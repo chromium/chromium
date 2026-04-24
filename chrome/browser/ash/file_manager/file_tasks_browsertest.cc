@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -86,7 +87,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -981,9 +981,9 @@ IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
 
   auto [google_workspace_cloud_upload, microsoft_office_cloud_upload,
         odfs_extension_installed, is_managed] = GetParam();
-  profile->GetPrefs()->SetString(prefs::kGoogleWorkspaceCloudUpload,
+  profile->GetPrefs()->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
                                  google_workspace_cloud_upload);
-  profile->GetPrefs()->SetString(prefs::kMicrosoftOfficeCloudUpload,
+  profile->GetPrefs()->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
                                  microsoft_office_cloud_upload);
 
   for (const auto& extension_group :

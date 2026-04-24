@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
@@ -130,8 +130,8 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
   void CheckM365SupportedLinkDefaultPrefSet(bool value) {
     PrefService* pref_service = profile()->GetPrefs();
     ASSERT_TRUE(pref_service);
-    EXPECT_EQ(value,
-              pref_service->GetBoolean(prefs::kM365SupportedLinkDefaultSet));
+    EXPECT_EQ(value, pref_service->GetBoolean(
+                         ash::prefs::kM365SupportedLinkDefaultSet));
   }
 
   Profile* profile() { return browser()->profile(); }

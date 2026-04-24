@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -50,9 +50,9 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
 namespace cloud_upload {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kMicrosoftOfficeCloudUpload,
+  registry->RegisterStringPref(ash::prefs::kMicrosoftOfficeCloudUpload,
                                kCloudUploadPolicyAllowed);
-  registry->RegisterStringPref(prefs::kGoogleWorkspaceCloudUpload,
+  registry->RegisterStringPref(ash::prefs::kGoogleWorkspaceCloudUpload,
                                kCloudUploadPolicyAllowed);
 }
 
@@ -92,7 +92,7 @@ bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
-             prefs::kMicrosoftOfficeCloudUpload));
+             ash::prefs::kMicrosoftOfficeCloudUpload));
 }
 
 bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
@@ -102,7 +102,7 @@ bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsMicrosoftOfficeOneDriveIntegrationAllowed(profile) &&
          IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
-             prefs::kMicrosoftOfficeCloudUpload));
+             ash::prefs::kMicrosoftOfficeCloudUpload));
 }
 
 bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
@@ -111,7 +111,7 @@ bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
-             prefs::kGoogleWorkspaceCloudUpload));
+             ash::prefs::kGoogleWorkspaceCloudUpload));
 }
 
 bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
@@ -120,7 +120,7 @@ bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
          IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
-             prefs::kGoogleWorkspaceCloudUpload));
+             ash::prefs::kGoogleWorkspaceCloudUpload));
 }
 
 }  // namespace cloud_upload

@@ -98,7 +98,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
 
     // Enable OneDrive.
     profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-    profile()->GetPrefs()->SetString(prefs::kMicrosoftOneDriveMount,
+    profile()->GetPrefs()->SetString(ash::prefs::kMicrosoftOneDriveMount,
                                      "automated");
 
     // By default, VolumeManager null for testing so create one.

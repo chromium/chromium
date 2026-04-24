@@ -203,12 +203,12 @@ CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
   }
 
   pref_change_registrar_->Add(
-      prefs::kGoogleWorkspaceCloudUpload,
+      ash::prefs::kGoogleWorkspaceCloudUpload,
       base::BindRepeating(
           &CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_->Add(
-      prefs::kMicrosoftOfficeCloudUpload,
+      ash::prefs::kMicrosoftOfficeCloudUpload,
       base::BindRepeating(
           &CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged,
           base::Unretained(this)));

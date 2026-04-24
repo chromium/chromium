@@ -140,12 +140,12 @@ class CloudUploadPromptPrefsHandlerTest
     const CloudProvider cloud_provider = std::get<0>(GetParam());
     switch (cloud_provider) {
       case ash::cloud_upload::CloudProvider::kGoogleDrive:
-        profile()->GetPrefs()->SetString(prefs::kGoogleWorkspaceCloudUpload,
-                                         value);
+        profile()->GetPrefs()->SetString(
+            ash::prefs::kGoogleWorkspaceCloudUpload, value);
         break;
       case ash::cloud_upload::CloudProvider::kOneDrive:
-        profile()->GetPrefs()->SetString(prefs::kMicrosoftOfficeCloudUpload,
-                                         value);
+        profile()->GetPrefs()->SetString(
+            ash::prefs::kMicrosoftOfficeCloudUpload, value);
         break;
       case ash::cloud_upload::CloudProvider::kNone:
       case ash::cloud_upload::CloudProvider::kUnknown:

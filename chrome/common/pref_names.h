@@ -1629,34 +1629,6 @@ inline constexpr char kSelectFileLastDirectory[] = "selectfile.last_directory";
 inline constexpr char kAllowFileSelectionDialogs[] =
     "select_file_dialogs.allowed";
 
-#if BUILDFLAG(IS_CHROMEOS)
-
-// Whether the user can remove OneDrive.
-inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
-
-// Whether M365 has been already been set as default to open supported links.
-inline constexpr char kM365SupportedLinkDefaultSet[] =
-    "filebrowser.m365_supported_link_default_set";
-
-// Pref that contains the value of the MicrosoftOneDriveMount policy.
-inline constexpr char kMicrosoftOneDriveMount[] =
-    "filebrowser.office.microsoft_one_drive_mount";
-
-// Pref that contains the value of the MicrosoftOneDriveAccountRestrictions
-// policy.
-inline constexpr char kMicrosoftOneDriveAccountRestrictions[] =
-    "filebrowser.office.microsoft_one_drive_account_restrictions";
-
-// Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
-inline constexpr char kMicrosoftOfficeCloudUpload[] =
-    "filebrowser.office.microsoft_office_cloud_upload";
-
-// Pref that contains the value of the GoogleWorkspaceCloudUpload policy.
-inline constexpr char kGoogleWorkspaceCloudUpload[] =
-    "filebrowser.office.google_workspace_cloud_upload";
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Extensions which should be opened upon completion.
 inline constexpr char kDownloadExtensionsToOpen[] =
     "download.extensions_to_open";

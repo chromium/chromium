@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::settings {
@@ -66,7 +66,7 @@ OneDrivePageHandler::OneDrivePageHandler(
 
   pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(
-      prefs::kAllowUserToRemoveODFS,
+      ash::prefs::kAllowUserToRemoveODFS,
       base::BindRepeating(&OneDrivePageHandler::OnAllowUserToRemoveODFSChanged,
                           base::Unretained(this)));
   OnAllowUserToRemoveODFSChanged();
@@ -177,7 +177,7 @@ void OneDrivePageHandler::OnAllowUserToRemoveODFSChanged() {
   }
   const PrefService* pref_service = profile_->GetPrefs();
   page_->OnAllowUserToRemoveODFSChanged(
-      pref_service->GetBoolean(prefs::kAllowUserToRemoveODFS));
+      pref_service->GetBoolean(ash::prefs::kAllowUserToRemoveODFS));
 }
 
 }  // namespace ash::settings

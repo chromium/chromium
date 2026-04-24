@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -107,8 +107,8 @@ std::unique_ptr<CloudUploadPrefsWatcher> CloudUploadPrefsWatcher::Create(
 void CloudUploadPrefsWatcher::Init() {
   pref_change_registrar_->Init(profile_->GetPrefs());
 
-  for (const auto* pref : {prefs::kMicrosoftOfficeCloudUpload,
-                           prefs::kGoogleWorkspaceCloudUpload}) {
+  for (const auto* pref : {ash::prefs::kMicrosoftOfficeCloudUpload,
+                           ash::prefs::kGoogleWorkspaceCloudUpload}) {
     pref_change_registrar_->Add(
         pref,
         base::BindRepeating(&CloudUploadPrefsWatcher::OnCloudUploadPrefChanged,

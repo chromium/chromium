@@ -44,6 +44,7 @@ source_set("cloud_storage_pref_utils") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common:constants",
     "//components/pref_registry",

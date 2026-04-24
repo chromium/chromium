@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace {
@@ -19,15 +19,16 @@ constexpr char MicrosoftOneDriveNoAccountRestriction[] = "common";
 namespace chromeos::cloud_storage {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kMicrosoftOneDriveMount,
+  registry->RegisterStringPref(ash::prefs::kMicrosoftOneDriveMount,
                                MicrosoftOneDriveMountAllowed);
 
   base::ListValue account_restrictions_default;
   account_restrictions_default.Append(MicrosoftOneDriveNoAccountRestriction);
-  registry->RegisterListPref(prefs::kMicrosoftOneDriveAccountRestrictions,
+  registry->RegisterListPref(ash::prefs::kMicrosoftOneDriveAccountRestrictions,
                              std::move(account_restrictions_default));
-  registry->RegisterBooleanPref(prefs::kAllowUserToRemoveODFS, true);
-  registry->RegisterBooleanPref(prefs::kM365SupportedLinkDefaultSet, false);
+  registry->RegisterBooleanPref(ash::prefs::kAllowUserToRemoveODFS, true);
+  registry->RegisterBooleanPref(ash::prefs::kM365SupportedLinkDefaultSet,
+                                false);
 }
 
 }  // namespace chromeos::cloud_storage

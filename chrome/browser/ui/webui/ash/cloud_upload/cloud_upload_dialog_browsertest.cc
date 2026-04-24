@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -739,15 +739,15 @@ IN_PROC_BROWSER_TEST_P(CloudUploadDialogHandlerDisabledBrowserTest,
   auto* prefs = profile()->GetPrefs();
   if (google_workspace_test) {
     // Disable Microsoft365.
-    prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
+    prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
                      chromeos::cloud_upload::kCloudUploadPolicyAllowed);
-    prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
+    prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
                      chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
   } else {
     // Disable Google Workspace.
-    prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
+    prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
                      chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
-    prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
+    prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
                      chromeos::cloud_upload::kCloudUploadPolicyAllowed);
 
     // Perform the necessary OneDrive & Microsoft365 setup.
@@ -795,9 +795,9 @@ IN_PROC_BROWSER_TEST_F(
     CloudUploadDialogNoTasksBrowserTest,
     OneDriveSetupDialogShownWhenFixupFlowIsNecessaryForMicrosoft365) {
   auto* prefs = profile()->GetPrefs();
-  prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
+  prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
                    chromeos::cloud_upload::kCloudUploadPolicyDisallowed);
-  prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
+  prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
                    chromeos::cloud_upload::kCloudUploadPolicyAllowed);
 
   const auto& doc_file = files_[0];
@@ -927,11 +927,11 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
     auto [google_workspace_cloud_upload, microsoft_office_cloud_upload] =
         GetParam();
     auto* prefs = profile()->GetPrefs();
-    prefs->SetString(prefs::kGoogleWorkspaceCloudUpload,
+    prefs->SetString(ash::prefs::kGoogleWorkspaceCloudUpload,
                      google_workspace_cloud_upload);
-    prefs->SetString(prefs::kMicrosoftOneDriveMount,
+    prefs->SetString(ash::prefs::kMicrosoftOneDriveMount,
                      microsoft_office_cloud_upload);
-    prefs->SetString(prefs::kMicrosoftOfficeCloudUpload,
+    prefs->SetString(ash::prefs::kMicrosoftOfficeCloudUpload,
                      microsoft_office_cloud_upload);
   }
 };
@@ -999,8 +999,8 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   // Now toggle the automated policy to disallowed.
   profile()->GetPrefs()->SetString(
       chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
-          ? prefs::kGoogleWorkspaceCloudUpload
-          : prefs::kMicrosoftOfficeCloudUpload,
+          ? ash::prefs::kGoogleWorkspaceCloudUpload
+          : ash::prefs::kMicrosoftOfficeCloudUpload,
       kCloudUploadPolicyDisallowed);
 
   // All handlers are reset.
@@ -1082,8 +1082,8 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   // Now toggle the automated policy to disallowed.
   profile()->GetPrefs()->SetString(
       chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAutomated(profile())
-          ? prefs::kGoogleWorkspaceCloudUpload
-          : prefs::kMicrosoftOfficeCloudUpload,
+          ? ash::prefs::kGoogleWorkspaceCloudUpload
+          : ash::prefs::kMicrosoftOfficeCloudUpload,
       kCloudUploadPolicyDisallowed);
 
   // Check that user-selected handlers remain unchanged on `disallowed`.

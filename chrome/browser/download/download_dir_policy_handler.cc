@@ -113,7 +113,7 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     if (download_to_drive) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
     } else if (download_to_one_drive) {
-      prefs->SetBoolean(prefs::kAllowUserToRemoveODFS, false);
+      prefs->SetBoolean(ash::prefs::kAllowUserToRemoveODFS, false);
     }
   }
 

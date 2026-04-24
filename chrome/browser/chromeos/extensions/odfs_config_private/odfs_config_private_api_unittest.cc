@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/extensions/odfs_config_private/odfs_config_private_api.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,15 +45,16 @@ class OfdsConfigPrivateApiUnittest : public ExtensionApiUnittest {
  protected:
   void SetOneDriveMount(Profile* profile, const std::string& mount) {
     ASSERT_TRUE(profile);
-    profile->GetPrefs()->SetString(prefs::kMicrosoftOneDriveMount, mount);
+    profile->GetPrefs()->SetString(ash::prefs::kMicrosoftOneDriveMount, mount);
   }
 
   void SetOneDriveAccountRestrictions(
       Profile* profile,
       const std::vector<std::string>& restrictions) {
     ASSERT_TRUE(profile);
-    profile->GetPrefs()->SetList(prefs::kMicrosoftOneDriveAccountRestrictions,
-                                 ToList(restrictions));
+    profile->GetPrefs()->SetList(
+        ash::prefs::kMicrosoftOneDriveAccountRestrictions,
+        ToList(restrictions));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;

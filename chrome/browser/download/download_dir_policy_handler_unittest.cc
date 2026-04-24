@@ -23,6 +23,10 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 const char* kUserIDHash = "deadbeef";
@@ -160,7 +164,7 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
 
-  EXPECT_TRUE(store_->GetValue(prefs::kAllowUserToRemoveODFS, &value));
+  EXPECT_TRUE(store_->GetValue(ash::prefs::kAllowUserToRemoveODFS, &value));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
@@ -183,8 +187,8 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
   EXPECT_FALSE(
       recommended_store_->GetValue(prefs::kPromptForDownload, nullptr));
 
-  EXPECT_FALSE(
-      recommended_store_->GetValue(prefs::kAllowUserToRemoveODFS, nullptr));
+  EXPECT_FALSE(recommended_store_->GetValue(ash::prefs::kAllowUserToRemoveODFS,
+                                            nullptr));
 
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));

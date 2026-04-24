@@ -3101,6 +3101,9 @@ inline constexpr char kTPMUpdatePlannedNotificationShownTime[] =
 // File manager/file system related Prefs
 //-----------------------------------------------------------------------------
 
+// Whether the user can remove OneDrive.
+inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
+
 // Map of default tasks, associated by MIME type.
 inline constexpr char kDefaultTasksByMimeType[] =
     "filebrowser.tasks.default_by_mime_type";
@@ -3121,6 +3124,10 @@ inline constexpr char kDefaultHandlersForFileExtensions[] =
 inline constexpr char kFilesAppDefaultLocation[] =
     "filebrowser.default_location";
 
+// Pref that contains the value of the GoogleWorkspaceCloudUpload policy.
+inline constexpr char kGoogleWorkspaceCloudUpload[] =
+    "filebrowser.office.google_workspace_cloud_upload";
+
 // Pref that contains the value of the LocalUserFilesAllowed policy.
 inline constexpr char kLocalUserFilesAllowed[] =
     "filebrowser.local_user_files_allowed";
@@ -3129,6 +3136,23 @@ inline constexpr char kLocalUserFilesAllowed[] =
 // policy.
 inline constexpr char kLocalUserFilesMigrationDestination[] =
     "filebrowser.local_user_files_migration_destination";
+
+// Whether M365 has been already been set as default to open supported links.
+inline constexpr char kM365SupportedLinkDefaultSet[] =
+    "filebrowser.m365_supported_link_default_set";
+
+// Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
+inline constexpr char kMicrosoftOfficeCloudUpload[] =
+    "filebrowser.office.microsoft_office_cloud_upload";
+
+// Pref that contains the value of the MicrosoftOneDriveAccountRestrictions
+// policy.
+inline constexpr char kMicrosoftOneDriveAccountRestrictions[] =
+    "filebrowser.office.microsoft_one_drive_account_restrictions";
+
+// Pref that contains the value of the MicrosoftOneDriveMount policy.
+inline constexpr char kMicrosoftOneDriveMount[] =
+    "filebrowser.office.microsoft_one_drive_mount";
 
 // URL path string of the most recently used SMB NetworkFileShare path.
 inline constexpr char kMostRecentlyUsedNetworkFileShareURL[] =
