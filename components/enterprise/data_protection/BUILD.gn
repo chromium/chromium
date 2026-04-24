@@ -8,6 +8,8 @@ source_set("data_protection") {
   sources = [
     "data_protection_url_lookup_service.cc",
     "data_protection_url_lookup_service.h",
+    "features.cc",
+    "features.h",
     "utils.cc",
     "utils.h",
   ]
