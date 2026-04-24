@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_history.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import android.graphics.Color;
@@ -30,6 +31,47 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpBackgroundDataThemeCollectionUnitTest {
+    @Test
+    public void testEquals() {
+        CustomBackgroundInfo info1 =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        "id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        CustomBackgroundInfo info2 =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        "id",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection data1 =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        info1,
+                        Color.RED,
+                        /* portraitMatrix= */ null,
+                        /* landscapeMatrix= */ null);
+        NtpBackgroundDataThemeCollection data2 =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        info2,
+                        Color.RED,
+                        /* portraitMatrix= */ null,
+                        /* landscapeMatrix= */ null);
+        NtpBackgroundDataThemeCollection data3 =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID_LOCAL,
+                        info1,
+                        Color.BLUE,
+                        /* portraitMatrix= */ null,
+                        /* landscapeMatrix= */ null);
+
+        assertEquals(data1, data2);
+        assertNotEquals(data1, data3);
+        assertEquals(data1.hashCode(), data2.hashCode());
+    }
+
     @Test
     public void testToJsonAndFromJson() throws JSONException {
         @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
@@ -82,7 +124,12 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 new CustomBackgroundInfo(
                         url, collectionId, /* isUploadedImage= */ false, isDailyRefreshEnabled);
         NtpBackgroundDataThemeCollection data =
-                new NtpBackgroundDataThemeCollection(platformType, info, primaryColor, null, null);
+                new NtpBackgroundDataThemeCollection(
+                        platformType,
+                        info,
+                        primaryColor,
+                        /* portraitMatrix= */ null,
+                        /* landscapeMatrix= */ null);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);

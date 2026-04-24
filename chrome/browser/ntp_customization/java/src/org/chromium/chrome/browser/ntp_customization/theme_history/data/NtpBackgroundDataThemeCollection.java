@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** Data class for NTP theme collection background image. */
 @NullMarked
 public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
@@ -84,6 +86,21 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
                     NtpBackgroundDataUtils.matrixToJsonArray(mLandscapeMatrix));
         }
         return json;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NtpBackgroundDataThemeCollection other) {
+            return super.equals(obj)
+                    && Objects.equals(mCustomBackgroundInfo, other.mCustomBackgroundInfo)
+                    && mPrimaryColor == other.mPrimaryColor;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mCustomBackgroundInfo, mPrimaryColor);
     }
 
     /** Returns the NtpBackgroundDataThemeCollection object from the given JSON. */

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /** Base class for NTP background data. */
 @NullMarked
@@ -65,5 +66,19 @@ public abstract class NtpBackgroundDataBase {
         json.put(PLATFORM_TYPE_KEY, mPlatformType);
         json.put(BACKGROUND_TYPE_KEY, getBackgroundType());
         return json;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NtpBackgroundDataBase other) {
+            return mPlatformType == other.getPlatformType()
+                    && getBackgroundType() == other.getBackgroundType();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mPlatformType, getBackgroundType());
     }
 }

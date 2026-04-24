@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 
+import java.util.Objects;
+
 /** Data class for NTP customized background color. */
 @NullMarked
 public class NtpBackgroundDataCustomizedColor extends NtpBackgroundDataBase {
@@ -53,6 +55,21 @@ public class NtpBackgroundDataCustomizedColor extends NtpBackgroundDataBase {
         jsonObject.put(LIGHT_MODE_COLOR_KEY, mLightModeColor);
         jsonObject.put(DARK_MODE_COLOR_KEY, mDarkModeColor);
         return jsonObject;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NtpBackgroundDataCustomizedColor other) {
+            return super.equals(obj)
+                    && mLightModeColor == other.mLightModeColor
+                    && mDarkModeColor == other.mDarkModeColor;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mLightModeColor, mDarkModeColor);
     }
 
     /** Returns the NtpBackgroundDataCustomizedColor object from the given JSON. */

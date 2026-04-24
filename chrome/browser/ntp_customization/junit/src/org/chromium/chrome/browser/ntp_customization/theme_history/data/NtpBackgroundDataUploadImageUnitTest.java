@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme_history.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -25,6 +26,23 @@ import org.chromium.chrome.browser.ntp_customization.theme_history.data.NtpBackg
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpBackgroundDataUploadImageUnitTest {
+    @Test
+    public void testEquals() {
+        NtpBackgroundDataUploadImage data1 =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID_LOCAL, "path", Color.RED, new Matrix(), new Matrix());
+        NtpBackgroundDataUploadImage data2 =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID_LOCAL, "path", Color.RED, new Matrix(), new Matrix());
+        NtpBackgroundDataUploadImage data3 =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID_LOCAL, "path2", Color.RED, new Matrix(), new Matrix());
+
+        assertEquals(data1, data2);
+        assertNotEquals(data1, data3);
+        assertEquals(data1.hashCode(), data2.hashCode());
+    }
+
     @Test
     public void testToJsonAndFromJson() throws JSONException {
         Matrix portraitMatrix = new Matrix();

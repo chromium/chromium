@@ -13,6 +13,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 
+import java.util.Objects;
+
 /** Data class for NTP background color. */
 @NullMarked
 public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
@@ -56,6 +58,19 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
         jsonObject.put(THEME_COLOR_ID_KEY, mThemeColorId);
         jsonObject.put(IS_DAILY_REFRESH_ENABLED_KEY, mIsChromeColorDailyRefreshEnabled);
         return jsonObject;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NtpBackgroundDataColor other) {
+            return super.equals(obj) && mThemeColorId == other.mThemeColorId;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mThemeColorId);
     }
 
     /** Returns the NtpBackgroundDataColor object from the given JSON representation. */

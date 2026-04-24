@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 
+import java.util.Objects;
+
 /** Data class for NTP uploaded background image. */
 @NullMarked
 public class NtpBackgroundDataUploadImage extends NtpBackgroundDataBase {
@@ -77,6 +79,21 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataBase {
         json.put(PORTRAIT_MATRIX_KEY, NtpBackgroundDataUtils.matrixToJsonArray(mPortraitMatrix));
         json.put(LANDSCAPE_MATRIX_KEY, NtpBackgroundDataUtils.matrixToJsonArray(mLandscapeMatrix));
         return json;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NtpBackgroundDataUploadImage other) {
+            return super.equals(obj)
+                    && Objects.equals(mLastUploadImageFilePath, other.mLastUploadImageFilePath)
+                    && mPrimaryColor == other.mPrimaryColor;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mLastUploadImageFilePath, mPrimaryColor);
     }
 
     /** Returns the NtpBackgroundDataUploadImage object from the given JSON. */

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** A class to hold information about a custom background. */
 @NullMarked
 public class CustomBackgroundInfo {
@@ -24,5 +26,21 @@ public class CustomBackgroundInfo {
         this.collectionId = collectionId;
         this.isUploadedImage = isUploadedImage;
         this.isDailyRefreshEnabled = isDailyRefreshEnabled;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CustomBackgroundInfo other) {
+            return Objects.equals(backgroundUrl, other.backgroundUrl)
+                    && Objects.equals(collectionId, other.collectionId)
+                    && isUploadedImage == other.isUploadedImage
+                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
     }
 }
