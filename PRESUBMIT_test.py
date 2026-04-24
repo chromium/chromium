@@ -5991,26 +5991,6 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
         self.assertIn('bios/file.cc', results[8].message)
         self.assertIn('components/kiosk/file.cc', results[9].message)
 
-    def testJavaPath(self):
-        input_api = MockInputApi()
-        input_api.files = [
-            MockFile('components/foo/file1.java', ['otherFunction']),
-            MockFile('components/foo/file2.java', ['hasSyncConsent']),
-            MockFile('chrome/foo/file3.java', ['canSyncFeatureStart']),
-            MockFile('chrome/foo/file4.java', ['isSyncFeatureEnabled']),
-            MockFile('chrome/foo/file5.java', ['isSyncFeatureActive']),
-        ]
-
-        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
-
-        self.assertEqual(4, len(results))
-        self.assertTrue(
-            all('components/foo/file1.java' not in r.message for r in results))
-        self.assertIn('components/foo/file2.java', results[0].message)
-        self.assertIn('chrome/foo/file3.java', results[1].message)
-        self.assertIn('chrome/foo/file4.java', results[2].message)
-        self.assertIn('chrome/foo/file5.java', results[3].message)
-
 
 class CheckAnonymousNamespaceTest(unittest.TestCase):
     """Test the presubmit for anonymous namespaces."""
