@@ -5,12 +5,12 @@
 chrome.test.runTests([
   function contentScript() {
     chrome.activityLogPrivate.getExtensionActivities(
-      {
-        activityType: 'content_script'
-      },
-      (result) => {
-        chrome.test.assertEq(1, result.activities.length);
-        chrome.test.succeed();
-      });
-  }
+        {
+          activityType: 'content_script',
+        },
+        (result) => {
+          chrome.test.assertEq(1, result.activities.length);
+          chrome.test.succeed();
+        });
+  },
 ]);

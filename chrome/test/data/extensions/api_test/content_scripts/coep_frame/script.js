@@ -4,8 +4,11 @@
 
 const params = new URLSearchParams(location.search);
 
-fetch(params.get('href'), {mode: 'no-cors'}).then(() => {
-  parent.postMessage('SUCCESS', '*');
-}, () => {
-  parent.postMessage('FAIL', '*');
-});
+fetch(params.get('href'), {mode: 'no-cors'})
+    .then(
+        () => {
+          parent.postMessage('SUCCESS', '*');
+        },
+        () => {
+          parent.postMessage('FAIL', '*');
+        });

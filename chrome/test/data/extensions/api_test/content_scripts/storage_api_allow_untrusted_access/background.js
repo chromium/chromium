@@ -71,8 +71,9 @@ chrome.test.runTests([
         {accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'});
 
     const expectedMessages = [
-      'storage.session.onChanged received', 'storage.sync.onChanged received',
-      'storage.local.onChanged received'
+      'storage.session.onChanged received',
+      'storage.sync.onChanged received',
+      'storage.local.onChanged received',
     ];
     const receivedMessages = new Set();
 

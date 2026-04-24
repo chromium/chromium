@@ -33,7 +33,7 @@ async function testInjectSpeculationRules() {
 
   // Load the initial page that runs the content_script.js to inject a
   // speculation rules.
-  chrome.tabs.update({ url: getUrl('empty.html') });
+  chrome.tabs.update({url: getUrl('empty.html')});
 }
 
 chrome.test.getConfig(async config => {
@@ -41,4 +41,4 @@ chrome.test.getConfig(async config => {
   chrome.test.runTests([
     testInjectSpeculationRules,
   ]);
-})
+});

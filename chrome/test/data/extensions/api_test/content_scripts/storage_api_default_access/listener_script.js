@@ -12,4 +12,4 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
   } else {
     chrome.runtime.sendMessage('script received an unexpected message');
   }
-})
+});

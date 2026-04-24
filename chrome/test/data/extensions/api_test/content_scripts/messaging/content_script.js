@@ -24,9 +24,7 @@ chrome.test.runTests([
   // have custom externally_connectable manifest property.
   function testMessageToExtensionAllowingByDefault() {
     chrome.runtime.sendMessage(
-        'badpbjaedophlnacllhobhnbcgomhbcd',
-        TEST_MESSAGE,
-        function(response) {
+        'badpbjaedophlnacllhobhnbcgomhbcd', TEST_MESSAGE, function(response) {
           chrome.test.assertEq(TEST_MESSAGE, response.receivedMessage);
           assertValidExternalMessageSender(response.receivedSender);
           chrome.test.succeed();
@@ -36,9 +34,7 @@ chrome.test.runTests([
   // our extension ID in its externally_connectable manifest property.
   function testMessageToAllowingExtension() {
     chrome.runtime.sendMessage(
-        'pmnfaklgffejbafjijfofbcianldmhci',
-        TEST_MESSAGE,
-        function(response) {
+        'pmnfaklgffejbafjijfofbcianldmhci', TEST_MESSAGE, function(response) {
           chrome.test.assertEq(TEST_MESSAGE, response.receivedMessage);
           assertValidExternalMessageSender(response.receivedSender);
           chrome.test.succeed();
@@ -49,11 +45,10 @@ chrome.test.runTests([
   // ID there.
   function testMessageToDenyingExtension() {
     chrome.runtime.sendMessage(
-        'gcdagggcealpldjgchchljhjlhikcmco',
-        TEST_MESSAGE,
-        function(response) {
-          chrome.test.assertLastError('Could not establish connection. ' +
-                                      'Receiving end does not exist.');
+        'gcdagggcealpldjgchchljhjlhikcmco', TEST_MESSAGE, function(response) {
+          chrome.test.assertLastError(
+              'Could not establish connection. ' +
+              'Receiving end does not exist.');
           chrome.test.succeed();
         });
   },

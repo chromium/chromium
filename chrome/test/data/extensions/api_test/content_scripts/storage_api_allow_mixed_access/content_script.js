@@ -16,8 +16,8 @@ async function testAccessibleStorageAreas(func, param) {
     // If the param exists and to avoid mutating it, insert a copy of the param
     // to each area params.
     await chrome.storage[area][func](param);
-  };
-};
+  }
+}
 
 async function testGetValueSetByBackgroundPage() {
   // Content scripts can access values set by the background page when the
@@ -31,8 +31,8 @@ async function testGetValueSetByBackgroundPage() {
     }
     const value = await chrome.storage[area].get('background');
     chrome.test.assertEq({background: area}, value);
-  };
-};
+  }
+}
 
 chrome.test.runTests([
   // This test must run before any other test clears the storage.
@@ -52,7 +52,7 @@ chrome.test.runTests([
   },
 
   async function getBytesInUseFromContentScript() {
-    await testAccessibleStorageAreas('getBytesInUse', null)
+    await testAccessibleStorageAreas('getBytesInUse', null);
     chrome.test.succeed();
   },
 
@@ -62,7 +62,7 @@ chrome.test.runTests([
   },
 
   async function clearValuesFromContentScript() {
-    await testAccessibleStorageAreas('clear')
+    await testAccessibleStorageAreas('clear');
     chrome.test.succeed();
   },
 

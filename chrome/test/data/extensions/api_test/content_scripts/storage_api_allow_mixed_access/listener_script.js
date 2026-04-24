@@ -13,4 +13,4 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     chrome.runtime.sendMessage(
         `script received an unexpected event: ${JSON.stringify(changes)}`);
   }
-})
+});

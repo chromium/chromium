@@ -11,7 +11,7 @@ chrome.test.runTests([
           {target: {tabId}, func: () => document.title});
       chrome.test.assertEq(1, results.length);
       return results[0].result;
-    };
+    }
 
     const config = await chrome.test.getConfig();
     const url = `http://example.com:${config.testServer.port}/simple.html`;

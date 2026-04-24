@@ -4,10 +4,10 @@
 
 // Inject an image.
 const img = document.createElement('img');
-img.onload = function () {
+img.onload = function() {
   chrome.runtime.connect().postMessage(true);
 };
-img.onerror = function () {
+img.onerror = function() {
   chrome.runtime.connect().postMessage(false);
 };
 img.src = 'icon3.png';

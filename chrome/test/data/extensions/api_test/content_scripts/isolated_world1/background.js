@@ -22,6 +22,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 chrome.test.getConfig(function(config) {
   chrome.test.log('Creating tab...');
   chrome.tabs.create({
-    url: `http://localhost:${config.testServer.port}/extensions/test_file.html`
+    url: `http://localhost:${config.testServer.port}/extensions/test_file.html`,
   });
 });

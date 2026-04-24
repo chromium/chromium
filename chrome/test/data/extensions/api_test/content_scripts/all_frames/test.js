@@ -26,7 +26,7 @@ chrome.test.runTests([
         chrome.test.succeed();
       }
     });
-  }
+  },
 ]);
 
 chrome.test.getConfig(function(config) {

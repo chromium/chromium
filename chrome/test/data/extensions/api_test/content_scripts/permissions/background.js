@@ -32,8 +32,8 @@ function createTestTab(domain, callback) {
       });
 
   chrome.tabs.create({url: testUrl(domain)}, pass(function(tab) {
-    createdTabId = tab.id;
-  }));
+                       createdTabId = tab.id;
+                     }));
 }
 
 chrome.test.getConfig(function(config) {
@@ -44,11 +44,11 @@ chrome.test.getConfig(function(config) {
     // inject content scripts.
     function noAccess() {
       createTestTab('a.com', pass(function(tab) {
-        testTabId = tab.id;
-        chrome.tabs.executeScript(
-            tab.id, {code: `document.title = 'success'`},
-            callbackFail(error('a.com')));
-      }));
+                      testTabId = tab.id;
+                      chrome.tabs.executeScript(
+                          tab.id, {code: `document.title = 'success'`},
+                          callbackFail(error('a.com')));
+                    }));
     },
 
     // Add the host permission and see if we can inject a content script into
@@ -105,6 +105,6 @@ chrome.test.getConfig(function(config) {
                                             }));
                           }));
                     }));
-    }
+    },
   ]);
 });

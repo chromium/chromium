@@ -32,7 +32,7 @@ async function testInaccessibleStorageAreas(func, param) {
   }
   await chrome.test.assertPromiseRejects(
       chrome.storage.session[func](...areaParams), invalidAccessMessage);
-};
+}
 
 async function testGetValueSetByBackgroundPage() {
   // Content scripts can access values set by the background page when the
@@ -43,9 +43,9 @@ async function testGetValueSetByBackgroundPage() {
         chrome.test.assertEq({background: area}, value);
         resolve();
       });
-    })
-  };
-};
+    });
+  }
+}
 
 chrome.test.runTests([
   // This test must run before any other test clears the storage.
@@ -118,5 +118,5 @@ chrome.test.runTests([
         chrome.storage.sync.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
         contextCannotSetAccessLevelMessage);
     chrome.test.succeed();
-  }
+  },
 ]);

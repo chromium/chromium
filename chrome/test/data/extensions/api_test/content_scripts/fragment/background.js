@@ -26,9 +26,11 @@ let testUrl = '';
 const debug = 0;
 if (debug) {
   testUrl = 'http://www.google.com';
-  chrome.test.log = function(msg) { console.log(msg) };
+  chrome.test.log = function(msg) {
+    console.log(msg);
+  };
   chrome.test.runTests = function(tests) {
-    for (let i in tests) {
+    for (const i in tests) {
       tests[i]();
     }
   };

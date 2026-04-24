@@ -9,8 +9,9 @@ chrome.test.getConfig(function(config) {
       '/extensions/test_file_with_body.html';
 
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete')
+    if (changeInfo.status != 'complete') {
       return;
+    }
     chrome.tabs.onUpdated.removeListener(listener);
 
     // We need to test two different paths, because the message bundles used
@@ -40,9 +41,9 @@ chrome.test.getConfig(function(config) {
         chrome.tabs.insertCSS(tabId, {file: 'test.css'}, function() {
           chrome.tabs.executeScript(tabId, {file: 'test_paragraph_style.js'});
         });
-      }
+      },
     ]);
   });
 
-  chrome.tabs.create({ url: TEST_FILE_URL });
+  chrome.tabs.create({url: TEST_FILE_URL});
 });

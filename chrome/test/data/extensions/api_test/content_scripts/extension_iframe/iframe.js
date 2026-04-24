@@ -13,13 +13,14 @@ chrome.test.getConfig(function(config) {
   // chrome.storage should exist, since the extension has the permission, and
   // the storage api is allowed in content scripts.
   if (!chrome.storage) {
-    console.log("Error: chrome.storage doesn't exist; it should");
+    console.log('Error: chrome.storage doesn\'t exist; it should');
     success = false;
   }
 
   const checkPrivilegedApi = function(api, name) {
-    if (api)
+    if (api) {
       return true;
+    }
 
     console.log(`Error: ${name} doesn't exist, but should.`);
     return false;
@@ -35,8 +36,9 @@ chrome.test.getConfig(function(config) {
   success = success && checkPrivilegedApi(chrome.tabs, 'chrome.tabs');
   // And parts of chrome.extension should be unavailable to unprivileged
   // contexts.
-  success = success && checkPrivilegedApi(chrome.extension.getViews,
-                                          'chrome.extension.getViews');
+  success = success &&
+      checkPrivilegedApi(
+                chrome.extension.getViews, 'chrome.extension.getViews');
 
   chrome.runtime.sendMessage({success: success});
 });

@@ -20,7 +20,7 @@ chrome.test.runTests([
         chrome.test.fail(`Unexpected request: ${JSON.stringify(request)}`);
       }
     });
-  }
+  },
 ]);
 
 chrome.test.getConfig(function(config) {

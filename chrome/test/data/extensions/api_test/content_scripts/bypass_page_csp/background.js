@@ -6,10 +6,11 @@ chrome.runtime.onConnect.addListener(function(port) {
   chrome.test.log('got connect');
   port.onMessage.addListener(function(msg) {
     chrome.test.log('got message: ' + msg);
-    if (msg)
+    if (msg) {
       chrome.test.notifyPass();
-    else
+    } else {
       chrome.test.notifyFail();
+    }
   });
 });
 

@@ -13,8 +13,8 @@ chrome.test.runTests([
     // checks the title.
     const exampleUrl = `http://main.example:${
         config.testServer.port}/extensions/main_world_script_flag.html`;
-    let tab = await openTab(exampleUrl);
-    let results = await chrome.scripting.executeScript({
+    const tab = await openTab(exampleUrl);
+    const results = await chrome.scripting.executeScript({
       target: {tabId: tab.id},
       func: () => document.title,
     });

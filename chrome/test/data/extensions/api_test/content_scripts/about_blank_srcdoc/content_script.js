@@ -9,6 +9,7 @@ if (location.protocol === 'about:') {
 }
 
 chrome.runtime.onMessage.addListener(function(message) {
-  if (message === 'open about:blank popup')
+  if (message === 'open about:blank popup') {
     window.open('about:blank');
+  }
 });

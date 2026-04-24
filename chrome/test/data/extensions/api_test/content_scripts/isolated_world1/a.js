@@ -4,4 +4,4 @@
 
 // NOTE: Using `let` instead of `const` since this variable is read and
 // updated by other script from the extension.
-let num = 1;
+let num = 1;  // eslint-disable-line

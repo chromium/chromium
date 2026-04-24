@@ -59,5 +59,5 @@ chrome.test.runTests([
     // local.onChanged fired, since events should be received in FIFO order.
     await chrome.storage.sync.set({notify: 'yes'});
     await chrome.storage.local.set({notify: 'yes'});
-  }
+  },
 ]);

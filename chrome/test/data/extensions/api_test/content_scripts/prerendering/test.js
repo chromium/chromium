@@ -8,8 +8,9 @@ let testServerPort = 0;
 // options described in `details`.
 function getUrl(path, details) {
   let host = 'default.test';
-  if (details && details.matchAboutBlank)
+  if (details && details.matchAboutBlank) {
     host = 'match_about_blank.test';
+  }
   const url = `http://${host}:${testServerPort}/extensions/${path}`;
   return url;
 }

@@ -55,12 +55,14 @@ chrome.test.getConfig(function(config) {
       // Create tab using window.open on an existing page to inherit the origin
       // of the document.
       chrome.test.log(`Creating tab using window.open('about:blank')...`);
-      chrome.tabs.query({
-        url: '*://*/*test_file_with_about_blank_iframe*'
-      }, function(tabs) {
-        chrome.test.assertTrue(tabs.length > 0);
-        chrome.tabs.sendMessage(tabs[0].id, 'open about:blank popup');
-      });
+      chrome.tabs.query(
+          {
+            url: '*://*/*test_file_with_about_blank_iframe*',
+          },
+          function(tabs) {
+            chrome.test.assertTrue(tabs.length > 0);
+            chrome.tabs.sendMessage(tabs[0].id, 'open about:blank popup');
+          });
     },
 
     // Request host permissions for chrome.tabs.executeScript. These permissions
@@ -68,54 +70,62 @@ chrome.test.getConfig(function(config) {
     // about:blank is tested against the content_scripts[*].matches in the
     // manifest file instead of the effective permissions.
     function getHostPermissionsForFollowingTests() {
-      chrome.permissions.request({
-        origins: ['*://*/*']
-      }, function(granted) {
-        chrome.test.assertTrue(granted,
-            'Need *://*/* permissions for chrome.tabs.executeScript tests.');
-        chrome.test.succeed();
-      });
+      chrome.permissions.request(
+          {
+            origins: ['*://*/*'],
+          },
+          function(granted) {
+            chrome.test.assertTrue(
+                granted,
+                'Need *://*/* permissions for ' +
+                    'chrome.tabs.executeScript tests.');
+            chrome.test.succeed();
+          });
     },
 
     // chrome.tabs.executeScript should run in the frame
     function testExecuteScriptInFrame() {
-      chrome.tabs.query({
-        url: '*://*/*test_file_with_about_blank_iframe*'
-      }, function(tabs) {
-        chrome.test.assertTrue(tabs.length > 0);
-        chrome.tabs.executeScript(
-            tabs[0].id, {
-              code: `frameElement && (frameElement.src || 'about:blank')`,
-              matchAboutBlank: true,
-              allFrames: true
-            },
-            function(results) {
-              chrome.test.assertNoLastError();
-              chrome.test.assertTrue(results.indexOf('about:blank') >= 0);
-              chrome.test.succeed();
-            });
-      });
+      chrome.tabs.query(
+          {
+            url: '*://*/*test_file_with_about_blank_iframe*',
+          },
+          function(tabs) {
+            chrome.test.assertTrue(tabs.length > 0);
+            chrome.tabs.executeScript(
+                tabs[0].id, {
+                  code: `frameElement && (frameElement.src || 'about:blank')`,
+                  matchAboutBlank: true,
+                  allFrames: true,
+                },
+                function(results) {
+                  chrome.test.assertNoLastError();
+                  chrome.test.assertTrue(results.indexOf('about:blank') >= 0);
+                  chrome.test.succeed();
+                });
+          });
     },
     // chrome.tabs.executeScript should run in about:srcdoc frames
     function testExecuteScriptInSrcdocFrame() {
-      chrome.tabs.query({
-        url: '*://*/*srcdoc*'
-      }, function(tabs) {
-        chrome.test.assertTrue(tabs.length > 0);
-        chrome.tabs.executeScript(
-            tabs[0].id, {
-              code: `frameElement && frameElement.srcdoc && 'srcdoc'`,
-              matchAboutBlank: true,
-              allFrames: true
-            },
-            function(results) {
-              chrome.test.assertNoLastError();
-              chrome.test.assertTrue(
-                  results.indexOf('srcdoc') >= 0,
-                  'contentscript should be able to run in srcdoc frame');
-              chrome.test.succeed();
-            });
-      });
-    }
+      chrome.tabs.query(
+          {
+            url: '*://*/*srcdoc*',
+          },
+          function(tabs) {
+            chrome.test.assertTrue(tabs.length > 0);
+            chrome.tabs.executeScript(
+                tabs[0].id, {
+                  code: `frameElement && frameElement.srcdoc && 'srcdoc'`,
+                  matchAboutBlank: true,
+                  allFrames: true,
+                },
+                function(results) {
+                  chrome.test.assertNoLastError();
+                  chrome.test.assertTrue(
+                      results.indexOf('srcdoc') >= 0,
+                      'contentscript should be able to run in srcdoc frame');
+                  chrome.test.succeed();
+                });
+          });
+    },
   ]);
 });

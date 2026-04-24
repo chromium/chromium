@@ -4,8 +4,9 @@
 
 function checkFirstMessageEquals(expectedRequest) {
   return function(request) {
-    if (request != expectedRequest)
+    if (request != expectedRequest) {
       chrome.test.fail('Unexpected request: ' + JSON.stringify(request));
+    }
     // chrome.test.succeed() will be called by chrome.test.listenOnce().
     // If this function is not used by chrome.test.listenOnce(), then
     // call chrome.test.succeed() when you're done.
@@ -48,6 +49,6 @@ chrome.test.getConfig(function(config) {
       const testUrl = `http://localhost:${config.testServer.port}` +
           '/extensions/test_file_with_javascript_url_iframe.html';
       chrome.tabs.create({url: testUrl});
-    }
+    },
   ]);
 });

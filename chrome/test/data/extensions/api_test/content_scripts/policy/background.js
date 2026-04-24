@@ -29,8 +29,8 @@ function createTestTab(domain, callback) {
       });
 
   chrome.tabs.create({url: testUrl(domain)}, pass(function(tab) {
-    createdTabId = tab.id;
-  }));
+                       createdTabId = tab.id;
+                     }));
 }
 
 chrome.test.getConfig(function(config) {

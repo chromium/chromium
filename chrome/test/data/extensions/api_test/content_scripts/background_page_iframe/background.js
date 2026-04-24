@@ -6,6 +6,8 @@ chrome.test.getConfig(function(config) {
   const iframe = document.createElement('iframe');
   iframe.src =
       'http://a.com:' + config.testServer.port + '/extensions/test_file.html';
-  iframe.onload = function() { chrome.test.sendMessage('iframe loaded'); }
+  iframe.onload = function() {
+    chrome.test.sendMessage('iframe loaded');
+  };
   document.body.appendChild(iframe);
 });

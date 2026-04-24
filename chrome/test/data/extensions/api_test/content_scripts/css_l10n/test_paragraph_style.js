@@ -7,14 +7,15 @@
 // not be present in any CSS code).
 
 // NOTE: Using `var` because multiple scripts inject with a `message` variable.
-var message = 'Test failed to complete';
+var message = 'Test failed to complete';  // eslint-disable-line no-var
 try {
   const p = document.getElementById('pId');
-  let color = getComputedStyle(p).color;
-  if (getComputedStyle(p).color == 'rgb(255, 0, 0)')
+  const color = getComputedStyle(p).color;
+  if (getComputedStyle(p).color == 'rgb(255, 0, 0)') {
     message = 'passed';
-  else
+  } else {
     message = 'Paragraph is not red: ' + color;
+  }
 } finally {
   chrome.runtime.sendMessage({tag: 'paragraph_style', message: message});
 }

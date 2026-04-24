@@ -5,9 +5,8 @@
 window.addEventListener('load', function() {
   const parentExtensionPage = unescape(location.hash.replace('#', ''));
 
-  console.log(
-      `PAGE: Sending content to parent extension page - ${
-          parentExtensionPage}`);
+  console.log(`PAGE: Sending content to parent extension page - ${
+      parentExtensionPage}`);
   window.parent.postMessage(
       document.getElementById('content').innerText, parentExtensionPage);
 });

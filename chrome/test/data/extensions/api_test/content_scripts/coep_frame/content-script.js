@@ -27,7 +27,7 @@
             resolve();
           }
         });
-      })
+      }),
     ]);
     document.title = 'PASSED';
   } catch (e) {

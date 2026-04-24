@@ -15,6 +15,6 @@ if (location.pathname == '/empty.html') {
   const script = document.createElement('script');
   script.type = 'speculationrules';
   script.innerText =
-    `{ "prerender": [ { "source": "list", "urls": [ "${target.href}" ]} ] }`;
+      `{ "prerender": [ { "source": "list", "urls": [ "${target.href}" ]} ] }`;
   document.head.appendChild(script);
 }
