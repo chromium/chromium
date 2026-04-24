@@ -455,10 +455,12 @@
   [
       "abc",
       [
-        "abcdef"
+        "abcdef",
+        "abcdefg"
       ],
       [
         "",
+        ""
       ],
       [],
       {
@@ -467,15 +469,19 @@
           "tlw": false
         },
         "google:suggestdetail": [
+          {},
           {}
         ],
         "google:suggestrelevance": [
           1253,
+          1252
         ],
         "google:suggestsubtypes": [
+          [],
           []
         ],
         "google:suggesttype": [
+          "QUERY",
           "QUERY"
         ],
         "google:verbatimrelevance": 1300

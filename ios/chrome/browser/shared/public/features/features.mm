@@ -16,6 +16,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync_preferences/features.h"
 #import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "components/version_info/channel.h"
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
@@ -1014,8 +1015,7 @@ bool IsAIOmniboxLaunchedCountry() {
       GetApplicationContext()->GetVariationsService();
   bool is_launched_country =
       variations_service &&
-      base::ToLowerASCII(variations_service->GetStoredPermanentCountry()) ==
-          "us";
+      base::ToLowerASCII(GetCurrentCountryCode(variations_service)) == "us";
   return is_launched_country;
 }
 
