@@ -692,6 +692,13 @@ public final class ChromePreferenceKeys {
 
     /**
      * The number at the end should be consistent with {@link
+     * org.chromium.chrome.browser.ntp_customization.theme_history.data.NtpBackgroundDataBase.PlatformType}
+     */
+    public static final KeyPrefix NTP_CUSTOMIZATION_SYNC_HISTORY_DATA =
+            new KeyPrefix("Chrome.NtpCustomizationSync.HistoryData.*");
+
+    /**
+     * The number at the end should be consistent with {@link
      * org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType}
      */
     public static final KeyPrefix HOME_MODULES_FRESHNESS_COUNT =
@@ -1187,6 +1194,7 @@ public final class ChromePreferenceKeys {
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
                 HOME_MODULE_CARDS_ENABLED,
                 HOME_MODULES_MODULE_TYPE.pattern(),
+                NTP_CUSTOMIZATION_SYNC_HISTORY_DATA.pattern(),
                 HOME_MODULES_FRESHNESS_COUNT.pattern(),
                 HOME_MODULES_FRESHNESS_TIMESTAMP_MS.pattern(),
                 HOMEPAGE_CUSTOM_GURL,
