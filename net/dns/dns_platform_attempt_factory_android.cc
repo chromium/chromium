@@ -19,7 +19,7 @@ namespace net {
 
 std::unique_ptr<DnsPlatformAttemptFactoryAndroid>
 DnsPlatformAttemptFactoryAndroid::Create() {
-  base::NoDestructor<DnsPlatformAndroidAttempt::DelegateImpl> delegate;
+  static base::NoDestructor<DnsPlatformAndroidAttempt::DelegateImpl> delegate;
   return base::WrapUnique<DnsPlatformAttemptFactoryAndroid>(
       new DnsPlatformAttemptFactoryAndroid(delegate.get()));
 }
