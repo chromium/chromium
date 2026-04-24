@@ -95,6 +95,11 @@ class FormInteractionsUkmLogger {
                            const AutofillField& field,
                            base::TimeTicks form_parsed_timestamp,
                            bool off_the_record);
+  void LogSuggestionAccepted(ukm::SourceId ukm_source_id,
+                             const FormStructure& form_structure,
+                             const AutofillField& autofill_field,
+                             SuggestionType accepted_suggestion_type,
+                             int accepted_suggestion_position);
   // For address suggestions, the `record_type` is irrelevant.
   void LogDidFillSuggestion(ukm::SourceId ukm_source_id,
                             const FormStructure& form,

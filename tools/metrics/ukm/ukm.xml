@@ -3953,6 +3953,64 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill2.SuggestionAccepted">
+  <owner>jihadghanna@google.com</owner>
+  <summary>
+    Recorded when the user accepts a suggestion on some trigger field. This
+    includes only suggestions going through the Autofill codebase, meaning that
+    password suggestions are excluded.
+  </summary>
+  <metric name="AcceptedIndex">
+    <summary>
+      The index of the accepted suggestion in the list of shown suggestions.
+    </summary>
+  </metric>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form.
+    </summary>
+  </metric>
+  <metric name="OverallType" enum="AutofillFieldType">
+    <summary>
+      FieldType of the trigger field where the suggestions where accepted. For
+      fields that have multiple field types, one of them is chosen arbitrarily.
+    </summary>
+  </metric>
+  <metric name="PriorValueLength">
+    <summary>
+      Length of the value in the field before accepting the suggestion.
+    </summary>
+  </metric>
+  <metric name="SuggestionType" enum="SuggestionType">
+    <summary>
+      The type of the accepted suggestion.
+    </summary>
+  </metric>
+</event>
+
 <event name="AutofillAi.FieldEvent">
   <owner>jihadghanna@google.com</owner>
   <owner>jkeitel@google.com</owner>
