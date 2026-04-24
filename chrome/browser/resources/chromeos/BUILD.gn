@@ -47,6 +47,7 @@ group("resources") {
     "set_time_dialog:resources",
     "skyvault:resources",
     "supervision:resources",
+    "sys_internals:resources",
     "vm:resources",
   ]
 }
@@ -89,7 +90,6 @@ group("closure_compile") {
     "emulator:closure_compile",
     "multidevice_internals:closure_compile",
     "smb_shares:closure_compile",
-    "sys_internals:closure_compile",
   ]
 }
 

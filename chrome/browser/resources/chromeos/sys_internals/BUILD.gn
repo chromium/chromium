@@ -2,33 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":constants",
-    ":index",
-    ":types",
-  ]
-}
+build_webui("build") {
+  grd_prefix = "sys_internals"
 
-js_library("index") {
-  deps = [
-    ":constants",
-    ":types",
-    "line_chart",
-    "line_chart:unit_label",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:promise_resolver",
-    "//ash/webui/common/resources:util",
+  static_files = [
+    "index.html",
+    "index.css",
+    "images/cpu.svg",
+    "images/info.svg",
+    "images/memory.svg",
+    "images/menu.svg",
+    "images/zram.svg",
+    "line_chart/line_chart.css",
   ]
 
-  externs_list = [ "externs.js" ]
-}
-
-js_library("constants") {
-}
-
-js_library("types") {
-  deps = [ "line_chart:data_series" ]
+  ts_files = [
+    "constants.js",
+    "index.js",
+    "main.js",
+    "types.js",
+    "line_chart/constants.js",
+    "line_chart/data_series.js",
+    "line_chart/line_chart.js",
+    "line_chart/menu.js",
+    "line_chart/scrollbar.js",
+    "line_chart/sub_chart.js",
+    "line_chart/unit_label.js",
+  ]
 }

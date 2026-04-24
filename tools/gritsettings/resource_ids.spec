@@ -386,6 +386,10 @@
     "META": {"sizes": {"includes": [5],}},
     "includes": [3690],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/sys_internals/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [3695],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/components/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [3720],
