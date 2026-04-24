@@ -91,6 +91,10 @@ class ContextualCueingController
 
   void HideCue();
 
+  // Returns the list of cue surfaces that are currently eligible to show a cue.
+  absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
+  GetEligibleCueSurfaces();
+
   // Not owned. Guaranteed to outlive `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<TabListInterface> tab_list_interface_;

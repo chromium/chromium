@@ -102,4 +102,9 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
   return data;
 }
 
+optimization_guide::proto::ContextualCueingSurface GlicCueTarget::GetSurface()
+    const {
+  return optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME;
+}
+
 }  // namespace glic

@@ -27,6 +27,8 @@ class TestCueTarget : public CueTarget {
   CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCueingResponse& response)
       const override;
+  optimization_guide::proto::ContextualCueingSurface GetSurface()
+      const override;
 };
 
 }  // namespace contextual_cueing

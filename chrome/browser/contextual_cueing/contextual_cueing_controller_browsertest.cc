@@ -382,14 +382,13 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, Ineligible) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   cue_target_->eligible = false;
-  SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 1);
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
-      ContextualCueingDecision::kTargetFeatureNotEligible, 1);
+      ContextualCueingDecision::kNoEligibleCueSurfaces, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {

@@ -172,6 +172,15 @@ void ContextualCueingController::OnPageContentAnnotated(
     return;
   }
 
+  if (GetEligibleCueSurfaces().empty()) {
+    MODEL_EXECUTION_LOG(
+        base::StringPrintf("%s ineligible for cue: No eligible cue surfaces.",
+                           active_web_contents->GetLastCommittedURL().spec()));
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kNoEligibleCueSurfaces);
+    return;
+  }
+
   if (!IsAllowedToShowCue()) {
     return;
   }
@@ -273,6 +282,9 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
     *request.add_background_tabs() =
         GetTabProtoFromWebContents(background_tabs[i].contents);
   }
+  auto eligible_cue_surfaces = GetEligibleCueSurfaces();
+  *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
+                                           eligible_cue_surfaces.end()};
 
   LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
                              request.background_tabs_size());
@@ -506,6 +518,20 @@ void ContextualCueingController::HideCue() {
 CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {
   auto iter = cue_targets_.find(type);
   return iter != cue_targets_.end() ? iter->second.get() : nullptr;
+}
+
+absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
+ContextualCueingController::GetEligibleCueSurfaces() {
+  absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
+      eligible_cue_surfaces;
+  for (const auto& [cue_type, target] : cue_targets_) {
+    if (target->IsEligible() &&
+        target->GetSurface() !=
+            optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
+      eligible_cue_surfaces.insert(target->GetSurface());
+    }
+  }
+  return eligible_cue_surfaces;
 }
 
 }  // namespace contextual_cueing

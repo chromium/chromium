@@ -9,12 +9,10 @@
 #include <variant>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/models/image_model.h"
-
-namespace optimization_guide::proto {
-class ContextualCueingResponse;
-}  // namespace optimization_guide::proto
 
 namespace contextual_cueing {
 
@@ -59,6 +57,9 @@ class CueTarget {
   // Extract this feature's click data from a contextual cueing response.
   virtual CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCueingResponse& response)
+      const = 0;
+
+  virtual optimization_guide::proto::ContextualCueingSurface GetSurface()
       const = 0;
 };
 

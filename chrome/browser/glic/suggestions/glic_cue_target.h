@@ -30,6 +30,8 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   contextual_cueing::CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCueingResponse& response)
       const override;
+  optimization_guide::proto::ContextualCueingSurface GetSurface()
+      const override;
 
  private:
   // Unowned and guaranteed to outlive this.
