@@ -7510,30 +7510,13 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
-  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
-      initiator_process_id_, *initiator_frame_token_);
-
-  PolicyContainerHost* initiator_policy_container_host = nullptr;
-  if (initiator_rfh) {
-    // Get policy from the initiator_rfh
-    initiator_policy_container_host = initiator_rfh->policy_container_host();
-  } else {
-    // Get policy from the NavigationStateKeepAlive
-    auto* storage_partition =
-        frame_tree_node_->current_frame_host()->GetStoragePartition();
-    NavigationStateKeepAlive* navigation_state =
-        storage_partition->GetNavigationStateKeepAlive(*initiator_frame_token_);
-    if (navigation_state) {
-      initiator_policy_container_host =
-          navigation_state->policy_container_host();
-    }
+  if (!policy_container_builder_ ||
+      !policy_container_builder_->InitiatorPolicies()) {
+    return true;
   }
 
-  // Determine the PolicyContainerPolicies to use based on navigation type.
-  const PolicyContainerPolicies* policies = nullptr;
-  if (initiator_policy_container_host) {
-    policies = &initiator_policy_container_host->policies();
-  }
+  const PolicyContainerPolicies* policies =
+      policy_container_builder_->InitiatorPolicies();
 
   // The origin trial status is tied to the existence of allowlists in policy
   // container. If the initiator doesn't have an enforced allowlist in its
@@ -7571,6 +7554,11 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
+  // It's possible that the initiator frame has been deleted by the time this is
+  // reached. If so, we can't complete the fenced frame check below, and will
+  // fail closed.
+  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+      initiator_process_id_, *initiator_frame_token_);
   // The feature currently does not impact fenced frames.
   // TODO(crbug.com/447954811): Revisit this if the feature needs to be
   // enabled and fenced frames need to be supported.

@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -735,6 +736,144 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, WebSocketBlocked) {
     });
   )",
                                                                denied_ws_url)));
+}
+// Verifies that when an iframe with Connection-Allowlist is redirected from
+// same-origin to cross-origin, the navigation is subject to the initiator's
+// Connection-Allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       IframeSameOriginRedirectToCrossOrigin) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL iframe_url =
+      embedded_https_test_server().GetURL("a.test", "/iframe.html");
+  GURL final_url = embedded_https_test_server().GetURL("b.test", "/final.html");
+  GURL redirect_url = embedded_https_test_server().GetURL(
+      "a.test", "/cross-site/b.test/final.html");
+
+  RegisterResponse(
+      "/main.html",
+      ResponseEntry(JsReplace("<html><body><iframe id='test_iframe' "
+                              "src=$1></iframe></body></html>",
+                              iframe_url),
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      "/iframe.html",
+      ResponseEntry("<html><body>Hello from iframe</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse("/final.html",
+                   ResponseEntry("<html><body>Final page</body></html>", {}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_EQ(iframe->GetLastCommittedURL(), iframe_url);
+  EXPECT_EQ(iframe->GetLastCommittedOrigin(),
+            main_frame->GetLastCommittedOrigin());
+
+  // Navigate the iframe to a same-origin URL that redirects to cross-origin.
+  // The initiator is the iframe's content, which has (response-origin).
+  // Redirect to b.test should be blocked.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(iframe, JsReplace("location.href = $1", redirect_url)));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, nav_observer.last_net_error_code());
+
+  // Verify that the final URL was never even requested.
+  EXPECT_FALSE(monitor.GetRequestInfo(final_url).has_value());
+}
+
+// Ensure that Connection-Allowlist headers are correctly enforced for
+// redirects even when the initiator frame is destroyed during the redirect.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    IframeSameOriginRedirectToCrossOriginInitiatorDestroyed) {
+  // Setup ControllableHttpResponse for the redirect URL.
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), "/delayed-redirect");
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL initiator_url =
+      embedded_https_test_server().GetURL("a.test", "/initiator.html");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/target.html");
+  GURL final_url = embedded_https_test_server().GetURL("b.test", "/final.html");
+  GURL redirect_url =
+      embedded_https_test_server().GetURL("a.test", "/delayed-redirect");
+
+  RegisterResponse(
+      "/main.html",
+      ResponseEntry(
+          JsReplace("<html><body>"
+                    "<iframe id='initiator' src=$1></iframe>"
+                    "<iframe id='target' name='target_frame' src=$2></iframe>"
+                    "</body></html>",
+                    initiator_url, target_url),
+          {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      "/initiator.html",
+      ResponseEntry("<html><body>Initiator iframe</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse(
+      "/target.html",
+      ResponseEntry("<html><body>Target iframe</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
+  RegisterResponse("/final.html",
+                   ResponseEntry("<html><body>Final page</body></html>", {}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* initiator_frame = ChildFrameAt(main_frame, 0);
+  RenderFrameHost* target_frame = ChildFrameAt(main_frame, 1);
+  ASSERT_TRUE(initiator_frame);
+  ASSERT_TRUE(target_frame);
+
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            initiator_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            target_frame->GetLastCommittedOrigin());
+
+  // Trigger navigation in target_iframe initiated by initiator_iframe.
+  // The server will redirect it to b.test.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  ExecuteScriptAsync(
+      initiator_frame,
+      JsReplace("window.open($1, 'target_frame')", redirect_url));
+
+  // Wait for the request to reach the server.
+  controllable_response.WaitForRequest();
+
+  // Destroy the initiator iframe while the redirect response is pending.
+  RenderFrameDeletedObserver deleted(initiator_frame);
+  EXPECT_TRUE(
+      ExecJs(main_frame, "document.getElementById('initiator').remove();"));
+  deleted.WaitUntilDeleted();
+
+  // Send the redirect response now that the initiator is gone.
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      final_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  nav_observer.Wait();
+
+  // The navigation should still fail because the initiator's policies were
+  // captured.
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, nav_observer.last_net_error_code());
+
+  // Verify that the final URL was never requested.
+  EXPECT_FALSE(monitor.GetRequestInfo(final_url).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, UseCounterForWorker) {
