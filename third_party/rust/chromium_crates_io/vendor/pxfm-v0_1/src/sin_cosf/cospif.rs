@@ -152,7 +152,7 @@ unsafe fn cospif_fma_impl(x: f32) -> f32 {
         }
         if x_abs < 0x4b80_0000u32 {
             static CF: [f32; 2] = [1., -1.];
-            let is_odd_integer = unsafe { (x.to_int_unchecked::<i32>() & 1) != 0 };
+            let is_odd_integer = is_odd_integerf(x);
             return CF[is_odd_integer as usize];
         }
         return 1.;

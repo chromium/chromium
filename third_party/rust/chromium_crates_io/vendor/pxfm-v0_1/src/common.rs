@@ -106,18 +106,6 @@ pub(crate) fn is_integer(n: f64) -> bool {
 }
 
 #[inline(always)]
-#[allow(unused)]
-pub(crate) fn is_odd_integer_fast(x: f64) -> bool {
-    unsafe { (x.to_int_unchecked::<i64>() & 1) != 0 }
-}
-
-#[inline(always)]
-#[allow(unused)]
-pub(crate) fn is_odd_integerf_fast(x: f32) -> bool {
-    unsafe { (x.to_int_unchecked::<i32>() & 1) != 0 }
-}
-
-#[inline(always)]
 pub(crate) fn is_odd_integer(x: f64) -> bool {
     #[cfg(any(
         all(

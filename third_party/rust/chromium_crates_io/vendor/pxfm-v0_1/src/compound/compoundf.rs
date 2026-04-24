@@ -395,13 +395,14 @@ fn exp2_fast(t: f64) -> f64 {
     The total absolute error is thus bounded by 2^-43.035 + 2^-41.208
     < 2^-40.849. */
     let mut err: u64 = 0x3d61d00000000000; // 2^-40.849 < 0x1.1dp-41
-    v = unsafe { v.wrapping_add(k.to_int_unchecked::<i64>().wrapping_shl(52) as u64) }; // scale v by 2^k, k is already integer
+    let ik = k as i64;
+    v = v.wrapping_add(ik.wrapping_shl(52) as u64); // scale v by 2^k, k is already integer
 
     // in case of potential underflow, we defer to the accurate path
     if f64::from_bits(v) < f64::from_bits(0x38100000000008e2) {
         return -1.0;
     }
-    err = unsafe { err.wrapping_add((k.to_int_unchecked::<i64>() << 52) as u64) }; // scale the error by 2^k too
+    err = err.wrapping_add((ik << 52) as u64); // scale the error by 2^k too
     let lb = (f64::from_bits(v) - f64::from_bits(err)) as f32;
     let rb = (f64::from_bits(v) + f64::from_bits(err)) as f32;
     if lb != rb {

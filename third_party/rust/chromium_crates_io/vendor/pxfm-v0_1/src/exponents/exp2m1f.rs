@@ -57,7 +57,7 @@ fn exp2m1f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
         }
 
         // x >= 128, or x is nan
-        if x.is_sign_positive() {
+        if x.is_sign_positive() || x.is_nan() {
             // x >= 128 and 2^x - 1 rounds to +inf, or x is +inf or nan
             return x + f32::INFINITY;
         }
@@ -174,6 +174,7 @@ mod tests {
 
     #[test]
     fn test_exp2m1f() {
+        assert!(f_exp2m1f(f32::from_bits(0x7fc0_0000)).is_nan());
         assert_eq!(f_exp2m1f(0.432423), 0.34949815);
         assert_eq!(f_exp2m1f(-4.), -0.9375);
         assert_eq!(f_exp2m1f(5.43122), 42.14795);

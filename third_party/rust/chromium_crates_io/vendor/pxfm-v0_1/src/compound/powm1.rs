@@ -165,7 +165,7 @@ pub(crate) fn powm1_expm1_1(r: DoubleDouble) -> DoubleDouble {
 
     let z = DoubleDouble::mul_f64_add(DoubleDouble::new(LOG2L, LOG2H), -k, r);
 
-    let bk = unsafe { k.to_int_unchecked::<i64>() }; /* Note: k is an integer, this is just a conversion. */
+    let bk = k as i64;
     let mk = (bk >> 12) + 0x3ff;
     let i2 = (bk >> 6) & 0x3f;
     let i1 = bk & 0x3f;

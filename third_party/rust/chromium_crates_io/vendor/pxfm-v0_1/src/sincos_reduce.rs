@@ -173,7 +173,7 @@ impl LargeArgumentReduction {
         //   | {x mod pi/128} - (u.hi + u.lo) | < 2 * 2^-6 * 2^-105 = 2^-110
         let u = DoubleDouble::quick_mult(y, PI_OVER_128_DD);
 
-        (unsafe { kd.to_int_unchecked::<i64>() as u64 }, u)
+        (kd as i64 as u64, u)
     }
 }
 

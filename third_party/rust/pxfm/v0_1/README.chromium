@@ -1,7 +1,7 @@
 Name: pxfm
 URL: https://crates.io/crates/pxfm
-Version: 0.1.28
-Revision: 43c41db467e97a2e6be701815db4ddb49e5bdcef
+Version: 0.1.29
+Revision: fbf859ceb1f3f90e1daf5281aa5d60b8e01e009e
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/pxfm-v0_1/LICENSE-APACHE.md

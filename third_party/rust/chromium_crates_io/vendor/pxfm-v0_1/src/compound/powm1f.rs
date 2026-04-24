@@ -202,9 +202,7 @@ pub(crate) fn powm1_exp2m1_fast(t: f64) -> f64 {
     // now |r| <= 2^-6
     // 2^t = 2^k * exp2_U[i][0] * 2^r
     let mut s = f64::from_bits(COMPOUNDF_EXP2_U[i as usize].1);
-    let su = unsafe {
-        k.to_int_unchecked::<i64>().wrapping_shl(52) // k is already integer
-    };
+    let su = (k as i64).wrapping_shl(52);
     s = f64::from_bits(s.to_bits().wrapping_add(su as u64));
     let q_poly = compoundf_expf_poly(r);
     v = q_poly;

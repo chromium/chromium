@@ -334,6 +334,7 @@ mod tests {
 
     #[test]
     fn test_exp2f() {
+        assert!(f_exp2f(f32::from_bits(0x7fc0_0000)).is_nan());
         assert_eq!(f_exp2f(1. / 64.), 1.0108893);
         assert_eq!(f_exp2f(2.0), 4.0);
         assert_eq!(f_exp2f(3.0), 8.0);

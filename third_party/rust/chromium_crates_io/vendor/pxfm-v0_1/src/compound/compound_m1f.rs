@@ -160,7 +160,7 @@ fn exp2m1_fast(t: f64) -> f64 {
     // now |r| <= 2^-6
     // 2^t = 2^k * exp2_U[i][0] * 2^r
     let mut s = f64::from_bits(COMPOUNDF_EXP2_U[i as usize].1);
-    let su = unsafe { ((k.to_int_unchecked::<i64>() as u64).wrapping_add(0x3ffu64)) << 52 }; // k is already integer
+    let su = (((k as i64) as u64).wrapping_add(0x3ffu64)) << 52;
     s *= f64::from_bits(su);
     let q_poly = compoundf_expf_poly(r);
     v = q_poly.to_bits();

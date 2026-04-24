@@ -230,8 +230,7 @@ impl PowfBackend for FmaPowfBackend {
 
     #[inline(always)]
     fn odd_integerf(&self, x: f32) -> bool {
-        use crate::common::is_odd_integerf_fast;
-        is_odd_integerf_fast(x)
+        is_odd_integerf(x)
     }
 
     #[inline(always)]

@@ -245,8 +245,7 @@ impl SinCosPiBackend for FmaSinCosPiBackend {
 
     #[inline(always)]
     fn odd_integer(&self, x: f64) -> bool {
-        use crate::common::is_odd_integer_fast;
-        is_odd_integer_fast(x)
+        is_odd_integer(x)
     }
 
     #[inline(always)]

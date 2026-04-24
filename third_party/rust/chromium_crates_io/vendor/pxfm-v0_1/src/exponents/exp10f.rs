@@ -112,10 +112,19 @@ pub(crate) fn exp_b_range_reduc<B: ExpfBackend>(x: f32, backend: &B) -> ExpBRedu
 #[inline(always)]
 fn exp10f_gen<B: ExpfBackend>(x: f32, backend: B) -> f32 {
     let x_u = x.to_bits();
-    let x_abs = x_u & 0x7fffffff;
+    let x_abs = x_u & 0x7fff_ffff;
 
     // When |x| >= log10(2^128), or x is nan
     if x_abs >= 0x421a209bu32 {
+        if x_u.wrapping_shl(1) >= 0xffu32 << 24 {
+            // |x| == inf, |x| == NaN
+            if x.is_sign_negative() && x.is_infinite() {
+                return 0.0;
+            } else if x.is_infinite() {
+                return f32::INFINITY;
+            }
+            return x + f32::NAN; // x == NaN
+        }
         // When x < log10(2^-150) or nan
         if x_u > 0xc2349e35u32 {
             // exp(-Inf) = 0
@@ -244,6 +253,7 @@ mod tests {
 
     #[test]
     fn test_exp10f() {
+        assert!(f_exp10f(f32::from_bits(0x7fc0_0000)).is_nan());
         assert_eq!(f_exp10f(-1. / 64.), 0.9646616);
         assert_eq!(f_exp10f(1. / 64.), 1.0366329);
         assert_eq!(f_exp10f(1.), 10.0);
