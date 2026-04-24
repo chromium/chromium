@@ -51,7 +51,8 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
       PwaInProductHelpState iph_state,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
-      InstallDialogType dialog_type);
+      InstallDialogType dialog_type,
+      InstallOsType os_type);
 
   ~WebAppInstallFlowDialogDelegate() override;
 
@@ -78,6 +79,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
 
  protected:
   InstallDialogStep current_step_ = InstallDialogStep::kInstallDialog;
+  InstallOsType os_type_;
   base::WeakPtr<WebAppInstallFlowView> flow_view_;
 
  private:

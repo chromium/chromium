@@ -87,7 +87,8 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
     PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    InstallDialogType dialog_type)
+    InstallDialogType dialog_type,
+    InstallOsType os_type)
     : WebAppInstallDialogDelegate(web_contents,
                                   std::move(install_info),
                                   std::move(install_tracker),
@@ -95,7 +96,8 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
                                   iph_state,
                                   prefs,
                                   tracker,
-                                  dialog_type) {}
+                                  dialog_type),
+      os_type_(os_type) {}
 
 WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() = default;
 
@@ -108,12 +110,25 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
   }
 
   // Update install dialog step.
-  if (current_step_ == InstallDialogStep::kInstallDialog) {
-    current_step_ = InstallDialogStep::kInstallerOptions;
-  } else if (current_step_ == InstallDialogStep::kInstallerOptions) {
-    current_step_ = InstallDialogStep::kProgress;
-  } else if (current_step_ == InstallDialogStep::kProgress) {
-    current_step_ = InstallDialogStep::kSuccessful;
+  switch (current_step_) {
+    case InstallDialogStep::kInstallDialog:
+      if (os_type_ == InstallOsType::kOther) {
+        current_step_ = InstallDialogStep::kProgress;
+      } else {
+        current_step_ = InstallDialogStep::kInstallerOptions;
+      }
+      break;
+
+    case InstallDialogStep::kInstallerOptions:
+      current_step_ = InstallDialogStep::kProgress;
+      break;
+
+    case InstallDialogStep::kProgress:
+      current_step_ = InstallDialogStep::kSuccessful;
+      break;
+
+    case InstallDialogStep::kSuccessful:
+      NOTREACHED();
   }
 
   if (flow_view_) {
@@ -216,7 +231,8 @@ void WebAppInstallFlowDialogDelegate::Show(
   GURL start_url = install_info->start_url();
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
-      std::move(callback), std::move(iph_state), prefs, tracker, install_type);
+      std::move(callback), std::move(iph_state), prefs, tracker, install_type,
+      os_type);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
   absl::flat_hash_map<InstallDialogStep, std::unique_ptr<views::View>>
