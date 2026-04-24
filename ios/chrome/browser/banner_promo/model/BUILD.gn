@@ -28,6 +28,18 @@ source_set("model") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_default_browser_banner_promo_app_agent.h",
+    "fake_default_browser_banner_promo_app_agent.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "default_browser_banner_promo_app_agent_unittest.mm" ]

@@ -21,6 +21,9 @@ extern NSString* const kToolbarToolsMenuButtonIdentifier;
 extern NSString* const kToolbarOmniboxButtonIdentifier;
 extern NSString* const kToolbarAssistantButtonIdentifier;
 
+// The height of the promo banner displayed in the toolbar.
+extern const CGFloat kToolbarPromoBannerHeight;
+
 // The height of the toolbar.
 extern const CGFloat kToolbarHeight;
 // The height of the toolbar when at the top on iPhone portrait.

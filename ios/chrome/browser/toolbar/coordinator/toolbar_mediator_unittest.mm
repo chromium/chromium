@@ -8,6 +8,9 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
+#import "ios/chrome/browser/banner_promo/model/fake_default_browser_banner_promo_app_agent.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
@@ -21,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
@@ -48,6 +52,8 @@ class ToolbarMediatorTest : public PlatformTest,
  protected:
   ToolbarMediatorTest() {
     scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
+    mock_app_agent_ = OCMClassMock([DefaultBrowserBannerPromoAppAgent class]);
+    settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
@@ -74,13 +80,15 @@ class ToolbarMediatorTest : public PlatformTest,
         [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
                                              scenario:kTestMenuScenario];
     mediator_ = [[ToolbarMediator alloc]
-        initWithWebStateList:browser_->GetWebStateList()
-               actionFactory:action_factory_
-        fullscreenController:TestFullscreenController::FromBrowser(
-                                 browser_.get())
-                 topPosition:GetParam()];
+                initWithWebStateList:browser_->GetWebStateList()
+                       actionFactory:action_factory_
+                fullscreenController:TestFullscreenController::FromBrowser(
+                                         browser_.get())
+                         topPosition:GetParam()
+        defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
+    mediator_.settingsHandler = settings_handler_;
 
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     [mediator_ setConsumer:consumer_];
@@ -123,6 +131,8 @@ class ToolbarMediatorTest : public PlatformTest,
   id page_side_swipe_handler_;
   id scene_handler_;
   id browser_coordinator_handler_;
+  id mock_app_agent_;
+  id settings_handler_;
   raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
 };
 
@@ -280,6 +290,117 @@ TEST_P(ToolbarMediatorTest, TestBottomOmniboxNotEnabled) {
   TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, true);
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that displayPromoFromAppAgent: calls showBannerPromo on the consumer.
+TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
+  if (!GetParam()) {
+    // Promo is only supported on top position.
+    return;
+  }
+  FakeDefaultBrowserBannerPromoAppAgent* fake_app_agent =
+      [[FakeDefaultBrowserBannerPromoAppAgent alloc] init];
+
+  BrowserActionFactory* action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
+              initWithWebStateList:browser_->GetWebStateList()
+                     actionFactory:action_factory
+              fullscreenController:TestFullscreenController::FromBrowser(
+                                       browser_.get())
+                       topPosition:GetParam()
+      defaultBrowserBannerAppAgent:fake_app_agent];
+
+  id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
+  [local_mediator setConsumer:local_consumer];
+
+  OCMExpect([local_consumer showBannerPromo]);
+
+  [fake_app_agent forceDisplayPromo];
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+  [local_mediator disconnect];
+}
+
+// Tests that hidePromoFromAppAgent: calls hideBannerPromo on the consumer.
+TEST_P(ToolbarMediatorTest, TestHidePromo) {
+  if (!GetParam()) {
+    // Promo is only supported on top position.
+    return;
+  }
+  FakeDefaultBrowserBannerPromoAppAgent* fake_app_agent =
+      [[FakeDefaultBrowserBannerPromoAppAgent alloc] init];
+
+  BrowserActionFactory* action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
+              initWithWebStateList:browser_->GetWebStateList()
+                     actionFactory:action_factory
+              fullscreenController:TestFullscreenController::FromBrowser(
+                                       browser_.get())
+                       topPosition:GetParam()
+      defaultBrowserBannerAppAgent:fake_app_agent];
+
+  id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
+  [local_mediator setConsumer:local_consumer];
+
+  OCMExpect([local_consumer hideBannerPromo]);
+
+  [fake_app_agent forceHidePromo];
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+  [local_mediator disconnect];
+}
+
+// Tests that bannerPromoWasTapped: calls settingsHandler and appAgent.
+TEST_P(ToolbarMediatorTest, TestBannerPromoWasTapped) {
+  if (!GetParam()) {
+    // Promo is only supported on top position.
+    return;
+  }
+  OCMExpect([settings_handler_
+      showDefaultBrowserSettingsFromViewController:nil
+                                      sourceForUMA:
+                                          DefaultBrowserSettingsPageSource::
+                                              kBannerPromo]);
+  OCMExpect([mock_app_agent_ promoTapped]);
+
+  [mediator_ bannerPromoWasTapped:nil];
+
+  EXPECT_OCMOCK_VERIFY(settings_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_app_agent_);
+}
+
+// Tests that bannerPromoCloseButtonWasTapped: calls appAgent.
+TEST_P(ToolbarMediatorTest, TestBannerPromoCloseButtonWasTapped) {
+  if (!GetParam()) {
+    // Promo is only supported on top position.
+    return;
+  }
+  OCMExpect([mock_app_agent_ promoCloseButtonTapped]);
+
+  [mediator_ bannerPromoCloseButtonWasTapped:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_app_agent_);
+}
+
+// Tests that tabGroupIndicatorVisibilityUpdated: updates the app agent.
+TEST_P(ToolbarMediatorTest, TestTabGroupIndicatorVisibilityUpdated) {
+  if (!GetParam()) {
+    // Promo is only supported on top position.
+    return;
+  }
+  OCMExpect([mock_app_agent_ setUICurrentlySupportsPromo:NO]);
+  [mediator_ tabGroupIndicatorVisibilityUpdated:YES];
+  EXPECT_OCMOCK_VERIFY(mock_app_agent_);
+
+  OCMExpect([mock_app_agent_ setUICurrentlySupportsPromo:YES]);
+  [mediator_ tabGroupIndicatorVisibilityUpdated:NO];
+  EXPECT_OCMOCK_VERIFY(mock_app_agent_);
 }
 
 INSTANTIATE_TEST_SUITE_P(ToolbarMediatorTest,

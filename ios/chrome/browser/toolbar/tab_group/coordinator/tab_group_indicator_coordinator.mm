@@ -81,6 +81,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   Browser* browser = self.browser;
   BOOL incognito = browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];
+  _view.hidden = YES;
   _view.displayedOnNTP = _displayedOnNTP;
   _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;

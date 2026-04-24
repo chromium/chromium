@@ -9,6 +9,7 @@
 #import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
@@ -40,6 +42,7 @@
 namespace {
 
 constexpr CGFloat kStackViewSpacing = 9;
+const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 
 constexpr CGFloat kButtonMinScale = 0.2;
 
@@ -151,6 +154,23 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   // Used to record the latest fullscreen progress.
   CGFloat _fullscreenProgress;
+
+  // Background and container for the banner promo.
+  UIView* _bannerPromoBackground;
+  // The banner promo view.
+  BannerPromoView* _bannerPromo;
+  // Whether the banner promo is displayed.
+  BOOL _bannerPromoVisible;
+  // Constraint for the banner promo background height.
+  NSLayoutConstraint* _bannerPromoBackgroundHeightConstraint;
+  // Constraint for the banner promo background top.
+  NSLayoutConstraint* _bannerPromoBackgroundTopConstraint;
+  // Constraints for the banner promo in split toolbar mode (where the banner is
+  // above the toolbar).
+  NSArray<NSLayoutConstraint*>* _bannerPromoAboveConstraints;
+  // Constraints for the banner promo in non-split toolbar mode (where the
+  // banner is below the toolbar).
+  NSArray<NSLayoutConstraint*>* _bannerPromoBelowConstraints;
 }
 
 - (instancetype)initInIncognito:(BOOL)incognito topPosition:(BOOL)topPosition {
@@ -172,7 +192,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   if (!_tabGroupIndicatorView) {
     return;
   }
-  _tabGroupIndicatorView.hidden = YES;
   _tabGroupIndicatorView.delegate = self;
   // ToolbarViewController will show its own _separator, when needed.
   _tabGroupIndicatorView.showSeparator = NO;
@@ -280,6 +299,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [_locationBarViewController didMoveToParentViewController:self];
 }
 
+- (void)setBannerPromoDelegate:
+    (id<BannerPromoViewDelegate>)bannerPromoDelegate {
+  _bannerPromoDelegate = bannerPromoDelegate;
+  _bannerPromo.delegate = bannerPromoDelegate;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -289,6 +314,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   self.view.accessibilityIdentifier = kToolbarViewIdentifier;
 
   [self createView];
+  [self setUpBannerPromo];
   [self setUpHierarchy];
 
   [self updateToolbarElementsVisibility];
@@ -439,6 +465,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
                     forNotification:(NSNotification*)notification {
+  CHECK(!_topPosition);
   if (locationIndicatorVisible) {
     _locationBarBottomPaddingConstraint.active = NO;
     _locationBarTopConstraint.active = YES;
@@ -475,18 +502,64 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
                                         curve:curve];
 }
 
+- (void)showBannerPromo {
+  CHECK(_topPosition);
+  if (_bannerPromoVisible) {
+    return;
+  }
+  _bannerPromoVisible = YES;
+
+  [self updateBannerConstraints];
+
+  if ([self isBannerBelowToolbar]) {
+    _bannerPromoBackgroundHeightConstraint.constant = 0;
+  } else {
+    _bannerPromoBackgroundHeightConstraint.constant =
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+    _bannerPromoBackgroundTopConstraint.constant =
+        -_bannerPromoBackgroundHeightConstraint.constant;
+  }
+
+  [self.view layoutIfNeeded];
+  _bannerPromoBackgroundTopConstraint.constant = 0;
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kBannerPromoAnimationDuration.InSecondsF()
+      animations:^{
+        [weakSelf showBannerPromoAnimationBlock];
+      }
+      completion:^(BOOL finished) {
+        [weakSelf showBannerPromoCompletionBlock];
+      }];
+}
+
+- (void)hideBannerPromo {
+  if (!_bannerPromoVisible) {
+    return;
+  }
+  [self.view.superview layoutIfNeeded];
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kBannerPromoAnimationDuration.InSecondsF()
+      animations:^{
+        [weakSelf hideBannerPromoAnimationBlock];
+      }
+      completion:^(BOOL completed) {
+        [weakSelf hideBannerPromoCompletionBlock];
+      }];
+
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
   CGFloat locationBarExpandedHeight;
-  CGFloat locationBarBottomPadding;
   if (ShouldHaveCompactLocationBar(self.traitCollection)) {
     locationBarExpandedHeight = kLocationBarHeight;
-    locationBarBottomPadding = kToolbarPadding;
   } else {
     locationBarExpandedHeight = kTopLocationBarIPhonePortraitHeight;
-    locationBarBottomPadding = kTopToolbarIPhonePortraitPadding;
   }
   CGFloat locationBarHeight = progress * locationBarExpandedHeight +
                               (1 - progress) * kLocationBarHeightFullscreen;
@@ -496,9 +569,11 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   _locationBarBackground.alpha = progress;
 
-  CGFloat toolbarPadding = progress * locationBarBottomPadding +
-                           (1 - progress) * kToolbarPaddingFullscreen;
-  _locationBarBottomPaddingConstraint.constant = -toolbarPadding;
+  _locationBarBottomPaddingConstraint.constant =
+      -[self locationBarBottomPaddingForFullscreenProgress:progress];
+
+  _bannerPromoBackgroundHeightConstraint.constant =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:progress];
 
   [self updateButtons:_leadingStackView.arrangedSubviews
       forFullscreenProgress:progress];
@@ -507,6 +582,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   CGFloat alphaValue = fmax(progress * 2 - 1, 0);
   _tabGroupIndicatorView.alpha = alphaValue;
+  _bannerPromoBackground.alpha = alphaValue;
 
   CGFloat offset = 0;
   if (!IsRegularXRegularSizeClass(self.traitCollection) &&
@@ -533,9 +609,102 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _tabGroupIndicatorView.hidden = !visible;
   _separator.hidden = !(visible || [self hasOmnibox]);
   [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.mutator tabGroupIndicatorVisibilityUpdated:visible];
 }
 
 #pragma mark - Private
+
+// Helper method to actually do the animation to show the banner promo.
+- (void)showBannerPromoAnimationBlock {
+  _bannerPromoBackgroundHeightConstraint.constant =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  _locationBarBottomPaddingConstraint.constant =
+      -[self locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.view.superview layoutIfNeeded];
+}
+
+// Helper method for show completion.
+- (void)showBannerPromoCompletionBlock {
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _bannerPromo);
+}
+
+// Helper method to actually do the animation to hide the banner promo.
+- (void)hideBannerPromoAnimationBlock {
+  if ([self isBannerBelowToolbar]) {
+    _bannerPromoBackgroundHeightConstraint.constant = 0;
+  } else {
+    _bannerPromoBackgroundTopConstraint.constant =
+        -[self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  }
+
+  _bannerPromoVisible = NO;
+
+  _locationBarBottomPaddingConstraint.constant =
+      -[self locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
+
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+  [self.view.superview layoutIfNeeded];
+}
+
+// Helper method for hide completion.
+- (void)hideBannerPromoCompletionBlock {
+  [NSLayoutConstraint deactivateConstraints:_bannerPromoAboveConstraints];
+  [NSLayoutConstraint deactivateConstraints:_bannerPromoBelowConstraints];
+  [self.view.superview layoutIfNeeded];
+}
+
+// Returns whether the banner is displayed below the toolbar.
+- (BOOL)isBannerBelowToolbar {
+  return !IsSplitToolbarMode(self);
+}
+
+// Returns the height of the promo banner for `progress`.
+- (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
+  if (!_bannerPromoVisible) {
+    return 0;
+  }
+
+  if (![self isBannerBelowToolbar]) {
+    return kToolbarPromoBannerHeight + self.view.safeAreaInsets.top;
+  }
+
+  return kToolbarPromoBannerHeight * progress;
+}
+
+// Returns the location bar bottom padding for `progress`.
+- (CGFloat)locationBarBottomPaddingForFullscreenProgress:(CGFloat)progress {
+  CGFloat locationBarBottomPadding;
+  if (ShouldHaveCompactLocationBar(self.traitCollection)) {
+    locationBarBottomPadding = kToolbarPadding;
+  } else {
+    locationBarBottomPadding = kTopToolbarIPhonePortraitPadding;
+  }
+  if ([self isBannerBelowToolbar]) {
+    // When the banner is below the toolbar, always use its height for a
+    // progress of 1 as progress is used below.
+    locationBarBottomPadding +=
+        [self bannerPromoBackgroundHeightForFullscreenProgress:1];
+  }
+  return progress * locationBarBottomPadding +
+         (1 - progress) * kToolbarPaddingFullscreen;
+}
+
+// Updates the banner-related constraints.
+- (void)updateBannerConstraints {
+  if (!_bannerPromoVisible) {
+    return;
+  }
+
+  if ([self isBannerBelowToolbar]) {
+    [NSLayoutConstraint deactivateConstraints:_bannerPromoAboveConstraints];
+    [NSLayoutConstraint activateConstraints:_bannerPromoBelowConstraints];
+  } else {
+    [NSLayoutConstraint activateConstraints:_bannerPromoAboveConstraints];
+    [NSLayoutConstraint deactivateConstraints:_bannerPromoBelowConstraints];
+  }
+}
 
 // Updates the availability of the tab group indicator and its constraints.
 - (void)updateTabGroupIndicatorAvailability {
@@ -698,6 +867,57 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [_toolsMenuButton addTarget:self
                        action:@selector(toolsMenuButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
+}
+
+// Sets up the banner promo view and its constraints.
+- (void)setUpBannerPromo {
+  _bannerPromoBackground = [[UIView alloc] init];
+  _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  _bannerPromoBackground.backgroundColor =
+      [UIColor colorNamed:@"banner_promo_background_color"];
+  _bannerPromoBackground.clipsToBounds = YES;
+  [self.view addSubview:_bannerPromoBackground];
+
+  _bannerPromo = [[BannerPromoView alloc] init];
+  _bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
+  [_bannerPromoBackground addSubview:_bannerPromo];
+
+  _bannerPromo.delegate = self.bannerPromoDelegate;
+  _bannerPromoVisible = NO;
+
+  _bannerPromoBackgroundHeightConstraint =
+      [_bannerPromoBackground.heightAnchor constraintEqualToConstant:0];
+
+  _bannerPromoBackgroundTopConstraint = [_bannerPromoBackground.topAnchor
+      constraintEqualToAnchor:self.view.topAnchor];
+
+  _bannerPromoAboveConstraints = @[
+    _bannerPromoBackgroundTopConstraint,
+    [_bannerPromo.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+  ];
+
+  _bannerPromoBelowConstraints = @[
+    [_bannerPromo.topAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
+    [_bannerPromoBackground.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+  ];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_bannerPromoBackground.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_bannerPromoBackground.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    _bannerPromoBackgroundHeightConstraint,
+
+    [_bannerPromo.leadingAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
+    [_bannerPromo.trailingAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
+    [_bannerPromo.bottomAnchor
+        constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
+  ]];
 }
 
 - (UIStackView*)makeStackViewWithButtons:(NSArray<UIView*>*)buttons {
@@ -1031,6 +1251,11 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self updateLayoutConstraints];
   [self updateToolbarVisibility];
   [self updateTabGroupIndicatorAvailability];
+  if (_topPosition) {
+    [self updateBannerConstraints];
+    _bannerPromoBackgroundHeightConstraint.constant = [self
+        bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
+  }
 }
 
 @end

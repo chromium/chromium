@@ -22,6 +22,8 @@ NSString* const kToolbarOmniboxButtonIdentifier =
 NSString* const kToolbarAssistantButtonIdentifier =
     @"kToolbarAssistantButtonIdentifier";
 
+constexpr CGFloat kToolbarPromoBannerHeight = 50;
+
 constexpr CGFloat kToolbarHeight = 62;
 constexpr CGFloat kTopToolbarIPhonePortraitHeight = 54;
 constexpr CGFloat kLocationBarHeight = 42;

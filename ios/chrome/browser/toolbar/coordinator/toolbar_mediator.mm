@@ -6,6 +6,8 @@
 
 #import "base/notimplemented.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
@@ -30,6 +33,7 @@
 
 @interface ToolbarMediator () <BooleanObserver,
                                CRWWebStateObserver,
+                               DefaultBrowserBannerAppAgentObserver,
                                ToolbarButtonMenuFactoryDelegate,
                                WebStateListObserving>
 @end
@@ -49,12 +53,16 @@
   raw_ptr<FullscreenController> _fullscreenController;
   // Whether the location bar indicator is active.
   BOOL _locationBarIndicatorActive;
+  // The default browser banner app agent.
+  DefaultBrowserBannerPromoAppAgent* _defaultBrowserBannerAppAgent;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        actionFactory:(BrowserActionFactory*)actionFactory
                 fullscreenController:(FullscreenController*)fullscreenController
-                         topPosition:(BOOL)topPosition {
+                         topPosition:(BOOL)topPosition
+        defaultBrowserBannerAppAgent:
+            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -76,6 +84,11 @@
     _fullscreenController = fullscreenController;
     _topPosition = topPosition;
     _locationBarIndicatorActive = NO;
+
+    if (_topPosition && defaultBrowserBannerAppAgent) {
+      _defaultBrowserBannerAppAgent = defaultBrowserBannerAppAgent;
+      [_defaultBrowserBannerAppAgent addObserver:self];
+    }
 
     if (IsBottomOmniboxAvailable()) {
       _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
@@ -133,6 +146,7 @@
 }
 
 - (void)disconnect {
+  [_defaultBrowserBannerAppAgent removeObserver:self];
   _activeWebStateObservationForwarder.reset();
   _activeWebStateObserver.reset();
   _webStateList->RemoveObserver(_webStateListObserver.get());
@@ -151,6 +165,12 @@
     [self updateConsumerWithWebState:_webStateList->GetActiveWebState()];
   }
   [self updateToolbarPosition];
+}
+
+- (void)setUICurrentlySupportsPromo:(BOOL)supports {
+  if (_defaultBrowserBannerAppAgent) {
+    _defaultBrowserBannerAppAgent.UICurrentlySupportsPromo = supports;
+  }
 }
 
 #pragma mark - ToolbarMutator
@@ -177,6 +197,12 @@
   if (self.navigationBrowserAgent) {
     self.navigationBrowserAgent->StopLoading();
   }
+}
+
+#pragma mark - ToolbarMutator
+
+- (void)tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
+  [self setUICurrentlySupportsPromo:!visible];
 }
 
 #pragma mark - ToolbarButtonMenuFactoryDelegate
@@ -270,6 +296,31 @@
   if (observableBoolean == _bottomOmniboxEnabled) {
     [self updateToolbarPosition];
   }
+}
+
+#pragma mark - DefaultBrowserBannerAppAgentObserver
+
+- (void)displayPromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent {
+  [self.consumer showBannerPromo];
+}
+
+- (void)hidePromoFromAppAgent:(DefaultBrowserBannerPromoAppAgent*)appAgent {
+  [self.consumer hideBannerPromo];
+}
+
+#pragma mark - BannerPromoViewDelegate
+
+- (void)bannerPromoWasTapped:(BannerPromoView*)bannerPromoView {
+  [self.settingsHandler
+      showDefaultBrowserSettingsFromViewController:nil
+                                      sourceForUMA:
+                                          DefaultBrowserSettingsPageSource::
+                                              kBannerPromo];
+  [_defaultBrowserBannerAppAgent promoTapped];
+}
+
+- (void)bannerPromoCloseButtonWasTapped:(BannerPromoView*)bannerPromoView {
+  [_defaultBrowserBannerAppAgent promoCloseButtonTapped];
 }
 
 #pragma mark - UIKeyboardNotification

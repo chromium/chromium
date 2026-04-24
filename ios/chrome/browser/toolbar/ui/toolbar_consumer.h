@@ -50,6 +50,12 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 - (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
                     forNotification:(NSNotification*)notification;
 
+// Shows the banner promo view.
+- (void)showBannerPromo;
+
+// Hides the banner promo view.
+- (void)hideBannerPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSUMER_H_

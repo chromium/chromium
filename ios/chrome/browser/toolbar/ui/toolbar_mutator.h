@@ -20,6 +20,9 @@
 // Stops loading the current page.
 - (void)stop;
 
+// Called when the tab group indicator visibility is updated.
+- (void)tabGroupIndicatorVisibilityUpdated:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_MUTATOR_H_

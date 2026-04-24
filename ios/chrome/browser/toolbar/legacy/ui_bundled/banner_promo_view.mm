@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
@@ -196,6 +197,9 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
+  if (IsChromeNextIaEnabled()) {
+    return [super intrinsicContentSize];
+  }
   // Promo should be the same height as the toolbar.
   CGFloat height =
       ToolbarExpandedHeight(self.traitCollection.preferredContentSizeCategory);
