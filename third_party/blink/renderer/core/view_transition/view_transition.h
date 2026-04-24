@@ -463,6 +463,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     ~ScopedPauseRendering();
 
     bool ShouldThrottleRendering() const;
+    void SetDelayUntilVisibilityChange();
 
    private:
     std::unique_ptr<cc::ScopedPauseRendering> cc_paused_;
@@ -492,7 +493,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool in_main_lifecycle_update_ = false;
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
-  bool context_destroyed_ = false;
   bool pending_skip_view_transitions_ = false;
 
   int wait_until_pending_promise_count_ = 0;

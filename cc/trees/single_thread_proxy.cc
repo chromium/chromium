@@ -363,7 +363,8 @@ void SingleThreadProxy::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
   scheduler_on_impl_thread_->SetDeferBeginMainFrame(defer_main_frame_update_);
 }
 
-void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
+void SingleThreadProxy::SetPauseRendering(bool pause_rendering,
+                                          bool delay_until_visibility_change) {
   DCHECK(task_runner_provider_->IsMainThread());
   // Pause updates only makes sense if there's a scheduler. In synchronous mode,
   // the client controls when a frame is produced.

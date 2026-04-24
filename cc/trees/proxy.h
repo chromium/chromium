@@ -69,7 +69,8 @@ class CC_EXPORT Proxy {
   virtual void SetDeferMainFrameUpdate(bool defer_main_frame_update) = 0;
 
   // Pauses all main and impl-side rendering.
-  virtual void SetPauseRendering(bool pause_rendering) = 0;
+  virtual void SetPauseRendering(bool pause_rendering,
+                                 bool delay_until_visibility_change) = 0;
 
   // Indicates that the next main frame will contain the result of running an
   // event handler for an input event.

@@ -227,9 +227,15 @@ void ProxyImpl::SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame) {
     scheduler_->SetDeferBeginMainFrame(ShouldDeferBeginMainFrame());
 }
 
-void ProxyImpl::SetPauseRendering(bool pause_rendering) {
+void ProxyImpl::SetPauseRendering(bool pause_rendering,
+                                  bool delay_until_visibility_change) {
   DCHECK(IsImplThread());
-  scheduler_->SetPauseRendering(pause_rendering);
+  if (!pause_rendering && delay_until_visibility_change &&
+      host_impl_->visible()) {
+    pause_rendering_until_visibility_change_ = true;
+  } else {
+    scheduler_->SetPauseRendering(pause_rendering);
+  }
 }
 
 void ProxyImpl::SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) {
@@ -284,6 +290,11 @@ void ProxyImpl::SetVisibleOnImpl(bool visible) {
   DCHECK(IsImplThread());
   host_impl_->SetVisible(visible);
   scheduler_->SetVisible(visible);
+
+  if (pause_rendering_until_visibility_change_) {
+    pause_rendering_until_visibility_change_ = false;
+    scheduler_->SetPauseRendering(false);
+  }
 }
 
 void ProxyImpl::SetShouldWarmUpOnImpl() {

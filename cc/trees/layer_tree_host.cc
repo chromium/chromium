@@ -743,7 +743,7 @@ LayerTreeHost::DeferMainFrameUpdate() {
 ScopedPauseRendering::ScopedPauseRendering(LayerTreeHost* host)
     : host_(host->weak_ptr_factory_.GetWeakPtr()) {
   host->pause_rendering_count_++;
-  host->proxy_->SetPauseRendering(true);
+  host->proxy_->SetPauseRendering(true, false);
 }
 
 ScopedPauseRendering::~ScopedPauseRendering() {
@@ -752,7 +752,7 @@ ScopedPauseRendering::~ScopedPauseRendering() {
     DCHECK_GT(host->pause_rendering_count_, 0u);
     if (--host->pause_rendering_count_ == 0) {
       host->SetNeedsCommit();
-      host->proxy_->SetPauseRendering(false);
+      host->proxy_->SetPauseRendering(false, delay_until_visibility_change_);
     }
   }
 }

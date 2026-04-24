@@ -2381,5 +2381,74 @@ class LayerTreeHostTestPauseRendering : public LayerTreeHostAnimationTest {
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestPauseRendering);
 
+class LayerTreeHostTestPauseRenderingUntilVisibilityChange
+    : public LayerTreeHostAnimationTest {
+ public:
+  void SetupTree() override {
+    if (layer_tree_host()->IsUsingLayerLists()) {
+      skip_test_ = true;
+      EndTest();
+      return;
+    }
+    LayerTreeHostAnimationTest::SetupTree();
+    layer_ = Layer::Create();
+    layer_->SetBounds(gfx::Size(4, 4));
+    layer_tree_host()->root_layer()->AddChild(layer_);
+    layer_tree_host()->SetElementIdsForTesting();
+  }
+
+  void BeginTest() override {
+    if (skip_test_) {
+      return;
+    }
+    AttachAnimationsToTimeline();
+    animation_->AttachElement(layer_->element_id());
+    AddAnimatedTransformToAnimation(animation_.get(), 4, 1, 1);
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void WillCommit(const CommitState& state) override {
+    if (layer_tree_host()->SourceFrameNumber() == 0) {
+      rendering_paused_ = layer_tree_host()->PauseRendering();
+    }
+  }
+
+  void DidCommitAndDrawFrame() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      rendering_paused_->SetDelayUntilVisibilityChange();
+      rendering_paused_.reset();
+
+      // Post a delayed task to toggle visibility and unpause!
+      MainThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHostTestPauseRenderingUntilVisibilityChange::
+                             TriggerVisibilityChange,
+                         base::Unretained(this)),
+          base::Milliseconds(100));
+    } else if (layer_tree_host()->SourceFrameNumber() == 2) {
+      EXPECT_TRUE(visibility_changed_);
+      EndTest();
+    }
+  }
+
+  void TriggerVisibilityChange() {
+    visibility_changed_ = true;
+    layer_tree_host()->SetVisible(false);
+    layer_tree_host()->SetVisible(true);
+
+    // Add damage to force a draw!
+    layer_->SetOpacity(0.5f);
+    PostSetNeedsCommitToMainThread();
+  }
+
+ private:
+  scoped_refptr<Layer> layer_;
+  std::unique_ptr<ScopedPauseRendering> rendering_paused_;
+  bool visibility_changed_ = false;
+  bool skip_test_ = false;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestPauseRenderingUntilVisibilityChange);
+
 }  // namespace
 }  // namespace cc

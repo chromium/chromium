@@ -69,7 +69,8 @@ class FakeProxy : public Proxy {
                                    bool raster,
                                    base::OnceClosure callback) override {}
   double GetAverageThroughput() const override;
-  void SetPauseRendering(bool pause_rendering) override {}
+  void SetPauseRendering(bool pause_rendering,
+                         bool delay_until_visibility_change) override {}
   void SetInputResponsePending() override {}
   bool IsRenderingPaused() const override;
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}

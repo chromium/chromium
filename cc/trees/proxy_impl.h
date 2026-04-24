@@ -76,7 +76,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void InitializePaintWorkletLayerPainterOnImpl(
       std::unique_ptr<PaintWorkletLayerPainter> painter);
   void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
-  void SetPauseRendering(bool pause_rendering);
+  void SetPauseRendering(bool pause_rendering,
+                         bool delay_until_visibility_change);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl(bool urgent);
   void SetTargetLocalSurfaceIdOnImpl(
@@ -255,6 +256,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // Either thread can request deferring BeginMainFrame; keep track of both.
   bool main_wants_defer_begin_main_frame_ = false;
   bool impl_wants_defer_begin_main_frame_ = false;
+  bool pause_rendering_until_visibility_change_ = false;
 };
 
 }  // namespace cc

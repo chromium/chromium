@@ -6239,6 +6239,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionDelayUnpauseOnTeardown",
+      status: "stable",
+    },
+    {
       name: "ViewTransitionHoistBackdropFilterEffect",
       status: "stable",
     },

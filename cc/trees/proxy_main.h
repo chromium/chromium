@@ -105,7 +105,8 @@ class CC_EXPORT ProxyMain : public Proxy {
   void DetachInputDelegateAndRenderFrameObserver() override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
-  void SetPauseRendering(bool pause_rendering) override;
+  void SetPauseRendering(bool pause_rendering,
+                         bool delay_until_visibility_change) override;
   void SetInputResponsePending() override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;

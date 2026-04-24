@@ -110,8 +110,13 @@ class CC_EXPORT ScopedPauseRendering {
   explicit ScopedPauseRendering(LayerTreeHost* host);
   ~ScopedPauseRendering();
 
+  void SetDelayUntilVisibilityChange() {
+    delay_until_visibility_change_ = true;
+  }
+
  private:
   base::WeakPtr<LayerTreeHost> host_;
+  bool delay_until_visibility_change_ = false;
 };
 
 class CC_EXPORT ScopedRequestHighFramerate {

@@ -77,6 +77,12 @@ ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
 
 ViewTransition::ScopedPauseRendering::~ScopedPauseRendering() = default;
 
+void ViewTransition::ScopedPauseRendering::SetDelayUntilVisibilityChange() {
+  if (cc_paused_) {
+    cc_paused_->SetDelayUntilVisibilityChange();
+  }
+}
+
 bool ViewTransition::ScopedPauseRendering::ShouldThrottleRendering() const {
   return !cc_paused_;
 }
@@ -319,6 +325,12 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   }
 
   // Resume rendering, and finalize the rest of the state.
+  if (RuntimeEnabledFeatures::ViewTransitionDelayUnpauseOnTeardownEnabled() &&
+      creation_type_ == CreationType::kForSnapshot && document_->hidden()) {
+    if (rendering_paused_scope_) {
+      rendering_paused_scope_->SetDelayUntilVisibilityChange();
+    }
+  }
   ResumeRendering();
   if (style_tracker_) {
     style_tracker_->Abort();

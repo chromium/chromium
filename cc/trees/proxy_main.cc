@@ -732,7 +732,8 @@ void ProxyMain::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
                                 defer_main_frame_update));
 }
 
-void ProxyMain::SetPauseRendering(bool pause_rendering) {
+void ProxyMain::SetPauseRendering(bool pause_rendering,
+                                  bool delay_until_visibility_change) {
   DCHECK(IsMainThread());
   if (pause_rendering_ == pause_rendering)
     return;
@@ -750,7 +751,8 @@ void ProxyMain::SetPauseRendering(bool pause_rendering) {
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::SetPauseRendering,
-                     base::Unretained(proxy_impl_.get()), pause_rendering_));
+                     base::Unretained(proxy_impl_.get()), pause_rendering_,
+                     delay_until_visibility_change));
 }
 
 void ProxyMain::SetInputResponsePending() {
