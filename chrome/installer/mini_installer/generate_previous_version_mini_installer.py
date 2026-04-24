@@ -35,7 +35,10 @@ def main():
     try:
         # Run |cmd|, redirecting stderr to stdout in order for captured errors
         # to be inline with corresponding stdout.
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(cmd,
+                                         stderr=subprocess.STDOUT,
+                                         encoding='utf-8',
+                                         text=True)
     except subprocess.CalledProcessError as e:
         raise Exception("Error while running cmd: %s\n"
                         "Exit code: %s\n"
