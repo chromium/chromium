@@ -39,6 +39,138 @@ std::string GetEtldPlusOne(const GURL& url) {
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+bool AreDatesConflicted(const optimization_guide::proto::Date& source_date,
+                        const optimization_guide::proto::Date& target_date) {
+  return (target_date.has_year() && source_date.has_year() &&
+          target_date.year() != source_date.year()) ||
+         (target_date.has_month() && source_date.has_month() &&
+          target_date.month() != source_date.month()) ||
+         (target_date.has_day() && source_date.has_day() &&
+          target_date.day() != source_date.day());
+}
+
+template <typename T, typename ValidateAndPrepareFunction>
+void MergeStructuredDataRepeatedField(
+    const google::protobuf::RepeatedPtrField<T>& source,
+    google::protobuf::RepeatedPtrField<T>* target,
+    ValidateAndPrepareFunction validate_and_prepare_function) {
+  // TODO(crbug.com/489690454): In the absence of a join-key, we will restrict
+  // merging functionality to `target` and `source` of length 1.
+  if (target->size() == 1 && source.size() == 1) {
+    if (validate_and_prepare_function(source.Get(0), target->Mutable(0))) {
+      target->Mutable(0)->MergeFrom(source.Get(0));
+    }
+  }
+}
+
+bool ValidateAndPrepareOrderForMerge(
+    const optimization_guide::proto::Order& source,
+    optimization_guide::proto::Order* target) {
+  if (target->has_id() && source.has_id() && target->id() != source.id()) {
+    return false;
+  }
+
+  if (!target->products().empty() && !source.products().empty()) {
+    if (target->products().size() != source.products().size()) {
+      return false;
+    }
+
+    // TODO(crbug.com/489690454): Consider if the order of products is
+    // deterministic between annotations. If false negatives occur due to
+    // ordering differences, we may need to ignore order by, for example,
+    // introducing a set-based check.
+    for (int i = 0; i < target->products().size(); ++i) {
+      const optimization_guide::proto::Product& target_product =
+          target->products().Get(i);
+      const optimization_guide::proto::Product& source_product =
+          source.products().Get(i);
+      if (target_product.name() != source_product.name() ||
+          target_product.quantity() != source_product.quantity()) {
+        return false;
+      }
+    }
+  }
+
+  if (target->has_order_date() && source.has_order_date()) {
+    if (AreDatesConflicted(source.order_date(), target->order_date())) {
+      return false;
+    }
+  }
+
+  if (target->has_grand_total() && source.has_grand_total() &&
+      target->grand_total() != source.grand_total()) {
+    return false;
+  }
+
+  if (!target->products().empty() && !source.products().empty()) {
+    // `Both target` and `source` are verified to be equal in the conflict
+    // checks above. To avoid duplicating products in `target` from
+    // `MergeFrom()`, `target`is cleared.
+    target->mutable_products()->Clear();
+  }
+
+  return true;
+}
+
+bool ValidateAndPrepareShipmentForMerge(
+    const optimization_guide::proto::Shipment& source,
+    optimization_guide::proto::Shipment* target) {
+  if (target->has_associated_order_id() && source.has_associated_order_id() &&
+      target->associated_order_id() != source.associated_order_id()) {
+    return false;
+  }
+  if (target->has_tracking_number() && source.has_tracking_number() &&
+      target->tracking_number() != source.tracking_number()) {
+    return false;
+  }
+  if (target->has_carrier_name() && source.has_carrier_name() &&
+      target->carrier_name() != source.carrier_name()) {
+    return false;
+  }
+  if (target->has_delivery_address() && source.has_delivery_address() &&
+      target->delivery_address() != source.delivery_address()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateAndPrepareFlightReservationForMerge(
+    const optimization_guide::proto::FlightReservation& source,
+    optimization_guide::proto::FlightReservation* target) {
+  if (target->has_confirmation_code() && source.has_confirmation_code() &&
+      target->confirmation_code() != source.confirmation_code()) {
+    return false;
+  }
+  if (target->has_grand_total() && source.has_grand_total() &&
+      target->grand_total() != source.grand_total()) {
+    return false;
+  }
+  if (target->has_flight_number() && source.has_flight_number() &&
+      target->flight_number() != source.flight_number()) {
+    return false;
+  }
+  if (target->has_passenger_name() && source.has_passenger_name() &&
+      target->passenger_name() != source.passenger_name()) {
+    return false;
+  }
+  if (target->has_departure_airport() && source.has_departure_airport() &&
+      target->departure_airport() != source.departure_airport()) {
+    return false;
+  }
+  if (target->has_arrival_airport() && source.has_arrival_airport() &&
+      target->arrival_airport() != source.arrival_airport()) {
+    return false;
+  }
+  if (target->has_departure_date() && source.has_departure_date()) {
+    if (AreDatesConflicted(source.departure_date(), target->departure_date())) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
@@ -225,7 +357,7 @@ void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
 
     if (src.has_structured_data()) {
       MergeContentAnnotationStructuredData(
-          merged_annotation.mutable_structured_data(), src.structured_data());
+          src.structured_data(), merged_annotation.mutable_structured_data());
     }
   }
 
@@ -238,9 +370,18 @@ void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
 }
 
 void AccessibilityAnnotatorBackendImpl::MergeContentAnnotationStructuredData(
-    optimization_guide::proto::StructuredData* target_structured_data,
-    const optimization_guide::proto::StructuredData& source_structured_data) {
-  // TODO(crbug.com/492303942): Implement logic to merge structured data.
+    const optimization_guide::proto::StructuredData& source_structured_data,
+    optimization_guide::proto::StructuredData* target_structured_data) {
+  MergeStructuredDataRepeatedField(source_structured_data.orders(),
+                                   target_structured_data->mutable_orders(),
+                                   ValidateAndPrepareOrderForMerge);
+  MergeStructuredDataRepeatedField(source_structured_data.shipments(),
+                                   target_structured_data->mutable_shipments(),
+                                   ValidateAndPrepareShipmentForMerge);
+  MergeStructuredDataRepeatedField(
+      source_structured_data.flight_reservations(),
+      target_structured_data->mutable_flight_reservations(),
+      ValidateAndPrepareFlightReservationForMerge);
 }
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(

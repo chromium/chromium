@@ -126,9 +126,11 @@ class AccessibilityAnnotatorBackendImpl
   // Deep merges `source_structured_data` into `target_structured_data`. For any
   // field that is set in both, the existing value in `target_structured_data`
   // takes precedence.
+  // TODO(crbug.com/489690454): Consider moving merge logic to a separate file
+  // if more structured data types are added.
   void MergeContentAnnotationStructuredData(
-      optimization_guide::proto::StructuredData* target_structured_data,
-      const optimization_guide::proto::StructuredData& source_structured_data);
+      const optimization_guide::proto::StructuredData& source_structured_data,
+      optimization_guide::proto::StructuredData* target_structured_data);
 
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;

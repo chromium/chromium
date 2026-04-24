@@ -462,5 +462,351 @@ TEST_F(AccessibilityAnnotatorBackendTest, OnContentAnnotationsClearedNotified) {
   backend_->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_Order) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with an order containing products.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* order1 =
+      data1.content_annotation.mutable_structured_data()->add_orders();
+  order1->set_id("order_123");
+  order1->set_grand_total(100.0);
+
+  auto* p1 = order1->add_products();
+  p1->set_name("Product A");
+  p1->set_quantity(2);
+  auto* p2 = order1->add_products();
+  p2->set_name("Product B");
+  p2->set_quantity(1);
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with the same order ID but missing products
+  // and grand total.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* order2 =
+      data2.content_annotation.mutable_structured_data()->add_orders();
+  order2->set_id("order_123");
+  auto* date = order2->mutable_order_date();
+  date->set_year(2026);
+  date->set_month(4);
+  date->set_day(10);
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the lookback mechanism correctly merged the data from both
+  // entries.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.orders_size(), 1);
+  const auto& o = sd.orders(0);
+  EXPECT_EQ(o.id(), "order_123");
+  EXPECT_EQ(o.grand_total(), 100.0);
+  EXPECT_EQ(o.order_date().year(), 2026);
+  EXPECT_EQ(o.order_date().month(), 4);
+  EXPECT_EQ(o.order_date().day(), 10);
+  ASSERT_EQ(o.products_size(), 2);
+  EXPECT_EQ(o.products(0).name(), "Product A");
+  EXPECT_EQ(o.products(0).quantity(), 2);
+  EXPECT_EQ(o.products(1).name(), "Product B");
+  EXPECT_EQ(o.products(1).quantity(), 1);
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_Order_Conflict) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with an order and a specific grand total.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* order1 =
+      data1.content_annotation.mutable_structured_data()->add_orders();
+  order1->set_id("order_123");
+  order1->set_grand_total(100.0);
+  auto* date1 = order1->mutable_order_date();
+  date1->set_year(2026);
+  date1->set_month(4);
+  date1->set_day(9);
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with a conflicting grand total.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* order2 =
+      data2.content_annotation.mutable_structured_data()->add_orders();
+  order2->set_id("order_123");
+  order2->set_grand_total(200.0);
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the entries were not merged due to the conflict in grand total.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.orders_size(), 1);
+  const auto& o = sd.orders(0);
+  EXPECT_EQ(o.id(), "order_123");
+  EXPECT_EQ(o.grand_total(), 200.0);
+  EXPECT_FALSE(o.has_order_date());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_Shipment) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with a shipment containing a carrier name.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* shipment1 =
+      data1.content_annotation.mutable_structured_data()->add_shipments();
+  shipment1->set_tracking_number("track_123");
+  shipment1->set_carrier_name("UPS");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with the same tracking number and a delivery
+  // address.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* shipment2 =
+      data2.content_annotation.mutable_structured_data()->add_shipments();
+  shipment2->set_tracking_number("track_123");
+  shipment2->set_delivery_address("123 Main St");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the lookback mechanism correctly merged the shipment data.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.shipments_size(), 1);
+  const auto& s = sd.shipments(0);
+  EXPECT_EQ(s.tracking_number(), "track_123");
+  EXPECT_EQ(s.delivery_address(), "123 Main St");
+  EXPECT_EQ(s.carrier_name(), "UPS");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_Shipment_Conflict) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with a shipment containing a carrier name and
+  // delivery address.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* shipment1 =
+      data1.content_annotation.mutable_structured_data()->add_shipments();
+  shipment1->set_tracking_number("track_123");
+  shipment1->set_carrier_name("UPS");
+  shipment1->set_delivery_address("456 Side St");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with a conflicting carrier name for the same
+  // tracking number.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* shipment2 =
+      data2.content_annotation.mutable_structured_data()->add_shipments();
+  shipment2->set_tracking_number("track_123");
+  shipment2->set_carrier_name("FedEx");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the entries were not merged due to the conflict in carrier
+  // name.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  ASSERT_TRUE(merged[0].has_structured_data());
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.shipments_size(), 1);
+  const auto& s123 = sd.shipments(0);
+  EXPECT_EQ(s123.tracking_number(), "track_123");
+  EXPECT_EQ(s123.carrier_name(), "FedEx");
+  EXPECT_FALSE(s123.has_delivery_address());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_FlightReservation) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with a flight reservation containing a flight
+  // number.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* flight1 = data1.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight1->set_confirmation_code("flight_123");
+  flight1->set_flight_number("AA123");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with the same confirmation code but a
+  // passenger name.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* flight2 = data2.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight2->set_confirmation_code("flight_123");
+  flight2->set_passenger_name("John Doe");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the lookback mechanism correctly merged the flight reservation
+  // data.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.flight_reservations_size(), 1);
+  const auto& f = sd.flight_reservations(0);
+  EXPECT_EQ(f.confirmation_code(), "flight_123");
+  EXPECT_EQ(f.flight_number(), "AA123");
+  EXPECT_EQ(f.passenger_name(), "John Doe");
+}
+
+TEST_F(
+    AccessibilityAnnotatorBackendTest,
+    ProcessConfirmedStatusLookback_MergeStructuredData_FlightReservation_Conflict) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with a flight reservation containing a flight
+  // number.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  auto* flight1 = data1.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight1->set_confirmation_code("flight_123");
+  flight1->set_flight_number("AA123");
+  flight1->set_passenger_name("John Doe");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with a conflicting flight number.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* flight2 = data2.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight2->set_confirmation_code("flight_123");
+  flight2->set_flight_number("UA456");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that the entries were not merged due to the conflict in flight
+  // number.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+  ASSERT_EQ(sd.flight_reservations_size(), 1);
+  const auto& f = sd.flight_reservations(0);
+  EXPECT_EQ(f.confirmation_code(), "flight_123");
+  EXPECT_EQ(f.flight_number(), "UA456");
+  EXPECT_FALSE(f.has_passenger_name());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MergeStructuredData_MultipleTypes) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Set up an older pending entry with a flight reservation.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("");
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(1);
+  data1.url = url1;
+  auto* flight1 = data1.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight1->set_confirmation_code("flight_123");
+  flight1->set_flight_number("AA123");
+  flight1->set_departure_airport("SFO");
+  flight1->set_arrival_airport("LAX");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  // Set up a newer confirmed entry with an order, shipment, and the same
+  // flight reservation.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("");
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url1;
+  data2.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* order =
+      data2.content_annotation.mutable_structured_data()->add_orders();
+  order->set_id("order_123");
+  auto* shipment =
+      data2.content_annotation.mutable_structured_data()->add_shipments();
+  shipment->set_tracking_number("track_123");
+  auto* flight2 = data2.content_annotation.mutable_structured_data()
+                      ->add_flight_reservations();
+  flight2->set_confirmation_code("flight_123");
+  flight2->set_flight_number("AA123");
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Verify that all structured data types were correctly merged.
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  const auto& sd = merged[0].structured_data();
+
+  ASSERT_EQ(sd.orders_size(), 1);
+  EXPECT_EQ(sd.orders(0).id(), "order_123");
+
+  ASSERT_EQ(sd.shipments_size(), 1);
+  EXPECT_EQ(sd.shipments(0).tracking_number(), "track_123");
+
+  ASSERT_EQ(sd.flight_reservations_size(), 1);
+  EXPECT_EQ(sd.flight_reservations(0).confirmation_code(), "flight_123");
+  EXPECT_EQ(sd.flight_reservations(0).flight_number(), "AA123");
+  EXPECT_EQ(sd.flight_reservations(0).departure_airport(), "SFO");
+  EXPECT_EQ(sd.flight_reservations(0).arrival_airport(), "LAX");
+}
+
 }  // namespace
 }  // namespace accessibility_annotator
