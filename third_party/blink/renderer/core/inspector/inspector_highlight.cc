@@ -2067,54 +2067,44 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
   PhysicalRect border_box;
   PhysicalRect margin_box;
 
-  if (layout_object->IsText()) {
-    auto* layout_text = To<LayoutText>(layout_object);
+  if (const auto* layout_text = DynamicTo<LayoutText>(layout_object)) {
     PhysicalRect text_rect = layout_text->VisualOverflowRect();
     content_box = text_rect;
     padding_box = text_rect;
     border_box = text_rect;
     margin_box = text_rect;
-  } else if (layout_object->IsBox()) {
-    auto* layout_box = To<LayoutBox>(layout_object);
+  } else if (const auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
     content_box = layout_box->PhysicalContentBoxRect();
 
     // Include scrollbars and gutters in the padding highlight.
     padding_box = layout_box->PhysicalPaddingBoxRect();
-    PhysicalBoxStrut scrollbars = layout_box->ComputeScrollbars();
-    padding_box.SetX(padding_box.X() - scrollbars.left);
-    padding_box.SetY(padding_box.Y() - scrollbars.top);
-    padding_box.SetWidth(padding_box.Width() + scrollbars.HorizontalSum());
-    padding_box.SetHeight(padding_box.Height() + scrollbars.VerticalSum());
+    padding_box.Expand(layout_box->ComputeScrollbars());
 
     border_box = layout_box->PhysicalBorderBoxRect();
 
     margin_box = border_box;
     margin_box.Expand(layout_box->MarginOutsets());
-  } else {
-    auto* layout_inline = To<LayoutInline>(layout_object);
-
-    // LayoutInline's bounding box includes paddings and borders, excludes
-    // margins.
+    margin_box.size.ClampNegativeToZero();
+  } else if (const auto* layout_inline =
+                 DynamicTo<LayoutInline>(layout_object)) {
     border_box = layout_inline->PhysicalLinesBoundingBox();
-    padding_box =
-        PhysicalRect(border_box.X() + layout_inline->BorderLeft(),
-                     border_box.Y() + layout_inline->BorderTop(),
-                     border_box.Width() - layout_inline->BorderLeft() -
-                         layout_inline->BorderRight(),
-                     border_box.Height() - layout_inline->BorderTop() -
-                         layout_inline->BorderBottom());
-    content_box =
-        PhysicalRect(padding_box.X() + layout_inline->PaddingLeft(),
-                     padding_box.Y() + layout_inline->PaddingTop(),
-                     padding_box.Width() - layout_inline->PaddingLeft() -
-                         layout_inline->PaddingRight(),
-                     padding_box.Height() - layout_inline->PaddingTop() -
-                         layout_inline->PaddingBottom());
+
+    padding_box = border_box;
+    padding_box.Contract(layout_inline->BorderOutsets());
+    padding_box.size.ClampNegativeToZero();
+
+    content_box = padding_box;
+    content_box.Contract(layout_inline->PaddingOutsets());
+    content_box.size.ClampNegativeToZero();
+
     // Ignore top/bottom margins for inlines.
     const PhysicalBoxStrut margins = layout_inline->MarginOutsets();
     margin_box = PhysicalRect(border_box.X() - margins.left, border_box.Y(),
                               border_box.Width() + margins.HorizontalSum(),
                               border_box.Height());
+    margin_box.size.ClampNegativeToZero();
+  } else {
+    NOTREACHED();
   }
 
   *content = layout_object->LocalRectToAbsoluteQuad(content_box);
