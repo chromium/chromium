@@ -379,7 +379,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_widgets.xml",
     "java/res/drawable/menu_bg_bottom_tinted.xml",
     "java/res/drawable/modern_toolbar_text_box_background_with_primary_color_square.xml",
-    "java/res/drawable/new_tab_icon.xml",
     "java/res/drawable/optional_button_background.xml",
     "java/res/drawable/optional_button_background_baseline.xml",
     "java/res/drawable/optional_button_background_selector.xml",
@@ -419,6 +418,7 @@ android_resources("java_resources") {
 
   deps = [
     "//chrome/app:java_strings_grd",
+    "//chrome/browser/ui/android/actions:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/styles/android:java_resources",
