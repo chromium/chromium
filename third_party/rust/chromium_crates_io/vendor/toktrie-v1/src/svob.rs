@@ -227,7 +227,7 @@ impl SimpleVob {
 
     pub fn write_to(&self, buf: &mut [u8]) {
         assert!(buf.len() <= self.data.len() * (BITS / 8));
-        buf.copy_from_slice(&bytemuck::cast_slice(&self.data)[..buf.len()]);
+        crate::bytes::write_u32s_as_le_bytes(&self.data, buf);
     }
 
     #[inline(always)]

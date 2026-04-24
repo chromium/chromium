@@ -219,11 +219,10 @@ fn test_write_to() {
     // write out first two u32's
     let mut buf = [0u8; 8];
     v.write_to(&mut buf);
-    let words: &[u32] = bytemuck::cast_slice(&buf);
-    // first word should be 0xffffffff if the first 32 bits are set
-    assert_eq!(words[0], 0xffffffff);
-    // second word should be 0 (no bits set from 32..64)
-    assert_eq!(words[1], 0);
+    let w0 = u32::from_le_bytes(buf[0..4].try_into().unwrap());
+    let w1 = u32::from_le_bytes(buf[4..8].try_into().unwrap());
+    assert_eq!(w0, 0xffffffff);
+    assert_eq!(w1, 0);
 }
 
 #[test]

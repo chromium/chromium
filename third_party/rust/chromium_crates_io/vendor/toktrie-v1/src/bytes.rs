@@ -13,6 +13,25 @@ pub fn clone_vec_as_bytes<T: NoUninit>(input: &[T]) -> Vec<u8> {
     bytemuck::cast_slice(input).to_vec()
 }
 
+/// Write `&[u32]` into `&mut [u8]` in little-endian byte order.
+/// This is safe to call on any platform and guarantees a consistent
+/// byte layout regardless of native endianness.
+///
+/// If `dst` is shorter than `words.len() * 4`, only the bytes that fit
+/// are written (the trailing partial word is truncated).
+/// If `dst` is longer than `words.len() * 4`, the extra bytes are left
+/// untouched.
+pub fn write_u32s_as_le_bytes(words: &[u32], dst: &mut [u8]) {
+    for (i, &w) in words.iter().enumerate() {
+        let start = i * 4;
+        let end = (start + 4).min(dst.len());
+        if start >= dst.len() {
+            break;
+        }
+        dst[start..end].copy_from_slice(&w.to_le_bytes()[..end - start]);
+    }
+}
+
 pub fn vec_from_bytes<T: PodTrait>(bytes: &[u8]) -> Vec<T> {
     if !bytes.len().is_multiple_of(size_of::<T>()) {
         panic!(
@@ -148,5 +167,41 @@ mod tests {
     fn test_very_small_limit() {
         let result = limit_display("hello", 1);
         assert_eq!(result, "h...");
+    }
+
+    #[test]
+    fn test_write_u32s_exact_fit() {
+        let words: &[u32] = &[0xDEADBEEF, 0x01020304];
+        let mut buf = [0u8; 8];
+        write_u32s_as_le_bytes(words, &mut buf);
+        assert_eq!(buf, [0xEF, 0xBE, 0xAD, 0xDE, 0x04, 0x03, 0x02, 0x01]);
+    }
+
+    #[test]
+    fn test_write_u32s_dst_shorter_truncates() {
+        let words: &[u32] = &[0xDEADBEEF, 0x01020304];
+        let mut buf = [0u8; 5];
+        write_u32s_as_le_bytes(words, &mut buf);
+        // first word fully written, second word truncated to 1 byte
+        assert_eq!(buf, [0xEF, 0xBE, 0xAD, 0xDE, 0x04]);
+    }
+
+    #[test]
+    fn test_write_u32s_dst_longer_leaves_tail() {
+        let words: &[u32] = &[0x00000001];
+        let mut buf = [0xFF; 8];
+        write_u32s_as_le_bytes(words, &mut buf);
+        assert_eq!(buf, [0x01, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF]);
+    }
+
+    #[test]
+    fn test_write_u32s_empty_inputs() {
+        let mut buf = [0xAA; 4];
+        write_u32s_as_le_bytes(&[], &mut buf);
+        assert_eq!(buf, [0xAA; 4]);
+
+        let words: &[u32] = &[0x12345678];
+        let mut empty_buf: [u8; 0] = [];
+        write_u32s_as_le_bytes(words, &mut empty_buf);
     }
 }
