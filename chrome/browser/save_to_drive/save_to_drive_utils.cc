@@ -5,6 +5,7 @@
 #include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/extensions/api/tabs.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -27,6 +28,11 @@ base::WeakPtr<extensions::StreamContainer> GetStreamWeakPtr(
       extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
           embedder_host);
   return manager ? manager->GetStreamContainer(embedder_host) : nullptr;
+}
+
+int GetTabId(content::RenderFrameHost* render_frame_host) {
+  auto stream = GetStreamWeakPtr(render_frame_host);
+  return stream ? stream->tab_id() : extensions::api::tabs::TAB_ID_NONE;
 }
 
 }  // namespace save_to_drive

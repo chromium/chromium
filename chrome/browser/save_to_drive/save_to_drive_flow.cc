@@ -64,6 +64,8 @@ WebContents* GetTabWebContents(RenderFrameHost* render_frame_host) {
 
 SaveToDriveFlow::CreateCallback* g_create_callback_for_testing = nullptr;
 
+bool g_skip_valid_tab_for_testing = false;
+
 }  // namespace
 
 SaveToDriveFlow::SaveToDriveFlow(
@@ -107,6 +109,12 @@ SaveToDriveFlow* SaveToDriveFlow::Create(
 void SaveToDriveFlow::SetCreateCallbackForTesting(CreateCallback* callback) {
   CHECK_IS_TEST();
   g_create_callback_for_testing = callback;
+}
+
+// static
+void SaveToDriveFlow::SetSkipValidateTabForTesting(bool skip_validate_tab) {
+  CHECK_IS_TEST();
+  g_skip_valid_tab_for_testing = skip_validate_tab;
 }
 
 void SaveToDriveFlow::Run() {
@@ -229,6 +237,15 @@ void SaveToDriveFlow::Stop() {
   }
   DeleteForCurrentDocument(&render_frame_host());
   // Don't do anything else here. The flow will be destroyed after this line.
+}
+
+bool SaveToDriveFlow::HasValidTabId(RenderFrameHost* render_frame_host) {
+  // `SetSkipValidateTabForTesting(true)` is called in test to skip this
+  // validation when there are no active browsers.
+  if (g_skip_valid_tab_for_testing) {
+    return true;
+  }
+  return GetTabWebContents(render_frame_host) != nullptr;
 }
 
 SaveToDriveFlow::TestApi::TestApi(SaveToDriveFlow* flow)
