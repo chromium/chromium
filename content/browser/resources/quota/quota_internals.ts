@@ -51,6 +51,19 @@ function convertMojoTimeToJS(mojoTime: Time): Date {
   return new Date(timeInMs - epochDeltaInMs);
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 ** 2) {
+    return `${(bytes / 1024).toFixed(2)} KB`;
+  }
+  if (bytes < 1024 ** 3) {
+    return `${(bytes / (1024 ** 2)).toFixed(2)} MB`;
+  }
+  return `${(bytes / (1024 ** 3)).toFixed(2)} GB`;
+}
+
 function getProxy(): QuotaInternalsBrowserProxy {
   return QuotaInternalsBrowserProxy.getInstance();
 }
@@ -66,26 +79,21 @@ async function renderDiskAvailabilityAndTempPoolSize() {
       rowTemplate.cloneNode(true) as HTMLTemplateElement;
   const listenerRow = listenerRowTemplate.content;
 
-  const availableSpaceBytes =
-      (Number(result.availableSpace) / (1024 ** 3)).toFixed(2);
-  const totalSpaceBytes = (Number(result.totalSpace) / (1024 ** 3)).toFixed(2);
-  const tempPoolSizeBytes =
-      (Number(result.tempPoolSize) / (1024 ** 3)).toFixed(2);
-
   listenerRow.querySelector('.total-space')!.textContent =
-      `${totalSpaceBytes} GB`;
+      formatBytes(Number(result.totalSpace));
   listenerRow.querySelector('.available-space')!.textContent =
-      `${availableSpaceBytes} GB`;
+      formatBytes(Number(result.availableSpace));
   listenerRow.querySelector('.temp-pool-size')!.textContent =
-      `${tempPoolSizeBytes} GB`;
+      formatBytes(Number(result.tempPoolSize));
 
   tableBody.append(listenerRow);
 }
 
 async function renderGlobalUsage() {
   const result = await getProxy().getGlobalUsage();
-  const formattedResultString: string = `${Number(result.usage)} B (${
-      result.unlimitedUsage} B for unlimited origins)`;
+  const formattedResultString: string =
+      `${formatBytes(Number(result.usage))} (${
+          formatBytes(Number(result.unlimitedUsage))} by unlimited origins)`;
   const globalUsage =
       document.body.querySelector(`.global-and-unlimited-usage`);
   if (globalUsage) {
@@ -143,7 +151,7 @@ async function renderUsageAndQuotaStats() {
     const bucketTableEntryObj: BucketEntry = {
       bucketId: entry.bucketId.toString(),
       name: entry.name,
-      usage: entry.usage.toString(),
+      usage: formatBytes(Number(entry.usage)),
       useCount: entry.useCount.toString(),
       lastAccessed: convertMojoTimeToJS(entry.lastAccessed)
                         .toLocaleString('en-US', {timeZoneName: 'short'}),
