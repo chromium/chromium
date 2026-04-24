@@ -200,22 +200,34 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
           : nullptr;
 
   // CSP is bypassed for style elements in user agent shadow DOM.
-  const bool passes_content_security_policy_checks =
+  const bool passes_style_csp =
       IsInUserAgentShadowDOM(element) ||
       (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                &element, text, element.nonce(), document.Url(),
                                start_position_.line_));
 
-  // TODO(crbug.com/448174611) - should Declarative CSS Modules continue
-  // respecting CSP? Need to confirm with WHATWG.
+  // Declarative CSS Modules impact the module map, so they must also respect
+  // `script-src` CSP. The strictest union applies: the module is blocked if
+  // either `style-src` or `script-src` denies it.
+  const bool passes_script_csp =
+      !IsModule(document) || IsInUserAgentShadowDOM(element) ||
+      (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kScript,
+                               &element, text, element.nonce(), document.Url(),
+                               start_position_.line_));
+
+  const bool passes_content_security_policy_checks =
+      passes_style_csp && passes_script_csp;
+
   if (passes_content_security_policy_checks && IsModule(document)) {
     CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesStyleTagEnabled(
         document.GetExecutionContext()));
     UseCounter::Count(document, WebFeature::kStyleTypeModule);
     AddImportMapEntry(element, text);
 
-    // Return early, since we explicitly *don't* want to create a
-    // CSSStyleSheet for CSS modules.
+    // Return early, since we explicitly *don't* want to create a CSSStyleSheet
+    // for CSS modules.
+    // TODO(crbug.com/448174611): Should this fire `load` and `error` events to
+    // match the behavior of classic <style> tags?
     return kProcessingSuccessful;
   }
 
