@@ -100,18 +100,17 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
-                               {
-                                   {"TrimAfterHostInResults", "true"},
-                               }},
-                              {history_embeddings::kHistoryEmbeddingsAnswers,
-                               {}},
-                              {feature_engagement::kIPHHistorySearchFeature,
-                               {}},
+        /*enabled_features=*/
+        {
+            {history_embeddings::kHistoryEmbeddings,
+             {
+                 {"TrimAfterHostInResults", "true"},
+             }},
+            {history_embeddings::kHistoryEmbeddingsAnswers, {}},
+            {feature_engagement::kIPHHistorySearchFeature, {}},
 #if BUILDFLAG(IS_CHROMEOS)
-                              {chromeos::features::
-                                   kFeatureManagementHistoryEmbedding,
-                               {{}}}
+            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+            {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});

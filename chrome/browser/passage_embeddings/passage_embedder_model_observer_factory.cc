@@ -17,6 +17,10 @@
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace passage_embeddings {
 
 // static
@@ -57,6 +61,14 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
       !base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     return nullptr;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kFeatureManagementPassageEmbedder)) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   Profile* profile = Profile::FromBrowserContext(context);
   // When the history embeddings feature is on, observe launched target even
   // when in the experiment group, as we never want to use both models at once.

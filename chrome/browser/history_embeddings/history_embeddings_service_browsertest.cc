@@ -179,14 +179,16 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     // The feature must be enabled first or else the service isn't initialized
     // properly.
     feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings,
-          {{"SendQualityLog", "true"},
-           {"ContentVisibilityThreshold", "0.01"},
-           {"UseUrlFilter", "false"}}},
-         {kHistoryEmbeddingsAnswers, {{}}},
-         {page_content_annotations::features::kPageContentAnnotations, {{}}},
+        {
+            {kHistoryEmbeddings,
+             {{"SendQualityLog", "true"},
+              {"ContentVisibilityThreshold", "0.01"},
+              {"UseUrlFilter", "false"}}},
+            {kHistoryEmbeddingsAnswers, {{}}},
+            {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
-         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+            {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
@@ -267,6 +269,7 @@ class HistoryEmbeddingsWithLowAggregationBrowserTest
            {"PassageExtractionMaxWordsPerAggregatePassage", "10"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+         {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
          {page_content_annotations::features::kPageContentAnnotations, {{}}}},
         /*disabled_features=*/{});
@@ -417,6 +420,7 @@ class HistoryEmbeddingsWithUrlFilterBrowserTest
           {{"SendQualityLog", "true"}, {"UseUrlFilter", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+         {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
          {page_content_annotations::features::kPageContentAnnotations, {{}}}},
         /*disabled_features=*/{});
@@ -597,13 +601,15 @@ class HistoryEmbeddingsKillSwitchBrowserTest
     : public HistoryEmbeddingsBrowserTest {
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings,
-          {{"SendQualityLog", "true"},
-           {"ContentVisibilityThreshold", "0.01"},
-           {"UseUrlFilter", "false"}}},
-         {page_content_annotations::features::kPageContentAnnotations, {{}}},
+        {
+            {kHistoryEmbeddings,
+             {{"SendQualityLog", "true"},
+              {"ContentVisibilityThreshold", "0.01"},
+              {"UseUrlFilter", "false"}}},
+            {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
-         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+            {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+            {chromeos::features::kFeatureManagementPassageEmbedder, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{kLaunchedHistoryEmbeddings});
