@@ -2550,14 +2550,12 @@ void TableView::UpdateAccessibilityFocus(
     if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell ||
         !active_visible_column_index_.has_value()) {
       if (ax_header_row) {
-        ax_header_row->NotifyEvent(ax::mojom::Event::kSelection, true);
         GetViewAccessibility().SetActiveDescendant(*ax_header_row);
       }
     } else {
       AXVirtualView* ax_header_cell = GetVirtualAccessibilityCellImpl(
           ax_header_row, active_visible_column_index_.value());
       if (ax_header_cell) {
-        ax_header_cell->NotifyEvent(ax::mojom::Event::kSelection, true);
         GetViewAccessibility().SetActiveDescendant(*ax_header_cell);
       }
     }
@@ -2574,14 +2572,12 @@ void TableView::UpdateAccessibilityFocus(
   AXVirtualView* ax_row = GetVirtualAccessibilityBodyRow(active_row);
   if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     if (ax_row) {
-      ax_row->NotifyEvent(ax::mojom::Event::kSelection, true);
       GetViewAccessibility().SetActiveDescendant(*ax_row);
     }
   } else {
     AXVirtualView* ax_cell = GetVirtualAccessibilityCellImpl(
         ax_row, active_visible_column_index_.value());
     if (ax_cell) {
-      ax_cell->NotifyEvent(ax::mojom::Event::kSelection, true);
       GetViewAccessibility().SetActiveDescendant(*ax_cell);
     }
   }
