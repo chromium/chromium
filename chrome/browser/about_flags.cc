@@ -8589,7 +8589,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-android", flag_descriptions::kLensOverlayAndroidName,
+     flag_descriptions::kLensOverlayAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayAndroid)},
+#else
     {"enable-lens-overlay", flag_descriptions::kLensOverlayName,
      flag_descriptions::kLensOverlayDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensOverlay,

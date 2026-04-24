@@ -3577,6 +3577,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "enable-lens-overlay-android",
+    "owners": [ "huangs@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "enable-lens-overlay-edu-action-chip",
     "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 145

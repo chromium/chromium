@@ -2805,6 +2805,10 @@ inline constexpr char kLensOverlayName[] = "Lens overlay";
 inline constexpr char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";
 
+inline constexpr char kLensOverlayAndroidName[] = "Lens overlay on Android";
+inline constexpr char kLensOverlayAndroidDescription[] =
+    "Enables Lens search via an overlay on any page on Android.";
+
 inline constexpr char kLensOverlayEduActionChipName[] =
     "Lens Overlay EDU action chip";
 inline constexpr char kLensOverlayEduActionChipDescription[] =

@@ -95,6 +95,7 @@ static_library("flags_android_impl") {
     "//components/history/core/browser:features",
     "//components/history_clusters/core",
     "//components/language/core/common",
+    "//components/lens:features",
     "//components/ntp_tiles",
     "//components/offline_pages/core:switches",
     "//components/omnibox/common",

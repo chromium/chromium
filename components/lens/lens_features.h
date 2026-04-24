@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kShowContextualTasksMenuIcon);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);
 
+// Enables the Lens overlay on Android.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayAndroid);
+
 // Enables the Lens overlay translate button.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
