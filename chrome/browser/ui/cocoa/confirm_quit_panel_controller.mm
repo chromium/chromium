@@ -136,7 +136,13 @@ typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
   for (NSWindow* window in NSApp.windows) {
     if (GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(
             gfx::NativeWindow(window))) {
-      window.alphaValue = value;
+      // Include child windows to ensure the animation is also applied to
+      // popovers, dialogs, etc.
+      NSArray* windowsToFade =
+          [@[ window ] arrayByAddingObjectsFromArray:window.childWindows];
+      for (NSWindow* windowToFade in windowsToFade) {
+        windowToFade.alphaValue = value;
+      }
     }
   }
 }

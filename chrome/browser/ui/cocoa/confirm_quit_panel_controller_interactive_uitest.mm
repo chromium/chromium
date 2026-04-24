@@ -178,4 +178,47 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
   EXPECT_FLOAT_EQ(browserWindow.alphaValue, 0.0);
   EXPECT_FLOAT_EQ(hudWindow.alphaValue, 1.0);
 }
+
+// Verifies that child windows (like JS dialogs) fade out when the browser
+// windows do.
+IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
+                       SustainedHoldFadesAllWindows) {
+  NSWindow* browserWindow =
+      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  CGRect childContentRect = {browserWindow.frame.origin, {100, 100}};
+  NSWindow* childWindow =
+      [[NSWindow alloc] initWithContentRect:childContentRect
+                                  styleMask:NSWindowStyleMaskTitled
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+  [childWindow orderFront:nil];
+  [browserWindow addChildWindow:childWindow ordered:NSWindowAbove];
+
+  EXPECT_EQ(childWindow.alphaValue, 1.0);
+
+  base::TimeTicks startTime = base::TimeTicks::Now();
+  __block BOOL browserWindowFaded = NO;
+  __block BOOL childFaded = NO;
+  ConfirmQuitPanelController.isKeyDownForKeyCodeMock =
+      ^(unsigned short keyCode) {
+        if (browserWindow.alphaValue < 1.0) {
+          browserWindowFaded = YES;
+        }
+
+        if (childWindow.alphaValue < 1.0) {
+          childFaded = YES;
+        }
+
+        // Return YES for enough time to trigger a quit and see the fade.
+        base::TimeDelta elapsed = base::TimeTicks::Now() - startTime;
+        return (BOOL)(elapsed <
+                      (confirm_quit::kShowDuration + base::Milliseconds(500)));
+      };
+
+  BOOL shouldQuit = [[ConfirmQuitPanelController sharedController]
+      runConfirmQuitLoopWithEvent:cmd_q_event_];
+  EXPECT_TRUE(shouldQuit);
+  EXPECT_TRUE(browserWindowFaded);
+  EXPECT_TRUE(childFaded);
+}
 }  // namespace
