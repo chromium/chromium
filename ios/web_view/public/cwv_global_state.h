@@ -19,6 +19,10 @@ CWV_EXPORT
 // Set to `YES` to enable the autofill across iframes feature.
 @property(nonatomic, readwrite) BOOL autofillAcrossIframesEnabled;
 
+// Set to `YES` to delay loading resources from early init to CWV start.
+// Defaults to `NO`.
+@property(nonatomic, readwrite) BOOL delayLoadingResources;
+
 @end
 
 // Manages internal global state that must be initialized before accessing any
@@ -50,8 +54,11 @@ CWV_EXPORT
 // Returns `YES` if the autofill across iframes feature is enabled.
 @property(nonatomic, readonly) BOOL autofillAcrossIframesEnabled;
 
-- (instancetype)init NS_UNAVAILABLE;
+// Returns `YES` if the delay loading resources feature is enabled.
+@property(nonatomic, readonly, getter=isDelayLoadingResources)
+    BOOL delayLoadingResources;
 
+- (instancetype)init NS_UNAVAILABLE;
 // Use this method to set the necessary credentials used to communicate with
 // the Google API for features such as translate. See this link for more info:
 // https://support.google.com/googleapi/answer/6158857

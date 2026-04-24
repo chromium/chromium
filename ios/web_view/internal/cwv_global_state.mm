@@ -93,6 +93,7 @@
   // Set flags before doing anything else.
   CHECK(flags);
   _autofillAcrossIframesEnabled = flags.autofillAcrossIframesEnabled;
+  _delayLoadingResources = flags.delayLoadingResources;
 
   DCHECK([NSThread isMainThread]);
 

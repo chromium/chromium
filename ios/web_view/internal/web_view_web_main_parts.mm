@@ -43,6 +43,48 @@ std::string MakeFeaturesString(
   }
   return base::JoinString(feature_names, ",");
 }
+
+void LoadNonScalableResources() {
+  base::FilePath pak_file;
+  base::PathService::Get(base::DIR_ASSETS, &pak_file);
+  pak_file = pak_file.Append(FILE_PATH_LITERAL("web_view_resources.pak"));
+  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+  resource_bundle.AddDataPackFromPath(pak_file, ui::kScaleFactorNone);
+}
+
+void LoadScalableResources() {
+  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+  if (ui::IsScaleFactorSupported(ui::k100Percent)) {
+    base::FilePath pak_file_100;
+    base::PathService::Get(base::DIR_ASSETS, &pak_file_100);
+    pak_file_100 =
+        pak_file_100.Append(FILE_PATH_LITERAL("web_view_100_percent.pak"));
+    resource_bundle.AddDataPackFromPath(pak_file_100, ui::k100Percent);
+  }
+
+  if (ui::IsScaleFactorSupported(ui::k200Percent)) {
+    base::FilePath pak_file_200;
+    base::PathService::Get(base::DIR_ASSETS, &pak_file_200);
+    pak_file_200 =
+        pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
+    resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
+  }
+
+  if (ui::IsScaleFactorSupported(ui::k300Percent)) {
+    base::FilePath pak_file_300;
+    base::PathService::Get(base::DIR_ASSETS, &pak_file_300);
+    pak_file_300 =
+        pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
+    resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
+  }
+}
+
+void InitializeResources() {
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      std::string(), nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+  LoadNonScalableResources();
+  LoadScalableResources();
+}
 }  // namespace
 
 namespace ios_web_view {
@@ -61,10 +103,9 @@ WebViewWebMainParts::~WebViewWebMainParts() {
 
 void WebViewWebMainParts::PreCreateMainMessageLoop() {
   l10n_util::OverrideLocaleWithCocoaLocale();
-  ui::ResourceBundle::InitSharedInstanceWithLocale(
-      std::string(), nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-  LoadNonScalableResources();
-  LoadScalableResources();
+  if (![CWVGlobalState sharedInstance].delayLoadingResources) {
+    InitializeResources();
+  }
 }
 
 void WebViewWebMainParts::PreCreateThreads() {
@@ -105,6 +146,9 @@ void WebViewWebMainParts::PostCreateThreads() {
 }
 
 void WebViewWebMainParts::PreMainMessageLoopRun() {
+  if ([CWVGlobalState sharedInstance].delayLoadingResources) {
+    InitializeResources();
+  }
   WebViewTranslateService::GetInstance()->Initialize();
 
   web::WebUIIOSControllerFactory::RegisterFactory(
@@ -131,41 +175,6 @@ void WebViewWebMainParts::PostMainMessageLoopRun() {
 
 void WebViewWebMainParts::PostDestroyThreads() {
   ApplicationContext::GetInstance()->PostDestroyThreads();
-}
-
-void WebViewWebMainParts::LoadNonScalableResources() {
-  base::FilePath pak_file;
-  base::PathService::Get(base::DIR_ASSETS, &pak_file);
-  pak_file = pak_file.Append(FILE_PATH_LITERAL("web_view_resources.pak"));
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  resource_bundle.AddDataPackFromPath(pak_file, ui::kScaleFactorNone);
-}
-
-void WebViewWebMainParts::LoadScalableResources() {
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  if (ui::IsScaleFactorSupported(ui::k100Percent)) {
-    base::FilePath pak_file_100;
-    base::PathService::Get(base::DIR_ASSETS, &pak_file_100);
-    pak_file_100 =
-        pak_file_100.Append(FILE_PATH_LITERAL("web_view_100_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_100, ui::k100Percent);
-  }
-
-  if (ui::IsScaleFactorSupported(ui::k200Percent)) {
-    base::FilePath pak_file_200;
-    base::PathService::Get(base::DIR_ASSETS, &pak_file_200);
-    pak_file_200 =
-        pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
-  }
-
-  if (ui::IsScaleFactorSupported(ui::k300Percent)) {
-    base::FilePath pak_file_300;
-    base::PathService::Get(base::DIR_ASSETS, &pak_file_300);
-    pak_file_300 =
-        pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
-    resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
-  }
 }
 
 }  // namespace ios_web_view
