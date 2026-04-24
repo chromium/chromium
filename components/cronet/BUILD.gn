@@ -71,7 +71,7 @@ source_set("metrics_util") {
   ]
   deps = [
     "//base",
-    "//net:net",
+    "//net",
   ]
 }
 
