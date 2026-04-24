@@ -157,7 +157,7 @@ suite('AppStyleUpdater', () => {
   test('setLineFocusPos sets y position', () => {
     const pos = 123;
 
-    updater.setLineFocusPos(pos, null);
+    updater.setLineFocusPos(pos, 0);
 
     assertEquals(`${pos}px`, app.style.getPropertyValue('--line-focus-y'));
     assertEquals('', app.style.getPropertyValue('--line-focus-height'));

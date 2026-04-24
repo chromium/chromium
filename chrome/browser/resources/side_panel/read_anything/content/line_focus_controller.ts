@@ -1,7 +1,6 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from '../content/read_anything_types.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {isForwardArrow, isLineFocusShortcut, isVerticalArrow} from '../shared/keyboard_util.js';
@@ -11,9 +10,10 @@ import {LineFocusModel} from './line_focus_model.js';
 import {LineFocusCursorMoveMode, LineFocusNoneMoveMode, LineFocusStaticMoveMode} from './line_focus_move_mode.js';
 import type {MoveModeDelegate} from './line_focus_move_mode.js';
 import {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusWindowStyleMode} from './line_focus_style_mode.js';
+import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from './read_anything_types.js';
 
 export interface LineFocusListener {
-  onLineFocusMove(): void;
+  onLineFocusMove(newTop: number, newHeight: number|null): void;
   onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusToggled(): void;
@@ -25,26 +25,15 @@ export interface LineFocusListener {
 // to specialized strategies.
 export class LineFocusController implements MoveModeDelegate {
   private readonly listeners_: LineFocusListener[] = [];
-  private model_: LineFocusModel = new LineFocusModel();
   private speechController_ = SpeechController.getInstance();
   private logger_ = ReadAnythingLogger.getInstance();
 
-  constructor() {
+  constructor(private model_: LineFocusModel = new LineFocusModel()) {
     const styleMode =
         new LineFocusNoneStyleMode(LineFocusStyle.OFF, this.model_);
     this.model_.setCurrentStyleMode(styleMode);
     this.model_.setCurrentMoveMode(new LineFocusNoneMoveMode(
         this.model_, styleMode, this, LineFocusMovement.STATIC));
-  }
-
-  getTop(): number {
-    return this.model_.getTop();
-  }
-
-  getHeight(): number|null {
-    return (this.getCurrentLineFocusType() === LineFocusType.WINDOW) ?
-        this.model_.getWindowHeight() :
-        null;
   }
 
   getCurrentLineFocusType(): LineFocusType {
@@ -57,11 +46,6 @@ export class LineFocusController implements MoveModeDelegate {
 
   getCurrentLineFocusMovement(): LineFocusMovement {
     return this.model_.getCurrentMoveMode().getMovement();
-  }
-
-  // Whether the current line focus mode is static.
-  isStatic(): boolean {
-    return this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
   }
 
   addListener(listener: LineFocusListener) {
@@ -112,7 +96,7 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onAllMenusClose() {
-    this.listeners_.forEach(l => l.onLineFocusMove());
+    this.notifyMove();
   }
 
   onWordBoundary(segments: Segment[]) {
@@ -218,7 +202,9 @@ export class LineFocusController implements MoveModeDelegate {
 
   // MoveModeDelegate methods.
   notifyMove(): void {
-    this.listeners_.forEach(l => l.onLineFocusMove());
+    this.listeners_.forEach(
+        l => l.onLineFocusMove(
+            this.model_.getTop(), this.model_.getWindowHeight()));
   }
 
   notifyScroll(scrollDiff: number, instant?: boolean): void {

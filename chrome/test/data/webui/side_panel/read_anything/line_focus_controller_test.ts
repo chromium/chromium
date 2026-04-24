@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {LineFocusController, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusController, LineFocusModel, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -18,6 +18,7 @@ suite('LineFocusController', () => {
   const defaultHeight = 1000;
   let lineFocusController: LineFocusController;
   let lineFocusListener: LineFocusListener;
+  let model: LineFocusModel;
   let lineFocusMoved: boolean;
   let defaultContainer: HTMLElement;
   let speech: TestSpeechBrowserProxy;
@@ -78,7 +79,8 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(true);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
-    lineFocusController = new LineFocusController();
+    model = new LineFocusModel();
+    lineFocusController = new LineFocusController(model);
     lineFocusMoved = false;
     lineFocusToggled = false;
     lineFocusListener = {
@@ -138,26 +140,36 @@ suite('LineFocusController', () => {
   });
 
   test('onStyleChange updates style only', () => {
-    const isStatic = lineFocusController.isStatic();
+    const isStatic = lineFocusController.getCurrentLineFocusMovement() ===
+        LineFocusMovement.STATIC;
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.UNDERLINE,
         lineFocusController.getCurrentLineFocusStyle());
-    assertEquals(isStatic, lineFocusController.isStatic());
+    assertEquals(
+        isStatic,
+        lineFocusController.getCurrentLineFocusMovement() ===
+            LineFocusMovement.STATIC);
 
     lineFocusController.onStyleChange(
         LineFocusStyle.SMALL_WINDOW, defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.SMALL_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
-    assertEquals(isStatic, lineFocusController.isStatic());
+    assertEquals(
+        isStatic,
+        lineFocusController.getCurrentLineFocusMovement() ===
+            LineFocusMovement.STATIC);
 
     lineFocusController.onStyleChange(
         LineFocusStyle.OFF, defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
-    assertEquals(isStatic, lineFocusController.isStatic());
+    assertEquals(
+        isStatic,
+        lineFocusController.getCurrentLineFocusMovement() ===
+            LineFocusMovement.STATIC);
   });
 
   test('onStyleChange propagates line focus mode', () => {
@@ -236,12 +248,16 @@ suite('LineFocusController', () => {
     const startingStyle = lineFocusController.getCurrentLineFocusStyle();
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
     assertEquals(startingStyle, lineFocusController.getCurrentLineFocusStyle());
 
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
-    assertTrue(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.STATIC,
+        lineFocusController.getCurrentLineFocusMovement());
     assertEquals(startingStyle, lineFocusController.getCurrentLineFocusStyle());
   });
 
@@ -251,7 +267,7 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
 
-    assertEquals(0, lineFocusController.getTop());
+    assertEquals(0, model.getTop());
   });
 
   test('onMovementChange to static sets it in the middle', () => {
@@ -263,7 +279,7 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
 
-    assertEquals(defaultHeight / 2, lineFocusController.getTop());
+    assertEquals(defaultHeight / 2, model.getTop());
   });
 
   test('onStyleChange to window updates position and height', () => {
@@ -274,8 +290,8 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
 
-    assertEquals(container.offsetTop, lineFocusController.getTop());
-    assertLT(0, lineFocusController.getHeight()!);
+    assertEquals(container.offsetTop, model.getTop());
+    assertLT(0, model.getWindowHeight());
   });
 
   test('onStyleChange window sizes should be different heights', () => {
@@ -283,13 +299,13 @@ suite('LineFocusController', () => {
 
     lineFocusController.onStyleChange(
         LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-    const height1 = lineFocusController.getHeight();
+    const height1 = model.getWindowHeight();
     lineFocusController.onStyleChange(
         LineFocusStyle.SMALL_WINDOW, container, defaultHeight);
-    const height2 = lineFocusController.getHeight();
+    const height2 = model.getWindowHeight();
     lineFocusController.onStyleChange(
         LineFocusStyle.LARGE_WINDOW, container, defaultHeight);
-    const height3 = lineFocusController.getHeight();
+    const height3 = model.getWindowHeight();
 
     assertTrue(!!height1);
     assertTrue(!!height2);
@@ -331,7 +347,9 @@ suite('LineFocusController', () => {
     assertEquals(
         LineFocusStyle.MEDIUM_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
 
     lineFocusController.restoreFromPrefs(
         chrome.readingMode.lineFocusSmallStaticWindow, /*isOn=*/ true,
@@ -339,14 +357,18 @@ suite('LineFocusController', () => {
     assertEquals(
         LineFocusStyle.SMALL_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
-    assertTrue(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.STATIC,
+        lineFocusController.getCurrentLineFocusMovement());
 
     lineFocusController.restoreFromPrefs(
         chrome.readingMode.lineFocusOff, /*isOn=*/ true, defaultContainer,
         defaultHeight);
     assertEquals(
         LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
-    assertTrue(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.STATIC,
+        lineFocusController.getCurrentLineFocusMovement());
 
     lineFocusController.restoreFromPrefs(
         chrome.readingMode.lineFocusCursorLine, /*isOn=*/ true,
@@ -354,7 +376,9 @@ suite('LineFocusController', () => {
     assertEquals(
         LineFocusStyle.UNDERLINE,
         lineFocusController.getCurrentLineFocusStyle());
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
   });
 
   test('restoreFromPrefs with line focus off, uses previous movement', () => {
@@ -366,7 +390,9 @@ suite('LineFocusController', () => {
 
     assertEquals(
         LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
   });
 
   test('restoreFromPrefs sets last used line focus mode', () => {
@@ -380,7 +406,9 @@ suite('LineFocusController', () => {
     assertEquals(
         LineFocusStyle.LARGE_WINDOW,
         lineFocusController.getCurrentLineFocusStyle());
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
   });
 
   test('onScrollEnd initiated by line focus, recalculates window', () => {
@@ -405,17 +433,17 @@ suite('LineFocusController', () => {
     lineFocusController.onStyleChange(
         LineFocusStyle.SMALL_WINDOW, container, height);
     lineFocusMoved = false;
-    const startingTop = lineFocusController.getTop();
+    const startingTop = model.getTop();
 
     lineFocusController.onKeyDown(downKey(), container, height);
     assertFalse(lineFocusMoved);
-    assertEquals(startingTop, lineFocusController.getTop());
+    assertEquals(startingTop, model.getTop());
 
     lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onKeyDown(downKey(), container, height);
     lineFocusController.onScrollEnd(height);
     assertTrue(lineFocusMoved);
-    assertLT(startingTop, lineFocusController.getTop());
+    assertLT(startingTop, model.getTop());
   });
 
   test('toggle while on disables line focus', () => {
@@ -518,7 +546,7 @@ suite('LineFocusController', () => {
 
     lineFocusController.onMouseMoveInToolbar(101);
 
-    assertEquals(0, lineFocusController.getTop());
+    assertEquals(0, model.getTop());
   });
 
   test('onMouseMoveInToolbar does nothing when speech active', () => {
@@ -533,11 +561,11 @@ suite('LineFocusController', () => {
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
     speechController.onPlayPauseToggle(container);
-    const startingTop = lineFocusController.getTop();
+    const startingTop = model.getTop();
 
     lineFocusController.onMouseMoveInToolbar(101);
 
-    assertEquals(startingTop, lineFocusController.getTop());
+    assertEquals(startingTop, model.getTop());
   });
 
   test('onAllMenusClose notifies listeners', () => {

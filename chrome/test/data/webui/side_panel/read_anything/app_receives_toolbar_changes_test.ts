@@ -254,12 +254,16 @@ suite('AppReceivesToolbarChanges', () => {
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.CURSOR}});
-    assertFalse(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.CURSOR,
+        lineFocusController.getCurrentLineFocusMovement());
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
-    assertTrue(lineFocusController.isStatic());
+    assertEquals(
+        LineFocusMovement.STATIC,
+        lineFocusController.getCurrentLineFocusMovement());
   });
 
   test('line focus movement change updates padding', async () => {

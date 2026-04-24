@@ -103,9 +103,9 @@ export class AppStyleUpdater {
     return padding ? parseInt(padding) : 0;
   }
 
-  setLineFocusPos(y: number, height: number|null) {
+  setLineFocusPos(y: number, height: number) {
     this.setStyle_('--line-focus-y', `${y}px`);
-    if (height) {
+    if (height > 0) {
       this.setStyle_('--line-focus-height', `${height}px`);
     }
   }

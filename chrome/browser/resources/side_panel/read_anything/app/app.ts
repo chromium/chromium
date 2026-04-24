@@ -20,7 +20,7 @@ import type {ContentListener, ContentState} from '../content/content_controller.
 import {LineFocusController} from '../content/line_focus_controller.js';
 import type {LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import {DEFAULT_SETTINGS, LineFocusType} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS} from '../content/read_anything_types.js';
 import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
@@ -468,14 +468,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   ///////////////////////// LineFocusListener methods //////////////////////////
-  onLineFocusMove(): void {
+  onLineFocusMove(newTop: number, newHeight: number): void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
 
-    this.styleUpdater_.setLineFocusPos(
-        this.lineFocusController_.getTop(),
-        this.lineFocusController_.getHeight());
+    this.styleUpdater_.setLineFocusPos(newTop, newHeight);
   }
 
   onNeedScrollForLineFocus(scrollDiff: number, instant: boolean = false): void {
@@ -667,11 +665,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected onFontSizeChange_() {
     this.styleUpdater_.setFontSize();
     this.onTextLocationsChange_();
-    if (chrome.readingMode.isLineFocusEnabled &&
-        this.lineFocusController_.getCurrentLineFocusType() ===
-            LineFocusType.LINE) {
-      this.styleUpdater_.setLineFocusHeight();
-    }
+    this.setLineFocusStyle_();
   }
 
   protected onThemeChange_() {
