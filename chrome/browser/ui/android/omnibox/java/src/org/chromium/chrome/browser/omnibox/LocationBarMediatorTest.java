@@ -1745,17 +1745,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testClearUrlBarCursorWithoutFocusAnimations() {
-        // Assume that the URL bar is focused without animations on the NTP.
-        doReturn(true).when(mUrlCoordinator).hasFocus();
-        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-
-        mMediator.clearUrlBarCursorWithoutFocusAnimations();
-        // Verify that the omnibox focus is cleared on an exit from the NTP.
-        verify(mUrlCoordinator).clearFocus();
-    }
-
-    @Test
     public void testOnTouchAfterFocus_triggerUrlFocusChange() {
         mMediator.onFinishNativeInitialization();
         doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
