@@ -418,17 +418,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // that is returned. The pin does nothing after the widget is closed.
   std::unique_ptr<CloseOnDeactivatePin> PreventCloseOnDeactivate();
 
-  // Explicitly set the button to automatically highlight when the bubble is
-  // shown. By default the anchor is highlighted, if it is a button.
-  //
-  // TODO(ellyjones): Is there ever a situation where this is the right thing to
-  // do UX-wise? It seems very odd to highlight something other than the anchor
-  // view.
-  // DEPRECATED: Please use SetHighlightedElement instead.
-  void SetHighlightedButton(Button* highlighted_button);
-
-  // Like SetHighlightedButton, but using a TrackedElement that's looked up
-  // by id, in the context based on the anchor widget.
+  // Explicitly set the element to automatically highlight when the bubble is
+  // shown. By default the anchor is highlighted, if it is highlightable
+  // (e.g. a button). The element is looked up by `id`, in the context based on
+  // the anchor widget.
   void SetHighlightedElement(ui::ElementIdentifier id);
 
   // The bubble's parent window - this can only be usefully set before creating
@@ -611,6 +604,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            DelayedHighlightByElement);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           AnchorChangeChangesHighlight);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            MultipleBubbleAnchorHighlightTestInOrder);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            MultipleBubbleAnchorHighlightTestOutOfOrder);
@@ -662,7 +657,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
-  ViewTracker highlighted_button_tracker_;
   std::optional<ui::ElementTracker::Subscription>
       highlighted_element_shown_subscription_;
   ui::SafeElementReference highlighted_element_tracker_;
@@ -679,7 +673,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool close_on_deactivate_ = true;
   std::unique_ptr<CloseOnDeactivatePin::Pins> close_on_deactivate_pins_;
 
-  // Whether the |anchor_widget_| (or the |highlighted_button_tracker_|, when
+  // Whether the anchor (or the `highlighted_element_tracker_`, when
   // provided) should be highlighted when this bubble is shown.
   bool highlight_button_when_shown_ = true;
 
@@ -698,7 +692,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   std::unique_ptr<ui::BubbleCloser> mac_bubble_closer_;
 #endif
 
-  // Used to ensure the button remains anchored while this dialog is open.
+  // Used to ensure the button remains highlighted while this dialog is open.
   std::optional<Button::ScopedAnchorHighlight> button_anchor_highlight_;
   // Same if going via TrackedElement.
   std::unique_ptr<ui::ElementHighlighter::Highlight> element_anchor_highlight_;

@@ -104,7 +104,7 @@ NewPageActionHighlight(content::WebContents& web_contents) {
       PageActionIconType::kPwaInstall);
 
   if (install_icon) {
-    // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
+    // TODO(crbug.com/40841129): move this to dialog->SetHighlightedElement.
     return install_icon->AddAnchorHighlight();
   }
 

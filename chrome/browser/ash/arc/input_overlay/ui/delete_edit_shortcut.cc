@@ -96,9 +96,6 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
 DeleteEditShortcut::~DeleteEditShortcut() = default;
 
 void DeleteEditShortcut::UpdateAnchorView(ActionViewListItem* anchor_view) {
-  // Reset the highlight of previous anchor view.
-  SetHighlightedButton(anchor_view);
-
   SetAnchorView(anchor_view);
   UpdateTooltipText(anchor_view);
 
