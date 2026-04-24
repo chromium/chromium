@@ -69,7 +69,7 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     const Vector<GapIntersection>& intersections,
-    bool is_dangling_intersection,
+    bool is_cap_intersection,
     bool is_column_gap,
     bool is_main,
     bool has_joining_decoration,
@@ -80,11 +80,10 @@ LayoutUnit GapGeometry::ComputeInsetEnd(
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   const Length& inset =
-      is_dangling_intersection
-          ? (is_column_gap ? style.ColumnRuleInsetCapEnd()
-                           : style.RowRuleInsetCapEnd())
-          : (is_column_gap ? style.ColumnRuleInsetJunctionEnd()
-                           : style.RowRuleInsetJunctionEnd());
+      is_cap_intersection ? (is_column_gap ? style.ColumnRuleInsetCapEnd()
+                                           : style.RowRuleInsetCapEnd())
+                          : (is_column_gap ? style.ColumnRuleInsetJunctionEnd()
+                                           : style.RowRuleInsetJunctionEnd());
 
   if (inset.IsOverlapJoin()) {
     return ComputeOverlapJoinInset(has_joining_decoration, is_main,
@@ -98,7 +97,7 @@ LayoutUnit GapGeometry::ComputeInsetStart(
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
     const Vector<GapIntersection>& intersections,
-    bool is_dangling_intersection,
+    bool is_cap_intersection,
     bool is_column_gap,
     bool is_main,
     bool has_joining_decoration,
@@ -109,7 +108,7 @@ LayoutUnit GapGeometry::ComputeInsetStart(
   // intersection point.
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   const Length& inset =
-      is_dangling_intersection
+      is_cap_intersection
           ? (is_column_gap ? style.ColumnRuleInsetCapStart()
                            : style.RowRuleInsetCapStart())
           : (is_column_gap ? style.ColumnRuleInsetJunctionStart()
@@ -637,7 +636,7 @@ bool GapGeometry::IsIntersectionAtContainerEdge(
   return false;
 }
 
-bool GapGeometry::IsDanglingIntersection(
+bool GapGeometry::IsCapIntersection(
     GridTrackSizingDirection cross_direction,
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
@@ -658,9 +657,9 @@ LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
     wtf_size_t intersection_index,
     bool is_main_gap,
     const Vector<GapIntersection>& intersections,
-    bool is_dangling_intersection,
+    bool is_cap_intersection,
     const Vector<int>& cross_decoration_widths) const {
-  if (is_dangling_intersection) {
+  if (is_cap_intersection) {
     return LayoutUnit();
   }
 
@@ -672,7 +671,7 @@ LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
     return LayoutUnit(cross_decoration_widths[intersection.GetMainGapIndex()]);
   }
 
-  // For grid and multicol, interior intersection `i` corresponds to cross gap
+  // For grid and multicol, junction intersection `i` corresponds to cross gap
   // `i - 1`.
   return LayoutUnit(cross_decoration_widths[intersection_index - 1]);
 }

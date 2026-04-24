@@ -200,42 +200,42 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       bool is_main_gap,
       const Vector<GapIntersection>& intersections) const;
 
-  // Returns true if the intersection should be treated as an "edge" for
-  // decoration purposes. An intersection is an edge if it is either:
+  // Returns true if the intersection should be treated as a "cap" for
+  // decoration purposes (i.e. an endpoint with no visible crossing decoration
+  // to join with). An intersection is a cap if it is either:
   // - At the container boundary (per IsIntersectionAtContainerEdge), or
   // - A dangling interior endpoint with no visible crossing decoration
   //   (https://github.com/w3c/csswg-drafts/issues/13697).
-  // `gap_index` is the index of the gap itself and
-  // `intersection_index` is the index of the intersection point within that
-  // gap.
-  bool IsDanglingIntersection(
-      GridTrackSizingDirection cross_direction,
-      wtf_size_t gap_index,
-      wtf_size_t intersection_index,
-      bool is_main_gap,
-      RuleVisibilityItems rule_visibility,
-      RuleVisibilityItems cross_rule_visibility,
-      const Vector<GapIntersection>& intersections) const;
+  // Otherwise the intersection is a "junction" (it has a crossing decoration
+  // that the main decoration joins with). `gap_index` is the index of the gap
+  // itself and `intersection_index` is the index of the intersection point
+  // within that gap.
+  bool IsCapIntersection(GridTrackSizingDirection cross_direction,
+                         wtf_size_t gap_index,
+                         wtf_size_t intersection_index,
+                         bool is_main_gap,
+                         RuleVisibilityItems rule_visibility,
+                         RuleVisibilityItems cross_rule_visibility,
+                         const Vector<GapIntersection>& intersections) const;
 
   // Returns the cross-direction decoration width at the given intersection,
   // used by `overlap-join` to determine how far the decoration should extend.
-  // Edge intersections border the container and have no crossing decoration, so
-  // they return 0. `is_dangling_intersection` indicates whether the
-  // intersection is at a container edge or a dangling interior endpoint with no
-  // visible crossing decoration
-  // (https://github.com/w3c/csswg-drafts/issues/13697).
+  // Cap intersections have no crossing decoration, so they return 0.
+  // `is_cap_intersection` indicates whether the intersection is a cap (at a
+  // container edge or a dangling interior endpoint with no visible crossing
+  // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit GetCrossDecorationWidthForIntersection(
       wtf_size_t gap_index,
       wtf_size_t intersection_index,
       bool is_main_gap,
       const Vector<GapIntersection>& intersections,
-      bool is_dangling_intersection,
+      bool is_cap_intersection,
       const Vector<int>& cross_decoration_widths) const;
 
   // Returns the base width used to resolve percentage inset values at the
-  // intersection located at `intersection_index`. Edge intersections return 0.
-  // For most interior intersections, this is the cross width at that point (via
-  // `GetCrossWidthForIntersection()`). For flex main-direction overlap
+  // intersection located at `intersection_index`. Cap intersections return 0.
+  // For most junction intersections, this is the cross width at that point
+  // (via `GetCrossWidthForIntersection()`). For flex main-direction overlap
   // intersections, this instead returns the overlap window size. Takes
   // `intersections` list because logic here depends on neighboring entries to
   // detect overlaps.
@@ -247,11 +247,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       const Vector<GapIntersection>& intersections) const;
 
   // Returns the cross gap width at the intersection located at
-  // `intersection_index`. Returns 0 for edge intersections. For interior
+  // `intersection_index`. Returns 0 for cap intersections. For junction
   // intersections in grid and multicol, returns the cross gutter width. For
   // flex main-direction intersections, returns the per-line cross gap size.
   // Takes `intersections` list because logic here depends on neighboring
-  // entries to identify edge and spanner-adjacent intersections.
+  // entries to identify cap and spanner-adjacent intersections.
   LayoutUnit GetCrossWidthForIntersection(
       GridTrackSizingDirection track_direction,
       wtf_size_t gap_index,
@@ -302,28 +302,28 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   bool IsMultiColSpanner(wtf_size_t gap_index,
                          GridTrackSizingDirection direction = kForRows) const;
 
-  // `is_dangling_intersection` indicates whether the intersection is at a
+  // `is_cap_intersection` indicates whether the intersection is a cap (at a
   // container edge or a dangling interior endpoint with no visible crossing
-  // decoration (https://github.com/w3c/csswg-drafts/issues/13697).
+  // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetEnd(const ComputedStyle& style,
                              wtf_size_t gap_index,
                              wtf_size_t intersection_index,
                              const Vector<GapIntersection>& intersections,
-                             bool is_dangling_intersection,
+                             bool is_cap_intersection,
                              bool is_column_gap,
                              bool is_main,
                              bool has_joining_decoration,
                              LayoutUnit cross_gap_width,
                              LayoutUnit cross_decoration_width) const;
 
-  // `is_dangling_intersection` indicates whether the intersection is at a
+  // `is_cap_intersection` indicates whether the intersection is a cap (at a
   // container edge or a dangling interior endpoint with no visible crossing
-  // decoration (https://github.com/w3c/csswg-drafts/issues/13697).
+  // decoration; https://github.com/w3c/csswg-drafts/issues/13697).
   LayoutUnit ComputeInsetStart(const ComputedStyle& style,
                                wtf_size_t gap_index,
                                wtf_size_t intersection_index,
                                const Vector<GapIntersection>& intersections,
-                               bool is_dangling_intersection,
+                               bool is_cap_intersection,
                                bool is_column_gap,
                                bool is_main,
                                bool has_joining_decoration,
@@ -395,9 +395,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   // For `overlap-join`, computes the inset so the main-direction decoration
   // extends to meet the far edge of the cross-direction decoration at each
-  // interior intersection. When `has_joining_decoration` is false (e.g. at edge
+  // junction intersection. When `has_joining_decoration` is false (e.g. at cap
   // intersections or when the adjacent segment is not visible), the inset is 0.
-  // At interior intersections the inset is negative, pulling the endpoint
+  // At junction intersections the inset is negative, pulling the endpoint
   // outward to the far edge of the cross decoration width.
   LayoutUnit ComputeOverlapJoinInset(bool has_joining_decoration,
                                      bool is_main,

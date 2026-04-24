@@ -236,13 +236,13 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
                                        : gap_geometry.GetCrossGaps().size();
 
   // When `overlap-join` is specified, the decoration extends to meet the
-  // cross-direction decoration's edge at interior intersections. This requires
+  // cross-direction decoration's edge at junction intersections. This requires
   // knowing the cross-direction rule widths at each intersection point.
   const bool has_overlap_join =
       CSSGapDecorationUtils::HasOverlapJoin(style, is_column_gap);
 
   // Pre-expand cross-direction rule widths for `overlap-join` resolution. Each
-  // interior intersection `i` corresponds to cross gap `i - 1`, whose
+  // junction intersection `i` corresponds to cross gap `i - 1`, whose
   // decoration width determines how far the decoration extends when
   // `overlap-join` is active.
   Vector<int> cross_decoration_widths;
@@ -295,63 +295,60 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         break;
       }
 
-      const bool start_is_dangling_intersection =
-          gap_geometry.IsDanglingIntersection(
-              cross_direction, gap_index, start, is_main, rule_visibility,
-              cross_rule_visibility, intersections);
-      const bool end_is_dangling_intersection =
-          gap_geometry.IsDanglingIntersection(
-              cross_direction, gap_index, end, is_main, rule_visibility,
-              cross_rule_visibility, intersections);
+      const bool start_is_cap_intersection = gap_geometry.IsCapIntersection(
+          cross_direction, gap_index, start, is_main, rule_visibility,
+          cross_rule_visibility, intersections);
+      const bool end_is_cap_intersection = gap_geometry.IsCapIntersection(
+          cross_direction, gap_index, end, is_main, rule_visibility,
+          cross_rule_visibility, intersections);
 
       // The `*inset_width` is the base value against which percentage inset
-      // values are resolved. It is `0` for edge intersections (content edges
-      // of the container). For interior intersections it is typically the
-      // cross gap width at that point. However, for flex main-direction
-      // overlap intersections, the inset width is the size of the overlap
-      // window.
+      // values are resolved. It is `0` for cap intersections (endpoints with
+      // no crossing decoration to join with). For junction intersections it is
+      // typically the cross gap width at that point. However, for flex
+      // main-direction overlap intersections, the inset width is the size of
+      // the overlap window.
       const LayoutUnit start_max_inset_width = gap_geometry.GetMaxInsetWidth(
           track_direction, gap_index, start, is_main, intersections);
       const LayoutUnit end_max_inset_width = gap_geometry.GetMaxInsetWidth(
           track_direction, gap_index, end, is_main, intersections);
 
       // For `overlap-join`, determine the cross-direction decoration width at
-      // each intersection. Edge intersections have no cross decoration.
+      // each intersection. Cap intersections have no cross decoration.
       LayoutUnit start_cross_decoration_width;
       LayoutUnit end_cross_decoration_width;
       if (has_overlap_join) {
         start_cross_decoration_width =
             gap_geometry.GetCrossDecorationWidthForIntersection(
                 gap_index, start, is_main, intersections,
-                start_is_dangling_intersection, cross_decoration_widths);
+                start_is_cap_intersection, cross_decoration_widths);
         end_cross_decoration_width =
             gap_geometry.GetCrossDecorationWidthForIntersection(
-                gap_index, end, is_main, intersections,
-                end_is_dangling_intersection, cross_decoration_widths);
+                gap_index, end, is_main, intersections, end_is_cap_intersection,
+                cross_decoration_widths);
       }
 
       // When `overlap-join` is active in a grid container with
       // `rule-visibility-items: between`, determine whether there is a
       // cross-direction joining decoration at the intersection. When true,
       // the inset extends to meet the cross decoration; otherwise it is 0.
-      // Effective edges have no crossing decoration to join with (either
+      // Cap intersections have no crossing decoration to join with (either
       // at the container boundary or at dangling interior endpoints).
       const bool start_has_joining_decoration =
-          has_overlap_join && !start_is_dangling_intersection;
+          has_overlap_join && !start_is_cap_intersection;
       const bool end_has_joining_decoration =
-          has_overlap_join && !end_is_dangling_intersection;
+          has_overlap_join && !end_is_cap_intersection;
 
       // Inset values are used to offset the end points of gap decorations.
       // Percentage values are resolved against the `*inset_width` of the
       // intersection point.
       // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
       LayoutUnit start_inset = gap_geometry.ComputeInsetStart(
-          style, gap_index, start, intersections,
-          start_is_dangling_intersection, is_column_gap, is_main,
-          start_has_joining_decoration, start_max_inset_width,
-          start_cross_decoration_width);
+          style, gap_index, start, intersections, start_is_cap_intersection,
+          is_column_gap, is_main, start_has_joining_decoration,
+          start_max_inset_width, start_cross_decoration_width);
       LayoutUnit end_inset = gap_geometry.ComputeInsetEnd(
-          style, gap_index, end, intersections, end_is_dangling_intersection,
+          style, gap_index, end, intersections, end_is_cap_intersection,
           is_column_gap, is_main, end_has_joining_decoration,
           end_max_inset_width, end_cross_decoration_width);
 
