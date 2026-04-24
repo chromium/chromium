@@ -205,72 +205,121 @@ template("generate_bindings") {
   }
 }
 
-generate_bindings("generate_bindings_all") {
-  visibility += [ "//third_party/blink/public/mojom/*" ]
+# Per-type bindings generation actions. These run in parallel on RBE, each on
+# its own worker, instead of generating all types in a single monolithic action.
+# The `generate_bindings_all` group below preserves the original target name so
+# all existing deps continue to work.
 
-  targets = []
-  outputs = []
-  targets += [ "async_iterator" ]
-  outputs += generated_async_iterator_sources_in_core +
-             generated_async_iterator_sources_in_modules
-  targets += [ "callback_function" ]
-  outputs += generated_callback_function_sources_in_core +
-             generated_callback_function_sources_in_modules +
-             generated_callback_function_sources_for_testing_in_core
-  targets += [ "callback_interface" ]
-  outputs += generated_callback_interface_sources_in_core +
-             generated_callback_interface_sources_in_modules
-  targets += [ "dictionary" ]
-  outputs += generated_dictionary_sources_in_core +
-             generated_dictionary_sources_in_modules +
-             generated_dictionary_sources_for_testing_in_core +
-             generated_dictionary_sources_for_testing_in_modules
+generate_bindings("generate_bindings_async_iterator") {
+  targets = [ "async_iterator" ]
+  outputs = generated_async_iterator_sources_in_core +
+            generated_async_iterator_sources_in_modules
+}
+
+generate_bindings("generate_bindings_callback_function") {
+  targets = [ "callback_function" ]
+  outputs = generated_callback_function_sources_in_core +
+            generated_callback_function_sources_in_modules +
+            generated_callback_function_sources_for_testing_in_core
+}
+
+generate_bindings("generate_bindings_callback_interface") {
+  targets = [ "callback_interface" ]
+  outputs = generated_callback_interface_sources_in_core +
+            generated_callback_interface_sources_in_modules
+}
+
+generate_bindings("generate_bindings_dictionary") {
+  targets = [ "dictionary" ]
+  outputs = generated_dictionary_sources_in_core +
+            generated_dictionary_sources_in_modules +
+            generated_dictionary_sources_for_testing_in_core +
+            generated_dictionary_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_dictionary_sources_in_extensions_chromeos
   }
   if (use_blink_extensions_webview) {
     outputs += generated_dictionary_sources_in_extensions_webview
   }
-  targets += [ "enumeration" ]
-  outputs += generated_enumeration_sources_in_core +
-             generated_enumeration_sources_in_modules +
-             generated_enumeration_sources_for_testing_in_core +
-             generated_enumeration_sources_for_testing_in_modules
+}
+
+generate_bindings("generate_bindings_enumeration") {
+  targets = [ "enumeration" ]
+  outputs = generated_enumeration_sources_in_core +
+            generated_enumeration_sources_in_modules +
+            generated_enumeration_sources_for_testing_in_core +
+            generated_enumeration_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_enumeration_sources_in_extensions_chromeos
   }
   if (use_blink_extensions_webview) {
     outputs += generated_enumeration_sources_in_extensions_webview
   }
-  targets += [ "interface" ]
-  outputs += generated_interface_sources_in_core +
-             generated_interface_sources_in_modules +
-             generated_interface_extra_sources_in_modules +
-             generated_interface_sources_for_testing_in_core +
-             generated_interface_sources_for_testing_in_modules +
-             generated_interface_extra_sources_for_testing_in_modules
+}
+
+generate_bindings("generate_bindings_interface") {
+  targets = [ "interface" ]
+  outputs = generated_interface_sources_in_core +
+            generated_interface_sources_in_modules +
+            generated_interface_extra_sources_in_modules +
+            generated_interface_sources_for_testing_in_core +
+            generated_interface_sources_for_testing_in_modules +
+            generated_interface_extra_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_interface_sources_in_extensions_chromeos
   }
   if (use_blink_extensions_webview) {
     outputs += generated_interface_sources_in_extensions_webview
   }
-  targets += [ "namespace" ]
-  outputs += generated_namespace_sources_in_core +
-             generated_namespace_sources_in_modules
-  targets += [ "observable_array" ]
-  outputs += generated_observable_array_sources_in_core +
-             generated_observable_array_sources_in_modules
-  targets += [ "sync_iterator" ]
-  outputs += generated_sync_iterator_sources_in_core +
-             generated_sync_iterator_sources_in_modules
-  targets += [ "typedef" ]
-  outputs +=
+}
+
+generate_bindings("generate_bindings_namespace") {
+  targets = [ "namespace" ]
+  outputs = generated_namespace_sources_in_core +
+            generated_namespace_sources_in_modules
+}
+
+generate_bindings("generate_bindings_observable_array") {
+  targets = [ "observable_array" ]
+  outputs = generated_observable_array_sources_in_core +
+            generated_observable_array_sources_in_modules
+}
+
+generate_bindings("generate_bindings_sync_iterator") {
+  targets = [ "sync_iterator" ]
+  outputs = generated_sync_iterator_sources_in_core +
+            generated_sync_iterator_sources_in_modules
+}
+
+generate_bindings("generate_bindings_typedef") {
+  targets = [ "typedef" ]
+  outputs =
       generated_typedef_sources_in_core + generated_typedef_sources_in_modules
-  targets += [ "union" ]
-  outputs +=
+}
+
+generate_bindings("generate_bindings_union") {
+  targets = [ "union" ]
+  outputs =
       generated_union_sources_in_core + generated_union_sources_in_modules +
       generated_union_sources_for_testing_in_core
+}
+
+group("generate_bindings_all") {
+  visibility += [ "//third_party/blink/public/mojom/*" ]
+
+  public_deps = [
+    ":generate_bindings_async_iterator",
+    ":generate_bindings_callback_function",
+    ":generate_bindings_callback_interface",
+    ":generate_bindings_dictionary",
+    ":generate_bindings_enumeration",
+    ":generate_bindings_interface",
+    ":generate_bindings_namespace",
+    ":generate_bindings_observable_array",
+    ":generate_bindings_sync_iterator",
+    ":generate_bindings_typedef",
+    ":generate_bindings_union",
+  ]
 }
 
 action_with_pydeps("check_generated_file_list") {
