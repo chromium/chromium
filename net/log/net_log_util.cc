@@ -4,6 +4,8 @@
 
 #include "net/log/net_log_util.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <string>
 #include <utility>
@@ -87,7 +89,7 @@ const StringToConstant kLoadStateTable[] = {
 #undef LOAD_STATE
 };
 
-const short kNetErrors[] = {
+const int16_t kNetErrors[] = {
 #define NET_ERROR(label, value) value,
 #include "net/base/net_error_list.h"
 #undef NET_ERROR
