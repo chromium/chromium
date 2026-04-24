@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property overflow-clip-margin value 'calc(100px - 50px)'
+  assert_true: 'calc(100px - 50px)' is a supported value for overflow-clip-margin. expected true got false
+[FAIL] Property overflow-clip-margin value 'calc(100px - 100px)'
+  assert_true: 'calc(100px - 100px)' is a supported value for overflow-clip-margin. expected true got false
+[FAIL] Property overflow-clip-margin value 'calc(0.5em + 100px)'
+  assert_true: 'calc(0.5em + 100px)' is a supported value for overflow-clip-margin. expected true got false
+Harness: the test ran to completion.
+

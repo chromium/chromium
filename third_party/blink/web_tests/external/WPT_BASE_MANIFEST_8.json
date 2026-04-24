@@ -3391,6 +3391,13 @@
        }
       }
      },
+     "grid-stale-layoutbox-crash.html": [
+      "0e9c2cbdf78b269479b8285875956618f913b157",
+      [
+       null,
+       {}
+      ]
+     ],
      "grid-table-cell-001-crash.html": [
       "7b9c09e3af75246028a7e5766354040758432072",
       [
@@ -9877,6 +9884,13 @@
       ],
       "popover-focus-blur-crash.html": [
        "0d23cfe0c8aef947f1b26dd4c372febc34706e40",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popover-focus-previous-crash.html": [
+       "b1de7ead31b357e3b216882e9c01c5344d83f1f6",
        [
         null,
         {}
@@ -144407,7 +144421,7 @@
        ]
       ],
       "flex-gap-decorations-029.html": [
-       "7c055f3ff72c03909a3cc7e47cb63a1cca64f6b5",
+       "b13e979e770688ce12547393e14b357835253be3",
        [
         null,
         [
@@ -144420,7 +144434,7 @@
        ]
       ],
       "flex-gap-decorations-030.html": [
-       "309f48d10c0689bca1fed0e22f7cc2d1943c863e",
+       "3fe9b327f8fe2e038e75cc8b9201492e2d08da90",
        [
         null,
         [
@@ -144915,7 +144929,7 @@
       ],
       "fragmentation": {
        "flex-gap-decorations-fragmentation-001.html": [
-        "6d1f2035e9c66cf38aa2a52e961fecbcfb1a3d6e",
+        "f6f014fc22ae8ebaeeeba595ce719aec4d769660",
         [
          null,
          [
@@ -145283,7 +145297,7 @@
         ]
        ],
        "grid-gap-decorations-fragmentation-008.html": [
-        "88e2c599b5bb7ea2ba24350dbc8503958c28c018",
+        "89f9158fb01257d62be88d1813b10056644f562f",
         [
          null,
          [
@@ -145543,7 +145557,7 @@
         ]
        ],
        "grid-gap-decorations-fragmentation-030.html": [
-        "1cb06b262fb82aa0ade89e1cf8908bbec24b9b0b",
+        "d935961975fcb37c61e78c06401007f633992321",
         [
          null,
          [
@@ -146168,7 +146182,7 @@
        ]
       ],
       "grid-gap-decorations-052.html": [
-       "e7e2becf3f82a62bb822c478a48b73c5eeee899b",
+       "e8c6d65f2cd93733df6d24e32892dc7fe76a1c58",
        [
         null,
         [
@@ -146181,7 +146195,7 @@
        ]
       ],
       "grid-gap-decorations-053.html": [
-       "206487711595f4db438e50ba8f16e3c358fdcf77",
+       "2a65d80d095acf4f486fec406e37c00debaf0d68",
        [
         null,
         [
@@ -146350,7 +146364,7 @@
        ]
       ],
       "grid-gap-decorations-069.html": [
-       "0f4a94852e7e3c11475e457726480d4faf876e80",
+       "615daf24e7d0299bb0acd24b43c34582b7acfe23",
        [
         null,
         [
@@ -146466,6 +146480,71 @@
         {}
        ]
       ],
+      "grid-gap-decorations-078.html": [
+       "c969fbd1f2f5b05bbaa768487232136cfea76547",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-078-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-079.html": [
+       "5d9874dad0465cdc93b87832d1956d51712f3129",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-079-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-080.html": [
+       "ab3f575909a9e1e33f77ff604fa61c1d2ff8c54b",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-080-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-081.html": [
+       "10d4bd11c6203039761d6c2a5a43b5f498246e51",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-081-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-082.html": [
+       "5d65962b71af49b81daf4d872ff47912743aca12",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-082-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-direction-inset.html": [
        "0484a725c37c2d2e43bbead424e228d73691a918",
        [
@@ -146519,7 +146598,7 @@
        ]
       ],
       "grid-gap-decorations-repaint-on-item-position-change.html": [
-       "51cf91b55fc25d5937bd4e8a9fe6838b94c777de",
+       "84dafa65e2a8036c39618628a6e8c954c4040fdf",
        [
         null,
         [
@@ -146532,7 +146611,7 @@
        ]
       ],
       "grid-gap-decorations-repaint-on-item-span-change.html": [
-       "68e3ac1c371486c4a28342b18c27fff0c2c675da",
+       "0d11fe65b233a42d648380547f1452ed8ad4a32e",
        [
         null,
         [
@@ -147435,7 +147514,7 @@
        ]
       ],
       "multicol-gap-decorations-022.html": [
-       "16ae3a95e2e073dc4c7bd132b78b32381756251a",
+       "14480e192bcbf1d4eb05fbb7db936bc527794642",
        [
         null,
         [
@@ -147448,7 +147527,7 @@
        ]
       ],
       "multicol-gap-decorations-023.html": [
-       "e60f351c320dd4534395178d0f8d383dcda13c57",
+       "2193503731859c3a40c8e1b9421c0dd120734845",
        [
         null,
         [
@@ -147584,6 +147663,45 @@
         [
          [
           "/css/css-gaps/multicol/multicol-gap-decorations-033-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-034.html": [
+       "44bb0fdb36ae4d675e66cb65598b07cc6146ce79",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-034-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-035.html": [
+       "25dec14748644375e79745829f908aeb79fef7ab",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-035-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-036.html": [
+       "87b2d42b8483bc53758c43c9d8ce58f993e0ebac",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-036-ref.html",
           "=="
          ]
         ],
@@ -222142,6 +222260,84 @@
        {}
       ]
      ],
+     "intrinsic-height-abspos-percentage-child-002.html": [
+      "84b93fad3ebda9ee4a3cdc6ddcd4c4d7677d4251",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-height-abspos-percentage-child-003.html": [
+      "fa1ffc720696288a42b447d46b3faa667196262c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-height-abspos-percentage-child-004.html": [
+      "2d49c53d1715fb5d7c52c4d3567a3d15a8e91d1f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-height-abspos-percentage-child.html": [
+      "082870eab744f05c1aa4060637b63bc932ecb377",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/intrinsic-height-abspos-percentage-child-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-height-abspos-stretch-percentage-child.html": [
+      "8b506b9be4f9eecb40498e7c8a24645b719983f0",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/intrinsic-height-abspos-stretch-percentage-child-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-height-fixedpos-percentage-child.html": [
+      "cc09a6fbe85951e767b2d696f7e764b0bdd54528",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "intrinsic-percent-non-replaced-001.html": [
       "64f227073d4dbf2846add39d048ebdb427b515f6",
       [
@@ -285554,6 +285750,19 @@
         [
          [
           "/css/css-view-transitions/scoped/content-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "fractional-border-shift.html": [
+       "b055d46a08808971555e5a3681616242b8014204",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/fractional-border-shift-ref.html",
           "=="
          ]
         ],
@@ -391217,6 +391426,26 @@
        "47d7818d5b3120f09c80ca607a62e00a2bf98371",
        []
       ],
+      "grid-gap-decorations-078-ref.html": [
+       "2a4d9633cc7d7963608daedb4eb2d348c196d204",
+       []
+      ],
+      "grid-gap-decorations-079-ref.html": [
+       "fafde9903f15c84a2f479282aa255ae07a3c6237",
+       []
+      ],
+      "grid-gap-decorations-080-ref.html": [
+       "2210e0cea6f8c1b1aa8d1a223897a3be52ea2e2d",
+       []
+      ],
+      "grid-gap-decorations-081-ref.html": [
+       "f6afa21627859b81b0912cbd16f602d9418a39d9",
+       []
+      ],
+      "grid-gap-decorations-082-ref.html": [
+       "efa167d38a08d72be9b71af8580b500c252d0938",
+       []
+      ],
       "grid-gap-decorations-direction-inset-ref.html": [
        "4ac85ffa4c5987ad2fca2934d0b7579d0fcf0689",
        []
@@ -391234,11 +391463,11 @@
        []
       ],
       "grid-gap-decorations-repaint-on-item-position-change-ref.html": [
-       "7147758d6c77bc44d3bd33762738a9080d3a754e",
+       "278cf599d83b1ea77e7f4073e6ad452b96999b87",
        []
       ],
       "grid-gap-decorations-repaint-on-item-span-change-ref.html": [
-       "4f1d72ed442097f27fd04a02a7f8d52eea2cf8e0",
+       "56d8463fba8aace769133f918a9ab296d73d1e0e",
        []
       ],
       "grid-gap-decorations-writing-mode-ref.html": [
@@ -391400,7 +391629,7 @@
        []
       ],
       "multicol-gap-decorations-014-ref.html": [
-       "15ea3102c8805a1236687b2f6770c71245119845",
+       "d182a9303ae98d0071dacb9cd5ff09a00059536a",
        []
       ],
       "multicol-gap-decorations-015-ref.html": [
@@ -391469,6 +391698,18 @@
       ],
       "multicol-gap-decorations-033-ref.html": [
        "68d4235ca3931a0f866dfb97425c79470f3131d4",
+       []
+      ],
+      "multicol-gap-decorations-034-ref.html": [
+       "d182a9303ae98d0071dacb9cd5ff09a00059536a",
+       []
+      ],
+      "multicol-gap-decorations-035-ref.html": [
+       "bcb3e0b8f3ecfca4990342b5aac615d3ec23665e",
+       []
+      ],
+      "multicol-gap-decorations-036-ref.html": [
+       "458730464bdd3a006107f10ff4ac6b9eeddb8a70",
        []
       ],
       "multicol-gap-decorations-direction-inset-ref.html": [
@@ -401227,6 +401468,10 @@
        "dbe15c9673d88543029d6729af4c8f4fd86db797",
        []
       ],
+      "overflow-clip-margin-computed-expected.txt": [
+       "4fc3ebd7e0872c69f96ce981ffea46fd9136793e",
+       []
+      ],
       "scroll-markers-computed-expected.txt": [
        "5ce9ecc5c23e64f623f256550824d692539374f1",
        []
@@ -406868,6 +407113,14 @@
      ],
      "inline-intrinsic-size-calc-ref.html": [
       "6b9a38a1bc4733387e3f2a427214c8fa4f73adde",
+      []
+     ],
+     "intrinsic-height-abspos-percentage-child-ref.html": [
+      "0e65b5872c3dc7dcd8faa0c547de1703da5940d4",
+      []
+     ],
+     "intrinsic-height-abspos-stretch-percentage-child-ref.html": [
+      "cfbe6b054dfaebb5c237f7634832ba0ed7eba239",
       []
      ],
      "intrinsic-percent-non-replaced-001-ref.html": [
@@ -418843,6 +419096,10 @@
       ],
       "empty-ref.html": [
        "a8b9d0e6b24602b1242d806a322b55d80a1b8fd0",
+       []
+      ],
+      "fractional-border-shift-ref.html": [
+       "176fc2a13414f03734eed81bea2b77ab128565f5",
        []
       ],
       "from-scale-zero-ref.html": [
@@ -486115,8 +486372,20 @@
       []
      ]
     },
+    "mixed-content.https.any-expected.txt": [
+     "b3c44d782c771baecf1b53229ffbdde0dad40c88",
+     []
+    ],
+    "mixed-content.https.any.serviceworker-expected.txt": [
+     "b3c44d782c771baecf1b53229ffbdde0dad40c88",
+     []
+    ],
     "mixed-content.https.any.sharedworker-expected.txt": [
-     "5c182f772edbbdcfd92df31139bb1ec29879ce92",
+     "56e0cec05c5e8d9d4c840271c73fafdf41d73154",
+     []
+    ],
+    "mixed-content.https.any.worker-expected.txt": [
+     "b3c44d782c771baecf1b53229ffbdde0dad40c88",
      []
     ],
     "multi-globals": {
@@ -562115,7 +562384,7 @@
     "css-gaps": {
      "animation": {
       "column-rule-inset-interpolation.html": [
-       "76b87c3de4221ff267a218695c813c9d601cc307",
+       "03088931b4c23b76e556d9ae8909c42697b90df0",
        [
         null,
         {}
@@ -562157,14 +562426,14 @@
        ]
       ],
       "gap-decorations-inset-neutral-keyframe-001.html": [
-       "a5183f9de7a67abb016688c9c90ec1dfb84cea7c",
+       "34ff137f6f15d081770e977dd46b2cdc3bd180c6",
        [
         null,
         {}
        ]
       ],
       "gap-decorations-inset-neutral-keyframe-002.html": [
-       "c250cc3acf1616f8cedcddcbcba8767d8964d0e5",
+       "e8c0e34d59c37301bec14a0ba5e3fc54f6636246",
        [
         null,
         {}
@@ -562213,7 +562482,7 @@
        ]
       ],
       "row-rule-inset-interpolation.html": [
-       "773993b07e372ab1bbb67d75c53fc3adf69259fb",
+       "580498ba404c5b1ed860e5e2ce2ff364f7995b63",
        [
         null,
         {}
@@ -562301,7 +562570,7 @@
      },
      "parsing": {
       "gap-decorations-bidirectional-shorthands.html": [
-       "a21a3db612d7bb3954aacf25d5cbab5cc53a5eb8",
+       "7f9e27c88abdfc7ef96e43cfd79cf56d0a34897f",
        [
         null,
         {}
@@ -562454,57 +562723,57 @@
         {}
        ]
       ],
-      "rule-edge-inset-bidirectional-shorthand.html": [
-       "430783180f2dbfc3290c09a62fd966d5861e9ad8",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-interior-inset-computed.html": [
-       "752cd4e76127f1dc28b5854c8ea3f0fb558af7e3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-interior-inset-invalid.html": [
-       "82c0fb215c78a10d842bb7e17ed29d02803b101a",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-interior-inset-shorthand.html": [
-       "b71e0f33d93a81837786190bc468cd2fa68f8306",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-interior-inset-valid.html": [
-       "6761e5069f6cc045ac4e5373e5ea6857fc474a3b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-start-end-inset-computed.html": [
-       "8067210e80b761da0eb5189611c9af784f5efcd0",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-edge-start-end-inset-invalid.html": [
-       "06c7f7dc515e1d0364c8cec7db9c538d20424480",
-       [
-        null,
-        {}
-       ]
-      ],
       "rule-inset-bidirectional-shorthand.html": [
-       "356c5521810369f69f3a446ed3eaa9cc12a40c96",
+       "b8790819dc26bd0a7b558e604e401219c453e826",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-bidirectional-shorthand.html": [
+       "233b1aaddeee8f155cb2a0a1a82940f7e9aad2ab",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-junction-computed.html": [
+       "00c95c3a262f71b4682a3b6942a6967082fa2bc8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-junction-invalid.html": [
+       "8e2142cba86ab4477e328f9915da3cc88c7e15f2",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-junction-shorthand.html": [
+       "342bd3f4cec1ecf24f225e49f31690110e584947",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-junction-valid.html": [
+       "4ed61841c385b09ffd3a3a8bb779f7f31c986bea",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-start-end-computed.html": [
+       "66aa8c98a994a2d328e56bff9afd4c57d1a13371",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-cap-start-end-invalid.html": [
+       "81a0c3f8f000fb24be2861aee54a4403af664435",
        [
         null,
         {}
@@ -562524,15 +562793,36 @@
         {}
        ]
       ],
+      "rule-inset-junction-bidirectional-shorthand.html": [
+       "c1f0e6dc8e282eb456f4d8b2781ef110913ec801",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-junction-start-end-computed.html": [
+       "d0db49e5991822b8d1a0090b235c488a180bf033",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rule-inset-junction-start-end-invalid.html": [
+       "dd8a6354cbd6067c51014c05084243b47bd42566",
+       [
+        null,
+        {}
+       ]
+      ],
       "rule-inset-shorthand.html": [
-       "3261030848a6c41c62eac6acb72c498c1fcd9986",
+       "2523da0d2eab1698bdb0247c7d27a6a6a0528f02",
        [
         null,
         {}
        ]
       ],
       "rule-inset-start-end-bidirectional-shorthand.html": [
-       "c3b0fca4a8a372698e3c38b41ab9608049544e33",
+       "672455aae2073ce89074e320eb014c7ae4b96657",
        [
         null,
         {}
@@ -562553,7 +562843,7 @@
        ]
       ],
       "rule-inset-start-end-shorthand.html": [
-       "c151cfbccb71b94bc794ac40bd5060acc07eff56",
+       "573be26d0d15a3350eaaacb6f6f90084cd94ab7c",
        [
         null,
         {}
@@ -562568,27 +562858,6 @@
       ],
       "rule-inset-valid.html": [
        "2d01cbe33e182c0a26211106defbcde1d22e9ad8",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-interior-inset-bidirectional-shorthand.html": [
-       "2ae3b66eded777c77337e9f4897605e3b06ecc79",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-interior-start-end-inset-computed.html": [
-       "7e85ff5acf74f189c275e532647b1055dd70f7f3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "rule-interior-start-end-inset-invalid.html": [
-       "db9113c0c07452662cc698eefc705b2f3fd106fc",
        [
         null,
         {}
@@ -570486,7 +570755,7 @@
        ]
       ],
       "overflow-clip-margin-computed.html": [
-       "17f271b37034cdfe6f5b560a37473498bb672272",
+       "e5dc86de347e1e8bf5e0d75715df470071c0288c",
        [
         null,
         {}
@@ -574939,6 +575208,13 @@
        ]
       ]
      },
+     "resnap-on-layout-is-immediate.html": [
+      "77ebd8322910d29f154837974f74a7bb29091e56",
+      [
+       null,
+       {}
+      ]
+     ],
      "resnap-on-snap-alignment-change.html": [
       "760d9afbe2e913ebfef2e4d6d24c59d57ef4e834",
       [
@@ -577892,6 +578168,13 @@
      },
      "aspect-ratio-affects-container-width-when-height-changes.html": [
       "0dbbb2f9404da7cfa89f2e75af3ca06cfbe4be7e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aspect-ratio-automatic-minimum.html": [
+      "6ea635ce05f2f71acf9f78e2547e9026bceed9ba",
       [
        null,
        {}
@@ -597882,7 +598165,7 @@
      ]
     ],
     "element-internals-behaviors.tentative.html": [
-     "e8bd77ea5cbc3359195ae46f17a4b690f93839c2",
+     "c80404d7a3cf5bf3767599312bc54869f5787a4c",
      [
       null,
       {}
@@ -597946,7 +598229,7 @@
       ]
      ],
      "ElementInternals-submit-behavior.tentative.html": [
-      "92df7c4b3d3b90d7722b16b8cdf31e66f68c1505",
+      "a1f13560f30b47be7e53db571d148739b0b4b9cf",
       [
        null,
        {
@@ -886528,7 +886811,7 @@
      ]
     },
     "mixed-content.https.any.js": [
-     "b7a6d8381da97b9b16cca3803717a66c8c7d69ad",
+     "3ed24c1edc7402e6bdbd9ee1e1830affd5f57a6b",
      [
       "websockets/mixed-content.https.any.html",
       {
