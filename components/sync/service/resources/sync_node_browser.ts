@@ -41,7 +41,7 @@ function isChildOf(parentNode: SyncNode, node: SyncNode) {
  * If this proves to be slow and expensive, we should experiment with moving
  * this functionality to C++ instead.
  */
-function nodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
+function defaultNodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
   if (nodeA.hasOwnProperty('positionIndex') &&
       nodeB.hasOwnProperty('positionIndex')) {
     return nodeA.positionIndex! - nodeB.positionIndex!;
@@ -50,6 +50,29 @@ function nodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
   } else {
     return nodeA.METAHANDLE - nodeB.METAHANDLE;
   }
+}
+
+/**
+ * A helper function to sort sync nodes by recency.
+ *
+ * Sorts by modification time (MTIME) descending (newest first), and falls back
+ * to the default node comparator.
+ */
+function recencyNodeComparator(nodeA: SyncNode, nodeB: SyncNode): number {
+  const timeA = Date.parse(nodeA.MTIME) || 0;
+  const timeB = Date.parse(nodeB.MTIME) || 0;
+
+  if (timeA !== timeB) {
+    return timeB - timeA;  // Newest first
+  }
+  return defaultNodeComparator(nodeA, nodeB);
+}
+
+function getComparator(): (a: SyncNode, b: SyncNode) => number {
+  const useRecency =
+      document.querySelector<HTMLInputElement>('#sort-by-recency-checkbox')
+          ?.checked;
+  return useRecency ? recencyNodeComparator : defaultNodeComparator;
 }
 
 /**
@@ -151,7 +174,7 @@ function handleExpand(treeItem: CrTreeItemElement) {
   const treeItemData = (treeItem.detail as {payload: SyncNode}).payload;
   const treeData = (treeItem.tree!.detail as {payload: SyncNode[]}).payload;
   const children = treeData.filter(node => isChildOf(treeItemData, node));
-  children.sort(nodeComparator);
+  children.sort(getComparator());
 
   children.forEach(function(node: SyncNode) {
     const item = document.createElement('cr-tree-item');
@@ -193,7 +216,7 @@ function refresh() {
 
     tree.detail = {payload: nodes, children: {}};
     const roots = nodes.filter(isTypeRootNode);
-    roots.sort(nodeComparator);
+    roots.sort(getComparator());
     roots.forEach(typeRoot => {
       const child = document.createElement('cr-tree-item');
       tree.add(child);
@@ -210,6 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector<HTMLButtonElement>('#node-browser-refresh-button');
   assert(refreshButton);
   refreshButton.addEventListener('click', refresh);
+  const sortCheckbox =
+      document.querySelector<HTMLInputElement>('#sort-by-recency-checkbox');
+  assert(sortCheckbox);
+  sortCheckbox.addEventListener('change', refresh);
   const splitter = document.querySelector<HTMLElement>('#sync-node-splitter');
   assert(splitter);
   splitter.addEventListener('resize', () => {
