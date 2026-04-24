@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("enterprise_groups_profile_handler_factory") {
+  sources = [
+    "enterprise_groups_profile_handler_factory.h",
+    "enterprise_groups_profile_handler_factory.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/browser/groups",
+    "//components/enterprise/browser/groups:features",
+    "//components/policy/core/common",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}

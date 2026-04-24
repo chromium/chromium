@@ -45,6 +45,7 @@ specific_include_rules = {
     "+ios/chrome/browser/enterprise/connectors",
     "+ios/chrome/browser/enterprise/data_controls",
     "+ios/chrome/browser/enterprise/data_protection",
+    "+ios/chrome/browser/enterprise/groups/model",
     "+ios/chrome/browser/enterprise/identifiers",
     "+ios/chrome/browser/enterprise/model",
     "+ios/chrome/browser/external_files/model",

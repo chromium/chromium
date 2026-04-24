@@ -15,6 +15,8 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/enterprise/browser/groups/enterprise_groups_handler.h"
+#import "components/enterprise/browser/groups/groups_features.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -87,7 +89,10 @@ class UserPolicySigninServiceTest : public PlatformTest {
       : test_account_id_(AccountId::FromUserEmailGaiaId(
             kManagedTestUser,
             signin::GetTestGaiaIdForEmail(kManagedTestUser))),
-        register_completed_(false) {}
+        register_completed_(false) {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_groups::kEnterpriseGroupsExperiments);
+  }
 
   MOCK_METHOD1(OnPolicyRefresh, void(bool));
 
@@ -139,6 +144,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
     mock_store_ =
         static_cast<MockUserCloudPolicyStore*>(manager_->core()->store());
     DCHECK(mock_store_);
+    enterprise_groups_profile_handler_ =
+        std::make_unique<EnterpriseGroupsProfileHandler>(
+            manager_->core(), pref_service_, profile_->GetProfileName());
 
     // Verify that the UserCloudPolicyManager core services aren't initialized
     // before creating the user policy service.
@@ -151,6 +159,8 @@ class UserPolicySigninServiceTest : public PlatformTest {
     }
     user_policy_signin_service_.reset();
     manager_->Shutdown();
+    enterprise_groups_profile_handler_->Shutdown();
+    enterprise_groups_profile_handler_.reset();
 
     BrowserPolicyConnector::SetDeviceManagementServiceForTesting(nullptr);
 
@@ -228,6 +238,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
         enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile_.get()),
         &device_management_service_, profile_->GetUserCloudPolicyManager(),
         identity_test_env_.identity_manager(),
+        enterprise_groups_profile_handler_.get(),
         profile_->GetSharedURLLoaderFactory());
   }
 
@@ -302,10 +313,13 @@ class UserPolicySigninServiceTest : public PlatformTest {
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
+  std::unique_ptr<EnterpriseGroupsProfileHandler>
+      enterprise_groups_profile_handler_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<UserPolicySigninService> user_policy_signin_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the user policy manager isn't initialized when initializing the
@@ -325,6 +339,7 @@ TEST_F(UserPolicySigninServiceTest, DontRegister_BecauseUserSignedOut) {
   // Expect that the UserCloudPolicyManager isn't initialized because the user
   // wasn't signed in, hence not eligible for user policy.
   EXPECT_FALSE(manager_->core()->service());
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 // Tests that the user policy manager isn't initialized when initializing the
@@ -344,6 +359,7 @@ TEST_F(UserPolicySigninServiceTest, DontRegister_BecauseUnmanagedAccount) {
   // Expect that the UserCloudPolicyManager isn't initialized because the user
   // was using an unmanaged account, hence not eligible for user policy.
   EXPECT_FALSE(manager_->core()->service());
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 // Tests that the registration for user policy and the initialization of the
@@ -380,12 +396,14 @@ TEST_F(UserPolicySigninServiceTest, RegisterAndInitializeManager_AtInit) {
   // service because the user is signed in and eligible for user policy.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(manager_->core()->service());
+  EXPECT_TRUE(enterprise_groups_profile_handler_->IsObserving());
 
   // Expect sign-out to clear the policy from the store and shutdown the
   // UserCloudPolicyManager.
   EXPECT_CALL(*mock_store_, Clear());
   identity_test_env()->ClearPrimaryAccount();
   ASSERT_FALSE(manager_->core()->service());
+  EXPECT_FALSE(enterprise_groups_profile_handler_->IsObserving());
 }
 
 // Tests that registration is still possible after the manager was shutdown

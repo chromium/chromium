@@ -11,6 +11,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/enterprise/groups/model/enterprise_groups_profile_handler_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -27,6 +28,8 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
+  DependsOn(
+      enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetInstance());
 }
 
 UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() = default;
@@ -64,6 +67,8 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
       device_management_service, profile->GetUserCloudPolicyManager(),
       IdentityManagerFactory::GetForProfile(profile),
+      enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetForProfile(
+          profile),
       profile->GetSharedURLLoaderFactory());
 }
 

@@ -19,6 +19,7 @@ class ProfileIdService;
 namespace policy {
 
 class CloudPolicyClientRegistrationHelper;
+class EnterpriseGroupsProfileHandler;
 
 // A specialization of UserPolicySigninServiceBase for iOS.
 class UserPolicySigninService : public UserPolicySigninServiceBase,
@@ -32,6 +33,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
+      EnterpriseGroupsProfileHandler* enterprise_groups_profile_handler,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   UserPolicySigninService(const UserPolicySigninService&) = delete;
   UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
@@ -56,6 +58,10 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void UpdateLastPolicyCheckTime() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
   std::string GetProfileId() override;
+  void ShutdownCloudPolicyManager() override;
+  void InitializeCloudPolicyManager(
+      const AccountId& account_id,
+      std::unique_ptr<CloudPolicyClient> client) override;
 
   // Tries to initialize the service if a signed in account is available and
   // eligible for user policy.
@@ -67,6 +73,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // The PrefService and ProfileIdService associated with the Profile.
   raw_ptr<PrefService> pref_service_;
   raw_ptr<enterprise::ProfileIdService> profile_id_service_;
+  raw_ptr<EnterpriseGroupsProfileHandler> enterprise_groups_profile_handler_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

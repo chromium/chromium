@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/time/time.h"
+#import "components/enterprise/browser/groups/enterprise_groups_handler.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
@@ -52,6 +53,7 @@ UserPolicySigninService::UserPolicySigninService(
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
     signin::IdentityManager* identity_manager,
+    EnterpriseGroupsProfileHandler* enterprise_groups_profile_handler,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
     : UserPolicySigninServiceBase(local_state,
                                   device_management_service,
@@ -59,7 +61,8 @@ UserPolicySigninService::UserPolicySigninService(
                                   identity_manager,
                                   system_url_loader_factory),
       pref_service_(pref_service),
-      profile_id_service_(profile_id_service) {
+      profile_id_service_(profile_id_service),
+      enterprise_groups_profile_handler_(enterprise_groups_profile_handler) {
   if (identity_manager) {
     scoped_identity_manager_observation_.Observe(identity_manager);
   }
@@ -143,6 +146,23 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
 
 void UserPolicySigninService::OnUserPolicyNotificationSeen() {
   TryInitialize();
+}
+
+void UserPolicySigninService::ShutdownCloudPolicyManager() {
+  if (enterprise_groups_profile_handler_) {
+    enterprise_groups_profile_handler_->ResetAndClearGroups();
+  }
+  UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
+}
+
+void UserPolicySigninService::InitializeCloudPolicyManager(
+    const AccountId& account_id,
+    std::unique_ptr<CloudPolicyClient> client) {
+  UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
+                                                            std::move(client));
+  if (enterprise_groups_profile_handler_) {
+    enterprise_groups_profile_handler_->Init();
+  }
 }
 
 }  // namespace policy

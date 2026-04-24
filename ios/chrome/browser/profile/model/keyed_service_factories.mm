@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
+#import "ios/chrome/browser/enterprise/groups/model/enterprise_groups_profile_handler_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
@@ -243,6 +244,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetInstance();
   enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance();
   enterprise_connectors::IOSReportingEventRouterFactory::GetInstance();
+  enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetInstance();
   enterprise_idle::IdleServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   ios::AboutSigninInternalsFactory::GetInstance();

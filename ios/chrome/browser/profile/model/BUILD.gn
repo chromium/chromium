@@ -171,6 +171,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/groups/model:enterprise_groups_profile_handler_factory",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
