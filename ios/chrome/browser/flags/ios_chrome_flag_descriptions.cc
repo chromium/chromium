@@ -90,6 +90,11 @@ const char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "
     "spread across multiple iframes.";
 
+const char kAutofillAiAvailableByDefaultName[] =
+    "Autofill AI available by default";
+const char kAutofillAiAvailableByDefaultDescription[] =
+    "Makes Autofill AI available by default.";
+
 const char kAutofillAiCreateEntityDataManagerName[] =
     "Autofill AI Create Entity Data Manager";
 const char kAutofillAiCreateEntityDataManagerDescription[] =
@@ -117,6 +122,12 @@ const char kAutofillAiWalletFlightReservationName[] =
 const char kAutofillAiWalletFlightReservationDescription[] =
     "Enables Autofill AI support for flight reservation entities from Google "
     "Wallet.";
+
+const char kAutofillAiWalletPrivatePassesDeepLinkName[] =
+    "Autofill AI Google Wallet private passes deep link";
+const char kAutofillAiWalletPrivatePassesDeepLinkDescription[] =
+    "Enables Autofill AI support for deep linking to private passes from "
+    "Google Wallet.";
 
 const char kAutofillAiWalletPrivatePassesName[] =
     "Autofill AI Google Wallet private passes";
@@ -1828,6 +1839,10 @@ const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Capabilities API";
 const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[] =
     "Used for testing purposes to test waiting thresholds in dev.";
+
+const char kWalletApiPrivatePassesEnabledName[] = "Wallet API Private Passes";
+const char kWalletApiPrivatePassesEnabledDescription[] =
+    "Enables the Wallet API for private passes.";
 
 const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =

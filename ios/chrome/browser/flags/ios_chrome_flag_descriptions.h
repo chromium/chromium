@@ -74,6 +74,9 @@ extern const char kAssistantSidePanelDescription[];
 extern const char kAutofillAcrossIframesName[];
 extern const char kAutofillAcrossIframesDescription[];
 
+extern const char kAutofillAiAvailableByDefaultName[];
+extern const char kAutofillAiAvailableByDefaultDescription[];
+
 extern const char kAutofillAiCreateEntityDataManagerName[];
 extern const char kAutofillAiCreateEntityDataManagerDescription[];
 
@@ -91,6 +94,9 @@ extern const char kAutofillAiValuablesIPHDescription[];
 
 extern const char kAutofillAiWalletFlightReservationName[];
 extern const char kAutofillAiWalletFlightReservationDescription[];
+
+extern const char kAutofillAiWalletPrivatePassesDeepLinkName[];
+extern const char kAutofillAiWalletPrivatePassesDeepLinkDescription[];
 
 extern const char kAutofillAiWalletPrivatePassesName[];
 extern const char kAutofillAiWalletPrivatePassesDescription[];
@@ -1113,6 +1119,9 @@ extern const char kViewCertificateInformationDescription[];
 
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
+
+extern const char kWalletApiPrivatePassesEnabledName[];
+extern const char kWalletApiPrivatePassesEnabledDescription[];
 
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
