@@ -743,6 +743,7 @@ mojom("mojo_bindings") {
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
     "//components/no_state_prefetch/common:mojo_bindings",
+    "//components/page_content_annotations/content/mojom",
     "//content/public/common:interfaces",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mojom_core",

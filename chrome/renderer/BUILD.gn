@@ -170,6 +170,7 @@ static_library("renderer") {
     "//components/omnibox/common",
     "//components/optimization_guide/content/renderer",
     "//components/optimization_guide/core:features",
+    "//components/page_content_annotations/content/mojom",
     "//components/page_content_annotations/core:features",
     "//components/page_image_annotation/content/renderer",
     "//components/page_load_metrics/renderer",

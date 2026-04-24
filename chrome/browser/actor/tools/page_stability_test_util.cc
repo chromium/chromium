@@ -15,6 +15,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -101,13 +102,14 @@ void PageStabilityTest::Respond(std::string_view text) {
   fetch_response_->Done();
 }
 
-mojo::Remote<mojom::PageStabilityMonitor>
+mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
 PageStabilityTest::CreatePageStabilityMonitor(bool supports_paint_stability) {
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
   main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
 
-  mojo::Remote<mojom::PageStabilityMonitor> monitor_remote;
+  mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
+      monitor_remote;
   chrome_render_frame->CreatePageStabilityMonitor(
       monitor_remote.BindNewPipeAndPassReceiver(), actor::TaskId(),
       supports_paint_stability);

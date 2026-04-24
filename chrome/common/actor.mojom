@@ -262,17 +262,3 @@ interface JournalClient {
   // New log messages are sent in batches to limit the frequency of calls.
   AddEntriesToJournal(array<JournalEntry> entries);
 };
-
-// Used to monitor page stability in the renderer. Implemented by
-// `actor::PageStabilityMonitor` and lives in the renderer process. The browser
-// queries this interface to learn when the current page associated with
-// `actor::PageStabilityMonitor` is stable.
-//
-// We CHECK that only one `NotifyWhenStable()` call is in flight at any given
-// time.
-//
-// `observation_delay` is the amount of time to wait when observing tool
-// execution before starting to wait for page stability.
-interface PageStabilityMonitor {
-  NotifyWhenStable(mojo_base.mojom.TimeDelta observation_delay) => ();
-};

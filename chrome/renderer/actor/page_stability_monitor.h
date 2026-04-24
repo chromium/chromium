@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/time/time.h"
-#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/journal.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -33,8 +33,9 @@ class PaintStabilityMonitor;
 // Helper class for monitoring page stability after tool usage. Its lifetime
 // must not outlive the RenderFrame it is observing. This object is single-use,
 // i.e. NotifyWhenStable can only be called once.
-class PageStabilityMonitor : public content::RenderFrameObserver,
-                             public mojom::PageStabilityMonitor {
+class PageStabilityMonitor
+    : public content::RenderFrameObserver,
+      public page_content_annotations::mojom::PageStabilityMonitor {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
   // the given RenderFrame. If `supports_paint_stability` is true, paint
@@ -63,7 +64,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void NotifyWhenStable(base::TimeDelta observation_delay,
                         NotifyWhenStableCallback callback) override;
 
-  void Bind(mojo::PendingReceiver<mojom::PageStabilityMonitor> receiver);
+  void Bind(mojo::PendingReceiver<
+            page_content_annotations::mojom::PageStabilityMonitor> receiver);
 
  private:
   friend class PageStabilityMetrics;
@@ -177,7 +179,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
 
   bool monitoring_complete_ = false;
 
-  mojo::Receiver<mojom::PageStabilityMonitor> receiver_{this};
+  mojo::Receiver<page_content_annotations::mojom::PageStabilityMonitor>
+      receiver_{this};
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

@@ -6,6 +6,7 @@ module chrome.mojom;
 
 import "chrome/common/actor.mojom";
 import "components/lens/lens_metadata.mojom";
+import "components/page_content_annotations/content/mojom/page_stability.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
@@ -162,6 +163,7 @@ interface ChromeRenderFrame {
   // `supports_paint_stability` indicates whether to include paint stability in
   // page stability heuristics.
   CreatePageStabilityMonitor(
-    pending_receiver<actor.mojom.PageStabilityMonitor> monitor,
+    pending_receiver<page_content_annotations.mojom.PageStabilityMonitor>
+      monitor,
     actor.mojom.TaskId task_id, bool supports_paint_stability);
 };

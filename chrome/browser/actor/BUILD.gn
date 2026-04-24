@@ -71,6 +71,7 @@ source_set("actor") {
     "//components/download/content/public",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/content/mojom",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/policy/core/browser",
     "//components/tabs:public",

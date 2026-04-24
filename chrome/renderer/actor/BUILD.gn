@@ -46,6 +46,7 @@ source_set("actor") {
 
   public_deps = [
     "//base",
+    "//components/page_content_annotations/content/mojom",
     "//content/public/renderer",
   ]
 

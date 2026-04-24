@@ -17,6 +17,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
@@ -34,7 +35,9 @@ namespace {
 
 using ::testing::_;
 
-class MockPageStabilityMonitor : public actor::mojom::PageStabilityMonitor {
+using page_content_annotations::mojom::PageStabilityMonitor;
+
+class MockPageStabilityMonitor : public PageStabilityMonitor {
  public:
   MockPageStabilityMonitor() = default;
   ~MockPageStabilityMonitor() override = default;
@@ -44,15 +47,14 @@ class MockPageStabilityMonitor : public actor::mojom::PageStabilityMonitor {
               (base::TimeDelta, NotifyWhenStableCallback),
               (override));
 
-  void Bind(
-      mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> receiver) {
+  void Bind(mojo::PendingReceiver<PageStabilityMonitor> receiver) {
     receiver_.Bind(std::move(receiver));
   }
 
   void Close() { receiver_.reset(); }
 
  private:
-  mojo::Receiver<actor::mojom::PageStabilityMonitor> receiver_{this};
+  mojo::Receiver<PageStabilityMonitor> receiver_{this};
 };
 
 class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
@@ -117,7 +119,7 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
               (override));
   MOCK_METHOD(void,
               CreatePageStabilityMonitor,
-              (mojo::PendingReceiver<actor::mojom::PageStabilityMonitor>,
+              (mojo::PendingReceiver<PageStabilityMonitor>,
                const actor::TaskId&,
                bool),
               (override));
@@ -166,17 +168,17 @@ TEST_F(PasswordChangePageStabilityWaiterTest, PageBecomesStable) {
   base::test::TestFuture<void> future;
 
   EXPECT_CALL(mock_chrome_render_frame_, CreatePageStabilityMonitor)
-      .WillOnce([&](mojo::PendingReceiver<actor::mojom::PageStabilityMonitor>
-                        receiver,
+      .WillOnce([&](mojo::PendingReceiver<PageStabilityMonitor> receiver,
                     const actor::TaskId&, bool) {
         mock_page_stability_monitor_.Bind(std::move(receiver));
       });
 
-  actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback monitor_callback;
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback;
   EXPECT_CALL(mock_page_stability_monitor_, NotifyWhenStable(_, _))
       .WillOnce([&](base::TimeDelta,
-                    actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback
-                        callback) { monitor_callback = std::move(callback); });
+                    PageStabilityMonitor::NotifyWhenStableCallback callback) {
+        monitor_callback = std::move(callback);
+      });
 
   PasswordChangePageStabilityWaiter waiter(web_contents(), &stub_client_,
                                            future.GetCallback());
@@ -190,30 +192,24 @@ TEST_F(PasswordChangePageStabilityWaiterTest, RestartsOnNavigation) {
 
   EXPECT_CALL(mock_chrome_render_frame_, CreatePageStabilityMonitor)
       .Times(2)
-      .WillRepeatedly(
-          [&](mojo::PendingReceiver<actor::mojom::PageStabilityMonitor>
-                  receiver,
-              const actor::TaskId&, bool) {
-            mock_page_stability_monitor_.Close();
-            mock_page_stability_monitor_.Bind(std::move(receiver));
-          });
+      .WillRepeatedly([&](mojo::PendingReceiver<PageStabilityMonitor> receiver,
+                          const actor::TaskId&, bool) {
+        mock_page_stability_monitor_.Close();
+        mock_page_stability_monitor_.Bind(std::move(receiver));
+      });
 
-  actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback
-      monitor_callback1;
-  actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback
-      monitor_callback2;
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback1;
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback2;
 
   EXPECT_CALL(mock_page_stability_monitor_, NotifyWhenStable)
-      .WillOnce(
-          [&](base::TimeDelta,
-              actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback cb) {
-            monitor_callback1 = std::move(cb);
-          })
-      .WillOnce(
-          [&](base::TimeDelta,
-              actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback cb) {
-            monitor_callback2 = std::move(cb);
-          });
+      .WillOnce([&](base::TimeDelta,
+                    PageStabilityMonitor::NotifyWhenStableCallback cb) {
+        monitor_callback1 = std::move(cb);
+      })
+      .WillOnce([&](base::TimeDelta,
+                    PageStabilityMonitor::NotifyWhenStableCallback cb) {
+        monitor_callback2 = std::move(cb);
+      });
 
   PasswordChangePageStabilityWaiter waiter(web_contents(), &stub_client_,
                                            future.GetCallback());
@@ -230,17 +226,17 @@ TEST_F(PasswordChangePageStabilityWaiterTest, MonitorDisconnects) {
   base::test::TestFuture<void> future;
 
   EXPECT_CALL(mock_chrome_render_frame_, CreatePageStabilityMonitor)
-      .WillOnce([&](mojo::PendingReceiver<actor::mojom::PageStabilityMonitor>
-                        receiver,
+      .WillOnce([&](mojo::PendingReceiver<PageStabilityMonitor> receiver,
                     const actor::TaskId&, bool) {
         mock_page_stability_monitor_.Bind(std::move(receiver));
       });
 
-  actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback monitor_callback;
+  PageStabilityMonitor::NotifyWhenStableCallback monitor_callback;
   EXPECT_CALL(mock_page_stability_monitor_, NotifyWhenStable)
       .WillOnce([&](base::TimeDelta,
-                    actor::mojom::PageStabilityMonitor::NotifyWhenStableCallback
-                        callback) { monitor_callback = std::move(callback); });
+                    PageStabilityMonitor::NotifyWhenStableCallback callback) {
+        monitor_callback = std::move(callback);
+      });
 
   PasswordChangePageStabilityWaiter waiter(web_contents(), &stub_client_,
                                            future.GetCallback());

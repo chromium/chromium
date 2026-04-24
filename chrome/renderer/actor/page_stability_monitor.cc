@@ -410,7 +410,8 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
 }
 
 void PageStabilityMonitor::Bind(
-    mojo::PendingReceiver<mojom::PageStabilityMonitor> receiver) {
+    mojo::PendingReceiver<page_content_annotations::mojom::PageStabilityMonitor>
+        receiver) {
   CHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
 

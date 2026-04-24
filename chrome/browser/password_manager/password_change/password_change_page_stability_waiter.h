@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/common/actor.mojom.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,7 +30,7 @@ class WebContents;
 // This class ensures page stability by executing a renderer stability check
 // followed by a visual state check:
 // 1. **Renderer Stability**: It binds to the
-// `actor::mojom::PageStabilityMonitor`
+// `page_content_annotations::mojom::PageStabilityMonitor`
 //    Mojo interface in the renderer to wait for initial paint stability.
 // 2. **Compositor Visual State**: It inserts a visual state callback to ensure
 //    the browser has received a frame from the renderer's compositor.
@@ -65,7 +65,7 @@ class PasswordChangePageStabilityWaiter : public content::WebContentsObserver {
 
   base::OnceClosure callback_;
   raw_ptr<password_manager::PasswordManagerClient> client_;
-  mojo::Remote<actor::mojom::PageStabilityMonitor> monitor_;
+  mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor> monitor_;
   base::OneShotTimer timeout_timer_;
   base::WeakPtrFactory<PasswordChangePageStabilityWaiter> weak_ptr_factory_{
       this};

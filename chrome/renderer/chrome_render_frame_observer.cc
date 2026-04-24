@@ -677,7 +677,8 @@ void ChromeRenderFrameObserver::GetCrossDocumentScriptToolResult(
 }
 
 void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
-    mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
+    mojo::PendingReceiver<page_content_annotations::mojom::PageStabilityMonitor>
+        monitor,
     const actor::TaskId& task_id,
     bool supports_paint_stability) {
   page_stability_monitor_ = std::make_unique<actor::PageStabilityMonitor>(

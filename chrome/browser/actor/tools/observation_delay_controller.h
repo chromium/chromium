@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -109,7 +109,8 @@ class ObservationDelayController : public content::WebContentsObserver {
   // Protected so tests can hook into state changes and some internal state.
   virtual void SetState(State state);
   State state_ = State::kInitial;
-  mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
+  mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
+      page_stability_monitor_remote_;
 
  private:
   friend std::ostream& operator<<(

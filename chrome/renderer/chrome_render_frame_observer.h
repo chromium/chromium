@@ -16,6 +16,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/actor/tool_executor.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -146,7 +147,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   // `supports_paint_stability` indicates whether to include paint stability in
   // page stability heuristics.
   void CreatePageStabilityMonitor(
-      mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
+      mojo::PendingReceiver<
+          page_content_annotations::mojom::PageStabilityMonitor> monitor,
       const actor::TaskId& task_id,
       bool supports_paint_stability) override;
 

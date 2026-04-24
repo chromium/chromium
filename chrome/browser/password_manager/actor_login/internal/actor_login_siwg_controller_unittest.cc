@@ -26,6 +26,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -123,7 +124,8 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
               (override));
   MOCK_METHOD(void,
               CreatePageStabilityMonitor,
-              (mojo::PendingReceiver<actor::mojom::PageStabilityMonitor>,
+              (mojo::PendingReceiver<
+                   page_content_annotations::mojom::PageStabilityMonitor>,
                const actor::TaskId&,
                bool),
               (override));

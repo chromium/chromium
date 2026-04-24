@@ -14,6 +14,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/page_content_annotations/content/mojom/page_stability.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class GURL;
@@ -60,8 +61,8 @@ class PageStabilityTest : public PlatformBrowserTest {
 
   void Respond(std::string_view text);
 
-  mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor(
-      bool supports_paint_stability = true);
+  mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
+  CreatePageStabilityMonitor(bool supports_paint_stability = true);
 
  private:
   std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;
