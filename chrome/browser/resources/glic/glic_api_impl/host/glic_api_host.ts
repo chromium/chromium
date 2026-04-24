@@ -553,17 +553,17 @@ export class GlicApiHost implements PostMessageRequestHandler {
     switch (event) {
       case GlicRequestEvent.REQUEST_HANDLER_EXCEPTION:
         chrome.histograms.recordEnumerationValue(
-            `Glic.Api.RequestCounts.Error`, requestTypeNumber,
+            `Glic.Api.StatusCounts.Error`, requestTypeNumber,
             HOST_REQUEST_TYPES.MAX_VALUE + 1);
         break;
       case GlicRequestEvent.REQUEST_RECEIVED_WHILE_HIDDEN:
         chrome.histograms.recordEnumerationValue(
-            `Glic.Api.RequestCounts.Hidden`, requestTypeNumber,
+            `Glic.Api.StatusCounts.Hidden`, requestTypeNumber,
             HOST_REQUEST_TYPES.MAX_VALUE + 1);
         break;
       case GlicRequestEvent.REQUEST_RECEIVED:
         chrome.histograms.recordEnumerationValue(
-            `Glic.Api.RequestCounts.Received`, requestTypeNumber,
+            `Glic.Api.StatusCounts.Received`, requestTypeNumber,
             HOST_REQUEST_TYPES.MAX_VALUE + 1);
         break;
       default:

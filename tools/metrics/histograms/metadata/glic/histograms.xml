@@ -163,36 +163,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Api.RequestCounts.Error" enum="GlicHostApiRequestType"
-    expires_after="2026-09-20">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>birnie@google.com</owner>
-  <summary>Recorded when a glic API fails with an exception.</summary>
-</histogram>
-
-<histogram name="Glic.Api.RequestCounts.Hidden" enum="GlicHostApiRequestType"
-    expires_after="2026-09-20">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Recorded when a glic API is called while the client is not being shown.
-    Reported regardless of whether the call was successful.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Api.RequestCounts.Received" enum="GlicHostApiRequestType"
-    expires_after="2026-09-20">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Recorded when a glic API is called. Reported regardless of whether the call
-    was successful.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
     enum="GlicRequestEvent" expires_after="2026-09-27">
   <owner>carlosk@chromium.org</owner>
@@ -300,6 +270,36 @@ chromium-metrics-reviews@google.com.
   </token>
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->
 
+</histogram>
+
+<histogram name="Glic.Api.StatusCounts.Error" enum="GlicHostApiRequestType"
+    expires_after="2026-09-20">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>Recorded when a glic API fails with an exception.</summary>
+</histogram>
+
+<histogram name="Glic.Api.StatusCounts.Hidden" enum="GlicHostApiRequestType"
+    expires_after="2026-09-20">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when a glic API is called while the client is not being shown.
+    Reported regardless of whether the call was successful.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.StatusCounts.Received" enum="GlicHostApiRequestType"
+    expires_after="2026-09-20">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when a glic API is called. Reported regardless of whether the call
+    was successful.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Api.TabData.UpdatesPerNavigation" units="count"

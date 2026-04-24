@@ -1889,6 +1889,7 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   expected_count_hidden = 0;
 #endif
+  // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
@@ -1897,11 +1898,18 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
       GlicRequestEvent::kRequestHandlerException, 1);
   histogram_tester->ExpectTotalCount("Glic.Api.RequestCounts.GetContextFromTab",
                                      0);
+  // Per-status metrics
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+                                      9 /*GetContextFromFocusedTab*/,
+                                      expected_count_hidden);
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
+                                      9 /*GetContextFromFocusedTab*/, 1);
 
   // Open the glic panel and attempt to extract focused and arbitrary tab
   // context.
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ContinueJsTest();
+  // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
@@ -1919,6 +1927,7 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
   // context.
   RunTestSequence(CloseGlic());
   ContinueJsTest();
+  // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestReceivedWhileHidden, ++expected_count_hidden);
@@ -1931,6 +1940,17 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
       GlicRequestEvent::kRequestHandlerException, 1);
+  // Per-status metrics
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+                                      9 /*GetContextFromFocusedTab*/,
+                                      expected_count_hidden);
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
+                                      9 /*GetContextFromFocusedTab*/, 2);
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+                                      10 /*GetContextFromTab*/,
+                                      expected_count_hidden);
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
+                                      10 /*GetContextFromTab*/, 2);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
