@@ -6,8 +6,12 @@
 
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_mediator.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-@interface ComposeboxMenuCoordinator () <UISheetPresentationControllerDelegate>
+@interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
+                                         UISheetPresentationControllerDelegate>
 @end
 
 @implementation ComposeboxMenuCoordinator {
@@ -29,12 +33,14 @@
 
 - (void)start {
   _viewController = [[ComposeboxMenuViewController alloc] init];
-  _mediator = [[ComposeboxMenuMediator alloc] init];
+  _mediator = [[ComposeboxMenuMediator alloc] initWithEntrypoint:_entrypoint];
+  _mediator.delegate = self;
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
   _viewController.sheetPresentationController.delegate = self;
   _viewController.sheetPresentationController
       .prefersEdgeAttachedInCompactHeight = YES;
+  _viewController.mutator = _mediator;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -52,6 +58,20 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
+}
+
+#pragma mark - ComposeboxMenuMediatorDelegate
+
+- (void)composeboxMenuMediatorDidProduceFocusParams:
+    (ComposeboxFocusParams*)focusParams {
+  __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+
+  [_viewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [commands showComposeboxWithParams:focusParams];
+                         }];
 }
 
 @end

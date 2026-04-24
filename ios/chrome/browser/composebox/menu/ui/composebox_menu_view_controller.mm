@@ -243,33 +243,7 @@ enum class ComposeboxMenuSectionIdentifier {
     return;
   }
 
-  // TODO (crbug.com/505269628): Implement menu items selection.
-  switch (item.type) {
-    case ComposeboxMenuItemType::kAIM:
-      break;
-    case ComposeboxMenuItemType::kCreateImage:
-      break;
-    case ComposeboxMenuItemType::kDeepSearch:
-      break;
-    case ComposeboxMenuItemType::kCanvas:
-      break;
-    case ComposeboxMenuItemType::kModelRegular:
-      break;
-    case ComposeboxMenuItemType::kModelAuto:
-      break;
-    case ComposeboxMenuItemType::kModelThinking:
-      break;
-    case ComposeboxMenuItemType::kAttachmentTabs:
-      break;
-    case ComposeboxMenuItemType::kAttachmentCamera:
-      break;
-    case ComposeboxMenuItemType::kAttachmentGallery:
-      break;
-    case ComposeboxMenuItemType::kAttachmentFiles:
-      break;
-    case ComposeboxMenuItemType::kUnknown:
-      break;
-  }
+  [self.mutator handleItemPickedWithType:item.type];
 }
 
 #pragma mark - Data Source Helpers

@@ -11,7 +11,10 @@ source_set("coordinator") {
   ]
   deps = [
     "//ios/chrome/browser/composebox/menu/ui",
+    "//ios/chrome/browser/composebox/public:focus_params",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
   ]
   public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]
 }

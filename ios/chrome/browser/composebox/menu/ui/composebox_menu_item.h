@@ -7,20 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-enum class ComposeboxMenuItemType {
-  kUnknown = 0,
-  kAIM,
-  kCreateImage,
-  kDeepSearch,
-  kCanvas,
-  kModelRegular,
-  kModelAuto,
-  kModelThinking,
-  kAttachmentTabs,
-  kAttachmentCamera,
-  kAttachmentGallery,
-  kAttachmentFiles,
-};
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 
 // Represents a menu item in the Composebox menu.
 @interface ComposeboxMenuItem : NSObject

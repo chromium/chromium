@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_mutator.h"
+
 // View controller for the composebox menu.
 @interface ComposeboxMenuViewController : UIViewController
+
+// The mutator for this menu UI.
+@property(nonatomic, weak) id<ComposeboxMenuMutator> mutator;
 
 @end
 
