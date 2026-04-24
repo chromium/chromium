@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,6 +24,7 @@
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/test_matchers.h"
@@ -299,6 +301,8 @@ TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
 }
 
 TEST_F(SessionStoreOpenTest, ShouldLoadLocalScreenshots) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
   const int kTabNodeId = 2;
 
   const std::string kHeaderStorageKey = "header-storage-key";
@@ -329,6 +333,8 @@ TEST_F(SessionStoreOpenTest, ShouldLoadLocalScreenshots) {
 }
 
 TEST_F(SessionStoreOpenTest, ShouldLoadForeignScreenshots) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
   const std::string kForeignSessionTag = "SomeForeignTag";
   const int kTabNodeId = 2;
 
@@ -357,6 +363,69 @@ TEST_F(SessionStoreOpenTest, ShouldLoadForeignScreenshots) {
               ElementsAre(kTabNodeId));
   EXPECT_THAT(store->tracker()->LookupScreenshotTabNodeIds(kForeignSessionTag),
               ElementsAre(kTabNodeId));
+}
+
+TEST_F(SessionStoreOpenTest, ShouldNotLoadLocalScreenshotsWithoutFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSyncTabScreenshots);
+
+  const int kTabNodeId = 2;
+
+  const std::string kHeaderStorageKey = "header-storage-key";
+  const std::string kTabStorageKey = "x-tab-storage-key";
+  const std::string kScreenshotStorageKey = "a-screenshot-storage-key";
+
+  // Setup: Prepopulate the underlying store with a tab and a screenshot.
+  WriteHeaderAndTabAndScreenshot(*underlying_store_, kLocalCacheGuid,
+                                 kHeaderStorageKey, kTabStorageKey,
+                                 kScreenshotStorageKey, kTabNodeId);
+
+  // Open the store with the prepopulated contents.
+  MockOpenCallback completion;
+  EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(), _));
+  SessionStore::Open(kLocalCacheGuid, mock_sync_sessions_client_.get(),
+                     completion.Get());
+  completion.Wait();
+
+  SessionStore* store = completion.GetResult();
+  ASSERT_THAT(store, NotNull());
+
+  EXPECT_THAT(store->tracker()->LookupTabNodeIds(kLocalCacheGuid),
+              ElementsAre(kTabNodeId));
+  EXPECT_THAT(store->tracker()->LookupScreenshotTabNodeIds(kLocalCacheGuid),
+              IsEmpty());
+}
+
+TEST_F(SessionStoreOpenTest, ShouldNotLoadForeignScreenshotsWithoutFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSyncTabScreenshots);
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const int kTabNodeId = 2;
+
+  const std::string kHeaderStorageKey = "header-storage-key";
+  const std::string kTabStorageKey = "x-tab-storage-key";
+  const std::string kScreenshotStorageKey = "a-screenshot-storage-key";
+
+  // Setup: Prepopulate the underlying store with a tab and a screenshot.
+  WriteHeaderAndTabAndScreenshot(*underlying_store_, kForeignSessionTag,
+                                 kHeaderStorageKey, kTabStorageKey,
+                                 kScreenshotStorageKey, kTabNodeId);
+
+  // Open the store with the prepopulated contents.
+  MockOpenCallback completion;
+  EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(), _));
+  SessionStore::Open(kLocalCacheGuid, mock_sync_sessions_client_.get(),
+                     completion.Get());
+  completion.Wait();
+
+  SessionStore* store = completion.GetResult();
+  ASSERT_THAT(store, NotNull());
+
+  EXPECT_THAT(store->tracker()->LookupTabNodeIds(kForeignSessionTag),
+              ElementsAre(kTabNodeId));
+  EXPECT_THAT(store->tracker()->LookupScreenshotTabNodeIds(kForeignSessionTag),
+              IsEmpty());
 }
 
 // Test fixture that creates an initial session store.
@@ -872,6 +941,8 @@ TEST_F(SessionStoreTest, ShouldDeleteForeignData) {
 }
 
 TEST_F(SessionStoreTest, ShouldStoreScreenshots) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
   const std::string kForeignSessionTag = "SomeForeignTag";
   const int kWindowId = 5;
   const int kTabId = 7;
@@ -900,6 +971,7 @@ TEST_F(SessionStoreTest, ShouldStoreScreenshots) {
   screenshot.set_session_tag(kForeignSessionTag);
   screenshot.set_tab_node_id(kTabNodeId);
   screenshot.mutable_tab_screenshot()->set_screenshot_data("some data");
+  ASSERT_TRUE(SessionStore::AreValidSpecifics(screenshot));
 
   {
     std::unique_ptr<SessionStore::WriteBatch> batch =
@@ -973,6 +1045,23 @@ TEST_F(SessionStoreTest, ShouldStoreScreenshots) {
   }
 
   EXPECT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()), IsEmpty());
+}
+
+TEST_F(SessionStoreTest, ShouldConsiderScreenshotInvalidWithoutFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kSyncTabScreenshots);
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const int kTabNodeId = 1;
+
+  const std::string screenshot_storage_key =
+      SessionStore::GetTabScreenshotStorageKey(kForeignSessionTag, kTabNodeId);
+
+  SessionSpecifics screenshot;
+  screenshot.set_session_tag(kForeignSessionTag);
+  screenshot.set_tab_node_id(kTabNodeId);
+  screenshot.mutable_tab_screenshot()->set_screenshot_data("some data");
+  EXPECT_FALSE(SessionStore::AreValidSpecifics(screenshot));
 }
 
 TEST_F(SessionStoreTest, ShouldReturnForeignUnmappedTabs) {

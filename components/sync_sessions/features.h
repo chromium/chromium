@@ -11,6 +11,7 @@ namespace sync_sessions {
 
 BASE_DECLARE_FEATURE(kOptimizeAssociateWindowsAndroid);
 BASE_DECLARE_FEATURE(kFilterNavigationsBySyncSessionsClient);
+BASE_DECLARE_FEATURE(kSyncTabScreenshots);
 
 }  // namespace sync_sessions
 

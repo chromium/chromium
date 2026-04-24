@@ -29,6 +29,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -281,10 +282,12 @@ SessionStore::WriteBatch::DeleteForeignEntityAndUpdateTracker(
       session_tracker_->DeleteForeignTab(session_tag, tab_node_id);
       break;
     case EntityType::kScreenshot:
-      // Removal of a screenshot entity does not cascade. If the tab node
-      // doesn't exist, this does nothing.
-      session_tracker_->SetTabNodeHasScreenshot(session_tag, tab_node_id,
-                                                /*has_screenshot=*/false);
+      if (base::FeatureList::IsEnabled(kSyncTabScreenshots)) {
+        // Removal of a screenshot entity does not cascade. If the tab node
+        // doesn't exist, this does nothing.
+        session_tracker_->SetTabNodeHasScreenshot(session_tag, tab_node_id,
+                                                  /*has_screenshot=*/false);
+      }
       break;
   }
 
@@ -357,6 +360,9 @@ bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
 
   // Tab screenshots must have a valid tab node ID.
   if (specifics.has_tab_screenshot()) {
+    if (!base::FeatureList::IsEnabled(kSyncTabScreenshots)) {
+      return false;
+    }
     if (specifics.tab_node_id() < 0) {
       return false;
     }
@@ -611,6 +617,8 @@ SessionStore::SessionStore(
           SessionID::FromSerializedValue(specifics.tab().tab_id()));
       UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
     } else if (specifics.has_tab_screenshot()) {
+      // Guaranteed because `AreValidSpecifics()` was checked above.
+      CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
       UpdateTrackerWithSpecifics(specifics, mtime, &session_tracker_);
     } else {
       // Unreachable because `AreValidSpecifics()` was checked above.
@@ -648,7 +656,9 @@ std::unique_ptr<syncer::DataBatch> SessionStore::GetSessionDataForKeys(
         session_tag_to_node_ids[session_tag].insert(tab_node_id);
         break;
       case EntityType::kScreenshot:
-        session_tag_to_screenshot_node_ids[session_tag].insert(tab_node_id);
+        if (base::FeatureList::IsEnabled(kSyncTabScreenshots)) {
+          session_tag_to_screenshot_node_ids[session_tag].insert(tab_node_id);
+        }
         break;
     }
   }

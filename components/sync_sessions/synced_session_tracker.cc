@@ -14,6 +14,7 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -729,6 +730,7 @@ void SyncedSessionTracker::SetTabNodeHasScreenshot(
     const std::string& session_tag,
     int tab_node_id,
     bool has_screenshot) {
+  CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
   TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session) {
     return;
@@ -838,6 +840,11 @@ void UpdateTrackerWithSpecifics(const sync_pb::SessionSpecifics& specifics,
       session->SetModifiedTime(modification_time);
     }
   } else if (specifics.has_tab_screenshot()) {
+    if (!base::FeatureList::IsEnabled(kSyncTabScreenshots)) {
+      DLOG(WARNING) << "Ignoring session tab screenshot because the feature is "
+                    << "disabled.";
+      return;
+    }
     if (specifics.tab_node_id() == TabNodePool::kInvalidTabNodeID) {
       DLOG(WARNING) << "Ignoring session tab screenshot with invalid tab node "
                     << "ID for session tag " << session_tag << ".";

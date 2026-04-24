@@ -7,8 +7,10 @@
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/test_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,6 +159,8 @@ class SyncedSessionTrackerTest : public testing::Test {
 };
 
 TEST_F(SyncedSessionTrackerTest, ShouldTrackScreenshots) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
   const std::string kTag1 = "tag1";
   const int kTabNodeId1 = 5;
   const int kTabNodeId2 = 6;
@@ -1111,6 +1115,8 @@ TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
 
 TEST_F(SyncedSessionTrackerTest,
        SerializePartialTrackerToSpecifics_TabAndScreenshot) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
   tracker_.SetLocalSessionStartTime(kSessionStartTime);
   tracker_.PutWindowInSession(kTag, kWindow1);
