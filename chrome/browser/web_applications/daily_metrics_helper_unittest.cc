@@ -22,6 +22,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -84,6 +88,13 @@ TEST_F(DailyMetricsHelperTest, NothingEmittedForCallsInOneDay) {
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsOldRecordsOnFirstCallNextDay) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   DailyInteraction record1(GURL("http://some.url/1"));
   FlushOldRecordsAndUpdate(record1);
 
@@ -96,6 +107,13 @@ TEST_F(DailyMetricsHelperTest, EmitsOldRecordsOnFirstCallNextDay) {
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsOncePerUrl) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   {
     DailyInteraction record(GURL("http://some.url/1"));
     FlushOldRecordsAndUpdate(record);
@@ -113,6 +131,13 @@ TEST_F(DailyMetricsHelperTest, EmitsOncePerUrl) {
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsLatestValuePerUrl) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   {
     DailyInteraction record1(GURL("http://some.url/1"));
     record1.install_source = 1;
@@ -144,6 +169,13 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValuePerUrl) {
 
 // Ensure last-recorded values are used for non-summed features.
 TEST_F(DailyMetricsHelperTest, EmitsLatestValues) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   // Record with default values.
   DailyInteraction record1(GURL("http://some.url/1"));
   FlushOldRecordsAndUpdate(record1);
@@ -171,6 +203,13 @@ TEST_F(DailyMetricsHelperTest, EmitsLatestValues) {
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsSumsForDurationsAndSessions) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   // Default values are 0s
   DailyInteraction record(GURL("http://some.url/1"));
   FlushOldRecordsAndUpdate(record);
@@ -202,6 +241,13 @@ TEST_F(DailyMetricsHelperTest, EmitsSumsForDurationsAndSessions) {
 }
 
 TEST_F(DailyMetricsHelperTest, EmitsClampedSumsForExtremeDurations) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   DailyInteraction record(GURL("http://some.url/1"));
   record.foreground_duration = base::Seconds(1);
   record.background_duration = base::Hours(20);
@@ -226,6 +272,13 @@ TEST_F(DailyMetricsHelperTest, EmitsClampedSumsForExtremeDurations) {
 }
 
 TEST_F(DailyMetricsHelperTest, DoesNotEmitZeroDurationsOrSessions) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   DailyInteraction record1(GURL("http://some.url/1"));
   FlushOldRecordsAndUpdate(record1);
 
