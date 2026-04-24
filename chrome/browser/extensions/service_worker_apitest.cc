@@ -1667,6 +1667,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, VerifyNoApiBindings) {
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
 }
 
+// TODO(crbug.com/506096527): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBackgroundSyncTest, Sync) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("service_worker/sync"));
@@ -1689,6 +1691,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBackgroundSyncTest, Sync) {
   content::background_sync_test_util::SetOnline(web_contents, true);
   EXPECT_TRUE(sync_listener.WaitUntilSatisfied());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
                        FetchFromContentScriptShouldNotGoToServiceWorkerOfPage) {
