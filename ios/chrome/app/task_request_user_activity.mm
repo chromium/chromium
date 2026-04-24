@@ -297,6 +297,13 @@ void OpenBookmarksWithBrowser(Browser* browser) {
   [handler showBookmarksManager];
 }
 
+// Navigates to the recent tabs UI.
+void OpenRecentTabsWithBrowser(Browser* browser) {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler showRecentTabs];
+}
+
 // Navigates to the password search UI.
 void OpenPasswordSearchWithBrowser(Browser* browser) {
   id<SettingsCommands> handler =
@@ -602,7 +609,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
           completion:base::BindOnce(&OpenBookmarksWithBrowser)];
       break;
     case UserActivityType::kOpenRecentTabs:
-      // TODO(crbug.com/492115056): Add implementation.
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:_targetMode
+          completion:base::BindOnce(&OpenRecentTabsWithBrowser)];
       break;
     case UserActivityType::kOpenTabGrid:
       [self openURLs:{}
