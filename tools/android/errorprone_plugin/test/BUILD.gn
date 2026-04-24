@@ -29,9 +29,7 @@ android_nocompile_test_suite("errorprone_plugin_tests") {
     {
       target = "nocompile_gn:no_android_log_test_java"
       nocompile_sources =
-          rebase_path(no_android_log_test_nocompile_sources,
-                      "",
-                      "nocompile_gn")
+          rebase_path(no_android_log_test_nocompile_sources, "", "nocompile_gn")
       expected_compile_output_regex = "warning: .NoAndroidLog"
     },
   ]
