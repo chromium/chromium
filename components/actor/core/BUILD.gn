@@ -47,5 +47,3 @@ source_set("unit_tests") {
     "//url",
   ]
 }
-
-
