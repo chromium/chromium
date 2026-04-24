@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_query_contextualizer_delegate_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
@@ -224,76 +225,11 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 @interface ComposeboxInputPlateMediator () <
     SearchEngineObserving,
     ComposeboxInputItemCollectionDelegate,
-    WebStateDeferredExecutorDelegate>
-
-// Delegate methods for QueryContextualizer.
-- (GURL)GetTabUrl:(contextual_tasks::QueryContextualizer::TabId)id;
-- (SessionID)GetTabSessionId:(contextual_tasks::QueryContextualizer::TabId)id;
-- (void)GetPageContext:(contextual_tasks::QueryContextualizer::TabId)id
-              callback:
-                  (base::OnceCallback<void(
-                       std::unique_ptr<lens::ContextualInputData>)>)callback;
-- (bool)IsTabValid:(contextual_tasks::QueryContextualizer::TabId)id;
-- (std::optional<lens::ImageEncodingOptions>)
-    GetTabViewportEncodingOptionsForQueryContextualizer;
-- (contextual_search::ContextualSearchSessionHandle*)
-    GetOrCreateSessionHandleForQueryContextualizer;
+    WebStateDeferredExecutorDelegate,
+    ComposeboxQueryContextualizerDelegate>
 
 @end
 
-namespace {
-
-class QueryContextualizerDelegateBridge
-    : public contextual_tasks::QueryContextualizer::Delegate {
- public:
-  explicit QueryContextualizerDelegateBridge(
-      ComposeboxInputPlateMediator* mediator)
-      : mediator_(mediator) {}
-
-  GURL GetTabUrl(contextual_tasks::QueryContextualizer::TabId id) override {
-    return [mediator_ GetTabUrl:id];
-  }
-
-  SessionID GetTabSessionId(
-      contextual_tasks::QueryContextualizer::TabId id) override {
-    return [mediator_ GetTabSessionId:id];
-  }
-
-  void GetPageContext(
-      contextual_tasks::QueryContextualizer::TabId id,
-      base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
-          callback) override {
-    [mediator_ GetPageContext:id callback:std::move(callback)];
-  }
-
-  bool IsTabValid(contextual_tasks::QueryContextualizer::TabId id) override {
-    return [mediator_ IsTabValid:id];
-  }
-
-  std::optional<lens::ImageEncodingOptions>
-  GetTabViewportEncodingOptionsForQueryContextualizer() override {
-    return [mediator_ GetTabViewportEncodingOptionsForQueryContextualizer];
-  }
-
-  contextual_search::ContextualSearchSessionHandle*
-  GetOrCreateSessionHandleForQueryContextualizer() override {
-    return [mediator_ GetOrCreateSessionHandleForQueryContextualizer];
-  }
-
-  void GetRelevantTabsForQuery(
-      const std::string& query_text,
-      const std::vector<GURL>& attached_context_urls,
-      base::OnceCallback<void(
-          std::vector<contextual_tasks::QueryContextualizer::TabId>)> callback)
-      override {
-    std::move(callback).Run({});
-  }
-
- private:
-  __weak ComposeboxInputPlateMediator* mediator_;
-};
-
-}  // namespace
 
 @implementation ComposeboxInputPlateMediator {
   // The ordered list of items for display.
@@ -2209,24 +2145,26 @@ class QueryContextualizerDelegateBridge
   [self sendText:query];
 }
 
-#pragma mark - contextual_tasks::QueryContextualizer::Delegate
+#pragma mark - ComposeboxQueryContextualizerDelegate
 
-- (GURL)GetTabUrl:(contextual_tasks::QueryContextualizer::TabId)id {
+- (GURL)tabURLForTabID:(contextual_tasks::QueryContextualizer::TabId)tabID {
   // No-op. Recontextualization is only needed for the contextual-tasks
   // composebox handler.
   return GURL();
 }
 
-- (SessionID)GetTabSessionId:(contextual_tasks::QueryContextualizer::TabId)id {
+- (SessionID)tabSessionIDForTabID:
+    (contextual_tasks::QueryContextualizer::TabId)tabID {
   // No-op. Recontextualization is only needed for the contextual-tasks
   // composebox handler.
   return SessionID::InvalidValue();
 }
 
-- (void)GetPageContext:(contextual_tasks::QueryContextualizer::TabId)id
-              callback:
-                  (base::OnceCallback<void(
-                       std::unique_ptr<lens::ContextualInputData>)>)callback {
+- (void)
+    getPageContextForTabID:(contextual_tasks::QueryContextualizer::TabId)tabID
+                  callback:(base::OnceCallback<void(
+                                std::unique_ptr<lens::ContextualInputData>)>)
+                               callback {
   // No-op. Recontextualization is only needed for the contextual-tasks
   // composebox handler.
   if (callback) {
@@ -2234,21 +2172,19 @@ class QueryContextualizerDelegateBridge
   }
 }
 
-- (bool)IsTabValid:(contextual_tasks::QueryContextualizer::TabId)id {
+- (bool)isTabValid:(contextual_tasks::QueryContextualizer::TabId)tabID {
   // No-op. Recontextualization is only needed for the contextual-tasks
   // composebox handler.
   return false;
 }
 
-- (std::optional<lens::ImageEncodingOptions>)
-    GetTabViewportEncodingOptionsForQueryContextualizer {
+- (std::optional<lens::ImageEncodingOptions>)tabViewportEncodingOptions {
   // No-op. Recontextualization is only needed for the contextual-tasks
   // composebox handler.
   return std::nullopt;
 }
 
-- (contextual_search::ContextualSearchSessionHandle*)
-    GetOrCreateSessionHandleForQueryContextualizer {
+- (contextual_search::ContextualSearchSessionHandle*)getOrCreateSessionHandle {
   return _contextualSearchSession.get();
 }
 

@@ -66,6 +66,8 @@ source_set("input_plate") {
     "composebox_omnibox_client.h",
     "composebox_omnibox_client.mm",
     "composebox_omnibox_client_delegate.h",
+    "composebox_query_contextualizer_delegate_bridge.h",
+    "composebox_query_contextualizer_delegate_bridge.mm",
     "composebox_url_loader.h",
   ]
   public_deps = [
