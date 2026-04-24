@@ -111,7 +111,7 @@ chrome.test.runTests([
   },
 
   async function faviconLoaded() {
-    // TODO(https://crbug.com/371432155): Enable this on desktop Android.
+    // TODO(https://crbug.com/449095632): Enable this on desktop Android.
     if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
       chrome.test.succeed('skipped');
       return;
@@ -126,7 +126,7 @@ chrome.test.runTests([
   },
 
   async function titleUpdated() {
-    // TODO(https://crbug.com/371432155): Enable this on desktop Android.
+    // TODO(https://crbug.com/449095632): Enable this on desktop Android.
     if ((await chrome.runtime.getPlatformInfo()).os == 'android') {
       chrome.test.succeed('skipped');
       return;

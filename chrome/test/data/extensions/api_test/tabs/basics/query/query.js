@@ -31,7 +31,7 @@ loadScript.then(async function() {
                                     },
                                     pass(function(tab) {
                                       waitForAllTabs(pass(function() {
-                                        // TODO(crbug.com/371432155): Android
+                                        // TODO(crbug.com/449095632): Android
                                         // does not yet support creating pinned
                                         // tabs with chrome.tabs.create(). See
                                         // OpenTabHelper.
@@ -108,7 +108,7 @@ loadScript.then(async function() {
     },
 
     function queryPinned() {
-      // TODO(crbug.com/371432155): Android does not yet support creating
+      // TODO(crbug.com/449095632): Android does not yet support creating
       // pinned tabs with chrome.tabs.create(). See OpenTabHelper.
       if (isAndroid) {
         chrome.test.succeed('skipped');

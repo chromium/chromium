@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
+// TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Update) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
+// TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Desktop Android does not yet support creating a tab in the pinned state.
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, CrashBrowser) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
+// TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Crashes on desktop Android with invalid tab index and ID.
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
+// TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/499307054): Flaky on desktop Android. Crashes during test
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_HostPermission) {
   ASSERT_TRUE(RunExtensionTest("tabs/host_permission")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
+// TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Flaky on Windows, Mac and Linux. http://crbug.com/41375473.
