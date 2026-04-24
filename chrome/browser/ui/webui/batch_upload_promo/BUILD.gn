@@ -17,7 +17,7 @@ source_set("batch_upload_promo") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/batch_upload",
     "//chrome/browser/sync",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//components/sync/base",
     "//components/sync/service",
     "//content/public/browser",
