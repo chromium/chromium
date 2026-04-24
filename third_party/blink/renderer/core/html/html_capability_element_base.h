@@ -114,9 +114,10 @@ class CORE_EXPORT HTMLCapabilityElementBase
 
   uint16_t GetTranslatedMessageID(uint16_t message_id,
                                   const AtomicString& language_string);
-  virtual void UpdateAppearance();
 
-  virtual void UpdateIcon(mojom::blink::PermissionName permission);
+  virtual void UpdateAppearance() = 0;
+
+  virtual void UpdateIcon(mojom::blink::PermissionName permission) = 0;
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();

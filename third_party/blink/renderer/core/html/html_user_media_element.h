@@ -54,6 +54,9 @@ class CORE_EXPORT HTMLUserMediaElement
 
   void ResetMediaStreamRequestTime();
 
+  void UpdateAppearance() override;
+  void UpdateIcon(mojom::blink::PermissionName permission) override;
+
   const Vector<mojom::blink::PermissionDescriptorPtr>&
   GetPermissionDescriptors() const {
     return permission_descriptors_;

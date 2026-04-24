@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -16,10 +17,41 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
 using ::testing::_;
+
+const char* kCameraString = "Use camera";
+const char* kMicrophoneString = "Use microphone";
+const char* kCameraMicrophoneString = "Use microphone and camera";
+const char* kCameraAllowedString = "Camera allowed";
+const char* kMicrophoneAllowedString = "Microphone allowed";
+const char* kCameraMicrophoneAllowedString = "Camera and microphone allowed";
+
+class LocalePlatformSupport : public TestingPlatformSupport {
+ public:
+  WebString QueryLocalizedString(int resource_id) override {
+    switch (resource_id) {
+      case IDS_PERMISSION_REQUEST_CAMERA:
+        return WebString(kCameraString);
+      case IDS_PERMISSION_REQUEST_MICROPHONE:
+        return WebString(kMicrophoneString);
+      case IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE:
+        return WebString(kCameraMicrophoneString);
+      case IDS_PERMISSION_REQUEST_CAMERA_ALLOWED:
+        return WebString(kCameraAllowedString);
+      case IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED:
+        return WebString(kMicrophoneAllowedString);
+      case IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED:
+        return WebString(kCameraMicrophoneAllowedString);
+      default:
+        break;
+    }
+    return TestingPlatformSupport::QueryLocalizedString(resource_id);
+  }
+};
 
 class MockUserMediaRequestProvider final
     : public GarbageCollected<MockUserMediaRequestProvider>,
@@ -41,7 +73,13 @@ class MockUserMediaRequestProvider final
   }
 };
 
-class HTMLUserMediaElementTest : public PageTestBase {};
+class HTMLUserMediaElementTest : public PageTestBase {
+ public:
+  HTMLUserMediaElementTest() : platform_support_() {}
+
+ protected:
+  ScopedTestingPlatformSupport<LocalePlatformSupport> platform_support_;
+};
 
 TEST_F(HTMLUserMediaElementTest, BranchingLogicBasedOnTypeAttribute) {
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
@@ -181,6 +219,65 @@ TEST_F(HTMLUserMediaElementTest, DoNotStartRequestTwiceOnClick) {
   EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
   element->click();
   ::testing::Mock::VerifyAndClearExpectations(provider);
+}
+
+TEST_F(HTMLUserMediaElementTest, GrantedText) {
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  // Case 1: Camera only - No Constraints (Legacy)
+  element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map_camera;
+  init_map_camera.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                         mojom::blink::PermissionStatus::GRANTED);
+  element->OnPermissionStatusInitialized(init_map_camera);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraAllowedString);
+
+  // Case 2: Camera only - With Constraints
+  element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+  element->OnPermissionStatusInitialized(init_map_camera);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraString);
+
+  // Case 3: Microphone only - No Constraints (Legacy)
+  element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->setAttribute(html_names::kTypeAttr, AtomicString("microphone"));
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map_mic;
+  init_map_mic.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                      mojom::blink::PermissionStatus::GRANTED);
+  element->OnPermissionStatusInitialized(init_map_mic);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kMicrophoneAllowedString);
+
+  // Case 4: Microphone only - With Constraints
+  element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->OnConstraintsSet(/*has_video=*/false, /*has_audio=*/true);
+  element->OnPermissionStatusInitialized(init_map_mic);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kMicrophoneString);
+
+  // Case 5: Camera and Microphone - No Constraints (Legacy)
+  element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->setAttribute(html_names::kTypeAttr,
+                        AtomicString("camera microphone"));
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map_both;
+  init_map_both.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                       mojom::blink::PermissionStatus::GRANTED);
+  init_map_both.insert(mojom::blink::PermissionName::AUDIO_CAPTURE,
+                       mojom::blink::PermissionStatus::GRANTED);
+  element->OnPermissionStatusInitialized(init_map_both);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraMicrophoneAllowedString);
+
+  // Case 6: Camera and Microphone - With Constraints
+  element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/true);
+  element->OnPermissionStatusInitialized(init_map_both);
+  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+            kCameraMicrophoneString);
 }
 
 }  // namespace blink

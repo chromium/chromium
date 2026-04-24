@@ -116,12 +116,10 @@ void HTMLInstallElement::UpdateAppearanceTask(bool is_installed) {
   String inner_text = GetLocale().QueryString(message_id);
   CHECK(message_id);
   permission_text_span()->setInnerText(inner_text);
-
   UpdateIcon(mojom::blink::PermissionName::WEB_APP_INSTALLATION);
 }
 
-void HTMLInstallElement::UpdateIcon(
-    mojom::blink::PermissionName permission_name) {
+void HTMLInstallElement::UpdateIcon(mojom::blink::PermissionName permission) {
   permission_internal_icon()->SetIcon(show_as_launch_
                                           ? PermissionIconType::kLaunch
                                           : PermissionIconType::kInstall);

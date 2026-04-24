@@ -68,6 +68,7 @@ class CORE_EXPORT HTMLGeolocationElement final
 
   // HTMLCapabilityElementBase:
   void UpdateAppearance() override;
+  void UpdateIcon(mojom::blink::PermissionName permission) override;
   void UpdatePermissionStatusAndAppearance() override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;

@@ -301,4 +301,12 @@ void HTMLGeolocationElement::UpdateText() {
   permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
 }
 
+void HTMLGeolocationElement::UpdateIcon(
+    mojom::blink::PermissionName permission) {
+  DCHECK_EQ(permission, mojom::blink::PermissionName::GEOLOCATION);
+  permission_internal_icon()->SetIcon(is_precise_location()
+                                          ? PermissionIconType::kLocationPrecise
+                                          : PermissionIconType::kLocation);
+}
+
 }  // namespace blink

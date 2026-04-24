@@ -4,6 +4,7 @@
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,6 +29,31 @@ PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
   descriptor->name = name;
   return descriptor;
+}
+
+// Helper to get permission text resource ID for the given map which has only
+// one element.
+uint16_t GetUntranslatedMessageIDSinglePermission(PermissionName name,
+                                                  bool granted) {
+  if (name == PermissionName::VIDEO_CAPTURE) {
+    return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
+                   : IDS_PERMISSION_REQUEST_CAMERA;
+  }
+
+  if (name == PermissionName::AUDIO_CAPTURE) {
+    return granted ? IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED
+                   : IDS_PERMISSION_REQUEST_MICROPHONE;
+  }
+
+  return 0;
+}
+
+// Helper to get permission text resource ID for the given map which has
+// multiple elements. Currently we only support "camera microphone" grouped
+// permissions.
+uint16_t GetUntranslatedMessageIDMultiplePermissions(bool granted) {
+  return granted ? IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED
+                 : IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
 
 Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
@@ -211,6 +238,63 @@ void HTMLUserMediaElement::StartMediaStreamRequest() {
 
 void HTMLUserMediaElement::ResetMediaStreamRequestTime() {
   media_stream_request_start_time_ = base::TimeTicks();
+}
+
+void HTMLUserMediaElement::UpdateAppearance() {
+  PermissionName permission_name;
+  wtf_size_t permission_count;
+  if (permission_status_map_.size() == 0U) {
+    // Use |permission_descriptors_| instead and assume a "not granted" state.
+    if (permission_descriptors_.size() == 0U) {
+      return;
+    }
+    permission_name = permission_descriptors_[0]->name;
+    permission_count = permission_descriptors_.size();
+  } else {
+    CHECK_LE(permission_status_map_.size(), 2u);
+    permission_name = permission_status_map_.begin()->key;
+    permission_count = permission_status_map_.size();
+  }
+
+  UpdateIcon(permission_count == 1 ? permission_name
+                                   : PermissionName::VIDEO_CAPTURE);
+
+  AtomicString language_string = ComputeInheritedLanguage().ToAsciiLower();
+  bool granted = PermissionsGranted();
+
+  uint16_t untranslated_message_id;
+  if (has_constraints_) {
+    untranslated_message_id =
+        permission_count == 1
+            ? GetUntranslatedMessageIDSinglePermission(permission_name, false)
+            : GetUntranslatedMessageIDMultiplePermissions(false);
+  } else {
+    untranslated_message_id =
+        permission_count == 1
+            ? GetUntranslatedMessageIDSinglePermission(permission_name, granted)
+            : GetUntranslatedMessageIDMultiplePermissions(granted);
+  }
+
+  uint16_t translated_message_id =
+      GetTranslatedMessageID(untranslated_message_id, language_string);
+  CHECK(translated_message_id);
+  permission_text_span()->setInnerText(
+      GetLocale().QueryString(translated_message_id));
+}
+
+void HTMLUserMediaElement::UpdateIcon(PermissionName permission) {
+  PermissionIconType icon_type;
+  switch (permission) {
+    case PermissionName::VIDEO_CAPTURE:
+      icon_type = PermissionIconType::kCamera;
+      break;
+    case PermissionName::AUDIO_CAPTURE:
+      icon_type = PermissionIconType::kMicrophone;
+      break;
+    default:
+      return;
+  }
+  permission_internal_icon()->SetIcon(icon_type);
 }
 
 }  // namespace blink

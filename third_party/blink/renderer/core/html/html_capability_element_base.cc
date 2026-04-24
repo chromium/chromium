@@ -118,42 +118,6 @@ constexpr EDisplay kInvalidDisplayStyles[] = {
     EDisplay::kRuby,     EDisplay::kRubyText,
 };
 
-// Helper to get permission text resource ID for the given map which has only
-// one element.
-uint16_t GetUntranslatedMessageIDSinglePermission(PermissionName name,
-                                                  bool granted,
-                                                  bool is_precise_location) {
-  if (name == PermissionName::VIDEO_CAPTURE) {
-    return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
-                   : IDS_PERMISSION_REQUEST_CAMERA;
-  }
-
-  if (name == PermissionName::AUDIO_CAPTURE) {
-    return granted ? IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED
-                   : IDS_PERMISSION_REQUEST_MICROPHONE;
-  }
-
-  if (name == PermissionName::GEOLOCATION) {
-    if (is_precise_location) {
-      // This element uses precise location.
-      return granted ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED
-                     : IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION;
-    }
-    return granted ? IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED
-                   : IDS_PERMISSION_REQUEST_GEOLOCATION;
-  }
-
-  return 0;
-}
-
-// Helper to get permission text resource ID for the given map which has
-// multiple elements. Currently we only support "camera microphone" grouped
-// permissions.
-uint16_t GetUntranslatedMessageIDMultiplePermissions(bool granted) {
-  return granted ? IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED
-                 : IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
-}
-
 // Helper to get `PermissionsPolicyFeature` from permission name
 network::mojom::PermissionsPolicyFeature
 PermissionNameToPermissionsPolicyFeature(PermissionName permission_name) {
@@ -497,61 +461,6 @@ uint16_t HTMLCapabilityElementBase::GetTranslatedMessageID(
   // en strings.
   return GetPermissionElementMessageId(parts->first, message_id)
       .value_or(message_id);
-}
-
-void HTMLCapabilityElementBase::UpdateAppearance() {
-  bool permission_granted;
-  PermissionName permission_name;
-  wtf_size_t permission_count;
-  if (permission_status_map_.size() == 0U) {
-    // Use |permission_descriptors_| instead and assume a "not granted" state.
-    if (permission_descriptors_.size() == 0U) {
-      return;
-    }
-    permission_granted = false;
-    permission_name = permission_descriptors_[0]->name;
-    permission_count = permission_descriptors_.size();
-  } else {
-    CHECK_LE(permission_status_map_.size(), 2u);
-    permission_granted = PermissionsGranted();
-    permission_name = permission_status_map_.begin()->key;
-    permission_count = permission_status_map_.size();
-  }
-
-  UpdateIcon(permission_count == 1 ? permission_name
-                                   : PermissionName::VIDEO_CAPTURE);
-
-  AtomicString language_string = ComputeInheritedLanguage().ToAsciiLower();
-
-  uint16_t untranslated_message_id =
-      permission_count == 1
-          ? GetUntranslatedMessageIDSinglePermission(
-                permission_name, permission_granted, is_precise_location_)
-          : GetUntranslatedMessageIDMultiplePermissions(permission_granted);
-  uint16_t translated_message_id =
-      GetTranslatedMessageID(untranslated_message_id, language_string);
-  CHECK(translated_message_id);
-  permission_text_span_->setInnerText(
-      GetLocale().QueryString(translated_message_id));
-}
-
-void HTMLCapabilityElementBase::UpdateIcon(PermissionName permission) {
-  PermissionIconType icon_type;
-  switch (permission) {
-    case PermissionName::GEOLOCATION:
-      icon_type = is_precise_location_ ? PermissionIconType::kLocationPrecise
-                                       : PermissionIconType::kLocation;
-      break;
-    case PermissionName::VIDEO_CAPTURE:
-      icon_type = PermissionIconType::kCamera;
-      break;
-    case PermissionName::AUDIO_CAPTURE:
-      icon_type = PermissionIconType::kMicrophone;
-      break;
-    default:
-      return;
-  }
-  permission_internal_icon_->SetIcon(icon_type);
 }
 
 void HTMLCapabilityElementBase::UpdatePermissionStatusAndAppearance() {
