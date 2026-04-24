@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // Create a split view with and verify web contents are as expected and
       // the active index is correct.
       InstrumentTab(kWebContentsId),
-      NavigateWebContents(kWebContentsId, GURL(chrome::kChromeUINewTabURL)),
+      NavigateWebContents(kWebContentsId, chrome::ChromeUINewTabURLAsGURL()),
       CreateTabsAndEnterSplitView(), Check([&]() {
         return multi_contents_view()
                    ->start_contents_view_for_testing()
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
         return multi_contents_view()
                    ->end_contents_view_for_testing()
                    ->GetWebContents()
-                   ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+                   ->GetVisibleURL() == chrome::ChromeUINewTabURLAsGURL();
       }),
       CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
       // Simulate a double click on the resize area to trigger the split tabs to
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                  bool first_web_contents_set =
                      multi_contents_view->start_contents_view_for_testing()
                          ->GetWebContents()
-                         ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+                         ->GetVisibleURL() == chrome::ChromeUINewTabURLAsGURL();
                  bool second_web_contents_set =
                      multi_contents_view->end_contents_view_for_testing()
                          ->GetWebContents()
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // Create a split view with and verify web contents are as expected and
       // the active index is correct.
       InstrumentTab(kWebContentsId),
-      NavigateWebContents(kWebContentsId, GURL(chrome::kChromeUINewTabURL)),
+      NavigateWebContents(kWebContentsId, chrome::ChromeUINewTabURLAsGURL()),
       CreateTabsAndEnterSplitView(), Check([&]() {
         return multi_contents_view()
                    ->start_contents_view_for_testing()
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
         return multi_contents_view()
                    ->end_contents_view_for_testing()
                    ->GetWebContents()
-                   ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+                   ->GetVisibleURL() == chrome::ChromeUINewTabURLAsGURL();
       }),
       CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
       // Simulate a double press gesture event on the resize area to trigger the
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                  bool first_web_contents_set =
                      multi_contents_view->start_contents_view_for_testing()
                          ->GetWebContents()
-                         ->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL);
+                         ->GetVisibleURL() == chrome::ChromeUINewTabURLAsGURL();
                  bool second_web_contents_set =
                      multi_contents_view->end_contents_view_for_testing()
                          ->GetWebContents()

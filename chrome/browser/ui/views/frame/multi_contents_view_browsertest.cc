@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // Drag and drop should be enabled for chrome://newtab.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 }
 

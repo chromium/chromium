@@ -277,8 +277,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
   QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL), 1),
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL), 2),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
+      AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
       WaitForActiveTabChange(2), Do([&]() {
         SelectTabAt(1);
         DragSequence(
@@ -317,8 +317,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
   QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL), 1),
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL), 2),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
+      AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
       WaitForActiveTabChange(2), Do([&]() {
         SelectTabAt(1);
         DragSequence(
@@ -397,8 +397,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
 
   QuitTabDraggingObserver observer(browser_view.tab_strip_view());
   RunTestSequence(
-      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL), 1),
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL), 2),
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
+      AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
       WaitForActiveTabChange(2), Do([&]() {
         SelectTabAt(1);
         DragSequence(MoveMouse(ui_test_utils::GetCenterInScreenCoordinates(

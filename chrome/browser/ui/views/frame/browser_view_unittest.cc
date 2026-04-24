@@ -308,8 +308,8 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   EXPECT_FALSE(bookmark_bar->GetVisible());
 
   // The NTP should be treated the same as any other page.
-  NavigateAndCommitActiveTabWithTitle(browser, GURL(chrome::kChromeUINewTabURL),
-                                      std::u16string());
+  NavigateAndCommitActiveTabWithTitle(
+      browser, chrome::ChromeUINewTabURLAsGURL(), std::u16string());
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(top_container, bookmark_bar->parent());
 

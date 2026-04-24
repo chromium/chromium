@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
   // BookmarkBarView isn't shown.
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, false);
-  GURL new_tab_url(chrome::kChromeUINewTabURL);
+  GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   chrome::AddTabAt(browser(), GURL(), -1, true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url));
 
