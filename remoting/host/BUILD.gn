@@ -48,7 +48,7 @@ group("all") {
     }
 
     if (enable_me2me_host && is_linux) {
-      deps += [ "//remoting/host/linux:migrate_host" ]
+      deps += [ "//remoting/host/linux:remoting_migrate_host" ]
     }
   }
 }
@@ -88,9 +88,9 @@ source_set("host_main_headers") {
     "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
     "//remoting/host/linux:login_session_reporter_main_headers",
-    "//remoting/host/linux:migrate_host_main_headers",
-    "//remoting/host/linux:migrate_host_main_impl",
     "//remoting/host/linux:remote_session_info_main_headers",
+    "//remoting/host/linux:remoting_migrate_host_main_headers",
+    "//remoting/host/linux:remoting_migrate_host_main_impl",
     "//remoting/host/mac:agent_process_broker_main_headers",
     "//remoting/host/mac:host_service_main_headers",
     "//remoting/host/mac:remoting_native_messaging_host",
@@ -1320,7 +1320,7 @@ if (enable_me2me_host) {
       "//remoting/host/webauthn:main",
     ]
     if (is_linux) {
-      deps += [ "//remoting/host/linux:migrate_host_main_impl" ]
+      deps += [ "//remoting/host/linux:remoting_migrate_host_main_impl" ]
     }
     if (is_mac) {
       deps += [
