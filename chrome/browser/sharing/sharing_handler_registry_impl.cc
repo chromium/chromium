@@ -106,7 +106,8 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true)) {
     AddSharingHandler(
-        std::make_unique<GlicExperimentalTriggeringMessageHandler>(profile),
+        std::make_unique<GlicExperimentalTriggeringMessageHandler>(
+            profile, message_sender),
         {components_sharing_message::SharingMessage::
              kGlicExperimentalTriggering});
   }

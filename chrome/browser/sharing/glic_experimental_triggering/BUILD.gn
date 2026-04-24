@@ -7,8 +7,10 @@ source_set("glic_experimental_triggering") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/glic:mojo_bindings",
     "//components/sharing_message",
     "//components/sharing_message/proto",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -31,8 +33,11 @@ source_set("unit_tests") {
     ":glic_experimental_triggering",
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/glic/test_support",
     "//chrome/test:test_support",
+    "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
