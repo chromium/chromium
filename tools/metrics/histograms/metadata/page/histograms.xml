@@ -670,6 +670,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageActionController.{PageActionType}.ShownPerNavigation"
+    enum="BooleanShown" expires_after="2026-12-01">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records whether the {PageActionType} page action was shown at least once
+    during a navigation. Logged once per navigation when the user navigates away
+    or the tab is closed.
+  </summary>
+  <token key="PageActionType">
+    <variant name="AiMode"/>
+    <variant name="BookmarksStar"/>
+    <variant name="ClickToCall"/>
+    <variant name="CookieControls"/>
+    <variant name="Discounts"/>
+    <variant name="FileSystemAccess"/>
+    <variant name="Find"/>
+    <variant name="Indigo"/>
+    <variant name="IntentPicker"/>
+    <variant name="JsOptimizations"/>
+    <variant name="LensOverlay"/>
+    <variant name="LensOverlayHomework"/>
+    <variant name="LocalCardMigration"/>
+    <variant name="ManagePasswords"/>
+    <variant name="MandatoryReauth"/>
+    <variant name="MemorySaver"/>
+    <variant name="OptimizationGuide"/>
+    <variant name="PaymentsOfferNotification"/>
+    <variant name="PriceInsights"/>
+    <variant name="PriceTracking"/>
+    <variant name="PWAInstall"/>
+    <variant name="QRCodeGenerator"/>
+    <variant name="ReadAnything"
+        summary="ReadAnything (Obsolete, Deprecated Jun 06, 2024)"/>
+    <variant name="ReaderMode"/>
+    <variant name="ReadingMode"/>
+    <variant name="SaveAutofillAddress"/>
+    <variant name="SaveCard"/>
+    <variant name="SaveIban"/>
+    <variant name="SendTabToSelf"/>
+    <variant name="SharingHub"/>
+    <variant name="SideSearch"/>
+    <variant name="SMSRemoteFetcher"/>
+    <variant name="Translate"/>
+    <variant name="VirtualCardEnroll"/>
+    <variant name="VirtualCardManualFeedback"/>
+    <variant name="Zoom"/>
+  </token>
+</histogram>
+
 <histogram name="PageActionController.{PageActionType}.{State}.CTR2"
     enum="PageActionCTREvent" expires_after="2026-12-01">
   <owner>koretadaniel@chromium.org</owner>

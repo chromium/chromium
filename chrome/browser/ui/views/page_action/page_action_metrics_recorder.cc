@@ -33,8 +33,9 @@ PageActionPerActionMetricsRecorder::PageActionPerActionMetricsRecorder(
   scoped_observation_.Observe(&model);
 }
 
-PageActionPerActionMetricsRecorder::~PageActionPerActionMetricsRecorder() =
-    default;
+PageActionPerActionMetricsRecorder::~PageActionPerActionMetricsRecorder() {
+  RecordShownPerNavigation();
+}
 
 void PageActionPerActionMetricsRecorder::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
@@ -95,10 +96,9 @@ bool PageActionPerActionMetricsRecorder::IsNewNavigation() {
     return false;
   }
 
-  // TODO(crbug.com/407974430): [Metric] Record per-navigation metric for
-  // ...ActionTypeShown
   const GURL current_url = contents->GetURL();
   if (current_url != current_navigation_metrics_.url) {
+    RecordShownPerNavigation();
     current_navigation_metrics_.url = current_url;
     return true;
   }
@@ -174,6 +174,19 @@ void PageActionPerActionMetricsRecorder::RecordChipClick() {
   base::UmaHistogramExactLinear(
       "PageActionController.Chip.NumberActionsShownWhenClicked",
       visible_ephemeral_page_actions_count_callback_.Run(), 20);
+}
+
+void PageActionPerActionMetricsRecorder::RecordShownPerNavigation() {
+  if (current_navigation_metrics_.url.is_empty()) {
+    return;
+  }
+
+  bool was_shown = current_navigation_metrics_.icon_shown_recorded ||
+                   current_navigation_metrics_.chip_shown_recorded;
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"PageActionController.", histogram_name_, ".ShownPerNavigation"}),
+      was_shown);
 }
 
 }  // namespace page_actions

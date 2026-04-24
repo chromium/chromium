@@ -91,6 +91,7 @@ class PageActionPerActionMetricsRecorder
   void RecordChipShown();
   void RecordIconClick();
   void RecordChipClick();
+  void RecordShownPerNavigation();
 
   // Tracks per-navigation state.
   NavigationMetrics current_navigation_metrics_;

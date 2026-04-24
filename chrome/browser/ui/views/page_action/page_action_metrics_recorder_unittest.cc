@@ -486,5 +486,62 @@ TEST_F(PageActionMetricsRecorderTest, ChipToIconOnlyDoesNotLogExtraShown) {
   histogram_tester.ExpectTotalCount(specific_chip_histogram, 1);
 }
 
+TEST_F(PageActionMetricsRecorderTest, ShownPerNavigationRecordedOnNavigation) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  const std::string metric_name =
+      base::StrCat({"PageActionController.", properties_.histogram_name,
+                    ".ShownPerNavigation"});
+
+  GURL url1(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  GURL url2(kSecondUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url2);
+
+  FireModelChanged();
+
+  histogram_tester.ExpectUniqueSample(metric_name, false, 1);
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  GURL url3("https://url-3.test");
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url3);
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
+  FireModelChanged();
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  histogram_tester.ExpectTotalCount(metric_name, 2);
+  histogram_tester.ExpectBucketCount(metric_name, true, 1);
+  histogram_tester.ExpectBucketCount(metric_name, false, 1);
+}
+
+TEST_F(PageActionMetricsRecorderTest, ShownPerNavigationRecordedOnDestruction) {
+  base::HistogramTester histogram_tester;
+  CreateRecorder();
+
+  const std::string metric_name =
+      base::StrCat({"PageActionController.", properties_.histogram_name,
+                    ".ShownPerNavigation"});
+
+  GURL url1(kFirstUrlStr);
+  content::WebContentsTester::For(tab_.GetContents())->NavigateAndCommit(url1);
+
+  ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(true));
+  FireModelChanged();
+
+  recorder_.reset();
+
+  histogram_tester.ExpectUniqueSample(metric_name, true, 1);
+}
+
 }  // namespace
 }  // namespace page_actions
