@@ -465,6 +465,10 @@ const char kCredentialProviderPerformanceImprovementsDescription[] =
     "Enables a series of performance improvements for the Credential Provider "
     "Extension.";
 
+const char kCrossDeviceSigninName[] = "Cross-Device Sign-in";
+const char kCrossDeviceSigninDescription[] =
+    "Guards the logic to start sign-in from a given QR Code.";
+
 const char kDataSharingDebugLogsName[] = "Enable data sharing debug logs";
 const char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "

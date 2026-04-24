@@ -11501,6 +11501,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kSeamlessSigninVariations,
                                     "SeamlessSigninVariations")},
 
+    {"cross-device-signin", flag_descriptions::kCrossDeviceSigninName,
+     flag_descriptions::kCrossDeviceSigninDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kCrossDeviceSignin)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

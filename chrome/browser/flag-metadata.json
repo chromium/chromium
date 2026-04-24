@@ -2007,6 +2007,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cross-device-signin",
+    "owners": ["lbarczynski@google.com", "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "cross-device-task-handoff",
     "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 160

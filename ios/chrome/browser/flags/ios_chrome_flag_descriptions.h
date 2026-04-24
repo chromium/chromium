@@ -286,6 +286,9 @@ extern const char kCredentialProviderPasskeyPRFDescription[];
 extern const char kCredentialProviderPerformanceImprovementsName[];
 extern const char kCredentialProviderPerformanceImprovementsDescription[];
 
+extern const char kCrossDeviceSigninName[];
+extern const char kCrossDeviceSigninDescription[];
+
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
 

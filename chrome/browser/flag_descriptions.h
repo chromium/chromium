@@ -81,6 +81,10 @@ inline constexpr char kCredentialManagementUnifiedUiName[] =
 inline constexpr char kCredentialManagementUnifiedUiDescription[] =
     "Enables the Unified UI for the credential management password APIs.";
 
+inline constexpr char kCrossDeviceSigninName[] = "Cross-Device Sign-in";
+inline constexpr char kCrossDeviceSigninDescription[] =
+    "Guards the logic to start sign-in from a given QR Code.";
+
 inline constexpr char kCrossTabElementCaptureName[] =
     "Element Capture cross-tab";
 inline constexpr char kCrossTabElementCaptureDescription[] =
