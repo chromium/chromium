@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -131,6 +133,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final NonNullObservableSupplier<Boolean> mIsFindInPageShowingSupplier;
     private final ControlContainer mControlContainer;
     private final ToolbarLayout mToolbarLayout;
+    private final TopControlsStacker mTopControlsStacker;
     private final BottomControlsStacker mBottomControlsStacker;
     private final BottomSheetController mBottomSheetController;
     private final SettableNonNullObservableSupplier<Integer> mBrowserControlsOffsetSupplier;
@@ -218,6 +221,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ControlContainer controlContainer,
             ToolbarLayout toolbarLayout,
+            TopControlsStacker topControlsStacker,
             BottomControlsStacker bottomControlsStacker,
             BottomSheetController bottomSheetController,
             SettableNonNullObservableSupplier<Integer> browserControlsOffsetSupplier,
@@ -243,6 +247,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
+        mTopControlsStacker = topControlsStacker;
         mBottomControlsStacker = bottomControlsStacker;
         mBottomSheetController = bottomSheetController;
         mBrowserControlsOffsetSupplier = browserControlsOffsetSupplier;
@@ -630,6 +635,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int verticalGravity =
                 newControlsPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
         layoutParams.gravity = Gravity.START | verticalGravity;
+        int heightAboveToolbar =
+                mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TOOLBAR);
+        layoutParams.topMargin =
+                newControlsPosition == ControlsPosition.TOP ? heightAboveToolbar : 0;
         CoordinatorLayout.LayoutParams toolbarLayoutParams =
                 mControlContainer.mutateToolbarLayoutParams();
         toolbarLayoutParams.topMargin =

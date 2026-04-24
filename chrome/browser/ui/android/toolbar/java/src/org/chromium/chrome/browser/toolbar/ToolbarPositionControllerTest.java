@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerV
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -290,6 +292,7 @@ public class ToolbarPositionControllerTest {
     @Mock private PrefService mPrefs;
     @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
     @Mock private PrefService mLocalPrefService;
+    @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private InsetObserver mInsetObserver;
@@ -390,6 +393,7 @@ public class ToolbarPositionControllerTest {
                         mKeyboardVisibilityDelegate,
                         mControlContainer,
                         mToolbarLayout,
+                        mTopControlsStacker,
                         mBottomControlsStacker,
                         mBottomSheetController,
                         mBottomToolbarOffsetSupplier,
@@ -1295,6 +1299,24 @@ public class ToolbarPositionControllerTest {
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
         assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
+    public void testTopMarginFromTopControlsStacker() {
+        int heightAboveToolbar = 24;
+        when(mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TOOLBAR))
+                .thenReturn(heightAboveToolbar);
+
+        // When controls are at bottom, topMargin should be 0.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
+        assertEquals(0, mControlContainerLayoutParams.topMargin);
+
+        // When controls are at top, topMargin should match heightAboveToolbar.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertControlsAtTop();
+        assertEquals(heightAboveToolbar, mControlContainerLayoutParams.topMargin);
     }
 
     private void assertControlsAtBottom() {

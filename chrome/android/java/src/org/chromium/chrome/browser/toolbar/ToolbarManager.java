@@ -1943,6 +1943,7 @@ public class ToolbarManager
                         mWindowAndroid.getKeyboardDelegate(),
                         mControlContainer,
                         mToolbarLayout,
+                        mTopControlsStacker,
                         mBottomControlsStacker,
                         mBottomSheetController,
                         mBottomToolbarControlsOffsetSupplier,
