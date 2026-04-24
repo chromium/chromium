@@ -93,6 +93,7 @@
 #include "cc/tiles/raster_tile_priority_queue.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "cc/tiles/tiles_with_resource_iterator.h"
+#include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/damage_tracker.h"
 #include "cc/trees/debug_rect_history.h"
@@ -462,23 +463,6 @@ LayerTreeHostImpl::UIResourceData::UIResourceData(UIResourceData&&) noexcept =
     default;
 LayerTreeHostImpl::UIResourceData& LayerTreeHostImpl::UIResourceData::operator=(
     UIResourceData&&) = default;
-
-std::unique_ptr<LayerTreeHostImpl> LayerTreeHostImpl::Create(
-    const LayerTreeSettings& settings,
-    LayerTreeHostImplClient* client,
-    TaskRunnerProvider* task_runner_provider,
-    RenderingStatsInstrumentation* rendering_stats_instrumentation,
-    TaskGraphRunner* task_graph_runner,
-    std::unique_ptr<MutatorHost> mutator_host,
-    RasterDarkModeFilter* dark_mode_filter,
-    int id,
-    scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-    LayerTreeHostSchedulingClient* scheduling_client) {
-  return base::WrapUnique(new LayerTreeHostImpl(
-      settings, client, task_runner_provider, rendering_stats_instrumentation,
-      task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
-      std::move(image_worker_task_runner), scheduling_client));
-}
 
 LayerTreeHostImpl::LayerTreeHostImpl(
     const LayerTreeSettings& settings,

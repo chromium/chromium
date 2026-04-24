@@ -68,6 +68,7 @@
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/test/test_paint_worklet_layer_painter.h"
 #include "cc/test/test_task_graph_runner.h"
+#include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/draw_property_utils.h"
@@ -96,6 +97,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "components/viz/service/layers/viz_layer_tree_host_impl.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
@@ -10737,7 +10739,7 @@ TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
   // that we can force partial swap enabled.
   LayerTreeSettings settings = DefaultSettings();
   std::unique_ptr<LayerTreeHostImpl> layer_tree_host_impl =
-      LayerTreeHostImpl::Create(
+      CreateLayerTreeHostImplForTesting(
           settings, this, &task_runner_provider_, &stats_instrumentation_,
           &task_graph_runner_,
           AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
@@ -11142,7 +11144,7 @@ TEST_P(ClientModeLayerTreeHostImplTest, MemoryLimits) {
   LayerTreeSettings settings = DefaultSettings();
   settings.memory_policy =
       ManagedMemoryPolicy(kGpuByteLimit, kGpuCutoff, kGpuResourceLimit);
-  host_impl_ = LayerTreeHostImpl::Create(
+  host_impl_ = CreateLayerTreeHostImplForTesting(
       settings, this, &task_runner_provider_, &stats_instrumentation_,
       &task_graph_runner_,
       AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
@@ -15698,7 +15700,7 @@ TEST_P(LayerTreeHostImplTest, RecomputeGpuRasterOnLayerTreeFrameSinkChange) {
   host_impl_->ReleaseLayerTreeFrameSink();
   host_impl_ = nullptr;
 
-  host_impl_ = LayerTreeHostImpl::Create(
+  host_impl_ = CreateLayerTreeHostImplForTesting(
       DefaultSettings(), this, &task_runner_provider_, &stats_instrumentation_,
       &task_graph_runner_,
       AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,
@@ -18197,7 +18199,7 @@ TEST_P(LayerTreeHostImplTest, RecomputeRasterCapsOnLayerTreeFrameSinkUpdate) {
   host_impl_->ReleaseLayerTreeFrameSink();
   host_impl_ = nullptr;
 
-  host_impl_ = LayerTreeHostImpl::Create(
+  host_impl_ = CreateLayerTreeHostImplForTesting(
       DefaultSettings(), this, &task_runner_provider_, &stats_instrumentation_,
       &task_graph_runner_,
       AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,

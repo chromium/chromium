@@ -52,6 +52,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/layers/viz_layer_tree_host_impl.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace viz {
@@ -1572,7 +1573,7 @@ LayerContextImpl::LayerContextImpl(
       task_runner_provider_(cc::TaskRunnerProvider::CreateForDisplayTree(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
       rendering_stats_(cc::RenderingStatsInstrumentation::Create()),
-      host_impl_(cc::LayerTreeHostImpl::Create(
+      host_impl_(VizLayerTreeHostImpl::Create(
           GetDisplayTreeSettings(std::move(settings)),
           this,
           task_runner_provider_.get(),

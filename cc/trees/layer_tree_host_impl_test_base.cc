@@ -14,6 +14,7 @@
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
+#include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -22,6 +23,53 @@
 namespace cc {
 
 using ScrollThread = InputHandler::ScrollThread;
+
+namespace {
+class TestVizLayerTreeHostImpl : public LayerTreeHostImpl {
+ public:
+  static std::unique_ptr<LayerTreeHostImpl> Create(
+      const LayerTreeSettings& settings,
+      LayerTreeHostImplClient* client,
+      TaskRunnerProvider* task_runner_provider,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      TaskGraphRunner* task_graph_runner,
+      std::unique_ptr<MutatorHost> mutator_host,
+      RasterDarkModeFilter* dark_mode_filter,
+      int id,
+      scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+      LayerTreeHostSchedulingClient* scheduling_client) {
+    CHECK(settings.trees_in_viz_in_viz_process);
+    return base::WrapUnique(new TestVizLayerTreeHostImpl(
+        settings, client, task_runner_provider, rendering_stats_instrumentation,
+        task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
+        std::move(image_worker_task_runner), scheduling_client));
+  }
+  using LayerTreeHostImpl::LayerTreeHostImpl;
+  ~TestVizLayerTreeHostImpl() override = default;
+};
+}  // namespace
+std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
+    const LayerTreeSettings& settings,
+    LayerTreeHostImplClient* client,
+    TaskRunnerProvider* task_runner_provider,
+    RenderingStatsInstrumentation* rendering_stats_instrumentation,
+    TaskGraphRunner* task_graph_runner,
+    std::unique_ptr<MutatorHost> mutator_host,
+    RasterDarkModeFilter* dark_mode_filter,
+    int id,
+    scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+    LayerTreeHostSchedulingClient* scheduling_client) {
+  if (settings.trees_in_viz_in_viz_process) {
+    return TestVizLayerTreeHostImpl::Create(
+        settings, client, task_runner_provider, rendering_stats_instrumentation,
+        task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
+        std::move(image_worker_task_runner), scheduling_client);
+  }
+  return ClientLayerTreeHostImpl::Create(
+      settings, client, task_runner_provider, rendering_stats_instrumentation,
+      task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
+      std::move(image_worker_task_runner), scheduling_client);
+}
 
 TestFrameData::TestFrameData() {
   // Set ack to something valid, so DCHECKs don't complain.
@@ -275,7 +323,7 @@ bool LayerTreeHostImplTestBase::CreateHostImpl(
   }
   host_impl_.reset();
   InitializeImageWorker(settings);
-  host_impl_ = LayerTreeHostImpl::Create(
+  host_impl_ = CreateLayerTreeHostImplForTesting(
       settings, this, &task_runner_provider_, &stats_instrumentation_,
       &task_graph_runner_,
       AnimationHost::CreateForTesting(ThreadInstance::kImpl), nullptr, 0,

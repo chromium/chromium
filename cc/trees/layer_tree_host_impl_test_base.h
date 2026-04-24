@@ -37,6 +37,18 @@ class SolidColorScrollbarLayerImpl;
 
 constexpr gfx::Size kDefaultLayerSize(100, 100);
 
+std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
+    const LayerTreeSettings& settings,
+    LayerTreeHostImplClient* client,
+    TaskRunnerProvider* task_runner_provider,
+    RenderingStatsInstrumentation* rendering_stats_instrumentation,
+    TaskGraphRunner* task_graph_runner,
+    std::unique_ptr<MutatorHost> mutator_host,
+    RasterDarkModeFilter* dark_mode_filter,
+    int id,
+    scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+    LayerTreeHostSchedulingClient* scheduling_client);
+
 struct TestFrameData : public FrameData {
   TestFrameData();
   ~TestFrameData();
