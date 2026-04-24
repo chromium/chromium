@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/google_services_connectivity_routine.h"
 
-#include <array>
 #include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/google_services_connectivity_routine_util.h"
@@ -29,10 +29,11 @@ constexpr char kTimeoutSecNum[] = "10";
 // return the result.
 constexpr char kMaxErrorsNum[] = "5";
 
-// D-Bus call timeout. Shill tests hosts sequentially, so the worst case is
-// kGoogleHosts.size() * kTimeoutSecNum. Add margin for proxy resolution and
-// D-Bus overhead.
-constexpr int kDbusTimeoutMs = 70'000;
+// D-Bus call timeout. Shill tests hosts sequentially and returns early after
+// `kMaxErrorsNum` errors, so the worst case is
+// `kMaxErrorsNum` * `kTimeoutSecNum` for failed probes plus quick successes
+// for the remaining hosts. Add margin for proxy resolution and D-Bus overhead.
+constexpr auto kDBusTimeout = base::Seconds(70);
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
@@ -144,12 +145,6 @@ bool GoogleServicesConnectivityRoutine::CanRun() {
 
 void GoogleServicesConnectivityRoutine::Run() {
   CHECK(CanRun());
-  // TODO(crbug.com/463098734): define a list of Google services in the util
-  // file according to the requirements document.
-  static constexpr auto kGoogleHosts = std::to_array<std::string_view>(
-      {"clients1.google.com", "clients2.google.com", "clients3.google.com",
-       "clients4.google.com", "clients5.google.com"});
-
   const base::flat_map<std::string, std::string> options = {
       {shill::kTestHostsConnectivityTimeoutKey, kTimeoutSecNum},
       {shill::kTestHostsConnectivityMaxErrorsKey, kMaxErrorsNum},
@@ -157,7 +152,8 @@ void GoogleServicesConnectivityRoutine::Run() {
        shill::kTestHostsConnectivityProxySystem},
   };
   shill_manager_client_->TestHostsConnectivity(
-      std::vector<std::string>(kGoogleHosts.begin(), kGoogleHosts.end()),
+      base::ToVector(GetGoogleServicesHostnames(),
+                     [](std::string_view host) { return std::string(host); }),
       options,
       base::BindOnce(
           &GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult,
@@ -165,7 +161,7 @@ void GoogleServicesConnectivityRoutine::Run() {
       base::BindOnce(
           &GoogleServicesConnectivityRoutine::OnGetHostsConnectivityError,
           weak_factory_.GetWeakPtr()),
-      kDbusTimeoutMs);
+      static_cast<int>(kDBusTimeout.InMilliseconds()));
 }
 
 void GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult(

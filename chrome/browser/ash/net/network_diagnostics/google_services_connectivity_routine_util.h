@@ -7,7 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "chrome/browser/ash/net/network_diagnostics/hosts_connectivity_diagnostics.pb.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 
@@ -17,6 +19,20 @@ inline constexpr char kGoogleServicesConnectivityFailedToExecuteError[] =
     "Failed to execute the connectivity test.";
 inline constexpr char kGoogleServicesConnectivityInvalidProtobufError[] =
     "Invalid protobuf response from connectivity test.";
+
+// Returns the deduped hostnames the `GoogleServicesConnectivityRoutine`
+// probes. Covers the P0/P1/P2 ChromeOS services the tool verifies:
+// enrollment, login, policy fetch, auto-update, clock sync, CRD, CWS,
+// Play Store, DriveFS and time zone. Per-service grouping is an
+// implementation detail; see the .cc file. The span is valid for
+// process lifetime.
+//
+// The hostnames are sourced from Chrome Enterprise support articles
+// (see the .cc file for links). Those articles are updated
+// periodically as Google endpoints change, so this list should be
+// audited against them at least once per release cycle to stay
+// accurate.
+base::span<const std::string_view> GetGoogleServicesHostnames();
 
 // Converts a string to optional, returning nullopt for empty strings.
 std::optional<std::string> ToOptionalStrIfNonEmpty(const std::string& value);
