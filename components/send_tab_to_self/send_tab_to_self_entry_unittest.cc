@@ -17,6 +17,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
+#include "components/send_tab_to_self/test_matchers.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/session_constants.h"
@@ -36,49 +37,6 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
-
-MATCHER_P2(MatchesAutofillSignature, form_signature, field_signature, "") {
-  return testing::ExplainMatchResult(
-             Field("form_signature",
-                   &PageContext::FormFieldAutofillSignature::form_signature,
-                   form_signature),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             Field("field_signature",
-                   &PageContext::FormFieldAutofillSignature::field_signature,
-                   field_signature),
-             arg, result_listener);
-}
-
-MATCHER_P5(MatchesFormField,
-           id_attribute,
-           name_attribute,
-           form_control_type,
-           value,
-           autofill_signature,
-           "") {
-  return testing::ExplainMatchResult(
-             Field("id_attribute", &PageContext::FormField::id_attribute,
-                   id_attribute),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             Field("name_attribute", &PageContext::FormField::name_attribute,
-                   name_attribute),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             Field("form_control_type",
-                   &PageContext::FormField::form_control_type,
-                   form_control_type),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             Field("value", &PageContext::FormField::value, value), arg,
-             result_listener) &&
-         testing::ExplainMatchResult(
-             Field("autofill_signature",
-                   &PageContext::FormField::autofill_signature,
-                   autofill_signature),
-             arg, result_listener);
-}
 
 MATCHER_P(MatchesPageContext, fields_matcher, "") {
   return testing::ExplainMatchResult(

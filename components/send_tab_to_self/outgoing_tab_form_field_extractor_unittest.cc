@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -43,56 +44,7 @@ using ::testing::Not;
 using ::testing::SizeIs;
 using ::testing::Test;
 
-// TODO(crbug.com/485145029): Consider introducing
-// components/send_tab_to_self/test_matchers.h since matchers are duplicated
-// across files.
 
-MATCHER_P2(MatchesAutofillSignature, form_signature, field_signature, "") {
-  return testing::ExplainMatchResult(
-             testing::Field(
-                 "form_signature",
-                 &PageContext::FormFieldAutofillSignature::form_signature,
-                 form_signature),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field(
-                 "field_signature",
-                 &PageContext::FormFieldAutofillSignature::field_signature,
-                 field_signature),
-             arg, result_listener);
-}
-
-MATCHER_P5(MatchesFormField,
-           id_attribute,
-           name_attribute,
-           form_control_type,
-           value,
-           autofill_signature,
-           "") {
-  return testing::ExplainMatchResult(
-             testing::Field("id_attribute",
-                            &PageContext::FormField::id_attribute,
-                            id_attribute),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("name_attribute",
-                            &PageContext::FormField::name_attribute,
-                            name_attribute),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("form_control_type",
-                            &PageContext::FormField::form_control_type,
-                            form_control_type),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("value", &PageContext::FormField::value, value),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("autofill_signature",
-                            &PageContext::FormField::autofill_signature,
-                            autofill_signature),
-             arg, result_listener);
-}
 
 class OutgoingTabFormFieldExtractorTest
     : public Test,
@@ -139,11 +91,12 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractFields) {
   autofill::test_api(autofill_manager())
       .AddSeenFormStructure(std::move(form_structure));
 
-  EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
-                                           url::Origin::Create(kUrl))
-                  .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, u"value1", _),
-                          MatchesFormField(u"id2", _, _, u"value2", _)));
+  EXPECT_THAT(
+      ExtractOutgoingTabFormFields(autofill_manager(),
+                                   url::Origin::Create(kUrl))
+          .fields,
+      ElementsAre(MatchesFormField(Eq(u"id1"), _, _, Eq(u"value1"), _),
+                  MatchesFormField(Eq(u"id2"), _, _, Eq(u"value2"), _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
@@ -167,7 +120,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
+              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterEmptyFields) {
@@ -265,7 +218,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest,
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
+              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {

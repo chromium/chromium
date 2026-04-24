@@ -107,10 +107,14 @@ source_set("test_support") {
   sources = [
     "fake_send_tab_to_self_model.cc",
     "fake_send_tab_to_self_model.h",
+    "test_matchers.cc",
+    "test_matchers.h",
   ]
   deps = [
     ":send_tab_to_self",
     "//base",
+    "//components/autofill/core/common",
+    "//testing/gmock",
     "//url",
   ]
 }
