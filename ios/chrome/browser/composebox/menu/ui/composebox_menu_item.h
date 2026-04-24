@@ -15,6 +15,10 @@ enum class ComposeboxMenuItemType {
   kCanvas,
   kModelAuto,
   kModelThinking,
+  kAttachmentTabs,
+  kAttachmentCamera,
+  kAttachmentGallery,
+  kAttachmentFiles,
 };
 
 // Represents a menu item in the Composebox menu.

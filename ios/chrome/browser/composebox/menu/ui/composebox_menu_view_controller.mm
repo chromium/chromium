@@ -19,27 +19,44 @@ namespace {
 // The height of the attachments stack view.
 const CGFloat kAttachmentStackViewHeight = 80.0f;
 
-// The spacing of the attachments stack view.
-const CGFloat kAttachmentStackViewSpacing = 6.0f;
-
 // Insets for the safe area (top, left, bottom, right).
-const UIEdgeInsets kSafeAreaInsets = {20.0, 15.0, 0.0, 15.0};
+const UIEdgeInsets kSafeAreaInsets = {20.0, 15.0, 20.0, 15.0};
 
-// The reuse identifier for the composebox menu table view cell.
-NSString* const kComposeboxMenuCellIdentifier = @"ComposeboxMenuCell";
+// Fractional width of the attachment item.
+const CGFloat kAttachmentItemFractionalWidth = 0.25f;
+
+// Trailing inset for the attachment item.
+const CGFloat kAttachmentItemTrailingInset = 6.0f;
+
+// Insets for the attachments section.
+const NSDirectionalEdgeInsets kAttachmentsSectionInsets = {20.0, 15.0, 20.0,
+                                                           15.0};
+
+// Leading constant for the header label.
+const CGFloat kHeaderLabelLeadingPadding = 15.0f;
+
+// Vertical constant for the header label.
+const CGFloat kHeaderLabelVerticalPadding = 10.0f;
+
+// Composebox menu section identifier.
+enum class ComposeboxMenuSectionIdentifier {
+  kAttachments = 0,
+  kTools,
+  kModels,
+};
 
 }  // namespace
 
-@interface ComposeboxMenuViewController () <UITableViewDataSource,
-                                            UITableViewDelegate>
+@interface ComposeboxMenuViewController () <UICollectionViewDelegate>
 @end
 
 @implementation ComposeboxMenuViewController {
-  // The table view displaying the composebox menu tools and actions.
-  UITableView* _tableView;
-  // The stack view containing the attachments
-  UIStackView* _attachmentStackView;
-  // The sections to display in the table view.
+  // The collection view displaying the composebox menu.
+  UICollectionView* _collectionView;
+  // The diffable data source for the collection view.
+  UICollectionViewDiffableDataSource<NSNumber*, ComposeboxMenuItem*>*
+      _dataSource;
+  // The sections to display in the collection view.
   NSArray<ComposeboxMenuSection*>* _sections;
 }
 
@@ -49,14 +66,16 @@ NSString* const kComposeboxMenuCellIdentifier = @"ComposeboxMenuCell";
   self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
   [self setUpSections];
-  [self setUpTableView];
-
-  UIView* headerView =
-      [self headerViewWithItems:[self availableAttachmentViews]];
-  _tableView.tableHeaderView = headerView;
+  [self setUpCollectionView];
+  [self setUpDataSource];
+  [self applyInitialSnapshot];
 }
 
 - (void)setUpSections {
+  ComposeboxMenuSection* attachmentsSection = [[ComposeboxMenuSection alloc]
+      initWithTitle:nil
+              items:[self availableAttachmentItems]];
+
   ComposeboxMenuItem* aimItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
               image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
@@ -103,173 +122,118 @@ NSString* const kComposeboxMenuCellIdentifier = @"ComposeboxMenuCell";
                         IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3")
               items:@[ autoItem, thinkingItem ]];
 
-  _sections = @[ toolsSection, modelsSection ];
+  _sections = @[ attachmentsSection, toolsSection, modelsSection ];
 }
 
-- (void)setUpTableView {
-  _tableView = [[UITableView alloc] initWithFrame:self.view.bounds
-                                            style:UITableViewStyleInsetGrouped];
-  [_tableView registerClass:[UITableViewCell class]
-      forCellReuseIdentifier:kComposeboxMenuCellIdentifier];
-  _tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  _tableView.dataSource = self;
-  _tableView.delegate = self;
-  _tableView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+- (void)setUpCollectionView {
+  _collectionView =
+      [[UICollectionView alloc] initWithFrame:self.view.bounds
+                         collectionViewLayout:[self createLayout]];
+  _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  _collectionView.delegate = self;
+  _collectionView.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
-  [self.view addSubview:_tableView];
+  [self.view addSubview:_collectionView];
+  AddSameConstraints(_collectionView, self.view);
+}
 
-  AddSameConstraints(_tableView, self.view);
+- (UICollectionViewLayout*)createLayout {
+  UICollectionViewCompositionalLayoutConfiguration* config =
+      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
 
-  /// Remove extra space from UITableViewWrapperView.
-  _tableView.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(0, CGFLOAT_MIN, 0, CGFLOAT_MIN);
-  _tableView.tableHeaderView =
-      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-  _tableView.tableFooterView =
-      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+  __weak __typeof(self) weakSelf = self;
+  return [[UICollectionViewCompositionalLayout alloc]
+      initWithSectionProvider:^NSCollectionLayoutSection*(
+          NSInteger sectionIndex,
+          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+        return [weakSelf layoutSectionForIndex:sectionIndex
+                             layoutEnvironment:layoutEnvironment];
+      }
+                configuration:config];
+}
+
+- (NSCollectionLayoutSection*)
+    layoutSectionForIndex:(NSInteger)sectionIndex
+        layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
+  if (sectionIndex ==
+      static_cast<NSInteger>(ComposeboxMenuSectionIdentifier::kAttachments)) {
+    // Attachments section (Horizontal)
+    NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
+        sizeWithWidthDimension:
+            [NSCollectionLayoutDimension
+                fractionalWidthDimension:kAttachmentItemFractionalWidth]
+               heightDimension:[NSCollectionLayoutDimension
+                                   fractionalHeightDimension:1.0]];
+    NSCollectionLayoutItem* item =
+        [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+    item.contentInsets =
+        NSDirectionalEdgeInsetsMake(0, 0, 0, kAttachmentItemTrailingInset);
+
+    NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
+        sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                   fractionalWidthDimension:1.0]
+               heightDimension:
+                   [NSCollectionLayoutDimension
+                       absoluteDimension:kAttachmentStackViewHeight]];
+    NSCollectionLayoutGroup* group =
+        [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
+                                                      subitems:@[ item ]];
+
+    NSCollectionLayoutSection* section =
+        [NSCollectionLayoutSection sectionWithGroup:group];
+    section.contentInsets = kAttachmentsSectionInsets;
+    section.orthogonalScrollingBehavior =
+        UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
+    return section;
+  } else {
+    UICollectionLayoutListConfiguration* listConfig =
+        [[UICollectionLayoutListConfiguration alloc]
+            initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
+    listConfig.headerMode = UICollectionLayoutListHeaderModeSupplementary;
+    NSCollectionLayoutSection* section = [NSCollectionLayoutSection
+        sectionWithListConfiguration:listConfig
+                   layoutEnvironment:layoutEnvironment];
+    return section;
+  }
 }
 
 #pragma mark - Private
 
-// Returns the available attachment views.
-- (NSArray<UIView*>*)availableAttachmentViews {
-  UIView* tabsAttachment =
-      [self attachmentViewWithTitle:l10n_util::GetNSString(
-                                        IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
-                             symbol:DefaultSymbolWithPointSize(
-                                        kNewTabGroupActionSymbol,
-                                        kSymbolActionPointSize)];
-  UIView* cameraAttachment = [self
-      attachmentViewWithTitle:l10n_util::GetNSString(
-                                  IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
-                       symbol:DefaultSymbolWithPointSize(
-                                  kSystemCameraSymbol, kSymbolActionPointSize)];
-  UIView* galleryAttachment =
-      [self attachmentViewWithTitle:l10n_util::GetNSString(
-                                        IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
-                             symbol:DefaultSymbolWithPointSize(
-                                        kPhotoOnRectangleAngled,
-                                        kSymbolActionPointSize)];
-  UIView* filesAttachment =
-      [self attachmentViewWithTitle:l10n_util::GetNSString(
-                                        IDS_IOS_COMPOSEBOX_FILES_ACTION)
-                             symbol:DefaultSymbolWithPointSize(
-                                        kFolderSymbol, kSymbolActionPointSize)];
+- (NSArray<ComposeboxMenuItem*>*)availableAttachmentItems {
+  ComposeboxMenuItem* tabsItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
+              image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kAttachmentTabs];
+  ComposeboxMenuItem* cameraItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
+              image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kAttachmentCamera];
+  ComposeboxMenuItem* galleryItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
+              image:DefaultSymbolWithPointSize(kPhotoOnRectangleAngled,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kAttachmentGallery];
+  ComposeboxMenuItem* filesItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
+              image:DefaultSymbolWithPointSize(kFolderSymbol,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kAttachmentFiles];
 
-  return
-      @[ tabsAttachment, cameraAttachment, galleryAttachment, filesAttachment ];
+  return @[ tabsItem, cameraItem, galleryItem, filesItem ];
 }
 
-// Sets up the container for the attachment options.
-- (UIView*)headerViewWithItems:(NSArray<UIView*>*)items {
-  _attachmentStackView = [[UIStackView alloc] initWithArrangedSubviews:items];
-  _attachmentStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  _attachmentStackView.distribution = UIStackViewDistributionFillEqually;
-  _attachmentStackView.alignment = UIStackViewAlignmentFill;
-  _attachmentStackView.axis = UILayoutConstraintAxisHorizontal;
-  _attachmentStackView.spacing = kAttachmentStackViewSpacing;
+#pragma mark - UICollectionViewDelegate
 
-  CGFloat height =
-      kAttachmentStackViewHeight + kSafeAreaInsets.top + kSafeAreaInsets.bottom;
-  UIView* headerView = [[UIView alloc]
-      initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, height)];
-  headerView.backgroundColor = [UIColor clearColor];
-  [headerView addSubview:_attachmentStackView];
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  [collectionView deselectItemAtIndexPath:indexPath animated:YES];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_attachmentStackView.heightAnchor
-        constraintEqualToConstant:kAttachmentStackViewHeight],
-    [_attachmentStackView.leadingAnchor
-        constraintEqualToAnchor:headerView.leadingAnchor
-                       constant:kSafeAreaInsets.left],
-    [_attachmentStackView.trailingAnchor
-        constraintEqualToAnchor:headerView.trailingAnchor
-                       constant:-kSafeAreaInsets.right],
-    [_attachmentStackView.topAnchor
-        constraintEqualToAnchor:headerView.topAnchor
-                       constant:kSafeAreaInsets.top],
-  ]];
-
-  return headerView;
-}
-
-// Create an attachment view with the given title and symbol.
-- (ComposeboxMenuAttachmentView*)attachmentViewWithTitle:(NSString*)title
-                                                  symbol:(UIImage*)symbol {
-  ComposeboxMenuAttachmentView* attachmentView =
-      [[ComposeboxMenuAttachmentView alloc] init];
-  attachmentView.translatesAutoresizingMaskIntoConstraints = NO;
-  attachmentView.title = title;
-  attachmentView.image =
-      SymbolWithPalette(symbol, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
-  attachmentView.accessibilityLabel = title;
-
-  attachmentView.configurationUpdateHandler = ^(UIButton* updatedButton) {
-    BOOL isHighlighted = updatedButton.state == UIControlStateHighlighted;
-    CGFloat scale = isHighlighted ? 1.05 : 1.0;
-    CGFloat alpha = isHighlighted ? 0.7 : 1.0;
-    [UIView animateWithDuration:0.1
-                     animations:^{
-                       updatedButton.alpha = alpha;
-                       updatedButton.transform =
-                           CGAffineTransformMakeScale(scale, scale);
-                     }];
-  };
-  return attachmentView;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  return _sections.count;
-}
-
-- (NSInteger)tableView:(UITableView*)tableView
-    numberOfRowsInSection:(NSInteger)section {
-  return _sections[section].items.count;
-}
-
-- (NSString*)tableView:(UITableView*)tableView
-    titleForHeaderInSection:(NSInteger)section {
-  return _sections[section].title;
-}
-
-- (void)tableView:(UITableView*)tableView
-    willDisplayHeaderView:(UIView*)view
-               forSection:(NSInteger)section {
-  if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-    UITableViewHeaderFooterView* header = (UITableViewHeaderFooterView*)view;
-    header.textLabel.font = [UIFont systemFontOfSize:16.0
-                                              weight:UIFontWeightBold];
-    header.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  ComposeboxMenuItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
+  if (!item) {
+    return;
   }
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [tableView
-      dequeueReusableCellWithIdentifier:kComposeboxMenuCellIdentifier];
-
-  ComposeboxMenuItem* item = _sections[indexPath.section].items[indexPath.row];
-
-  UIListContentConfiguration* configuration =
-      [cell defaultContentConfiguration];
-  configuration.text = item.title;
-  configuration.image = item.image;
-  configuration.imageProperties.tintColor =
-      [UIColor colorNamed:kTextPrimaryColor];
-  cell.contentConfiguration = configuration;
-
-  return cell;
-}
-
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-  ComposeboxMenuItem* item = _sections[indexPath.section].items[indexPath.row];
 
   // TODO (crbug.com/505269628): Implement menu items selection.
   switch (item.type) {
@@ -285,9 +249,174 @@ NSString* const kComposeboxMenuCellIdentifier = @"ComposeboxMenuCell";
       break;
     case ComposeboxMenuItemType::kModelThinking:
       break;
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      break;
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      break;
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      break;
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      break;
     case ComposeboxMenuItemType::kUnknown:
       break;
   }
+}
+
+#pragma mark - Data Source Helpers
+
+- (void)setUpDataSource {
+  __weak __typeof(self) weakSelf = self;
+
+  UICollectionViewCellRegistration* listCellRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[UICollectionViewListCell class]
+               configurationHandler:^(UICollectionViewListCell* cell,
+                                      NSIndexPath* indexPath,
+                                      ComposeboxMenuItem* item) {
+                 [weakSelf configureListCell:cell
+                                 atIndexPath:indexPath
+                                    withItem:item];
+               }];
+
+  UICollectionViewCellRegistration* attachmentCellRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[UICollectionViewCell class]
+               configurationHandler:^(UICollectionViewCell* cell,
+                                      NSIndexPath* indexPath,
+                                      ComposeboxMenuItem* item) {
+                 [weakSelf configureAttachmentCell:cell
+                                       atIndexPath:indexPath
+                                          withItem:item];
+               }];
+
+  UICollectionViewSupplementaryRegistration* headerRegistration =
+      [UICollectionViewSupplementaryRegistration
+          registrationWithSupplementaryClass:[UICollectionReusableView class]
+                                 elementKind:
+                                     UICollectionElementKindSectionHeader
+                        configurationHandler:^(UICollectionReusableView* view,
+                                               NSString* elementKind,
+                                               NSIndexPath* indexPath) {
+                          [weakSelf configureHeaderView:view
+                                            atIndexPath:indexPath];
+                        }];
+
+  _dataSource = [[UICollectionViewDiffableDataSource alloc]
+      initWithCollectionView:_collectionView
+                cellProvider:^UICollectionViewCell*(
+                    UICollectionView* collectionView, NSIndexPath* indexPath,
+                    ComposeboxMenuItem* item) {
+                  if (indexPath.section ==
+                      static_cast<NSInteger>(
+                          ComposeboxMenuSectionIdentifier::kAttachments)) {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            attachmentCellRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:item];
+                  } else {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            listCellRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:item];
+                  }
+                }];
+
+  _dataSource.supplementaryViewProvider = ^UICollectionReusableView*(
+      UICollectionView* collectionView, NSString* elementKind,
+      NSIndexPath* indexPath) {
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader] &&
+        indexPath.section > 0) {
+      return [collectionView
+          dequeueConfiguredReusableSupplementaryViewWithRegistration:
+              headerRegistration
+                                                        forIndexPath:indexPath];
+    }
+    return nil;
+  };
+}
+
+- (void)applyInitialSnapshot {
+  NSDiffableDataSourceSnapshot<NSNumber*, ComposeboxMenuItem*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  // Attachments
+  if (_sections.count > 0) {
+    NSNumber* attachmentsIdentifier = @(
+        static_cast<NSInteger>(ComposeboxMenuSectionIdentifier::kAttachments));
+    [snapshot appendSectionsWithIdentifiers:@[ attachmentsIdentifier ]];
+    [snapshot appendItemsWithIdentifiers:_sections[0].items
+               intoSectionWithIdentifier:attachmentsIdentifier];
+  }
+
+  // Tools
+  if (_sections.count > 1) {
+    NSNumber* toolsIdentifier =
+        @(static_cast<NSInteger>(ComposeboxMenuSectionIdentifier::kTools));
+    [snapshot appendSectionsWithIdentifiers:@[ toolsIdentifier ]];
+    [snapshot appendItemsWithIdentifiers:_sections[1].items
+               intoSectionWithIdentifier:toolsIdentifier];
+  }
+
+  // Models
+  if (_sections.count > 2) {
+    NSNumber* modelsIdentifier =
+        @(static_cast<NSInteger>(ComposeboxMenuSectionIdentifier::kModels));
+    [snapshot appendSectionsWithIdentifiers:@[ modelsIdentifier ]];
+    [snapshot appendItemsWithIdentifiers:_sections[2].items
+               intoSectionWithIdentifier:modelsIdentifier];
+  }
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - Private Configuration Helpers
+
+- (void)configureListCell:(UICollectionViewListCell*)cell
+              atIndexPath:(NSIndexPath*)indexPath
+                 withItem:(ComposeboxMenuItem*)item {
+  UIListContentConfiguration* configuration =
+      [cell defaultContentConfiguration];
+  configuration.text = item.title;
+  configuration.image = item.image;
+  configuration.imageProperties.tintColor =
+      [UIColor colorNamed:kTextPrimaryColor];
+  cell.contentConfiguration = configuration;
+}
+
+- (void)configureAttachmentCell:(UICollectionViewCell*)cell
+                    atIndexPath:(NSIndexPath*)indexPath
+                       withItem:(ComposeboxMenuItem*)item {
+  ComposeboxMenuAttachmentView* attachmentView =
+      [[ComposeboxMenuAttachmentView alloc] init];
+  attachmentView.translatesAutoresizingMaskIntoConstraints = NO;
+  attachmentView.title = item.title;
+  attachmentView.image = SymbolWithPalette(
+      item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+
+  [cell.contentView addSubview:attachmentView];
+  AddSameConstraints(attachmentView, cell.contentView);
+}
+
+- (void)configureHeaderView:(UICollectionReusableView*)view
+                atIndexPath:(NSIndexPath*)indexPath {
+  UILabel* label = [[UILabel alloc] init];
+  label.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightBold];
+  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.text = _sections[indexPath.section].title;
+
+  [view addSubview:label];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [label.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                        constant:kHeaderLabelLeadingPadding],
+    [label.topAnchor constraintEqualToAnchor:view.topAnchor
+                                    constant:kHeaderLabelVerticalPadding],
+    [label.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                       constant:-kHeaderLabelVerticalPadding],
+  ]];
 }
 
 @end
