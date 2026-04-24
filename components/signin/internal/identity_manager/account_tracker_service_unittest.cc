@@ -15,7 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
@@ -31,6 +33,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -1259,8 +1262,103 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
+TEST_F(AccountTrackerServiceTest, LoadFromPrefs_RemovesAccountsWithoutGaiaId) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
+
+  ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  update->Append(base::DictValue()
+                     .Set("account_id", gaia_alpha.ToString())
+                     .Set("email", email_alpha)
+                     .Set("gaia", gaia_alpha.ToString()));
+
+  // This account has no Gaia ID. It should be removed when loaded.
+  update->Append(base::DictValue()
+                     .Set("account_id", email_beta)
+                     .Set("email", email_beta)
+                     .Set("gaia", ""));
+
+  ResetAccountTracker();
+
+  std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
+  ASSERT_EQ(1u, accounts.size());
+  EXPECT_EQ(accounts[0].GetGaiaId(), gaia_alpha);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountTrackerServiceTest, LoadFromPrefs_MigratesAccountsOnEnforcement) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+
+  ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
+
+  // This account is keyed by email in prefs (account_id is email_alpha).
+  update->Append(base::DictValue()
+                     .Set("account_id", email_alpha)
+                     .Set("email", email_alpha)
+                     .Set("gaia", gaia_alpha.ToString()));
+
+  ResetAccountTracker();
+
+  std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
+  EXPECT_EQ(account_tracker()->GetMigrationState(),
+            AccountTrackerService::MIGRATION_IN_PROGRESS);
+  ASSERT_EQ(1u, accounts.size());
+  EXPECT_EQ(accounts[0].GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(accounts[0].GetAccountId(), CoreAccountId::FromGaiaId(gaia_alpha));
+
+  // Verify that it has been updated in prefs to be keyed by Gaia ID.
+  const base::ListValue& list = prefs()->GetList(prefs::kAccountInfo);
+  ASSERT_EQ(1u, list.size());
+  EXPECT_THAT(list[0], base::test::DictionaryHasValue(
+                           "account_id", base::Value(gaia_alpha.ToString())));
+}
+
+TEST_F(AccountTrackerServiceTest, LoadFromPrefs_PartialMigration) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
+  const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+
+  ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
+
+  // Unmigrated account with stale info.
+  update->Append(base::DictValue()
+                     .Set("account_id", email_alpha)
+                     .Set("email", email_alpha)
+                     .Set("gaia", gaia_alpha.ToString())
+                     .Set("given_name", "StaleName"));
+
+  // Migrated account with fresh info.
+  update->Append(base::DictValue()
+                     .Set("account_id", gaia_alpha.ToString())
+                     .Set("email", email_alpha)
+                     .Set("gaia", gaia_alpha.ToString())
+                     .Set("given_name", "FreshName"));
+
+  ResetAccountTracker();
+
+  std::vector<AccountInfo> accounts = account_tracker()->GetAccounts();
+  EXPECT_EQ(account_tracker()->GetMigrationState(),
+            AccountTrackerService::MIGRATION_IN_PROGRESS);
+  ASSERT_EQ(1u, accounts.size());
+  EXPECT_EQ(accounts[0].GetGaiaId(), gaia_alpha);
+  EXPECT_EQ(accounts[0].GetAccountId(), CoreAccountId::FromGaiaId(gaia_alpha));
+  EXPECT_EQ(accounts[0].GetGivenName(), "FreshName");
+}
+
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
@@ -1304,6 +1402,9 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
@@ -1345,6 +1446,9 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const GaiaId gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);

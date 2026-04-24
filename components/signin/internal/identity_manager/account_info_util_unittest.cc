@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -549,7 +551,11 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_EmptyDict) {
   EXPECT_EQ(DeserializeAccountInfo(dict), std::nullopt);
 }
 
-TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
+TEST(AccountInfoUtilTest,
+     DeserializeAccountInfo_NoAccountIdWithoutEnforcement) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
   auto dict = base::DictValue()
                   .Set("account_id", "")
                   .Set("gaia", "gaia_id")
@@ -557,7 +563,27 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
   EXPECT_EQ(DeserializeAccountInfo(dict), std::nullopt);
 }
 
-TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaia) {
+// When GaiaAccountIdEnforcement is enabled, CoreAccountId is derived from
+// GaiaId and account_id serialized field is ignored.
+TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  auto dict = base::DictValue()
+                  .Set("account_id", "")
+                  .Set("gaia", "gaia_id")
+                  .Set("email", "test@example.org");
+  std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
+  ASSERT_NE(account_info, std::nullopt);
+  EXPECT_EQ(account_info->gaia, GaiaId("gaia_id"));
+  EXPECT_EQ(account_info->email, "test@example.org");
+}
+
+TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaiaWithoutEnforcement) {
+  // TODO(crbug.com/502237328): Remove this test once the feature is launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
   auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "")
@@ -572,6 +598,17 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaia) {
 #else
   EXPECT_EQ(account_info, std::nullopt);
 #endif
+}
+
+TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaia) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+  auto dict = base::DictValue()
+                  .Set("account_id", "test_account_id")
+                  .Set("gaia", "")
+                  .Set("email", "test@example.org");
+  std::optional<AccountInfo> account_info = DeserializeAccountInfo(dict);
+  EXPECT_EQ(account_info, std::nullopt);
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoEmail) {

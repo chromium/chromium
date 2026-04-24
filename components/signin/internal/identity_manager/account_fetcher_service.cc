@@ -228,8 +228,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
       account_tracker_service_->IsTrackingAccount(account_id));
   account_tracker_service_->StartTrackingAccount(account_id);
 
-  const AccountInfo& info =
-      account_tracker_service_->GetAccountInfo(account_id);
+  AccountInfo info = account_tracker_service_->GetAccountInfo(account_id);
 
   if (!only_fetch_if_invalid || !info.capabilities.AreAllCapabilitiesKnown()) {
     StartFetchingAccountCapabilities(info);

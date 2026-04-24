@@ -267,7 +267,12 @@ class AccountInfo::Builder {
 
   // Setters for CoreAccountInfo members.
   Builder& SetEmail(std::string_view email);
+
+  // Note: This method is a no-op if `kGaiaAccountIdEnforcement` is enabled,
+  // as the account id is derived from the gaia id instead.
+  // TODO(crbug.com/502237328): Remove the method.
   Builder& SetAccountId(const CoreAccountId& account_id);
+
   Builder& SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
 
   // The following AccountInfo class members are never supposed to contain empty
@@ -308,7 +313,9 @@ class AccountInfo::Builder {
   // Factory function that permits creating `AccountInfo` with an empty Gaia ID.
   // It exists only to support an ongoing migration and shouldn't be used for
   // other purposes.
-  // TODO(crbug.com/40268200): remove this after the migration is done.
+  // Please note that despite the name, this method still requires a non-empty
+  // gaia id if kGaiaAccountIdEnforcement is enabled.
+  // TODO(crbug.com/502237328): Remove after kGaiaAccountIdEnforcement launch.
   static AccountInfo::Builder CreateWithPossiblyEmptyGaiaId(
       const GaiaId& gaia_id,
       std::string_view email);

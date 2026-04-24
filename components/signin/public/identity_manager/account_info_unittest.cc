@@ -4,7 +4,9 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -216,6 +218,18 @@ TEST_F(AccountInfoTest, BuilderPopulatesCoreAccountInfoFields) {
   EXPECT_EQ(info.GetEmail(), "test@example.com");
   EXPECT_EQ(info.GetAccountId(), CoreAccountId::FromGaiaId(GaiaId("test_id")));
   EXPECT_TRUE(info.IsUnderAdvancedProtection());
+}
+
+TEST_F(AccountInfoTest, BuilderSetsAccountIdFromGaiaIdWithEnforcement) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kGaiaAccountIdEnforcement);
+
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com").Build();
+
+  EXPECT_EQ(info.GetGaiaId(), GaiaId("test_id"));
+  EXPECT_EQ(info.GetEmail(), "test@example.com");
+  EXPECT_EQ(info.GetAccountId(), CoreAccountId::FromGaiaId(GaiaId("test_id")));
 }
 
 TEST_F(AccountInfoTest, GettersEmptyAccountInfo) {

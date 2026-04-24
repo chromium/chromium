@@ -11,12 +11,14 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -253,14 +255,27 @@ std::optional<AccountInfo> DeserializeAccountInfo(const base::DictValue& dict) {
   const std::string* email =
       FindStringIfNonEmpty(dict, local::kAccountEmailKey);
 
-  if (!email || !account_id) {
-    // Cannot build `AccountInfo` without an email or account_id.
+  if (!email) {
+    // Cannot build `AccountInfo` without an email.
+    return std::nullopt;
+  }
+
+  if (!base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement) &&
+      !account_id) {
+    // Cannot build `AccountInfo` without an account_id prior to
+    // kGaiaAccountIdEnforcement.
     return std::nullopt;
   }
 
   const std::string* gaia_id =
       FindStringIfNonEmpty(dict, local::kAccountGaiaKey);
 #if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/502237328): Remove BUILDFLAG(IS_CHROMEOS) after rolling out
+  // kGaiaAccountIdEnforcement.
+  if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement) &&
+      !gaia_id) {
+    return std::nullopt;
+  }
   AccountInfo::Builder builder =
       AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
           GaiaId(gaia_id ? *gaia_id : std::string()), *email);
@@ -274,8 +289,9 @@ std::optional<AccountInfo> DeserializeAccountInfo(const base::DictValue& dict) {
 
   AccountInfo::Builder builder(GaiaId(*gaia_id), *email);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  builder.SetAccountId(CoreAccountId::FromString(*account_id));
+  if (!base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
+    builder.SetAccountId(CoreAccountId::FromString(*account_id));
+  }
 
   if (const std::string* hosted_domain =
           FindStringIfNonEmpty(dict, local::kAccountHostedDomainKey)) {

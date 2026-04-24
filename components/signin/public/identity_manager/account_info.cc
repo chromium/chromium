@@ -290,6 +290,8 @@ AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
   // TODO(crbug.com/40283608): verify that `gaia_id` and `email` aren't empty
   // when the account fetcher case is fixed.
   CHECK(!core_account_info.IsEmpty());
+  CHECK(!base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement) ||
+        !core_account_info.gaia.empty());
   account_info_.account_id = core_account_info.account_id;
   account_info_.gaia = core_account_info.gaia;
   account_info_.email = core_account_info.email;
@@ -311,6 +313,10 @@ AccountInfo::Builder::Builder(const AccountInfo& account_info)
 AccountInfo::Builder::~Builder() = default;
 
 AccountInfo AccountInfo::Builder::Build() {
+  if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
+    CHECK(!account_info_.gaia.empty());
+    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
+  }
   return std::move(account_info_);
 }
 
@@ -406,6 +412,10 @@ AccountInfo::Builder::Builder() = default;
 AccountInfo::Builder AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
     const GaiaId& gaia_id,
     std::string_view email) {
+  CHECK(!gaia_id.empty() ||
+        !base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement))
+      << "Creating AccountInfo with empty GaiaId is not allowed when "
+         "kGaiaAccountIdEnforcement is enabled";
   CHECK(!email.empty());
   AccountInfo::Builder builder;
   builder.account_info_.gaia = gaia_id;
