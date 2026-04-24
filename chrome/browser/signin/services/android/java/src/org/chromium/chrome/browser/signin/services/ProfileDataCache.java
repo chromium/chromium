@@ -268,7 +268,9 @@ public class ProfileDataCache implements IdentityManager.Observer {
         mPerAccountBadgeConfig.put(accountId, badgeConfig);
         var accountInfo = findAccountInfo(accountId);
         if (accountInfo != null) {
-            onExtendedAccountInfoUpdated(accountInfo);
+            var displayableProfileData = toDisplayableProfileData(accountInfo);
+            mAccountsCache.putAccount(accountInfo.getId(), displayableProfileData);
+            fireOnProfileDataUpdated(displayableProfileData);
         }
     }
 
@@ -316,6 +318,11 @@ public class ProfileDataCache implements IdentityManager.Observer {
     /** Implements {@link IdentityManager.Observer}. */
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
+        if (mIdentityManager.findExtendedAccountInfoByAccountId(accountInfo.getId()) == null) {
+            // Account was removed from the IdentityManager.
+            // Cache will be updated by onRefreshTokenRemovedForAccount() callback.
+            return;
+        }
         var displayableProfileData = toDisplayableProfileData(accountInfo);
         mAccountsCache.putAccount(accountInfo.getId(), displayableProfileData);
         fireOnProfileDataUpdated(displayableProfileData);

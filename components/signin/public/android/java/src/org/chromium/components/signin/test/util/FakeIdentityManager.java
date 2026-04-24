@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin.test.util;
 
+
 import androidx.annotation.MainThread;
 
 import org.chromium.base.ThreadUtils;
@@ -135,13 +136,18 @@ public class FakeIdentityManager implements IdentityManager {
     public void removeAccount(CoreAccountId accountId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mExtendedAccountInfos.remove(accountId);
+                    var removedAccountInfo = mExtendedAccountInfos.remove(accountId);
                     if (mPrimaryAccount != null && mPrimaryAccount.getId().equals(accountId)) {
                         mPrimaryAccount = null;
                     }
                     if (mAreRefreshTokensLoaded) {
                         for (Observer observer : mObservers) {
                             observer.onRefreshTokenRemovedForAccount(accountId);
+                        }
+                    }
+                    if (!mIsOnExtendedAccountInfoUpdatedBlocked && removedAccountInfo != null) {
+                        for (Observer observer : mObservers) {
+                            observer.onExtendedAccountInfoUpdated(removedAccountInfo);
                         }
                     }
                 });

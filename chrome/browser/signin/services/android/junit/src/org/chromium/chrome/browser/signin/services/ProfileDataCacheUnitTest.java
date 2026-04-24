@@ -528,4 +528,12 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals("", profileData.getFullName());
         Assert.assertEquals("", profileData.getGivenName());
     }
+
+    @Test
+    public void testWhenAccountIsRemovedThenShouldNotNotifyOnProfileDataUpdated() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
+    }
 }
