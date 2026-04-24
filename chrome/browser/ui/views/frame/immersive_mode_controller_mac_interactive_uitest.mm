@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,6 +30,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
@@ -540,7 +540,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  views::View* anchor_view = browser_view->toolbar()->app_menu_button();
+  views::View* anchor_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId, browser_view->GetElementContext());
 
   // Create and show a bubble anchored to the app menu button.
   auto delegate = std::make_unique<views::BubbleDialogDelegate>(

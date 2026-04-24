@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -102,7 +102,7 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       break;
     case PromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(
-          {views::BubbleAnchor(browser_view->toolbar()->app_menu_button())},
+          {toolbar_button_provider->GetAppMenuControl()->GetAnchor()},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kEnhancedBrowsing, bubble_type);
       break;
@@ -115,7 +115,7 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
                            : views::BubbleBorder::RIGHT_CENTER;
       } else {
         anchor.anchor_base =
-            views::BubbleAnchor(browser_view->toolbar()->app_menu_button());
+            toolbar_button_provider->GetAppMenuControl()->GetAnchor();
       }
       IOSPromoBubble::ShowPromoBubble(anchor,
                                       /*highlighted_button=*/nullptr,

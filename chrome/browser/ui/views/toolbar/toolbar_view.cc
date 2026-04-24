@@ -1629,13 +1629,8 @@ void ToolbarView::UpdateTypeAndSeverity(
     return;
   }
 
-  std::u16string accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
-  if (type_and_severity.type ==
-      AppMenuIconController::IconType::kUpgradeNotification) {
-    accname_app = l10n_util::GetStringFUTF16(
-        IDS_ACCNAME_APP_UPGRADE_RECOMMENDED, accname_app);
-  }
-  app_menu_button_->GetViewAccessibility().SetName(accname_app);
+  app_menu_button_->GetViewAccessibility().SetName(
+      AppMenuIconController::GetIconAccessibleName(type_and_severity.type));
   app_menu_button_->SetTypeAndSeverity(type_and_severity);
 }
 

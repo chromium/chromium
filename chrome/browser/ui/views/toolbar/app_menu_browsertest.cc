@@ -66,6 +66,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -104,9 +105,11 @@ class AppMenuBrowserTest : public UiBrowserTest {
   }
 
   BrowserAppMenuButton* menu_button() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->app_menu_button();
+    return views::AsViewClass<BrowserAppMenuButton>(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetElementContext()));
   }
 
  private:

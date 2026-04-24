@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -31,14 +30,11 @@
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -278,40 +274,10 @@ SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
 }
 
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
-  int tooltip_message_id;
-  std::u16string text;
-  if (type_and_severity_.severity == AppMenuIconController::Severity::kNone) {
-    tooltip_message_id = IDS_APPMENU_TOOLTIP;
-  } else if (type_and_severity_.type ==
-             AppMenuIconController::IconType::kUpgradeNotification) {
-    tooltip_message_id = IDS_APPMENU_TOOLTIP_UPDATE_AVAILABLE;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-    int message_id = IDS_APP_MENU_BUTTON_UPDATE;
-    // Select an update text option randomly. Show this text in all browser
-    // windows.
-    static const int update_text_option = base::RandIntInclusive(1, 3);
-    if (update_text_option == 1) {
-      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT1;
-    } else if (update_text_option == 2) {
-      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT2;
-    } else {
-      message_id = IDS_APP_MENU_BUTTON_UPDATE_ALT3;
-    }
-    text = l10n_util::GetStringUTF16(message_id);
-#else
-    text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_UPDATE);
-#endif
-  } else {
-    tooltip_message_id = IDS_APPMENU_TOOLTIP_ALERT;
-    const int text_id =
-        type_and_severity_.severity == AppMenuIconController::Severity::kLow
-            ? IDS_APP_MENU_BUTTON_ACTION_REQUIRED
-            : IDS_APP_MENU_BUTTON_ERROR;
-    text = l10n_util::GetStringUTF16(text_id);
-  }
-
-  SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
+  const std::u16string text = AppMenuIconController::GetIconLabel(
+      type_and_severity_.type, type_and_severity_.severity);
+  SetTooltipText(AppMenuIconController::GetIconTooltip(
+      type_and_severity_.type, type_and_severity_.severity));
   SetHighlight(text, GetHighlightColor());
 }
 

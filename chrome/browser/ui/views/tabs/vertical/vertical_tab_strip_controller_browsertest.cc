@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_TRUE(toolbar->forward_button()->IsDrawn());
   EXPECT_TRUE(toolbar->reload_button()->IsDrawn());
   EXPECT_TRUE(toolbar->location_bar()->IsDrawn());
-  EXPECT_TRUE(toolbar->app_menu_button()->IsDrawn());
+  EXPECT_TRUE(button_provider->GetAppMenuControl()->IsDrawn());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

@@ -216,6 +216,7 @@ source_set("impl") {
       "//ui/gfx",
       "//ui/gfx:color_utils",
       "//ui/menus",
+      "//ui/strings:ui_strings_grit",
     ]
     if (is_chromeos) {
       deps += [ "//chrome/browser/policy:system_features_disable_list" ]

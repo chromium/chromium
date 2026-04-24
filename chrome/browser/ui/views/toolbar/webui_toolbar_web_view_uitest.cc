@@ -40,7 +40,7 @@ namespace {
 
 WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar()
+      ->toolbar_button_provider()
       ->GetWebUIToolbarViewForTesting();
 }
 

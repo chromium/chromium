@@ -161,7 +161,7 @@ bool WaitForButtonVisible(content::WebContents* web_contents,
 
 WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar()
+      ->toolbar_button_provider()
       ->GetWebUIToolbarViewForTesting();
 }
 
