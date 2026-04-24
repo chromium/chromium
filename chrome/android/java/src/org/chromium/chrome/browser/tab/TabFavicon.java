@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
@@ -34,7 +33,7 @@ public class TabFavicon extends TabWebContentsUserData {
      * The size in pixels at which favicons will be drawn. Ideally mFavicon will have this size to
      * avoid scaling artifacts.
      */
-    private final int mIdealFaviconSize;
+    private int mIdealFaviconSize;
 
     // The ideal favicon size for navigation transitions, in DIP.
     private final int mNavigationTransitionsIdealFaviconSize;
@@ -78,11 +77,19 @@ public class TabFavicon extends TabWebContentsUserData {
     private TabFavicon(Tab tab) {
         super(tab);
         mTab = (TabImpl) tab;
-        Resources resources = mTab.getThemedApplicationContext().getResources();
-        mIdealFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
-        mNavigationTransitionsIdealFaviconSize =
-                resources.getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
+        mIdealFaviconSize = getIdealFaviconSize();
+        mNavigationTransitionsIdealFaviconSize = getNavigationTransitionsIdealFaviconSize();
         mNativeTabFavicon = TabFaviconJni.get().init(tab, mNavigationTransitionsIdealFaviconSize);
+    }
+
+    private int getIdealFaviconSize() {
+        return mTab.getContext().getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+    }
+
+    private int getNavigationTransitionsIdealFaviconSize() {
+        return mTab.getContext()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
     }
 
     @Override
@@ -115,7 +122,9 @@ public class TabFavicon extends TabWebContentsUserData {
 
         // Use the cached favicon only if the page wasn't changed.
         if (mFavicon != null && mFaviconTabUrl != null && mFaviconTabUrl.equals(mTab.getUrl())) {
-            return mFavicon;
+            if (mFavicon.getWidth() == getIdealFaviconSize()) {
+                return mFavicon;
+            }
         }
 
         return TabFaviconJni.get().getFavicon(mNativeTabFavicon);
@@ -177,6 +186,7 @@ public class TabFavicon extends TabWebContentsUserData {
     @VisibleForTesting
     void onFaviconAvailable(Bitmap icon, GURL iconUrl) {
         assert icon != null;
+        mIdealFaviconSize = getIdealFaviconSize();
         // Bitmap#createScaledBitmap will return the original bitmap if it is already
         // |mIdealFaviconSize|x|mIdealFaviconSize| DP.
         mFavicon = Bitmap.createScaledBitmap(icon, mIdealFaviconSize, mIdealFaviconSize, true);
@@ -199,6 +209,7 @@ public class TabFavicon extends TabWebContentsUserData {
 
     @VisibleForTesting
     boolean shouldUpdateFaviconForBrowserUi(int newIconWidth, int newIconHeight) {
+        mIdealFaviconSize = getIdealFaviconSize();
         return pageUrlChanged()
                 || isBetterFavicon(
                         mFaviconWidth,

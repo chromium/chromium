@@ -10,6 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/android/view_android.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -93,8 +94,15 @@ ScopedJavaLocalRef<jobject> TabFavicon::GetFavicon(JNIEnv* env) {
   // Always return the default favicon in Android.
   SkBitmap favicon = favicon_driver_->GetFavicon().AsBitmap();
   if (!favicon.empty()) {
-    const float device_scale_factor =
-        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
+    float device_scale_factor = 1.0f;
+    if (active_web_contents_ && active_web_contents_->GetNativeView()) {
+      device_scale_factor =
+          active_web_contents_->GetNativeView()->GetDipScale();
+    } else {
+      device_scale_factor =
+          display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
+    }
+
     int target_size_dip = device_scale_factor * gfx::kFaviconSize;
     if (favicon.width() != target_size_dip ||
         favicon.height() != target_size_dip) {

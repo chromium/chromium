@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Context;
@@ -71,11 +72,13 @@ public class TabFaviconTest {
         mUserDataHost = new UserDataHost();
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
         doReturn(mContext).when(mTab).getThemedApplicationContext();
+        doReturn(mContext).when(mTab).getContext();
         doReturn(mResources).when(mContext).getResources();
         doReturn(IDEAL_SIZE).when(mResources).getDimensionPixelSize(anyInt());
         doReturn(false).when(mTab).isNativePage();
         doReturn(true).when(mTab).isInitialized();
         doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(null).when(mTab).getPendingLoadParams();
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         doReturn(new EmptyIterator()).when(mTab).getTabObservers();
 
@@ -133,6 +136,32 @@ public class TabFaviconTest {
         Bitmap bitmap = TabFavicon.getBitmap(mTab);
         assertNotNull(bitmap);
         assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+    }
+
+    @Test
+    public void testOnFaviconAvailable_DensityChangeInvalidatesCache() {
+        // 1. Initial favicon at IDEAL_SIZE.
+        onFaviconAvailable(makeBitmap(IDEAL_SIZE, Color.GREEN));
+        Bitmap bitmap = TabFavicon.getBitmap(mTab);
+        assertNotNull(bitmap);
+        assertEquals(IDEAL_SIZE, bitmap.getWidth());
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+
+        // 2. Change density (ideal size doubles).
+        int newIdealSize = IDEAL_SIZE * 2;
+        doReturn(newIdealSize).when(mResources).getDimensionPixelSize(anyInt());
+
+        // 3. Requesting bitmap should now bypass cache because cached size (IDEAL_SIZE) !=
+        // newIdealSize.
+        // It should return whatever native provides (we'll mock native to return a new larger
+        // bitmap).
+        Bitmap newBitmap = makeBitmap(newIdealSize, Color.BLUE);
+        doReturn(newBitmap).when(mTabFaviconJni).getFavicon(anyLong());
+
+        Bitmap result = TabFavicon.getBitmap(mTab);
+        assertNotNull(result);
+        assertEquals(newIdealSize, result.getWidth());
+        assertEquals(Color.BLUE, result.getPixel(0, 0));
     }
 
     @Test
