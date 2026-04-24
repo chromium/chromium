@@ -87,6 +87,33 @@ Our team strongly prefers small, easily reviewable CLs (Changelists).
     one large CL or if they prefer you to manage a chain of smaller, focused CLs
     to make the work easier to review later.
 
+## Automated Sub-Agent Review
+
+Before finalizing any task or uploading a CL in `//remoting`, you **MUST** trigger
+an automated self-review to catch common CRD-specific errors.
+*   **Pre-checks:** Before invoking the generalist sub-agent, you MUST run the following
+    commands and gather their output to include in the prompt below:
+    1.  `git cl presubmit -u --force` (Linting and presubmit checks).
+    2.  `gn check {OUT_DIR} //remoting/*` (Headers and dependencies).
+*   **Action:** Invoke the `generalist` sub-agent using the `invoke_agent` tool.
+*   **Prompt:** Use the following exact prompt template:
+    > "You are a senior Chrome Remote Desktop reviewer. Review the following
+    > changes [include diff or describe changes]. I have also run the presubmit
+    > and gn check commands. Here is their output: [include output].
+    > Your MOST IMPORTANT task is to identify any unintended changes, logical
+    > mistakes, or typos. After verifying the core correctness, specifically check for:
+    > 1. Memory safety in high-privilege processes, particularly preventing Use-After-Free
+    >    (UAF) errors.
+    > 2. Platform-specific logic bugs or missing `#if BUILDFLAG(...)` guards.
+    > 3. Adherence to the 'Small CLs' mandate. Suggest a reasonable split point if the CL is
+    >    large and a split point is apparent.
+    > 4. Consider all directives in remoting/GEMINI.md and ensure the CL adheres to them.
+    >    [include contents of remoting/GEMINI.md]
+    >
+    > IMPORTANT: You are the reviewing sub-agent. Do NOT trigger any further sub-agent reviews."
+*   **Feedback Loop:** If the sub-agent identifies issues, you must address them
+    and re-run the relevant validation steps before considering the task complete.
+
 ## Workflow Efficiency (Optimizing for Wall-Clock Time)
 
 When executing tasks, optimize for **total human wall-clock time** rather than
