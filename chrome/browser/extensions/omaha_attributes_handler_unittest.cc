@@ -13,17 +13,17 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace extensions {
 namespace {
 
 // Extension ids used during testing.
 constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
-
-}  // namespace
 
 // Test suite to test Omaha attribute handler.
 using OmahaAttributesHandlerUnitTest = ExtensionServiceTestBase;
@@ -270,4 +270,5 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 }
 
+}  // namespace
 }  // namespace extensions
