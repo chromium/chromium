@@ -38,7 +38,50 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include <sys/resource.h>
+#endif
+
 namespace content {
+
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+class ScopedNProcLimitForTest {
+ public:
+  explicit ScopedNProcLimitForTest(rlim_t max_process_count) {
+    if (getrlimit(RLIMIT_NPROC, &previous_limit_) != 0) {
+      return;
+    }
+
+    struct rlimit new_limit = previous_limit_;
+    if (new_limit.rlim_cur != RLIM_INFINITY &&
+        new_limit.rlim_cur <= max_process_count) {
+      return;
+    }
+    new_limit.rlim_cur = max_process_count;
+
+    if (setrlimit(RLIMIT_NPROC, &new_limit) == 0) {
+      should_restore_ = true;
+    }
+  }
+
+  ScopedNProcLimitForTest(const ScopedNProcLimitForTest&) = delete;
+  ScopedNProcLimitForTest& operator=(const ScopedNProcLimitForTest&) = delete;
+
+  ~ScopedNProcLimitForTest() {
+    if (should_restore_) {
+      setrlimit(RLIMIT_NPROC, &previous_limit_);
+    }
+  }
+
+ private:
+  bool should_restore_ = false;
+  struct rlimit previous_limit_ = {};
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_LINUX)
 
 class RenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
  public:
@@ -98,6 +141,14 @@ TEST_F(RenderProcessHostUnitTest, RendererProcessLimitOverride) {
 // Test that using more than half of the system's process limit will be
 // considered going over Chrome's process limit, on non-Android platforms.
 TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
+#if BUILDFLAG(IS_LINUX)
+  // Keep this test bounded on systems where RLIMIT_NPROC is set very high.
+  // The value is chosen to be big enough for
+  // RenderProcessHost::GetMaxRendererProcessCount() to return smaller values on
+  // systems with up to 1 TB of RAM.
+  ScopedNProcLimitForTest scoped_nproc_limit(/*max_process_count=*/12400);
+#endif
+
   // This is half of the system's process limit, or a fallback value (82) if the
   // system's limit is unknown.
   const size_t max_platform_renderer_process_count =
