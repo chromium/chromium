@@ -3,9 +3,7 @@
 # found in the LICENSE file.
 
 source_set("switches") {
-  sources = [
-    "os_crypt_switches.h",
-  ]
+  sources = [ "os_crypt_switches.h" ]
 }
 
 if (is_apple) {
