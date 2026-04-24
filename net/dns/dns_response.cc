@@ -64,10 +64,13 @@ DnsResourceRecord::DnsResourceRecord(DnsResourceRecord&& other)
       klass(other.klass),
       ttl(other.ttl),
       owned_rdata(std::move(other.owned_rdata)) {
-  if (!owned_rdata.empty())
+  if (!owned_rdata.empty()) {
     rdata = owned_rdata;
-  else
+  } else {
     rdata = other.rdata;
+  }
+  // Ensure the moved-from object has no dangling reference.
+  other.rdata = base::span<const uint8_t>();
 }
 
 DnsResourceRecord::~DnsResourceRecord() = default;
@@ -95,10 +98,13 @@ DnsResourceRecord& DnsResourceRecord::operator=(DnsResourceRecord&& other) {
   ttl = other.ttl;
   owned_rdata = std::move(other.owned_rdata);
 
-  if (!owned_rdata.empty())
+  if (!owned_rdata.empty()) {
     rdata = owned_rdata;
-  else
+  } else {
     rdata = other.rdata;
+  }
+  // Ensure the moved-from object has no dangling reference.
+  other.rdata = base::span<const uint8_t>();
 
   return *this;
 }

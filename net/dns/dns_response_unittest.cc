@@ -1863,6 +1863,35 @@ TEST(DnsResponseTest, MalformedThenValid_NoTailAccumulated) {
   EXPECT_THAT(response.dotted_qnames(), testing::ElementsAre("name.test"));
 }
 
+TEST(DnsResourceRecordTest, NoDanglingPtrOnMoveAssignment) {
+  auto record1 = std::make_unique<DnsResourceRecord>();
+  std::vector<uint8_t> data = {1, 2, 3, 4};
+  record1->SetOwnedRdata(data);
+
+  auto record2 = std::make_unique<DnsResourceRecord>();
+  *record2 = std::move(*record1);
+  record2.reset();
+
+  // Since `record2` has been destroyed, the moved-from `record1` being
+  // destroyed should not trigger a crash due to a dangling pointer being
+  // detected.
+  record1.reset();
+}
+
+TEST(DnsResourceRecordTest, NoanglingPtrOnMoveConstructor) {
+  auto record1 = std::make_unique<DnsResourceRecord>();
+  std::vector<uint8_t> data = {1, 2, 3, 4};
+  record1->SetOwnedRdata(data);
+
+  {
+    DnsResourceRecord record2(std::move(*record1));
+  }
+
+  // Since `record2` has been destroyed, the moved-from `record1` being
+  // destroyed should not trigger a crash due to a dangling pointer being
+  // detected.
+  record1.reset();
+}
 }  // namespace
 
 }  // namespace net
