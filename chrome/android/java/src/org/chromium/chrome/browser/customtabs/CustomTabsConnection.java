@@ -1203,10 +1203,6 @@ public class CustomTabsConnection {
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
             return ParallelRequestStatus.FAILURE_NOT_INITIALIZED;
         }
-        if (intent.hasExtra(PARALLEL_REQUEST_URL_LIST_KEY)
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_MULTIPLE_PARALLEL_REQUESTS)) {
-            return ParallelRequestStatus.NO_REQUEST;
-        }
 
         if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
             // The prewarming logic below is hard-coded to the regular profile.
