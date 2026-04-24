@@ -105,8 +105,7 @@ public class NtpThemeBottomSheetView extends ScrollView {
         NtpThemeListItemView themeCollectionsItemView =
                 assumeNonNull(getItemBySectionType(THEME_COLLECTION));
         NtpThemeListThemeCollectionItemIconView themeCollectionsItemIconView =
-                themeCollectionsItemView.findViewById(
-                        org.chromium.chrome.browser.ntp_customization.R.id.leading_icon);
+                themeCollectionsItemView.findViewById(R.id.leading_icon);
         themeCollectionsItemIconView.setImageDrawablePair(
                 new Pair<>(primaryDrawable, secondaryDrawable));
     }

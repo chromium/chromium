@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,9 +26,7 @@ public class NtpThemeViewBinder {
     public static void bindThemeBottomSheet(
             PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == LEARN_MORE_BUTTON_CLICK_LISTENER) {
-            ImageView learnMoreButton =
-                    view.findViewById(
-                            org.chromium.chrome.browser.ntp_customization.R.id.learn_more_button);
+            ImageView learnMoreButton = view.findViewById(R.id.learn_more_button);
             learnMoreButton.setOnClickListener(model.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == IS_SECTION_SELECTED) {
             ((NtpThemeBottomSheetView) view)

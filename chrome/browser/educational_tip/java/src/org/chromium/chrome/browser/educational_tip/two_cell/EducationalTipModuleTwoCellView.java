@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -109,11 +110,10 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
         if (isCompleted) {
             int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
             titleView.setTextColor(disabledColor);
-            titleView.setPaintFlags(
-                    titleView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            titleView.setPaintFlags(titleView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             descriptionView.setTextColor(disabledColor);
             descriptionView.setPaintFlags(
-                    descriptionView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+                    descriptionView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
             itemLayout.setForeground(null);
 
@@ -125,12 +125,10 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
             int titleColor = getContext().getColor(R.color.default_text_color_list);
             int descriptionColor = getContext().getColor(R.color.default_text_color_secondary_list);
             titleView.setTextColor(titleColor);
-            titleView.setPaintFlags(
-                    titleView.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            titleView.setPaintFlags(titleView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
             descriptionView.setTextColor(descriptionColor);
             descriptionView.setPaintFlags(
-                    descriptionView.getPaintFlags()
-                            & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+                    descriptionView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
 
             itemLayout.setClickable(true);
             SetupListModuleUtils.clearAccessibilityStateDescription(itemLayout);

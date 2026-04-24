@@ -189,7 +189,7 @@ public class TabMetadataFileManager {
      */
     public static void saveListToFile(File metadataFile, TabModelSelectorMetadata metadata) {
         synchronized (SAVE_LIST_LOCK) {
-            androidx.core.util.AtomicFile file = new AtomicFile(metadataFile);
+            AtomicFile file = new AtomicFile(metadataFile);
             FileOutputStream output = null;
             try {
                 output = file.startWrite();

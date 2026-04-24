@@ -106,8 +106,7 @@ public class TabListFaviconProviderTest {
                 new TabListFaviconProvider(
                         mActivity,
                         /* isTabStrip= */ false,
-                        org.chromium.components.browser_ui.styles.R.dimen
-                                .default_favicon_corner_radius,
+                        R.dimen.default_favicon_corner_radius,
                         mTabWebContentsFaviconDelegate);
         mTabListFaviconProvider.initWithNative(mProfile);
         mTabListFaviconProvider.setFaviconHelperForTesting(mMockFaviconHelper);

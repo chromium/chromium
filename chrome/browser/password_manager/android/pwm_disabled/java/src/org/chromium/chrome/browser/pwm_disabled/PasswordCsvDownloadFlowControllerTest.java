@@ -284,9 +284,7 @@ public class PasswordCsvDownloadFlowControllerTest {
                 ContextUtils.getApplicationContext()
                         .getString(R.string.password_settings_export_tips),
                 description.getText());
-        errorAlertDialog
-                .getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
-                .performClick();
+        errorAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
         BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // The source file should not have been deleted, because the write to the destination

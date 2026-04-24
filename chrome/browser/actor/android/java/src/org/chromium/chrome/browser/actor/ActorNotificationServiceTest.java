@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -265,8 +266,7 @@ public class ActorNotificationServiceTest {
         when(mTask.getId()).thenReturn(taskId);
         when(mTask.getTitle()).thenReturn("Test Task");
         when(mKeyedService.getTask(taskId)).thenReturn(mTask);
-        when(mServiceController.createTrustedBringTabToFrontIntent(any()))
-                .thenReturn(new android.content.Intent());
+        when(mServiceController.createTrustedBringTabToFrontIntent(any())).thenReturn(new Intent());
 
         int[] terminalStates = {
             ActorTaskState.FINISHED, ActorTaskState.FAILED, ActorTaskState.CANCELLED

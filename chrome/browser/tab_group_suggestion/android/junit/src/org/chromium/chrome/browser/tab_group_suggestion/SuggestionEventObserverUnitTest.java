@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
+import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -190,9 +191,7 @@ public class SuggestionEventObserverUnitTest {
                 .didSelectTab(
                         eq(TAB_ID),
                         eq(TEST_URL),
-                        eq(
-                                org.chromium.components.visited_url_ranking.url_grouping
-                                        .TabSelectionCause.FROM_NEW_TAB),
+                        eq(TabSelectionCause.FROM_NEW_TAB),
                         eq(Tab.INVALID_TAB_ID));
     }
 

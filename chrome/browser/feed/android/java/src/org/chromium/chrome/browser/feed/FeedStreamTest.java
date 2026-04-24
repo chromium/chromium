@@ -68,6 +68,7 @@ import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -498,7 +499,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        eq(WindowOpenDisposition.CURRENT_TAB),
                         any(),
                         eq(false),
                         anyInt(),
@@ -530,7 +531,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        eq(WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
                         anyInt(),
@@ -562,7 +563,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
+                        eq(WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
                         anyInt(),
@@ -629,7 +630,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
+                        eq(WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(false),
                         anyInt(),
@@ -649,7 +650,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
+                        eq(WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(true),
                         anyInt(),
@@ -668,7 +669,7 @@ public class FeedStreamTest {
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
+                        eq(WindowOpenDisposition.OFF_THE_RECORD),
                         any(),
                         eq(false),
                         anyInt(),

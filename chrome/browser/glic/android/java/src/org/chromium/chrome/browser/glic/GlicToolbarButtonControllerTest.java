@@ -47,6 +47,8 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Collections;
+
 /** Unit tests for {@link GlicToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
@@ -413,7 +415,7 @@ public class GlicToolbarButtonControllerTest {
         // Mock an active task.
         ActorTask task = mock(ActorTask.class);
         when(task.getTitle()).thenReturn("Test Task");
-        when(mActorService.getActiveTasks()).thenReturn(java.util.Collections.singletonList(task));
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
         // Set up show hook.
         Runnable showHook = mock(Runnable.class);

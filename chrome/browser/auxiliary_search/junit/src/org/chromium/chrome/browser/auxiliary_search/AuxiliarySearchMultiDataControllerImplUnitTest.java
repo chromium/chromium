@@ -124,8 +124,7 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
 
         mDataEntry1 =
                 new AuxiliarySearchDataEntry(
-                        /* type= */ org.chromium.chrome.browser.auxiliary_search
-                                .AuxiliarySearchEntryType.TAB,
+                        /* type= */ AuxiliarySearchEntryType.TAB,
                         /* url= */ JUnitTestGURLs.URL_1,
                         /* title= */ "Title 1",
                         /* lastActiveTime= */ now - 2,
@@ -135,8 +134,7 @@ public class AuxiliarySearchMultiDataControllerImplUnitTest {
                         /* score= */ 0);
         mDataEntry2 =
                 new AuxiliarySearchDataEntry(
-                        /* type= */ org.chromium.chrome.browser.auxiliary_search
-                                .AuxiliarySearchEntryType.TAB,
+                        /* type= */ AuxiliarySearchEntryType.TAB,
                         /* url= */ JUnitTestGURLs.URL_2,
                         /* title= */ "Title 2",
                         /* lastActiveTime= */ now - 1,

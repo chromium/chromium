@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
+import androidx.credentials.exceptions.GetCredentialUnknownException;
 import androidx.credentials.provider.PendingIntentHandler;
 
 import org.json.JSONException;
@@ -43,7 +45,7 @@ public class DigitalCredentialsPresentationDelegateTest {
 
     @Test
     public void testExtractDigitalCredentialFromGetResponse()
-            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
+            throws GetCredentialException, JSONException {
         Intent intent = new Intent();
         packageResponseJson(JSON_WITH_PROTOCOL, intent);
 
@@ -57,7 +59,7 @@ public class DigitalCredentialsPresentationDelegateTest {
 
     @Test
     public void testExtractDigitalCredentialFromGetResponse_NoProtocol()
-            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
+            throws GetCredentialException, JSONException {
         Intent intent = new Intent();
         packageResponseJson(JSON_WITHOUT_PROTOCOL, intent);
 
@@ -72,11 +74,10 @@ public class DigitalCredentialsPresentationDelegateTest {
     public void testExtractDigitalCredentialFromGetResponse_Exception() {
         Intent intent = new Intent();
         PendingIntentHandler.setGetCredentialException(
-                intent,
-                new androidx.credentials.exceptions.GetCredentialUnknownException("test error"));
+                intent, new GetCredentialUnknownException("test error"));
 
         assertThrows(
-                androidx.credentials.exceptions.GetCredentialException.class,
+                GetCredentialException.class,
                 () ->
                         DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
                                 intent));

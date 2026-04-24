@@ -223,7 +223,7 @@ public class PartnerBookmarksProviderExample extends ContentProvider {
                     }
                 }
                 setActiveConfiguration(res.getConfiguration());
-            } catch (android.content.res.Resources.NotFoundException e) {
+            } catch (Resources.NotFoundException e) {
                 Log.i(TAG, "failed to fetch resources; bailing out");
                 return false;
             }

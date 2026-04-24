@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -731,7 +732,7 @@ public class AutofillOptionsTest {
         doReturn(false)
                 .when(mPrefs)
                 .getBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA);
-        doReturn(org.chromium.chrome.browser.device_reauth.BiometricStatus.BIOMETRICS_AVAILABLE)
+        doReturn(BiometricStatus.BIOMETRICS_AVAILABLE)
                 .when(mMockReauthenticatorBridge)
                 .getBiometricAvailabilityStatus();
 
@@ -769,7 +770,7 @@ public class AutofillOptionsTest {
         doReturn(true)
                 .when(mPrefs)
                 .getBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA);
-        doReturn(org.chromium.chrome.browser.device_reauth.BiometricStatus.BIOMETRICS_AVAILABLE)
+        doReturn(BiometricStatus.BIOMETRICS_AVAILABLE)
                 .when(mMockReauthenticatorBridge)
                 .getBiometricAvailabilityStatus();
 
@@ -783,8 +784,7 @@ public class AutofillOptionsTest {
                 .onPreferenceChange(mFragment.getAutofillAiAuthenticationSwitch(), false);
 
         // Verify reauth is triggered.
-        ArgumentCaptor<org.chromium.base.Callback<Boolean>> callbackCaptor =
-                MockitoHelper.callbackCaptor();
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = MockitoHelper.callbackCaptor();
         verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
 
         // Simulate failed reauth.

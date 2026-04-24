@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -182,11 +183,7 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                 int size = view.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        new android.graphics.drawable.BitmapDrawable(
-                                view.getResources(), scaledBitmap),
-                        null,
-                        null,
-                        null);
+                        new BitmapDrawable(view.getResources(), scaledBitmap), null, null, null);
                 textView.setCompoundDrawablePadding(20);
             } else {
                 textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);

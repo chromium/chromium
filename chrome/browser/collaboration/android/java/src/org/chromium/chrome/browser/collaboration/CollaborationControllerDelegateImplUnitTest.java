@@ -55,6 +55,7 @@ import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -346,10 +347,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         String collabId = "Collaboration";
         long resultCallback = 1;
         GroupToken token = new GroupToken(collabId, /* accessToken= */ "");
-        org.chromium.components.sync.protocol.GroupData groupData =
-                org.chromium.components.sync.protocol.GroupData.newBuilder()
-                        .setGroupId(collabId)
-                        .build();
+        GroupData groupData = GroupData.newBuilder().setGroupId(collabId).build();
         SharedTabGroupPreview previewData =
                 new SharedTabGroupPreview(/* title= */ "", /* tabs= */ null);
 
@@ -452,8 +450,8 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity), eq(title), eq(savedGroup), createCallbackCaptor.capture());
 
         mCollaborationControllerDelegateImpl.showShareDialog(null, localId, resultCallback);
-        org.chromium.components.sync.protocol.GroupData groupData =
-                org.chromium.components.sync.protocol.GroupData.newBuilder()
+        GroupData groupData =
+                GroupData.newBuilder()
                         .setGroupId(collaborationId)
                         .setAccessToken(accessToken)
                         .build();

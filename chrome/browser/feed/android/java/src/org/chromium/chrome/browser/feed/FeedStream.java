@@ -21,6 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -1037,7 +1039,7 @@ public class FeedStream implements Stream {
             FeedUiProto.StreamUpdate streamUpdate;
             try {
                 streamUpdate = FeedUiProto.StreamUpdate.parseFrom(data);
-            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            } catch (InvalidProtocolBufferException e) {
                 Log.wtf(TAG, "Unable to parse StreamUpdate proto data", e);
                 mReliabilityLoggingBridge.onStreamUpdateError();
                 return;

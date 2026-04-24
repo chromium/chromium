@@ -22,6 +22,7 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 import androidx.core.graphics.drawable.IconCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -550,7 +551,7 @@ public abstract class NotificationBuilderBase {
         if (action.type == Action.Type.TEXT) {
             assert action.placeholder != null;
             actionBuilder.addRemoteInput(
-                    new androidx.core.app.RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
+                    new RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
                             .setLabel(action.placeholder)
                             .build());
         }

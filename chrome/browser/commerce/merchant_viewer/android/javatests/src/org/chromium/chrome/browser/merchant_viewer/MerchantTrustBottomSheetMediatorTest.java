@@ -172,7 +172,7 @@ public class MerchantTrustBottomSheetMediatorTest {
         assertEquals(DUMMY_SHEET_TITLE, mToolbarModel.get(BottomSheetToolbarProperties.TITLE));
     }
 
-    @Test(expected = java.lang.AssertionError.class)
+    @Test(expected = AssertionError.class)
     public void testNavigateToNonGoogleUrl() {
         doReturn(NON_GOOGLE_URL).when(mMockDestinationGurl).getSpec();
         mMediator.navigateToUrl(mMockDestinationGurl, DUMMY_SHEET_TITLE);

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download.home.list.mutator;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.util.Pair;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
@@ -114,9 +116,10 @@ public class ListMutationController {
 
     /**
      * Called to add more items in a group card.
+     *
      * @param dateAndDomain The date and domain corresponding to the card.
      */
-    public void loadMoreItemsOnCard(android.util.Pair<Date, String> dateAndDomain) {
+    public void loadMoreItemsOnCard(Pair<Date, String> dateAndDomain) {
         mCardPaginator.loadMore(dateAndDomain);
         mMutator.reload();
     }

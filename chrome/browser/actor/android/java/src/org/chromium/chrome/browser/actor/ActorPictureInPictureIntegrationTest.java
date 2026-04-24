@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.util.Size;
 
+import androidx.core.pip.PictureInPictureDelegate;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -18,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -97,18 +99,16 @@ public class ActorPictureInPictureIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Setup mock actor task so that getCurrentActingTab returns our tab.
-                    ActorTask mockTask = org.mockito.Mockito.mock(ActorTask.class);
-                    org.mockito.Mockito.when(mockTask.getLastActedTabs())
+                    ActorTask mockTask = Mockito.mock(ActorTask.class);
+                    Mockito.when(mockTask.getLastActedTabs())
                             .thenReturn(Collections.singleton(mTab.getId()));
-                    ActorKeyedService actorService =
-                            org.mockito.Mockito.mock(ActorKeyedService.class);
-                    org.mockito.Mockito.when(actorService.getCurrentActiveTask())
-                            .thenReturn(mockTask);
-                    org.mockito.Mockito.when(actorService.getActiveTasksCount()).thenReturn(1);
+                    ActorKeyedService actorService = Mockito.mock(ActorKeyedService.class);
+                    Mockito.when(actorService.getCurrentActiveTask()).thenReturn(mockTask);
+                    Mockito.when(actorService.getActiveTasksCount()).thenReturn(1);
                     ActorKeyedServiceFactory.setForTesting(actorService);
 
                     mController.onPictureInPictureEvent(
-                            androidx.core.pip.PictureInPictureDelegate.Event.ENTERED, null);
+                            PictureInPictureDelegate.Event.ENTERED, null);
                 });
 
         // Verify offscreen rendering is active.
@@ -124,7 +124,7 @@ public class ActorPictureInPictureIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.onPictureInPictureEvent(
-                            androidx.core.pip.PictureInPictureDelegate.Event.EXITED, null);
+                            PictureInPictureDelegate.Event.EXITED, null);
                 });
 
         // Verify restoration.

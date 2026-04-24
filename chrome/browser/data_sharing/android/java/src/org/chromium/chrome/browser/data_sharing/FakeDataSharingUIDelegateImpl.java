@@ -20,6 +20,7 @@ import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
+import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.UiUtils;
 import org.chromium.url.GURL;
@@ -111,8 +112,8 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
 
     /* Creates group data and calls onGroupCreatedWithWait when showCreateFlow() is called. */
     public void forceGroupCreation(String collaborationId, String accessToken) {
-        org.chromium.components.sync.protocol.GroupData groupData =
-                org.chromium.components.sync.protocol.GroupData.newBuilder()
+        GroupData groupData =
+                GroupData.newBuilder()
                         .setGroupId(collaborationId)
                         .setAccessToken(accessToken)
                         .build();

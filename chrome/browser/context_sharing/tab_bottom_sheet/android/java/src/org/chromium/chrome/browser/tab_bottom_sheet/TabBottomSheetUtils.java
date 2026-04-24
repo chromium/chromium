@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -12,10 +13,10 @@ import org.chromium.ui.base.WindowAndroid;
 /** Utility methods used by the Tab Bottom Sheet components. */
 @NullMarked
 public final class TabBottomSheetUtils {
-    private static final org.chromium.base.UnownedUserDataKey<TabBottomSheetManager> MANAGER_KEY =
-            new org.chromium.base.UnownedUserDataKey<>();
-    private static final org.chromium.base.UnownedUserDataKey<CoBrowseViewFactory> FACTORY_KEY =
-            new org.chromium.base.UnownedUserDataKey<>();
+    private static final UnownedUserDataKey<TabBottomSheetManager> MANAGER_KEY =
+            new UnownedUserDataKey<>();
+    private static final UnownedUserDataKey<CoBrowseViewFactory> FACTORY_KEY =
+            new UnownedUserDataKey<>();
 
     private TabBottomSheetUtils() {}
 

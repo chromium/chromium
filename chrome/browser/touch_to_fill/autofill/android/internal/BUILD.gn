@@ -95,6 +95,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:service_loader_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/profiles/android:java",

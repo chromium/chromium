@@ -76,8 +76,7 @@ public class AuxiliarySearchModuleMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
-                        org.chromium.chrome.browser.auxiliary_search.R.style
-                                .Theme_BrowserUI_DayNight);
+                        R.style.Theme_BrowserUI_DayNight);
 
         mFactory = AuxiliarySearchControllerFactory.getInstance();
         mHooks = Mockito.mock(AuxiliarySearchHooks.class);
@@ -215,10 +214,7 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     private void inflateViewAndVerify(boolean isDefaultOptIn) {
         mView =
                 LayoutInflater.from(mContext)
-                        .inflate(
-                                org.chromium.chrome.browser.auxiliary_search.R.layout
-                                        .auxiliary_search_module_layout,
-                                null);
+                        .inflate(R.layout.auxiliary_search_module_layout, null);
 
         int contentTextResId;
         int firstButtonTextResId;

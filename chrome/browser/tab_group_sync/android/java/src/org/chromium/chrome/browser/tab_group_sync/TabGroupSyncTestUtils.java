@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
 /** Test utils for tab group sync. */
@@ -17,7 +18,7 @@ public class TabGroupSyncTestUtils {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "Group_1";
         group.title = "Group 1";
-        group.color = org.chromium.components.tab_groups.TabGroupColorId.GREEN;
+        group.color = TabGroupColorId.GREEN;
         SavedTabGroupTab tab1 =
                 createSavedTabGroupTab("Tab_1", group.syncId, "Tab 1", "https://foo1.com", 0);
         group.savedTabs.add(tab1);

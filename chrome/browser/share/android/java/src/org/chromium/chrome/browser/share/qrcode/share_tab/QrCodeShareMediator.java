@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Process;
 import android.text.DynamicLayout;
@@ -200,7 +201,7 @@ class QrCodeShareMediator {
 
         TextPaint textPaint = new TextPaint();
         textPaint.setAntiAlias(true);
-        textPaint.setColor(android.graphics.Color.BLACK);
+        textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(fontSize);
 
         // Text is as wide as the QR code.
@@ -214,7 +215,7 @@ class QrCodeShareMediator {
         int width = qrCodeSize + 2 * sidePadding;
         Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(newBitmap);
-        canvas.drawColor(android.graphics.Color.WHITE);
+        canvas.drawColor(Color.WHITE);
         canvas.translate(sidePadding, textTopPadding);
         textLayout.draw(canvas);
         canvas.drawBitmap(

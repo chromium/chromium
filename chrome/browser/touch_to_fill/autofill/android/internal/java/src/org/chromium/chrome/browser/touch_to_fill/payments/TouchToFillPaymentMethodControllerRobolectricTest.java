@@ -174,7 +174,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -631,8 +630,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_payment_method_bottom_sheet_half_height,
                 R.string.autofill_payment_method_bottom_sheet_full_height,
                 R.string.autofill_payment_method_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_payment_method_home_screen);
+                R.id.touch_to_fill_payment_method_home_screen);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
     }
 
@@ -917,8 +915,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_progress_sheet_half_height,
                 R.string.autofill_bnpl_progress_sheet_full_height,
                 R.string.autofill_bnpl_progress_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_progress_screen);
+                R.id.touch_to_fill_progress_screen);
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(sheetItems.size(), is(3));
@@ -1181,8 +1178,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_bnpl_issuer_selection_screen);
+                R.id.touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -1213,8 +1209,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_bnpl_issuer_selection_screen);
+                R.id.touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -1245,8 +1240,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_issuer_bottom_sheet_half_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_full_height,
                 R.string.autofill_bnpl_issuer_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_bnpl_issuer_selection_screen);
+                R.id.touch_to_fill_bnpl_issuer_selection_screen);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(3));
@@ -2089,8 +2083,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_half_height,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_full_height,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                        .touch_to_fill_bnpl_issuer_tos_screen);
+                R.id.touch_to_fill_bnpl_issuer_tos_screen);
 
         List<PropertyModel> headerModel = getModelsOfType(itemList, TOS_HEADER);
         assertThat(headerModel.size(), is(1));
@@ -2290,7 +2283,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 R.string.autofill_bnpl_error_sheet_half_height,
                 R.string.autofill_bnpl_error_sheet_full_height,
                 R.string.autofill_bnpl_error_sheet_closed,
-                org.chromium.chrome.browser.touch_to_fill.payments.R.id.touch_to_fill_error_screen);
+                R.id.touch_to_fill_error_screen);
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(sheetItems.size(), is(3));
@@ -3059,9 +3052,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ALL_LOYALTY_CARDS_SCREEN));
         assertThat(
                 mTouchToFillPaymentMethodModel.get(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY),
-                is(
-                        org.chromium.chrome.browser.touch_to_fill.payments.R.id
-                                .all_loyalty_cards_back_image_button));
+                is(R.id.all_loyalty_cards_back_image_button));
         itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(2));
 
@@ -3197,7 +3188,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
         assertThat(
                 mTouchToFillPaymentMethodModel.get(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY),
-                is(org.chromium.chrome.browser.touch_to_fill.payments.R.id.all_loyalty_cards_item));
+                is(R.id.all_loyalty_cards_item));
         itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(1));
     }

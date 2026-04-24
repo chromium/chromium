@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.settings;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -59,7 +60,7 @@ public class DownloadLocationPreference extends DialogPreference
         summaryBuilder.append(directoryOption.location);
         if (directoryOption.name != null) {
             summaryBuilder.setSpan(
-                    new StyleSpan(android.graphics.Typeface.BOLD),
+                    new StyleSpan(Typeface.BOLD),
                     0,
                     directoryOption.name.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

@@ -34,7 +34,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,8 +57,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Before
     public void setUp() {
-        RuntimeEnvironment.application.setTheme(
-                org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+        RuntimeEnvironment.application.setTheme(R.style.Theme_BrowserUI_DayNight);
         AutofillAiSaveUpdateEntityPromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         mPromptController =
                 AutofillAiSaveUpdateEntityPromptController.create(

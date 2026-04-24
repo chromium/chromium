@@ -73,17 +73,14 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
 
     private void setUpManagedDisclaimerView(PreferenceViewHolder holder, PrefService prefService) {
         TextViewWithCompoundDrawables managedDisclaimerView =
-                holder.itemView.findViewById(
-                        org.chromium.components.browser_ui.settings.R.id.managed_disclaimer_text);
+                holder.itemView.findViewById(R.id.managed_disclaimer_text);
 
         assert managedDisclaimerView != null;
         boolean offerToSavePasswords = prefService.getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
         managedDisclaimerView.setText(
                 offerToSavePasswords
-                        ? org.chromium.chrome.browser.password_manager.R.string
-                                .password_saving_on_by_administrator
-                        : org.chromium.chrome.browser.password_manager.R.string
-                                .password_saving_off_by_administrator);
+                        ? R.string.password_saving_on_by_administrator
+                        : R.string.password_saving_off_by_administrator);
     }
 
     private void setUpPostDeprecationWarning(PreferenceViewHolder holder) {

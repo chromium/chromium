@@ -27,6 +27,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
+import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.widget.ButtonCompat;
@@ -49,8 +50,7 @@ public class SavePasswordsPromoCoordinatorUnitTest {
     @Before
     public void setUp() {
         mCallbackController = new CallbackController();
-        RuntimeEnvironment.application.setTheme(
-                org.chromium.chrome.browser.educational_tip.R.style.Theme_AppCompat);
+        RuntimeEnvironment.application.setTheme(R.style.Theme_AppCompat);
         when(mActionDelegate.getContext()).thenReturn(RuntimeEnvironment.application);
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
@@ -74,9 +74,7 @@ public class SavePasswordsPromoCoordinatorUnitTest {
 
         @Nullable SavePasswordsInstructionalBottomSheetContent content =
                 mSavePasswordsPromoCoordinator.getBottomSheetContent();
-        ButtonCompat button =
-                content.getContentView()
-                        .findViewById(org.chromium.chrome.browser.educational_tip.R.id.button);
+        ButtonCompat button = content.getContentView().findViewById(R.id.button);
         button.performClick();
         verify(mBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
     }

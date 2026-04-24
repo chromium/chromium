@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.PictureInPictureParams;
 import android.app.RemoteAction;
 import android.content.Intent;
 import android.util.Size;
@@ -35,6 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,9 +51,11 @@ import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link ActorPictureInPictureController}. */
@@ -71,7 +75,7 @@ public class ActorPictureInPictureControllerTest {
     @Mock private Callback<Boolean> mOnPipChangedCallback;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private org.chromium.ui.base.WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -258,8 +262,7 @@ public class ActorPictureInPictureControllerTest {
         verify(mActivity, never()).moveTaskToBack(true);
 
         // Advance time by 1 hour
-        org.robolectric.shadows.ShadowLooper.idleMainLooper(
-                1, java.util.concurrent.TimeUnit.MINUTES);
+        ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
 
         // Now it should exit
         verify(mActivity).moveTaskToBack(true);
@@ -283,8 +286,8 @@ public class ActorPictureInPictureControllerTest {
         createMockActorTask(101, "Task", ActorTaskState.ACTING);
         mController.updatePipState();
 
-        ArgumentCaptor<android.app.PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(android.app.PictureInPictureParams.class);
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
         verify(mActivity).setPictureInPictureParams(captor.capture());
 
         List<RemoteAction> actions = captor.getValue().getActions();
@@ -299,8 +302,8 @@ public class ActorPictureInPictureControllerTest {
 
         mController.updatePipState();
 
-        ArgumentCaptor<android.app.PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(android.app.PictureInPictureParams.class);
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
         verify(mActivity).setPictureInPictureParams(captor.capture());
 
         List<RemoteAction> actions = captor.getValue().getActions();

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Manages the registration of high-level module collections on the home surface, like the Setup
@@ -67,7 +68,7 @@ public class HomeTipsModulesProvider {
             // transition seamlessly from the Setup List (Celebration card) back to standard Tips
             // within the same session once all tasks are complete. Actual visibility is enforced
             // via each builder's isEligible() check.
-            java.util.Set<Integer> modules = new java.util.HashSet<>();
+            java.util.Set<Integer> modules = new HashSet<>();
             modules.addAll(SetupListModuleUtils.getModuleTypesForRegistration(showTwoCell));
             modules.addAll(EducationalTipModuleUtils.getModuleTypes());
             return modules;

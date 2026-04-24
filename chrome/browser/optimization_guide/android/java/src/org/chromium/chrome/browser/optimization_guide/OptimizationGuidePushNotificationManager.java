@@ -11,6 +11,8 @@ import android.util.Base64;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -129,7 +131,7 @@ public class OptimizationGuidePushNotificationManager {
                         READ_CACHE_RESULT_HISTOGRAM,
                         ReadCacheResult.SUCCESS,
                         ReadCacheResult.NUM_ENTRIES);
-            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            } catch (InvalidProtocolBufferException e) {
                 RecordHistogram.recordEnumeratedHistogram(
                         READ_CACHE_RESULT_HISTOGRAM,
                         ReadCacheResult.INVALID_PROTO_ERROR,

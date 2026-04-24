@@ -798,8 +798,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     getContext().getResources().getQuantityString(stringRes, itemCount, itemCount);
             if (singleDownloadCompleted) {
                 String bytesString =
-                        org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
-                                getContext(), itemToShow.totalSizeBytes);
+                        DownloadUtils.getStringForBytes(getContext(), itemToShow.totalSizeBytes);
                 // Try to display the download domain/origin if possible. Otherwise, omit it.
                 String displayUrl =
                         DownloadUtils.formatUrlForDisplayInNotification(

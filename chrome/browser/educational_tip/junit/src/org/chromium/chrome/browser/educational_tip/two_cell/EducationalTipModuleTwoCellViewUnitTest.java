@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.educational_tip.two_cell;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,14 +140,10 @@ public class EducationalTipModuleTwoCellViewUnitTest {
 
         int disabledColor = mContext.getColor(R.color.default_text_color_disabled_list);
         Assert.assertEquals(disabledColor, item1TitleView.getCurrentTextColor());
-        Assert.assertTrue(
-                (item1TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+        Assert.assertTrue((item1TitleView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertEquals(disabledColor, item1DescriptionView.getCurrentTextColor());
         Assert.assertTrue(
-                (item1DescriptionView.getPaintFlags()
-                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+                (item1DescriptionView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertFalse(item1Layout.isClickable());
     }
 
@@ -161,14 +158,10 @@ public class EducationalTipModuleTwoCellViewUnitTest {
 
         int disabledColor = mContext.getColor(R.color.default_text_color_disabled_list);
         Assert.assertEquals(disabledColor, item2TitleView.getCurrentTextColor());
-        Assert.assertTrue(
-                (item2TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+        Assert.assertTrue((item2TitleView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertEquals(disabledColor, item2DescriptionView.getCurrentTextColor());
         Assert.assertTrue(
-                (item2DescriptionView.getPaintFlags()
-                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+                (item2DescriptionView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertFalse(item2Layout.isClickable());
     }
 
@@ -188,16 +181,12 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         Assert.assertNotEquals(
                 mContext.getColor(R.color.default_text_color_disabled_list),
                 item2TitleView.getCurrentTextColor());
-        Assert.assertFalse(
-                (item2TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+        Assert.assertFalse((item2TitleView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertNotEquals(
                 mContext.getColor(R.color.default_text_color_disabled_list),
                 item2DescriptionView.getCurrentTextColor());
         Assert.assertFalse(
-                (item2DescriptionView.getPaintFlags()
-                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
-                        != 0);
+                (item2DescriptionView.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
         Assert.assertTrue(item2Layout.isClickable());
     }
 }

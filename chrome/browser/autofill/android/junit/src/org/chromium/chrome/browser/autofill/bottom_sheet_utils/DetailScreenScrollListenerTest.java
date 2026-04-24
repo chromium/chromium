@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,7 +44,7 @@ public class DetailScreenScrollListenerTest {
 
     @Before
     public void setUp() {
-        mContext = Robolectric.setupActivity(android.app.Activity.class);
+        mContext = Robolectric.setupActivity(Activity.class);
         mScrollListener = new DetailScreenScrollListener(mMockBottomSheetController);
     }
 

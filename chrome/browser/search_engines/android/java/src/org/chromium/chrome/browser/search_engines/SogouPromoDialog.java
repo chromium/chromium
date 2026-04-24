@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.search_engines;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -101,7 +102,7 @@ public class SogouPromoDialog extends PromoDialog {
             return;
         }
 
-        StyleSpan boldSpan = new StyleSpan(android.graphics.Typeface.BOLD);
+        StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
         TextView textView = (TextView) findViewById(R.id.subheader);
         SpannableString description =
                 SpanApplier.applySpans(

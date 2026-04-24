@@ -40,6 +40,7 @@ import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 
@@ -104,14 +105,7 @@ public class RecentActivityListCoordinatorUnitTest {
         logItem.titleText = USER_DISPLAY_NAME1 + " changed a tab";
         logItem.descriptionText = TEST_DESCRIPTION_1;
         logItem.timeDeltaText = TEST_TIMESTAMP_1;
-        GroupMember triggeringUser =
-                new GroupMember(
-                        null,
-                        null,
-                        null,
-                        org.chromium.components.data_sharing.member_role.MemberRole.OWNER,
-                        null,
-                        "");
+        GroupMember triggeringUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
         logItem.activityMetadata.triggeringUser = triggeringUser;
         logItem.activityMetadata.tabMetadata = new TabMessageMetadata();

@@ -11,6 +11,8 @@ import android.app.RemoteAction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Icon;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Rational;
 import android.util.Size;
 import android.view.ViewGroup;
@@ -63,8 +65,7 @@ public class ActorPictureInPictureController
     private final BasicPictureInPicture mPipDelegate;
     private final Size mLastNormalSizeBeforePip;
     private final Callback<Boolean> mOnPipChangedCallback;
-    private final android.os.Handler mHandler =
-            new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private @Nullable ActorKeyedService mActorService;
     private boolean mInActorPiP;

@@ -102,7 +102,7 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        org.chromium.chrome.browser.share.screenshot.EditorScreenshotTaskJni.get()
+        EditorScreenshotTaskJni.get()
                 .grabWindowSnapshotAsync(
                         this,
                         assertNonNull(((ChromeActivity) activity).getWindowAndroid()),

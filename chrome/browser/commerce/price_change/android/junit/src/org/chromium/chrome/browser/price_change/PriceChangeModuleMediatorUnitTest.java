@@ -173,11 +173,7 @@ public class PriceChangeModuleMediatorUnitTest {
         showModuleWithInitializedService();
 
         assertEquals(
-                mContext.getResources()
-                        .getQuantityString(
-                                org.chromium.chrome.browser.price_change.R.plurals
-                                        .price_change_module_title,
-                                1),
+                mContext.getResources().getQuantityString(R.plurals.price_change_module_title, 1),
                 mModel.get(PriceChangeModuleProperties.MODULE_TITLE));
         assertEquals(
                 PRODUCT_TITLE, mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING));

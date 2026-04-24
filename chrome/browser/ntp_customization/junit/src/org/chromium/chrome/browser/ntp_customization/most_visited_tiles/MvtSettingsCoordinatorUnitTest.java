@@ -57,8 +57,7 @@ public class MvtSettingsCoordinatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
-                        org.chromium.chrome.browser.ntp_customization.R.style
-                                .Theme_BrowserUI_DayNight);
+                        R.style.Theme_BrowserUI_DayNight);
         mCoordinator = new MvtSettingsCoordinator(mContext, mBottomSheetDelegate);
         mPropertyModel = new PropertyModel(BOTTOM_SHEET_KEYS);
     }

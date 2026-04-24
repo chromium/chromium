@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omaha.metrics;
 
 import android.util.Base64;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.chromium.base.Promise;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
@@ -41,7 +43,7 @@ class TrackingProvider {
                     if (serialized != null) {
                         try {
                             state = Tracking.parseFrom(Base64.decode(serialized, Base64.DEFAULT));
-                        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+                        } catch (InvalidProtocolBufferException e) {
                         }
                     }
 

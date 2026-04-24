@@ -14,6 +14,7 @@ import android.os.ResultReceiver;
 import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
 import androidx.credentials.Credential;
+import androidx.credentials.ExperimentalDigitalCredentialApi;
 import androidx.credentials.GetDigitalCredentialOption;
 import androidx.credentials.exceptions.GetCredentialCancellationException;
 import androidx.credentials.exceptions.GetCredentialInterruptedException;
@@ -57,7 +58,7 @@ public class DigitalCredentialsPresentationDelegate {
     private static final String TYPE_INTERRUPTED =
             "android.credentials.GetCredentialException.TYPE_INTERRUPTED";
 
-    @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
+    @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(
             WindowAndroid windowAndroid, String origin, String request) {
         Activity window = windowAndroid.getActivity().get();

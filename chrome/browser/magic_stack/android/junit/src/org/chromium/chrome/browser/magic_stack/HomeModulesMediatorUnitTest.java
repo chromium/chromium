@@ -55,6 +55,7 @@ import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -657,8 +658,7 @@ public class HomeModulesMediatorUnitTest {
     public void testFilterEnabledModuleList() {
         ClassificationResult classificationResult =
                 new ClassificationResult(
-                        org.chromium.components.segmentation_platform.prediction_status
-                                .PredictionStatus.SUCCEEDED,
+                        PredictionStatus.SUCCEEDED,
                         new String[] {"SafetyHub", "SingleTab", "PriceChange"},
                         /* requestId= */ 0);
         Set<Integer> filteredEnabledModuleSet = new HashSet<>();
@@ -690,8 +690,7 @@ public class HomeModulesMediatorUnitTest {
     public void testFilterEnabledModuleList_withInvalidType() {
         ClassificationResult classificationResult =
                 new ClassificationResult(
-                        org.chromium.components.segmentation_platform.prediction_status
-                                .PredictionStatus.SUCCEEDED,
+                        PredictionStatus.SUCCEEDED,
                         new String[] {"TabResumption"},
                         /* requestId= */ 0);
         Set<Integer> filteredEnabledModuleSet = new HashSet<>();
