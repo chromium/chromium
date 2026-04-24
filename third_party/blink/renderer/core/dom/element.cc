@@ -9396,6 +9396,20 @@ void Element::SetOuterHTMLInternal(const String& html,
     context_element = To<Element>(p);
   }
 
+  // The registry should reflect the parent scope where replacement nodes will
+  // live, not the fabricated context_element. When scoped registries aren't in
+  // use, all elements share the tree scope's global registry so no distinction
+  // is needed.
+  CustomElementRegistry* registry;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      GetDocument().ScopedCustomElementRegistryUsed()) {
+    auto* parent_element = DynamicTo<Element>(p);
+    registry = parent_element ? parent_element->customElementRegistry()
+                              : p->GetTreeScope().customElementRegistry();
+  } else {
+    registry = GetTreeScope().customElementRegistry();
+  }
+
   Node* prev = previousSibling();
   Node* next = nextSibling();
 
@@ -9405,7 +9419,7 @@ void Element::SetOuterHTMLInternal(const String& html,
                             .interface_name = trusted_types_names::kElement,
                             .property_name = trusted_types_names::kOuterHTML,
                             .context_element = context_element,
-                            .registry = customElementRegistry(),
+                            .registry = registry,
                         },
                         FragmentParserOptions(), exception_state);
 
@@ -9669,6 +9683,22 @@ void Element::InsertAdjacentHTMLInternal(const String& where,
     context_element = To<Element>(context_node);
   }
 
+  // The registry should reflect where new nodes will be inserted (i.e., under
+  // context_node), not the fabricated context_element which may differ for
+  // non-Element parents like ShadowRoot. When scoped registries aren't in use,
+  // all elements share the tree scope's global registry so no distinction is
+  // needed.
+  CustomElementRegistry* registry;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      GetDocument().ScopedCustomElementRegistryUsed()) {
+    auto* context_element_for_registry = DynamicTo<Element>(context_node);
+    registry = context_element_for_registry
+                   ? context_element_for_registry->customElementRegistry()
+                   : context_node->GetTreeScope().customElementRegistry();
+  } else {
+    registry = GetTreeScope().customElementRegistry();
+  }
+
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   if (DocumentFragment* fragment = ParseHTMLFragment(
           html,
@@ -9676,7 +9706,7 @@ void Element::InsertAdjacentHTMLInternal(const String& where,
               .interface_name = trusted_types_names::kElement,
               .property_name = trusted_types_names::kInsertAdjacentHTML,
               .context_element = context_element,
-              .registry = customElementRegistry(),
+              .registry = registry,
           },
           FragmentParserOptions(), exception_state)) {
     InsertAdjacent(where, fragment, exception_state);

@@ -11,5 +11,11 @@ This is a testharness.js-based test.
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] insertAdjacentHTML should use the element's registry even when the registry is null
   assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] insertAdjacentHTML with beforebegin should use the containing scope's registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] insertAdjacentHTML with afterend should use the containing scope's registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] outerHTML setter should use the parent scope's registry, not the replaced element's
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
 
