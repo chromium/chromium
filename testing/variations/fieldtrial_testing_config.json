@@ -24407,6 +24407,31 @@
             ]
         }
     ],
+    "VerticalTabsExpandOnHover": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "expand_on_hover_default_enabled": "true",
+                        "expand_on_hover_use_velocity_heuristic": "true",
+                        "expand_on_hover_velocity_heuristic_min_samples": "3",
+                        "expand_on_hover_velocity_heuristic_threshold": "0.25"
+                    },
+                    "enable_features": [
+                        "IPH_VerticalTabsExpandOnHoverFeature",
+                        "VerticalTabsExpandOnHover"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerticalTabsLaunch": [
         {
             "platforms": [
