@@ -1478,7 +1478,7 @@ device::gcpw::HidOpenDeviceGcpwResponse ProcessHidOpenDeviceRequest(
   // LINT.IfChange
   uint16_t usage_page = os_device_manager->GetUsagePage(device_handle.Get());
   if (usage_page != device::mojom::kPageFido) {
-    LOGFN(ERROR) << "Device is not a FIDO device. " << usage_page;
+    LOGFN(VERBOSE) << "Device is not a FIDO device. " << usage_page;
     return response;
   }
   // LINT.ThenChange(//services/device/hid/hid_service_win.cc)
