@@ -58,7 +58,7 @@ struct A2AInvokePaymentAppMetricsTestParam {
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
 
-  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID(), /*has_iframe=*/false);
 
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
                                       /*sample=*/true,
@@ -582,13 +582,15 @@ class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
 };
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
-  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID(), /*has_iframe=*/true);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
-      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName,
+       ukm::builders::FacilitatedPayments_PixCodeCopied::kHasIframeName});
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("HasIframe"), true);
 }
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {

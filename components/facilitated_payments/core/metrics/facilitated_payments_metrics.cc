@@ -114,11 +114,12 @@ std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
   }
 }
 
-void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
+void LogPixCodeCopied(ukm::SourceId ukm_source_id, bool has_iframe) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
                             /*sample=*/true);
   ukm::builders::FacilitatedPayments_PixCodeCopied(ukm_source_id)
       .SetPixCodeCopied(true)
+      .SetHasIframe(has_iframe)
       .Record(ukm::UkmRecorder::Get());
 }
 
