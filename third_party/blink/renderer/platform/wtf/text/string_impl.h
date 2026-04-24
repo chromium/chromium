@@ -205,8 +205,9 @@ class WTF_EXPORT StringImpl {
     // SAFETY: The AllocationSize<CharType>() helper function computes a size
     // that includes `length_` UChar/LChar characters in addition to the size
     // required for the StringImpl.
-    return UNSAFE_BUFFERS(
-        {reinterpret_cast<const uint8_t*>(this + 1), CharactersSizeInBytes()});
+    return UNSAFE_BUFFERS(base::span(base::unchecked,
+                                     reinterpret_cast<const uint8_t*>(this + 1),
+                                     CharactersSizeInBytes()));
   }
   // Create a new std::u16string based on this.
   // The character content is always copied.
@@ -605,8 +606,8 @@ class WTF_EXPORT StringImpl {
     // SAFETY: The AllocationSize<CharType>() helper function computes a size
     // that includes `length_` UChar/LChar characters in addition to the size
     // required for the StringImpl.
-    return UNSAFE_BUFFERS(
-        base::span(reinterpret_cast<CharType*>(this + 1), length_));
+    return UNSAFE_BUFFERS(base::span(
+        base::unchecked, reinterpret_cast<CharType*>(this + 1), length_));
   }
   template <typename CharType>
   ALWAYS_INLINE base::span<const CharType> CharacterBuffer() const {
