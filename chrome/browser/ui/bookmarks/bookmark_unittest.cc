@@ -49,7 +49,7 @@ TEST_F(BookmarkTest, NonEmptyBookmarkBarShownOnNTP) {
   bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://www.test.com"),
                                 std::u16string());
 
-  AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   EXPECT_EQ(BookmarkBar::SHOW,
             BookmarkBarController::From(browser())->bookmark_bar_state());
 }
@@ -59,7 +59,7 @@ TEST_F(BookmarkTest, EmptyBookmarkBarNotShownOnNTP) {
       BookmarkModelFactory::GetForBrowserContext(profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-  AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
+  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   EXPECT_EQ(BookmarkBar::HIDDEN,
             BookmarkBarController::From(browser())->bookmark_bar_state());
 }
@@ -77,7 +77,7 @@ TEST_F(BookmarkTest, BookmarkBarOnCustomNTP) {
   // Give it a NTP virtual URL.
   content::NavigationController* controller = &web_contents->GetController();
   content::NavigationEntry* entry = controller->GetVisibleEntry();
-  entry->SetVirtualURL(GURL(chrome::kChromeUINewTabURL));
+  entry->SetVirtualURL(chrome::ChromeUINewTabURLAsGURL());
 
   // Verify that the bookmark bar is hidden.
   EXPECT_EQ(BookmarkBar::HIDDEN,

@@ -185,7 +185,7 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   }
 
   // Use "New tab" as title if the current page is NTP even in incognito mode.
-  if (u == GURL(chrome::kChromeUINewTabURL)) {
+  if (u == chrome::ChromeUINewTabURLAsGURL()) {
     *title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
   }
 
