@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
 
 #import <algorithm>
+#import <ranges>
 #import <unordered_map>
 
 #import "base/debug/dump_without_crashing.h"
@@ -39,33 +40,53 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
   using enum ComposeboxModelOption;
   switch (model_mode) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-      return ComposeboxModelOption::kAuto;
+      return kAuto;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
-      return ComposeboxModelOption::kThinking;
+      return kThinking;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
-      return ComposeboxModelOption::kThinkingNoGenUI;
+      return kThinkingNoGenUI;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
     case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
-      return ComposeboxModelOption::kRegular;
+      return kRegular;
     default:
       base::debug::DumpWithoutCrashing();
-      return ComposeboxModelOption::kRegular;
+      return kRegular;
+  }
+}
+
+// Returns the model mode for the given model option.
+omnibox::ModelMode ModelModeForModelOption(
+    ComposeboxModelOption modelOption,
+    const contextual_search::InputState& input_state) {
+  using enum ComposeboxModelOption;
+  switch (modelOption) {
+    case kNone:
+      return input_state.GetDefaultModel();
+    case kRegular:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
+    case kAuto:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
+    case kThinking:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
+    case kThinkingNoGenUI:
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
   }
 }
 
 // Returns the input plate control for the given tool mode.
 std::optional<ComposeboxMode> ModeForToolMode(omnibox::ToolMode tool_mode) {
+  using enum ComposeboxMode;
   switch (tool_mode) {
     case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      return ComposeboxMode::kCanvas;
+      return kCanvas;
     case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      return ComposeboxMode::kDeepSearch;
+      return kDeepSearch;
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE:
-      return ComposeboxMode::kImageGeneration;
+      return kImageGeneration;
     case omnibox::ToolMode::TOOL_MODE_AIM:
-      return ComposeboxMode::kAIM;
+      return kAIM;
     default:
       return std::nullopt;
   }
@@ -273,25 +294,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   }
 
   omnibox::ModelMode requestedModelMode =
-      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-  using enum ComposeboxModelOption;
-  switch (modelOption) {
-    case kNone:
-      requestedModelMode = _inputState.GetDefaultModel();
-      break;
-    case kRegular:
-      requestedModelMode = omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
-      break;
-    case kAuto:
-      requestedModelMode = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
-      break;
-    case kThinking:
-      requestedModelMode = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
-      break;
-    case kThinkingNoGenUI:
-      requestedModelMode = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
-      break;
-  }
+      ModelModeForModelOption(modelOption, _inputState);
 
   if (_inputState.active_model == requestedModelMode) {
     return;
@@ -374,6 +377,140 @@ ComposeboxStrings* ServerStringsFromInputState(
   return search::DefaultSearchProviderIsGoogle(_templateURLService);
 }
 
+- (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption {
+  if (![self attachmentsAvailable]) {
+    return NO;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isAttachmentAllowedByServer:attachmentOption];
+  } else {
+    return [self isAttachmentAllowedLocally:attachmentOption];
+  }
+}
+
+- (BOOL)isAttachmentDisabled:(ComposeboxAttachmentOption)attachmentOption {
+  if (![self canAddMoreAttachments]) {
+    return YES;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isAttachmentDisabledByServer:attachmentOption];
+  } else {
+    return [self isAttachmentDisabledLocally:attachmentOption];
+  }
+}
+
+/// Returns the default mode/tool that is implicit in the context. The tool is
+/// not displayed in the input menu.
+- (ComposeboxMode)defaultTool {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    return ComposeboxMode::kAIM;
+  } else {
+    return ComposeboxMode::kRegularSearch;
+  }
+}
+
+- (BOOL)isToolAllowed:(ComposeboxMode)mode {
+  if (mode == [self defaultTool]) {
+    return YES;
+  }
+
+  // All tools are gated by AI omnibox eligibility.
+  if (![self isEligibleToAIM]) {
+    return NO;
+  }
+
+  // Global checks first
+  switch (mode) {
+    case ComposeboxMode::kImageGeneration:
+      if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kCanvas:
+      if (!ShowComposeboxAdditionalAdvancedTools() ||
+          experimental_flags::ShouldForceDisableComposeboxCanvas()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kDeepSearch:
+      if (!ShowDeepSearchTool() ||
+          experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kAIM:
+      break;
+    case ComposeboxMode::kRegularSearch:
+      if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+        return NO;
+      }
+      break;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isToolAllowedByServer:mode];
+  } else {
+    return [self isToolAllowedLocally:mode];
+  }
+}
+
+- (BOOL)isToolDisabled:(ComposeboxMode)mode {
+  if ([self activeMode] == mode) {
+    // Allows the user to exit the active mode.
+    return NO;
+  }
+  if (EnableComposeboxServerSideState()) {
+    return [self isToolDisabledByServer:mode];
+  } else {
+    return [self isToolDisabledLocally:mode];
+  }
+}
+
+- (BOOL)canSelectTool:(ComposeboxMode)mode {
+  return [self isToolAllowed:mode] && ![self isToolDisabled:mode];
+}
+
+- (BOOL)canSelectModel:(ComposeboxModelOption)modelOption {
+  return
+      [self isModelAllowed:modelOption] && ![self isModelDisabled:modelOption];
+}
+
+- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption {
+  // None is the fallback/default option that is always available.
+  if (modelOption == ComposeboxModelOption::kNone) {
+    return YES;
+  }
+
+  // All models are gated by AI omnibox eligibility.
+  if (![self isEligibleToAIM]) {
+    return NO;
+  }
+
+  // Models are only available from server state.
+  if (!ShowComposeboxAdditionalAdvancedTools() ||
+      !EnableComposeboxServerSideState()) {
+    return NO;
+  }
+
+  omnibox::ModelMode modelMode =
+      ModelModeForModelOption(modelOption, _inputState);
+  return std::ranges::contains(_inputState.allowed_models, modelMode);
+}
+
+- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption {
+  // Models are only available from server state.
+  if (!ShowComposeboxAdditionalAdvancedTools() ||
+      !EnableComposeboxServerSideState()) {
+    return NO;
+  }
+
+  omnibox::ModelMode modelMode =
+      ModelModeForModelOption(modelOption, _inputState);
+  return std::ranges::contains(_inputState.disabled_models, modelMode);
+}
+
 - (BOOL)canAddMoreAttachments {
   return [self remainingAttachmentCapacity] > 0;
 }
@@ -412,30 +549,6 @@ ComposeboxStrings* ServerStringsFromInputState(
     }
   }
   return remainingAttachmentCapacity;
-}
-
-- (std::unordered_set<ComposeboxModelOption>)allowedModels {
-  std::unordered_set<ComposeboxModelOption> allowed = {};
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return allowed;
-  }
-  for (auto modelType : _inputState.allowed_models) {
-    allowed.insert(ModelOptionForModelMode(modelType));
-  }
-
-  return allowed;
-}
-
-- (std::unordered_set<ComposeboxModelOption>)disabledModels {
-  std::unordered_set<ComposeboxModelOption> disabled = {};
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return disabled;
-  }
-  for (auto modelType : _inputState.disabled_models) {
-    disabled.insert(ModelOptionForModelMode(modelType));
-  }
-
-  return disabled;
 }
 
 - (BOOL)canAttachActiveTabWithAttachedWebStateIDs:
@@ -488,29 +601,22 @@ ComposeboxStrings* ServerStringsFromInputState(
   std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;
   std::unordered_set<ComposeboxAttachmentOption> disabledAttachments;
 
-  if ([self canAttachActiveTabWithAttachedWebStateIDs:attachedWebStateIDs] &&
-      [self tabAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kCurrentTab);
-  }
-  if ([self tabAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kTab);
-  }
-  if ([self tabAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kTab);
-  }
-  if ([self fileAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kFile);
-  }
-  if ([self fileAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kFile);
-  }
-  if ([self imageAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kGallery);
-    allowedAttachments.insert(ComposeboxAttachmentOption::kCamera);
-  }
-  if ([self imageAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kGallery);
-    disabledAttachments.insert(ComposeboxAttachmentOption::kCamera);
+  for (ComposeboxAttachmentOption attachmentOption :
+       ComposeboxAttachmentOptionSet::All()) {
+    if (attachmentOption == ComposeboxAttachmentOption::kCurrentTab) {
+      if ([self
+              canAttachActiveTabWithAttachedWebStateIDs:attachedWebStateIDs] &&
+          [self isAttachmentAllowed:attachmentOption]) {
+        allowedAttachments.insert(attachmentOption);
+      }
+    } else {
+      if ([self isAttachmentAllowed:attachmentOption]) {
+        allowedAttachments.insert(attachmentOption);
+      }
+    }
+    if ([self isAttachmentDisabled:attachmentOption]) {
+      disabledAttachments.insert(attachmentOption);
+    }
   }
 
   state.allowedAttachments = allowedAttachments;
@@ -520,33 +626,41 @@ ComposeboxStrings* ServerStringsFromInputState(
   std::unordered_set<ComposeboxMode> allowedTools;
   std::unordered_set<ComposeboxMode> disabledTools;
 
-  if ([self imageToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kImageGeneration);
-  }
-  if ([self imageToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kImageGeneration);
-  }
-  if ([self canvasToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kCanvas);
-  }
-  if ([self canvasToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kCanvas);
-  }
-  if ([self deepSearchToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kDeepSearch);
-  }
-  if ([self deepSearchToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kDeepSearch);
-  }
-  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
-    allowedTools.insert(ComposeboxMode::kAIM);
+  // The default/implicit tool is not displayed as an option.
+  ComposeboxMode defaultMode = [self defaultTool];
+  for (ComposeboxMode mode : ComposeboxModeSet::All()) {
+    if (mode == defaultMode) {
+      continue;
+    }
+    if ([self isToolAllowed:mode]) {
+      allowedTools.insert(mode);
+    }
+    if ([self isToolDisabled:mode]) {
+      disabledTools.insert(mode);
+    }
   }
 
   state.allowedTools = allowedTools;
   state.disabledTools = disabledTools;
 
-  state.allowedModels = [self allowedModels];
-  state.disabledModels = [self disabledModels];
+  std::unordered_set<ComposeboxModelOption> allowedModels;
+  std::unordered_set<ComposeboxModelOption> disabledModels;
+
+  for (ComposeboxModelOption modelOption : ComposeboxModelOptionSet::All()) {
+    // Skip ComposeboxModelOption::kNone in the available models.
+    if (modelOption == ComposeboxModelOption::kNone) {
+      continue;
+    }
+    if ([self isModelAllowed:modelOption]) {
+      allowedModels.insert(modelOption);
+    }
+    if ([self isModelDisabled:modelOption]) {
+      disabledModels.insert(modelOption);
+    }
+  }
+
+  state.allowedModels = allowedModels;
+  state.disabledModels = disabledModels;
 
   return state;
 }
@@ -564,14 +678,10 @@ ComposeboxStrings* ServerStringsFromInputState(
   if (!EnableComposeboxServerSideState()) {
     canSelectModel = YES;
   } else {
-    bool model_allowed = std::find(inputState.allowed_models.begin(),
-                                   inputState.allowed_models.end(),
-                                   preselectionState.active_model) !=
-                         inputState.allowed_models.end();
-    bool model_disabled = std::find(inputState.disabled_models.begin(),
-                                    inputState.disabled_models.end(),
-                                    preselectionState.active_model) !=
-                          inputState.disabled_models.end();
+    bool model_allowed = std::ranges::contains(inputState.allowed_models,
+                                               preselectionState.active_model);
+    bool model_disabled = std::ranges::contains(inputState.disabled_models,
+                                                preselectionState.active_model);
     canSelectModel = model_allowed && !model_disabled;
   }
 
@@ -583,14 +693,10 @@ ComposeboxStrings* ServerStringsFromInputState(
   if (!EnableComposeboxServerSideState()) {
     canSelectTool = YES;
   } else {
-    bool tool_allowed = std::find(inputState.allowed_tools.begin(),
-                                  inputState.allowed_tools.end(),
-                                  preselectionState.active_tool) !=
-                        inputState.allowed_tools.end();
-    bool tool_disabled = std::find(inputState.disabled_tools.begin(),
-                                   inputState.disabled_tools.end(),
-                                   preselectionState.active_tool) !=
-                         inputState.disabled_tools.end();
+    bool tool_allowed = std::ranges::contains(inputState.allowed_tools,
+                                              preselectionState.active_tool);
+    bool tool_disabled = std::ranges::contains(inputState.disabled_tools,
+                                               preselectionState.active_tool);
     canSelectTool = tool_allowed && !tool_disabled;
   }
 
@@ -627,133 +733,12 @@ ComposeboxStrings* ServerStringsFromInputState(
   return _modeHolder.mode;
 }
 
-// Whether the given mode is allowed in the input state.
-- (BOOL)toolAllowedInInputState:(omnibox::ToolMode)toolMode {
-  if (!EnableComposeboxServerSideState()) {
-    return YES;
-  }
-  return std::find(_inputState.allowed_tools.begin(),
-                   _inputState.allowed_tools.end(),
-                   toolMode) != _inputState.allowed_tools.end();
-}
-
-// Whether the given mode is disabled in the input state.
-- (BOOL)toolDisabledInInputState:(omnibox::ToolMode)toolMode {
-  if (!EnableComposeboxServerSideState()) {
-    return NO;
-  }
-  return std::find(_inputState.disabled_tools.begin(),
-                   _inputState.disabled_tools.end(),
-                   toolMode) != _inputState.disabled_tools.end();
-}
-
-// Whether the given tool mode is selectable.
-- (BOOL)canSelectToolBasedOnInputState:(omnibox::ToolMode)toolMode {
-  return [self toolAllowedInInputState:toolMode] &&
-         ![self toolDisabledInInputState:toolMode];
-}
-
-// Whether the given mode is allowed in the input state.
-- (BOOL)modelAllowedInInputState:(omnibox::ModelMode)modelMode {
-  if (!EnableComposeboxServerSideState()) {
-    return YES;
-  }
-  return std::find(_inputState.allowed_models.begin(),
-                   _inputState.allowed_models.end(),
-                   modelMode) != _inputState.allowed_models.end();
-}
-
-// Whether the given mode is disabled in the input state.
-- (BOOL)modelDisabledInInputState:(omnibox::ModelMode)modelMode {
-  if (!EnableComposeboxServerSideState()) {
-    return NO;
-  }
-  return std::find(_inputState.disabled_models.begin(),
-                   _inputState.disabled_models.end(),
-                   modelMode) != _inputState.disabled_models.end();
-}
-
-// Whether the given model mode is selectable.
-- (BOOL)canSelectModelBasedOnInputState:(omnibox::ModelMode)modelMode {
-  return [self modelAllowedInInputState:modelMode] &&
-         ![self modelDisabledInInputState:modelMode];
-}
-
-/// Whether the current input state disables the given input type.
-- (BOOL)inputStateDisablesType:(omnibox::InputType)inputType {
-  return std::find(_inputState.disabled_input_types.begin(),
-                   _inputState.disabled_input_types.end(),
-                   inputType) != _inputState.disabled_input_types.end();
-}
-
-/// Whether the current input state allows the given input type.
-- (BOOL)inputStateAllowsType:(omnibox::InputType)inputType {
-  return std::find(_inputState.allowed_input_types.begin(),
-                   _inputState.allowed_input_types.end(),
-                   inputType) != _inputState.allowed_input_types.end();
-}
-
 #pragma mark - Eligibility & Availability
 
 /// Whether the user is eligible to share content (enterprise policy).
 - (BOOL)isContentSharingEnabled {
   return _prefService && _sessionHandle &&
          _sessionHandle->CheckSearchContentSharingSettings(_prefService);
-}
-
-/// Whether the user is eligible to use Create Image.
-- (BOOL)imageToolAllowed {
-  if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return
-        [self toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsCreateImagesEligible();
-  }
-}
-
-/// Whether the user is eligible to use Canvas.
-- (BOOL)canvasToolAllowed {
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return NO;
-  }
-  if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self toolAllowedInInputState:omnibox::TOOL_MODE_CANVAS];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsCanvasEligible();
-  }
-}
-
-/// Whether the user is eligible to use Deep Search.
-- (BOOL)deepSearchToolAllowed {
-  if (!ShowDeepSearchTool()) {
-    return NO;
-  }
-  if (experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self toolAllowedInInputState:omnibox::TOOL_MODE_DEEP_SEARCH];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsDeepSearchEligible();
-  }
 }
 
 /// Whether the user is eligible to upload PDFs.
@@ -774,49 +759,10 @@ ComposeboxStrings* ServerStringsFromInputState(
   }
 
   BOOL canSearchWithAI = [self isEligibleToAIM];
-  BOOL canCreateImage = [self imageToolAllowed];
-  BOOL canUseCanvas = [self canvasToolAllowed];
-  BOOL canUseDeepSearch = [self deepSearchToolAllowed];
+  BOOL canCreateImage = [self isToolAllowed:ComposeboxMode::kImageGeneration];
+  BOOL canUseCanvas = [self isToolAllowed:ComposeboxMode::kCanvas];
+  BOOL canUseDeepSearch = [self isToolAllowed:ComposeboxMode::kDeepSearch];
   return canUseCanvas || canCreateImage || canUseDeepSearch || canSearchWithAI;
-}
-
-/// Whether the current state allows tab attachments.
-- (BOOL)tabAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateAllowsType:omnibox::INPUT_TYPE_BROWSER_TAB];
-  }
-
-  return YES;
-}
-
-/// Whether the current state allows file attachments.
-- (BOOL)fileAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_FILE];
-  } else {
-    return [self isEligibleToUploadPdf];
-  }
-}
-
-/// Whether the current state allows image attachments.
-- (BOOL)imageAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState() &&
-      ![self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_IMAGE]) {
-    return NO;
-  }
-
-  return YES;
 }
 
 #pragma mark - Attachment Rules
@@ -829,89 +775,147 @@ ComposeboxStrings* ServerStringsFromInputState(
   return kAttachmentLimit;
 }
 
-// Whether Create Image is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)imageToolDisabled {
-  if ([self activeMode] == ComposeboxMode::kImageGeneration) {
-    return NO;
-  }
-  BOOL generateImageDisabled =
-      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN] ||
-      [self toolDisabledInInputState:omnibox::ToolMode::
-                                         TOOL_MODE_IMAGE_GEN_UPLOAD];
+#pragma mark - Helpers
 
-  return generateImageDisabled || self.items.hasTabOrFile;
+/// Whether the given attachment option is allowed by the server.
+- (BOOL)isAttachmentAllowedByServer:
+    (ComposeboxAttachmentOption)attachmentOption {
+  using enum ComposeboxAttachmentOption;
+  switch (attachmentOption) {
+    case kCurrentTab:
+    case kTab:
+      return std::ranges::contains(_inputState.allowed_input_types,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB);
+    case kFile:
+      return std::ranges::contains(_inputState.allowed_input_types,
+                                   omnibox::INPUT_TYPE_LENS_FILE);
+    case kGallery:
+    case kCamera:
+      return std::ranges::contains(_inputState.allowed_input_types,
+                                   omnibox::INPUT_TYPE_LENS_IMAGE);
+  }
 }
 
-// Whether Canvas is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)canvasToolDisabled {
-  if ([self activeMode] == ComposeboxMode::kCanvas) {
-    return NO;
+/// Whether the given attachment option is allowed by local rules.
+- (BOOL)isAttachmentAllowedLocally:
+    (ComposeboxAttachmentOption)attachmentOption {
+  using enum ComposeboxAttachmentOption;
+  switch (attachmentOption) {
+    case kCurrentTab:
+    case kTab:
+      return YES;
+    case kFile:
+      return [self isEligibleToUploadPdf];
+    case kGallery:
+    case kCamera:
+      return YES;
   }
-  return [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_CANVAS];
 }
 
-// Whether Deep Search is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)deepSearchToolDisabled {
-  if ([self activeMode] == ComposeboxMode::kDeepSearch) {
-    return NO;
+/// Whether the given attachment option is disabled by the server.
+- (BOOL)isAttachmentDisabledByServer:
+    (ComposeboxAttachmentOption)attachmentOption {
+  using enum ComposeboxAttachmentOption;
+  switch (attachmentOption) {
+    case kCurrentTab:
+    case kTab:
+      return std::ranges::contains(_inputState.disabled_input_types,
+                                   omnibox::INPUT_TYPE_BROWSER_TAB);
+    case kFile:
+      return std::ranges::contains(_inputState.disabled_input_types,
+                                   omnibox::INPUT_TYPE_LENS_FILE);
+    case kGallery:
+    case kCamera:
+      return std::ranges::contains(_inputState.disabled_input_types,
+                                   omnibox::INPUT_TYPE_LENS_IMAGE);
   }
-  return
-      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
 }
 
-// Disables tab attachment.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)tabAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_BROWSER_TAB];
-  }
-
+/// Whether the given attachment option is disabled by local rules.
+- (BOOL)isAttachmentDisabledLocally:
+    (ComposeboxAttachmentOption)attachmentOption {
   BOOL isImageCreationMode =
       [self activeMode] == ComposeboxMode::kImageGeneration;
-  return isImageCreationMode;
+  using enum ComposeboxAttachmentOption;
+  switch (attachmentOption) {
+    case kCurrentTab:
+    case kTab:
+    case kFile:
+      return isImageCreationMode;
+    case kGallery:
+    case kCamera:
+      return NO;
+  }
 }
 
-// Whether the current state disables file attachments.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)fileAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
+/// Whether the given tool mode is allowed by the server.
+- (BOOL)isToolAllowedByServer:(ComposeboxMode)mode {
+  using enum ComposeboxMode;
+  switch (mode) {
+    case kImageGeneration:
+      return std::ranges::contains(_inputState.allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    case kCanvas:
+      return std::ranges::contains(_inputState.allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
+    case kDeepSearch:
+      return std::ranges::contains(_inputState.allowed_tools,
+                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    case kAIM:
+      return [self isEligibleToAIM];
+    case kRegularSearch:
+      return YES;
   }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_FILE];
-  }
-
-  BOOL isImageCreationMode =
-      [self activeMode] == ComposeboxMode::kImageGeneration;
-  return isImageCreationMode;
 }
 
-// Whether the current state disables image attachments.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)imageAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
+/// Whether the given tool mode is allowed by local rules.
+- (BOOL)isToolAllowedLocally:(ComposeboxMode)mode {
+  using enum ComposeboxMode;
+  switch (mode) {
+    case kImageGeneration:
+      return _aimEligibilityService
+                 ? _aimEligibilityService->IsCreateImagesEligible()
+                 : NO;
+    case kCanvas:
+      return _aimEligibilityService ? _aimEligibilityService->IsCanvasEligible()
+                                    : NO;
+    case kDeepSearch:
+      return _aimEligibilityService
+                 ? _aimEligibilityService->IsDeepSearchEligible()
+                 : NO;
+    case kAIM:
+      return [self isEligibleToAIM];
+    case kRegularSearch:
+      return YES;
   }
+}
 
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_IMAGE];
+/// Whether the given tool mode is disabled by the server.
+- (BOOL)isToolDisabledByServer:(ComposeboxMode)mode {
+  using enum ComposeboxMode;
+  switch (mode) {
+    case kImageGeneration:
+      return std::ranges::contains(_inputState.disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) ||
+             std::ranges::contains(
+                 _inputState.disabled_tools,
+                 omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+    case kCanvas:
+      return std::ranges::contains(_inputState.disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS);
+    case kDeepSearch:
+      return std::ranges::contains(_inputState.disabled_tools,
+                                   omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    case kAIM:
+    case kRegularSearch:
+      return NO;
   }
+}
 
-  return NO;
+/// Whether the given tool mode is disabled by local rules.
+- (BOOL)isToolDisabledLocally:(ComposeboxMode)mode {
+  return mode == ComposeboxMode:: kImageGeneration &&
+         self.items.hasTabOrFile;
 }
 
 @end

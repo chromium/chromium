@@ -5,18 +5,28 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_MODEL_OPTION_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_MODEL_OPTION_H_
 
+#include "base/containers/enum_set.h"
+
 // The available model options.
 enum class ComposeboxModelOption {
   // No explicit selection.
-  kNone,
+  kNone = 0,
   // Regular model in use.
-  kRegular,
+  kRegular = 1,
   // The system automatically selects the optimal model per query.
-  kAuto,
+  kAuto = 2,
   // The system utilizes the thinking reasoning engine.
-  kThinking,
+  kThinking = 3,
   // The system utilizes the thinking reasoning engine with no gen UI mode.
-  kThinkingNoGenUI,
+  kThinkingNoGenUI = 4,
+  // The maximum value for iteration.
+  kMaxValue = kThinkingNoGenUI,
 };
+
+// A set of ComposeboxModelOption values used for iteration.
+using ComposeboxModelOptionSet =
+    base::EnumSet<ComposeboxModelOption,
+                  ComposeboxModelOption::kNone,
+                  ComposeboxModelOption::kMaxValue>;
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_MODEL_OPTION_H_

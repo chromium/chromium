@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -28,11 +29,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-
-@interface ComposeboxInputStateManager (Testing)
-- (BOOL)imageToolDisabled;
-- (BOOL)tabAttachmentDisabled;
-@end
 
 @interface FakeComposeboxInputStateManagerDelegate
     : NSObject <ComposeboxInputStateManagerDelegate>
@@ -59,7 +55,8 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
     PlatformTest::SetUp();
     contextual_search::ContextualSearchService::RegisterProfilePrefs(
         pref_service_.registry());
-    scoped_feature_list_.InitAndEnableFeature(kComposeboxServerSideState);
+    scoped_feature_list_.InitWithFeatures({kComposeboxServerSideState},
+                                          {kComposeboxAIMDisabled});
 
     session_handle_ = std::make_unique<
         contextual_search::MockContextualSearchSessionHandle>();
@@ -289,10 +286,12 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolAllowed_ServerSideDisabled) {
   local_feature_list.InitAndDisableFeature(kComposeboxServerSideState);
 
   // Set up mock expectation for AIM eligibility service.
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*mock_aim_service_, IsCreateImagesEligible())
       .WillOnce(testing::Return(true));
 
-  EXPECT_TRUE([manager_ imageToolAllowed]);
+  EXPECT_TRUE([manager_ isToolAllowed:ComposeboxMode::kImageGeneration]);
 }
 
 // Tests that the image tool is disabled in local fallback mode when there are
@@ -312,7 +311,7 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
 
   manager_.items = collection;
 
-  EXPECT_TRUE([manager_ imageToolDisabled]);
+  EXPECT_TRUE([manager_ isToolDisabled:ComposeboxMode::kImageGeneration]);
 }
 
 // Tests that tab attachments are disabled in local fallback mode when the
@@ -325,7 +324,7 @@ TEST_F(ComposeboxInputStateManagerTest, TabAttachmentDisabled_ImageGenMode) {
   // Set the active mode to image generation.
   mode_holder_.mode = ComposeboxMode::kImageGeneration;
 
-  EXPECT_TRUE([manager_ tabAttachmentDisabled]);
+  EXPECT_TRUE([manager_ isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
 }
 
 #pragma mark - Attachment Capacity

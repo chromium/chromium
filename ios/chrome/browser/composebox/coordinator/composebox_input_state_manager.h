@@ -17,7 +17,9 @@
 
 #import "components/contextual_search/input_state_model.h"
 #import "components/lens/lens_overlay_mime_type.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
@@ -118,29 +120,38 @@ class WebStateID;
 // Checks if the user is eligible for AIM.
 - (BOOL)isEligibleToAIM;
 
-// Checks if the user is allowed to create images.
-- (BOOL)imageToolAllowed;
-
-// Whether the client is allowed to access canvas mode.
-- (BOOL)canvasToolAllowed;
-
-// Whether the client is allowed to access deep search mode.
-- (BOOL)deepSearchToolAllowed;
-
 // Checks if the Default Search Engine is Google.
 - (BOOL)isDSEGoogle;
+
+// Whether the given attachment option is allowed.
+- (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption;
+
+// Whether the given attachment option is disabled.
+- (BOOL)isAttachmentDisabled:(ComposeboxAttachmentOption)attachmentOption;
+
+// Whether the given tool mode is allowed.
+- (BOOL)isToolAllowed:(ComposeboxMode)mode;
+
+// Whether the given tool mode is disabled.
+- (BOOL)isToolDisabled:(ComposeboxMode)mode;
+
+// Whether the given model option is allowed.
+- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption;
+
+// Whether the given model option is disabled.
+- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption;
+
+// Whether the given tool mode can be selected.
+- (BOOL)canSelectTool:(ComposeboxMode)mode;
+
+// Whether the given model option can be selected.
+- (BOOL)canSelectModel:(ComposeboxModelOption)modelOption;
 
 // Whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;
 
 // The remaining attachment capacity.
 - (NSUInteger)remainingAttachmentCapacity;
-
-// The list of model options available based on the input model.
-- (std::unordered_set<ComposeboxModelOption>)allowedModels;
-
-// The list of model options disabled based on the input model.
-- (std::unordered_set<ComposeboxModelOption>)disabledModels;
 
 // Whether the user can ask about the current Tab.
 - (BOOL)canAttachActiveTabWithAttachedWebStateIDs:

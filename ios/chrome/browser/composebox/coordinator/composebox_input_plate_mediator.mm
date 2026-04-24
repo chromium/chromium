@@ -1225,20 +1225,20 @@ class QueryContextualizerDelegateBridge
       [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
       break;
     case ComposeboxMode::kImageGeneration:
-      if (![_stateManager imageToolAllowed]) {
+      if (![_stateManager canSelectTool:ComposeboxMode::kImageGeneration]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self cleanAttachmentsForImageGeneration];
       [self updateImageGenerationToolMode];
       break;
     case ComposeboxMode::kCanvas:
-      if (![_stateManager canvasToolAllowed]) {
+      if (![_stateManager canSelectTool:ComposeboxMode::kCanvas]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
       break;
     case ComposeboxMode::kDeepSearch:
-      if (![_stateManager deepSearchToolAllowed]) {
+      if (![_stateManager canSelectTool:ComposeboxMode::kDeepSearch]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
@@ -1988,16 +1988,10 @@ class QueryContextualizerDelegateBridge
 
   BOOL applyDefaultSelection = _modelOption == kNone;
   if (applyDefaultSelection) {
-    auto allowedModels = [_stateManager allowedModels];
-    auto disabledModel = [_stateManager disabledModels];
-    BOOL autoAllowed = allowedModels.contains(kAuto);
-    BOOL autoDisabled = disabledModel.contains(kAuto);
-    BOOL defaultToAuto = autoAllowed && !autoDisabled;
-
+    BOOL defaultToAuto = [_stateManager canSelectModel:kAuto];
     ComposeboxModelOption defaultOption = defaultToAuto
                                               ? ComposeboxModelOption::kAuto
                                               : ComposeboxModelOption::kRegular;
-
     [self setModelOption:defaultOption];
   }
 }
