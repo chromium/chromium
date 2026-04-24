@@ -12,8 +12,13 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace ui {
+class Event;
+}
+
 namespace views {
 
+class View;
 class Widget;
 
 // Singleton to support always-on-top input protection for Widgets.
@@ -24,6 +29,15 @@ class VIEWS_EXPORT OccludedWidgetInputProtector : public views::WidgetObserver {
   OccludedWidgetInputProtector(const OccludedWidgetInputProtector&) = delete;
   OccludedWidgetInputProtector& operator=(const OccludedWidgetInputProtector&) =
       delete;
+
+  // Returns true if `event` should be blocked due to occlusion by an
+  // always-on-top widget. For located events, this checks if the event's
+  // location is occluded. For non-located events, it checks if `target_view` is
+  // significantly occluded.
+  //
+  // TODO(crbug.com/495850608): Consult with UX to determine the best heuristic
+  // for non-located event occlusion.
+  bool ShouldBlockEvent(const ui::Event& event, const View& target_view);
 
   // Updates the tracking state of the protector for `widget`. The protector
   // will decide whether to track or stop tracking the widget based on its
