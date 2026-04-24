@@ -393,7 +393,7 @@ public class EntityEditorModuleTest {
         assertTrue(toolbar.getBrandingIconForTest().isVisible());
         assertEquals(
                 mActivity.getString(R.string.autofill_google_wallet_title),
-                toolbar.getBrandingIconForTest().getTitle());
+                toolbar.getBrandingIconForTest().getActionView().getContentDescription());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 

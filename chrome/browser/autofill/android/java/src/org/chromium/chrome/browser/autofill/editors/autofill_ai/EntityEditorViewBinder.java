@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_ID;
-import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.TOOLBAR_BRANDING_ICON_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
 
@@ -63,10 +62,8 @@ public class EntityEditorViewBinder {
             view.setValidateOnShow(model.get(VALIDATE_ON_SHOW));
         } else if (propertyKey == OPEN_HELP_CALLBACK) {
             view.setOpenHelpCallback(model.get(OPEN_HELP_CALLBACK));
-        } else if (propertyKey == TOOLBAR_BRANDING_ICON_ID
-                || propertyKey == TOOLBAR_BRANDING_ICON_TITLE) {
-            view.setBrandingIconDetails(
-                    model.get(TOOLBAR_BRANDING_ICON_ID), model.get(TOOLBAR_BRANDING_ICON_TITLE));
+        } else if (propertyKey == TOOLBAR_BRANDING_ICON_ID) {
+            view.setBrandingIcon(model.get(TOOLBAR_BRANDING_ICON_ID));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

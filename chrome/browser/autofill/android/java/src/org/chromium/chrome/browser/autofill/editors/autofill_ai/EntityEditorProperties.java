@@ -43,8 +43,6 @@ public class EntityEditorProperties {
 
     public static final ReadableIntPropertyKey TOOLBAR_BRANDING_ICON_ID =
             new ReadableIntPropertyKey("toolbar_branding_icon_id");
-    public static final ReadableIntPropertyKey TOOLBAR_BRANDING_ICON_TITLE =
-            new ReadableIntPropertyKey("toolbar_branding_icon_title");
 
     public static final WritableBooleanPropertyKey VALIDATE_ON_SHOW =
             new WritableBooleanPropertyKey("validate_on_show");
@@ -66,7 +64,6 @@ public class EntityEditorProperties {
         ALLOW_DELETE,
         DELETE_CALLBACK,
         TOOLBAR_BRANDING_ICON_ID,
-        TOOLBAR_BRANDING_ICON_TITLE,
         VALIDATE_ON_SHOW,
         EDITOR_FIELDS,
         OPEN_HELP_CALLBACK,

@@ -224,6 +224,7 @@ android_resources("java_resources") {
     "java/res/layout/autofill_editor_dialog_non_editable_textview.xml",
     "java/res/layout/autofill_editor_dialog_notice.xml",
     "java/res/layout/autofill_editor_dialog_textview.xml",
+    "java/res/layout/autofill_editor_toolbar_icon.xml",
     "java/res/layout/autofill_local_card_editor.xml",
     "java/res/layout/autofill_local_iban_editor.xml",
     "java/res/layout/autofill_migrate_address_profile_prompt.xml",

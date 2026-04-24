@@ -36,7 +36,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -267,11 +267,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         mDeleteCallback = deleteCallback;
     }
 
-    public void setBrandingIconDetails(
-            @DrawableRes int toolbarBrandingIconId, @StringRes int toolbarBrandingIconTitleId) {
+    public void setBrandingIcon(@LayoutRes int toolbarBrandingIconId) {
         EditorDialogToolbar toolbar =
                 (EditorDialogToolbar) mContainerView.findViewById(R.id.action_bar);
-        toolbar.setBrandingIconDetails(toolbarBrandingIconId, toolbarBrandingIconTitleId);
+        toolbar.setBrandingIcon(toolbarBrandingIconId);
     }
 
     public void setDoneRunnable(Runnable doneRunnable) {
