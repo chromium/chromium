@@ -30,6 +30,7 @@
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -253,9 +254,12 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
   if (credentials_mode != network::mojom::CredentialsMode::kOmit &&
       credentials_mode !=
           network::mojom::CredentialsMode::kOmitBug_775438_Workaround) {
-    CHECK(gaia::HasGaiaSchemeHostPort(gaia_gurl)) << gaia_gurl;
+    CHECK(gaia::HasGaiaSchemeHostPort(gaia_gurl) ||
+          gaia_gurl.DomainIs("googleapis.com") ||
+          GaiaConfig::GetInstance() != nullptr)
+        << gaia_gurl;
 
-    url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
+    url::Origin origin = url::Origin::Create(gaia_gurl);
     resource_request->site_for_cookies =
         net::SiteForCookies::FromOrigin(origin);
     resource_request->trusted_params =
@@ -446,10 +450,14 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
             }
           }
         })");
-  CreateAndStartGaiaFetcher(
-      request_body_, kFormEncodedContentType, headers,
-      GetOAuth2TokenUrl(mtls_token_binding),
-      google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
+  // `CredentialsMode::kInclude` is required for enabling client mTLS
+  // certificates.
+  network::mojom::CredentialsMode credentials_mode =
+      mtls_token_binding ? network::mojom::CredentialsMode::kInclude
+                         : google_apis::GetOmitCredentialsModeForGaiaRequests();
+  CreateAndStartGaiaFetcher(request_body_, kFormEncodedContentType, headers,
+                            GetOAuth2TokenUrl(mtls_token_binding),
+                            credentials_mode, traffic_annotation);
 }
 
 void GaiaAuthFetcher::StartListAccounts() {

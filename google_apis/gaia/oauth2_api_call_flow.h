@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "google_apis/credentials_mode.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
@@ -63,6 +64,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
   // call. Should be overriden by subclasses if the expected success response
   // code is not 200 or 204.
   virtual bool IsExpectedSuccessCode(int code) const;
+
+  // Returns the credentials mode for the API call.
+  virtual network::mojom::CredentialsMode GetCredentialsMode() const;
 
   // Sub-classes can expose an appropriate observer interface by implementing
   // these template methods.

@@ -78,6 +78,10 @@ bool OAuth2ApiCallFlow::IsExpectedSuccessCode(int code) const {
   return code == net::HTTP_OK || code == net::HTTP_NO_CONTENT;
 }
 
+network::mojom::CredentialsMode OAuth2ApiCallFlow::GetCredentialsMode() const {
+  return google_apis::GetOmitCredentialsModeForGaiaRequests();
+}
+
 void OAuth2ApiCallFlow::OnURLLoadComplete(std::optional<std::string> body) {
   CHECK_EQ(API_CALL_STARTED, state_);
   EndApiCall(std::move(body));
@@ -97,8 +101,7 @@ std::unique_ptr<network::SimpleURLLoader> OAuth2ApiCallFlow::CreateURLLoader(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = CreateApiCallUrl();
   request->method = request_type;
-  request->credentials_mode =
-      google_apis::GetOmitCredentialsModeForGaiaRequests();
+  request->credentials_mode = GetCredentialsMode();
   request->headers = CreateApiCallHeaders();
   request->headers.SetHeader("Authorization",
                              CreateAuthorizationHeaderValue(access_token));

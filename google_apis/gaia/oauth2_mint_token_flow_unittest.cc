@@ -424,6 +424,9 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
   GURL CreateApiCallUrl() override {
     return OAuth2MintTokenFlow::CreateApiCallUrl();
   }
+  network::mojom::CredentialsMode GetCredentialsMode() const override {
+    return OAuth2MintTokenFlow::GetCredentialsMode();
+  }
 };
 
 }  // namespace
@@ -664,6 +667,17 @@ TEST_F(OAuth2MintTokenFlowTest,
                    /*use_mtls_endpoints=*/true);
   EXPECT_EQ(flow_->CreateApiCallUrl(),
             GaiaUrls::GetInstance()->mtls_oauth2_issue_token_url());
+}
+
+TEST_F(OAuth2MintTokenFlowTest, GetCredentialsMode) {
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  EXPECT_NE(flow_->GetCredentialsMode(),
+            network::mojom::CredentialsMode::kInclude);
+
+  CreateClientFlow(/*bound_oauth_token=*/std::string(),
+                   /*use_mtls_endpoints=*/true);
+  EXPECT_EQ(flow_->GetCredentialsMode(),
+            network::mojom::CredentialsMode::kInclude);
 }
 
 TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValue) {

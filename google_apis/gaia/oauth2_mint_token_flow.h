@@ -180,6 +180,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
  protected:
   // Implementation of template methods in OAuth2ApiCallFlow.
   GURL CreateApiCallUrl() override;
+  network::mojom::CredentialsMode GetCredentialsMode() const override;
   net::HttpRequestHeaders CreateApiCallHeaders() override;
   std::string CreateApiCallBody() override;
   std::string CreateAuthorizationHeaderValue(

@@ -373,6 +373,15 @@ GURL OAuth2MintTokenFlow::CreateApiCallUrl() {
              : GaiaUrls::GetInstance()->oauth2_issue_token_url();
 }
 
+network::mojom::CredentialsMode OAuth2MintTokenFlow::GetCredentialsMode()
+    const {
+  // `CredentialsMode::kInclude` is required for enabling client mTLS
+  // certificates.
+  return parameters_.use_mtls_endpoints
+             ? network::mojom::CredentialsMode::kInclude
+             : OAuth2ApiCallFlow::GetCredentialsMode();
+}
+
 net::HttpRequestHeaders OAuth2MintTokenFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
   headers.SetHeader("X-OAuth-Client-ID", parameters_.client_id);
