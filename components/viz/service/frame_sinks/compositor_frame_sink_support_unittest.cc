@@ -39,6 +39,7 @@
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "components/viz/service/transitions/surface_animation_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
@@ -301,6 +302,12 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   bool SupportHasSurfaceAnimationManager(
       CompositorFrameSinkSupport* support) const {
     return !support->view_transition_token_to_animation_manager_.empty();
+  }
+
+  void OnSaveTransitionDirectiveProcessed(
+      CompositorFrameSinkSupport* support,
+      const CompositorFrameTransitionDirective& directive) {
+    support->OnSaveTransitionDirectiveProcessed(directive);
   }
 
  protected:
@@ -2786,6 +2793,72 @@ TEST_F(VideoCadenceThrottlingTest, CaptureOverridesCadenceThrottling) {
   EXPECT_TRUE(support_->GetThrottlerForTesting().throttling_allowed());
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             kVideoInterval);
+}
+
+// Regression test for https://crbug.com/497047552.
+TEST_F(CompositorFrameSinkSupportTestBase,
+       OnSaveTransitionDirectiveProcessedReentryUAF) {
+  // This test ensures we don't crash when processing a transition completion
+  // that triggers a chain reaction of new transition requests.
+  //
+  // 1. We set up an initial transition.
+  blink::ViewTransitionToken token_x;
+
+  // Create Surface A by submitting a frame.
+  SubmitCompositorFrameWithResources({});
+  Surface* surface_a = support_->GetLastCreatedSurfaceForTesting();
+  ASSERT_TRUE(surface_a);
+
+  // 2. We submit a request to save the transition for our token.
+  auto save_directive = CompositorFrameTransitionDirective::CreateSave(
+      token_x, /*maybe_cross_frame_sink=*/true, 1, {}, {}, false);
+  ProcessCompositorFrameTransitionDirective(support_.get(), save_directive,
+                                            surface_a);
+  ASSERT_TRUE(SupportHasSurfaceAnimationManager(support_.get()));
+
+  // 3. We prepare a second frame that's waiting on this transition. This
+  // frame is special because it also asks for many more new transitions.
+  LocalSurfaceId local_surface_id_b(
+      local_surface_id_.parent_sequence_number() + 1,
+      local_surface_id_.embed_token());
+
+  CompositorFrame frame_2 =
+      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId);
+  // Add the requirement that token_x must be finished before this frame can
+  // be displayed.
+  frame_2.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective::CreateAnimate(token_x, true, 2,
+                                                        true));
+
+  // Add MANY more new transition requests. This will force the system to
+  // reorganize its internal storage when they are processed.
+  for (int i = 0; i < 100; ++i) {
+    frame_2.metadata.transition_directives.push_back(
+        CompositorFrameTransitionDirective::CreateSave(
+            blink::ViewTransitionToken(), true, 100 + i, {}, {}, false));
+  }
+
+  // Submit the second frame. It will stay "pending" because it is waiting
+  // for the first transition to complete.
+  support_->SubmitCompositorFrame(local_surface_id_b, std::move(frame_2));
+
+  SurfaceId surface_id_b(support_->frame_sink_id(), local_surface_id_b);
+  Surface* surface_b =
+      manager_->surface_manager()->GetSurfaceForId(surface_id_b);
+  ASSERT_TRUE(surface_b);
+  ASSERT_TRUE(surface_b->HasPendingFrame());
+
+  // 4. We now signal that the first transition is complete.
+  // This triggers a chain reaction:
+  // - The system marks the first transition as finished.
+  // - This allows the second frame to finally become active.
+  // - As the second frame becomes active, it registers all its many new
+  //   transition requests.
+  // - These new requests cause the internal storage to be reallocated,
+  //   invalidating current iterators.
+  // - Finally, we finish the cleanup for the original transition. If we were
+  //   still using an outdated reference to the storage, we would crash here.
+  OnSaveTransitionDirectiveProcessed(support_.get(), save_directive);
 }
 
 }  // namespace viz
