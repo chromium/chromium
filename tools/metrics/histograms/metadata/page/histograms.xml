@@ -202,6 +202,46 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleSearch" summary="SRP navigations"/>
 </variants>
 
+<variants name="PageActionType">
+  <variant name="AiMode"/>
+  <variant name="BookmarksStar"/>
+  <variant name="ClickToCall"/>
+  <variant name="CookieControls"/>
+  <variant name="Discounts"/>
+  <variant name="FileSystemAccess"/>
+  <variant name="Find"/>
+  <variant name="Indigo"/>
+  <variant name="IntentPicker"/>
+  <variant name="JsOptimizations"/>
+  <variant name="LensOverlay"/>
+  <variant name="LensOverlayHomework"/>
+  <variant name="LocalCardMigration"/>
+  <variant name="ManagePasswords"/>
+  <variant name="MandatoryReauth"/>
+  <variant name="MemorySaver"/>
+  <variant name="OptimizationGuide"/>
+  <variant name="PaymentsOfferNotification"/>
+  <variant name="PriceInsights"/>
+  <variant name="PriceTracking"/>
+  <variant name="PWAInstall"/>
+  <variant name="QRCodeGenerator"/>
+  <variant name="ReadAnything"
+      summary="ReadAnything (Obsolete, Deprecated Jun 06, 2024)"/>
+  <variant name="ReaderMode"/>
+  <variant name="ReadingMode"/>
+  <variant name="SaveAutofillAddress"/>
+  <variant name="SaveCard"/>
+  <variant name="SaveIban"/>
+  <variant name="SendTabToSelf"/>
+  <variant name="SharingHub"/>
+  <variant name="SideSearch"/>
+  <variant name="SMSRemoteFetcher"/>
+  <variant name="Translate"/>
+  <variant name="VirtualCardEnroll"/>
+  <variant name="VirtualCardManualFeedback"/>
+  <variant name="Zoom"/>
+</variants>
+
 <variants name="PageActionVisualState">
   <variant name="Chip"/>
   <variant name="Icon"/>
@@ -679,45 +719,7 @@ chromium-metrics-reviews@google.com.
     during a navigation. Logged once per navigation when the user navigates away
     or the tab is closed.
   </summary>
-  <token key="PageActionType">
-    <variant name="AiMode"/>
-    <variant name="BookmarksStar"/>
-    <variant name="ClickToCall"/>
-    <variant name="CookieControls"/>
-    <variant name="Discounts"/>
-    <variant name="FileSystemAccess"/>
-    <variant name="Find"/>
-    <variant name="Indigo"/>
-    <variant name="IntentPicker"/>
-    <variant name="JsOptimizations"/>
-    <variant name="LensOverlay"/>
-    <variant name="LensOverlayHomework"/>
-    <variant name="LocalCardMigration"/>
-    <variant name="ManagePasswords"/>
-    <variant name="MandatoryReauth"/>
-    <variant name="MemorySaver"/>
-    <variant name="OptimizationGuide"/>
-    <variant name="PaymentsOfferNotification"/>
-    <variant name="PriceInsights"/>
-    <variant name="PriceTracking"/>
-    <variant name="PWAInstall"/>
-    <variant name="QRCodeGenerator"/>
-    <variant name="ReadAnything"
-        summary="ReadAnything (Obsolete, Deprecated Jun 06, 2024)"/>
-    <variant name="ReaderMode"/>
-    <variant name="ReadingMode"/>
-    <variant name="SaveAutofillAddress"/>
-    <variant name="SaveCard"/>
-    <variant name="SaveIban"/>
-    <variant name="SendTabToSelf"/>
-    <variant name="SharingHub"/>
-    <variant name="SideSearch"/>
-    <variant name="SMSRemoteFetcher"/>
-    <variant name="Translate"/>
-    <variant name="VirtualCardEnroll"/>
-    <variant name="VirtualCardManualFeedback"/>
-    <variant name="Zoom"/>
-  </token>
+  <token key="PageActionType" variants="PageActionType"/>
 </histogram>
 
 <histogram name="PageActionController.{PageActionType}.{State}.CTR2"
@@ -735,45 +737,7 @@ chromium-metrics-reviews@google.com.
     &quot;Shown&quot; is logged once per page action the first time it becomes
     visible on a given page, and &quot;Clicked&quot; is logged once per click.
   </summary>
-  <token key="PageActionType">
-    <variant name="AiMode"/>
-    <variant name="BookmarksStar"/>
-    <variant name="ClickToCall"/>
-    <variant name="CookieControls"/>
-    <variant name="Discounts"/>
-    <variant name="FileSystemAccess"/>
-    <variant name="Find"/>
-    <variant name="Indigo"/>
-    <variant name="IntentPicker"/>
-    <variant name="JsOptimizations"/>
-    <variant name="LensOverlay"/>
-    <variant name="LensOverlayHomework"/>
-    <variant name="LocalCardMigration"/>
-    <variant name="ManagePasswords"/>
-    <variant name="MandatoryReauth"/>
-    <variant name="MemorySaver"/>
-    <variant name="OptimizationGuide"/>
-    <variant name="PaymentsOfferNotification"/>
-    <variant name="PriceInsights"/>
-    <variant name="PriceTracking"/>
-    <variant name="PWAInstall"/>
-    <variant name="QRCodeGenerator"/>
-    <variant name="ReadAnything"
-        summary="ReadAnything (Obsolete, Deprecated Jun 06, 2024)"/>
-    <variant name="ReaderMode"/>
-    <variant name="ReadingMode"/>
-    <variant name="SaveAutofillAddress"/>
-    <variant name="SaveCard"/>
-    <variant name="SaveIban"/>
-    <variant name="SendTabToSelf"/>
-    <variant name="SharingHub"/>
-    <variant name="SideSearch"/>
-    <variant name="SMSRemoteFetcher"/>
-    <variant name="Translate"/>
-    <variant name="VirtualCardEnroll"/>
-    <variant name="VirtualCardManualFeedback"/>
-    <variant name="Zoom"/>
-  </token>
+  <token key="PageActionType" variants="PageActionType"/>
   <token key="State" variants="PageActionVisualState"/>
 </histogram>
 
