@@ -1642,7 +1642,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (this.textboxState_ !== TextBoxState.INACTIVE) {
       const textbox = this.shadowRoot.querySelector('ink-text-box');
       assert(textbox);
-      textbox.commitTextAnnotation();
+      await textbox.commitTextAnnotation();
     }
 
     // `this.hasUnsavedEdits_` will be set back to true if save is disrupted for

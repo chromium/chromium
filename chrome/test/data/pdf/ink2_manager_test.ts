@@ -14,6 +14,12 @@ const manager = Ink2Manager.getInstance();
 
 function getTestAnnotation(id: number): TextAnnotation {
   return {
+    id: id,
+    mojoTextInfo: new ArrayBuffer(0),
+    newTypefaces: [],
+    pageIndex: 0,
+    pdfZoom: 1.0,
+    text: 'Hello World',
     textAttributes: {
       typeface: TextTypeface.SANS_SERIF,
       size: 12,
@@ -24,9 +30,6 @@ function getTestAnnotation(id: number): TextAnnotation {
         italic: false,
       },
     },
-    text: 'Hello World',
-    id: id,
-    pageIndex: 0,
     textBoxRect: {
       height: 35,
       locationX: 60,
@@ -968,6 +971,22 @@ chrome.test.runTests([
     // 450 - 10 - 50 = 390.
     chrome.test.assertEq(235, syncScrollMessage.x);
     chrome.test.assertEq(390, syncScrollMessage.y);
+
+    chrome.test.succeed();
+  },
+
+  function testFontCaching() {
+    assertDeepEquals([], manager.getKnownFontIds());
+
+    manager.addKnownFontId(1);
+    assertDeepEquals([1], manager.getKnownFontIds());
+    manager.addKnownFontId(2);
+    assertDeepEquals([1, 2], manager.getKnownFontIds());
+
+    // verify that getKnownFontIds() returns a copy.
+    const ids = manager.getKnownFontIds();
+    ids.push(3);
+    assertDeepEquals([1, 2], manager.getKnownFontIds());
 
     chrome.test.succeed();
   },

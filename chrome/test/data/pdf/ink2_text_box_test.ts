@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PdfViewerPrivateProxyImpl, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation, TextBoxRect} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {assertDeepEquals, getRequiredElement, setUpInkTestContext} from './test_util.js';
 
 // Set up a dummy viewport so that we can get a predictable initial state.
 const {viewport, mockPlugin} = setUpInkTestContext();
+const privateProxy = new TestPdfViewerPrivateProxy();
+PdfViewerPrivateProxyImpl.setInstance(privateProxy);
 const manager = Ink2Manager.getInstance();
 manager.initializeTextAnnotations();
 const textbox = document.createElement('ink-text-box');
@@ -18,21 +21,24 @@ document.body.appendChild(textbox);
 
 function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
+    id: 0,
+    mojoTextInfo: new ArrayBuffer(0),
+    newTypefaces: [],
+    pageIndex: 0,
+    pdfZoom: 1.0,
     text: 'Hello World',
     textAttributes: {
+      alignment: TextAlignment.LEFT,
+      color: hexToColor(TEXT_COLORS[0]!.color),
       size: 12,
-      typeface: TextTypeface.SANS_SERIF,
       styles: {
         [TextStyle.BOLD]: false,
         [TextStyle.ITALIC]: false,
       },
-      alignment: TextAlignment.LEFT,
-      color: hexToColor(TEXT_COLORS[0]!.color),
+      typeface: TextTypeface.SANS_SERIF,
     },
     textBoxRect,
     textOrientation: 0,
-    id: 0,
-    pageIndex: 0,
   };
 }
 
@@ -1175,6 +1181,55 @@ chrome.test.runTests([
     // scrolling, so both of these end up at 10.
     chrome.test.assertEq(10, syncScrollMessage.x);
     chrome.test.assertEq(10, syncScrollMessage.y);
+
+    chrome.test.succeed();
+  },
+
+  async function testCommitTextAnnotationFontCaching() {
+    privateProxy.reset();
+    assertDeepEquals([], manager.getKnownFontIds());
+
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    textbox.$.textbox.value = 'Hello';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    await textbox.commitTextAnnotation();
+
+    let getTextInfoArgs = await privateProxy.whenCalled('getTextInfo');
+    assertDeepEquals([], getTextInfoArgs.knownFontIds);
+    chrome.test.assertEq(textbox.$.textbox, getTextInfoArgs.textarea);
+
+    privateProxy.reset();
+    privateProxy.setGetTextInfoResult({
+      typefaces: [{uniqueId: 123, serializedTypeface: new ArrayBuffer(10)}],
+      mojoTextInfo: new ArrayBuffer(5),
+    });
+
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    textbox.$.textbox.value = 'World';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    await textbox.commitTextAnnotation();
+
+    getTextInfoArgs = await privateProxy.whenCalled('getTextInfo');
+    assertDeepEquals([], getTextInfoArgs.knownFontIds);
+    assertDeepEquals([123], manager.getKnownFontIds());
+
+    privateProxy.reset();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    textbox.$.textbox.value = 'Again';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    await textbox.commitTextAnnotation();
+
+    getTextInfoArgs = await privateProxy.whenCalled('getTextInfo');
+    assertDeepEquals([123], getTextInfoArgs.knownFontIds);
 
     chrome.test.succeed();
   },

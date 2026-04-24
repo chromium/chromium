@@ -16,9 +16,14 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     PdfViewerPrivateProxy {
   onSaveToDriveProgress: FakeChromeEvent;
   private streamUrl_: string = '';
+  private getTextInfoResult_: chrome.pdfViewerPrivate.GetTextInfoResult = {
+    typefaces: [],
+    mojoTextInfo: new ArrayBuffer(0),
+  };
 
   constructor() {
     super([
+      'getTextInfo',
       'saveToDrive',
       'setPdfDocumentTitle',
     ]);
@@ -28,12 +33,14 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
 
 
   // <if expr="enable_pdf_ink2">
-  getTextInfo(_textarea: HTMLTextAreaElement, _knownFontIds: number[]):
+  setGetTextInfoResult(result: chrome.pdfViewerPrivate.GetTextInfoResult) {
+    this.getTextInfoResult_ = result;
+  }
+
+  getTextInfo(textarea: HTMLTextAreaElement, knownFontIds: number[]):
       Promise<chrome.pdfViewerPrivate.GetTextInfoResult> {
-    return Promise.resolve({
-      typefaces: [],
-      mojoTextInfo: new ArrayBuffer(0),
-    });
+    this.methodCalled('getTextInfo', {textarea, knownFontIds});
+    return Promise.resolve(this.getTextInfoResult_);
   }
   // </if>
 

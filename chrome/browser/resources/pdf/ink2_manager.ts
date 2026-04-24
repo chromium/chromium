@@ -135,6 +135,9 @@ export class Ink2Manager extends EventTarget {
     zoom: 1.0,
   };
   private nextAnnotationId_: number = 0;
+  // Keeps track of fonts that have been sent to the backend so that each font
+  // is only serialized and loaded once.
+  private knownFontIds_: number[] = [];
 
   setViewport(viewport: Viewport) {
     this.viewport_ = viewport;
@@ -238,10 +241,13 @@ export class Ink2Manager extends EventTarget {
     }
 
     this.pageIndex_ = page;
-    const annotation = existing ? existing : {
-      text: '',
+    const annotation: TextAnnotation = existing ? existing : {
       id: this.nextAnnotationId_,
+      mojoTextInfo: new ArrayBuffer(0),
+      newTypefaces: [],
       pageIndex: page,
+      pdfZoom: this.viewport_.getZoom(),
+      text: '',
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
         height: newBoxHeight,
@@ -441,6 +447,15 @@ export class Ink2Manager extends EventTarget {
 
     current.styles = styles;
     this.fireAttributesChanged_();
+  }
+
+  getKnownFontIds(): number[] {
+    return [...this.knownFontIds_];
+  }
+
+  addKnownFontId(id: number) {
+    assert(!this.knownFontIds_.includes(id));
+    this.knownFontIds_.push(id);
   }
 
   private pageToScreenCoordinates_(pageIndex: number, pageRect: TextBoxRect):

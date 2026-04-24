@@ -783,16 +783,21 @@ export function createTextBox() {
       new CustomEvent('initialize-text-box', {
         detail: {
           annotation: {
+            id: 0,
+            mojoTextInfo: new ArrayBuffer(0),
+            newTypefaces: [],
+            pageIndex: 0,
+            pdfZoom: 1.0,
             text: '',
             textAttributes: {
+              alignment: TextAlignment.LEFT,
+              color: hexToColor(TEXT_COLORS[0]!.color),
               size: 12,
-              typeface: 'sans-serif',
               styles: {
                 [TextStyle.BOLD]: false,
                 [TextStyle.ITALIC]: false,
               },
-              alignment: TextAlignment.LEFT,
-              color: hexToColor(TEXT_COLORS[0]!.color),
+              typeface: 'sans-serif',
             },
             textBoxRect: {
               height: MIN_TEXTBOX_SIZE_PX,
@@ -800,8 +805,7 @@ export function createTextBox() {
               locationY: 50,
               width: DEFAULT_TEXTBOX_WIDTH,
             },
-            id: 0,
-            pageIndex: 0,
+            textOrientation: 0,
           },
           pageDimensions: {x: 10, y: 3, width: 390, height: 490},
         },
