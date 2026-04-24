@@ -2130,8 +2130,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 SidePanelContainerCoordinatorFactory.create(
                         mActivity, mSideUiCoordinator, SidePanelType.TOOLBAR);
         if (mSidePanelContainerCoordinator != null) {
-            mSidePanelContainerCoordinator.init();
-
             // Initialize SidePanelCoordinatorAndroid and a window-scoped SidePanelRegistry, and
             // associate them with a ChromeAndroidTask.
             // This will allow SidePanelCoordinatorAndroid and SidePanelRegistry to access the
@@ -2150,20 +2148,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             var chromeAndroidTask = mChromeAndroidTaskSupplier.get();
             assert chromeAndroidTask != null
                     : "ChromeAndroidTask shouldn't be null when side panel is enabled";
-            chromeAndroidTask.addFeature(
-                    new ChromeAndroidTaskFeatureKey(
-                            SidePanelCoordinatorAndroid.class,
-                            mProfileSupplier.get(),
-                            mWindowAndroid),
-                    () ->
-                            SidePanelCoordinatorAndroidFactory.create(
-                                    mSidePanelContainerCoordinator));
+
+            var sidePanelCoordinatorAndroid =
+                    (SidePanelCoordinatorAndroid)
+                            chromeAndroidTask.addFeature(
+                                    new ChromeAndroidTaskFeatureKey(
+                                            SidePanelCoordinatorAndroid.class,
+                                            mProfileSupplier.get(),
+                                            mWindowAndroid),
+                                    () ->
+                                            SidePanelCoordinatorAndroidFactory.create(
+                                                    mSidePanelContainerCoordinator));
+            assert sidePanelCoordinatorAndroid != null
+                    : "SidePanelCoordinatorAndroid shouldn't be null when side panel is enabled";
+
             chromeAndroidTask.addFeature(
                     new ChromeAndroidTaskFeatureKey(
                             WindowScopedSidePanelRegistryBridge.class,
                             mProfileSupplier.get(),
                             mWindowAndroid),
                     SidePanelRegistryBridgeFactory::createWindowScopedBridge);
+
+            mSidePanelContainerCoordinator.init(sidePanelCoordinatorAndroid);
 
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =

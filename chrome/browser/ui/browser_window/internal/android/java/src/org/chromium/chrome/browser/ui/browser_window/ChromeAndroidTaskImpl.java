@@ -692,18 +692,19 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public <T extends ChromeAndroidTaskFeature> void addFeature(
+    public <T extends ChromeAndroidTaskFeature> @Nullable ChromeAndroidTaskFeature addFeature(
             ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier) {
         ThreadUtils.assertOnUiThread();
         assertPendingCreateOrIdle();
 
-        if (mFeatures.containsKey(featureKey)) {
-            return;
+        ChromeAndroidTaskFeature feature = mFeatures.get(featureKey);
+        if (feature != null) {
+            return feature;
         }
 
-        var feature = featureSupplier.get();
+        feature = featureSupplier.get();
         if (feature == null) {
-            return;
+            return null;
         }
 
         mFeatures.put(featureKey, feature);
@@ -740,6 +741,8 @@ final class ChromeAndroidTaskImpl
         if (tabModelSelector != null) {
             feature.onTabModelSelected(tabModelSelector.getCurrentModel());
         }
+
+        return feature;
     }
 
     @Override

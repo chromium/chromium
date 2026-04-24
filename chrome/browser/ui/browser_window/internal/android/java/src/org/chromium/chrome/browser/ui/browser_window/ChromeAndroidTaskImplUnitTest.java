@@ -92,6 +92,7 @@ import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
@@ -859,6 +860,61 @@ public class ChromeAndroidTaskImplUnitTest {
         InOrder inOrder = inOrder(mockTabModel, mockNatives);
         inOrder.verify(mockTabModel).dissociateWithBrowserWindow();
         inOrder.verify(mockNatives).destroy(any(Long.class));
+    }
+
+    @Test
+    public void addFeature_featureDoesNotExist_returnNewlyCreatedFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
+
+        // Act.
+        var returnedFeature = chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+
+        // Assert.
+        assertEquals(testFeature, returnedFeature);
+    }
+
+    @Test
+    public void addFeature_featureAlreadyAdded_returnExistingFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var activityWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, profile, activityWindowAndroid);
+        Supplier<TestChromeAndroidTaskFeature> testFeatureSupplier =
+                new Supplier<>() {
+                    private boolean mIsFeatureCreated;
+
+                    @Override
+                    public TestChromeAndroidTaskFeature get() {
+                        assertFalse(
+                                "addFeature() should only create the feature once",
+                                mIsFeatureCreated);
+
+                        var feature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+                        mIsFeatureCreated = true;
+
+                        return feature;
+                    }
+                };
+
+        // Act: add the feature twice.
+        var returnedFeature1 = chromeAndroidTask.addFeature(featureKey, testFeatureSupplier);
+        var returnedFeature2 = chromeAndroidTask.addFeature(featureKey, testFeatureSupplier);
+
+        // Assert.
+        assertEquals(returnedFeature1, returnedFeature2);
     }
 
     @Test

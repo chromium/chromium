@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -41,6 +42,10 @@ final class SidePanelContainerCoordinatorImpl
     private final FrameLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
     private final @SidePanelType int mPanelType;
+
+    // TODO(crbug.com/496407828): Use this to notify native side of events like "animation ended".
+    @SuppressWarnings("UnusedVariable")
+    private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
 
     private @Nullable SidePanelContent mCurrentContent;
 
@@ -66,9 +71,10 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void init() {
+    public void init(SidePanelCoordinatorAndroid sidePanelCoordinatorAndroid) {
         log(TAG, "init");
         ThreadUtils.assertOnUiThread();
+        mSidePanelCoordinatorAndroid = sidePanelCoordinatorAndroid;
         mSideUiCoordinator.registerSideUiContainer(this);
     }
 

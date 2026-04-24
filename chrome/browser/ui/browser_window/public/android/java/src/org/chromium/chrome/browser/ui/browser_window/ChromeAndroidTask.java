@@ -196,8 +196,10 @@ public interface ChromeAndroidTask {
      *
      * @param featureKey The key of the feature to add.
      * @param featureSupplier {@link Supplier} that should instantiate the feature.
+     * @return The {@link ChromeAndroidTaskFeature} that has been added, or null if {@code
+     *     featureSupplier} supplies a null feature.
      */
-    <T extends ChromeAndroidTaskFeature> void addFeature(
+    <T extends ChromeAndroidTaskFeature> @Nullable ChromeAndroidTaskFeature addFeature(
             ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier);
 
     /**
