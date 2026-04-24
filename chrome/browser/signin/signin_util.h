@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"

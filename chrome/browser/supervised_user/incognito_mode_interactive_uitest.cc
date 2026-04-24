@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"

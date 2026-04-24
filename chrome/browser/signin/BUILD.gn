@@ -3,30 +3,68 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-# TODO(crbug.com/364667553): complete modularization of //c/b/signin.
-# At the moment, it's hard to complete it at once as it pulls deps, which
-# result in circular deps. Modularization of others to resolve that is
-# non-trivial and is hard to complete at once.
 source_set("signin") {
-  sources = [ "identity_manager_factory.h" ]
+  public = [
+    "about_signin_internals_factory.h",
+    "account_consistency_mode_manager.h",
+    "account_consistency_mode_manager_factory.h",
+    "account_id_from_account_info.h",
+    "account_investigator_factory.h",
+    "account_reconcilor_factory.h",
+    "chrome_device_id_helper.h",
+    "chrome_signin_client.h",
+    "chrome_signin_client_factory.h",
+    "chrome_signin_helper.h",
+    "chrome_signin_pref_names.h",
+    "chrome_signin_proxying_url_loader_factory.h",
+    "chrome_signin_url_loader_throttle.h",
+    "header_modification_delegate.h",
+    "header_modification_delegate_impl.h",
+    "identity_manager_factory.h",
+    "signin_error_controller_factory.h",
+    "signin_hats_util.h",
+    "signin_metrics_service_factory.h",
+    "signin_policy_service.h",
+    "signin_policy_service_factory.h",
+    "signin_profile_attributes_updater.h",
+    "signin_profile_attributes_updater_factory.h",
+    "signin_util.h",
+  ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/hats",
+    "//components/account_id",
+    "//components/metrics",
+    "//components/signin/core/browser",
+    "//ui/base",
+    "//ui/base/interaction",
   ]
 
   if (enable_dice_support) {
-    sources += [
+    public += [
+      "binding_key_registration_token_helper.h",
+      "dice_intercepted_session_startup_helper.h",
+      "dice_response_handler.h",
+      "dice_response_handler_factory.h",
+      "dice_signed_in_profile_creator.h",
+      "dice_tab_helper.h",
       "dice_web_signin_interceptor.h",
-      "signin_promo_util.h",
+      "dice_web_signin_interceptor_factory.h",
+      "logout_tab_helper.h",
+      "process_dice_header_delegate_impl.h",
+      "signin_ui_delegate_impl_dice.h",
       "web_signin_interceptor.h",
     ]
     public_deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//components/keyed_service/core",
       "//components/policy/core/browser",
@@ -37,16 +75,171 @@ source_set("signin") {
       "//skia",
     ]
   }
+
+  if (is_android) {
+    public += [
+      "android/signin_bridge.h",
+      "android/signin_bridge_factory.h",
+      "android/signin_manager_android.h",
+      "android/web_signin_bridge.h",
+      "signin_manager_android_factory.h",
+    ]
+    public_deps += [ "//components/signin/public/browser" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "signin_promo_util.h",
+      "signin_ui_delegate.h",
+      "signin_ui_util.h",
+    ]
+    public_deps += [ ":signin_promo" ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    public += [ "force_signin_verifier.h" ]
+  }
+
+  if (is_chromeos) {
+    public += [
+      "signin_ui_chromeos_util.h",
+      "wait_for_network_callback_helper_ash.h",
+    ]
+  } else {
+    public += [
+      "chrome_signin_and_sync_status_metrics_provider.h",
+      "wait_for_network_callback_helper_chrome.h",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    public += [
+      "accounts_policy_manager.h",
+      "accounts_policy_manager_factory.h",
+    ]
+  }
+
+  if (enable_dice_support && is_win) {
+    public += [ "signin_util_win.h" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    public_deps += [
+      ":bound_session_credentials_proto",
+      "//chrome/common",
+      "//chrome/common:mojo_bindings",
+      "//components/keyed_service/content",
+      "//components/unexportable_keys/mojom:mojo_service",
+    ]
+    public += [
+      "bound_session_credentials/bound_session_cookie_controller.h",
+      "bound_session_credentials/bound_session_cookie_controller_impl.h",
+      "bound_session_credentials/bound_session_cookie_observer.h",
+      "bound_session_credentials/bound_session_cookie_refresh_service.h",
+      "bound_session_credentials/bound_session_cookie_refresh_service_factory.h",
+      "bound_session_credentials/bound_session_cookie_refresh_service_impl.h",
+      "bound_session_credentials/bound_session_debug_info.h",
+      "bound_session_credentials/bound_session_key.h",
+      "bound_session_credentials/bound_session_params_storage.h",
+      "bound_session_credentials/bound_session_params_util.h",
+      "bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.h",
+      "bound_session_credentials/bound_session_refresh_cookie_fetcher.h",
+      "bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h",
+      "bound_session_credentials/bound_session_registration_fetcher.h",
+      "bound_session_credentials/bound_session_registration_fetcher_impl.h",
+      "bound_session_credentials/bound_session_registration_fetcher_param.h",
+      "bound_session_credentials/bound_session_request_throttled_handler_browser_impl.h",
+      "bound_session_credentials/bound_session_switches.h",
+      "bound_session_credentials/session_binding_helper.h",
+      "bound_session_credentials/throttled_gaia_auth_fetcher.h",
+      "bound_session_credentials/unexportable_key_obsolete_profile_garbage_collector.h",
+      "bound_session_credentials/unexportable_key_profile_garbage_collection_service_factory.h",
+      "bound_session_credentials/unexportable_key_provider_config.h",
+      "bound_session_credentials/unexportable_key_service_factory.h",
+    ]
+
+    if (enable_dice_support) {
+      public += [
+        "bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.h",
+        "bound_session_credentials/dice_bound_session_cookie_service.h",
+        "bound_session_credentials/dice_bound_session_cookie_service_factory.h",
+      ]
+    }
+  }
+
+  if (is_mac || is_linux) {
+    public += [ "before_fre_refresh_hats_field_trial.h" ]
+  }
 }
 
 source_set("impl") {
-  sources = []
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-  deps = [ ":signin" ]
+  sources = [
+    "about_signin_internals_factory.cc",
+    "account_consistency_mode_manager.cc",
+    "account_consistency_mode_manager_factory.cc",
+    "account_id_from_account_info.cc",
+    "account_investigator_factory.cc",
+    "account_reconcilor_factory.cc",
+    "chrome_device_id_helper.cc",
+    "chrome_signin_client.cc",
+    "chrome_signin_client_factory.cc",
+    "chrome_signin_helper.cc",
+    "chrome_signin_proxying_url_loader_factory.cc",
+    "chrome_signin_url_loader_throttle.cc",
+    "header_modification_delegate_impl.cc",
+    "identity_manager_factory.cc",
+    "signin_error_controller_factory.cc",
+    "signin_hats_util.cc",
+    "signin_metrics_service_factory.cc",
+    "signin_policy_service.cc",
+    "signin_policy_service_factory.cc",
+    "signin_profile_attributes_updater.cc",
+    "signin_profile_attributes_updater_factory.cc",
+    "signin_util.cc",
+  ]
+  public_deps = [
+    ":signin",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//chrome/browser:global_features",
+    "//chrome/browser/autofill",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/google",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/metrics",
+    "//chrome/browser/prefs",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/webdata_services",
+    "//components/application_locale_storage",
+    "//components/embedder_support:user_agent",
+    "//components/plus_addresses/core/common:features",
+    "//components/profile_metrics",
+    "//components/signin/core/browser",
+    "//components/signin/public/webdata",
+    "//components/supervised_user/core/browser",
+    "//components/sync_bookmarks",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
 
   if (enable_dice_support) {
-    sources = [
+    sources += [
+      "binding_key_registration_token_helper.cc",
+      "dice_intercepted_session_startup_helper.cc",
+      "dice_response_handler.cc",
+      "dice_response_handler_factory.cc",
+      "dice_signed_in_profile_creator.cc",
+      "dice_tab_helper.cc",
       "dice_web_signin_interceptor.cc",
+      "dice_web_signin_interceptor_factory.cc",
+      "logout_tab_helper.cc",
+      "process_dice_header_delegate_impl.cc",
+      "signin_ui_delegate_impl_dice.cc",
       "web_signin_interceptor.cc",
     ]
     deps += [
@@ -60,6 +253,8 @@ source_set("impl") {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/profiles/batch_upload:impl",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/browser/themes",
@@ -86,6 +281,131 @@ source_set("impl") {
       "//google_apis",
       "//ui/base",
     ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
+    }
+  }
+
+  if (is_android) {
+    sources += [
+      "android/signin_bridge.cc",
+      "android/signin_bridge_factory.cc",
+      "android/signin_manager_android.cc",
+      "android/signin_metrics_utils.cc",
+      "android/unified_consent_service_bridge.cc",
+      "android/web_signin_bridge.cc",
+      "identity_services_provider_android.cc",
+      "signin_manager_android_factory.cc",
+    ]
+    deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/bookmarks/android",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/reading_list",
+      "//chrome/browser/signin/services/android:jni_headers",
+      "//chrome/browser/unified_consent",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/signin/public/android:jni_headers",
+      "//components/signin/public/browser",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "signin_promo.cc",
+      "signin_promo_util.cc",
+      "signin_ui_util.cc",
+    ]
+    deps += [
+      ":signin_promo",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:ui_features",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "force_signin_verifier.cc",
+      "signin_ui_delegate.cc",
+    ]
+    deps += [ "//chrome/browser/ui/webui/signin:signin_impl" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "signin_ui_chromeos_util.cc",
+      "wait_for_network_callback_helper_ash.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/ash/profiles",
+      "//chromeos/ash/components/account_manager",
+      "//chromeos/ash/components/install_attributes",
+      "//chromeos/ash/components/network",
+    ]
+  } else {
+    sources += [
+      "chrome_signin_and_sync_status_metrics_provider.cc",
+      "wait_for_network_callback_helper_chrome.cc",
+    ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    sources += [
+      "accounts_policy_manager.cc",
+      "accounts_policy_manager_factory.cc",
+    ]
+    deps += [ "//chrome/browser/ui/startup" ]
+  }
+
+  if (enable_dice_support && is_win) {
+    sources += [ "signin_util_win.cc" ]
+    deps += [ "//chrome/browser/first_run" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_credentials/bound_session_cookie_controller.cc",
+      "bound_session_credentials/bound_session_cookie_controller_impl.cc",
+      "bound_session_credentials/bound_session_cookie_observer.cc",
+      "bound_session_credentials/bound_session_cookie_refresh_service_factory.cc",
+      "bound_session_credentials/bound_session_cookie_refresh_service_impl.cc",
+      "bound_session_credentials/bound_session_debug_info.cc",
+      "bound_session_credentials/bound_session_params_storage.cc",
+      "bound_session_credentials/bound_session_params_util.cc",
+      "bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.cc",
+      "bound_session_credentials/bound_session_refresh_cookie_fetcher.cc",
+      "bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc",
+      "bound_session_credentials/bound_session_registration_fetcher_impl.cc",
+      "bound_session_credentials/bound_session_registration_fetcher_param.cc",
+      "bound_session_credentials/bound_session_request_throttled_handler_browser_impl.cc",
+      "bound_session_credentials/bound_session_switches.cc",
+      "bound_session_credentials/session_binding_helper.cc",
+      "bound_session_credentials/throttled_gaia_auth_fetcher.cc",
+      "bound_session_credentials/unexportable_key_obsolete_profile_garbage_collector.cc",
+      "bound_session_credentials/unexportable_key_profile_garbage_collection_service_factory.cc",
+      "bound_session_credentials/unexportable_key_provider_config.cc",
+      "bound_session_credentials/unexportable_key_service_factory.cc",
+    ]
+    deps += [
+      "//chrome/common",
+      "//components/unexportable_keys",
+    ]
+
+    if (enable_dice_support) {
+      sources += [
+        "bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.cc",
+        "bound_session_credentials/dice_bound_session_cookie_service.cc",
+        "bound_session_credentials/dice_bound_session_cookie_service_factory.cc",
+      ]
+    }
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "before_fre_refresh_hats_field_trial.cc" ]
   }
 }
 
@@ -112,6 +432,35 @@ source_set("google_accounts_private_api") {
     "//mojo/public/cpp/bindings",
   ]
   deps = [ "//google_apis" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "chrome_signin_client_test_util.h" ]
+  sources = [ "chrome_signin_client_test_util.cc" ]
+  public_deps = [
+    "//base",
+    "//services/network:test_support",
+  ]
+  deps = [
+    ":signin",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+
+  if (!is_android) {
+    public += [ "token_revoker_test_utils.h" ]
+    sources += [ "token_revoker_test_utils.cc" ]
+    public_deps += [ "//google_apis" ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/net",
+      "//content/test:test_support",
+    ]
+  }
 }
 
 if (enable_bound_session_credentials) {

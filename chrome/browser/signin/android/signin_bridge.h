@@ -7,11 +7,12 @@
 
 #include <string>
 
-#include "chrome/browser/android/tab_android.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
+
+class TabAndroid;
 
 namespace content {
 class WebContents;

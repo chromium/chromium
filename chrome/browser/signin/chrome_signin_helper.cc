@@ -42,6 +42,7 @@
 #include "net/http/http_response_headers.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"

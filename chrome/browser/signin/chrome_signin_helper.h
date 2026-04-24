@@ -10,7 +10,6 @@
 
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_id.h"

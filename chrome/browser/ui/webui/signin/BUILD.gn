@@ -104,7 +104,13 @@ source_set("signin") {
   ]
 
   # enterprise headers include turn_sync_on_helper_policy_fetch_tracker.h.
-  allow_circular_includes_from = [ "//chrome/browser/enterprise" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/enterprise",
+
+    # signin headers include turn_sync_on_helper.h for SigninAbortedMode, and
+    # dice_tab_helper.cc includes history_sync_optin_helper.h.
+    "//chrome/browser/signin",
+  ]
 
   if (enable_dice_support) {
     sources += [

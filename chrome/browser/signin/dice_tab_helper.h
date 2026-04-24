@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

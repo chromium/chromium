@@ -195,6 +195,7 @@ if (!is_android) {
     sources = [ "incognito_mode_interactive_uitest.cc" ]
 
     deps = [
+      "//chrome/browser/prefs",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test/supervised_user:live_tests",
