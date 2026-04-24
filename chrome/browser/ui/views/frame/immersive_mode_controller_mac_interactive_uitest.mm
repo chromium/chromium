@@ -549,8 +549,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
       anchor_view, views::BubbleBorder::TOP_RIGHT);
   delegate->SetContentsView(std::make_unique<views::View>())
       ->SetPreferredSize(gfx::Size(100, 100));
-  views::Widget* bubble_widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(delegate));
+  views::Widget* bubble_widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(delegate),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget->Show();
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser());

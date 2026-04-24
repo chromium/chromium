@@ -100,8 +100,9 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* const bubble = bubble_unique.get();
 
-  views::Widget* widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble_unique),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->widget_delegate()->SetEnableArrowKeyTraversal(true);
   widget->Show();
   button_controller->OnBubbleShown();

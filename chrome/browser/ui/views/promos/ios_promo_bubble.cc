@@ -621,8 +621,9 @@ void IOSPromoBubble::ShowPromoBubble(
     promo_bubble->set_highlight_button_when_shown(false);
   }
 
-  views::Widget* const widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(promo_bubble));
+  views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(promo_bubble),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
   widget->GetContentsView()->SetProperty(views::kElementIdentifierKey,
                                          kIOSPromoBubbleElementId);

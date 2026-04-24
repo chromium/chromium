@@ -353,8 +353,9 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   auto* anchored_nudge_ptr = anchored_nudge.get();
   shown_nudges_[id] = anchored_nudge_ptr;
 
-  auto* anchored_nudge_widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(anchored_nudge));
+  auto* anchored_nudge_widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(anchored_nudge),
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   // The widget is not activated so the nudge does not steal focus.
   anchored_nudge_widget->ShowInactive();

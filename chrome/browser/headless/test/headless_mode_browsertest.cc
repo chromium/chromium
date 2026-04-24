@@ -415,7 +415,8 @@ Widget* ShowTestBubble(Browser* browser) {
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
 
-  Widget* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
   return widget;

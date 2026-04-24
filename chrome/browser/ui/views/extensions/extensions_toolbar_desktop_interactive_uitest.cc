@@ -83,7 +83,8 @@ views::Widget* CreateBubble(views::View* anchor_point) {
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_point, views::BubbleBorder::TOP_RIGHT);
 
-  return views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  return views::BubbleDialogDelegate::CreateBubble(
+      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 }
 
 }  // namespace
