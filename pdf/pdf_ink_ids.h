@@ -16,6 +16,9 @@
 
 namespace chrome_pdf {
 
+// Identifies a unique font from the frontend.
+using FontId = base::StrongAlias<class InkFontIdTag, int>;
+
 // Identifies ink::PartitionedMesh objects.
 using InkModeledShapeId = base::StrongAlias<class InkModeledShapeIdTag, size_t>;
 

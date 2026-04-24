@@ -1539,7 +1539,15 @@ void PdfInkModule::HandleEditTextAnnotationMessage(
 
 void PdfInkModule::HandleFinishTextAnnotationMessage(
     const base::DictValue& message) {
-  // TODO(crbug.com/408976049): Implement.
+  const base::DictValue& data = *message.FindDict("data");
+  const base::ListValue& typefaces_value = *data.FindList("newTypefaces");
+  for (const base::Value& item : typefaces_value) {
+    const base::DictValue& item_as_dict = item.GetDict();
+    FontId unique_id(item_as_dict.FindInt("uniqueId").value());
+    const std::vector<uint8_t>& serialized_typeface =
+        *item_as_dict.FindBlob("serializedTypeface");
+    client_->AddFont(unique_id, serialized_typeface);
+  }
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

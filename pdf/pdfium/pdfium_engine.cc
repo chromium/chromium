@@ -110,7 +110,13 @@
 #include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/pdfium/pdfium_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_writer.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkFontTypes.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/gfx/skia_span_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -606,7 +612,22 @@ class ScopedPageObjectDeactivator {
   std::vector<FPDF_PAGEOBJECT> page_objects_;
 };
 
-#endif
+// TODO(crbug.com/482060888): Remove this once SkData::MakeFromStream() is able
+// to do this itself.
+sk_sp<const SkData> MakeDataAvoidingCopy(SkStreamAsset* stream) {
+  if (!stream) {
+    return SkData::MakeEmpty();
+  }
+  if (stream->getData()) {
+    return stream->getData();
+  }
+  if (stream->getMemoryBase() && stream->getLength()) {
+    return SkData::MakeWithoutCopy(stream->getMemoryBase(),
+                                   stream->getLength());
+  }
+  return SkData::MakeFromStream(stream, stream->getLength());
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
   CHECK_EQ(sk_bitmap.colorType(), SkColorType::kBGRA_8888_SkColorType);
@@ -5024,6 +5045,40 @@ std::optional<AccessibilityTextRunInfo> PDFiumEngine::GetFirstVisibleTextRun(
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+void PDFiumEngine::AddFont(FontId font_id,
+                           base::span<const uint8_t> serialized_typeface) {
+  SkMemoryStream serialized_typeface_stream(
+      gfx::MakeSkDataFromSpanWithoutCopy(serialized_typeface));
+  sk_sp<SkTypeface> typeface = SkTypeface::MakeDeserialize(
+      &serialized_typeface_stream, skia::DefaultFontMgr());
+  CHECK(typeface);
+
+  std::unique_ptr<SkStreamAsset> font_stream = typeface->openStream(nullptr);
+  sk_sp<const SkData> font_data = MakeDataAvoidingCopy(font_stream.get());
+  base::span<const uint8_t> font_data_span = gfx::SkDataToSpan(font_data);
+  CHECK(!font_data->empty());
+
+  constexpr SkFontTableTag kHeadTag = SkSetFourByteTag('h', 'e', 'a', 'd');
+  const bool is_sfnt = typeface->getTableSize(kHeadTag) > 0;
+
+  // TODO(crbug.com/506133432): Avoid hardcoding the cid parameter?
+  int font_type = is_sfnt ? FPDF_FONT_TRUETYPE : FPDF_FONT_TYPE1;
+  ScopedFPDFFont font(FPDFText_LoadFont(doc(), font_data_span.data(),
+                                        font_data_span.size(),
+                                        /*font_type=*/font_type,
+                                        /*cid=*/true));
+  CHECK(font);
+
+  bool inserted = font_map_.insert({font_id, std::move(font)}).second;
+  CHECK(inserted);
+}
+
+FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
+  auto it = font_map_.find(font_id);
+  CHECK(it != font_map_.end());
+  return it->second.get();
+}
+
 gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
                                          float device_pixel_ratio) {
   CHECK(PageIndexInBounds(page_index));

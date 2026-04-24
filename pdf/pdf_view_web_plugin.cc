@@ -310,6 +310,11 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
   ~PdfInkModuleClientImpl() override = default;
 
   // PdfInkModuleClient:
+  void AddFont(FontId font_id,
+               base::span<const uint8_t> serialized_typeface) override {
+    plugin_->engine_->AddFont(font_id, serialized_typeface);
+  }
+
   void ClearSelection() override { plugin_->engine_->ClearTextSelection(); }
 
   void DiscardStroke(int page_index, InkStrokeId id) override {

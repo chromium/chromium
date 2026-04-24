@@ -44,17 +44,21 @@
 #include "pdf/test/test_helpers.h"
 #include "pdf/text_search.h"
 #include "pdf/ui/thumbnail.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include <array>
@@ -2426,6 +2430,25 @@ TEST_P(PDFiumEngineInkTest, GetCanonicalToPdfTransform) {
             transform.MapPoint(kCanonicalTopLeftPoint));
   EXPECT_EQ(gfx::PointF(75.0f, 162.5f),
             transform.MapPoint(kCanonicalMiddlePoint));
+}
+
+TEST_P(PDFiumEngineInkTest, AddFont) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
+  sk_sp<SkData> serialized_font = default_font->serialize();
+  FontId id = static_cast<FontId>(default_font->uniqueID());
+
+  engine->AddFont(id, gfx::SkDataToSpan(serialized_font));
+  FPDF_FONT font = engine->GetAddedFont(id);
+  ASSERT_TRUE(font);
+
+  float ascent = 0;
+  EXPECT_TRUE(FPDFFont_GetAscent(font, 12, &ascent));
+  EXPECT_GT(ascent, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());

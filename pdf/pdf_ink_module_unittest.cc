@@ -274,6 +274,11 @@ class FakeClient : public PdfInkModuleClient {
   FakeClient& operator=(const FakeClient&) = delete;
   ~FakeClient() override = default;
 
+  MOCK_METHOD(void,
+              AddFont,
+              (FontId font_id, base::span<const uint8_t> serialized_typeface),
+              (override));
+
   // PdfInkModuleClient:
   MOCK_METHOD(void,
               DiscardStroke,
@@ -893,6 +898,48 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
 
   client().set_zoom(0.5f);
   ink_module().OnGeometryChanged();
+}
+
+class PdfInkModuleTextTest : public testing::Test {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        chrome_pdf::features::kPdfInk2,
+        {
+            {features::kPdfInk2TextAnnotations.name, "true"},
+        });
+    ink_module_ = std::make_unique<PdfInkModule>(client_);
+  }
+
+ protected:
+  FakeClient& client() { return client_; }
+  PdfInkModule& ink_module() { return *ink_module_; }
+  const PdfInkModule& ink_module() const { return *ink_module_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  NiceMock<FakeClient> client_;
+  std::unique_ptr<PdfInkModule> ink_module_;
+};
+
+TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
+  base::DictValue typeface;
+  std::vector<char> typeface_blob{1, 2, 3, 4};
+  typeface.Set("uniqueId", 123);
+  typeface.Set("serializedTypeface", base::Value(typeface_blob));
+
+  base::DictValue data;
+  base::ListValue typefaces;
+  typefaces.Append(std::move(typeface));
+  data.Set("newTypefaces", std::move(typefaces));
+
+  EXPECT_CALL(client(), AddFont(FontId(123), ElementsAreArray(typeface_blob)));
+
+  base::DictValue message = base::DictValue()
+                                .Set("type", "finishTextAnnotation")
+                                .Set("data", std::move(data));
+  EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
