@@ -5,6 +5,7 @@
 #include "components/translate/core/browser/translate_script.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "components/grit/components_resources.h"
 #include "components/translate/core/browser/translate_url_fetcher.h"
 #include "components/translate/core/browser/translate_url_util.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
@@ -38,8 +40,8 @@ const char TranslateScript::kScriptURL[] =
 const char TranslateScript::kRequestHeaderName[] =
     "Google-Translate-Element-Mode";
 const char TranslateScript::kRequestHeaderValue[] = "library";
-const char TranslateScript::kAlwaysUseSslQueryName[] = "aus";
-const char TranslateScript::kAlwaysUseSslQueryValue[] = "true";
+const char TranslateScript::kExperimentFilterQueryName[] = "ef";
+const char TranslateScript::kExperimentFilterQueryValue[] = "ehcm";
 const char TranslateScript::kCallbackQueryName[] = "cb";
 const char TranslateScript::kCallbackQueryValue[] =
     "cr.googleTranslate.onTranslateElementLoad";
@@ -108,8 +110,11 @@ GURL TranslateScript::GetTranslateScriptURL() {
 
   translate_script_url = net::AppendQueryParameter(
       translate_script_url, kCallbackQueryName, kCallbackQueryValue);
-  translate_script_url = net::AppendQueryParameter(
-      translate_script_url, kAlwaysUseSslQueryName, kAlwaysUseSslQueryValue);
+  if (base::FeatureList::IsEnabled(translate::kTranslateSimplifiedHindi)) {
+    translate_script_url = net::AppendQueryParameter(
+        translate_script_url, kExperimentFilterQueryName,
+        kExperimentFilterQueryValue);
+  }
   translate_script_url = net::AppendQueryParameter(
       translate_script_url, kCssLoaderCallbackQueryName,
       kCssLoaderCallbackQueryValue);
@@ -118,7 +123,6 @@ GURL TranslateScript::GetTranslateScriptURL() {
       kJavascriptLoaderCallbackQueryValue);
 
   translate_script_url = AddHostLocaleToUrl(translate_script_url);
-  translate_script_url = AddApiKeyToUrl(translate_script_url);
 
   return translate_script_url;
 }

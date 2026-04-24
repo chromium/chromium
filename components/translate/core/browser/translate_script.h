@@ -62,9 +62,9 @@ class TranslateScript {
   static const char kRequestHeaderName[];
   static const char kRequestHeaderValue[];
 
-  // Used in kTranslateScriptURL to specify using always ssl to load resources.
-  static const char kAlwaysUseSslQueryName[];
-  static const char kAlwaysUseSslQueryValue[];
+  // Used in kTranslateScriptURL to specify the experiment filter.
+  static const char kExperimentFilterQueryName[];
+  static const char kExperimentFilterQueryValue[];
 
   // Used in kTranslateScriptURL to specify a callback function name.
   static const char kCallbackQueryName[];

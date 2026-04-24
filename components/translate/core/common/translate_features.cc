@@ -8,4 +8,6 @@ namespace translate {
 
 BASE_FEATURE(kEnableTranslatePdf, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTranslateSimplifiedHindi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace translate
