@@ -29,7 +29,7 @@ BrowserWindowInterface* CreateBrowserWindow(
       Java_AndroidBrowserWindowCreateParamsImpl_create(
           env, static_cast<int>(create_params.type),
           create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
-          bounds.width(), bounds.height(),
+          bounds.right(), bounds.bottom(),
           static_cast<int>(create_params.initial_show_state),
           create_params.web_contents.get());
 
@@ -57,7 +57,7 @@ void CreateBrowserWindow(
       Java_AndroidBrowserWindowCreateParamsImpl_create(
           env, static_cast<int>(create_params.type),
           create_params.profile->GetJavaObject(), bounds.x(), bounds.y(),
-          bounds.width(), bounds.height(),
+          bounds.right(), bounds.bottom(),
           static_cast<int>(create_params.initial_show_state),
           create_params.web_contents.get());
 

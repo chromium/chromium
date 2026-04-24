@@ -78,11 +78,11 @@ final class AndroidBrowserWindowCreateParamsImpl implements AndroidBrowserWindow
             Profile profile,
             int leftBound,
             int topBound,
-            int width,
-            int height,
+            int rightBound,
+            int bottomBound,
             @WindowShowState.EnumType int initialShowState,
             @JniType("content::WebContents*") @Nullable WebContents webContents) {
-        Rect initialBounds = new Rect(leftBound, topBound, width, height);
+        Rect initialBounds = new Rect(leftBound, topBound, rightBound, bottomBound);
         return new AndroidBrowserWindowCreateParamsImpl(
                 windowType, profile, initialBounds, initialShowState, webContents);
     }
