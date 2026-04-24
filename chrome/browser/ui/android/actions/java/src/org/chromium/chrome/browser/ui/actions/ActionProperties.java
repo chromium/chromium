@@ -20,7 +20,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Properties for action buttons. */
 @NullMarked
 public class ActionProperties {
-    public static final WritableObjectPropertyKey<Drawable> ICON =
+    public static final WritableIntPropertyKey ICON_ID = new WritableIntPropertyKey();
+
+    /** Setting this property will override the drawable set by the ICON_ID property, if set. */
+    public static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
 
     /** This property should have a {@link ButtonState} value. */
@@ -43,7 +46,8 @@ public class ActionProperties {
     /** Base properties for general action buttons. */
     public static final PropertyKey[] BASE_KEYS =
             new PropertyKey[] {
-                ICON,
+                ICON_ID,
+                ICON_DRAWABLE,
                 CONTENT_DESCRIPTION_RESOLVER,
                 TOOLTIP_TEXT_RESOLVER,
                 ON_PRESS_CALLBACK,
@@ -70,5 +74,6 @@ public class ActionProperties {
     /** All properties for action buttons. */
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(
-                    new PropertyKey[] {ICON}, BASE_KEYS_WITH_BUTTON_STATE_AND_NO_ICON);
+                    new PropertyKey[] {ICON_ID, ICON_DRAWABLE},
+                    BASE_KEYS_WITH_BUTTON_STATE_AND_NO_ICON);
 }

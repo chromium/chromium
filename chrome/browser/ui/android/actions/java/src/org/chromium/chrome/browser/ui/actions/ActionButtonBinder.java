@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.actions;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageView;
@@ -21,8 +22,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class ActionButtonBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (ActionProperties.ICON == propertyKey) {
-            if (view instanceof ImageView v) v.setImageDrawable(model.get(ActionProperties.ICON));
+        if (ActionProperties.ICON_ID == propertyKey
+                || ActionProperties.ICON_DRAWABLE == propertyKey) {
+            Drawable drawable = model.get(ActionProperties.ICON_DRAWABLE);
+            if (drawable != null) {
+                if (view instanceof ImageView v) v.setImageDrawable(drawable);
+            } else {
+                int resId = model.get(ActionProperties.ICON_ID);
+                if (view instanceof ImageView v) v.setImageResource(resId);
+            }
         } else if (ActionProperties.CONTENT_DESCRIPTION_RESOLVER == propertyKey) {
             TextResolver resolver = model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);
             view.setContentDescription(resolver != null ? resolver.resolve(view.getContext()) : "");

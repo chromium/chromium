@@ -27,7 +27,10 @@ public class TabSwitcherActionPropertiesUnitTest {
         List<PropertyKey> keys = Arrays.asList(TabSwitcherActionProperties.ALL_KEYS);
 
         // Assert that ICON is not allowed to be modified directly.
-        assertFalse("ICON should not be a valid key", keys.contains(ActionProperties.ICON));
+        assertFalse(
+                "ICON_DRAWABLE should not be a valid key",
+                keys.contains(ActionProperties.ICON_DRAWABLE));
+        assertFalse("ICON_ID should not be a valid key", keys.contains(ActionProperties.ICON_ID));
 
         // Assert all valid keys are present.
         assertTrue(keys.contains(ActionProperties.CONTENT_DESCRIPTION_RESOLVER));

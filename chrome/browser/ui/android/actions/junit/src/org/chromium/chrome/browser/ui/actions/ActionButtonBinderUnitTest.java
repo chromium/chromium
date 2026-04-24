@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.actions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -18,6 +20,8 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,7 +53,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class ActionButtonBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Drawable mDrawable;
     @Mock private Callback<View> mOnPressCallback;
     @Mock private Callback<View> mOnLongPressCallback;
     @Mock private IphIntent mIphIntent;
@@ -58,6 +61,7 @@ public class ActionButtonBinderUnitTest {
     private Activity mActivity;
     private ImageView mView;
     private PropertyModel mModel;
+    private Drawable mDrawable;
 
     @Before
     public void setUp() {
@@ -66,21 +70,65 @@ public class ActionButtonBinderUnitTest {
         mActivity.setContentView(mView);
         mModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(mModel, mView, ActionButtonBinder::bind);
+        mDrawable = new ColorDrawable(Color.RED);
     }
 
     @Test
     @SmallTest
-    public void testIcon() {
-        mModel.set(ActionProperties.ICON, mDrawable);
+    public void testIconId() {
+        int resId = android.R.drawable.ic_delete;
+        mModel.set(ActionProperties.ICON_ID, resId);
+        assertNotNull(mView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconId_NullResId() {
+        mModel.set(ActionProperties.ICON_ID, android.R.drawable.ic_delete);
+        mModel.set(ActionProperties.ICON_ID, Resources.ID_NULL);
+        assertNull(mView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconDrawable() {
+        mModel.set(ActionProperties.ICON_DRAWABLE, mDrawable);
         assertEquals(mView.getDrawable(), mDrawable);
     }
 
     @Test
     @SmallTest
-    public void testIcon_NullDrawable() {
-        mModel.set(ActionProperties.ICON, mDrawable);
-        mModel.set(ActionProperties.ICON, null);
+    public void testIconDrawable_NullDrawable() {
+        mModel.set(ActionProperties.ICON_DRAWABLE, mDrawable);
+        mModel.set(ActionProperties.ICON_DRAWABLE, null);
         assertNull(mView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconDrawable_OverridesIconId() {
+        int resId = android.R.drawable.ic_delete;
+        Drawable resDrawable = mActivity.getDrawable(resId);
+
+        assertNotEquals(resDrawable, mDrawable);
+
+        mModel.set(ActionProperties.ICON_ID, resId);
+        mModel.set(ActionProperties.ICON_DRAWABLE, mDrawable);
+
+        assertEquals(mDrawable, mView.getDrawable());
+        assertNotEquals(resDrawable, mView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconDrawable_FallbackToIconIdWhenNull() {
+        int resId = android.R.drawable.ic_delete;
+
+        mModel.set(ActionProperties.ICON_ID, resId);
+        mModel.set(ActionProperties.ICON_DRAWABLE, mDrawable);
+        mModel.set(ActionProperties.ICON_DRAWABLE, null);
+
+        assertNotNull(mView.getDrawable());
     }
 
     @Test
