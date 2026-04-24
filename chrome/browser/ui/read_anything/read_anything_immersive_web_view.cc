@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
@@ -72,6 +73,22 @@ bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
   // and propagation.
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
+}
+
+void ReadAnythingImmersiveWebView::FindReply(content::WebContents* web_contents,
+                                             int request_id,
+                                             int number_of_matches,
+                                             const gfx::Rect& selection_rect,
+                                             int active_match_ordinal,
+                                             bool final_update) {
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
+  if (!find_tab_helper) {
+    return;
+  }
+  find_tab_helper->HandleFindReply(request_id, number_of_matches,
+                                   selection_rect, active_match_ordinal,
+                                   final_update);
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>

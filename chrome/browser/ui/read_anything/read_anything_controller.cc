@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -209,6 +211,8 @@ void ReadAnythingController::OnEntryShown(
           feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
     }
   }
+
+  MaybeUpdateFindBarController();
 }
 
 void ReadAnythingController::OnEntryHidden() {
@@ -293,6 +297,8 @@ ReadAnythingController::GetOrCreateWebUIWrapper(
 
     ReadAnythingControllerGlue::CreateForWebContents(
         web_ui_wrapper_->web_contents(), this);
+    find_in_page::FindTabHelper::CreateForWebContents(
+        web_ui_wrapper_->web_contents());
   }
   return std::move(web_ui_wrapper_);
 }
@@ -341,6 +347,43 @@ void ReadAnythingController::TransferWebUiOwnership(
   // next time.
   if (!has_shown_ui_) {
     RecreateWebUIWrapper();
+  }
+
+  // Ensure the find-in-page target is updated to reflect the new presentation
+  // state.
+  MaybeUpdateFindBarController();
+}
+
+void ReadAnythingController::MaybeUpdateFindBarController() {
+  if (!tab_ || !tab_->IsActivated() || !tab_->GetBrowserWindowInterface()) {
+    return;
+  }
+
+  content::WebContents* target_contents;
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay &&
+      ra_web_ui_observer_ && ra_web_ui_observer_->web_contents()) {
+    target_contents = ra_web_ui_observer_->web_contents();
+  } else {
+    // We're not in IRM so track main WebContents
+    target_contents = tab_->GetContents();
+  }
+
+  // If the target is just the main web contents, we don't need to force the
+  // FindBarController's creation if it doesn't already exist.
+  auto& window_features = tab_->GetBrowserWindowInterface()->GetFeatures();
+  if (target_contents == tab_->GetContents() &&
+      !window_features.HasFindBarController()) {
+    return;
+  }
+
+  auto* find_bar_controller = window_features.GetFindBarController();
+  if (!find_bar_controller) {
+    return;
+  }
+
+  // Direct the FindBarController to track the new target WebContents
+  if (find_bar_controller->web_contents() != target_contents) {
+    find_bar_controller->ChangeWebContents(target_contents);
   }
 }
 

@@ -48,6 +48,12 @@ class ReadAnythingImmersiveWebView : public views::WebView,
                          const content::ContextMenuParams& params) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  void FindReply(content::WebContents* web_contents,
+                 int request_id,
+                 int number_of_matches,
+                 const gfx::Rect& selection_rect,
+                 int active_match_ordinal,
+                 bool final_update) override;
 
  private:
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

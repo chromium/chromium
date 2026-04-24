@@ -201,6 +201,11 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
 
+  // Updates the FindBarController's target WebContents if necessary. This
+  // ensures that find-in-page (Cmd-F) targets the IRM overlay when it's open,
+  // rather than the occluded main WebContents.
+  void MaybeUpdateFindBarController();
+
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
 

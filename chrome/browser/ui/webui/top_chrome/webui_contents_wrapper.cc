@@ -230,6 +230,18 @@ void WebUIContentsWrapper::SetContentsBounds(content::WebContents* source,
   }
 }
 
+void WebUIContentsWrapper::FindReply(content::WebContents* web_contents,
+                                     int request_id,
+                                     int number_of_matches,
+                                     const gfx::Rect& selection_rect,
+                                     int active_match_ordinal,
+                                     bool final_update) {
+  if (host_) {
+    host_->FindReply(web_contents, request_id, number_of_matches,
+                     selection_rect, active_match_ordinal, final_update);
+  }
+}
+
 content::WebContents* WebUIContentsWrapper::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
