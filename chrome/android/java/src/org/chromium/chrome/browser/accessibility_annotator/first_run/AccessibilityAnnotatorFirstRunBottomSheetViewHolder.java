@@ -27,7 +27,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     final ScrollView mScrollView;
     final LottieAnimationView mIcon;
     final TextView mTitle;
-    final TextViewWithClickableSpans mDescription;
+    final TextView mDescription;
+    final TextViewWithClickableSpans mLearnMoreDescription;
+    final TextView mCard1Text;
+    final TextView mCard2Text;
     final Button mPrimaryButton;
     final Button mSecondaryButton;
 
@@ -42,10 +45,14 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
         mIcon = mContentView.findViewById(R.id.accessibility_annotator_icon);
         mTitle = mContentView.findViewById(R.id.accessibility_annotator_title);
         mDescription = mContentView.findViewById(R.id.accessibility_annotator_description);
+        mLearnMoreDescription =
+                mContentView.findViewById(R.id.accessibility_annotator_learn_more_description);
+        mCard1Text = mContentView.findViewById(R.id.accessibility_annotator_card_1_text);
+        mCard2Text = mContentView.findViewById(R.id.accessibility_annotator_card_2_text);
         mPrimaryButton = mContentView.findViewById(R.id.accessibility_annotator_primary_button);
         mSecondaryButton = mContentView.findViewById(R.id.accessibility_annotator_secondary_button);
 
-        mDescription.setMovementMethod(LinkMovementMethod.getInstance());
+        mLearnMoreDescription.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     void playAnimation() {

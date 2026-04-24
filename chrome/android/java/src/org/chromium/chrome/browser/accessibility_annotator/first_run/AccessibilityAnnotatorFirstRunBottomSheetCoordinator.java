@@ -48,7 +48,20 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
                                         R.string.accessibility_partial_custom_tab_bottom_sheet))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION,
+                                context.getString(
+                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                        .with(
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                        .LEARN_MORE_DESCRIPTION,
                                 context.getString(R.string.ntp_learn_more_about_suggested_content))
+                        .with(
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_1_TEXT,
+                                context.getString(
+                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
+                        .with(
+                                AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_2_TEXT,
+                                context.getString(
+                                        R.string.accessibility_partial_custom_tab_bottom_sheet))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties
                                         .PRIMARY_BUTTON_LABEL,
@@ -67,13 +80,17 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
                     }
                 };
 
-        SpannableString description =
+        SpannableString learnMoreDescription =
                 SpanApplier.applySpans(
-                        mModel.get(AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION)
+                        mModel.get(
+                                        AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                                .LEARN_MORE_DESCRIPTION)
                                 .toString(),
                         new SpanApplier.SpanInfo("<link>", "</link>", learnMoreSpan));
 
-        mModel.set(AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION, description);
+        mModel.set(
+                AccessibilityAnnotatorFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION,
+                learnMoreDescription);
 
         PropertyModelChangeProcessor.create(
                 mModel, mView, AccessibilityAnnotatorFirstRunBottomSheetViewBinder::bind);

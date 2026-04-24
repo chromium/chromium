@@ -29,17 +29,15 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:layout_marginTop="8dp">
+        android:paddingLeft="@dimen/accessibility_annotator_sheet_padding_horizontal"
+        android:paddingRight="@dimen/accessibility_annotator_sheet_padding_horizontal"
+        android:layout_marginTop="@dimen/accessibility_annotator_spacing_medium">
 
       <com.airbnb.lottie.LottieAnimationView
           android:id="@+id/accessibility_annotator_icon"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
+          android:layout_height="36dp"
           android:layout_gravity="center_horizontal"
-          android:minHeight="60dp"
-          android:maxHeight="100dp"
           android:importantForAccessibility="no"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"/>
@@ -48,14 +46,58 @@ found in the LICENSE file.
           android:id="@+id/accessibility_annotator_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/accessibility_annotator_spacing_medium"
           android:textAppearance="@style/TextAppearance.Headline.Primary"
           android:textAlignment="center" />
 
-      <org.chromium.ui.widget.TextViewWithClickableSpans
+      <TextView
           android:id="@+id/accessibility_annotator_description"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
-          android:layout_marginTop="8dp"
+          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:textAlignment="viewStart" />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
+          android:background="@drawable/card_container_background">
+        <TextView
+            android:id="@+id/accessibility_annotator_card_1_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:padding="@dimen/accessibility_annotator_spacing_large"
+            android:gravity="center_vertical"
+            android:drawableStart="@android:drawable/ic_dialog_info"
+            android:drawablePadding="@dimen/accessibility_annotator_spacing_large"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:importantForAccessibility="no"
+            android:background="@color/bottom_sheet_bg_color" />
+
+        <TextView
+            android:id="@+id/accessibility_annotator_card_2_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?android:attr/listPreferredItemHeightSmall"
+            android:padding="@dimen/accessibility_annotator_spacing_large"
+            android:gravity="center_vertical"
+            android:drawableStart="@android:drawable/ic_dialog_info"
+            android:drawablePadding="@dimen/accessibility_annotator_spacing_large"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+      </LinearLayout>
+
+      <org.chromium.ui.widget.TextViewWithClickableSpans
+          android:id="@+id/accessibility_annotator_learn_more_description"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
           android:textAlignment="viewStart" />
 
@@ -65,7 +107,7 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textAlignment="center"
-          android:layout_marginTop="22dp"
+          android:layout_marginTop="20dp"
           android:minHeight="@dimen/min_touch_target_size"
           android:minWidth="@dimen/min_touch_target_size" />
 
@@ -75,8 +117,8 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textAlignment="center"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
+          android:layout_marginTop="@dimen/accessibility_annotator_spacing_medium"
+          android:layout_marginBottom="@dimen/accessibility_annotator_spacing_medium"
           android:minHeight="@dimen/min_touch_target_size"
           android:minWidth="@dimen/min_touch_target_size" />
 

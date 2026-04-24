@@ -13,9 +13,15 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Properties for the Accessibility Annotator first-run bottom sheet. */
 @NullMarked
 /*package*/ class AccessibilityAnnotatorFirstRunBottomSheetProperties {
+    public static final WritableObjectPropertyKey<CharSequence> CARD_1_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> CARD_2_TEXT =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
     static final ReadableIntPropertyKey ICON = new ReadableIntPropertyKey();
+    public static final WritableObjectPropertyKey<CharSequence> LEARN_MORE_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<String> PRIMARY_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<String> SECONDARY_BUTTON_LABEL =
@@ -23,7 +29,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        DESCRIPTION, ICON, PRIMARY_BUTTON_LABEL, SECONDARY_BUTTON_LABEL, TITLE
+        CARD_1_TEXT,
+        CARD_2_TEXT,
+        DESCRIPTION,
+        ICON,
+        LEARN_MORE_DESCRIPTION,
+        PRIMARY_BUTTON_LABEL,
+        SECONDARY_BUTTON_LABEL,
+        TITLE
     };
 
     private AccessibilityAnnotatorFirstRunBottomSheetProperties() {}

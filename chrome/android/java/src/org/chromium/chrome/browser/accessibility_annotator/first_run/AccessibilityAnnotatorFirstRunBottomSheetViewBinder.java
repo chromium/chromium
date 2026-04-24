@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.accessibility_annotator.first_run;
 
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_1_TEXT;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_2_TEXT;
 import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.ICON;
+import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION;
 import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.PRIMARY_BUTTON_LABEL;
 import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.SECONDARY_BUTTON_LABEL;
 import static org.chromium.chrome.browser.accessibility_annotator.first_run.AccessibilityAnnotatorFirstRunBottomSheetProperties.TITLE;
@@ -28,13 +31,13 @@ import org.chromium.ui.modelutil.PropertyModel;
         if (TITLE == propertyKey) {
             setMaybeEmptyText(view.mTitle, model.get(TITLE));
         } else if (DESCRIPTION == propertyKey) {
-            CharSequence description = model.get(DESCRIPTION);
-            if (description == null || description.length() == 0) {
-                view.mDescription.setVisibility(View.GONE);
-            } else {
-                view.mDescription.setText(description);
-                view.mDescription.setVisibility(View.VISIBLE);
-            }
+            setMaybeEmptyText(view.mDescription, model.get(DESCRIPTION));
+        } else if (LEARN_MORE_DESCRIPTION == propertyKey) {
+            setMaybeEmptyText(view.mLearnMoreDescription, model.get(LEARN_MORE_DESCRIPTION));
+        } else if (CARD_1_TEXT == propertyKey) {
+            setMaybeEmptyText(view.mCard1Text, model.get(CARD_1_TEXT));
+        } else if (CARD_2_TEXT == propertyKey) {
+            setMaybeEmptyText(view.mCard2Text, model.get(CARD_2_TEXT));
         } else if (ICON == propertyKey) {
             int iconId = model.get(ICON);
             if (iconId == 0) {
@@ -50,8 +53,8 @@ import org.chromium.ui.modelutil.PropertyModel;
         }
     }
 
-    private static void setMaybeEmptyText(TextView textView, @Nullable String text) {
-        if (text == null || text.isEmpty()) {
+    private static void setMaybeEmptyText(TextView textView, @Nullable CharSequence text) {
+        if (text == null || text.length() == 0) {
             textView.setText("");
             textView.setVisibility(View.GONE);
             return;
