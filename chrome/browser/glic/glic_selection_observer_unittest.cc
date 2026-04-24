@@ -66,6 +66,9 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   using GlicSelectionObserver::RenderFrameCreated;
   using GlicSelectionObserver::RenderFrameDeleted;
 
+ protected:
+  bool IsSelectionPromptEnabled() const override { return true; }
+
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;

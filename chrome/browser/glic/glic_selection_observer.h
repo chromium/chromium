@@ -58,6 +58,9 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void DismissUI(bool keep_nudge);
 
+  // Returns true if the selection prompt is enabled for the current profile.
+  virtual bool IsSelectionPromptEnabled() const;
+
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

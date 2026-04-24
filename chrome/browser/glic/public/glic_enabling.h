@@ -172,6 +172,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Whether the tab web contents contextual menu item is enabled.
   static bool IsContextualMenuItemEnabled(Profile* profile);
 
+  // Whether the selection prompt is enabled.
+  static bool IsSelectionPromptEnabledForProfile(Profile* profile);
+
   // Returns true if Glic is enabled for the profile, the feature is enabled,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
