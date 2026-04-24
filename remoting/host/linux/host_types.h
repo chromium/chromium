@@ -18,6 +18,9 @@ class HostType {
   static const base::flat_map<std::string_view, const HostType*>&
   GetHostTypes();
 
+  // Finds a host type by its name. Returns nullptr if not found.
+  static const HostType* Find(std::string_view name);
+
   // Prints the help message for all supported host types.
   static void PrintHostTypeHelp();
 

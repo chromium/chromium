@@ -66,6 +66,13 @@ HostType::GetHostTypes() {
 }
 
 // static
+const HostType* HostType::Find(std::string_view name) {
+  const auto& host_types = GetHostTypes();
+  auto it = host_types.find(name);
+  return it == host_types.end() ? nullptr : it->second;
+}
+
+// static
 void HostType::PrintHostTypeHelp() {
   std::cerr << "Supported host types:\n";
   for (const auto& [name, type] : GetHostTypes()) {
