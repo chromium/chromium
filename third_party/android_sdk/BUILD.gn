@@ -84,6 +84,7 @@ if (android_ndk_api_level >= 29) {
   config("libbinder_include") {
     # Use public SDK to ensure LGPL-licensed code can be built without the
     # internal SDK.
-    include_dirs = [ "$public_android_sdk_platform_root/optional/libbinder_ndk_cpp/" ]
+    include_dirs =
+        [ "$public_android_sdk_platform_root/optional/libbinder_ndk_cpp/" ]
   }
 }
