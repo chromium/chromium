@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -34,32 +35,6 @@ using ::testing::_;
 using ::testing::Exactly;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-class MockGlicKeyedService : public GlicKeyedService {
- public:
-  // TODO(crbug.com/500407600): Possibly deduplicate with other
-  // MockGlicKeyedServices.
-  MockGlicKeyedService(Profile* profile,
-                       signin::IdentityManager* identity_manager,
-                       ProfileManager* profile_manager,
-                       GlicProfileManager* glic_profile_manager,
-                       glic::ContextualCueingService* contextual_cueing_service,
-                       actor::ActorKeyedService* actor_keyed_service)
-      : GlicKeyedService(profile,
-                         identity_manager,
-                         profile_manager,
-                         glic_profile_manager,
-                         contextual_cueing_service,
-                         actor_keyed_service) {}
-  MOCK_METHOD(bool,
-              IsPanelShowingForBrowser,
-              (const BrowserWindowInterface&),
-              (const, override));
-  MOCK_METHOD(void,
-              InvokeWithAutoSubmit,
-              (InvokeWithAutoSubmitPasskey, GlicInvokeOptions),
-              (override));
-};
 
 class GlicCueTargetTest : public testing::Test {
  public:

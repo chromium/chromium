@@ -572,6 +572,7 @@ source_set("unit_tests") {
       "host/context/glic_page_features_manager_unittest.cc",
       "host/context/glic_pin_candidate_comparator_unittest.cc",
       "host/context/glic_screenshot_capturer_unittest.cc",
+      "host/context/glic_share_image_handler_unittest.cc",
       "host/context/glic_tab_data_unittest.cc",
       "host/glic_cookie_synchronizer_unittest.cc",
       "host/glic_web_contents_warming_pool_unittest.cc",

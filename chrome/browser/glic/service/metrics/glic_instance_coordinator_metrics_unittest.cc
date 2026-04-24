@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,31 +20,6 @@ namespace glic {
 namespace {
 
 using ::testing::Return;
-
-class MockGlicInstance : public GlicInstance {
- public:
-  MOCK_METHOD(bool, IsShowing, (), (const, override));
-  MOCK_METHOD(bool, IsActive, (), (override));
-  MOCK_METHOD(bool, IsAttached, (), (override));
-  MOCK_METHOD(void, AddStateObserver, (PanelStateObserver*), (override));
-  MOCK_METHOD(void, RemoveStateObserver, (PanelStateObserver*), (override));
-  MOCK_METHOD(mojom::PanelState, GetPanelState, (), (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterStateChange,
-              (StateChangeCallback),
-              (override));
-  MOCK_METHOD(Host&, host, (), (override));
-  MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
-  MOCK_METHOD(const InstanceId&, id, (), (const, override));
-  MOCK_METHOD(std::optional<std::string>,
-              conversation_id,
-              (),
-              (const, override));
-  MOCK_METHOD(base::Time, GetLastActivationTimestamp, (), (const, override));
-  MOCK_METHOD(base::TimeDelta, GetTimeSinceLastActive, (), (const, override));
-  MOCK_METHOD(void, OnSelectionAreasChanged, (int count), (override));
-  MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface * tab), (override));
-};
 
 class MockDataProvider : public GlicInstanceCoordinatorMetrics::DataProvider {
  public:

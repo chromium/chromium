@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -94,24 +95,16 @@ class NavigationParamsObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-class MockGlicKeyedService : public GlicKeyedService {
- public:
-  explicit MockGlicKeyedService(content::BrowserContext* context)
-      : GlicKeyedService(
-            Profile::FromBrowserContext(context),
-            IdentityManagerFactory::GetForProfile(
-                Profile::FromBrowserContext(context)),
-            g_browser_process->profile_manager(),
-            GlicProfileManager::GetInstance(),
-            ContextualCueingServiceFactory::GetForProfile(
-                Profile::FromBrowserContext(context)),
-            actor::ActorKeyedServiceFactory::GetActorKeyedService(context)) {}
-  MOCK_METHOD(void, Invoke, (GlicInvokeOptions), ());
-};
-
 std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
     content::BrowserContext* context) {
-  return std::make_unique<MockGlicKeyedService>(context);
+  return std::make_unique<MockGlicKeyedService>(
+      context,
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      g_browser_process->profile_manager(), GlicProfileManager::GetInstance(),
+      ContextualCueingServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(context));
 }
 
 void NavigateToURL(Browser* browser, const GURL& url) {

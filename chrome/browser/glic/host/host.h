@@ -301,7 +301,7 @@ class Host : public GlicSharingManagerProvider {
 
   // Whether the primary web client is connected. Guaranteed not to be true
   // until the initialize() handshake has completed.
-  bool IsWebClientConnected() const;
+  virtual bool IsWebClientConnected() const;
   bool IsContextAccessIndicatorEnabled() const;
 
   std::optional<mojom::InvocationSource> invocation_source() const {

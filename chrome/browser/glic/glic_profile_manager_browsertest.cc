@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -59,44 +60,6 @@
 
 namespace glic {
 namespace {
-
-class MockGlicKeyedService : public GlicKeyedService {
- public:
-  MockGlicKeyedService(content::BrowserContext* browser_context,
-                       signin::IdentityManager* identity_manager,
-                       ProfileManager* profile_manager,
-                       GlicProfileManager* glic_profile_manager,
-                       ContextualCueingService* contextual_cueing_service,
-                       actor::ActorKeyedService* actor_keyed_service)
-      : GlicKeyedService(Profile::FromBrowserContext(browser_context),
-                         identity_manager,
-                         profile_manager,
-                         glic_profile_manager,
-                         contextual_cueing_service,
-                         actor_keyed_service) {}
-  MOCK_METHOD(void, CloseFloatingPanel, (), (override));
-  MOCK_METHOD(void,
-              OpenFreDialogInNewTab,
-              (BrowserWindowInterface*, mojom::InvocationSource),
-              (override));
-  MOCK_METHOD(void,
-              ToggleUI,
-              (BrowserWindowInterface*,
-               bool,
-               mojom::InvocationSource,
-               std::optional<std::string>),
-              (override));
-
-  bool IsWindowDetached() const override { return detached_; }
-  void SetWindowDetached() { detached_ = true; }
-
-  bool IsWindowShowing() const override { return showing_; }
-  void SetWindowShowing() { showing_ = true; }
-
- private:
-  bool detached_ = false;
-  bool showing_ = false;
-};
 
 class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -264,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
   // Tell the mock glic to pretend that the window is open (otherwise, we won't
   // attempt to close it).
-  service0->SetWindowShowing();
+  service0->SetWindowShowing(true);
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.
@@ -300,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
   // Simulate showing detached for Profile 0.
   // Profile 0 should now be selected for launch.
-  service0->SetWindowDetached();
+  service0->SetWindowDetached(true);
   EXPECT_EQ(profile0, profile_manager->GetProfileForLaunch());
 }
 

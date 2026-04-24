@@ -548,6 +548,9 @@ GlicSharingManager& GlicInstanceImpl::sharing_manager() {
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
+  for (auto& observer : state_observers_) {
+    observer.OnInstanceDestroyed();
+  }
   VLOG(1) << "Glic [InstanceImpl] CloseInstanceAndShutdown, id=" << id_.value();
   if (actor_task_manager_) {
     // We have to do this here before the ActorKeyedService is shutdown.

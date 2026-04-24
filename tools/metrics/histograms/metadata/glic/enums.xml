@@ -980,7 +980,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ShareImageResult) -->
 
 <enum name="ShareImageResult">
-  <int value="0" label="kSuccess"/>
+  <int value="0" label="kSentImageToClient"/>
   <int value="1" label="kFailedNoTab"/>
   <int value="2" label="kFailedNoFrame"/>
   <int value="3" label="kFailedNoBrowser"/>
@@ -995,6 +995,11 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kFailedClipboardPastePolicy"/>
   <int value="13" label="kFailedNoInstance"/>
   <int value="14" label="kFailedClientUnreadied"/>
+  <int value="15" label="kFailedTimedOutNoInstance"/>
+  <int value="16" label="kFailedTimedOutNoWebClient"/>
+  <int value="17" label="kFailedTimedOutDidNotCompleteOnboarding"/>
+  <int value="18" label="kFailedLostInstance"/>
+  <int value="19" label="kFailedSawNavigationDidNotCompleteOnboarding"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->

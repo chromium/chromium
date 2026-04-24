@@ -689,7 +689,7 @@ void GlicMetrics::OnShareImageStarted() {
 
 void GlicMetrics::OnShareImageComplete(ShareImageResult result) {
   if (!share_image_start_time_.is_null() &&
-      result == ShareImageResult::kSuccess) {
+      result == ShareImageResult::kSentImageToClient) {
     base::UmaHistogramMediumTimes(
         "Glic.TabContext.ShareImageDuration",
         base::TimeTicks::Now() - share_image_start_time_);

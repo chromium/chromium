@@ -64,11 +64,14 @@ class PanelStateObserver : public base::CheckedObserver {
  public:
   virtual void PanelStateChanged(const mojom::PanelState& panel_state,
                                  const PanelStateContext& context) = 0;
+  virtual void OnInstanceDestroyed() {}
 };
 
 // Public interface for one instance of the glic web client.
 class GlicInstance {
  public:
+  virtual ~GlicInstance();
+
   virtual bool IsShowing() const = 0;
 
   virtual bool IsActive() = 0;

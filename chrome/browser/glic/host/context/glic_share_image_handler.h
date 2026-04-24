@@ -9,9 +9,11 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -42,7 +44,8 @@ class GlicKeyedService;
 
 // Manages the capturing of context images (i.e., images for which the user has
 // opened the context menu), and sending to the web client as additional data.
-class GlicShareImageHandler : public content::WebContentsObserver {
+class GlicShareImageHandler : public content::WebContentsObserver,
+                              public PanelStateObserver {
  public:
   explicit GlicShareImageHandler(GlicKeyedService& service);
   ~GlicShareImageHandler() override;
@@ -52,7 +55,14 @@ class GlicShareImageHandler : public content::WebContentsObserver {
                          content::RenderFrameHost* render_frame_host,
                          const GURL& src_url);
 
+  // PanelStateObserver implementation:
+  void PanelStateChanged(const mojom::PanelState& panel_state,
+                         const PanelStateContext& context) override;
+  void OnInstanceDestroyed() override;
+
  private:
+  friend class GlicShareImageHandlerTest;
+
   // content::WebContentsObserver.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -88,11 +98,16 @@ class GlicShareImageHandler : public content::WebContentsObserver {
 
   // Performs the paste policy check. This is called by
   // `PerformPastePolicyCheckWhenReady` once the client is ready.
-  void DoPastePolicyCheck();
+  virtual void DoPastePolicyCheck();
 
   // Returns true if the glic client for the given tab is ready for context to
-  // be sent.
-  bool IsClientReady(tabs::TabInterface& tab);
+  // be sent. This also returns nullopt if the instance has changed.
+  virtual std::optional<bool> IsClientReady(tabs::TabInterface& tab);
+
+  // Gets the instance for the tab and verifies that it hasn't changed
+  // unexpectedly. Returns nullopt if the flow has failed due to an invalid
+  // instance change.
+  std::optional<GlicInstance*> GetAndVerifyInstance(tabs::TabInterface* tab);
 
   // Called when the end result of sharing is known. Sends context on success.
   void ShareComplete(ShareImageResult result);
@@ -133,6 +148,10 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   std::vector<uint8_t> thumbnail_data_;
   base::CallbackListSubscription will_discard_web_contents_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
+  base::ScopedObservation<GlicInstance, PanelStateObserver>
+      instance_observation_{this};
+  InstanceId instance_id_ = InstanceId::CreateNullId();
+  bool instance_change_permitted_ = true;
 
   // This is used for communicating with the renderer to capture image context.
   std::unique_ptr<mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>>

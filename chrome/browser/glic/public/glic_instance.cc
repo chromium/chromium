@@ -8,6 +8,8 @@
 
 namespace glic {
 
+GlicInstance::~GlicInstance() = default;
+
 InstanceId InstanceId::Create(uint64_t glic_instance_coordinator_id,
                               uint32_t index) {
   return InstanceId(

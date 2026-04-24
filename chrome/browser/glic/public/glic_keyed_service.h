@@ -268,14 +268,14 @@ class GlicKeyedService : public KeyedService,
   bool IsMediaRequestFromGlic(const std::string& request_id) const;
 
   // Get the GlicInstance for a provided tab, or null if there is none.
-  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
+  virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
 
   // Sends additional context to the web client associated with the given tab.
   // If no web client exists for the tab, then this method does nothing. It is
   // the responsibility of the caller to ensure that a host exists before
   // calling this method.
-  void SendAdditionalContext(tabs::TabHandle tab_handle,
-                             mojom::AdditionalContextPtr context);
+  virtual void SendAdditionalContext(tabs::TabHandle tab_handle,
+                                     mojom::AdditionalContextPtr context);
 
   GlicTabDataObserver& tab_data_observer() { return *tab_data_observer_; }
   GlicTabFaviconObserver& tab_favicon_observer() {
