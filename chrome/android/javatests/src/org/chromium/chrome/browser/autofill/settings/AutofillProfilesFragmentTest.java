@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -1449,7 +1449,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testAutofillAiEntities_opensEditorOnAddClick() throws Exception {
+    public void testAutofillAiEntities_opensEditorOnAddClickForLocalEntity() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -1476,7 +1476,59 @@ public class AutofillProfilesFragmentTest {
                             return category.findPreference("Vehicle" + " Add");
                         });
         assertNotNull(addVehicle);
+        int callCount = rule.mClickUpdate.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        rule.mClickUpdate.waitForCallback(callCount);
+
+        onView(withText("Add Vehicle")).check(matches(isDisplayed()));
+
+        // Click the "Done" button.
+        onView(withText("Done")).perform(click());
+        verify(sEntityDataManager)
+                .addOrUpdateEntityInstance(
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
+                        eq(R.string.done),
+                        any());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_opensEditorOnAddClickForWalletEntity() throws Exception {
+        EntityType vehicleType =
+                TestUtils.getVehicleEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Collections.emptyList());
+
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the new mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference addVehicle =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PreferenceCategory category =
+                                    sSettingsActivityTestRule
+                                            .getFragment()
+                                            .findPreference("Vehicle");
+                            return category.findPreference("Vehicle" + " Add");
+                        });
+        assertNotNull(addVehicle);
+        int callCount = rule.mClickUpdate.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        rule.mClickUpdate.waitForCallback(callCount);
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 
@@ -1486,7 +1538,10 @@ public class AutofillProfilesFragmentTest {
         ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(sEntityDataManager)
                 .addOrUpdateEntityInstance(
-                        any(), anyInt(), anyInt(), localSaveFallbackCaptor.capture());
+                        any(),
+                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.done),
+                        localSaveFallbackCaptor.capture());
 
         ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
 
@@ -1594,7 +1649,9 @@ public class AutofillProfilesFragmentTest {
                             return category.findPreference("Vehicle" + " Add");
                         });
         assertNotNull(addVehicle);
+        int callCount = rule.mClickUpdate.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        rule.mClickUpdate.waitForCallback(callCount);
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 
@@ -1640,7 +1697,9 @@ public class AutofillProfilesFragmentTest {
                             return category.findPreference("Vehicle" + " Add");
                         });
         assertNotNull(addVehicle);
+        int callCount = rule.mClickUpdate.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
+        rule.mClickUpdate.waitForCallback(callCount);
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 

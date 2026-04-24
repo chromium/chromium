@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordin
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.common.EditorViewBase;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -610,7 +611,8 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     public static void setObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
-        EditorDialogView.setEditorObserverForTest(sObserverForTest);
+        EditorDialogView.setEditorObserverForTest(sObserverForTest); // IN-TEST
+        EditorViewBase.setEditorObserverForTest(sObserverForTest); // IN-TEST
         ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
