@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,6 +64,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private ActorTask mActorTask;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     @Mock private Runnable mRegisterVoiceSearchRunnable;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -82,6 +85,8 @@ public class TabbedAdaptiveToolbarBehaviorTest {
 
     @Before
     public void setUp() {
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         Activity activity = Robolectric.setupActivity(Activity.class);
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -109,9 +114,9 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testResultFilterWithGlicEnabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
-
         assertTopResult(
                 /* segmentationResults= */ List.of(
                         AdaptiveToolbarButtonVariant.SHARE, AdaptiveToolbarButtonVariant.GLIC),

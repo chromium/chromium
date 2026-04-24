@@ -58,6 +58,7 @@ android_library("java") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

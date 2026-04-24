@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -113,8 +114,8 @@ public interface AdaptiveToolbarBehavior {
             }
 
             @Override
-            public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
-                return AdaptiveToolbarFeatures.getDefaultButtonVariant(context);
+            public @AdaptiveToolbarButtonVariant int getSegmentationDefault(Profile profile) {
+                return AdaptiveToolbarFeatures.getDefaultButtonVariant(context, profile);
             }
         };
     }
@@ -132,9 +133,10 @@ public interface AdaptiveToolbarBehavior {
             sValidButtons.addAll(COMMON_BUTTONS);
             sValidButtons.add(AdaptiveToolbarButtonVariant.NEW_TAB);
             sValidButtons.add(AdaptiveToolbarButtonVariant.VOICE);
-            if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
-                sValidButtons.add(AdaptiveToolbarButtonVariant.GLIC);
-            }
+        }
+
+        if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+            sValidButtons.add(AdaptiveToolbarButtonVariant.GLIC);
         }
 
         List<Integer> validResults = new ArrayList<>();
@@ -167,5 +169,5 @@ public interface AdaptiveToolbarBehavior {
 
     /** Returns the default button variant when none of the predicted results cannot be chosen. */
     @AdaptiveToolbarButtonVariant
-    int getSegmentationDefault();
+    int getSegmentationDefault(Profile profile);
 }

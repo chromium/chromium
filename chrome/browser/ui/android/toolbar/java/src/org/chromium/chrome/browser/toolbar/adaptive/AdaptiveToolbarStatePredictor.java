@@ -123,7 +123,7 @@ public class AdaptiveToolbarStatePredictor {
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         readFromSegmentationPlatform(
                 segmentSelectionResults -> {
-                    int defaultSegment = mBehavior.getSegmentationDefault();
+                    int defaultSegment = mBehavior.getSegmentationDefault(mProfile);
                     UiState uiState =
                             new UiState(
                                     AdaptiveToolbarFeatures.isCustomizationEnabled(),
@@ -254,7 +254,7 @@ public class AdaptiveToolbarStatePredictor {
     private @AdaptiveToolbarButtonVariant int replaceVariantIfDisabled(
             @AdaptiveToolbarButtonVariant int variant) {
         if (isVariantEnabled(variant)) return variant;
-        variant = mBehavior.getSegmentationDefault();
+        variant = mBehavior.getSegmentationDefault(mProfile);
         if (isVariantEnabled(variant)) return variant;
         // Fallback in the unlikely situation the default is disabled.
         return AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -270,7 +270,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return AdaptiveToolbarFeatures.isTranslateEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.GLIC:
-                return AdaptiveToolbarFeatures.isGlicActionEnabled();
+                return AdaptiveToolbarFeatures.isGlicEnabledForProfile(mProfile);
             default:
                 return true;
         }

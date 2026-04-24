@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
@@ -172,14 +173,22 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.sCpaTabGroupingButton.isEnabled();
     }
 
+    /** Returns whether Glic is enabled by flags in the context of the adaptive toolbar. */
     public static boolean isGlicActionEnabled() {
         // TODO(crbug.com/500410559): Remove side panel check and instead check if tab strip is
         // hidden after launch.
         return ChromeFeatureList.sGlic.isEnabled() && !AndroidSidePanelEnabledFn.isEnabled();
     }
 
+    /**
+     * Returns whether Glic is enabled for the given profile in the context of the adaptive toolbar.
+     */
+    public static boolean isGlicEnabledForProfile(Profile profile) {
+        return GlicEnabling.isEnabledForProfile(profile) && !AndroidSidePanelEnabledFn.isEnabled();
+    }
+
     public static boolean shouldForciblyShowGlicButton(Context context, Profile profile) {
-        if (!isGlicActionEnabled() || BottomBarConfigUtils.isBottomBarEnabled(context)) {
+        if (!isGlicEnabledForProfile(profile) || BottomBarConfigUtils.isBottomBarEnabled(context)) {
             return false;
         }
         ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
@@ -197,8 +206,9 @@ public class AdaptiveToolbarFeatures {
      *
      * @param context {@link Context} object.
      */
-    public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(Context context) {
-        if (isGlicActionEnabled()) {
+    public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(
+            Context context, Profile profile) {
+        if (isGlicEnabledForProfile(profile)) {
             return AdaptiveToolbarButtonVariant.GLIC;
         }
         if (sDefaultSegmentForTesting != null) {

@@ -45,6 +45,8 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -79,6 +81,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Profile mProfile;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private Tab mTab;
     @Mock private Configuration mConfiguration;
 
@@ -88,6 +91,8 @@ public class AdaptiveToolbarButtonControllerTest {
 
     @Before
     public void setUp() {
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         ButtonSpec buttonSpec =

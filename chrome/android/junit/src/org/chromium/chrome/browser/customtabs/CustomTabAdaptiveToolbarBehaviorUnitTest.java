@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.feature_engagement.Tracker;
@@ -269,13 +270,13 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         assertEquals(
                 "The default should be OPEN_IN_BROWSER",
                 OPEN_IN_BROWSER,
-                mBehavior.getSegmentationDefault());
+                mBehavior.getSegmentationDefault(Mockito.mock(Profile.class)));
 
         initBehavior(List.of(openInBrowser));
         assertEquals(
                 "The default should be UNKNOWN after dedup",
                 UNKNOWN,
-                mBehavior.getSegmentationDefault());
+                mBehavior.getSegmentationDefault(Mockito.mock(Profile.class)));
     }
 
     @Test

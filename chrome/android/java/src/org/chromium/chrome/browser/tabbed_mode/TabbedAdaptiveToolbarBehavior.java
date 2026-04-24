@@ -187,7 +187,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     }
 
     @Override
-    public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
-        return AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext);
+    public @AdaptiveToolbarButtonVariant int getSegmentationDefault(Profile profile) {
+        return AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext, profile);
     }
 }

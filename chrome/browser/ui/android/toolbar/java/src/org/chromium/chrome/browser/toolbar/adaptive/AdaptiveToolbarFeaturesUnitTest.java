@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,8 @@ import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,11 +46,14 @@ public class AdaptiveToolbarFeaturesUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
     private Context mContext;
 
     @Before
     public void setUp() {
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         mContext = ApplicationProvider.getApplicationContext();
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
     }

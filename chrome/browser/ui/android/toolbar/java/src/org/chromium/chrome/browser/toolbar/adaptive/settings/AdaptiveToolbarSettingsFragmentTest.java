@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.adaptive.settings;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
@@ -33,6 +34,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -63,6 +66,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private GlicEnabling.Natives mGlicEnablingNatives;
 
     private ChromeSwitchPreference mSwitchPreference;
     private RadioButtonGroupAdaptiveToolbarPreference mRadioPreference;
@@ -71,6 +75,9 @@ public class AdaptiveToolbarSettingsFragmentTest {
     public void setUpTest() throws Exception {
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
+
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(mProfile)).thenReturn(true);
 
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);

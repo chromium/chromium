@@ -240,11 +240,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     @Override
     protected boolean shouldShowButton(@Nullable Tab tab) {
-        // TODO(crbug.com/499354469): Add proper checks for glic availability.
-        if (!AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+        if (tab == null || tab.isOffTheRecord() || UrlUtilities.isNtpUrl(tab.getUrl())) {
             return false;
         }
-        if (tab == null || tab.isOffTheRecord() || UrlUtilities.isNtpUrl(tab.getUrl())) {
+        // TODO(crbug.com/499354469): Add proper checks for glic availability.
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForProfile(tab.getProfile())) {
             return false;
         }
         return super.shouldShowButton(tab);

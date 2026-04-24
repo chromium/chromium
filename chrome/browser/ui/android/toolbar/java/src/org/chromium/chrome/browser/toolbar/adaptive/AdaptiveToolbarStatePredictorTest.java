@@ -27,6 +27,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +52,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @Mock private Profile mProfile;
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
     @Mock private PrefService mPrefService;
+    @Mock private GlicEnabling.Natives mGlicEnablingNatives;
 
     @Before
     public void setUp() {
@@ -58,6 +61,8 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         UserPrefs.setPrefServiceForTesting(mPrefService);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingNatives);
+        when(mGlicEnablingNatives.isEnabledForProfile(mProfile)).thenReturn(true);
     }
 
     @After

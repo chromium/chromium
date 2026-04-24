@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -242,6 +243,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
     }
 
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     @Override
     public void onStart() {
         super.onStart();
@@ -267,6 +269,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updatePreferences();
     }
 
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     @Override
     public void onStop() {
         super.onStop();
@@ -763,13 +766,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 /* managePasskeys= */ false);
     }
 
-    private static boolean shouldShowGlicPreference() {
-        return ChromeFeatureList.sGlic.isEnabled();
+    private static boolean shouldShowGlicPreference(Profile profile) {
+        return GlicEnabling.shouldShowSettingsPage(profile);
     }
 
-    // TODO(crbug.com/481386779): Replace it with glic_enabling.
     private void updateGlicPreference() {
-        if (shouldShowGlicPreference()) {
+        if (shouldShowGlicPreference(getProfile())) {
             addPreferenceIfAbsent(PREF_GLIC);
         } else {
             removePreferenceIfPresent(PREF_GLIC);
@@ -1021,7 +1023,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowDefaultBrowserSetting()) {
                         indexData.removeEntry(getUniqueId(PREF_DEFAULT_BROWSER));
                     }
-                    if (!shouldShowGlicPreference()) {
+                    if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
                     }
 

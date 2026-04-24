@@ -68,6 +68,7 @@ public class GlicToolbarButtonControllerTest {
     @Mock private ButtonDataProvider.ButtonDataObserver mObserver;
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
     private Context mContext;
@@ -85,7 +86,9 @@ public class GlicToolbarButtonControllerTest {
                         ObservableSuppliers.alwaysFalse());
         when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserControlsVisibilityDelegate);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfile)).thenReturn(mGlicKeyedService);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         mController =
                 new GlicToolbarButtonController(
                         mContext,
