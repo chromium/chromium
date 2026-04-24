@@ -12998,6 +12998,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabsFromOtherDevicesSidePanelName,
      flag_descriptions::kTabsFromOtherDevicesSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabsFromOtherDevicesSidePanel)},
+    {"user-media-element", flag_descriptions::kUserMediaElementName,
+     flag_descriptions::kUserMediaElementDescription,
+     kOsMac | kOsWin | kOsLinux | kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kUserMediaElement)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

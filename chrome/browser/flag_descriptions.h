@@ -7813,6 +7813,11 @@ inline constexpr char kTrafficCountersForWiFiTestingDescription[] =
 inline constexpr char kUploadOfficeToCloudName[] =
     "Enable Office files upload workflow.";
 
+inline constexpr char kUserMediaElementName[] = "UserMediaElement";
+inline constexpr char kUserMediaElementDescription[] =
+    "Enables the <usermedia> element, allowing sites to embed a "
+    "camera/microphone permission request directly in the page.";
+
 inline constexpr char kUserMediaScreenCapturingName[] =
     "User Media Screen Capturing";
 inline constexpr char kUserMediaScreenCapturingDescription[] =

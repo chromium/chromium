@@ -16297,6 +16297,7 @@ from previous Chrome versions.
   <int value="727270087" label="PromosOnLocalNtp:enabled"/>
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>
+  <int value="728172566" label="UserMediaElement:enabled"/>
   <int value="728463882"
       label="ForceSupervisedSigninWithCapabilities:disabled"/>
   <int value="728550541"
@@ -19973,6 +19974,7 @@ from previous Chrome versions.
   <int value="1933282728" label="OmniboxUICuesForSearchHistoryMatches:enabled"/>
   <int value="1933376478" label="IsolatePrerenders:enabled"/>
   <int value="1933612277" label="EnablePortBoundCookies:disabled"/>
+  <int value="1934067725" label="UserMediaElement:disabled"/>
   <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
   <int value="1935448090"
