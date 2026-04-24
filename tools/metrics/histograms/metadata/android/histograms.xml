@@ -9315,18 +9315,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil"
-    enum="BooleanAllowed" expires_after="2024-11-03">
-  <owner>torne@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records when we allow a cross origin push state from a file URL solely
-    because AllowUniversalAccessFromFileURLs is enabled. This is logged from the
-    implementation of history.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.WebView.UniversalAccess.OriginUrlMismatchInRenderFrame"
     enum="BooleanAllowed" expires_after="2023-12-10">
   <owner>torne@chromium.org</owner>

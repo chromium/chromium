@@ -27,7 +27,6 @@
 
 #include <optional>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -352,12 +351,6 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
       full_url, window->GetSecurityOrigin(), window->Url());
 
   if (window->GetSecurityOrigin()->IsGrantedUniversalAccess()) {
-    // Log the case when 'pushState'/'replaceState' is allowed only because
-    // of IsGrantedUniversalAccess ie there is no other condition which should
-    // allow the change (!can_change).
-    base::UmaHistogramBoolean(
-        "Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil",
-        !can_change);
     can_change = true;
   }
 
