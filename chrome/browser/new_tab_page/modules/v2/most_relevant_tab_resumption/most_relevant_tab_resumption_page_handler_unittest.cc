@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,8 +16,6 @@
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -23,6 +23,7 @@
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,31 +59,43 @@ void ExpectURLTypesInFetchOptions(const FetchOptions& options,
 
 }  // namespace
 
-class MostRelevantTabResumptionPageHandlerTest
-    : public BrowserWithTestWindowTest {
+class MostRelevantTabResumptionPageHandlerTest : public testing::Test {
  public:
   MostRelevantTabResumptionPageHandlerTest() = default;
 
   void RemoveOldDismissedTabs() { Handler()->RemoveOldDismissedTabs(); }
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(
+        VisitedURLRankingServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              visited_url_ranking::MockVisitedURLRankingService>();
+        }));
+    profile_ = builder.Build();
     InitializeHandler();
   }
 
   void InitializeHandler() {
-    web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile()));
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
     handler_ = std::make_unique<MostRelevantTabResumptionPageHandler>(
         mojo::PendingReceiver<
             ntp::most_relevant_tab_resumption::mojom::PageHandler>(),
-        web_contents_.get());
+        web_contents_);
   }
 
   void ClearHandler() {
     handler_.reset();
-    web_contents_.reset();
+    if (web_contents_) {
+      content::WebContents* raw_web_contents = web_contents_.get();
+      web_contents_ = nullptr;
+      web_contents_factory_.DestroyWebContents(raw_web_contents);
+    }
   }
+
+  TestingProfile* profile() { return profile_.get(); }
 
   std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
   RunGetURLVisits() {
@@ -105,26 +118,15 @@ class MostRelevantTabResumptionPageHandlerTest
 
   void TearDown() override {
     ClearHandler();
-    BrowserWithTestWindowTest::TearDown();
   }
 
   MostRelevantTabResumptionPageHandler* Handler() { return handler_.get(); }
 
  private:
-  // BrowserWithTestWindowTest:
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {
-        TestingProfile::TestingFactory{
-            VisitedURLRankingServiceFactory::GetInstance(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  visited_url_ranking::MockVisitedURLRankingService>();
-            })},
-    };
-  }
-
-  std::unique_ptr<content::WebContents> web_contents_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<MostRelevantTabResumptionPageHandler> handler_;
 };
 
