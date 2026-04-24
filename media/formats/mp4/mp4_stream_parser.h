@@ -182,6 +182,9 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
 
   // Tracks the number of MEDIA_LOGS for video keyframe MP4<->frame mismatch.
   int num_video_keyframe_mismatches_;
+
+  // Tracks the number of MEDIA_LOGS for SEI recovery point keyframe promotions.
+  int num_sei_recovery_point_promotions_;
 };
 
 }  // namespace media::mp4

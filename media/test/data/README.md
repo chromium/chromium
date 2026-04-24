@@ -1904,3 +1904,34 @@ AUD-SEI-SPS-PPS-IDR-AUD-nIDR
 and then I doubled the file by concatenating itself to it's own end. The h264
 megablocks inside are also scrambled up intentionally. This process was very
 manual.
+
+#### bear-320x240-v-2fragments-open-gop_frag.mp4
+
+Video-only fragmented MP4 with open-GOP H.264 content. Contains two fragments:
+- Fragment 1: IDR keyframe + 23 non-keyframes
+- Fragment 2: SEI recovery point (recovery_frame_cnt=0) + 25 non-keyframes (no IDR)
+
+Used to test that non-IDR frames with SEI recovery points are correctly
+promoted to keyframes for MSE random access (kMediaSourceSeiRecoveryPointKeyframe).
+
+Generated with:
+
+    ffmpeg -y -f lavfi -i "testsrc2=size=320x240:rate=24:duration=2" \
+        -c:v libx264 -preset fast -profile:v high -level 41 \
+        -x264-params "keyint=24:min-keyint=24:bframes=3:open-gop=1" \
+        -pix_fmt yuv420p -an \
+        -movflags +frag_keyframe+empty_moov+default_base_moof \
+        bear-320x240-v-2fragments-open-gop_frag.mp4
+
+#### bear-320x240-v-2fragments-open-gop_frag-cenc.mp4
+
+CENC encrypted version of bear-320x240-v-2fragments-open-gop_frag.mp4.
+Used to test that SEI recovery point keyframe promotion is NOT applied
+to encrypted content.
+
+Generated with Bento4's mp4encrypt:
+
+    mp4encrypt --method MPEG-CENC \
+        --key 1:00000000000000000000000000000001:00000000000000000000000000000000 \
+        bear-320x240-v-2fragments-open-gop_frag.mp4 \
+        bear-320x240-v-2fragments-open-gop_frag-cenc.mp4

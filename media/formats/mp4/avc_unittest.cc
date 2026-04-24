@@ -9,11 +9,14 @@
 #include <string.h>
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <ostream>
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -529,6 +532,246 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
     EXPECT_EQ(test_case.expected, AnnexBToString(buf, subsamples))
         << "'" << test_case.input << "' generated unexpected output.";
   }
+}
+
+// Verify that SPS/PPS injection works for SEI recovery point frames.
+// This tests the behavior that ConvertAndAnalyzeFrame uses: when
+// is_sei_recovery_point is true, SPS/PPS should be injected so the hardware
+// decoder can initialize after a seek/reset.
+TEST_F(AVCConversionTest, InsertParamSetsForRecoveryPointFrame) {
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
+
+  AVCDecoderConfigurationRecord avc_config;
+  avc_config.sps_list.resize(1);
+  avc_config.sps_list[0].push_back(0x67);
+  avc_config.sps_list[0].push_back(0x12);
+  avc_config.pps_list.resize(1);
+  avc_config.pps_list[0].push_back(0x68);
+  avc_config.pps_list[0].push_back(0x56);
+  avc_config.pps_list[0].push_back(0x78);
+
+  // Build an Annex B frame with SEI recovery point + non-IDR slice.
+  std::vector<uint8_t> buf = {
+      // Start code + SEI NALU.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x06,
+      0x06,
+      0x01,
+      0x84,
+      0x80,
+      // Start code + non-IDR slice.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x01,
+      0x32,
+      0x12,
+  };
+  std::vector<SubsampleEntry> subsamples;
+
+  // Analyze first to confirm it's a recovery point.
+  auto analysis = AVC::AnalyzeAnnexB(buf, subsamples);
+  EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
+  EXPECT_FALSE(analysis.is_keyframe.value_or(true));
+
+  // Insert SPS/PPS (as ConvertAndAnalyzeFrame does for recovery points).
+  EXPECT_TRUE(AVC::InsertParamSetsAnnexB(avc_config, &buf, &subsamples));
+
+  // Verify SPS and PPS were injected before the SEI.
+  std::string annexb_str = AnnexBToString(buf, subsamples);
+  EXPECT_NE(annexb_str.find("SPS"), std::string::npos)
+      << "SPS not found in output: " << annexb_str;
+  EXPECT_NE(annexb_str.find("PPS"), std::string::npos)
+      << "PPS not found in output: " << annexb_str;
+}
+
+// Verify that a regular non-IDR frame (no SEI recovery point) is not
+// identified as a recovery point and would not trigger SPS/PPS injection.
+TEST_F(AVCConversionTest, RegularNonIDRNotRecoveryPoint) {
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
+
+  constexpr auto kNonIDRFrame = std::to_array<const uint8_t>({
+      // Start code + non-IDR slice.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      0x01,
+      0x32,
+      0x12,
+  });
+
+  auto result = AVC::AnalyzeAnnexB(kNonIDRFrame, {});
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(result.is_keyframe.has_value());
+  EXPECT_FALSE(result.is_keyframe.value());
+  // No SEI recovery point — SPS/PPS injection should NOT happen.
+  EXPECT_FALSE(result.is_sei_recovery_point.has_value());
+}
+
+// Builds an MP4 length-prefixed (length_size=4) AVC frame containing an SEI
+// recovery point NALU followed by a non-IDR slice NALU. This mirrors the
+// bitstream shape that triggers the SEI-recovery branch in
+// AVCBitstreamConverter::ConvertAndAnalyzeFrame.
+static std::vector<uint8_t> MakeLengthPrefixedSEIRecoveryFrame() {
+  return {
+      // 4-byte length = 5, then SEI NALU (type=6, payload type=6
+      // recovery_point, payload size=1, payload=0x84, RBSP trailing=0x80).
+      0x00,
+      0x00,
+      0x00,
+      0x05,
+      0x06,
+      0x06,
+      0x01,
+      0x84,
+      0x80,
+      // 4-byte length = 3, then non-IDR slice NALU (type=1, data).
+      0x00,
+      0x00,
+      0x00,
+      0x03,
+      0x01,
+      0x32,
+      0x12,
+  };
+}
+
+// Length-prefixed non-IDR frame without SEI recovery point. Used to verify
+// that ConvertAndAnalyzeFrame does NOT inject SPS/PPS for regular frames.
+static std::vector<uint8_t> MakeLengthPrefixedNonIDRFrame() {
+  return {
+      // 4-byte length = 3, then non-IDR slice NALU (type=1, data).
+      0x00, 0x00, 0x00, 0x03, 0x01, 0x32, 0x12,
+  };
+}
+
+static std::unique_ptr<AVCDecoderConfigurationRecord>
+MakeAvcConfigWithSpsPps() {
+  auto config = std::make_unique<AVCDecoderConfigurationRecord>();
+  config->length_size = 4;
+  config->sps_list.resize(1);
+  config->sps_list[0].push_back(0x67);
+  config->sps_list[0].push_back(0x12);
+  config->pps_list.resize(1);
+  config->pps_list[0].push_back(0x68);
+  config->pps_list[0].push_back(0x56);
+  config->pps_list[0].push_back(0x78);
+  return config;
+}
+
+// Clear content: ConvertAndAnalyzeFrame should inject SPS/PPS for a non-IDR
+// frame carrying an SEI recovery point, so the HW decoder can initialize
+// after a seek/reset.
+TEST_F(AVCConversionTest,
+       ConvertAndAnalyzeFrameInjectsParamSetsForSEIRecoveryInClearContent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kParseSEIRecoveryPoints, kMediaSourceSeiRecoveryPointKeyframe}, {});
+
+  auto converter =
+      base::MakeRefCounted<AVCBitstreamConverter>(MakeAvcConfigWithSpsPps());
+  std::vector<uint8_t> buf = MakeLengthPrefixedSEIRecoveryFrame();
+  std::vector<SubsampleEntry> subsamples;  // empty = clear content.
+  BitstreamConverter::AnalysisResult analysis;
+
+  EXPECT_TRUE(converter->ConvertAndAnalyzeFrame(&buf, /*is_keyframe=*/false,
+                                                &subsamples, &analysis));
+  EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
+
+  const std::string annexb_str = AnnexBToString(buf, subsamples);
+  EXPECT_NE(annexb_str.find("SPS"), std::string::npos)
+      << "Expected SPS injection in clear content: " << annexb_str;
+  EXPECT_NE(annexb_str.find("PPS"), std::string::npos)
+      << "Expected PPS injection in clear content: " << annexb_str;
+}
+
+// Regular non-IDR frame (no SEI recovery point): ConvertAndAnalyzeFrame must
+// NOT inject SPS/PPS. Only keyframes and SEI recovery point frames get
+// parameter set injection.
+TEST_F(AVCConversionTest,
+       ConvertAndAnalyzeFrameSkipsParamSetsForRegularNonIDRFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kParseSEIRecoveryPoints, kMediaSourceSeiRecoveryPointKeyframe}, {});
+
+  auto converter =
+      base::MakeRefCounted<AVCBitstreamConverter>(MakeAvcConfigWithSpsPps());
+  std::vector<uint8_t> buf = MakeLengthPrefixedNonIDRFrame();
+  std::vector<SubsampleEntry> subsamples;
+  BitstreamConverter::AnalysisResult analysis;
+
+  EXPECT_TRUE(converter->ConvertAndAnalyzeFrame(&buf, /*is_keyframe=*/false,
+                                                &subsamples, &analysis));
+  EXPECT_FALSE(analysis.is_sei_recovery_point.value_or(false));
+
+  const std::string annexb_str = AnnexBToString(buf, subsamples);
+  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+      << "SPS must not be injected for regular non-IDR frame: " << annexb_str;
+  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+      << "PPS must not be injected for regular non-IDR frame: " << annexb_str;
+}
+
+// Encrypted content: ConvertAndAnalyzeFrame must NOT inject SPS/PPS for an
+// SEI recovery point frame. Some older Intel/AMD HW decoders mishandle
+// SEI + SPS/PPS and encrypted streams lack the software decode fallback
+// needed to recover. See https://crbug.com/451536366.
+TEST_F(AVCConversionTest,
+       ConvertAndAnalyzeFrameSkipsParamSetsForSEIRecoveryInEncryptedContent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kParseSEIRecoveryPoints, kMediaSourceSeiRecoveryPointKeyframe}, {});
+
+  auto converter =
+      base::MakeRefCounted<AVCBitstreamConverter>(MakeAvcConfigWithSpsPps());
+  std::vector<uint8_t> buf = MakeLengthPrefixedSEIRecoveryFrame();
+  // Non-empty subsamples signals encrypted content. Entries must align with
+  // NAL boundaries so H264Parser can still parse the clear headers.
+  std::vector<SubsampleEntry> subsamples;
+  subsamples.emplace_back(/*clear_bytes=*/5u, /*cypher_bytes=*/4u);
+  subsamples.emplace_back(/*clear_bytes=*/5u, /*cypher_bytes=*/2u);
+  BitstreamConverter::AnalysisResult analysis;
+
+  EXPECT_TRUE(converter->ConvertAndAnalyzeFrame(&buf, /*is_keyframe=*/false,
+                                                &subsamples, &analysis));
+  EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
+
+  const std::string annexb_str = AnnexBToString(buf, subsamples);
+  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+      << "SPS must not be injected for encrypted SEI recovery: " << annexb_str;
+  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+      << "PPS must not be injected for encrypted SEI recovery: " << annexb_str;
+}
+
+// Flag kill-switch: when kMediaSourceSeiRecoveryPointKeyframe is disabled,
+// ConvertAndAnalyzeFrame must NOT inject SPS/PPS for an SEI recovery point
+// frame even on clear content. This mirrors the gate in mp4_stream_parser.cc
+// so a Finch rollback fully disables the new bitstream modification.
+TEST_F(AVCConversionTest,
+       ConvertAndAnalyzeFrameSkipsParamSetsForSEIRecoveryWhenFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kParseSEIRecoveryPoints},
+                                       {kMediaSourceSeiRecoveryPointKeyframe});
+
+  auto converter =
+      base::MakeRefCounted<AVCBitstreamConverter>(MakeAvcConfigWithSpsPps());
+  std::vector<uint8_t> buf = MakeLengthPrefixedSEIRecoveryFrame();
+  std::vector<SubsampleEntry> subsamples;  // empty = clear content.
+  BitstreamConverter::AnalysisResult analysis;
+
+  EXPECT_TRUE(converter->ConvertAndAnalyzeFrame(&buf, /*is_keyframe=*/false,
+                                                &subsamples, &analysis));
+  EXPECT_TRUE(analysis.is_sei_recovery_point.value_or(false));
+
+  const std::string annexb_str = AnnexBToString(buf, subsamples);
+  EXPECT_EQ(annexb_str.find("SPS"), std::string::npos)
+      << "SPS must not be injected when flag is disabled: " << annexb_str;
+  EXPECT_EQ(annexb_str.find("PPS"), std::string::npos)
+      << "PPS must not be injected when flag is disabled: " << annexb_str;
 }
 
 }  // namespace media::mp4

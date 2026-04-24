@@ -74,7 +74,7 @@ class MEDIA_EXPORT AVC {
 // with embedded NALU lengths into AnnexB bitstream format (described in ISO/IEC
 // 14496-10) with 4-byte start codes. It also knows how to handle CENC-encrypted
 // streams and adjusts subsample data for those streams while converting.
-class AVCBitstreamConverter : public BitstreamConverter {
+class MEDIA_EXPORT AVCBitstreamConverter : public BitstreamConverter {
  public:
   explicit AVCBitstreamConverter(
       std::unique_ptr<AVCDecoderConfigurationRecord> avc_config);

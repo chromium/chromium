@@ -140,6 +140,8 @@
 //media/test/data/bear-320x240-opus-a_enc-a.webm
 //media/test/data/bear-320x240-opus-av_enc-av.webm
 //media/test/data/bear-320x240-opus-av_enc-v.webm
+//media/test/data/bear-320x240-v-2fragments-open-gop_frag-cenc.mp4
+//media/test/data/bear-320x240-v-2fragments-open-gop_frag.mp4
 //media/test/data/bear-320x240-v-2frames-keyframe-is-non-sync-sample_frag-hevc.mp4
 //media/test/data/bear-320x240-v-2frames-nonkeyframe-is-sync-sample_frag-hevc.mp4
 //media/test/data/bear-320x240-v-2frames_frag-hevc.mp4

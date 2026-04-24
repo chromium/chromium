@@ -399,6 +399,94 @@ TEST_F(MP4StreamParserTest, AVC_NonKeyframeness_Mismatches_Container) {
                512);
 }
 
+TEST_F(MP4StreamParserTest, AVC_SEIRecoveryPointPromotedToKeyframe) {
+  // Open-GOP content: first fragment has IDR (keyframe), second fragment has
+  // SEI recovery point + non-IDR (promoted to keyframe by our fix).
+  // Without the fix, the second fragment's frames would all be non-keyframes
+  // and MSE would silently drop them after a seek.
+  //
+  // Note: This test uses unencrypted content. The keyframe promotion is scoped
+  // to clear (unencrypted) content only, since encrypted content may not
+  // support the software decode fallback needed on platforms where hardware
+  // decoders don't handle non-IDR recovery points correctly.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kParseSEIRecoveryPoints, kMediaSourceSeiRecoveryPointKeyframe}, {});
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  // The container marks the recovery point as sync, but bitstream analysis
+  // says non-IDR — this mismatch log fires. Then our promotion overrides.
+  EXPECT_MEDIA_LOG(DebugLog(
+      "ISO-BMFF container metadata for video frame indicates that the frame is "
+      "a keyframe, but the video frame contents indicate the opposite."));
+  EXPECT_MEDIA_LOG(InfoLog("Promoting non-IDR frame with SEI recovery point"));
+
+  // The test file has 48 frames: 24 in fragment 1 (1 IDR + 23 non-key) and
+  // 24 in fragment 2 (1 recovery point promoted to key + 23 non-key).
+  // Total: 2 keyframes, 46 non-keyframes.
+  verifying_keyframeness_sequence_ = true;
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kKeyframe)).Times(2);
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kNonKeyframe)).Times(46);
+
+  ParseMP4File("bear-320x240-v-2fragments-open-gop_frag.mp4", 512);
+}
+
+TEST_F(MP4StreamParserTest, AVC_SEIRecoveryPointNotPromotedWhenDisabled) {
+  // Same open-GOP content, but with the feature flag disabled.
+  // The recovery point frame should NOT be promoted to keyframe.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kParseSEIRecoveryPoints},
+                                       {kMediaSourceSeiRecoveryPointKeyframe});
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  // Container says sync but bitstream analysis overrides to non-keyframe.
+  EXPECT_MEDIA_LOG(DebugLog(
+      "ISO-BMFF container metadata for video frame indicates that the frame is "
+      "a keyframe, but the video frame contents indicate the opposite."));
+
+  // Only one keyframe (the IDR). The recovery point is NOT promoted, so
+  // 48 frames total: 1 keyframe, 47 non-keyframes.
+  verifying_keyframeness_sequence_ = true;
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kKeyframe)).Times(1);
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kNonKeyframe)).Times(47);
+
+  ParseMP4File("bear-320x240-v-2fragments-open-gop_frag.mp4", 512);
+}
+
+TEST_F(MP4StreamParserTest, AVC_SEIRecoveryPointNotPromotedWhenEncrypted) {
+  // Same open-GOP content but CENC encrypted. The keyframe promotion should
+  // NOT apply to encrypted content, since encrypted streams may not support
+  // the software decode fallback needed on platforms where hardware decoders
+  // don't handle non-IDR recovery points.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kParseSEIRecoveryPoints, kMediaSourceSeiRecoveryPointKeyframe}, {});
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_audio_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+
+  // Even with the feature enabled, encrypted content should not get the
+  // promotion. The mismatch log fires but no promotion log.
+  EXPECT_MEDIA_LOG(DebugLog(
+      "ISO-BMFF container metadata for video frame indicates that the frame is "
+      "a keyframe, but the video frame contents indicate the opposite."));
+
+  // Only one keyframe (the IDR). The recovery point is NOT promoted because
+  // the content is encrypted.
+  verifying_keyframeness_sequence_ = true;
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kKeyframe)).Times(1);
+  EXPECT_CALL(keyframeness_cb_, Run(Keyframeness::kNonKeyframe)).Times(47);
+
+  ParseMP4File("bear-320x240-v-2fragments-open-gop_frag-cenc.mp4", 512);
+}
+
 TEST_F(MP4StreamParserTest, MPEG2_AAC_LC) {
   InSequence s;
   base::flat_set<int> audio_object_types;

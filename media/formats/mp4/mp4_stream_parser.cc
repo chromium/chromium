@@ -46,6 +46,7 @@ namespace {
 const int kMaxEmptySampleLogs = 20;
 const int kMaxInvalidConversionLogs = 20;
 const int kMaxVideoKeyframeMismatchLogs = 10;
+const int kMaxSEIRecoveryPointPromotionLogs = 10;
 
 // Caller should be prepared to handle return of EncryptionScheme::kUnencrypted
 // in case of unsupported scheme.
@@ -189,7 +190,8 @@ MP4StreamParser::MP4StreamParser(
       has_dv_(has_dv),
       num_empty_samples_skipped_(0),
       num_invalid_conversions_(0),
-      num_video_keyframe_mismatches_(0) {}
+      num_video_keyframe_mismatches_(0),
+      num_sei_recovery_point_promotions_(0) {}
 
 MP4StreamParser::~MP4StreamParser() = default;
 
@@ -1167,6 +1169,28 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
         // implement keyframe analysis in their frame_bitstream_converter, we'll
         // similarly trust that analysis instead of the mp4.
         is_keyframe = analysis.is_keyframe.value();
+      }
+
+      // Treat frames with SEI recovery points (recovery_frame_cnt == 0) as
+      // keyframes for MSE random access purposes. This enables playback of
+      // open-GOP H.264 content where non-IDR I-frames are used as random
+      // access points. SPS/PPS parameter sets are injected for these frames
+      // in ConvertAndAnalyzeFrame() so the hardware decoder can initialize
+      // after a seek/reset. The H.264 GPU decoder already supports resuming
+      // from SEI recovery points (see h264_decoder.cc).
+      //
+      // Scoped to unencrypted content only: encrypted streams may not support
+      // the software decode fallback needed on platforms where hardware
+      // decoders don't handle non-IDR recovery points (some older Intel/AMD
+      // devices mishandle SEI + SPS/PPS). See https://crbug.com/451536366.
+      if (!is_keyframe && analysis.is_sei_recovery_point.value_or(false) &&
+          !runs_->is_encrypted() &&
+          base::FeatureList::IsEnabled(kMediaSourceSeiRecoveryPointKeyframe)) {
+        LIMITED_MEDIA_LOG(INFO, media_log_, num_sei_recovery_point_promotions_,
+                          kMaxSEIRecoveryPointPromotionLogs)
+            << "Promoting non-IDR frame with SEI recovery point to keyframe "
+               "for MSE random access.";
+        is_keyframe = true;
       }
     }
   } else if (buffer_type == DemuxerStream::AUDIO) {

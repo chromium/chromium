@@ -415,10 +415,16 @@ bool AVCBitstreamConverter::ConvertAndAnalyzeFrame(
   // |analysis_result|.
   *analysis_result = Analyze(*frame_buf, subsamples);
 
-  if (analysis_result->is_keyframe.value_or(is_keyframe)) {
-    // If this is a keyframe, we (re-)inject SPS and PPS headers at the start of
-    // a frame. If subsample info is present, we also update the clear byte
-    // count for that first subsample.
+  // See https://crbug.com/451536366.
+  const bool encrypted = subsamples && !subsamples->empty();
+  const bool inject_for_sei_recovery_point =
+      analysis_result->is_sei_recovery_point.value_or(false) && !encrypted &&
+      base::FeatureList::IsEnabled(kMediaSourceSeiRecoveryPointKeyframe);
+  if (analysis_result->is_keyframe.value_or(is_keyframe) ||
+      inject_for_sei_recovery_point) {
+    // (Re-)inject SPS and PPS headers for keyframes and SEI recovery point
+    // frames. Recovery point frames need parameter sets so the hardware decoder
+    // can initialize after a seek/reset, even though they are not IDR frames.
     RCHECK(AVC::InsertParamSetsAnnexB(*avc_config_, frame_buf, subsamples));
   }
 
