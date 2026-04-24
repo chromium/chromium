@@ -9537,6 +9537,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Window.OcclusionExperimental.MaxOfMinVisibleRectsDuration.{DimensionBucket}"
+    units="ms" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration spent in each bucket of the maximum of all the minimum
+    dimensions of visible rects for a window. This value gives a rough idea of
+    'how much a window is visible by'. For example, if a window has two visible
+    rects on the left and top sides with dimensions of 1000x20 and 50x1000,
+    respectively, then this metric value will be 50 and count towards the 31-50
+    bucket.
+
+    This metric is logged when the bucket changes for a WindowAndroid instance
+    or when the window is destroyed.
+  </summary>
+<!-- LINT.IfChange(DimensionBucket) -->
+
+  <token key="DimensionBucket">
+    <variant name="0" summary="0 pixels"/>
+    <variant name="1To10" summary="1 to 10 pixels"/>
+    <variant name="11To30" summary="11 to 30 pixels"/>
+    <variant name="31To50" summary="31 to 50 pixels"/>
+    <variant name="51To100" summary="51 to 100 pixels"/>
+    <variant name="101To200" summary="101 to 200 pixels"/>
+    <variant name="201Plus" summary="201+ pixels"/>
+    <variant name="FullyVisible" summary="Fully visible"/>
+  </token>
+<!-- LINT.ThenChange(//ui/android/java/src/org/chromium/ui/base/WindowAndroidOcclusionMetrics.java:DimensionBucket) -->
+
+</histogram>
+
 <histogram name="Android.Window.OcclusionExperimental.OccludedCount"
     units="count" expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

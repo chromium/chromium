@@ -288,6 +288,8 @@ public class WindowAndroid
     private long mOccludedPixels;
     private final long mCreationTimeMs;
 
+    private @Nullable WindowAndroidOcclusionMetrics mWindowAndroidOcclusionMetrics;
+
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
 
@@ -528,7 +530,10 @@ public class WindowAndroid
             return;
         }
 
-        // TODO(crbug.com/488882847) Use visibleRegion to record metrics.
+        if (mWindowAndroidOcclusionMetrics == null) {
+            mWindowAndroidOcclusionMetrics = new WindowAndroidOcclusionMetrics();
+        }
+        mWindowAndroidOcclusionMetrics.onOcclusionStateChanged(isOccluded, visibleRegion);
 
         updateOcclusionState(isOccluded, windowBounds);
     }
@@ -1143,10 +1148,14 @@ public class WindowAndroid
     @CalledByNative
     @Override
     public void destroy() {
+        long now = SystemClock.uptimeMillis();
         // This is safe to call even if the window was not occluded before destruction.
         onUnoccluded();
+        if (mWindowAndroidOcclusionMetrics != null) {
+            mWindowAndroidOcclusionMetrics.onDestroy();
+        }
 
-        long lifetimeMs = SystemClock.uptimeMillis() - mCreationTimeMs;
+        long lifetimeMs = now - mCreationTimeMs;
         if (lifetimeMs > 0 && mIsOcclusionTracked) {
             int percent = Math.round(mTotalOccludedTimeMs * 100f / lifetimeMs);
             // TODO(crbug.com/488882847): Rename to non-experimental once occlusion experiments are
