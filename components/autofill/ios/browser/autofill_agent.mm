@@ -719,9 +719,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
       suggestion.featureForIPH =
           SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
     } else if (popup_suggestion.iph_metadata.feature ==
-               &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
-      suggestion.featureForIPH = SuggestionFeatureForIPH::kPlusAddressCreation;
-    } else if (popup_suggestion.iph_metadata.feature ==
                &feature_engagement::
                    kIPHAutofillHomeWorkProfileSuggestionFeature) {
       suggestion.featureForIPH =
