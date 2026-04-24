@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -1851,6 +1852,15 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   cc::PropertyTrees& property_trees = *layers.property_trees();
 
+  // Any update to the display tree requires a new draw properties update if
+  // validation fails and returns early, because we may have already mutated
+  // some state (like taking render surfaces or resizing trees).
+  base::ScopedClosureRunner cleanup(base::BindOnce(
+      [](cc::LayerTreeImpl* layers) {
+        layers->set_needs_update_draw_properties();
+      },
+      &layers));
+
   std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
   property_trees.effect_tree_mutable().TakeRenderSurfaces(&old_render_surfaces);
 
@@ -2209,6 +2219,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     layers.MoveChangeTrackingToLayers();
   }
 
+  cleanup.ReplaceClosure(base::DoNothing());
   return base::ok();
 }
 

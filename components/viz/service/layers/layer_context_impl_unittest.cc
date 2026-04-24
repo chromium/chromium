@@ -18,6 +18,7 @@
 #include "cc/layers/nine_patch_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
+#include "cc/layers/render_surface_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
@@ -4835,6 +4836,44 @@ TEST_F(LayerContextImplTest, EmptyScrollTreeSucceeds) {
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+}
+
+TEST_F(LayerContextImplTest, DoUpdateDisplayTreeEarlyReturnUAF) {
+  // 1. Initial valid update to set up the tree and populate
+  // render_surface_list_.
+  auto update = CreateDefaultUpdate();
+  // The secondary root effect node created in ResetTestState() already has
+  // kRoot reason.
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+
+  // Trigger a draw to populate render_surface_list_.
+  layer_context_impl_->host_impl()->active_tree()->UpdateDrawProperties(
+      /*update_tiles=*/true, /*update_image_animation_controller=*/true);
+
+  const auto& render_surface_list =
+      layer_context_impl_->host_impl()->active_tree()->GetRenderSurfaceList();
+  ASSERT_FALSE(render_surface_list.empty());
+
+  // 2. A failing update that returns early in DoUpdateDisplayTree after
+  // TakeRenderSurfaces.
+  auto update2 = CreateDefaultUpdate();
+  // We can make UpdateTransformTreeProperties fail by setting an invalid
+  // page_scale_factor.
+  update2->transform_tree_update = mojom::TransformTreeUpdate::New();
+  update2->transform_tree_update->page_scale_factor = -1.0f;
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(), "Invalid page_scale_factor");
+
+  // 3. Check if needs_update_draw_properties() is true.
+  // If it's false, we have a UAF potential because render_surface_list still
+  // has pointers to freed surfaces.
+  EXPECT_TRUE(layer_context_impl_->host_impl()
+                  ->active_tree()
+                  ->needs_update_draw_properties());
 }
 
 }  // namespace
