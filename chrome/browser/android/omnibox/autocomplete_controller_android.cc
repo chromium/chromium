@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
+#include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -68,6 +69,7 @@
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/search_engines/android/template_url_android.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -592,6 +594,30 @@ void AutocompleteControllerAndroid::CreateNavigationObserver(
 
   ChromeOmniboxNavigationObserverAndroid::Create(navigation_handle, profile_,
                                                  input_.text(), match);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+AutocompleteControllerAndroid::GetTemplateUrlForText(
+    JNIEnv* env,
+    const std::u16string& text) {
+  if (!autocomplete_controller_ ||
+      !autocomplete_controller_->keyword_provider()) {
+    return nullptr;
+  }
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+
+  // KeywordProvider::GetTemplateURLForText handles text splitting, is_active,
+  // and validity checks
+  const TemplateURL* template_url =
+      autocomplete_controller_->keyword_provider()->GetTemplateUrlForText(
+          text, template_url_service);
+
+  if (!template_url) {
+    return nullptr;
+  }
+
+  return CreateTemplateUrlAndroid(env, template_url);
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()

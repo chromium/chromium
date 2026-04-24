@@ -205,7 +205,7 @@ public class AutocompleteCoordinatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn("bing").when(mTemplateUrl).getKeyword();
         doReturn("Bing").when(mTemplateUrl).getShortName();
-        doReturn(mTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("bing");
+        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         // Mock PreloadingFeatureMap to prevent crash during onSuggestionsReceived.
         PreloadingFeatureMap.setInstanceForTesting(mPreloadingFeatureMap);

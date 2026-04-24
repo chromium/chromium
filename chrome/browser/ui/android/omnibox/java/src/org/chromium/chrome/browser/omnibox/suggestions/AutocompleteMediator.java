@@ -1189,7 +1189,7 @@ class AutocompleteMediator
         }
 
         // Determine the keyword for site-search
-        String keyword = null;
+        @Nullable TemplateUrl templateUrl = null;
 
         if (source == SiteSearchActivationSource.SPACE) {
             if (!UserPrefs.get(profile).getBoolean(KEYWORD_SPACE_TRIGGERING_ENABLED_PREF)) {
@@ -1197,27 +1197,11 @@ class AutocompleteMediator
             }
 
             String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-            if (text.isEmpty()) {
-                return false;
-            }
+            if (text.isEmpty()) return false;
 
-            String trimmedText = text.trim();
-            String[] parts = trimmedText.split(" ", 2);
-            String potentialKeyword = parts[0];
+            // Pass full text, C++ handles the splitting and lookup
+            templateUrl = mAutocomplete.getTemplateUrlForText(text);
 
-            if (service.getTemplateUrlForKeyword(potentialKeyword) != null) {
-                // Case 1: First word is a registered keyword (e.g. "cr abc"). We trigger SiteSearch
-                // for "cr" and will extract query "abc" inside onKeywordModeEntered.
-                keyword = potentialKeyword;
-            } else if (trimmedText.contains(" ")) {
-                // Case 2: Multiple words but first isn't keyword (e.g. "foo bar baz"). Normal
-                // query.
-                return false;
-            } else {
-                // Case 3: No space, not a keyword yet. Keep it as whole (e.g. "crabc") as it might
-                // match a prefix later.
-                keyword = trimmedText;
-            }
         } else if (source == SiteSearchActivationSource.TAB) {
             AutocompleteResult result = mAutocompleteResult;
             if (result == null || result.getSuggestionsList().isEmpty()) {
@@ -1225,19 +1209,18 @@ class AutocompleteMediator
             }
 
             AutocompleteMatch match = result.getSuggestionsList().get(0);
-            keyword = match.getAssociatedKeyword();
+            String keyword = match.getAssociatedKeyword();
+            if (keyword == null) return false;
+
+            // Pass the specific keyword from the suggestion
+            templateUrl = mAutocomplete.getTemplateUrlForText(keyword);
         }
 
-        if (keyword != null) {
-            // Check if the keyword matches a registered search engine.
-            TemplateUrl templateUrl = service.getTemplateUrlForKeyword(keyword);
-            if (templateUrl != null) {
-                SiteSearchData data =
-                        new SiteSearchData(templateUrl.getKeyword(), templateUrl.getShortName());
-                // Enter keyword mode with the new site search data.
-                onKeywordModeEntered(data);
-                return true;
-            }
+        if (templateUrl != null) {
+            SiteSearchData data =
+                    new SiteSearchData(templateUrl.getKeyword(), templateUrl.getShortName());
+            onKeywordModeEntered(data);
+            return true;
         }
 
         return false;

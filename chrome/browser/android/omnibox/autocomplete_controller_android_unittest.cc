@@ -10,12 +10,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -125,4 +128,11 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
   controller()->OnOmniboxFocused(
       env, j_omnibox_text, j_current_url, page_classification,
       omnibox::TOOL_MODE_UNSPECIFIED, j_current_title);
+}
+
+TEST_F(AutocompleteControllerAndroidTest, GetTemplateUrlForText_NotFound) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto result =
+      controller()->GetTemplateUrlForText(env, u"nonexistent_keyword");
+  EXPECT_TRUE(result.is_null());
 }

@@ -373,7 +373,7 @@ public class AutocompleteMediatorUnitTest {
         var mockTemplateUrl = mock(TemplateUrl.class);
         doReturn("bing").when(mockTemplateUrl).getKeyword();
         doReturn("Bing").when(mockTemplateUrl).getShortName();
-        doReturn(mockTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("bing");
+        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
@@ -397,7 +397,7 @@ public class AutocompleteMediatorUnitTest {
         var mockTemplateUrl = mock(TemplateUrl.class);
         doReturn("bing").when(mockTemplateUrl).getKeyword();
         doReturn("Bing").when(mockTemplateUrl).getShortName();
-        doReturn(mockTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("bing");
+        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.TAB));
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
@@ -1878,7 +1878,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn("cr").when(mTemplateUrl).getKeyword();
         doReturn("Cr").when(mTemplateUrl).getShortName();
-        doReturn(mTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("cr");
+        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("cr abc");
 
         assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
 

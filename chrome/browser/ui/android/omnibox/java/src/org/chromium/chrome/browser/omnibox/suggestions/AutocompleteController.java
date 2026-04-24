@@ -25,6 +25,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -425,6 +426,17 @@ public class AutocompleteController {
         return AutocompleteControllerJni.get().getForProfile(profile);
     }
 
+    /**
+     * Extracts a valid keyword from the provided text and returns the corresponding TemplateUrl.
+     *
+     * @param text The text to evaluate (e.g. "youtube.com query").
+     * @return A valid TemplateUrl if the text begins with a valid, active keyword; null otherwise.
+     */
+    public @Nullable TemplateUrl getTemplateUrlForText(String text) {
+        if (mNativeController == 0) return null;
+        return AutocompleteControllerJni.get().getTemplateUrlForText(mNativeController, text);
+    }
+
     public static void setInstanceForTesting(@Nullable AutocompleteController instance) {
         sInstanceForTesting = Optional.ofNullable(instance);
         ResettersForTesting.register(AutocompleteController::resetInstanceForTesting);
@@ -529,5 +541,9 @@ public class AutocompleteController {
 
         /** Acquire an instance of AutocompleteController associated with the supplied profile. */
         AutocompleteController getForProfile(@JniType("Profile*") Profile profile);
+
+        /** Get TemplateUrl for the given text. */
+        TemplateUrl getTemplateUrlForText(
+                long nativeAutocompleteControllerAndroid, @JniType("std::u16string") String text);
     }
 }

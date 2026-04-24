@@ -132,6 +132,14 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
                                 uintptr_t navigation_handle_ptr,
                                 uintptr_t match_ptr);
 
+  // Extracts a valid keyword from the provided text and returns the
+  // corresponding TemplateURL. This handles text splitting (extracting the
+  // first word) and checks if it matches a valid, active keyword.
+  // Returns nullptr if no valid keyword is found.
+  base::android::ScopedJavaLocalRef<jobject> GetTemplateUrlForText(
+      JNIEnv* env,
+      const std::u16string& text);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
   template <typename T>
