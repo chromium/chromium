@@ -8159,8 +8159,8 @@ void Element::Focus(const FocusParams& params) {
   LocalFrame* initiator = params.initiator_frame ? params.initiator_frame
                                                  : GetDocument().GetFrame();
 
-  if (!initiator || !GetDocument().IsFocusAllowed(params.focus_trigger,
-                                                    *initiator)) {
+  if (!initiator ||
+      !GetDocument().IsFocusAllowed(params.focus_trigger, *initiator)) {
     return;
   }
 
