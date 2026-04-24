@@ -1279,4 +1279,18 @@ TEST_F(VisibleUnitsLineTest,
       << "Expected position in p2, but got: " << result_pos;
 }
 
+TEST_F(VisibleUnitsLineTest, IsStartOfLineWithPosition) {
+  SetBodyContent("<div id=sample>hello world</div>");
+  Node* text = GetElementById("sample")->firstChild();
+  EXPECT_TRUE(IsStartOfLine(Position(*text, 0)));
+  EXPECT_FALSE(IsStartOfLine(Position(*text, 3)));
+}
+
+TEST_F(VisibleUnitsLineTest, IsEndOfLineWithPosition) {
+  SetBodyContent("<div id=sample>hello world</div>");
+  Node* text = GetElementById("sample")->firstChild();
+  EXPECT_TRUE(IsEndOfLine(Position(*text, 11)));
+  EXPECT_FALSE(IsEndOfLine(Position(*text, 3)));
+}
+
 }  // namespace blink

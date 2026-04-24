@@ -489,6 +489,12 @@ bool IsStartOfLine(const VisiblePositionInFlatTree& p) {
   return IsStartOfLineAlgorithm<EditingInFlatTreeStrategy>(p);
 }
 
+bool IsStartOfLine(const Position& p, TextAffinity affinity) {
+  PositionWithAffinity pos(p, affinity);
+  return pos.IsNotNull() &&
+         p == StartOfLine(pos).GetPosition();
+}
+
 template <typename Strategy>
 static bool IsEndOfLineAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position) {
@@ -506,6 +512,11 @@ bool IsEndOfLine(const VisiblePosition& p) {
 
 bool IsEndOfLine(const VisiblePositionInFlatTree& p) {
   return IsEndOfLineAlgorithm<EditingInFlatTreeStrategy>(p);
+}
+
+bool IsEndOfLine(const Position& p, TextAffinity affinity) {
+  PositionWithAffinity pos(p, affinity);
+  return pos.IsNotNull() && p == EndOfLine(pos).GetPosition();
 }
 
 template <typename Strategy>

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/position_units.h"
+#include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -179,8 +180,12 @@ CORE_EXPORT bool InSameLine(const PositionInFlatTreeWithAffinity&,
                             const PositionInFlatTreeWithAffinity&);
 CORE_EXPORT bool IsStartOfLine(const VisiblePosition&);
 CORE_EXPORT bool IsStartOfLine(const VisiblePositionInFlatTree&);
+CORE_EXPORT bool IsStartOfLine(const Position&,
+                               TextAffinity = TextAffinity::kDownstream);
 CORE_EXPORT bool IsEndOfLine(const VisiblePosition&);
 CORE_EXPORT bool IsEndOfLine(const VisiblePositionInFlatTree&);
+CORE_EXPORT bool IsEndOfLine(const Position&,
+                             TextAffinity = TextAffinity::kDownstream);
 // TODO(yosin) Return values of |VisiblePosition| version of
 // |logicalStartOfLine()| with shadow tree isn't defined well. We should not use
 // it for shadow tree.
