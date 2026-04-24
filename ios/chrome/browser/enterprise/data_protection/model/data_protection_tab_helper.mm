@@ -86,7 +86,15 @@ DataProtectionTabHelper::DataProtectionTabHelper(web::WebState* web_state)
   CheckPolicyForInitialURL();
 }
 
-DataProtectionTabHelper::~DataProtectionTabHelper() = default;
+DataProtectionTabHelper::~DataProtectionTabHelper() {
+  for (auto& observer : observers_) {
+    observer.DataProtectionTabHelperDestroyed(this);
+  }
+  if (web_state_) {
+    web_state_->RemoveObserver(this);
+    web_state_ = nullptr;
+  }
+}
 
 DataProtectionTabHelper::NavigationState::NavigationState(
     std::optional<int64_t> navigation_id)

@@ -11,6 +11,8 @@ namespace web {
 class WebState;
 }
 
+class DataProtectionTabHelper;
+
 // Interface for observing data protection changes in a Tab.
 class DataProtectionTabHelperObserver : public base::CheckedObserver {
  public:
@@ -18,6 +20,11 @@ class DataProtectionTabHelperObserver : public base::CheckedObserver {
   virtual void ScreenshotProtectionDidChange(
       web::WebState* web_state,
       bool screenshot_protection_enabled) {}
+
+  // Called when the DataProtectionTabHelper is destroyed. Observers should stop
+  // observing.
+  virtual void DataProtectionTabHelperDestroyed(
+      DataProtectionTabHelper* helper) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_MODEL_DATA_PROTECTION_TAB_HELPER_OBSERVER_H_

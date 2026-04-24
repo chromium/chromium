@@ -9,6 +9,8 @@ source_set("model") {
     "data_protection_tab_helper.h",
     "data_protection_tab_helper.mm",
     "data_protection_tab_helper_observer.h",
+    "data_protection_tab_helper_observer_bridge.h",
+    "data_protection_tab_helper_observer_bridge.mm",
     "data_protection_url_lookup_service_factory.h",
     "data_protection_url_lookup_service_factory.mm",
   ]
@@ -47,6 +49,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "data_protection_scene_agent_unittest.mm",
+    "data_protection_tab_helper_observer_bridge_unittest.mm",
     "data_protection_tab_helper_unittest.mm",
   ]
   deps = [
