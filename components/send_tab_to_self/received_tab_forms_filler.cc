@@ -4,8 +4,13 @@
 
 #include "components/send_tab_to_self/received_tab_forms_filler.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +28,55 @@ namespace {
 
 // TODO(crbug.com/485145029): Consider making this configurable.
 constexpr base::TimeDelta kTimeout = base::Seconds(10);
+
+// Returns the set of signatures that appear exactly once in the incoming tab's
+// `fields`.
+base::flat_set<ReceivedTabFormsFiller::Signature> ComputeUniqueSignatures(
+    const std::vector<PageContext::FormField>& fields) {
+  // Count occurrences of each valid signature.
+  base::flat_map<ReceivedTabFormsFiller::Signature, size_t> counts;
+  for (const auto& field : fields) {
+    if (field.form_signature == 0 || field.field_signature == 0) {
+      continue;
+    }
+    counts[{field.form_signature, field.field_signature}]++;
+  }
+
+  // Filter for signatures that appeared exactly once.
+  std::vector<ReceivedTabFormsFiller::Signature> unique_sigs;
+  for (const auto& [sig, count] : counts) {
+    if (count == 1) {
+      unique_sigs.push_back(sig);
+    }
+  }
+  return base::flat_set<ReceivedTabFormsFiller::Signature>(
+      base::sorted_unique, std::move(unique_sigs));
+}
+
+// Returns the set of field signatures that are unique within `form`.
+base::flat_set<uint64_t> GetUniqueSignaturesInForm(
+    const autofill::FormStructure& form) {
+  if (form.form_signature().value() == 0) {
+    return {};
+  }
+  // Count occurrences of each signature in the form.
+  base::flat_map<uint64_t, size_t> counts;
+  for (const auto& field : form.fields()) {
+    uint64_t sig = field->GetFieldSignature().value();
+    if (sig != 0) {
+      counts[sig]++;
+    }
+  }
+
+  // Collect signatures that appeared exactly once.
+  std::vector<uint64_t> unique_sigs;
+  for (const auto& [sig, count] : counts) {
+    if (count == 1) {
+      unique_sigs.push_back(sig);
+    }
+  }
+  return base::flat_set<uint64_t>(base::sorted_unique, std::move(unique_sigs));
+}
 
 }  // namespace
 
@@ -48,6 +102,8 @@ ReceivedTabFormsFiller::ReceivedTabFormsFiller(
     const PageContext::FormFieldInfo& form_field_info,
     base::OnceClosure on_completion_callback)
     : origin_(origin),
+      received_unique_signatures_(
+          ComputeUniqueSignatures(form_field_info.fields)),
       pending_fields_(form_field_info.fields),
       on_completion_callback_for_test_(std::move(on_completion_callback)) {
   // Start a timer to self-destruct if filling takes too long. Using
@@ -126,8 +182,62 @@ void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
   }
 }
 
+const PageContext::FormField* ReceivedTabFormsFiller::FindPendingFieldMatching(
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field,
+    const base::flat_set<uint64_t>& form_unique_signatures) {
+  // 1. Try strict match based on ID, Name, and Type.
+  if (const PageContext::FormField* match =
+          FindPendingFieldByIdNameAndType(field)) {
+    return match;
+  }
+
+  // 2. Try fallback match using unique Autofill signatures. Return nullptr if
+  // no match is found or the signature is not unique in the receiver form.
+  const Signature sig{form.form_signature().value(),
+                      field.GetFieldSignature().value()};
+  return FindPendingFieldBySignature(sig, form_unique_signatures);
+}
+
+const PageContext::FormField*
+ReceivedTabFormsFiller::FindPendingFieldByIdNameAndType(
+    const autofill::AutofillField& field) {
+  auto it = pending_fields_.find(std::make_tuple(
+      field.id_attribute(), field.name_attribute(),
+      autofill::FormControlTypeToString(field.form_control_type())));
+  return it != pending_fields_.end() ? &*it : nullptr;
+}
+
+const PageContext::FormField*
+ReceivedTabFormsFiller::FindPendingFieldBySignature(
+    const Signature& sig,
+    const base::flat_set<uint64_t>& form_unique_signatures) {
+  // Check if the signature was unique in pending_fields_ initially.
+  if (!received_unique_signatures_.contains(sig)) {
+    return nullptr;
+  }
+
+  // Check if the signature is unique in the receiver form.
+  if (!form_unique_signatures.contains(sig.field_signature)) {
+    return nullptr;
+  }
+
+  // Since the signature was unique initially, the first match found is
+  // returned.
+  auto find_it =
+      std::find_if(pending_fields_.begin(), pending_fields_.end(),
+                   [&](const PageContext::FormField& pending) {
+                     return pending.form_signature == sig.form_signature &&
+                            pending.field_signature == sig.field_signature;
+                   });
+  return find_it != pending_fields_.end() ? &*find_it : nullptr;
+}
+
 void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
   manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
+    const base::flat_set<uint64_t> form_unique_signatures =
+        GetUniqueSignaturesInForm(form);
+
     for (const std::unique_ptr<autofill::AutofillField>& field :
          form.fields()) {
       if (field->origin() != origin_) {
@@ -135,21 +245,20 @@ void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
         continue;
       }
 
-      const auto it = pending_fields_.find(std::make_tuple(
-          field->id_attribute(), field->name_attribute(),
-          autofill::FormControlTypeToString(field->form_control_type())));
-      if (it == pending_fields_.end()) {
+      const PageContext::FormField* pending_field =
+          FindPendingFieldMatching(form, *field, form_unique_signatures);
+      if (!pending_field) {
         continue;
       }
 
       // TODO(crbug.com/485145029): Consider using a type distinguishable from
       // `kAutocompleteEntry`.
-      manager.FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                                 autofill::mojom::FieldActionType::kReplaceAll,
-                                 form.ToFormData(), *field, it->value,
-                                 autofill::SuggestionType::kAutocompleteEntry,
-                                 std::nullopt);
-      pending_fields_.erase(it);
+      manager.FillOrPreviewField(
+          autofill::mojom::ActionPersistence::kFill,
+          autofill::mojom::FieldActionType::kReplaceAll, form.ToFormData(),
+          *field, pending_field->value,
+          autofill::SuggestionType::kAutocompleteEntry, std::nullopt);
+      pending_fields_.erase(*pending_field);
     }
   });
 }

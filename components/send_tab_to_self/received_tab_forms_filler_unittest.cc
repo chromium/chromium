@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -33,23 +34,34 @@ namespace send_tab_to_self {
 namespace {
 
 using autofill::FormData;
-using autofill::FormFieldData;
-using autofill::FormStructure;
 using autofill::TestBrowserAutofillManager;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Test;
 
-PageContext::FormField MakeFormField(std::u16string id_attribute,
-                                     std::u16string name_attribute,
-                                     std::string form_control_type,
-                                     std::u16string value) {
+PageContext::FormField MakeFormField(
+    std::u16string id_attribute,
+    std::u16string name_attribute,
+    std::string form_control_type,
+    std::u16string value,
+    std::optional<ReceivedTabFormsFiller::Signature> sig = std::nullopt) {
   PageContext::FormField field;
   field.id_attribute = std::move(id_attribute);
   field.name_attribute = std::move(name_attribute);
   field.form_control_type = std::move(form_control_type);
   field.value = std::move(value);
+  if (sig) {
+    field.form_signature = sig->form_signature;
+    field.field_signature = sig->field_signature;
+  }
   return field;
+}
+
+ReceivedTabFormsFiller::Signature GetSignature(const FormData& form_data,
+                                               size_t field_index) {
+  autofill::FormStructure form(form_data);
+  return {form.form_signature().value(),
+          form.field(field_index)->GetFieldSignature().value()};
 }
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
@@ -114,6 +126,130 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
                                 run_loop.QuitClosure());
 
   autofill_manager().OnFormsSeen({form}, {});
+
+  run_loop.Run();
+}
+
+// Tests that fallback signature matching works when names/IDs are dynamic
+// but the signature is unique.
+TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  const FormData form_sender = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
+                   .name_attribute = u"name_123",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+  PageContext::FormFieldInfo form_field_info;
+  form_field_info.fields.push_back(MakeFormField(u"id1", u"name_123", "text",
+                                                 u"shared_value",
+                                                 GetSignature(form_sender, 0)));
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .label = u"label1",
+                   .name_attribute = u"name_124",
+                   .id_attribute = u"id2",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  const autofill::FieldGlobalId field_id =
+      form_receiver.fields()[0].global_id();
+
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               Eq(field_id), Eq(u"shared_value")));
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  autofill_manager().OnFormsSeen({form_receiver}, {});
+
+  run_loop.Run();
+}
+
+// Tests that fallback matching is skipped if the receiver form has multiple
+// fields with the same signature.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillFieldsByNonUniqueReceiverSignatureFallback) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  const FormData form_sender = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
+                   .name_attribute = u"name_123",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+  PageContext::FormFieldInfo form_field_info;
+  form_field_info.fields.push_back(MakeFormField(u"id1", u"name_123", "text",
+                                                 u"shared_value",
+                                                 GetSignature(form_sender, 0)));
+
+  // Create a receiver form with TWO fields that have the SAME signature.
+  // We use the same name to ensure they generate the same signature in tests.
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .label = u"label1",
+                   .name_attribute = u"name_123",
+                   .id_attribute = u"id2",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(3),
+                   .label = u"label2",
+                   .name_attribute = u"name_123",
+                   .id_attribute = u"id3",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  autofill_manager().OnFormsSeen({form_receiver}, {});
+
+  run_loop.Run();
+}
+
+// Tests that fallback matching is skipped if there are multiple pending fields
+// with the same signature.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillFieldsByNonUniquePendingSignatureFallback) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  const FormData form_sender = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
+                   .name_attribute = u"name_123",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+  const ReceivedTabFormsFiller::Signature sig = GetSignature(form_sender, 0);
+
+  PageContext::FormFieldInfo form_field_info;
+
+  // Add TWO fields to pending_fields_ with the SAME signature but different
+  // IDs.
+  form_field_info.fields.push_back(
+      MakeFormField(u"id1", u"name_123", "text", u"value1", sig));
+
+  form_field_info.fields.push_back(
+      MakeFormField(u"id2", u"name_124", "text", u"value2", sig));
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .label = u"label1",
+                   .name_attribute = u"name_123",
+                   .id_attribute = u"id3",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  autofill_manager().OnFormsSeen({form_receiver}, {});
 
   run_loop.Run();
 }

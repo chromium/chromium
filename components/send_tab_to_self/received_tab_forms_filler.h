@@ -33,6 +33,16 @@ namespace send_tab_to_self {
 // timeout.
 class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
  public:
+  // TODO(crbug.com/485145029): Adopt `autofill::FormSignature` and
+  // `autofill::FieldSignature` for type safety, and consider moving this to
+  // `PageContext` as `PageContext::FormFieldSignature`.
+  struct Signature {
+    uint64_t form_signature = 0;
+    uint64_t field_signature = 0;
+
+    bool operator==(const Signature& other) const = default;
+    auto operator<=>(const Signature& other) const = default;
+  };
   static void Start(
       autofill::AutofillClient& client,
       const url::Origin& origin,
@@ -77,7 +87,28 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
   void FillForms(autofill::AutofillManager& manager);
   void SelfDestruct();
 
+  // Finds a matching field in `pending_fields_` for the given `field` in
+  // `form`. Tries strict match first, then falls back to signature match if
+  // unique.
+  const PageContext::FormField* FindPendingFieldMatching(
+      const autofill::FormStructure& form,
+      const autofill::AutofillField& field,
+      const base::flat_set<uint64_t>& form_unique_signatures);
+
+  // Tries to find a match based on strict ID, Name, and Type equality.
+  const PageContext::FormField* FindPendingFieldByIdNameAndType(
+      const autofill::AutofillField& field);
+
+  // Tries to find a match using Autofill signatures as a fallback.
+  // Ensures the signature is unique in both the receiver form and pending
+  // fields.
+  const PageContext::FormField* FindPendingFieldBySignature(
+      const Signature& sig,
+      const base::flat_set<uint64_t>& form_unique_signatures);
+
   const url::Origin origin_;
+  // Signatures that appeared exactly once in the incoming tab's fields.
+  const base::flat_set<Signature> received_unique_signatures_;
 
   base::flat_set<PageContext::FormField, FieldUniquenessKeyComparator>
       pending_fields_;
