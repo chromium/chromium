@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/storage/intent_table.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -91,6 +92,10 @@ bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path,
   }
 
   if (!content_annotations_table_.Init(db_.get(), &encryptor_.value())) {
+    return false;
+  }
+
+  if (!intent_table_.Init(db_.get())) {
     return false;
   }
 
@@ -192,6 +197,13 @@ bool AccessibilityAnnotatorDatabase::MigrateOldVersionsAsNeeded(
 
   // Perform any necessary migrations from `detected_user_version` to
   // `kCurrentVersionNumber` here.
+
+  if (detected_user_version == 0) {
+    if (!intent_table_.MigrateFromCleanStateToVersion1()) {
+      return false;
+    }
+    detected_user_version++;
+  }
 
   // Set the user-version to the current version.
   return db_->Execute(base::StrCat(

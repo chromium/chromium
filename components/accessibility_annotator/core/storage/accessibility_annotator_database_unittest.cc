@@ -75,6 +75,8 @@ TEST_F(AccessibilityAnnotatorDatabaseTest, InitializeEmptyToCurrent) {
 
     // Check that expected tables are present.
     EXPECT_TRUE(connection.DoesTableExist("content_annotations"));
+    EXPECT_TRUE(connection.DoesTableExist("task_intent_provenance"));
+    EXPECT_TRUE(connection.DoesTableExist("task_intent"));
   }
 }
 

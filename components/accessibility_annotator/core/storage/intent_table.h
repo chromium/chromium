@@ -22,28 +22,30 @@ namespace accessibility_annotator {
 struct TaskIntent;
 enum class TaskIntentStatusType;
 
-// This class manages the tables storing task intents and provenance metadata
-// for clusters of history within the SQLite database passed to initialization.
+// This class manages the tables storing intents and provenance metadata
+// for the associated clusters of history within the SQLite database passed to
+// initialization.
+//
 // It expects the following schemas:
 //
 // -----------------------------------------------------------------------------
-// history_cluster_provenance   Contains provenance metadata for clusters of
-//                              history entries.
+// task_intent_provenance       Contains provenance metadata for task intents.
 //
+//   id                                 Uniquely identifies a provenance entry
+//                                      (auto-incrementing primary key).
+//   task_intent_id                     Uniquely identifies a task intent.
 //   visit_id                           Uniquely identifies a visit to a URL.
 //   url_id                             Uniquely identifies a URL.
-//   cluster_id                         Uniquely identifies a cluster of history
-//                                      entries.
 // -----------------------------------------------------------------------------
 // task_intent                  Contains task-level intents.
 //
-//   cluster_id                         Uniquely identifies a cluster of history
-//                                      entries (primary key, as well as foreign
-//                                      key to the history_cluster_provenance
-//                                      table).
+//   id                                 Uniquely identifies a cluster of history
+//                                      entries (auto-incrementing primary key).
 //   cluster_most_recent_visit_time     The most recent visit time for the
 //                                      cluster of history entries, in
 //                                      microseconds since the epoch.
+//   needs_regeneration                 Whether the task intent needs to be
+//                                      regenerated (0 = false, 1 = true).
 //   task_intent_type                   Enumerated type of task intent.
 //   task_intent                        A string representation of the task
 //                                      intent.
@@ -79,7 +81,12 @@ class IntentTable {
   // Returns true on success.
   bool DeleteAllTaskIntents();
 
+  // Creates all tables for intent. Should only be called when creating the
+  // database from a clean state. Returns true on success.
+  bool MigrateFromCleanStateToVersion1();
+
  private:
+  // Owned by the `AccessibilityAnnotatorDatabase`.  Outlives `this`.
   raw_ptr<sql::Database> database_ = nullptr;
 };
 

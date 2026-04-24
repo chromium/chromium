@@ -14,6 +14,8 @@
 
 namespace accessibility_annotator {
 
+using TaskIntentId = base::IdType64<class TaskIntentTag>;
+
 // The enumerated type of task intent.
 // This enum is persisted, so values should not be changed, revised, or reused.
 // Append new values only to the end of the list.
@@ -42,7 +44,7 @@ struct TaskIntent {
   TaskIntent& operator=(TaskIntent&& other);
   ~TaskIntent();
 
-  history::ClusterId cluster_id;
+  TaskIntentId id;
   absl::flat_hash_map<history::VisitID, history::URLID>
       source_visit_to_url_id_map;
   base::Time cluster_most_recent_visit_time;

@@ -14,6 +14,7 @@
 #include "base/thread_annotations.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/accessibility_annotator/core/storage/content_annotations_table.h"
+#include "components/accessibility_annotator/core/storage/intent_table.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 
@@ -32,9 +33,9 @@ using ContentAnnotationsData =
 class AccessibilityAnnotatorDatabase {
  public:
   // Current version number. This value is to be incremented when the database
-  // schema used by this class evolves in a non-backwards compatible way. When
-  // this number changes, all existing databases will be migrated to the new
-  // schema via the `MigrateOldVersionsAsNeeded` function.
+  // schema used by this class evolves in any way. When this number changes, all
+  // existing databases will be migrated to the new schema via the
+  // `MigrateOldVersionsAsNeeded` function.
   static constexpr int kCurrentVersionNumber = 1;
 
   AccessibilityAnnotatorDatabase();
@@ -77,6 +78,8 @@ class AccessibilityAnnotatorDatabase {
 
   ContentAnnotationsTable content_annotations_table_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  IntentTable intent_table_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace accessibility_annotator
