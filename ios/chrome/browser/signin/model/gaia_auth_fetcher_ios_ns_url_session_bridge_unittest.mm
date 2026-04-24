@@ -387,7 +387,9 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
 
 // Tests to send a request with no cookies set in the cookie store and receive
 // multiples cookies from the request.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
+// TODO(crbug.com/506117253): Fix flakiness.
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
+       DISABLED_FetchWithEmptyCookieStore) {
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_TRUE(completion_handler_);
@@ -406,7 +408,9 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
 
 // Tests to send a request with one cookie set in the cookie store and receive
 // another cookies from the request.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
+// TODO(crbug.com/506117253): Fix flakiness.
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
+       DISABLED_FetchWithCookieStore) {
   NSHTTPCookie* cookie_to_send = GetCookie1();
   ASSERT_TRUE(SetCookiesInCookieManager(@[ cookie_to_send ]));
 
@@ -433,7 +437,8 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
 
 // Tests to a request with a redirect. One cookie is received by the first
 // request, and a second one by the redirected request.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithRedirect) {
+// TODO(crbug.com/506117253): Fix flakiness.
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithRedirect) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
