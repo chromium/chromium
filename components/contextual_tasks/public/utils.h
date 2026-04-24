@@ -40,6 +40,9 @@ std::optional<lens::LensOverlayInvocationSource>
 GetLensInvocationSourceForAimZeroState(
     omnibox::ChromeAimEntryPoint entry_point);
 
+// Checks if the URL has a dark mode override param. Returns nullopt if no param
+// is present. If present, returns true for dark mode, false for light mode.
+std::optional<bool> GetDarkModeFromUrl(const GURL& url);
 }  // namespace contextual_tasks
 
 #endif  // COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_UTILS_H_

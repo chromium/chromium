@@ -95,4 +95,15 @@ GetLensInvocationSourceForAimZeroState(
   }
 }
 
+std::optional<bool> GetDarkModeFromUrl(const GURL& url) {
+  std::string cs;
+  if (net::GetValueForKeyInQuery(url, "cs", &cs)) {
+    if (cs == "0") {
+      return false;
+    } else if (cs == "1") {
+      return true;
+    }
+  }
+  return std::nullopt;
+}
 }  // namespace contextual_tasks

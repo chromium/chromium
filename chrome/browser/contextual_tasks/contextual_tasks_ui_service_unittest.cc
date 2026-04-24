@@ -973,6 +973,40 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
 }
 
 TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_PreservesCsParam) {
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get(),
+                                   /*cookie_synchronizer=*/nullptr);
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query&cs=1");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+  base::WeakPtrFactory weak_factory(&tab);
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+  GURL expected_initial_url(
+      "https://google.com/"
+      "search?udm=50&q=test+query&cs=1&sourceid=chrome&ccb=1");
+  EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
+            expected_initial_url);
+}
+TEST_F(ContextualTasksUiServiceTest,
        GetContextualTaskUrlForTask_WithEntryPoint) {
   ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
                                    contextual_tasks_service_.get(),

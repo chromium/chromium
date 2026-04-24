@@ -287,7 +287,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private isFrameLoading: boolean = false;
   private listenerIds_: number[] = [];
   private eventTracker_: EventTracker = new EventTracker();
-  private commonSearchParams_: {[key: string]: string} = {};
+  private commonSearchParams_: {[key: string]: string}|null = null;
   private postMessageHandler_: PostMessageHandler|null = null;
   private forcedEmbeddedPageHost =
       loadTimeData.getString('forcedEmbeddedPageHost');
@@ -323,6 +323,16 @@ export class ContextualTasksAppElement extends CrLitElement {
   private lastThreadFrameLoadStartEvent_: chrome.webviewTag.LoadStartEvent|
       LoadEvent|null = null;
 
+  private updateThemeFromUrl(url: URL) {
+    const csParam = url.searchParams.get('cs');
+    if (csParam === '0') {
+      this.darkMode_ = false;
+    } else if (csParam === '1') {
+      this.darkMode_ = true;
+    }
+    this.updateBackgroundColor_();
+    this.updateCommonSearchParams();
+  }
   private get composebox_(): ContextualTasksComposeboxElement|null {
     // <if expr="not is_android">
     return this.$.composebox || null;
@@ -334,6 +344,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
+    this.updateBackgroundColor_();
 
     // Record the WebUI URL in case one of the events below fires and changes
     // it.
@@ -528,6 +539,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     }
 
     const threadUrlAsUrl = new URL(threadUrl);
+    this.updateThemeFromUrl(threadUrlAsUrl);
     // If the thread URL has parameters to open history, set basic mode.
     if (this.enableBasicMode_ && this.hasThreadHistoryParams(threadUrlAsUrl) &&
         this.forceBasicModeIfOpeningThreadHistory_) {
@@ -767,6 +779,8 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.lastThreadFrameLoadStartEvent_.url === navigationUrl) {
       const event = this.lastThreadFrameLoadStartEvent_;
       this.lastThreadFrameLoadStartEvent_ = null;
+      const url = new URL(navigationUrl);
+      this.updateThemeFromUrl(url);
       this.onThreadFrameTopLevelNavigation(event);
     }
   }
@@ -1130,6 +1144,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private addCommonSearchParams(url: URL): URL {
+    if (!this.commonSearchParams_) {
+      return url;
+    }
     for (const [key, value] of Object.entries(this.commonSearchParams_)) {
       // If the url already has a key, skip it to avoid overriding it. `cs` is an
       // exception since it will cause UI mismatch between native and embedded

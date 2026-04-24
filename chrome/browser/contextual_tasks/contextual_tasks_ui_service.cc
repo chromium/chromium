@@ -265,6 +265,14 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   task_id_to_creation_url_[task.GetTaskId()] = url;
 
   GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
+  // If the CS param is in the URL, add it to the webui, so the
+  // chrome_content_browser_client.cc code can properly setup the renderer dark
+  // mode preference. This prevents UI flicker.
+  std::optional<bool> is_dark_mode = contextual_tasks::GetDarkModeFromUrl(url);
+  if (is_dark_mode.has_value()) {
+    ui_url = net::AppendQueryParameter(ui_url, "cs",
+                                       is_dark_mode.value() ? "1" : "0");
+  }
 
   content::WebContents* contextual_task_web_contents = nullptr;
   // If the current tab is included in the context list, this navigation should
