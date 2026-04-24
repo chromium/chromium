@@ -35,17 +35,19 @@ ZeroSuggestCacheService::ZeroSuggestCacheService(
 ZeroSuggestCacheService::~ZeroSuggestCacheService() = default;
 
 CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
-    const std::string& page_url) const {
-  return CacheEntry(
-      omnibox::GetUserPreferenceForZeroSuggestCachedResponse(prefs_, page_url));
+    const std::string& page_url,
+    bool is_composebox) const {
+  return CacheEntry(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+      prefs_, page_url, is_composebox));
 }
 
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
-    const std::string& response_json) {
+    const std::string& response_json,
+    bool is_composebox) {
   auto entry = CacheEntry(std::string(response_json));
-  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(prefs_, page_url,
-                                                         response_json);
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs_, page_url, response_json, is_composebox);
 
   for (auto& observer : observers_) {
     observer.OnZeroSuggestResponseUpdated(page_url, entry);
@@ -56,6 +58,7 @@ void ZeroSuggestCacheService::ClearCache() {
   // Clear user prefs used for cross-session persistence.
   prefs_->SetString(omnibox::kZeroSuggestCachedResults, "");
   prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
+  prefs_->SetString(omnibox::kZeroSuggestCachedResultsComposebox, "");
 }
 
 void ZeroSuggestCacheService::AddObserver(Observer* observer) {

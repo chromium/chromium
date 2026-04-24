@@ -47,13 +47,15 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 // using the |page_url| as the cache key.
 void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,
                                                    const std::string& page_url,
-                                                   const std::string& response);
+                                                   const std::string& response,
+                                                   bool is_composebox = false);
 
 // Returns the cached response from the ZPS dictionary preference associated
 // with the given |page_url|.
 std::string GetUserPreferenceForZeroSuggestCachedResponse(
     PrefService* prefs,
-    const std::string& page_url);
+    const std::string& page_url,
+    bool is_composebox = false);
 
 }  // namespace omnibox
 

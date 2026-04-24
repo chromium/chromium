@@ -96,11 +96,14 @@ bool IsComposebox(OEP::PageClassification classification) {
   return classification == OEP::NTP_COMPOSEBOX ||
          classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX ||
          classification == OEP::CO_BROWSING_COMPOSEBOX ||
+         classification == OEP::NTP_COMPOSEBOX_PREFETCH ||
          IsOmniboxComposebox(classification);
 }
 
 bool IsNTPComposebox(OEP::PageClassification classification) {
-  return classification == OEP::NTP_COMPOSEBOX;
+  return classification == OEP::NTP_COMPOSEBOX ||
+         classification == OEP::NTP_OMNIBOX_COMPOSEBOX ||
+         classification == OEP::NTP_COMPOSEBOX_PREFETCH;
 }
 
 bool IsNTPRealbox(OEP::PageClassification classification) {
