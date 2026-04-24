@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.StyleRes;
 
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -39,21 +38,21 @@ public class SearchBoxCoordinator {
     private final PropertyModel mModel;
     private final ViewGroup mView;
     private final SearchBoxMediator mMediator;
-    private boolean mIsIncognito;
-    private WindowAndroid mWindowAndroid;
+    private final boolean mIsIncognito;
+    private final WindowAndroid mWindowAndroid;
 
-    public SearchBoxCoordinator(Context context, ViewGroup parent, boolean isTablet) {
-        mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
-        mView = parent.findViewById(R.id.search_box);
-        mMediator = new SearchBoxMediator(context, mModel, mView, isTablet);
-    }
-
-    @Initializer
-    public void initialize(
+    public SearchBoxCoordinator(
+            Context context,
+            ViewGroup parent,
+            boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
             WindowAndroid windowAndroid) {
-        mMediator.initialize(activityLifecycleDispatcher);
+        mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
+        mView = parent.findViewById(R.id.search_box);
+        mMediator =
+                new SearchBoxMediator(
+                        context, mModel, mView, isTablet, activityLifecycleDispatcher);
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
     }

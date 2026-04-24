@@ -330,9 +330,14 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mUiConfig.updateDisplayStyle();
         }
 
-        mSearchBoxCoordinator = new SearchBoxCoordinator(mActivity, mNewTabPageLayout, mIsTablet);
-        mSearchBoxCoordinator.initialize(
-                lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
+        mSearchBoxCoordinator =
+                new SearchBoxCoordinator(
+                        mActivity,
+                        mNewTabPageLayout,
+                        mIsTablet,
+                        lifecycleDispatcher,
+                        mProfile.isOffTheRecord(),
+                        mWindowAndroid);
 
         updateSearchBoxTwoSideMargin();
         initializeLogoCoordinator();
