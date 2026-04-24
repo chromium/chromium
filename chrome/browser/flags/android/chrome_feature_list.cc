@@ -170,6 +170,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &data_sharing::features::kSharedDataTypesKillSwitch,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &download::features::kEnableSavePackageForOffTheRecord,
+    &download::features::kOpenDownloadInFilesAppIfNoHandlerFound,
     &download::features::kShowBlockedSensitiveDownload,
     &download::features::kShowDownloadScanningState,
     &download::features::kSmartSuggestionForLargeDownloads,

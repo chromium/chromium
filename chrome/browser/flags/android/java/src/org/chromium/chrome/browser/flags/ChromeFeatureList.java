@@ -546,6 +546,8 @@ public abstract class ChromeFeatureList {
             "OmniboxCacheSuggestionResources";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE =
             "OnDemandBackgroundTabContextCapture";
+    public static final String OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND =
+            "OpenDownloadInFilesAppIfNoHandlerFound";
     public static final String PAGE_CONTENT_PROVIDER = "PageContentProvider";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =
             "PageInfoAboutThisSiteMoreLangs";

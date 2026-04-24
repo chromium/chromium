@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -492,9 +493,15 @@ public class DownloadUtils {
 
         // If this is a zip file, check if Android Files app exists.
         if (MIME_TYPE_ZIP.equals(req.mMimeType)) {
+            // Use files app to open zip file if openDownloadInFilesAppIfNoHandlerFound() is
+            // true.
+            if (openDownloadInFilesAppIfNoHandlerFound()) {
+                return false;
+            }
             try {
                 PackageInfo packageInfo =
-                        req.mContext.getPackageManager()
+                        req.mContext
+                                .getPackageManager()
                                 .getPackageInfo(
                                         DOCUMENTS_UI_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
                 if (packageInfo != null) {
@@ -571,6 +578,7 @@ public class DownloadUtils {
                         new GURL(originalUrl), downloadGuid)) {
             return;
         }
+
         Tab tab = null;
         if (activity instanceof ChromeTabbedActivity chromeActivity) {
             // TODO(crbug.com/356713476): Stop using the deprecated method.
@@ -603,6 +611,9 @@ public class DownloadUtils {
                 .build();
         boolean canOpen = DownloadUtils.openFile(req);
         if (!canOpen) {
+            if (openDownloadInFilesAppIfNoHandlerFound() && showDownloadInFilesApp(filePath)) {
+                return;
+            }
             DownloadUtils.showDownloadManager(null, null, otrProfileId, source);
         }
     }
@@ -845,6 +856,41 @@ public class DownloadUtils {
             Log.e(TAG, "Cannot start activity to open file", e);
             return false;
         }
+    }
+
+    /**
+     * Show the download in the Files app .
+     *
+     * @param filePath The path to the file to open.
+     */
+    private static boolean showDownloadInFilesApp(String filePath) {
+        try {
+            Uri uri = Uri.parse(filePath);
+            String scheme = uri.getScheme();
+
+            // If it is a Content URI, open the system Downloads folder. Passing file path may cause
+            // FileUriExposedException unless we have a file provider.
+            // TODO(b/503083696): handle the case if the content URI points to external SD card.
+            if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+                Intent intent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                // Ensure the device has an app that can handle the Downloads intent
+                if (intent.resolveActivity(ContextUtils.getApplicationContext().getPackageManager())
+                        != null) {
+                    ContextUtils.getApplicationContext().startActivity(intent);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot open download with system files app", e);
+        }
+        return false;
+    }
+
+    private static boolean openDownloadInFilesAppIfNoHandlerFound() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND);
     }
 
     @NativeMethods

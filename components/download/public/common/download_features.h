@@ -69,6 +69,10 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 // Whether to enable save package for off the record mode.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kEnableSavePackageForOffTheRecord);
+
+// Whether to open the downloaded file in Files app if cannot open in Chrome.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kOpenDownloadInFilesAppIfNoHandlerFound);
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
