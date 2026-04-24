@@ -7651,15 +7651,15 @@ bool ConsumeGridLanesShorthand(bool important,
     }
 
     if (!grid_lanes_template_tracks) {
-      CSSParserTokenStream::State savepoint = stream.Save();
+      CSSParserSavePoint savepoint(stream);
       grid_lanes_template_tracks =
           ConsumeGridTemplatesRowsOrColumns(stream, context, local_context,
                                             /*is_grid_lanes_shorthand=*/true);
       if (grid_lanes_template_tracks) {
         stream.ConsumeWhitespace();
+        savepoint.Release();
         continue;
       }
-      stream.Restore(savepoint);
     }
 
     // If we reach here, nothing was consumed in this iteration.
