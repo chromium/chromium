@@ -420,14 +420,15 @@ def delete_simulator_by_udid(udid, path: str = None):
     LOGGER.error(message)
 
 
-def wipe_simulator_by_udid(udid):
+def wipe_simulator_by_udid(udid, path: str = None):
   """Wipes simulators by its udid.
 
   Args:
     udid: (str) UDID of simulator.
+    path: (str) Path where simulator is located.
   """
-  shutdown_simulator_by_udid(udid)
-  subprocess.check_call(['xcrun', 'simctl', 'erase', udid])
+  shutdown_simulator_by_udid(udid, path)
+  subprocess.check_call(_compose_simctl_cmd(['erase', udid], path))
 
 
 def get_home_directory(platform, version):
@@ -529,7 +530,7 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
       msg_action = "continuing" if boot_attempt == num_attempts - 1 else "retrying"
       LOGGER.info(f"Failed to manually boot simulator{msg_again}. "
                   f"Wiping simulator and {msg_action}.")
-      wipe_simulator_by_udid(sim_udid)
+      wipe_simulator_by_udid(sim_udid, path)
       test_runner.SimulatorTestRunner.kill_simulators()
 
   return False

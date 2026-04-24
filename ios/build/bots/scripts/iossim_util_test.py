@@ -670,7 +670,8 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(
         ['xcrun', 'simctl', 'erase', 'A4E66321-177A-450A-9BA1-488D85B7278E'],
         subprocess_mock.call_args[0][0])
-    mock_shutdown.assert_called_with('A4E66321-177A-450A-9BA1-488D85B7278E')
+    mock_shutdown.assert_called_with('A4E66321-177A-450A-9BA1-488D85B7278E',
+                                     None)
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_get_home_directory(self, subprocess_mock, _, _2):
