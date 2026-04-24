@@ -758,6 +758,21 @@ public class OmniboxResourceProvider {
         return ChromeColors.getPrimaryIconTint(context, isIncognito);
     }
 
+    /**
+     * Resolves the background color for primary icons.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return The primary icon background color.
+     */
+    public static ColorStateList getPrimaryIconBackgroundColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        return ColorStateList.valueOf(
+                IncognitoColors.getColorSurfaceContainer(context, isIncognito));
+    }
+
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public static @ColorInt int getPopupDividerLineColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="?attr/selectableItemBackground"
+    android:focusable="true">
+
+    <FrameLayout
+        android:id="@+id/start_icon_background"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fusebox_button_size"
+        android:background="@drawable/navattach_item_background"
+        android:padding="@dimen/fusebox_carousel_item_icon_bg_padding">
+
+        <ImageView
+            android:id="@+id/start_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            app:tint="@macro/default_icon_color" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/action_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fusebox_carousel_item_text_margin_top"
+        android:gravity="center_horizontal" />
+
+    <!-- Always-hidden view to support duck-typing with the vertical layout. -->
+    <ImageView
+        android:id="@+id/end_icon"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
+</LinearLayout>

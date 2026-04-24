@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
@@ -49,7 +51,12 @@ public class FuseboxPopupUnitTest {
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mViewGroup = mContentView.findViewById(R.id.fusebox_view_group);
         mFuseboxPopup =
-                new FuseboxPopup(mActivity, mPopupWindow, mContentView, mDynamicRectProvider);
+                new FuseboxPopup(
+                        mActivity,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ false);
     }
 
     @Test
@@ -135,5 +142,47 @@ public class FuseboxPopupUnitTest {
     public void testSetPopupState_Floating_clearsAnimation() {
         mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
         verify(mPopupWindow).setAnimationStyle(0);
+    }
+
+    @Test
+    public void testDynamicInflation_VerticalLayout() {
+        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(false);
+
+        // Re-create content view and popup to trigger new inflation logic
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity, mPopupWindow, mContentView, mDynamicRectProvider, false);
+
+        // Verify that we can find the elements
+        Assert.assertNotNull(mFuseboxPopup.mAddCurrentTab);
+        Assert.assertNotNull(mFuseboxPopup.mTabButton);
+        Assert.assertNotNull(mFuseboxPopup.mClipboardButton);
+        Assert.assertNotNull(mFuseboxPopup.mCameraButton);
+        Assert.assertNotNull(mFuseboxPopup.mGalleryButton);
+        Assert.assertNotNull(mFuseboxPopup.mFileButton);
+    }
+
+    @Test
+    public void testDynamicInflation_HorizontalLayout() {
+        OmniboxFeatures.sShowBottomSheetPopup.setForTesting(true);
+
+        // Re-create content view and popup to trigger new inflation logic
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ true);
+
+        // Verify that we can find the elements
+        Assert.assertNotNull(mFuseboxPopup.mAddCurrentTab);
+        Assert.assertNotNull(mFuseboxPopup.mTabButton);
+        Assert.assertNotNull(mFuseboxPopup.mClipboardButton);
+        Assert.assertNotNull(mFuseboxPopup.mCameraButton);
+        Assert.assertNotNull(mFuseboxPopup.mGalleryButton);
+        Assert.assertNotNull(mFuseboxPopup.mFileButton);
     }
 }

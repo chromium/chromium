@@ -41,6 +41,13 @@ public class IncognitoColors {
                 : SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
 
+    /** {@see SemanticColorUtils#getColorSurfaceContainer} */
+    public static @ColorInt int getColorSurfaceContainer(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.gm3_baseline_surface_container_dark)
+                : SemanticColorUtils.getColorSurfaceContainer(context);
+    }
+
     /** {@see SemanticColorUtils#getColorPrimaryContainer} */
     public static @ColorInt int getColorPrimaryContainer(Context context, boolean isIncognito) {
         return isIncognito

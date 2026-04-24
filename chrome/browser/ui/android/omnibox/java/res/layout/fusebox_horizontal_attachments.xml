@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:divider="@drawable/fusebox_attachment_divider"
+    android:showDividers="middle"
+    android:paddingHorizontal="@dimen/fusebox_carousel_padding_horizontal"
+    android:paddingTop="@dimen/fusebox_carousel_padding_vertical"
+    android:paddingBottom="@dimen/fusebox_carousel_padding_vertical">
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_add_current_tab"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_tabs_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_paste_from_clipboard_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_camera_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_picture_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        android:id="@+id/fusebox_pick_file_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+</LinearLayout>

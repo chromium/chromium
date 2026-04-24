@@ -174,7 +174,12 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_image_width">64dp</dimen>
     <dimen name="fusebox_attachment_item_height">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_item_spacing">1dp</dimen>
+
     <dimen name="fusebox_attachment_thumbnail_padding">8dp</dimen>
+    <dimen name="fusebox_carousel_item_icon_bg_padding">16dp</dimen>
+    <dimen name="fusebox_carousel_item_text_margin_top">4dp</dimen>
+    <dimen name="fusebox_carousel_padding_horizontal">16dp</dimen>
+    <dimen name="fusebox_carousel_padding_vertical">4dp</dimen>
     <!-- The remove view is 48x48dp, visible elements should be 18x18dp. (48-18)/2=15 -->
     <dimen name="fusebox_attachment_close_padding">15dp</dimen>
     <dimen name="fusebox_attachment_close_overhang">7dp</dimen>

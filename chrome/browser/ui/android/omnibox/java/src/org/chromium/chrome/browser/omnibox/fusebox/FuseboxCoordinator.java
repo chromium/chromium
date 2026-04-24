@@ -174,7 +174,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         var popup =
                 new FuseboxPopup(
-                        mContext, popupWindowBuilder.build(), popupView, dynamicRectProvider);
+                        mContext,
+                        popupWindowBuilder.build(),
+                        popupView,
+                        dynamicRectProvider,
+                        OmniboxFeatures.sShowBottomSheetPopup.getValue());
 
         mViewHolder = new FuseboxViewHolder(mParent, popup);
         mModel =

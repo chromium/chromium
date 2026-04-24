@@ -101,7 +101,13 @@ public class FuseboxViewBinderUnitTest {
                                 .inflate(R.layout.fusebox_context_popup, /* root= */ null);
         doReturn(popupView).when(mPopupWindow).getContentView();
 
-        mPopup = new FuseboxPopup(activity, mPopupWindow, popupView, mDynamicRectProvider);
+        mPopup =
+                new FuseboxPopup(
+                        activity,
+                        mPopupWindow,
+                        popupView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ false);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.

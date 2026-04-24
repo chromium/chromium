@@ -376,7 +376,10 @@ class FuseboxViewBinder {
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(
                         buttonView.getContext(), brandedColorScheme);
-        themeButton(buttonView, textAppearance, iconTint);
+        ColorStateList iconBackgroundTint =
+                OmniboxResourceProvider.getPrimaryIconBackgroundColor(
+                        buttonView.getContext(), brandedColorScheme);
+        themeButton(buttonView, textAppearance, iconTint, iconBackgroundTint);
 
         @DrawableRes int iconRes = getResIdForIconId(data.iconId);
         setButtonDrawables(buttonView, data.selected, iconRes);
@@ -431,7 +434,10 @@ class FuseboxViewBinder {
     }
 
     private static void themeButton(
-            View buttonView, @StyleRes int textAppearance, ColorStateList iconTint) {
+            View buttonView,
+            @StyleRes int textAppearance,
+            ColorStateList iconTint,
+            ColorStateList iconBackgroundTint) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         TextView textView = holder.mActionText;
         ImageView imageView = holder.mActionIcon;
@@ -445,6 +451,13 @@ class FuseboxViewBinder {
         }
         if (endImageView != null) {
             endImageView.setImageTintList(iconTint);
+        }
+
+        // The icon background is only present for horizontal attachments, so null-checking is
+        // necessary.
+        View iconBackground = buttonView.findViewById(R.id.start_icon_background);
+        if (iconBackground != null) {
+            iconBackground.setBackgroundTintList(iconBackgroundTint);
         }
     }
 
@@ -645,8 +658,10 @@ class FuseboxViewBinder {
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
+        ColorStateList iconBackgroundTint =
+                OmniboxResourceProvider.getPrimaryIconBackgroundColor(context, brandedColorScheme);
         for (View button : view.popup.mButtons) {
-            themeButton(button, textAppearance, iconTint);
+            themeButton(button, textAppearance, iconTint, iconBackgroundTint);
         }
 
         @StyleRes

@@ -22,7 +22,10 @@ found in the LICENSE file.
         android:paddingTop="4dp"
         android:paddingBottom="4dp">
 
-        <include layout="@layout/fusebox_vertical_attachments"/>
+        <ViewStub
+            android:id="@+id/fusebox_attachments_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <View
             style="@style/Fusebox.PopupMenu.Divider"
