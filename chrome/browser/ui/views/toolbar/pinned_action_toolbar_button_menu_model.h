@@ -19,7 +19,9 @@ class BrowserWindowInterface;
 
 extern const ui::ClassProperty<actions::ActionId>* const kActionIdKey;
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarPinElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarUnpinElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarCustomizeElementId);
 
 // PinnedActionToolbarButtonMenuModel is the interface for the showing of the
 // context menu for the buttons in the PinnedToolbarActionsContainer, the

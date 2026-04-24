@@ -62,6 +62,13 @@ class ToolbarAccessibilityTest : public InteractiveBrowserTest,
   // Steps to wait for a context menu and then dismiss it.
   [[nodiscard]] MultiStep DismissContextMenu(ui::ElementIdentifier element_id,
                                              ui::ElementIdentifier menu_id);
+  // Waits for the specified amount of time.
+  [[nodiscard]] StepBuilder DoWaitForTime(base::TimeDelta delay);
+
+  // Wait for a small delay for button layout to settle. Use before clicking
+  // on button elements to avoid clicking on the wrong spot due to outdated
+  // location information.
+  [[nodiscard]] StepBuilder DoWaitForLayout();
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };

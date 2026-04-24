@@ -170,3 +170,25 @@ ToolbarAccessibilityTest::DismissContextMenu(ui::ElementIdentifier element_id,
                          false);
                    }))));
 }
+
+ui::InteractionSequence::StepBuilder ToolbarAccessibilityTest::DoWaitForTime(
+    base::TimeDelta delay) {
+  StepBuilder step = Do(base::BindOnce(
+      [](base::TimeDelta delay) {
+        // Have to allow nestable tasks to use this within a RunTestSequence()
+        // call.
+        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, run_loop.QuitClosure(), delay);
+        run_loop.Run();
+      },
+      delay));
+  step.SetDescription("DoWaitForTime()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+ToolbarAccessibilityTest::DoWaitForLayout() {
+  // Wait for a small delay for button layout to settle.
+  return DoWaitForTime(base::Milliseconds(100));
+}

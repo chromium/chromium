@@ -490,19 +490,23 @@ export class TrackedElementManager {
     target.dispatchEvent(new PointerEvent('pointerdown', {
       bubbles: true,
       composed: true,
-      button: 0,
+      button: 0,  // Left
       pointerId: 1,
       isPrimary: true,
     }));
     target.dispatchEvent(new PointerEvent('pointerup', {
       bubbles: true,
       composed: true,
-      button: 0,
+      button: 0,  // Left
       pointerId: 1,
       isPrimary: true,
     }));
-
-    target.click();
+    target.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      composed: true,
+      button: 0,  // Left
+      detail: 1,  // Single click
+    }));
     return {success: true};
   }
 

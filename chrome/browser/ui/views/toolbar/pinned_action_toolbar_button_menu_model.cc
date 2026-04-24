@@ -29,7 +29,9 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarPinElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarUnpinElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarCustomizeElementId);
 
 namespace {
 // Returns true if the button pin state is managed through prefs instead of
@@ -61,10 +63,12 @@ PinnedActionToolbarButtonMenuModel::PinnedActionToolbarButtonMenuModel(
     : browser_(browser_interface), action_id_(action_id) {
   AddActionSpecificItems();
   // Add the pin/unpin and customize toolbar items.
-  items_.emplace_back(kActionPinActionToToolbar, TYPE_COMMAND);
+  items_.emplace_back(kActionPinActionToToolbar, TYPE_COMMAND,
+                      kPinnedActionToolbarPinElementId);
   items_.emplace_back(kActionUnpinActionFromToolbar, TYPE_COMMAND,
                       kPinnedActionToolbarUnpinElementId);
-  items_.emplace_back(kActionSidePanelShowCustomizeChromeToolbar, TYPE_COMMAND);
+  items_.emplace_back(kActionSidePanelShowCustomizeChromeToolbar, TYPE_COMMAND,
+                      kPinnedActionToolbarCustomizeElementId);
 }
 
 PinnedActionToolbarButtonMenuModel::~PinnedActionToolbarButtonMenuModel() =

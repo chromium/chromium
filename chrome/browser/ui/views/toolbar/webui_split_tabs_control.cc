@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,6 +30,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
@@ -62,7 +65,12 @@ void WebUISplitTabsControl::HandleContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::Rect& screen_rect,
     ui::mojom::MenuSourceType source_type) {
+  if (menu_runner_ && menu_runner_->IsRunning()) {
+    menu_runner_->Cancel();
+    return;
+  }
   BrowserWindowInterface* browser = toolbar_view_->browser_;
+
   if (menu_type == toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction) {
     // Only show "Separate Views" menu if actually in split.
     auto* tab_strip_model = browser->GetTabStripModel();
@@ -75,7 +83,7 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_.reset();
     split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
         tab_strip_model, SplitTabMenuModel::MenuSource::kToolbarButton);
-    RunMenuAt(screen_rect, source_type);
+    RunMenuAt(screen_rect, source_type, /*is_action_menu=*/true);
   } else if (menu_type ==
              toolbar_ui_api::mojom::ContextMenuType::kSplitTabsContext) {
     // Destroy the old menu runner first to avoid a dangling pointer since it
@@ -83,17 +91,30 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_.reset();
     split_tab_menu_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
         browser, kActionSplitTab);
-    RunMenuAt(screen_rect, source_type);
+    RunMenuAt(screen_rect, source_type, /*is_action_menu=*/false);
   }
 }
 
 void WebUISplitTabsControl::RunMenuAt(const gfx::Rect& screen_rect,
-                                      ui::mojom::MenuSourceType source_type) {
+                                      ui::mojom::MenuSourceType source_type,
+                                      bool is_action_menu) {
   last_source_type_for_testing_ = source_type;
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS,
-      base::BindRepeating(&WebUISplitTabsControl::UpdateState,
-                          base::Unretained(this)));
+  if (is_action_menu) {
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS,
+        base::BindRepeating(&WebUISplitTabsControl::UpdateState,
+                            base::Unretained(this)));
+  } else {
+    menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+        split_tab_menu_.get(),
+        base::BindRepeating(&WebUISplitTabsControl::UpdateState,
+                            base::Unretained(this)));
+    std::unique_ptr<views::MenuItemView> root =
+        menu_model_adapter_->CreateMenu();
+
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        std::move(root), views::MenuRunner::HAS_MNEMONICS);
+  }
 
   menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr, screen_rect,
                           views::MenuAnchorPosition::kTopLeft, source_type);
@@ -105,6 +126,11 @@ void WebUISplitTabsControl::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
+    // Force the menu to close if it's open because the active tab may have
+    // changed and invalidated the menu.
+    if (menu_runner_ && menu_runner_->IsRunning()) {
+      menu_runner_->Cancel();
+    }
     UpdateState();
   }
 }

@@ -42,9 +42,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabsToolbarButton,
-                                      kUpdatePinStateMenu);
-
 SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
     : ToolbarButton(
           views::Button::PressedCallback(),
@@ -55,7 +52,6 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarSplitTabsToolbarButtonElementId);
-  set_menu_identifier(kUpdatePinStateMenu);
   SetButtonController(std::make_unique<views::MenuButtonController>(
       this,
       base::BindRepeating(&SplitTabsToolbarButton::ButtonPressed,
@@ -145,6 +141,10 @@ bool SplitTabsToolbarButton::IsActiveTabInSplit() {
 
 void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
   if (IsActiveTabInSplit()) {
+    if (menu_runner_ && menu_runner_->IsRunning()) {
+      menu_runner_->Cancel();
+      return;
+    }
     menu_runner_ = std::make_unique<views::MenuRunner>(
         split_tab_menu_.get(), views::MenuRunner::HAS_MNEMONICS);
     menu_runner_->RunMenuAt(
@@ -161,7 +161,7 @@ void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
 void SplitTabsToolbarButton::UpdateButtonVisibility() {
   // Force the menu to close if it's open because the active tab or split may
   // have changed and invalidated the menu.
-  if (menu_runner_) {
+  if (menu_runner_ && menu_runner_->IsRunning()) {
     menu_runner_->Cancel();
   }
   const bool is_active_tab_in_split = IsActiveTabInSplit();

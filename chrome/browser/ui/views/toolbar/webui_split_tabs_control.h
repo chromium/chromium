@@ -16,6 +16,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
+namespace views {
+class MenuModelAdapter;
+class MenuRunner;
+}  // namespace views
+
 class WebUIToolbarWebView;
 
 // WebUISplitTabsControl implements C++-side functionality for the WebUI-based
@@ -58,7 +63,8 @@ class WebUISplitTabsControl : public TabStripModelObserver {
       const toolbar_ui_api::mojom::SplitTabsControlState* state);
   void UpdateState();
   void RunMenuAt(const gfx::Rect& screen_rect,
-                 ui::mojom::MenuSourceType source_type);
+                 ui::mojom::MenuSourceType source_type,
+                 bool is_action_menu);
 
   raw_ptr<WebUIToolbarWebView> toolbar_view_;
   BooleanPrefMember pin_state_;
@@ -68,6 +74,7 @@ class WebUISplitTabsControl : public TabStripModelObserver {
       ui::mojom::MenuSourceType::kNone;
 
   std::unique_ptr<ui::MenuModel> split_tab_menu_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 

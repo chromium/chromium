@@ -29,6 +29,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/interaction/interaction_test_util_mac.h"
@@ -216,6 +217,8 @@ InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
     : ui::test::internal::InteractiveTestPrivateFrameworkBase(test_impl) {
   test_impl.test_util().AddSimulator(
       std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  test_impl.test_util().AddSimulator(
+      std::make_unique<ui::InteractionTestUtilSimulatorWebUI>());
 #if BUILDFLAG(IS_MAC)
   test_impl.test_util().AddSimulator(
       std::make_unique<ui::test::InteractionTestUtilSimulatorMac>());

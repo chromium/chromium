@@ -55,6 +55,7 @@ source_set("test_support") {
     "//ui/base/interaction:test_support",
     "//ui/views",
     "//ui/views:test_support",
+    "//ui/webui/tracked_element:test_support",
   ]
 
   if (use_ozone) {
