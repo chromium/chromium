@@ -35,10 +35,10 @@ enum class RequestIdTokenStatus {
   // being recorded in metrics and in sync with the counterpart in enums.xml.
   kSuccessUsingTokenInHttpResponse = 0,
   kTooManyRequests = 1,
-  kAborted = 2,
-  kUnhandledRequest = 3,
+  kAborted = 2,  // Can be before OR after the UI display. If after, no cooldown
+  kUnhandledRequest = 3,  // UI closed without cooldown. e.g. top level redirect
   kIdpNotPotentiallyTrustworthy = 4,
-  kNotSelectAccount = 5,
+  kNotSelectAccount = 5,  // UI closed without cooldown. e.g. tab is closed
   kConfigHttpNotFound = 6,
   kConfigNoResponse = 7,
   kConfigInvalidResponse = 8,
@@ -64,7 +64,7 @@ enum class RequestIdTokenStatus {
   kDisabledEmbargo = 28,
   kUserInterfaceTimedOut = 29,  // obsolete
   kRpPageNotVisible = 30,
-  kShouldEmbargo = 31,
+  kShouldEmbargo = 31,  // UI closed with cooldown. e.g. UI dismissed by user
   kNotSignedInWithIdp = 32,
   kAccountsListEmpty = 33,
   kWellKnownListEmpty = 34,
@@ -501,6 +501,7 @@ class CONTENT_EXPORT Metrics {
   // Records several auto reauthn metrics using the given parameters.
   // |has_single_returning_account| is nullopt when we are recording the metrics
   // during a failure that happened before the accounts fetch.
+  // This is only recorded when `mediation` is not `required`.
   void RecordAutoReauthnMetrics(
       std::optional<bool> has_single_returning_account,
       const IdentityRequestAccount* auto_signin_account,
