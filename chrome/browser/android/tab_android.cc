@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
@@ -57,6 +58,9 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/performance_manager/public/resource_attribution/queries.h"
+#include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/supports_handles.h"
@@ -435,6 +439,43 @@ void TabAndroid::InitWebContents(
   for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
   }
+}
+
+void TabAndroid::GetMemoryUsageBytes(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_callback) {
+  if (!web_contents_) {
+    base::android::RunLongCallbackAndroid(j_callback, 0);
+    return;
+  }
+
+  std::optional<resource_attribution::PageContext> page_context =
+      resource_attribution::PageContext::FromWebContents(web_contents_.get());
+
+  if (!page_context.has_value()) {
+    base::android::RunLongCallbackAndroid(j_callback, 0);
+    return;
+  }
+
+  base::android::ScopedJavaGlobalRef<jobject> global_callback(env, j_callback);
+
+  resource_attribution::QueryBuilder()
+      .AddResourceType(resource_attribution::ResourceType::kMemorySummary)
+      .AddResourceContext(page_context.value())
+      .QueryOnce(base::BindOnce(
+          [](base::android::ScopedJavaGlobalRef<jobject> callback,
+             const resource_attribution::QueryResultMap& results) {
+            int64_t bytes_used = 0;
+            for (const auto& [context, result] : results) {
+              if (result.memory_summary_result.has_value()) {
+                bytes_used =
+                    result.memory_summary_result->private_footprint.InBytes();
+                break;
+              }
+            }
+            base::android::RunLongCallbackAndroid(callback, bytes_used);
+          },
+          global_callback));
 }
 
 void TabAndroid::InitializeAutofillIfNecessary() {

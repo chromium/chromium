@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -513,4 +514,9 @@ public interface Tab extends TabLifecycle {
 
     /** Resets the offscreen rendering state for this tab. */
     void stopOffscreenRendering();
+
+    /** Gets the memory usage of this tab in bytes asynchronously. */
+    default void getMemoryUsageBytes(Callback<Long> callback) {
+        callback.onResult(0L);
+    }
 }

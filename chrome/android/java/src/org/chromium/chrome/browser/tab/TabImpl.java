@@ -1228,6 +1228,15 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public void getMemoryUsageBytes(Callback<Long> callback) {
+        if (mNativeTabAndroid == 0) {
+            callback.onResult(0L);
+            return;
+        }
+        TabImplJni.get().getMemoryUsageBytes(mNativeTabAndroid, callback);
+    }
+
+    @Override
     public void destroy() {
         destroyInternal(/* deleteNativeWebContents= */ true);
     }
@@ -3053,6 +3062,8 @@ class TabImpl implements Tab {
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
 
         void initializeAutofillIfNecessary(long nativeTabAndroid);
+
+        void getMemoryUsageBytes(long nativeTabAndroid, Callback<Long> callback);
 
         void updateDelegates(
                 long nativeTabAndroid,

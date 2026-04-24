@@ -207,6 +207,8 @@ class TabAndroid : public tabs::TabInterface,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
   void InitializeAutofillIfNecessary();
+  void GetMemoryUsageBytes(JNIEnv* env,
+                           const base::android::JavaRef<jobject>& j_callback);
   void UpdateDelegates(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
