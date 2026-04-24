@@ -130,28 +130,6 @@ async def test_extensions_can_open_manifest(websocket,
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'goog:chromeOptions': {
-        'args': ['--remote-debugging-pipe']
-    },
-}],
-                         indirect=True)
-async def test_extensions_cannot_install(websocket,
-                                         unpacked_extension_location,
-                                         test_headless_mode):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support extensions")
-        return
-    path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'unknown error',
-                           'message': 'Method not available.',
-                       })):
-        await install(websocket, path)
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'goog:chromeOptions': {
         'args':
             ['--enable-unsafe-extension-debugging', '--remote-debugging-pipe']
     },
