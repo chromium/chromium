@@ -141,6 +141,8 @@ declare_args() {
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "ENABLE_USER_SPACE_ZERO_SEGMENT=$enable_user_space_zero_segment",
+    "USER_SPACE_ZERO_SEGMENT_SIZE_MB=$user_space_zero_segment_size_mb",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
@@ -1153,6 +1155,7 @@ if (build_with_chromium) {
       sources += [
         "hardening_unittest.cc",
         "page_allocator_unittest.cc",
+        "partition_address_space_unittest.cc",
         "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
         "partition_alloc_unittest.cc",
         "slot_start_unittest.cc",

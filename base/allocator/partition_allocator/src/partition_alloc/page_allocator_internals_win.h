@@ -248,6 +248,10 @@ bool SealSystemPagesInternal(uintptr_t address, size_t length) {
   return false;
 }
 
+size_t GetZeroSegmentSizeFromOS() {
+  return 0;
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_

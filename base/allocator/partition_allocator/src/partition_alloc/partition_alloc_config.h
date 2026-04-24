@@ -260,4 +260,12 @@ constexpr bool kUseFewerMemoryRegions =
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
+// Enables Zero Segment maintained by PA.
+#define PA_CONFIG_ENABLE_USER_SPACE_ZERO_SEGMENT() \
+  PA_BUILDFLAG(ENABLE_USER_SPACE_ZERO_SEGMENT)
+
+// Size of the Zero Segment in MB.
+#define PA_CONFIG_USER_SPACE_ZERO_SEGMENT_SIZE_MB() \
+  PA_BUILDFLAG(USER_SPACE_ZERO_SEGMENT_SIZE_MB)
+
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_

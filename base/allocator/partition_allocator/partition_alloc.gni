@@ -569,6 +569,28 @@ declare_args() {
       is_android && (current_cpu == "x64" || current_cpu == "arm64")
 }
 
+declare_args() {
+  # Enables the zero segment in user-space in PartitionAlloc. This segment is
+  # similar to Mach-O's __PAGEZERO segment in that it ensures that a certain
+  # range of virtual address space can never be allocated as writable.
+  #
+  # This is a feature required by the V8 Sandbox.
+  #
+  # We can only enable this on 64-bit builds and when PA is used as malloc to
+  # get hooks early enough to reserve the segment.
+  #
+  # TODO(40925855): Enable this on all supported platforms. Android can only
+  # be enabled after switching to native zygote.
+  enable_user_space_zero_segment =
+      has_64_bit_pointers && use_partition_alloc_as_malloc &&
+      (is_mac || (is_linux && !is_chromeos && !is_android))
+
+  # Size of the zero segment in MB. The total size will be at least this value.
+  # This is 4GB + 1MB. The 1MB protects from using certain kinds of objects
+  # at the 4G boundary.
+  user_space_zero_segment_size_mb = 4097
+}
+
 # Activates bounds checks for two-arg constructor of `base::span`.
 #
 # We actively exclude sanitizer builds because they show us a data race

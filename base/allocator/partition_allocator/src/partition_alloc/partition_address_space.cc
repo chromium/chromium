@@ -17,6 +17,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/compressed_pointer.h"
 #include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator_internal.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
@@ -96,6 +97,10 @@ MetadataInnerOffset(pool_handle pool) {
 
 PA_CONSTINIT PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
+#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
+size_t PartitionAddressSpace::zero_segment_size_ = 0;
+#endif
+
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 PA_CONSTINIT std::array<std::ptrdiff_t, kMaxPoolHandle>
     PartitionAddressSpace::offsets_to_metadata_ = {
@@ -156,6 +161,10 @@ void PartitionAddressSpace::Init() {
   if (IsInitialized()) {
     return;
   }
+
+#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
+  InitZeroSegment();
+#endif
 
   const size_t core_pool_size = CorePoolSize();
 
@@ -232,6 +241,39 @@ void PartitionAddressSpace::Init() {
   InitMetadataRegionAndOffsets();
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 }
+
+#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
+void PartitionAddressSpace::InitZeroSegment() {
+  if (zero_segment_size_) {
+    return;
+  }
+
+  zero_segment_size_ = GetZeroSegmentSizeFromOS();
+
+  const size_t min_zero_segment_size =
+      static_cast<size_t>(PA_CONFIG(USER_SPACE_ZERO_SEGMENT_SIZE_MB)) * 1024 *
+      1024;
+  // If the minimum zero segment returned from the OS is already big enough, we
+  // are good.
+  if (zero_segment_size_ >= min_zero_segment_size) {
+    return;
+  }
+
+  // Otherwise, try to allocate more pages trailing the OS parts.
+  const size_t allocation_size = min_zero_segment_size - zero_segment_size_;
+  const uintptr_t hint_address = zero_segment_size_;
+  const uintptr_t allocated_base =
+      AllocPages(hint_address, allocation_size, PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessible),
+                 PageTag::kPartitionAlloc);
+  if (allocated_base == hint_address) {
+    zero_segment_size_ += allocation_size;
+  } else if (allocated_base) {
+    FreePages(allocated_base, allocation_size);
+  }
+}
+#endif  // PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
                                                  size_t size) {
