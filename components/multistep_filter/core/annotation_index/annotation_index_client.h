@@ -20,6 +20,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace multistep_filter {
 
 struct FilterAnnotation;
@@ -45,7 +49,7 @@ class AnnotationIndexClient {
   // Creates a default instance of `AnnotationIndexClient`.
   static std::unique_ptr<AnnotationIndexClient> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      version_info::Channel channel);
+      signin::IdentityManager* identity_manager);
 
   virtual ~AnnotationIndexClient() = default;
 

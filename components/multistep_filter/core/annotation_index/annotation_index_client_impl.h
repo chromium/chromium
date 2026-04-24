@@ -5,17 +5,20 @@
 #ifndef COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_IMPL_H_
 #define COMPONENTS_MULTISTEP_FILTER_CORE_ANNOTATION_INDEX_ANNOTATION_INDEX_CLIENT_IMPL_H_
 
+#include <list>
+#include <map>
 #include <optional>
 #include <string_view>
-#include <list>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/version_info/channel.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace network {
@@ -23,6 +26,11 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 struct ResourceRequest;
 }  // namespace network
+
+namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
 
 namespace multistep_filter {
 
@@ -33,7 +41,7 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
  public:
   AnnotationIndexClientImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      version_info::Channel channel);
+      signin::IdentityManager* identity_manager);
   ~AnnotationIndexClientImpl() override;
 
   // AnnotationIndexClient overrides:
@@ -60,11 +68,6 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
-  // Creates a resource POST request for the given endpoint.
-  std::unique_ptr<network::ResourceRequest> CreatePostResourceRequest(
-      const GURL& api_base_url,
-      std::string_view endpoint) const;
-
   // Centralized helper to launch a network request. It creates the loader,
   // stores it in `active_url_loaders_` to keep it alive, and dispatches the
   // network request. It forwards the raw response to the provided callback.
@@ -83,12 +86,21 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   // Returns the base URL for the `SiteAutomationIndexServer` server APIs.
   GURL GetIndexServerApiBaseUrl() const;
 
- protected:
-  AnnotationIndexClientImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::string api_key);
+  // Callback invoked when the access token is fetched.
+  void OnAccessTokenFetched(
+      base::UnguessableToken fetcher_id,
+      std::unique_ptr<network::ResourceRequest> request,
+      std::string request_body,
+      base::OnceCallback<void(std::optional<std::string>)> callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
 
- private:
+  // Starts the URL loader to perform the network request.
+  void StartLoader(
+      std::unique_ptr<network::ResourceRequest> request,
+      std::string request_body,
+      base::OnceCallback<void(std::optional<std::string>)> callback);
+
   // The factory used to instantiate network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -96,8 +108,12 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   // list immediately cancels its underlying network traffic.
   SimpleURLLoaderList active_url_loaders_;
 
-  // API key to be used for the requests.
-  std::string api_key_;
+  // The identity manager used to fetch access tokens.
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Holds all currently active access token fetchers.
+  std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
+      active_fetchers_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

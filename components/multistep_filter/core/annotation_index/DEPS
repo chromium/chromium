@@ -1,5 +1,7 @@
 include_rules = [
   "+components/google/core/common",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/version_info",
   "+google_apis",
   "+net/base",

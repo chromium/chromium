@@ -19,8 +19,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/google/core/common/google_util.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_conversion_util.h"
 #include "components/multistep_filter/core/annotation_index/proto/annotation_index.pb.h"
@@ -28,9 +31,12 @@
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/switches.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/channel.h"
-#include "google_apis/common/api_key_request_util.h"
-#include "google_apis/google_api_keys.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -121,10 +127,6 @@ bool IsHttpSuccess(int response_code) {
   return response_code >= 200 && response_code < 300;
 }
 
-std::string GetAPIKeyForUrl(version_info::Channel channel) {
-  return google_apis::GetAPIKey(channel);
-}
-
 template <typename ProtoType, typename ResultType, typename ReturnType>
 base::OnceCallback<void(std::optional<std::string>)> BindParseAndConvert(
     base::OnceCallback<void(std::optional<ResultType>)> callback,
@@ -142,29 +144,34 @@ base::OnceCallback<void(std::optional<std::string>)> BindParseAndConvert(
       std::move(callback), convert_func);
 }
 
+std::unique_ptr<network::ResourceRequest> CreatePostResourceRequest(
+    const GURL& api_base_url,
+    std::string_view endpoint) {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = api_base_url.Resolve(endpoint);
+  request->method = kPostMethod;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  return request;
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<AnnotationIndexClient> AnnotationIndexClient::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    version_info::Channel channel) {
+    signin::IdentityManager* identity_manager) {
   return std::make_unique<AnnotationIndexClientImpl>(
-      std::move(url_loader_factory), channel);
+      std::move(url_loader_factory), identity_manager);
 }
 
 // TODO(crbug.com/483673955): Add UMA metrics for latency, traffic, and error
 // tracking.
 AnnotationIndexClientImpl::AnnotationIndexClientImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    version_info::Channel channel)
-    : AnnotationIndexClientImpl(std::move(url_loader_factory),
-                                GetAPIKeyForUrl(channel)) {}
-
-AnnotationIndexClientImpl::AnnotationIndexClientImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::string api_key)
+    signin::IdentityManager* identity_manager)
     : url_loader_factory_(std::move(url_loader_factory)),
-      api_key_(std::move(api_key)) {}
+      identity_manager_(identity_manager) {}
 
 AnnotationIndexClientImpl::~AnnotationIndexClientImpl() = default;
 
@@ -218,26 +225,83 @@ void AnnotationIndexClientImpl::ExtractFilterAnnotation(
       BindParseAndConvert(std::move(callback), &ToFilterAnnotation));
 }
 
-std::unique_ptr<network::ResourceRequest>
-AnnotationIndexClientImpl::CreatePostResourceRequest(
-    const GURL& api_base_url,
-    std::string_view endpoint) const {
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = api_base_url.Resolve(endpoint);
-  request->method = kPostMethod;
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  // Add API key to the request if a key exists, and the endpoint is trusted by
-  // Google.
-  if (!api_key_.empty() && request->url.SchemeIs(url::kHttpsScheme) &&
-      google_util::IsGoogleAssociatedDomainUrl(request->url)) {
-    google_apis::AddAPIKeyToRequest(*request, api_key_);
+void AnnotationIndexClientImpl::ExecuteRequest(
+    std::unique_ptr<network::ResourceRequest> request,
+    std::string request_body,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  if (!request->url.SchemeIs(url::kHttpsScheme) ||
+      !google_util::IsGoogleAssociatedDomainUrl(request->url)) {
+    StartLoader(std::move(request), std::move(request_body),
+                std::move(callback));
+    return;
   }
 
-  return request;
+  if (!identity_manager_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const base::UnguessableToken fetcher_id = base::UnguessableToken::Create();
+  auto finished = base::MakeRefCounted<base::RefCountedData<bool>>(false);
+
+  std::unique_ptr<signin::AccessTokenFetcher> fetcher =
+      identity_manager_->CreateAccessTokenFetcherForAccount(
+          account_id, signin::OAuthConsumerId::kMultistepFilter,
+          base::BindOnce(
+              [](scoped_refptr<base::RefCountedData<bool>> fin,
+                 base::WeakPtr<AnnotationIndexClientImpl> client,
+                 base::UnguessableToken fetcher_id,
+                 std::unique_ptr<network::ResourceRequest> request,
+                 std::string request_body,
+                 base::OnceCallback<void(std::optional<std::string>)> callback,
+                 GoogleServiceAuthError error,
+                 signin::AccessTokenInfo access_token_info) {
+                fin->data = true;
+                if (client) {
+                  client->OnAccessTokenFetched(
+                      fetcher_id, std::move(request), std::move(request_body),
+                      std::move(callback), error, access_token_info);
+                }
+              },
+              finished, weak_ptr_factory_.GetWeakPtr(), fetcher_id,
+              std::move(request), std::move(request_body), std::move(callback)),
+          signin::AccessTokenFetcher::Mode::kImmediate);
+
+  if (!finished->data) {
+    active_fetchers_[fetcher_id] = std::move(fetcher);
+  }
 }
 
-void AnnotationIndexClientImpl::ExecuteRequest(
+void AnnotationIndexClientImpl::OnAccessTokenFetched(
+    base::UnguessableToken fetcher_id,
+    std::unique_ptr<network::ResourceRequest> request,
+    std::string request_body,
+    base::OnceCallback<void(std::optional<std::string>)> callback,
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  active_fetchers_.erase(fetcher_id);
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  DCHECK(request->url.SchemeIs(url::kHttpsScheme));
+  DCHECK(google_util::IsGoogleAssociatedDomainUrl(request->url));
+
+  request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                             "Bearer " + access_token_info.token);
+  StartLoader(std::move(request), std::move(request_body), std::move(callback));
+}
+
+void AnnotationIndexClientImpl::StartLoader(
     std::unique_ptr<network::ResourceRequest> request,
     std::string request_body,
     base::OnceCallback<void(std::optional<std::string>)> callback) {

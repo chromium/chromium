@@ -24,7 +24,10 @@
 #include "components/multistep_filter/core/data_models/filter_suggestion_candidate.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/common/api_key_request_test_util.h"
+#include "net/http/http_request_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -39,10 +42,10 @@ namespace multistep_filter {
 namespace {
 
 constexpr char kTestApiUrl[] = "https://api.googleapis.com/test/";
-constexpr char kTestNonGoogleApiUrl[] = "https://api.example.com/test/";
+
 constexpr char kTestSwitchApiUrl[] = "https://switch.example.com/api/";
 constexpr char kTestInvalidUrl[] = "invalid_url";
-constexpr char kDummyApiKey[] = "dummykey";
+
 constexpr char kTestUrl[] = "https://example.com/test";
 constexpr char kTestExtractUrl[] = "https://example.com/path?q=1";
 constexpr char kTestSuggestionUrl[] = "https://travel.com/flights?min=100";
@@ -56,6 +59,17 @@ constexpr char kTestTaskType[] = "SEARCH_FLIGHTS";
 constexpr char kTestAttributeKey[] = "PRICE_MIN";
 constexpr char kTestAttributeValue[] = "100";
 constexpr char kTestAttributeLabel[] = "Min Price";
+
+constexpr char kTestApiBody[] = "test api body";
+constexpr char kTestFakeSuccessResponse[] = "fake success response";
+
+std::unique_ptr<network::ResourceRequest> CreateRequest(
+    const std::string& url_spec) {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL(url_spec);
+  request->method = "POST";
+  return request;
+}
 
 // Extracts the string payload from a URLLoader request body.
 std::string GetStringFromDataElements(
@@ -87,10 +101,12 @@ class AnnotationIndexClientImplTest : public testing::Test {
   AnnotationIndexClientImplTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        client_(AnnotationIndexClientImplTestApi::CreateManagerForApiKey(
-            test_shared_loader_factory_,
-            "dummykey")) {
+                &test_url_loader_factory_)) {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    client_ = std::make_unique<AnnotationIndexClientImpl>(
+        test_shared_loader_factory_, identity_test_env_.identity_manager());
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kMultistepFilter,
         {{kMultistepFilterIndexServerApiBaseUrl.name, kTestApiUrl}});
@@ -142,6 +158,7 @@ class AnnotationIndexClientImplTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
@@ -167,9 +184,6 @@ TEST_F(AnnotationIndexClientImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url.spec(),
             std::string(kTestApiUrl) + "GetTaskExecutionStrategies");
-  EXPECT_EQ(
-      google_apis::test_util::GetAPIKeyFromRequest(pending_request->request),
-      kDummyApiKey);
   GetTaskExecutionStrategiesRequest request_proto;
   ASSERT_TRUE(
       GetRequestProtoFromPendingRequest(pending_request, &request_proto));
@@ -270,9 +284,6 @@ TEST_F(AnnotationIndexClientImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url.spec(),
             std::string(kTestApiUrl) + "GetSupportedTasks");
-  EXPECT_EQ(
-      google_apis::test_util::GetAPIKeyFromRequest(pending_request->request),
-      kDummyApiKey);
   GetSupportedTasksRequest request_proto;
   ASSERT_TRUE(
       GetRequestProtoFromPendingRequest(pending_request, &request_proto));
@@ -359,9 +370,6 @@ TEST_F(AnnotationIndexClientImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url.spec(),
             std::string(kTestApiUrl) + "ExtractTaskAttributes");
-  EXPECT_EQ(
-      google_apis::test_util::GetAPIKeyFromRequest(pending_request->request),
-      kDummyApiKey);
   ExtractTaskAttributesRequest request_proto;
   ASSERT_TRUE(
       GetRequestProtoFromPendingRequest(pending_request, &request_proto));
@@ -433,31 +441,6 @@ TEST_F(AnnotationIndexClientImplTest,
   EXPECT_FALSE(future.Take().has_value());
 }
 
-TEST_F(AnnotationIndexClientImplTest, ApiKeyIncludedInRequest) {
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
-
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  EXPECT_EQ(
-      google_apis::test_util::GetAPIKeyFromRequest(pending_request->request),
-      kDummyApiKey);
-}
-
-TEST_F(AnnotationIndexClientImplTest, NoApiKeyForNonGoogleDomains) {
-  OverrideBaseUrlWithSwitch(kTestNonGoogleApiUrl);
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-  client_->GetSupportedTaskTypesForDomain(kTestDomain, future.GetCallback());
-
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  EXPECT_FALSE(google_apis::test_util::HasAPIKey(pending_request->request));
-}
-
 TEST_F(AnnotationIndexClientImplTest, BaseUrlOverriddenBySwitch) {
   OverrideBaseUrlWithSwitch(kTestSwitchApiUrl);
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
@@ -517,6 +500,94 @@ TEST_F(AnnotationIndexClientImplTest, LoaderCleanedUpAfterCompletion) {
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   SimulateEmptyResponse(test_url_loader_factory_.GetPendingRequest(0));
   EXPECT_TRUE(future.Take().has_value());
+}
+
+TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthSuccess) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  auto client = std::make_unique<AnnotationIndexClientImpl>(
+      test_shared_loader_factory_, identity_test_env_.identity_manager());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+
+  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
+                                   std::string(kTestApiBody),
+                                   future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+
+  std::optional<std::string> auth_header = request->request.headers.GetHeader(
+      net::HttpRequestHeaders::kAuthorization);
+  EXPECT_TRUE(auth_header.has_value());
+  EXPECT_EQ(*auth_header, "Bearer access_token");
+
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, kTestFakeSuccessResponse);
+
+  std::optional<std::string> result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(*result, kTestFakeSuccessResponse);
+}
+
+TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_SignedOutFails) {
+  // We use a local IdentityTestEnvironment here instead of the fixture's one
+  // because we need a signed-out state, and ClearPrimaryAccount() hits a
+  // NOTREACHED() on ChromeOS.
+  signin::IdentityTestEnvironment identity_test_env;
+
+  auto client = std::make_unique<AnnotationIndexClientImpl>(
+      test_shared_loader_factory_, identity_test_env.identity_manager());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+
+  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
+                                   std::string(kTestApiBody),
+                                   future.GetCallback());
+
+  // Should fail immediately without sending request.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(future.Take().has_value());
+}
+
+TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthFailure) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  auto client = std::make_unique<AnnotationIndexClientImpl>(
+      test_shared_loader_factory_, identity_test_env_.identity_manager());
+
+  base::test::TestFuture<std::optional<std::string>> future;
+
+  test_api(*client).ExecuteRequest(CreateRequest(kTestApiUrl),
+                                   std::string(kTestApiBody),
+                                   future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  // Should fail after token fetch failure, without sending request.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(future.Take().has_value());
+}
+
+TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_NonGoogleDomainNoToken) {
+  OverrideBaseUrlWithSwitch("https://non-google.com/api/");
+  base::test::TestFuture<std::optional<std::string>> future;
+
+  test_api(*client_).ExecuteRequest(
+      CreateRequest("https://non-google.com/api/test"),
+      std::string(kTestApiBody), future.GetCallback());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+
+  EXPECT_FALSE(request->request.headers.HasHeader(
+      net::HttpRequestHeaders::kAuthorization));
 }
 
 }  // namespace
