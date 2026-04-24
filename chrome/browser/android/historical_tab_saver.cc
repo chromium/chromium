@@ -169,7 +169,6 @@ void CreateHistoricalBulkClosure(
   DCHECK(model);
   DCHECK_EQ(tab_group_ids.size(), group_titles.size());
   DCHECK_EQ(tab_group_ids.size(), group_colors.size());
-  DCHECK_EQ(tab_group_ids.size(), tab_group_ids.size());
   DCHECK_EQ(tab_group_ids.size(), saved_tab_group_ids.size());
   DCHECK_EQ(per_tab_optional_tab_group_ids.size(), tabs.size());
 
