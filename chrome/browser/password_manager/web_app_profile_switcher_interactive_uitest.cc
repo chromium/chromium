@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
       web_app::AppBrowserController::FindForWebApp(*second_profile,
                                                    ash::kPasswordManagerAppId);
   ASSERT_TRUE(second_profile_app_browser);
-  EXPECT_EQ(chrome::FindLastActive(),
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
             second_profile_app_browser->GetBrowserForMigrationOnly());
 
   // Switch to the first profile from the second.

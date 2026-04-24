@@ -6,6 +6,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +30,8 @@ IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
   // We now have two browsers, one for the chrome window, one for the Camera
   // app.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(main_camera_app_url, chrome::FindLastActive()
+  EXPECT_EQ(main_camera_app_url, GlobalBrowserCollection::GetInstance()
+                                     ->GetLastActiveBrowser()
                                      ->GetTabStripModel()
                                      ->GetActiveWebContents()
                                      ->GetVisibleURL());

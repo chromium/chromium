@@ -18,10 +18,10 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,7 +49,8 @@ NSString* const kRemindersSharingServiceName =
     @"com.apple.reminders.RemindersShareExtension";
 
 bool CanShare() {
-  BrowserWindowInterface* last_active_browser = chrome::FindLastActive();
+  BrowserWindowInterface* last_active_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   return last_active_browser &&
          last_active_browser->GetFeatures()
              .location_bar_model()
@@ -237,7 +238,8 @@ bool CanShare() {
 // Performs the share action using the sharing service represented by |sender|.
 - (void)performShare:(NSMenuItem*)sender {
   CHECK(CanShare());
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   CHECK(browser);
 
   content::WebContents* contents =
@@ -279,7 +281,8 @@ bool CanShare() {
 
 - (void)emailLink:(id)sender {
   CHECK(CanShare());
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   CHECK(browser);
 
   content::WebContents* contents =

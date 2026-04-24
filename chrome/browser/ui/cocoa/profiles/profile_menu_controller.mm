@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -61,7 +60,8 @@ class Observer : public BrowserCollectionObserver, public AvatarMenuObserver {
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    BrowserWindowInterface* last_active = chrome::FindLastActive();
+    BrowserWindowInterface* last_active =
+        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     [controller_
         activeBrowserChangedTo:last_active
                                    ? last_active->GetBrowserForMigrationOnly()

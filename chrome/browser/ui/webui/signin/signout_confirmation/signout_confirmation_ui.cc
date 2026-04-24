@@ -9,8 +9,8 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -108,7 +108,8 @@ void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
   // handler with sample data.
   if (!initialize_handler_callback_) {
     CHECK_IS_TEST();
-    BrowserWindowInterface* browser = chrome::FindLastActive();
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     Initialize(browser->GetBrowserForMigrationOnly(),
                ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
                /*unsynced_data_count=*/0, base::DoNothing());

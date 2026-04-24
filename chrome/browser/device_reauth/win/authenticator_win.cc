@@ -34,9 +34,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/views/win/hwnd_util.h"
@@ -177,7 +177,8 @@ void GetBiometricAvailabilityFromWindows(
 
 void AuthenticateWithLegacyApi(const std::u16string& message,
                                base::OnceCallback<void(bool)> result_callback) {
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -299,7 +300,8 @@ void PerformInteropWindowsHelloAuthenticationAsync(
   }
   ComPtr<IAsyncOperation<UserConsentVerificationResult>> async_op;
 
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     RecordWindowsHelloAuthenticationResult(
         AuthenticationResultStatusWin::kFailedToFindBrowser);

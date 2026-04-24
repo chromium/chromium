@@ -738,7 +738,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
-  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
+  EXPECT_EQ(incognito_browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -792,7 +793,8 @@ IN_PROC_BROWSER_TEST_F(
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
+  EXPECT_EQ(incognito_browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -810,7 +812,8 @@ IN_PROC_BROWSER_TEST_F(
   event_navigation_observer.Wait();
   // Check that a new regular browser is opened
   // and the url is opened in the regular browser.
-  BrowserWindowInterface* new_browser = chrome::FindLastActive();
+  BrowserWindowInterface* new_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_TRUE(new_browser->GetProfile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->GetProfile());
@@ -832,7 +835,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
   EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
   guest_browser->window()->Show();
-  EXPECT_EQ(guest_browser, chrome::FindLastActive());
+  EXPECT_EQ(guest_browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -886,7 +890,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   event_navigation_observer.Wait();
   // Check that a new incognito browser is opened
   // and the url is opened in the incognito browser.
-  BrowserWindowInterface* new_browser = chrome::FindLastActive();
+  BrowserWindowInterface* new_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_TRUE(new_browser->GetProfile()->IsIncognitoProfile());
   EXPECT_TRUE(new_browser->GetProfile()->IsPrimaryOTRProfile());
@@ -926,7 +931,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
-  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
+  EXPECT_EQ(incognito_browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
   // lost focus because of other browser processes in other shards taking
   // focus. It prevents flakiness.
@@ -1064,7 +1070,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
 
   // It should be opened in a new browser in the second profile.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  BrowserWindowInterface* new_browser = chrome::FindLastActive();
+  BrowserWindowInterface* new_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   EXPECT_EQ(profile2_ptr, new_browser->GetProfile());
   EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
   EXPECT_EQ(simple, new_browser->GetTabStripModel()

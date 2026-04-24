@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1055,7 +1056,10 @@ IN_PROC_BROWSER_TEST_F(
   // the browser's backing ui::BaseWindow.
   const auto activate_browser = [](BrowserWindowInterface* browser) {
     // We must fake deactivation the previously activated browser first.
-    chrome::FindLastActive()->GetBrowserForMigrationOnly()->DidBecomeInactive();
+    GlobalBrowserCollection::GetInstance()
+        ->GetLastActiveBrowser()
+        ->GetBrowserForMigrationOnly()
+        ->DidBecomeInactive();
 
     // Simulate activation of `browser`.
     browser->GetBrowserForMigrationOnly()->DidBecomeActive();

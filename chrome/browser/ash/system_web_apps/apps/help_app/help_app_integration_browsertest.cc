@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -121,7 +122,10 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
 using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
 
 content::WebContents* GetActiveWebContents() {
-  return chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents();
+  return GlobalBrowserCollection::GetInstance()
+      ->GetLastActiveBrowser()
+      ->GetTabStripModel()
+      ->GetActiveWebContents();
 }
 
 class HelpAppIntegrationTestWithAutoTriggerDisabled
@@ -520,7 +524,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2NavigateOnRelaunch) {
   navigation_observer.Wait();
 
   // LaunchApp should navigate the existing window and not open any new windows.
-  EXPECT_EQ(browser, chrome::FindLastActive());
+  EXPECT_EQ(browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 }
 
@@ -785,7 +790,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
-  EXPECT_EQ(browser(), chrome::FindLastActive());
+  EXPECT_EQ(browser(),
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // The active tab should be the `test_url` we opened.
   EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
 }
@@ -839,7 +845,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
-  EXPECT_EQ(browser(), chrome::FindLastActive());
+  EXPECT_EQ(browser(),
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // The active tab should be the `test_url` we opened.
   EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
 

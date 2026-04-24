@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
@@ -809,7 +810,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, DISABLED_WindowActivation) {
 
 IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  BrowserWindowInterface* const browser1 = chrome::FindLastActive();
+  BrowserWindowInterface* const browser1 =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_TRUE(browser1);
 
   Browser* const browser2 = CreateBrowser(profile());
@@ -1993,7 +1995,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // A second activation should not create a new instance.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  BrowserWindowInterface* browser1 = chrome::FindLastActive();
+  BrowserWindowInterface* browser1 =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   EXPECT_TRUE(browser1);
   Browser* browser2 = CreateBrowser(profile());
 
@@ -2063,7 +2066,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
 
   // Check that we have two browsers and the inactive browser remained inactive.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(chrome::FindLastActive(), browser());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
+            browser());
   EXPECT_TRUE(browser()->window()->IsActive());
 
   // Now request to either activate an existing app or create a new one.
@@ -2074,7 +2078,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(tab_count1, tab_strip->count());
   EXPECT_EQ(tab_count2, tab_strip2->count());
-  EXPECT_EQ(chrome::FindLastActive(), browser2);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
+            browser2);
   EXPECT_TRUE(browser2->window()->IsActive());
 }
 
@@ -2120,7 +2125,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_GE(time_after_launch, time_launch);
 
   // Minimize Window.
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_TRUE(browser);
   browser->GetWindow()->Minimize();
   EXPECT_TRUE(browser->GetWindow()->IsMinimized());

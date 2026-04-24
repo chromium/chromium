@@ -64,7 +64,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -419,7 +419,8 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
   // because the bubble takes the focus from the other widgets including the
   // browser windows. So it is checked that |browser| is the last activated
   // browser, not is now activated.
-  if (browser != chrome::FindLastActive()) {
+  if (browser !=
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser()) {
     return ShowTranslateBubbleResult::kBrowserWindowNotActive;
   }
 

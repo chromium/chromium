@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
@@ -190,8 +191,10 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // The opened Settings window should be the active browser.
-  content::WebContents* web_contents =
-      chrome::FindLastActive()->GetTabStripModel()->GetWebContentsAt(0);
+  content::WebContents* web_contents = GlobalBrowserCollection::GetInstance()
+                                           ->GetLastActiveBrowser()
+                                           ->GetTabStripModel()
+                                           ->GetWebContentsAt(0);
   EXPECT_EQ(ash::kChromeUIOSSettingsHost, web_contents->GetURL().GetHost());
 
   // Showing an OS sub-page reuses the OS settings window.

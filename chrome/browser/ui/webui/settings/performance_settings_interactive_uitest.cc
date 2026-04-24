@@ -16,8 +16,8 @@
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
@@ -195,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsCrosInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackDialogElementId);
   CreateBrowserWindow(
       GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)));
-  BrowserWindowInterface* const browser = chrome::FindLastActive();
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
@@ -340,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackDialogElementId);
   CreateBrowserWindow(
       GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)));
-  BrowserWindowInterface* const browser = chrome::FindLastActive();
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
@@ -639,7 +641,8 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
 
   CreateBrowserWindow(
       GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)));
-  BrowserWindowInterface* const browser = chrome::FindLastActive();
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(
@@ -662,7 +665,8 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackDialogElementId);
   CreateBrowserWindow(
       GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)));
-  BrowserWindowInterface* const browser = chrome::FindLastActive();
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_NE(browser, nullptr);
 
   RunTestSequence(

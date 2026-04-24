@@ -18,7 +18,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -285,7 +285,9 @@ void PerformanceInterventionButtonController::MaybeShowUi(
   CHECK(pref_service);
   // Only trigger performance detection UI for the active window and if we are
   // not already showing the UI.
-  if (browser_ != chrome::FindLastActive() || delegate_->IsButtonShowing() ||
+  if (browser_ !=
+          GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser() ||
+      delegate_->IsButtonShowing() ||
       !performance_manager::user_tuning::prefs::
           ShouldShowPerformanceInterventionNotification(pref_service)) {
     return;
@@ -337,7 +339,9 @@ void PerformanceInterventionButtonController::MaybeShowUi(
 
 bool PerformanceInterventionButtonController::ContainsNonLastActiveProfile(
     const PerformanceDetectionManager::ActionableTabsResult& result) {
-  Profile* const profile = chrome::FindLastActive()->GetProfile();
+  Profile* const profile = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
+                               ->GetProfile();
   for (const resource_attribution::PageContext& context : result) {
     content::WebContents* const web_content = context.GetWebContents();
     if (!web_content) {

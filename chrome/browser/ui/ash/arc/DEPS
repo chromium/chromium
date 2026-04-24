@@ -33,6 +33,7 @@ specific_include_rules = {
   ],
   "arc_open_url_delegate_impl_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/common/webui_url_constants.h",
   ],
 }

@@ -25,10 +25,10 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -180,7 +180,8 @@ void ReadingListPageHandler::OpenURL(
     const GURL& url,
     bool mark_as_read,
     ui::mojom::ClickModifiersPtr click_modifiers) {
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     return;
   }
@@ -220,7 +221,8 @@ void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
 }
 
 void ReadingListPageHandler::MarkCurrentTabAsRead() {
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     return;
   }
@@ -231,7 +233,8 @@ void ReadingListPageHandler::MarkCurrentTabAsRead() {
 }
 
 void ReadingListPageHandler::AddCurrentTab() {
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     return;
   }
@@ -252,7 +255,8 @@ void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
                                                    int32_t x,
                                                    int32_t y) {
   auto embedder = reading_list_ui_->embedder();
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (embedder) {
     embedder->ShowContextMenu(
         gfx::Point(x, y),
@@ -348,7 +352,8 @@ const std::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
   if (active_tab_url_) {
     return active_tab_url_.value();
   }
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (browser) {
     return chrome::GetURLToBookmark(
         browser->GetTabStripModel()->GetActiveWebContents());

@@ -234,7 +234,8 @@ BrowserWindowInterface* CreateBrowser(Profile* profile) {
     chrome::NewEmptyWindow(profile);
   }
 
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   CHECK(browser);
   return browser;
 }
@@ -1275,7 +1276,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     ConfigureNSAppForKioskMode();
 
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   content::WebContents* activeWebContents = nullptr;
   if (browser) {
     activeWebContents = browser->GetTabStripModel()->GetActiveWebContents();
@@ -1464,7 +1466,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   if ([NSApp modalWindow])
     return YES;
 
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   return browser &&
          [[browser->GetWindow()->GetNativeWindow().GetNativeNSWindow()
              attachedSheet] isKindOfClass:[NSWindow class]];

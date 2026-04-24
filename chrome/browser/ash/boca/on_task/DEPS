@@ -29,6 +29,7 @@ specific_include_rules = {
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
     "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/common/chrome_paths.h",
     "+chrome/common/webui_url_constants.h",
     "+chrome/test/base/ui_test_utils.h"

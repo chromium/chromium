@@ -14,10 +14,10 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -262,7 +262,8 @@ void HistoryEmbeddingsHandler::SetUserFeedback(
   user_feedback_ = OptimizationFeedbackFromMojoUserFeedback(user_feedback);
   if (user_feedback ==
       history_embeddings::mojom::UserFeedback::kUserFeedbackNegative) {
-    BrowserWindowInterface* browser = chrome::FindLastActive();
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
     if (!browser) {
       return;
     }

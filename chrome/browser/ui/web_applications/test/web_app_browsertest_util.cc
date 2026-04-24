@@ -405,7 +405,8 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   ui_test_utils::WaitForBrowserSetLastActive(browser);
 
-  EXPECT_EQ(browser, chrome::FindLastActive());
+  EXPECT_EQ(browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   EXPECT_EQ(web_contents, browser->tab_strip_model()->GetActiveWebContents());
   return browser;
 }

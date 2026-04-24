@@ -96,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  const GURL visible_url = chrome::FindLastActive()
+  const GURL visible_url = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
@@ -152,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       /*autofill_metadata=*/base::DictValue());
   navigation_observer.Wait();
 
-  const GURL visible_url = chrome::FindLastActive()
+  const GURL visible_url = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
@@ -210,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(
       /*autofill_metadata=*/base::DictValue());
   navigation_observer.Wait();
 
-  const GURL visible_url = chrome::FindLastActive()
+  const GURL visible_url = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
@@ -268,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(
       /*autofill_metadata=*/base::DictValue());
   navigation_observer.Wait();
 
-  const GURL visible_url = chrome::FindLastActive()
+  const GURL visible_url = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
@@ -334,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
       /*autofill_metadata=*/std::move(autofill_metadata));
   navigation_observer.Wait();
 
-  const GURL visible_url = chrome::FindLastActive()
+  const GURL visible_url = GlobalBrowserCollection::GetInstance()
+                               ->GetLastActiveBrowser()
                                ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();

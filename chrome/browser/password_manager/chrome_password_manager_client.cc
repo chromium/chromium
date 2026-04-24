@@ -170,8 +170,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -1353,7 +1353,7 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
   BrowserWindowInterface* browser =
       tab ? tab->GetBrowserWindowInterface() : nullptr;
   if (!browser) {
-    browser = chrome::FindLastActive();
+    browser = GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   }
   ::NavigateToManagePasswordsPage(browser->GetBrowserForMigrationOnly(),
                                   referrer);

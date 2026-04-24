@@ -40,7 +40,6 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -684,7 +683,8 @@ BrowserDidBecomeActiveWaiter::BrowserDidBecomeActiveWaiter(
       browser->RegisterDidBecomeActive(base::BindRepeating(
           &BrowserDidBecomeActiveWaiter::OnBrowserDidBecomeActive,
           base::Unretained(this)));
-  if (chrome::FindLastActive() == browser &&
+  if (GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser() ==
+          browser &&
       !wait_for_set_last_active_observed_) {
     satisfied_ = true;
   }

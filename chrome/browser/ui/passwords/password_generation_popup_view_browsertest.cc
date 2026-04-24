@@ -10,8 +10,8 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"
 #include "chrome/grit/generated_resources.h"
@@ -270,7 +270,10 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
   // the right place than on Linux or Windows (see below) where the popup
   // subtree lives separately.
   waiter.WaitIfNeededAndGet();
-  window = chrome::FindLastActive()->GetWindow()->GetNativeWindow();
+  window = GlobalBrowserCollection::GetInstance()
+               ->GetLastActiveBrowser()
+               ->GetWindow()
+               ->GetNativeWindow();
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
   window = dialog_widget->GetNativeWindow();

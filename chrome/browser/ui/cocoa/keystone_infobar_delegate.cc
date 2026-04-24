@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/updater/updater.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -36,7 +37,8 @@ void ShowUpdaterPromotionInfoBarOnUISequence() {
   // it's likely that the set of users that don't want to be nagged about the
   // default browser also don't want to be nagged about the update check.
   // (Automated testers, I'm thinking of you...)
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser || !browser->GetProfile() ||
       !browser->GetProfile()->GetPrefs()->GetBoolean(
           prefs::kShowUpdatePromotionInfoBar) ||

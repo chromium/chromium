@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
 
   // Verify that history bridge service is available for regular profiles.
   EXPECT_TRUE([app_controller historyMenuBridge]->service());
-  BrowserWindowInterface* regular_browser = chrome::FindLastActive();
+  BrowserWindowInterface* regular_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 
   // Open a URL in Incognito window.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -129,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   // Check that there are exactly 2 browsers (regular and incognito).
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  BrowserWindowInterface* inc_browser = chrome::FindLastActive();
+  BrowserWindowInterface* inc_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   EXPECT_TRUE(inc_browser->GetProfile()->IsIncognitoProfile());
 
   // Verify that history bridge service is not available in Incognito.
@@ -157,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(incognito_browser, chrome::FindLastActive());
+  EXPECT_EQ(incognito_browser,
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
 
   // Simulate click on "New Window".
   ui_test_utils::BrowserCreatedObserver browser_created_observer;

@@ -12,9 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -288,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   EXPECT_FALSE(group_model()->ContainsTabGroup(group_.value()));
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  BrowserWindowInterface* active_browser = chrome::FindLastActive();
+  BrowserWindowInterface* active_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   ASSERT_NE(active_browser, browser());
   EXPECT_EQ(1, active_browser->GetTabStripModel()->count());
   EXPECT_EQ(1u, active_browser->GetTabStripModel()

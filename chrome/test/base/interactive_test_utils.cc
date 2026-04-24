@@ -19,8 +19,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/test_utils.h"
 #include "ui/display/display.h"
@@ -51,7 +51,9 @@ BrowserActivationWaiter::BrowserActivationWaiter(
   // When the active browser closes, the next "last active browser" in the
   // BrowserList might not be immediately activated. So we need to wait for the
   // "last active browser" to actually be active.
-  if (chrome::FindLastActive() == browser && browser->GetWindow()->IsActive()) {
+  if (GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser() ==
+          browser &&
+      browser->GetWindow()->IsActive()) {
     observed_ = true;
     return;
   }

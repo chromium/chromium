@@ -21,9 +21,9 @@
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -197,8 +197,10 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
 
   void AssertActiveWebContentsBelongToApp(const GURL& url,
                                           const webapps::AppId& app_id) {
-    content::WebContents* contents =
-        chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents();
+    content::WebContents* contents = GlobalBrowserCollection::GetInstance()
+                                         ->GetLastActiveBrowser()
+                                         ->GetTabStripModel()
+                                         ->GetActiveWebContents();
     EXPECT_TRUE(contents);
     EXPECT_TRUE(content::WaitForLoadStop(contents));
     EXPECT_EQ(contents->GetLastCommittedURL(), url);

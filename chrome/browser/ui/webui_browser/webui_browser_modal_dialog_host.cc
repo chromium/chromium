@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "ui/gfx/native_ui_util.h"
 
@@ -31,7 +31,8 @@ gfx::NativeView WebUIBrowserModalDialogHost::GetHostView() const {
 
 bool WebUIBrowserModalDialogHost::ShouldActivateDialog() const {
   // ref. same in BrowerViewLayout:::WebContentsModalDialogHostViews.
-  return chrome::FindLastActive() == browser_window_->browser();
+  return GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser() ==
+         browser_window_->browser();
 }
 
 gfx::Point WebUIBrowserModalDialogHost::GetDialogPosition(

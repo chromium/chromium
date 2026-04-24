@@ -50,7 +50,10 @@ void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
 // CAUTION: This can return a browser window with *any* profile. Please verify
 // the profile.
 // If you only care whether a *particular* browser is active, prefer checking
-// that with `browser->GetWindow()->IsActive()`, or similar.
+// that with `browser->GetWindow()->IsActive()`.
+// DEPRECATED: Use
+// GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser() in
+// chrome/browser/ui/browser_window/public/global_browser_collection.h instead.
 BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_ITERATOR_H_

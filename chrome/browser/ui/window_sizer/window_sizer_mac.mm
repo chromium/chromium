@@ -7,9 +7,9 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 // How much horizontal and vertical offset there is between newly
 // opened windows.
@@ -22,7 +22,8 @@ gfx::Point WindowSizer::GetDefaultPopupOrigin(const gfx::Size& size) {
   NSRect main_area = NSScreen.screens.firstObject.frame;
   NSPoint corner = NSMakePoint(NSMinX(work_area), NSMaxY(work_area));
 
-  if (BrowserWindowInterface* browser = chrome::FindLastActive()) {
+  if (BrowserWindowInterface* browser =
+          GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser()) {
     NSWindow* window =
         browser->GetWindow()->GetNativeWindow().GetNativeNSWindow();
     NSRect window_frame = [window frame];

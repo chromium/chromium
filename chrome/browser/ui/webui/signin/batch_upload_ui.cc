@@ -8,8 +8,8 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -147,7 +147,9 @@ void BatchUploadUI::CreateBatchUploadHandler(
   // Chrome for debugging purposes - fill it with sample data.
   if (!initialize_handler_callback_) {
     auto [account_info, descriptions] = GetSampleData();
-    BrowserWindowInterface* browser = chrome::FindLastActive();
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+    CHECK(browser);
     BatchUploadSelectedDataTypeItemsCallback sample_completion_callback =
         base::BindOnce(&CloseBrowserTabOnCompletionSample, browser);
     Initialize(account_info, browser->GetBrowserForMigrationOnly(),

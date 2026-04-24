@@ -48,7 +48,8 @@ PendingUpdateState GetPendingUpdateState() {
     return PendingUpdateState::kMultipleTabsOrWindows;
   }
 
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     // This might happen during startup.
     return PendingUpdateState::kUnknown;
@@ -63,7 +64,8 @@ PendingUpdateState GetPendingUpdateState() {
 
 // When there is one tab in one window, what is it?
 PageBlockingUpdate GetPageBlockingUpdate() {
-  BrowserWindowInterface* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!browser) {
     return PageBlockingUpdate::kErrorNoBrowser;
   }

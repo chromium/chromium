@@ -556,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  BrowserWindowInterface* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 
   EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
@@ -598,7 +599,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  BrowserWindowInterface* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 
   EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
@@ -645,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  BrowserWindowInterface* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 
   EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
@@ -689,7 +692,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  BrowserWindowInterface* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 
   EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =

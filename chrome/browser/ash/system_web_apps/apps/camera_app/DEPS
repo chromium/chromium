@@ -1,5 +1,6 @@
 specific_include_rules = {
   "camera_app_integration_browsertest.cc": [
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/views",
   ],
   "chrome_camera_save_delegate\\.(cc|h)": [
