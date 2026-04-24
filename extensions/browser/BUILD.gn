@@ -1327,26 +1327,6 @@ if (enable_extensions) {
     ]
 
     public_deps = [ "//content/test:test_support" ]
-
-    if (is_chromeos) {
-      sources +=
-          [ "api/media_perception_private/media_perception_private_apitest.cc" ]
-
-      deps += [
-        "//chromeos/ash/components/audio",
-        "//chromeos/ash/components/dbus:test_support",
-        "//chromeos/ash/components/dbus/media_analytics",
-        "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
-        "//chromeos/ash/components/dbus/upstart",
-        "//chromeos/ash/components/login/login_state",
-        "//chromeos/ash/components/network",
-        "//chromeos/dbus/permission_broker",
-        "//chromeos/dbus/power",
-        "//chromeos/dbus/power:power_manager_proto",
-        "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
-        "//extensions/common:mojom",
-      ]
-    }
   }
 
   fuzzer_test("extension_file_highlighter_fuzzer") {

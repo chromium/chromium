@@ -7,21 +7,24 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
-#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
-#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "extensions/browser/api/media_perception_private/media_perception_private_api.h"
 #include "extensions/common/api/media_perception_private.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
-#include "extensions/shell/browser/shell_extensions_api_client.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS));
 
 namespace extensions {
 
@@ -71,9 +74,9 @@ class TestMediaPerceptionAPIDelegate : public MediaPerceptionAPIDelegate {
   }
 };
 
-class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
+class TestExtensionsAPIClient : public ChromeExtensionsAPIClient {
  public:
-  TestExtensionsAPIClient() : ShellExtensionsAPIClient() {}
+  TestExtensionsAPIClient() = default;
 
   MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate() override {
     if (!test_media_perception_api_delegate_) {
@@ -88,42 +91,24 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
       test_media_perception_api_delegate_;
 };
 
-}  // namespace
-
-class MediaPerceptionPrivateApiTest : public ShellApiTest {
+class MediaPerceptionPrivateApiTest : public ExtensionApiTest {
  public:
-  MediaPerceptionPrivateApiTest() {}
+  MediaPerceptionPrivateApiTest()
+      : session_feature_type_(ScopedCurrentFeatureSessionType(
+            extensions::mojom::FeatureSessionType::kKiosk)) {}
 
   MediaPerceptionPrivateApiTest(const MediaPerceptionPrivateApiTest&) = delete;
   MediaPerceptionPrivateApiTest& operator=(
       const MediaPerceptionPrivateApiTest&) = delete;
 
-  ~MediaPerceptionPrivateApiTest() override {}
+  ~MediaPerceptionPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ShellApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
     // Allowlist of the extension ID of the test extension.
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID,
         "epcifkihnkjgphfkloaaleeakhpmgdmn");
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    // MediaAnalyticsClient and UpstartClient are required by
-    // MediaPerceptionAPIManager.
-    ash::MediaAnalyticsClient::InitializeFake();
-    ash::UpstartClient::InitializeFake();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    ash::UpstartClient::Shutdown();
-    ash::MediaAnalyticsClient::Shutdown();
-  }
-
-  void SetUpOnMainThread() override {
-    session_feature_type_ = extensions::ScopedCurrentFeatureSessionType(
-        extensions::mojom::FeatureSessionType::kKiosk);
-    ShellApiTest::SetUpOnMainThread();
   }
 
  private:
@@ -137,7 +122,8 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, SetAnalyticsComponent) {
   // Constructing a TestExtensionsAPIClient to set the behavior of the
   // ExtensionsAPIClient.
   TestExtensionsAPIClient test_api_client;
-  ASSERT_TRUE(RunAppTest("media_perception_private/component")) << message_;
+  ASSERT_TRUE(RunExtensionTest("media_perception_private/component"))
+      << message_;
 }
 
 // Verify that we can use the new interface to set the process state of the
@@ -147,12 +133,13 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest,
   // Constructing a TestExtensionsAPIClient to set the behavior of the
   // ExtensionsAPIClient.
   TestExtensionsAPIClient test_api_client;
-  ASSERT_TRUE(RunAppTest("media_perception_private/process_state")) << message_;
+  ASSERT_TRUE(RunExtensionTest("media_perception_private/process_state"))
+      << message_;
 }
 
 // Verify that we can set and get mediaPerception system state.
 IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, State) {
-  ASSERT_TRUE(RunAppTest("media_perception_private/state")) << message_;
+  ASSERT_TRUE(RunExtensionTest("media_perception_private/state")) << message_;
 }
 
 // Verify that we can request Diagnostics.
@@ -161,20 +148,24 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, GetDiagnostics) {
   mri::Diagnostics diagnostics;
   diagnostics.add_perception_sample()->mutable_frame_perception()->set_frame_id(
       1);
+  // browser_tests provide a FakeMediaAnalyticsClient by default.
   ash::FakeMediaAnalyticsClient::Get()->SetDiagnostics(diagnostics);
 
-  ASSERT_TRUE(RunAppTest("media_perception_private/diagnostics")) << message_;
+  ASSERT_TRUE(RunExtensionTest("media_perception_private/diagnostics"))
+      << message_;
 }
 
 // Verify that we can listen for MediaPerceptionDetection signals and handle
 // them.
 IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, MediaPerception) {
   extensions::ResultCatcher catcher;
-  catcher.RestrictToBrowserContext(browser_context());
+  catcher.RestrictToBrowserContext(profile());
 
   ExtensionTestMessageListener handler_registered_listener(
       "mediaPerceptionListenerSet");
-  ASSERT_TRUE(LoadApp("media_perception_private/media_perception")) << message_;
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("media_perception_private/media_perception")))
+      << message_;
   ASSERT_TRUE(handler_registered_listener.WaitUntilSatisfied());
 
   mri::MediaPerception media_perception;
@@ -184,4 +175,5 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, MediaPerception) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+}  // namespace
 }  // namespace extensions
