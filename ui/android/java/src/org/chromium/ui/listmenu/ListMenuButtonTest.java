@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.ui.R;
 import org.chromium.ui.base.MotionEventTestUtils;
@@ -106,16 +107,19 @@ public class ListMenuButtonTest {
                 () -> {
                     Assert.assertFalse(
                             "Button should not be pressed initially.", button.isPressed());
-
                     button.showMenu();
-                    Assert.assertTrue(
-                            "Button should be pressed when menu is open.", button.isPressed());
-
-                    button.dismiss();
-                    Assert.assertFalse(
-                            "Button should not be pressed after menu is dismissed.",
-                            button.isPressed());
                 });
+
+        CriteriaHelper.pollUiThread(
+                () -> button.isPressed(), "Button should be pressed when menu is open.");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    button.dismiss();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> !button.isPressed(), "Button should not be pressed after menu is dismissed.");
     }
 
     private ListMenuButton createListMenuButton() {

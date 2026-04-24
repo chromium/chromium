@@ -6,6 +6,8 @@ package org.chromium.ui.listmenu;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -26,6 +28,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 @NullMarked
 public class ListMenuButton extends ChromeImageButton {
     private final ListMenuHost mListMenuHost;
+    private final Handler mHandler;
     private boolean mIsActive;
 
     private boolean mIsAttachedToWindowForTesting;
@@ -39,6 +42,7 @@ public class ListMenuButton extends ChromeImageButton {
     public ListMenuButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mListMenuHost = new ListMenuHost(this, attrs, this::setIsPressed);
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -100,7 +104,13 @@ public class ListMenuButton extends ChromeImageButton {
     /** Store the active state to set 'pressed' style to the button when the menu is open. */
     public void setIsPressed(boolean active) {
         mIsActive = active;
-        setPressed(active);
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        setPressed(active);
+                    }
+                });
     }
 
     @Override
