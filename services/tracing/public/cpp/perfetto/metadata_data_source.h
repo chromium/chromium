@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -80,6 +81,16 @@ class COMPONENT_EXPORT(TRACING_CPP) MetadataDataSource
                             ChromeMetadataRecorder chrome_metadata_recorder);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MetadataDataSourceTest, AndroidMetadata);
+
+#if BUILDFLAG(IS_ANDROID)
+  static void RecordAndroidMetadata(
+      perfetto::protos::pbzero::ChromeMetadataPacket* chrome_metadata,
+      bool is_system_app,
+      const std::string& installer_package_name,
+      const std::string& host_package_name);
+#endif
+
   bool privacy_filtering_enabled_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

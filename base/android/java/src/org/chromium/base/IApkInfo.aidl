@@ -31,6 +31,8 @@ parcelable IApkInfo {
    * In WebView, this refers to the host app.
    */
   boolean isDebugApp;
+  /** Check if the app is a system app. */
+  boolean isSystemApp;
   /**
    * The packageName of Chrome/WebView. Use application context for host app packageName. Same as
    * the host information within any child process.

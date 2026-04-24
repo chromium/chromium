@@ -73,6 +73,7 @@ public final class ApkInfo {
                         /* resourcesVersion= */ info.resourcesVersion,
                         /* installerPackageName= */ info.installerPackageName,
                         /* isDebugApp= */ info.isDebugApp,
+                        /* isSystemApp= */ info.isSystemApp,
                         /* targetSdkVersion= */ info.targetSdkVersion);
     }
 
@@ -229,6 +230,7 @@ public final class ApkInfo {
         String appInstalledPackageName = appContextPackageName;
         ApplicationInfo appInfo = appContext.getApplicationInfo();
         mIApkInfo.isDebugApp = (appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        mIApkInfo.isSystemApp = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
 
         if (hostInformationProvided) {
             mIApkInfo.hostPackageName = assumeNonNull(providedHostPackageName);
@@ -335,6 +337,7 @@ public final class ApkInfo {
                 @JniType("std::string") String resourcesVersion,
                 @JniType("std::string") String installerPackageName,
                 boolean isDebugApp,
+                boolean isSystemApp,
                 int targetSdkVersion);
     }
 }

@@ -36,6 +36,7 @@ struct IApkInfo {
   const std::string hostVersionCode;
   const std::string installerPackageName;
   bool isDebugApp;
+  bool isSystemApp;
   const std::string packageName;
   const std::string packageVersionCode;
   const std::string packageVersionName;
@@ -80,12 +81,14 @@ static void JNI_ApkInfo_FillFields(JNIEnv* env,
                                    const std::string& resourcesVersion,
                                    const std::string& installerPackageName,
                                    bool isDebugApp,
+                                   bool isSystemApp,
                                    int32_t targetSdkVersion) {
   Set(IApkInfo{.hostPackageLabel = hostPackageLabel,
                .hostPackageName = hostPackageName,
                .hostVersionCode = hostVersionCode,
                .installerPackageName = installerPackageName,
                .isDebugApp = isDebugApp,
+               .isSystemApp = isSystemApp,
                .packageName = packageName,
                .packageVersionCode = packageVersionCode,
                .packageVersionName = packageVersionName,
@@ -127,6 +130,10 @@ const std::string& installer_package_name() {
 
 bool is_debug_app() {
   return get_apk_info().isDebugApp;
+}
+
+bool is_system_app() {
+  return get_apk_info().isSystemApp;
 }
 
 int target_sdk_version() {

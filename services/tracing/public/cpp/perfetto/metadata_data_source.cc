@@ -37,6 +37,10 @@ inline constexpr char kCpuCoresMetadataKey[] = "cpu-num-cores";
 inline constexpr char kOSNameMetadataKey[] = "os-name";
 inline constexpr char kOSVersionMetadataKey[] = "os-version";
 
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kPlayStorePackage[] = "com.android.vending";
+#endif
+
 }  // namespace
 
 std::string_view GetClockString(base::TimeTicks::Clock clock) {
@@ -114,6 +118,32 @@ void MetadataDataSource::OnFlush(const FlushArgs&) {}
 
 void MetadataDataSource::OnStop(const StopArgs&) {}
 
+#if BUILDFLAG(IS_ANDROID)
+// static
+void MetadataDataSource::RecordAndroidMetadata(
+    perfetto::protos::pbzero::ChromeMetadataPacket* chrome_metadata,
+    bool is_system_app,
+    const std::string& installer_package_name,
+    const std::string& host_package_name) {
+  if (is_system_app || installer_package_name == kPlayStorePackage) {
+    if (!host_package_name.empty()) {
+      chrome_metadata->set_app_package_name(host_package_name);
+    }
+  }
+#if defined(OFFICIAL_BUILD)
+  // Version code is only set for official builds on Android.
+  const std::string& version_code_str =
+      base::android::apk_info::package_version_code();
+  if (!version_code_str.empty()) {
+    int version_code = 0;
+    bool res = base::StringToInt(version_code_str, &version_code);
+    DCHECK(res);
+    chrome_metadata->set_chrome_version_code(version_code);
+  }
+#endif  // defined(OFFICIAL_BUILD)
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void MetadataDataSource::WriteMetadata(
     uintptr_t instance,
     std::vector<BundleRecorder> bundle_recorders,
@@ -175,22 +205,9 @@ void MetadataDataSource::WriteMetadata(
     }
 
 #if BUILDFLAG(IS_ANDROID)
-    const std::string& host_package_name =
-        base::android::apk_info::host_package_name();
-    if (!host_package_name.empty()) {
-      chrome_metadata->set_app_package_name(host_package_name);
-    }
-#if defined(OFFICIAL_BUILD)
-    // Version code is only set for official builds on Android.
-    const std::string& version_code_str =
-        base::android::apk_info::package_version_code();
-    if (!version_code_str.empty()) {
-      int version_code = 0;
-      bool res = base::StringToInt(version_code_str, &version_code);
-      DCHECK(res);
-      chrome_metadata->set_chrome_version_code(version_code);
-    }
-#endif  // defined(OFFICIAL_BUILD)
+    RecordAndroidMetadata(chrome_metadata, base::android::apk_info::is_system_app(),
+                          base::android::apk_info::installer_package_name(),
+                          base::android::apk_info::host_package_name());
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Do not include low anonymity field trials, to prevent them from being
