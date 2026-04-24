@@ -5,12 +5,79 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 
 #import "base/notreached.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 
 namespace actor {
 
-ActorToolError::ActorToolError(ActorToolErrorCode code,
+ActorToolError::ActorToolError(mojom::ActionResultCode external_code,
+                               ActorToolErrorCode internal_code,
                                std::optional<std::string> message)
-    : code(code), message(std::move(message)) {}
+    : external_code(external_code),
+      code(internal_code),
+      message(std::move(message)) {}
+
+ActorToolError::ActorToolError(mojom::ActionResultCode external_code,
+                               std::optional<std::string> message)
+    : ActorToolError(external_code,
+                     // TODO(crbug.com/505037793): Stop setting this once the
+                     // field is made optional.
+                     ActorToolErrorCode::kUnsupportedAction,
+                     std::move(message)) {}
+
+ActorToolError::ActorToolError(ActorToolErrorCode internal_code,
+                               std::optional<std::string> message)
+    : code(internal_code), message(std::move(message)) {
+  switch (internal_code) {
+    case ActorToolErrorCode::kUnsupportedAction:
+    case ActorToolErrorCode::kToolDisabledByFeature:
+      external_code = mojom::ActionResultCode::kToolUnknown;
+      break;
+    case ActorToolErrorCode::kExecutionMissingDependencies:
+    case ActorToolErrorCode::kCreationMissingRequiredFields:
+      external_code = mojom::ActionResultCode::kArgumentsInvalid;
+      break;
+    case ActorToolErrorCode::kCreationTargetTabNotFound:
+    case ActorToolErrorCode::kCreationMissingWebStateList:
+    case ActorToolErrorCode::kCreationMissingWebState:
+      external_code = mojom::ActionResultCode::kTabWentAway;
+      break;
+    case ActorToolErrorCode::kJavascriptFeatureGotInvalidResult:
+    case ActorToolErrorCode::kJavascriptFeatureFailedToCallJavaScriptFunction:
+    case ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution:
+      // TODO(crbug.com/505037793): Add a more appropriate ActionResultCode for
+      // this case, or Bling-specific errors more generally.
+      external_code = mojom::ActionResultCode::kArgumentsInvalid;
+      break;
+    case ActorToolErrorCode::kActorTargetWebStateDestroyed:
+      external_code = mojom::ActionResultCode::kTabWentAway;
+      break;
+    case ActorToolErrorCode::kActorTargetInvalidRemoteFrameToken:
+    case ActorToolErrorCode::kActorTargetFrameNotRegistered:
+    case ActorToolErrorCode::kActorTargetFrameNotFoundById:
+      external_code = mojom::ActionResultCode::kArgumentsInvalid;
+      break;
+    case ActorToolErrorCode::kActorTargetMaxDepthExceeded:
+      external_code = mojom::ActionResultCode::kToolTimeout;
+      break;
+    case ActorToolErrorCode::kActorTargetWebFrameInvalidated:
+      external_code = mojom::ActionResultCode::kFrameWentAway;
+      break;
+    case ActorToolErrorCode::kNavigationInvalidURL:
+      external_code = mojom::ActionResultCode::kNavigateInvalidUrl;
+      break;
+    case ActorToolErrorCode::kNavigationTabNotRealized:
+      external_code = mojom::ActionResultCode::kNavigateFailedToStart;
+      break;
+    case ActorToolErrorCode::kHistoryBackNotPossible:
+      external_code = mojom::ActionResultCode::kHistoryNoBackEntries;
+      break;
+    case ActorToolErrorCode::kHistoryForwardNotPossible:
+      external_code = mojom::ActionResultCode::kHistoryNoForwardEntries;
+      break;
+    default:
+      NOTREACHED();
+  }
+}
 
 ActorToolError::~ActorToolError() = default;
 
@@ -26,8 +93,6 @@ std::string GetActorToolErrorMessage(const ActorToolError& error) {
     return error.message.value();
   }
   switch (error.code) {
-    case ActorToolErrorCode::kUnknown:
-      return "Unknown error.";
     case ActorToolErrorCode::kUnsupportedAction:
       return "There isn't a tool to support this action.";
     case ActorToolErrorCode::kToolDisabledByFeature:

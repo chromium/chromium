@@ -8,23 +8,15 @@
 #import <optional>
 #import <string>
 
+#import "components/actor/public/mojom/actor_types.mojom.h"
+
 namespace actor {
 
-// Error codes for ActorTool in Chrome on iOS.
-//
-// This enum follows the structure of `ActionResultCode` from
-// chrome/common/actor.mojom, using numbered ranges to group errors by category.
-//
-// 0-99: General errors that aren't specific to any tool.
-// 100-199: Tool creation errors that aren't specific to any tool.
-// 200-299: JavaScriptFeature errors that aren't specific to any tool.
-// X00-X99 - A tool-specific error; each tool gets a reserved range of values.
+// TODO(crbug.com/505037793): Make this enum be scoped to errors that are only
+// relevant to Chrome on iOS. We should rename it and make it an implementation
+// detail of the ActorToolResult.
 enum class ActorToolErrorCode {
   // General errors (0-99).
-
-  // Default error code for unknown or unspecified failures.
-  // A more specific error code should be used when possible.
-  kUnknown = 0,
   // There is not an ActorTool that supports the given action.
   kUnsupportedAction = 1,
   // The specific tool type is disabled via the 'DisabledTools' feature
@@ -57,6 +49,9 @@ enum class ActorToolErrorCode {
   // The JavaScript function failed during execution.
   // When this is used, the ActorToolError.message should be populated with an
   // error message from the JavaScript that provides more context.
+  // TODO(crbug.com/505037793): Make each TS script file use a real error code
+  // by
+  // making them coordinate failure modes with their JavaScriptFeature class.
   kJavascriptFeatureFailedInJavaScriptExecution = 202,
   // The ActorToolTargetJavaScriptFeature failed because the WebState was
   // destroyed while trying to find the target frame.
@@ -91,9 +86,23 @@ enum class ActorToolErrorCode {
   kHistoryForwardNotPossible = 401,
 };
 
-// Represents an ActorTool error.
+// Represents the result of executing an ActorTool. This struct contains two
+// error codes: an `external_code` which corresponds to the broad,
+// platform-agnostic ActionResultCode defined in the mojom API, and an
+// `internal_code` which is an iOS-specific ActorToolErrorCode providing more
+// detailed information about the failure.
+// TODO(crbug.com/505037793): Rename this to ToolResult.
 struct ActorToolError {
-  ActorToolError(ActorToolErrorCode code,
+  ActorToolError(mojom::ActionResultCode external_code,
+                 ActorToolErrorCode internal_code,
+                 std::optional<std::string> message = std::nullopt);
+  ActorToolError(actor::mojom::ActionResultCode external_code,
+                 std::optional<std::string> message = std::nullopt);
+  // Constructs an error from an internal_code, inferring the corresponding
+  // external_code automatically.
+  // TODO(crbug.com/505037793): Stop using this in favor of other constructors
+  // after migration.
+  ActorToolError(ActorToolErrorCode internal_code,
                  std::optional<std::string> message = std::nullopt);
   ~ActorToolError();
 
@@ -103,6 +112,11 @@ struct ActorToolError {
   ActorToolError(ActorToolError&& other);
   ActorToolError& operator=(ActorToolError&& other);
 
+  // The `external_code` is what is surfaced to callers and matches the codes
+  // used on Desktop. The internal `code` is used when there is not an external
+  // code that is specific enough for our use case.
+  mojom::ActionResultCode external_code;
+  // TODO(crbug.com/505037793): Rename to internal_code and make it optional.
   ActorToolErrorCode code;
   // If not set, a default message for the error code will be used.
   // This is primarily used for kJavascriptExecutionFailed to provide

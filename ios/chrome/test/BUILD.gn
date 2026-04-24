@@ -364,6 +364,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile:unit_tests",
     "//ios/chrome/browser/intelligence/actor/model:unit_tests",
     "//ios/chrome/browser/intelligence/actor/tools/model:unit_tests",
+    "//ios/chrome/browser/intelligence/actor/tools/public:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/model:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/ui:unit_tests",

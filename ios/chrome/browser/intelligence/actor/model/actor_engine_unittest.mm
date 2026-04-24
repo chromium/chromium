@@ -25,8 +25,8 @@ class MockTool : public ActorTool {
     if (success_) {
       std::move(callback).Run(ToolExecutionResult(base::ok()));
     } else {
-      std::move(callback).Run(ToolExecutionResult(
-          base::unexpected(ActorToolError(ActorToolErrorCode::kUnknown))));
+      std::move(callback).Run(ToolExecutionResult(base::unexpected(
+          ActorToolError(ActorToolErrorCode::kUnsupportedAction))));
     }
   }
 
@@ -225,8 +225,8 @@ TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
   PushActionResult(ActionResult(ToolExecutionResult(base::ok())));
   SetNextActionIndex(1);
 
-  CompleteActions(ActionResult(ToolExecutionResult(
-      base::unexpected(ActorToolError(ActorToolErrorCode::kUnknown)))));
+  CompleteActions(ActionResult(ToolExecutionResult(base::unexpected(
+      ActorToolError(ActorToolErrorCode::kUnsupportedAction)))));
 
   EXPECT_EQ(GetActionResults().size(), 1ul);
   EXPECT_FALSE(GetActionResults()[0].tool_result.has_value());
