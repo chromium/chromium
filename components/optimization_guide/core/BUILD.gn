@@ -423,6 +423,8 @@ if (build_with_model_execution) {
   static_library("manifest_broker_test_support") {
     testonly = true
     sources = [
+      "model_execution/manifest_broker/test/scenario_builder.cc",
+      "model_execution/manifest_broker/test/scenario_builder.h",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
     ]
@@ -430,8 +432,12 @@ if (build_with_model_execution) {
       ":manifest_broker",
       ":manifest_broker_dev_support",
       ":model_execution_test_support",
+      ":ondevice",
       "//base",
       "//base/test:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/optimization_guide/public/mojom",
+      "//services/on_device_model/public/cpp/test_support",
       "//testing/gmock",
     ]
   }

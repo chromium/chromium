@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -31,115 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
-
-namespace {
-
-class ScenarioBuilder final {
- public:
-  explicit ScenarioBuilder(
-      TestManifestAssetManagerComponentState& component_state)
-      : state_(component_state) {
-    manifest_directory_ =
-        std::make_unique<ManifestComponentDirectory>(proto::Manifest{});
-  }
-
-  ScenarioBuilder& AddBaseModel(const std::string& name) {
-    state_->UpdateBaseModel(name + "_key", []() {
-      auto base_model_asset = std::make_unique<FakeBaseModelAsset>();
-      base_model_asset->set_version("1.0.0.0");
-      return base_model_asset;
-    }());
-    builder.Add(name + "_asset", OnDemandComponent(name + "_key", "1.0.0.0"));
-    builder.Add(name + "_recipe",
-                BaseModelRecipe(
-                    FileReference(name + "_asset", "weights.bin"),
-                    BaseModelRecipeArgs(
-                        proto::BaseModelRecipe::BACKEND_TYPE_CPU,
-                        proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED,
-                        {}, 100)));
-    return *this;
-  }
-
-  ScenarioBuilder& AddSafetyModel(const std::string& name) {
-    state_->UpdateSafetyModel(
-        name + "_key",
-        std::make_unique<FakeSafetyModelAsset>(FakeSafetyModelAsset::Content{
-            .model_info_version = 1,
-        }));
-    builder.Add(name + "_asset", OnDemandComponent(name + "_key", "1"));
-    builder.Add(name + "_recipe",
-                SafetyModelRecipe(FileReference(name + "_asset", "ts.bin"),
-                                  FileReference(name + "_asset", "lang.bin")));
-    return *this;
-  }
-
-  ScenarioBuilder& AddAdaptation(const std::string& name,
-                                 const std::string& base_model) {
-    // TODO: Add
-    return *this;
-  }
-
-  ScenarioBuilder& AddUnsafeSolution(const std::string& use_case,
-                                     const std::string& model) {
-    manifest_directory_->Add(use_case + "config.pb", []() {
-      proto::SolutionConfig solution_config;
-      *solution_config.mutable_feature() = SimpleTestFeatureConfig();
-      return solution_config;
-    }());
-    builder.Add(
-        use_case + "_solution",
-        SolutionRecipe(model + "_recipe", "",
-                       FileReference("manifest", use_case + "config.pb")));
-    builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, use_case},
-                use_case + "_solution");
-    return *this;
-  }
-
-  ScenarioBuilder& AddSafeSolution(const std::string& use_case,
-                                   const std::string& model,
-                                   const std::string& safety_model) {
-    manifest_directory_->Add(use_case + "config.pb", []() {
-      proto::SolutionConfig solution_config;
-      *solution_config.mutable_feature() = SimpleComposeConfig();
-      *solution_config.mutable_safety() = ComposeSafetyConfig();
-      return solution_config;
-    }());
-    builder.Add(
-        use_case + "_solution",
-        SolutionRecipe(model + "_recipe", safety_model + "_recipe",
-                       FileReference("manifest", use_case + "config.pb")));
-    builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, use_case},
-                use_case + "_solution");
-    return *this;
-  }
-
-  ScenarioBuilder& SetFeatureConfig(DeviceCategory category,
-                                    const std::string& use_case,
-                                    const proto::Any& config) {
-    builder.SetFeatureConfig(category, use_case, config);
-    return *this;
-  }
-
-  void Finish() {
-    manifest_directory_->Add(builder.Build());
-    state_->UpdateManifest(std::move(manifest_directory_));
-  }
-
-  // Sets up a minimal scenario that should enable the "test" use case.
-  static void MinimalTestScenario(
-      TestManifestAssetManagerComponentState& component_state) {
-    ScenarioBuilder(component_state)
-        .AddBaseModel("model_A")
-        .AddUnsafeSolution("test", "model_A")
-        .Finish();
-  }
-
-  raw_ref<TestManifestAssetManagerComponentState> state_;
-  std::unique_ptr<ManifestComponentDirectory> manifest_directory_;
-  ManifestBuilder builder;
-};
-
-}  // namespace
 
 class ManifestBrokerStateTest : public testing::Test {
  public:
