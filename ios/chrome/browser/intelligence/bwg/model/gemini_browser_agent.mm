@@ -18,6 +18,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -455,6 +457,20 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
           : fullscreen_controller_->GetMaxViewportInsets().bottom;
 
   SceneState* scene_state = browser_->GetSceneState();
+
+  if (!IsFullscreenRefactoringEnabled() && IsChromeNextIaEnabled()) {
+    // The legacy FullscreenController is unaware of the App Bar's height.
+    // If the App Bar is at the bottom, explicitly account for it to ensure
+    // the floaty positions correctly above it.
+    LayoutGuideCenter* layout_guide_center = LayoutGuideCenterForBrowser(nil);
+    UIView* app_bar_view =
+        [layout_guide_center referencedViewUnderName:kAppBarGuide];
+    if (app_bar_view &&
+        AppBarPositionForView(app_bar_view) == AppBarPosition::kBottom) {
+      max_bottom_inset += kAppBarHeight;
+    }
+  }
+
   if (scene_state && scene_state.window && IsLandscape(scene_state.window)) {
     max_bottom_inset += scene_state.window.safeAreaInsets.bottom;
   }
