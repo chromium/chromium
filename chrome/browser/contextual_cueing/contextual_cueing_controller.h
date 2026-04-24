@@ -89,6 +89,8 @@ class ContextualCueingController
 
   CueTarget* GetTarget(CueTargetType type);
 
+  void HideCue();
+
   // Not owned. Guaranteed to outlive `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   const raw_ptr<TabListInterface> tab_list_interface_;

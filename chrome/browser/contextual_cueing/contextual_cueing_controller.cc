@@ -484,6 +484,23 @@ void ContextualCueingController::OnCueClicked(
     target->OnClick(std::move(data));
   }
   contextual_cueing_service_->OnCueClicked(cue_type);
+
+  HideCue();
+}
+
+void ContextualCueingController::HideCue() {
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+  if (!active_tab) {
+    return;
+  }
+  page_actions::PageActionController* page_action_controller =
+      active_tab->GetTabFeatures()->page_action_controller();
+  if (!page_action_controller) {
+    return;
+  }
+  page_action_controller->Hide(kActionAnchoredContextualCue);
+#endif
 }
 
 CueTarget* ContextualCueingController::GetTarget(CueTargetType type) {
