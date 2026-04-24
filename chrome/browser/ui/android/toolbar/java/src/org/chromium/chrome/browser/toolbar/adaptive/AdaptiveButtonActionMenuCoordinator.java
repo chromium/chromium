@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.VisibleForTesting;
@@ -100,15 +99,6 @@ public class AdaptiveButtonActionMenuCoordinator {
                             onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                         });
 
-        int verticalPadding =
-                context.getResources()
-                        .getDimensionPixelOffset(R.dimen.adaptive_button_menu_vertical_padding);
-        ListView listView = mListMenu.getListView();
-        listView.setPaddingRelative(
-                listView.getPaddingStart(),
-                verticalPadding,
-                listView.getPaddingEnd(),
-                verticalPadding);
         ListMenuDelegate delegate =
                 new ListMenuDelegate() {
                     @SuppressWarnings("NullAway")
