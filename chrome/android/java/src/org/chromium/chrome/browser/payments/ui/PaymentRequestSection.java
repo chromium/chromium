@@ -1019,7 +1019,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                     labelView.setText(
                             convertOptionToString(
                                     mOption,
-                                    false, /* excludeMainLabel */
+                                    /* excludeMainLabel= */ false,
                                     mDelegate.isBoldLabelNeeded(OptionSection.this),
                                     /* singleLine= */ false));
                     labelView.setEnabled(isEnabled);
@@ -1471,7 +1471,9 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             int firstOptionIndex = INVALID_OPTION_INDEX;
             for (int i = 0; i < information.getSize(); i++) {
                 int currentRow = mOptionRows.size();
-                if (firstOptionIndex == INVALID_OPTION_INDEX) firstOptionIndex = currentRow;
+                if (firstOptionIndex == INVALID_OPTION_INDEX) {
+                    firstOptionIndex = currentRow;
+                }
 
                 EditableOption item = information.getItem(i);
                 OptionRow currentOptionRow =
