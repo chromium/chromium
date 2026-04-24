@@ -56,6 +56,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Collections;
 import java.util.Set;
@@ -141,6 +143,7 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
         DisplayableProfileData profileData =
                 new DisplayableProfileData(
+                        new CoreAccountId(new GaiaId("accountId")),
                         "testemail@gmail.com",
                         mock(Drawable.class),
                         "TestName LastName",
@@ -304,6 +307,7 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         DisplayableProfileData profileData =
                 new DisplayableProfileData(
+                        TestAccounts.ACCOUNT1.getId(),
                         TestAccounts.ACCOUNT1.getEmail(),
                         mock(Drawable.class),
                         TestAccounts.ACCOUNT1.getFullName(),
@@ -510,6 +514,7 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         DisplayableProfileData profileData =
                 new DisplayableProfileData(
+                        TestAccounts.ACCOUNT1.getId(),
                         TestAccounts.ACCOUNT1.getEmail(),
                         new BitmapDrawable(TestAccounts.ACCOUNT1.getAccountImage()),
                         TestAccounts.ACCOUNT1.getFullName(),

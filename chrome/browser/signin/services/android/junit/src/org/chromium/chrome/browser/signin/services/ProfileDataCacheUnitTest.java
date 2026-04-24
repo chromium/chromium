@@ -93,6 +93,7 @@ public class ProfileDataCacheUnitTest {
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
         Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(accountId, mProfileDataCache.getById(accountId).getAccountId());
         Assert.assertNull(mProfileDataCache.getById(accountId).getFullName());
 
         mAccountManagerTestRule.addAccount(
@@ -104,6 +105,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
         Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
         Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(accountId, mProfileDataCache.getById(accountId).getAccountId());
         Assert.assertEquals(fullName, mProfileDataCache.getById(accountId).getFullName());
         Assert.assertNull(mProfileDataCache.getById(accountId).getGivenName());
     }
@@ -122,6 +124,7 @@ public class ProfileDataCacheUnitTest {
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
         Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(accountId, mProfileDataCache.getById(accountId).getAccountId());
         Assert.assertNull(mProfileDataCache.getById(accountId).getGivenName());
 
         mAccountManagerTestRule.addAccount(
@@ -133,6 +136,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(accountId));
         Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
         Assert.assertEquals(accountEmail, mProfileDataCache.getById(accountId).getAccountEmail());
+        Assert.assertEquals(accountId, mProfileDataCache.getById(accountId).getAccountId());
         Assert.assertEquals(givenName, mProfileDataCache.getById(accountId).getGivenName());
         Assert.assertNull(mProfileDataCache.getById(accountId).getFullName());
     }
@@ -160,6 +164,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(),
                 mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.TEST_ACCOUNT_NO_NAME.getId(),
+                mProfileDataCache.getAccounts().getResult().get(0).getAccountId());
     }
 
     @Test
@@ -188,6 +195,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.ACCOUNT1.getEmail(),
                 mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                mProfileDataCache.getAccounts().getResult().get(0).getAccountId());
     }
 
     @Test
@@ -204,6 +214,9 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.ACCOUNT1.getEmail(),
                 mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                mProfileDataCache.getAccounts().getResult().get(0).getAccountId());
     }
 
     @Test
@@ -288,9 +301,12 @@ public class ProfileDataCacheUnitTest {
         var profileData = mProfileDataCache.getAccounts().getResult();
         Assert.assertEquals(3, profileData.size());
         Assert.assertEquals(TestAccounts.ACCOUNT2.getEmail(), profileData.get(0).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT2.getId(), profileData.get(0).getAccountId());
         Assert.assertEquals(
                 TestAccounts.CHILD_ACCOUNT.getEmail(), profileData.get(1).getAccountEmail());
+        Assert.assertEquals(TestAccounts.CHILD_ACCOUNT.getId(), profileData.get(1).getAccountId());
         Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.get(2).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), profileData.get(2).getAccountId());
     }
 
     @Test
@@ -305,8 +321,14 @@ public class ProfileDataCacheUnitTest {
                 TestAccounts.ACCOUNT1.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountEmail());
         Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountId());
+        Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -315,12 +337,18 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getAccounts().getResult().get(0).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getId(),
+                mProfileDataCache.getAccounts().getResult().get(0).getAccountId());
         CoreAccountId accountId = TestAccounts.ACCOUNT1.getId();
         Assert.assertThrows(
                 IllegalArgumentException.class, () -> mProfileDataCache.getById(accountId));
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
     }
 
     @Test
@@ -347,6 +375,7 @@ public class ProfileDataCacheUnitTest {
         verify(mAccountManagerTestRule.getIdentityManager(), times(expectedIdentityManagerCalls))
                 .getExtendedAccountInfoForAccountsWithRefreshToken();
         Assert.assertEquals(accountInfo.getEmail(), cachedProfileData.getAccountEmail());
+        Assert.assertEquals(accountInfo.getId(), cachedProfileData.getAccountId());
         Assert.assertEquals(accountInfo.getFullName(), cachedProfileData.getFullName());
         Assert.assertEquals(accountInfo.getGivenName(), cachedProfileData.getGivenName());
     }
@@ -383,7 +412,9 @@ public class ProfileDataCacheUnitTest {
         var accounts = mProfileDataCache.getAccounts().getResult();
         Assert.assertEquals(2, accounts.size());
         Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), accounts.get(0).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), accounts.get(0).getAccountId());
         Assert.assertEquals(TestAccounts.ACCOUNT2.getEmail(), accounts.get(1).getAccountEmail());
+        Assert.assertEquals(TestAccounts.ACCOUNT2.getId(), accounts.get(1).getAccountId());
         verify(mObserverMock).onAccountsUpdated(accounts);
         // TODO(crbug.com/485130949): onProfileDataUpdated should be never called after
         // onAccountsUpdated is called. (Blocked by crbug.com/480239119)
@@ -420,6 +451,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(1, accounts.size());
         Assert.assertEquals(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals(TestAccounts.TEST_ACCOUNT_NO_NAME.getId(), profileData.getAccountId());
     }
 
     @Test
@@ -442,8 +474,14 @@ public class ProfileDataCacheUnitTest {
                 TestAccounts.ACCOUNT1.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountEmail());
         Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountId());
+        Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
         Assert.assertEquals(2, mProfileDataCache.getAccounts().getResult().size());
     }
 
@@ -469,6 +507,7 @@ public class ProfileDataCacheUnitTest {
         var profileData = mProfileDataCache.getById(accountWithoutDisplayableInfo.getId());
         Assert.assertEquals(
                 accountWithoutDisplayableInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals(accountWithoutDisplayableInfo.getId(), profileData.getAccountId());
         Assert.assertNull(profileData.getFullName());
         Assert.assertNull(profileData.getGivenName());
     }
@@ -525,6 +564,7 @@ public class ProfileDataCacheUnitTest {
 
         var profileData = mProfileDataCache.getById(accountWithDisplayableInfo.getId());
         Assert.assertEquals(accountWithDisplayableInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals(accountWithDisplayableInfo.getId(), profileData.getAccountId());
         Assert.assertEquals("", profileData.getFullName());
         Assert.assertEquals("", profileData.getGivenName());
     }
@@ -535,5 +575,27 @@ public class ProfileDataCacheUnitTest {
         mProfileDataCache.addObserver(mObserverMock);
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
         verify(mObserverMock, never()).onProfileDataUpdated(any());
+    }
+
+    @Test
+    public void testAccountIdMatchesSourceAccountInfo() {
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Check getAccounts()
+        var accounts = mProfileDataCache.getAccounts().getResult();
+        Assert.assertEquals(2, accounts.size());
+        Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), accounts.get(0).getAccountId());
+        Assert.assertEquals(TestAccounts.ACCOUNT2.getId(), accounts.get(1).getAccountId());
+
+        // Check getById()
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountId());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getId(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
     }
 }

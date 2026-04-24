@@ -1548,6 +1548,7 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).recordLoadCompletedHistograms(slowestLoadPoint);
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(
+                        accountInfo.getId(),
                         accountInfo.getEmail(),
                         mock(Drawable.class),
                         accountInfo.getFullName(),
@@ -1649,6 +1650,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.fre_signing_in_2)).check(matches(isDisplayed()));
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(
+                        accountInfo.getId(),
                         accountInfo.getEmail(),
                         mock(Drawable.class),
                         accountInfo.getFullName(),

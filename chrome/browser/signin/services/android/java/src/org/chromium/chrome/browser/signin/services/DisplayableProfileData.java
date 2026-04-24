@@ -9,10 +9,12 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 /** Immutable holder for displayable profile data. */
 @NullMarked
 public class DisplayableProfileData {
+    private final CoreAccountId mAccountId;
     private final String mAccountEmail;
     private final Drawable mImage;
     private final @Nullable String mFullName;
@@ -20,18 +22,28 @@ public class DisplayableProfileData {
     private final boolean mHasDisplayableEmailAddress;
 
     public DisplayableProfileData(
+            CoreAccountId accountId,
             String accountEmail,
             @Nullable Drawable image,
             @Nullable String fullName,
             @Nullable String givenName,
             boolean hasDisplayableEmailAddress) {
+        assert accountId != null;
         assert accountEmail != null;
         assert image != null;
+        mAccountId = accountId;
         mAccountEmail = accountEmail;
         mImage = image;
         mFullName = fullName;
         mGivenName = givenName;
         mHasDisplayableEmailAddress = hasDisplayableEmailAddress;
+    }
+
+    /**
+     * @return The account id of the user.
+     */
+    public CoreAccountId getAccountId() {
+        return mAccountId;
     }
 
     /**

@@ -365,6 +365,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
             return new DisplayableProfileData(
+                    accountInfo.getId(),
                     accountInfo.getEmail(),
                     croppedAvatar,
                     accountInfo.getFullName(),
@@ -373,6 +374,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
         } else {
             final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
             return new DisplayableProfileData(
+                    accountInfo.getId(),
                     accountInfo.getEmail(),
                     croppedAvatar,
                     shouldPopulateNames ? accountInfo.getFullName() : null,
