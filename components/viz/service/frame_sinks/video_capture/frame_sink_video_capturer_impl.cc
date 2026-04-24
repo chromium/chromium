@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
@@ -1082,17 +1083,23 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   if (content_rect.IsEmpty()) {
     media::LetterboxVideoFrame(frame.get(), gfx::Rect());
 
-    if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
-        pixel_format_ == media::PIXEL_FORMAT_NV12) {
-      frame->set_color_space(gfx::ColorSpace::CreateREC709());
-    } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
-      frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-    } else if (pixel_format_ == media::PIXEL_FORMAT_RGBAF16) {
-      frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
-    } else {
-      NOTREACHED() << "Unexpected pixel format: " << pixel_format_;
+    // This is already done in `SharedMemoryVideoFramePool` when creating
+    // VideoFrame. This is not needed for
+    // `RenderableMappableSharedImageVideoFramePool` as the VideoFrame there
+    // always takes in a valid ColorSpace.
+    if (!base::FeatureList::IsEnabled(
+            features::kSharedMemoryVFPoolUseCorrectColorSpace)) {
+      if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
+          pixel_format_ == media::PIXEL_FORMAT_NV12) {
+        frame->set_color_space(gfx::ColorSpace::CreateREC709());
+      } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
+        frame->set_color_space(gfx::ColorSpace::CreateSRGB());
+      } else if (pixel_format_ == media::PIXEL_FORMAT_RGBAF16) {
+        frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+      } else {
+        NOTREACHED() << "Unexpected pixel format: " << pixel_format_;
+      }
     }
-
     dirty_rect_ = gfx::Rect();
     FrameCapture frame_capture(
         capture_frame_number, oracle_frame_number, content_version_,

@@ -386,6 +386,12 @@ BASE_FEATURE(kFlingSchedulingImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 // should be removed as soon as we confirm that the optimization is stable.
 BASE_FEATURE(kRpdqFilterLookupOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use correct default ColorSpace in `SharedMemoryVideoFramePool::WrapBuffer`
+// when creating a VideoFrame instead of when it is used in
+// `FrameSinkVideoCapturerImpl::MaybeCaptureFrame`.
+BASE_FEATURE(kSharedMemoryVFPoolUseCorrectColorSpace,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.

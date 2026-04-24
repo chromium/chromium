@@ -6,9 +6,12 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "components/viz/common/features.h"
+#include "media/base/video_types.h"
 
 using media::VideoFrame;
 using media::VideoPixelFormat;
@@ -124,6 +127,19 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
       base::BindOnce(&SharedMemoryVideoFramePool::OnFrameWrapperDestroyed,
                      weak_factory_.GetWeakPtr(), base::Unretained(frame.get()),
                      std::move(pooled_buffer.mapping)));
+  if (base::FeatureList::IsEnabled(
+          features::kSharedMemoryVFPoolUseCorrectColorSpace)) {
+    if (format == media::PIXEL_FORMAT_I420 ||
+        format == media::PIXEL_FORMAT_NV12) {
+      frame->set_color_space(gfx::ColorSpace::CreateREC709());
+    } else if (format == media::PIXEL_FORMAT_ARGB) {
+      frame->set_color_space(gfx::ColorSpace::CreateSRGB());
+    } else if (format == media::PIXEL_FORMAT_RGBAF16) {
+      frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+    } else {
+      NOTREACHED() << "Unexpected pixel format: " << format;
+    }
+  }
   return frame;
 }
 
