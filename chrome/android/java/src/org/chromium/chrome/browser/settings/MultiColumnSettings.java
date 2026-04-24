@@ -16,8 +16,6 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -29,6 +27,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -241,8 +240,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     }
 
     @Override
-    public @NonNull View onCreateView(
-            @NonNull LayoutInflater inflater,
+    public View onCreateView(
+            LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
@@ -588,7 +587,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         private static final String KEY_BACK_STACK_COUNTS = "BackStackCounts";
 
         @Override
-        public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+        public void onFragmentResumed(FragmentManager fm, Fragment f) {
             if (f instanceof MainSettings) {
                 // Skip main settings which is visible in the header pane.
                 return;
@@ -697,11 +696,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return mFragmentTracker.mTitles;
     }
 
-    public void addObserver(@NonNull Observer o) {
+    public void addObserver(Observer o) {
         mObservers.add(o);
     }
 
-    public void removeObserver(@NonNull Observer o) {
+    public void removeObserver(Observer o) {
         mObservers.remove(o);
     }
 
