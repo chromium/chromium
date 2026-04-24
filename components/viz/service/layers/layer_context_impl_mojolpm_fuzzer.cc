@@ -186,6 +186,107 @@ void FixUpLayerTreeUpdate(mojolpm::viz::mojom::LayerTreeUpdate* update) {
   }
 }
 
+constexpr uint32_t kMaxPropertyTreeNodes = 1000u;
+constexpr size_t kMaxLayers = 1000;
+constexpr size_t kMaxTilings = 100;
+constexpr size_t kMaxTilesPerTiling = 100;
+constexpr size_t kMaxUIResourceRequests = 100;
+constexpr size_t kMaxSurfaceRanges = 100;
+constexpr size_t kMaxLatencyInfo = 100;
+constexpr size_t kMaxAnimationTimelines = 100;
+constexpr size_t kMaxAnimationsPerTimeline = 100;
+constexpr size_t kMaxKeyframeModelsPerAnimation = 10;
+constexpr size_t kMaxKeyframesPerAnimationCurve = 10;
+
+void ClampLayerTreeUpdate(viz::mojom::LayerTreeUpdate* update) {
+  if (!update) {
+    return;
+  }
+
+  update->num_transform_nodes =
+      std::min(update->num_transform_nodes, kMaxPropertyTreeNodes);
+  update->num_clip_nodes =
+      std::min(update->num_clip_nodes, kMaxPropertyTreeNodes);
+  update->num_effect_nodes =
+      std::min(update->num_effect_nodes, kMaxPropertyTreeNodes);
+  update->num_scroll_nodes =
+      std::min(update->num_scroll_nodes, kMaxPropertyTreeNodes);
+
+  if (update->transform_nodes.size() > kMaxPropertyTreeNodes) {
+    update->transform_nodes.resize(kMaxPropertyTreeNodes);
+  }
+  if (update->clip_nodes.size() > kMaxPropertyTreeNodes) {
+    update->clip_nodes.resize(kMaxPropertyTreeNodes);
+  }
+  if (update->effect_nodes.size() > kMaxPropertyTreeNodes) {
+    update->effect_nodes.resize(kMaxPropertyTreeNodes);
+  }
+  if (update->scroll_nodes.size() > kMaxPropertyTreeNodes) {
+    update->scroll_nodes.resize(kMaxPropertyTreeNodes);
+  }
+
+  if (update->layers.size() > kMaxLayers) {
+    update->layers.resize(kMaxLayers);
+  }
+  if (update->layer_order && update->layer_order->size() > kMaxLayers) {
+    update->layer_order->resize(kMaxLayers);
+  }
+
+  if (update->tilings.size() > kMaxTilings) {
+    update->tilings.resize(kMaxTilings);
+  }
+  for (auto& tiling : update->tilings) {
+    if (tiling->tiles.size() > kMaxTilesPerTiling) {
+      tiling->tiles.resize(kMaxTilesPerTiling);
+    }
+  }
+
+  if (update->ui_resource_requests.size() > kMaxUIResourceRequests) {
+    update->ui_resource_requests.resize(kMaxUIResourceRequests);
+  }
+  if (update->surface_ranges &&
+      update->surface_ranges->size() > kMaxSurfaceRanges) {
+    update->surface_ranges->resize(kMaxSurfaceRanges);
+  }
+  if (update->latency_info.size() > kMaxLatencyInfo) {
+    update->latency_info.resize(kMaxLatencyInfo);
+  }
+
+  // Note: view_transition_requests might not exist if they weren't added in
+  // mojom yet, let's skip unless we are sure. We saw
+  // DeserializeViewTransitionRequests, so it should exist. Actually, I don't
+  // know the exact names. Let's just limit what we are sure about.
+
+  if (update->removed_animation_timelines &&
+      update->removed_animation_timelines->size() > kMaxAnimationTimelines) {
+    update->removed_animation_timelines->resize(kMaxAnimationTimelines);
+  }
+  if (update->animation_timelines) {
+    if (update->animation_timelines->size() > kMaxAnimationTimelines) {
+      update->animation_timelines->resize(kMaxAnimationTimelines);
+    }
+    for (auto& timeline : *update->animation_timelines) {
+      if (timeline->removed_animations.size() > kMaxAnimationsPerTimeline) {
+        timeline->removed_animations.resize(kMaxAnimationsPerTimeline);
+      }
+      if (timeline->new_animations.size() > kMaxAnimationsPerTimeline) {
+        timeline->new_animations.resize(kMaxAnimationsPerTimeline);
+      }
+      for (auto& animation : timeline->new_animations) {
+        if (animation->keyframe_models.size() >
+            kMaxKeyframeModelsPerAnimation) {
+          animation->keyframe_models.resize(kMaxKeyframeModelsPerAnimation);
+        }
+        for (auto& model : animation->keyframe_models) {
+          if (model->keyframes.size() > kMaxKeyframesPerAnimationCurve) {
+            model->keyframes.resize(kMaxKeyframesPerAnimationCurve);
+          }
+        }
+      }
+    }
+  }
+}
+
 class LayerContextTestcase
     : public mojolpm::Testcase<viz::fuzzing::layer_context::proto::Testcase,
                                viz::fuzzing::layer_context::proto::Action> {
@@ -228,6 +329,7 @@ class LayerContextTestcase
         auto proto_update = action.update_display_tree();
         FixUpLayerTreeUpdate(&proto_update);
         if (mojolpm::FromProto(proto_update, update) && update) {
+          ClampLayerTreeUpdate(update.get());
           // Call the implementation directly, bypassing the Mojo pipe to avoid
           // ReportBadMessage disconnecting the endpoint on invalid fuzz data.
           (void)impl_test_->layer_context_impl()->DoUpdateDisplayTree(
