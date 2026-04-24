@@ -131,7 +131,7 @@ try_.builder(
             "build_config": "ios",
             "platform": "ios",
         },
-        "xcode_build_version": "15a240d",
+        "xcode_build_version": "17a400",
     },
 )
 
