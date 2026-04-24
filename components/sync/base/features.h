@@ -240,6 +240,11 @@ BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroidLFF);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Feature flag for ChromeOS only to estimate new sign-in users population.
+BASE_DECLARE_FEATURE(kEstimateNewSignInUsersWithFinchAvailablePopulation);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

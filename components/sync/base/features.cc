@@ -216,4 +216,9 @@ BASE_FEATURE(kSyncInvalidationsBypassScheduler,
 BASE_FEATURE(kSyncSearchEnginesAndroidLFF, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kEstimateNewSignInUsersWithFinchAvailablePopulation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace syncer

@@ -1314,6 +1314,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.ChromeOS.IsEstimateNewSignInUsersWithFinchAvailablePopulationEnabled"
+    enum="Boolean" expires_after="2027-02-01">
+  <owner>mmrashad@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the state of the EstimateNewSignInUsersWithFinchAvailablePopulation
+    feature flag (True if enabled, False if disabled). Recorded exactly once per
+    device-level user during their first sign-in (profile initialization), when
+    the primary account is established for the first time. This tracks
+    operating-system level user accounts, not secondary Google Accounts added
+    via Settings. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ChromeSignoutConfirmationPrompt.{Variant}"
     enum="ChromeSignoutConfirmationChoice" expires_after="2026-09-06">
   <owner>droger@chromium.org</owner>
