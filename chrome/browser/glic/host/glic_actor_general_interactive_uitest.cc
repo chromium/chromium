@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabOnNewTabPage) {
       // clang-format off
       InitializeWithOpenGlicWindow(),
       InstrumentTab(kActiveTabId),
-      NavigateWebContents(kActiveTabId, GURL(chrome::kChromeUINewTabURL)),
+      NavigateWebContents(kActiveTabId, chrome::ChromeUINewTabURLAsGURL()),
       InAnyContext(WithElement(kActiveTabId, [&, this](ui::TrackedElement* el) {
         content::WebContents* contents =
             AsInstrumentedWebContents(el)->web_contents();
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
       // clang-format off
       InitializeWithOpenGlicWindow(),
       InstrumentTab(kActiveTabId),
-      NavigateWebContents(kActiveTabId, GURL(chrome::kChromeUINewTabURL)),
+      NavigateWebContents(kActiveTabId, chrome::ChromeUINewTabURLAsGURL()),
       InAnyContext(WithElement(kActiveTabId, [&, this](ui::TrackedElement* el) {
         content::WebContents* contents =
             AsInstrumentedWebContents(el)->web_contents();

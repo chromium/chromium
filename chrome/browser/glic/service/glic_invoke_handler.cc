@@ -44,7 +44,7 @@ static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
   tabs::TabInterface* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     tab = TabListInterface::From(browser)->OpenTab(
-        GURL(chrome::kChromeUINewTabURL), -1);
+        chrome::ChromeUINewTabURLAsGURL(), -1);
   }
   return tab;
 }
@@ -84,7 +84,7 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
       return {nullptr, /*is_new=*/false};
     }
     tabs::TabInterface* tab = TabListInterface::From(browser)->OpenTab(
-        GURL(chrome::kChromeUINewTabURL), -1);
+        chrome::ChromeUINewTabURLAsGURL(), -1);
     if (tab) {
       return {tab, /*is_new=*/true};
     }

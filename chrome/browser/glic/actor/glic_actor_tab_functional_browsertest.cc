@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorTabFunctionalBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     GlicActorTabFunctionalBrowserTest,
-    ::testing::Values(GURL(chrome::kChromeUINewTabURL),
+    ::testing::Values(chrome::ChromeUINewTabURLAsGURL(),
                       GURL(url::kAboutBlankURL)));
 
 }  // namespace
