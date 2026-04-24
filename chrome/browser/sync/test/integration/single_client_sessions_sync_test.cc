@@ -233,7 +233,7 @@ class SingleClientSessionsSyncTest
   }
 
   GURL GetInitialURL() const override {
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   }
 
   void ExpectNavigationChain(const std::vector<GURL>& urls) {

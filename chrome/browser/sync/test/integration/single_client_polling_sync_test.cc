@@ -48,7 +48,7 @@ class SingleClientPollingSyncTest
   }
 
   GURL GetInitialURL() const override {
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   }
 
   void SetUpOnMainThread() override {

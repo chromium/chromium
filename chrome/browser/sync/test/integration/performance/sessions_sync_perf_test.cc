@@ -53,7 +53,7 @@ class SessionsSyncPerfTest : public SyncTest {
   }
 
   GURL GetInitialURL() const override {
-    return GURL(chrome::kChromeUINewTabURL);
+    return chrome::ChromeUINewTabURLAsGURL();
   }
 
   // Opens |num_tabs| new tabs on |profile|.
