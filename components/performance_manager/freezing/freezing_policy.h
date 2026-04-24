@@ -156,7 +156,7 @@ class FreezingPolicy : public PageNodeObserver,
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
   void UpdateFrozenState(
       const PageNode* page_node,
-      base::LiveTicks now = base::LiveTicks::Now(),
+      base::TimeTicks now = base::TimeTicks::Now(),
       base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
@@ -249,7 +249,7 @@ class FreezingPolicy : public PageNodeObserver,
   // OnPeriodicUnfreezeTimer() at the next time when the tab must be unfrozen or
   // re-frozen.
   void StartPeriodicUnfreezeTimer(const PageNode* page_node,
-                                  base::LiveTicks now);
+                                  base::TimeTicks now);
 
   // Method invoked when when it's time to unfreeze or re-freeze a tab frozen
   // for `FreezingContext::kInfiniteTabs`.
@@ -279,7 +279,7 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Returns a random periodic unfreeze phase. Can be overridden in test to
   // eliminate randomness.
-  virtual base::LiveTicks GenerateRandomPeriodicUnfreezePhase() const;
+  virtual base::TimeTicks GenerateRandomPeriodicUnfreezePhase() const;
 
   // Called when the memory pressure state of the system is updated. Triggers a
   // policy-wide re-evaluation of page freezing.

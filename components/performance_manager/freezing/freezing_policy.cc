@@ -122,15 +122,12 @@ struct FreezingPolicy::PageFreezingState
   //                     12 ->         [20, 22]
   //                     13 ->         [20, 22]
   //         etc.
-  //
-  // Time is measured using LiveTicks so that time spent suspended isn't
-  // counted, to avoid a thundering herd of tabs being unfrozen on resume.
-  std::pair<base::LiveTicks, base::LiveTicks>
-  GetCurrentOrNextUnfreezePeriodStart(base::LiveTicks now) const {
-    const base::LiveTicks next_unfreeze_time = now.SnappedToNextTick(
+  std::pair<base::TimeTicks, base::TimeTicks>
+  GetCurrentOrNextUnfreezePeriodStart(base::TimeTicks now) const {
+    const base::TimeTicks next_unfreeze_time = now.SnappedToNextTick(
         *periodic_unfreeze_phase,
         features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
-    const base::LiveTicks previous_unfreeze_time =
+    const base::TimeTicks previous_unfreeze_time =
         next_unfreeze_time -
         features::kInfiniteTabsFreezing_UnfreezeInterval.Get();
     CHECK_LT(previous_unfreeze_time, now);
@@ -148,7 +145,7 @@ struct FreezingPolicy::PageFreezingState
   }
 
   // Returns true if `now` is within a periodic unfreeze period for this page.
-  bool IsInUnfreezePeriod(base::LiveTicks now) const {
+  bool IsInUnfreezePeriod(base::TimeTicks now) const {
     return GetCurrentOrNextUnfreezePeriodStart(now).first <= now;
   }
 
@@ -157,7 +154,7 @@ struct FreezingPolicy::PageFreezingState
   // there is a state change at time `now`, this returns the time of the next
   // state change).
   base::TimeDelta GetDelayUntilNextUnfreezeStateChange(
-      base::LiveTicks now) const {
+      base::TimeTicks now) const {
     auto [start_incl, end_excl] = GetCurrentOrNextUnfreezePeriodStart(now);
     if (start_incl > now) {
       return start_incl - now;
@@ -175,7 +172,7 @@ struct FreezingPolicy::PageFreezingState
   // Phase for periodic unfreezing. Use a random value so that different tabs
   // are unfrozen at different tabs as much as possible, but also cannot learn
   // anything about other unrelated tabs.
-  std::optional<base::LiveTicks> periodic_unfreeze_phase;
+  std::optional<base::TimeTicks> periodic_unfreeze_phase;
 
   // Reasons not to freeze the page.
   CannotFreezeReasonSet cannot_freeze_reasons;
@@ -405,11 +402,11 @@ FreezingPolicy::PageFreezingState& FreezingPolicy::GetFreezingState(
 }
 
 void FreezingPolicy::UpdateFrozenState(
-    const PageNode* page_node,
-    base::LiveTicks now,
+    const PageNode* page,
+    base::TimeTicks now,
     base::flat_set<raw_ptr<const PageNode>>* connected_pages_out) {
   const base::flat_set<raw_ptr<const PageNode>> connected_pages =
-      GetConnectedPages(page_node);
+      GetConnectedPages(page);
 
   // Determine whether:
   // - Any connected page has a `CannotFreezeReason`.
@@ -520,7 +517,7 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
   CanFreezePerTypeTracker after_tracker;
   after_tracker.PopulateWithPageFreezingState(state);
 
-  const base::LiveTicks now = base::LiveTicks::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
 
   if (!after_tracker.CanFreeze(FreezingType::kInfiniteTabs)) {
     // No need to run the periodic unfreeze timer when the tab isn't eligible
@@ -533,7 +530,7 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
   }
 
   if (before_tracker != after_tracker) {
-    UpdateFrozenState(page_node, now);
+    UpdateFrozenState(page_node);
   }
 }
 
@@ -1239,7 +1236,7 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
 }
 
 void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
-                                                base::LiveTicks now) {
+                                                base::TimeTicks now) {
   auto& state = GetFreezingState(page_node);
   CHECK(!state.periodic_unfreeze_timer.IsRunning(), base::NotFatalUntil::M141);
   state.periodic_unfreeze_timer.Start(
@@ -1249,7 +1246,7 @@ void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
 }
 
 void FreezingPolicy::OnPeriodicUnfreezeTimer(const PageNode* page_node) {
-  const base::LiveTicks now = base::LiveTicks::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
   UpdateFrozenState(page_node, now);
   StartPeriodicUnfreezeTimer(page_node, now);
 }
@@ -1399,8 +1396,8 @@ void FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
   ukm.Record(ukm::UkmRecorder::Get());
 }
 
-base::LiveTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
-  return base::LiveTicks() +
+base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
+  return base::TimeTicks() +
          base::Milliseconds(base::RandIntInclusive(
              0, features::kInfiniteTabsFreezing_UnfreezeInterval.Get()
                     .InMilliseconds()));
@@ -1445,7 +1442,7 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
 }
 
 void FreezingPolicy::UpdateAllPagesFrozenState() {
-  const base::LiveTicks now = base::LiveTicks::Now();
+  const base::TimeTicks now = base::TimeTicks::Now();
 
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
   for (auto& [id, state] : browsing_instance_states_) {
