@@ -818,8 +818,7 @@ class DetachToBrowserTabDragControllerTest
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features_with_params;
 
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kWebUITabStrip};
+    std::vector<base::test::FeatureRef> disabled_features;
 
 #if BUILDFLAG(IS_WIN)
     // Disable NativeWinOcclusion to avoid it interfering with test for dragging

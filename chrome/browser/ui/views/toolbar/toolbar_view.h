@@ -133,10 +133,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // transition.
   void UpdateCustomTabBarVisibility(bool visible, bool animate);
 
-  // We may or may not be using a WebUI tab strip. Make sure toolbar items are
-  // added or removed accordingly.
-  void UpdateForWebUITabStrip();
-
   // Clears the current state for |tab|.
   void ResetTabState(content::WebContents* tab);
 

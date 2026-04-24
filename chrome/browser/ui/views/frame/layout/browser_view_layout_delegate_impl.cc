@@ -24,10 +24,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
-#endif
-
 BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
     BrowserView& browser_view)
     : browser_view_(browser_view) {}
@@ -35,16 +31,6 @@ BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawTabStrip() const {
   return browser_view_->ShouldDrawTabStrip();
-}
-
-bool BrowserViewLayoutDelegateImpl::ShouldUseTouchableTabstrip() const {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  return WebUITabStripContainerView::UseTouchableTabStrip(
-             browser_view_->browser()) &&
-         browser_view_->GetSupportsTabStrip();
-#else
-  return false;
-#endif
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {

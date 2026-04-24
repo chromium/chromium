@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -278,42 +277,4 @@ TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
   ASSERT_TRUE(controller()->IsEnabled());
   controller()->SetEnabled(/*enabled=*/false);
   ASSERT_FALSE(controller()->IsEnabled());
-}
-
-class ImmersiveModeControllerChromeosWebUITabStripTest
-    : public ImmersiveModeControllerChromeosTest {
- public:
-  ImmersiveModeControllerChromeosWebUITabStripTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWebUITabStrip);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Ensures the WebUI tab strip can be opened during immersive reveal.
-// Regression test for crbug.com/40136260 where it couldn't be opened.
-TEST_F(ImmersiveModeControllerChromeosWebUITabStripTest, CanOpen) {
-  AddTab(browser(), GURL("about:blank"));
-
-  // The WebUI tab strip is only used in touch mode.
-  ui::TouchUiController::TouchUiScoperForTesting touch_mode_override(true);
-
-  WebUITabStripContainerView* const webui_tab_strip =
-      browser_view()->webui_tab_strip();
-  ASSERT_TRUE(webui_tab_strip);
-  EXPECT_FALSE(webui_tab_strip->GetVisible());
-
-  ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
-  EXPECT_FALSE(webui_tab_strip->GetVisible());
-
-  AttemptReveal();
-  EXPECT_FALSE(webui_tab_strip->GetVisible());
-
-  webui_tab_strip->SetVisibleForTesting(true);
-
-  // The WebUITabStrip should be layed out.
-  browser_view()->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(webui_tab_strip->GetVisible());
-  EXPECT_FALSE(webui_tab_strip->size().IsEmpty());
 }

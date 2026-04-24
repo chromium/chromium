@@ -60,14 +60,6 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
 
 class TabStripUIBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    // In this test, we create our own TabStripUI instance with a mock
-    // Embedder. Disable the production one to avoid conflicting with
-    // it.
-    feature_override_.InitAndDisableFeature(features::kWebUITabStrip);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     const TabStripUILayout default_layout =
         TabStripUILayout::CalculateForWebViewportSize(gfx::Size(200, 200));
@@ -97,9 +89,6 @@ class TabStripUIBrowserTest : public InProcessBrowserTest {
 
   ::testing::NiceMock<MockTabStripUIEmbedder> mock_embedder_;
   std::unique_ptr<content::WebContents> webui_contents_;
-
- private:
-  base::test::ScopedFeatureList feature_override_;
 };
 
 // static

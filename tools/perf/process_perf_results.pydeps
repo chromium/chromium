@@ -645,7 +645,6 @@ page_sets/desktop_ui/story_tags.py
 page_sets/desktop_ui/tab_search_story.py
 page_sets/desktop_ui/ui_devtools_utils.py
 page_sets/desktop_ui/url_list.py
-page_sets/desktop_ui/webui_tab_strip_story.py
 page_sets/desktop_ui/webui_utils.py
 page_sets/dummy_story_set.py
 page_sets/dummy_wpr_story_set.py

@@ -111,7 +111,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
       const BrowserLayoutParams& params) const;
 
   // Returns the type of tabstrip present.
-  enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
+  enum class TabStripType { kNone, kVertical, kHorizontal };
   TabStripType GetTabStripType() const;
 
   // Returns whether the shadow overlay (with its attendant margin) around the

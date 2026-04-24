@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/minimize_button_metrics_win.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -178,13 +177,9 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
                      .Build());
   }
 
-  bool supports_title =
-      supports_title_bar ||
-      WebUITabStripContainerView::SupportsTouchableTabStrip(browser);
-
   // If this is a web app window, the window title will be part of the
   // BrowserView and thus we don't need to create another one here.
-  if (!browser_view->GetIsWebAppType() && supports_title) {
+  if (!browser_view->GetIsWebAppType() && supports_title_bar) {
     window_title_ = new views::Label(browser_view->GetWindowTitle());
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -238,7 +233,7 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
 }
 
 int BrowserFrameViewWin::GetTopInset(bool restored) const {
-  if (GetBrowserView()->GetTabStripVisible() || IsWebUITabStrip()) {
+  if (GetBrowserView()->GetTabStripVisible()) {
     return TopAreaHeight(restored);
   }
   return ShouldBrowserCustomDrawTitlebar(GetBrowserView())
@@ -518,11 +513,6 @@ bool BrowserFrameViewWin::IsMaximized() const {
   return browser_widget()->IsMaximized();
 }
 
-bool BrowserFrameViewWin::IsWebUITabStrip() const {
-  return WebUITabStripContainerView::UseTouchableTabStrip(
-      GetBrowserView()->browser());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewWin, views::View overrides:
 
@@ -569,24 +559,12 @@ int BrowserFrameViewWin::FrameBorderThickness() const {
 int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
   const bool is_fullscreen =
       (browser_widget()->IsFullscreen() || IsMaximized()) && !restored;
-  if (!is_fullscreen) {
-    if (GetBrowserView()->GetTabStripVisible()) {
-      // Restored windows have a smaller top resize handle than the system
-      // default. When maximized, the OS sizes the window such that the border
-      // extends beyond the screen edges. In that case, we must return the
-      // default value.
-      return 0;
-    }
-
-    // There is no top border in tablet mode when the window is "restored"
-    // because it is still tiled into either the left or right pane of the
-    // display takes up the entire vertical extent of the screen. Note that a
-    // rendering bug in Windows may still cause the very top of the window to be
-    // cut off intermittently, but that's an OS issue that affects all
-    // applications, not specifically Chrome.
-    if (IsWebUITabStrip()) {
-      return 0;
-    }
+  if (!is_fullscreen && GetBrowserView()->GetTabStripVisible()) {
+    // Restored windows have a smaller top resize handle than the system
+    // default. When maximized, the OS sizes the window such that the border
+    // extends beyond the screen edges. In that case, we must return the
+    // default value.
+    return 0;
   }
 
   // Mouse and touch locations are floored but GetSystemMetricsInDIP is rounded,
@@ -623,19 +601,8 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     return 0;
   }
 
-  const bool maximized = IsMaximized() && !restored;
-  int top = FrameTopBorderThickness(restored);
-  if (IsWebUITabStrip()) {
-    // Caption bar is default Windows size in maximized mode but full size when
-    // windows are tiled in tablet mode (baesd on behavior of first-party
-    // Windows applications).
-    top += maximized ? TitlebarMaximizedVisualHeight()
-                     : caption_button_container_->GetPreferredSize().height();
-    return top;
-  }
-
   // The tabstrip controls its own top padding.
-  return top;
+  return FrameTopBorderThickness(restored);
 }
 
 int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
@@ -660,11 +627,8 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
 
   // The titlebar's actual height is the same in restored and maximized, but
   // some of it is above the screen in maximized mode. See the comment in
-  // FrameTopBorderThicknessPx(). For WebUI,
-  return (IsWebUITabStrip()
-              ? caption_button_container_->GetPreferredSize().height()
-              : TitlebarMaximizedVisualHeight()) +
-         FrameTopBorderThickness(false);
+  // FrameTopBorderThicknessPx().
+  return TitlebarMaximizedVisualHeight() + FrameTopBorderThickness(false);
 }
 
 int BrowserFrameViewWin::GetFrameHeight() const {
@@ -682,10 +646,7 @@ int BrowserFrameViewWin::WindowTopY() const {
   // FrameTopBorderThickness()) and floor(system dsf) pixels when restored.
   // Unfortunately we can't represent either of those at hidpi without using
   // non-integral dips, so we return the closest reasonable values instead.
-  if (IsMaximized()) {
-    return FrameTopBorderThickness(false);
-  }
-  return IsWebUITabStrip() ? FrameTopBorderThickness(true) : 1;
+  return IsMaximized() ? FrameTopBorderThickness(false) : 1;
 }
 
 int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {

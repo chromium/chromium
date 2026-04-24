@@ -98,7 +98,6 @@ class TopControlsSlideController;
 class TopControlsSlideControllerTest;
 class VerticalTabStripRegionView;
 class WebAppFrameToolbarView;
-class WebUITabStripContainerView;
 
 namespace gfx {
 class AnimationRunner;
@@ -297,9 +296,6 @@ class BrowserView : public BrowserWindow,
   TabStrip* horizontal_tab_strip_for_testing() {
     return horizontal_tab_strip_region_view_->tab_strip();
   }
-
-  // Accessor for the WebUI tab strip.
-  WebUITabStripContainerView* webui_tab_strip() { return webui_tab_strip_; }
 
   // Accessor for the Toolbar.
   const ToolbarView* toolbar() const { return toolbar_; }
@@ -919,9 +915,6 @@ class BrowserView : public BrowserWindow,
 
   void OnProjectsPanelStateChanged(ProjectsPanelStateController* controller);
 
-  // Make sure the WebUI tab strip exists if it should.
-  void MaybeInitializeWebUITabStrip();
-
   // Callback for the loading animation(s) associated with this view.
   void LoadingAnimationTimerCallback();
   void LoadingAnimationCallback(base::TimeTicks timestamp);
@@ -1200,19 +1193,11 @@ class BrowserView : public BrowserWindow,
   // The view that contains the tabstrip, new tab button, and grab handle space.
   raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view_ =
       nullptr;
+
   // The insertion index of the HorizontalTabStripRegionView in the BrowserView
   // view tree. This is used to correctly reparent the tabstrip when exiting
   // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
   std::optional<size_t> horizontal_tab_strip_region_insertion_index_;
-
-  // The webui based tabstrip, when applicable. see https://crbug.com/40638200.
-  raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
-
-  // Allows us to react to changes in accessibility mode. Having an observer
-  // object allows for the browser to change mode if it enters or leaves
-  // accessibility mode.
-  std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
-
   // The Toolbar containing the navigation buttons, menus and the address bar.
   raw_ptr<ToolbarView> toolbar_ = nullptr;
 

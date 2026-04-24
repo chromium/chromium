@@ -164,10 +164,6 @@
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
 #if defined(USE_AURA)
 #include <array>
 
@@ -1197,26 +1193,6 @@ void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   }
 }
 
-void ToolbarView::UpdateForWebUITabStrip() {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (!new_tab_button_) {
-    return;
-  }
-  if (browser_view_->webui_tab_strip()) {
-    const int button_height =
-        GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
-    new_tab_button_->SetPreferredSize(gfx::Size(button_height, button_height));
-    new_tab_button_->SetVisible(true);
-    const size_t insertion_index = GetIndexOf(new_tab_button_).value();
-    AddChildViewAt(browser_view_->webui_tab_strip()->CreateTabCounter(),
-                   insertion_index);
-    LoadImages();
-  } else {
-    new_tab_button_->SetVisible(false);
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-}
-
 void ToolbarView::ResetTabState(WebContents* tab) {
   if (location_bar_) {
     location_bar_->ResetTabState(tab);
@@ -1565,36 +1541,32 @@ void ToolbarView::LayoutCommon() {
   DCHECK(display_mode_ == DisplayMode::kNormal);
 
   gfx::Insets interior_margin =
-      GetLayoutInsets(browser_view_->webui_tab_strip()
-                          ? LayoutInset::WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN
-                          : LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+      GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  if (!browser_view_->webui_tab_strip()) {
-    if (app_menu_button_->IsLabelPresentAndVisible()) {
-      // The interior margin in an expanded state should be more than in a
-      // collapsed state.
-      interior_margin.set_right(interior_margin.right() + 1);
-      app_menu_button_->SetProperty(
+  if (app_menu_button_->IsLabelPresentAndVisible()) {
+    // The interior margin in an expanded state should be more than in a
+    // collapsed state.
+    interior_margin.set_right(interior_margin.right() + 1);
+    app_menu_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
+  } else {
+    app_menu_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+  }
+
+  // The margins of the `avatar_` uses the same constants as the
+  // `app_menu_button_`.
+  if (avatar_) {
+    if (avatar_->IsLabelPresentAndVisible()) {
+      avatar_->SetProperty(
           views::kMarginsKey,
           gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
     } else {
-      app_menu_button_->SetProperty(
+      avatar_->SetProperty(
           views::kMarginsKey,
           gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
-    }
-
-    // The margins of the `avatar_` uses the same constants as the
-    // `app_menu_button_`.
-    if (avatar_) {
-      if (avatar_->IsLabelPresentAndVisible()) {
-        avatar_->SetProperty(
-            views::kMarginsKey,
-            gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
-      } else {
-        avatar_->SetProperty(
-            views::kMarginsKey,
-            gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
-      }
     }
   }
 

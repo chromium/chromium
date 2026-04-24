@@ -6147,13 +6147,8 @@ if (!is_android) {
     }
 
     if (enable_webui_tab_strip) {
-      sources += [
-        "../browser/ui/views/frame/webui_tab_strip_container_view_browsertest.cc",
-        "../browser/ui/views/frame/webui_tab_strip_field_trial_browsertest.cc",
-        "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
-      ]
+      sources += [ "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc" ]
     }
-
     if (enable_session_service) {
       deps += [ "//chrome/browser/ui/webui/tab_strip_internals:browser_tests" ]
     }
@@ -12163,11 +12158,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_linux) {
       deps += [ "//ui/base/ime/linux" ]
-    }
-
-    if (enable_webui_tab_strip) {
-      sources +=
-          [ "../browser/ui/views/frame/webui_tab_strip_interactive_uitest.cc" ]
     }
 
     if (is_win || is_mac || is_linux) {

@@ -85,10 +85,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(BrowserFrameViewChromeOS*)
 
 namespace {
@@ -316,8 +312,7 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
     // but the inset is still calculated below, so the overview code can align
     // the window content with a fake header.
     if (!GetOverviewMode() || browser_widget()->IsFullscreen() ||
-        GetBrowserView()->GetTabStripVisible() ||
-        GetBrowserView()->webui_tab_strip()) {
+        GetBrowserView()->GetTabStripVisible()) {
       return 0;
     }
   }
@@ -942,13 +937,8 @@ bool BrowserFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview() const {
     return true;
   }
 
-  // Browsers in tablet mode still show their caption buttons in float state,
-  // even with the webUI tab strip.
-  if (display::Screen::Get()->InTabletMode()) {
-    return IsFloated();
-  }
-
-  return !UseWebUITabStrip();
+  // Browsers in tablet mode still show their caption buttons in float state.
+  return !display::Screen::Get()->InTabletMode() || IsFloated();
 }
 
 int BrowserFrameViewChromeOS::GetToolbarLeftInset() const {
@@ -979,14 +969,6 @@ bool BrowserFrameViewChromeOS::GetShouldPaint() const {
   if (IsFloated()) {
     return true;
   }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // Normal windows that have a WebUI-based tab strip do not need a browser
-  // frame as no tab strip is drawn on top of the browser frame.
-  if (UseWebUITabStrip()) {
-    return false;
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   // We need to paint when the top-of-window views are revealed in immersive
   // fullscreen.
@@ -1241,12 +1223,6 @@ bool BrowserFrameViewChromeOS::IsFloated() const {
 bool BrowserFrameViewChromeOS::IsSnapped() const {
   return ash::WindowState::Get(browser_widget()->GetNativeWindow())
       ->IsSnapped();
-}
-
-bool BrowserFrameViewChromeOS::UseWebUITabStrip() const {
-  return WebUITabStripContainerView::UseTouchableTabStrip(
-             GetBrowserView()->browser()) &&
-         GetBrowserView()->GetSupportsTabStrip();
 }
 
 const aura::Window* BrowserFrameViewChromeOS::GetFrameWindow() const {

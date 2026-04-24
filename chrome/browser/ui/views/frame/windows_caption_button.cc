@@ -60,8 +60,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize(
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
   int height = WindowFrameUtil::kWindowsCaptionButtonHeightRestored;
-  if (!frame_view_->GetBrowserView()->webui_tab_strip() &&
-      frame_view_->IsMaximized()) {
+  if (frame_view_->IsMaximized()) {
     const auto info = frame_view_->GetBrowserView()->GetFrameElementInfo();
     int maximized_height = info.tabstrip_preferred_height
                                ? info.tabstrip_preferred_height

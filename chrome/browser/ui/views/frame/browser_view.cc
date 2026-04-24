@@ -398,10 +398,6 @@
 #undef LoadAccelerators
 #endif
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
 using base::UserMetricsAction;
 using content::WebContents;
 using input::NativeWebKeyboardEvent;
@@ -841,34 +837,6 @@ class BrowserView::ExclusiveAccessContextImpl
   base::WeakPtrFactory<ExclusiveAccessContextImpl> weak_ptr_factory_{this};
 };
 
-class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
- public:
-  explicit AccessibilityModeObserver(BrowserView* browser_view)
-      : browser_view_(browser_view) {
-    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-  }
-
- private:
-  // ui::AXModeObserver:
-  void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override {
-    // The WebUI tablet/"touchable" tabstrip is not used when a screen reader is
-    // active - see `WebUITabStripContainerView::UseTouchableTabStrip()`.
-    // However, updating the assistive tech state in order to read it is slow,
-    // so instead of trying to it synchronously at startup, respond to updates
-    // here, then pass them to the browser via post so the tabstrip state can
-    // be properly updated on a fresh call stack.
-    if (ui::IsScreenReader(assistive_tech)) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
-                                    browser_view_->GetAsWeakPtr()));
-    }
-  }
-
-  const raw_ptr<BrowserView> browser_view_;
-  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
-      ax_mode_observation_{this};
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
@@ -876,9 +844,7 @@ BrowserView::BrowserView(Browser* browser)
     : views::ClientView(nullptr, nullptr),
       exclusive_access_context_(
           std::make_unique<ExclusiveAccessContextImpl>(*this)),
-      browser_(browser),
-      accessibility_mode_observer_(
-          std::make_unique<AccessibilityModeObserver>(this)) {
+      browser_(browser) {
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_.get())) {
     manager->OnBrowserWindowCreated();
   }
@@ -1140,7 +1106,6 @@ BrowserView::~BrowserView() {
   web_app_window_title_ = nullptr;
   horizontal_tab_strip_region_view_ = nullptr;
 
-  webui_tab_strip_ = nullptr;
   toolbar_ = nullptr;
   top_container_separator_ = nullptr;
   loading_bar_ = nullptr;
@@ -1407,12 +1372,6 @@ bool BrowserView::ShouldDrawTabStrip() const {
           Browser::WindowFeature::kFeatureTabStrip)) {
     return false;
   }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (WebUITabStripContainerView::UseTouchableTabStrip(browser_.get())) {
-    return false;
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   // Return false if the tabstrip has not yet been created (by InitViews()),
   // since callers may otherwise try to access it. Note that we can't just check
@@ -3017,21 +2976,14 @@ void BrowserView::DidFinishNavigation(
 
 void BrowserView::TouchModeChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // Reparenting is unnecessary when kWebUITabStrip is enabled because ChromeOS
-  // touch mode will use webui_tab_strip_ instead of tab_strip_region_view_ for
-  // the tab strip. web_ui_tab_strip_ is always parented to top_container, so
-  // this work is not needed.
-  if (!base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
-    if (ui::TouchUiController::Get()->touch_ui()) {
-      ReparentTabStripAndWebAppViewsToTopContainer(
-          TabStripAndWebAppViewsReparentedState::kTouchMode);
-    } else {
-      ReparentTabStripAndWebAppViewsToBrowserView(
-          TabStripAndWebAppViewsReparentedState::kTouchMode);
-    }
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    ReparentTabStripAndWebAppViewsToTopContainer(
+        TabStripAndWebAppViewsReparentedState::kTouchMode);
+  } else {
+    ReparentTabStripAndWebAppViewsToBrowserView(
+        TabStripAndWebAppViewsReparentedState::kTouchMode);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  MaybeInitializeWebUITabStrip();
 }
 
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
@@ -3833,12 +3785,6 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
     results.push_back(contents_web_view->holder());
   }
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (webui_tab_strip_) {
-    results.push_back(webui_tab_strip_->GetNativeViewHost());
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
   return results;
 }
 
@@ -3979,11 +3925,6 @@ bool BrowserView::ShouldShowWindowTitle() const {
   // title, crbug.com/40175496. Child windows (i.e. popups) do show a title.
   if (browser_->is_trusted_source() || AppUsesWindowControlsOverlay()) {
     return false;
-  }
-#elif BUILDFLAG(IS_WIN)
-  // On Windows in touch mode we display a window title.
-  if (WebUITabStripContainerView::UseTouchableTabStrip(browser())) {
-    return true;
   }
 #endif
 
@@ -4276,13 +4217,6 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble() {
-  // Do not spawn the bubble if using the WebUITabStrip.
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (WebUITabStripContainerView::UseTouchableTabStrip(browser_.get())) {
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
   if (auto* tab_search_host = GetTabSearchBubbleHost()) {
     tab_search_host->ShowTabSearchBubble(true);
   }
@@ -4559,11 +4493,6 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   // (Windows) or Ctrl+Back/Forward (Chrome OS).  If one of these is
   // invisible or has no focusable children, it will be automatically
   // skipped.
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (webui_tab_strip_) {
-    panes->push_back(webui_tab_strip_);
-  }
-#endif
   // If activity indicators or a permission request chip is visible, it must be
   // in the first position in the pane traversal order to be easily accessible
   // for keyboard users.
@@ -5069,17 +4998,11 @@ void BrowserView::AddedToWidget() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Reparenting is unnecessary when kWebUITabStrip is enabled because ChromeOS
-  // touch mode will use webui_tab_strip_ instead of tab_strip_region_view_ for
-  // the tab strip. web_ui_tab_strip_ is always parented to top_container, so
-  // this work is not needed.
-  if (!base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
-    // If in tablet mode, reparent web app views since they have different
-    // parent requirements.
-    if (ui::TouchUiController::Get()->touch_ui()) {
-      ReparentTabStripAndWebAppViewsToTopContainer(
-          TabStripAndWebAppViewsReparentedState::kTouchMode);
-    }
+  // If in tablet mode, reparent web app views since they have different
+  // parent requirements.
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    ReparentTabStripAndWebAppViewsToTopContainer(
+        TabStripAndWebAppViewsReparentedState::kTouchMode);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -5142,7 +5065,6 @@ void BrowserView::AddedToWidget() {
   frame_view->UpdateMinimumSize();
   using_native_frame_ = browser_widget_->ShouldUseNativeFrame();
 
-  MaybeInitializeWebUITabStrip();
   MaybeShowTabStripToolbarButtonIPH();
   MaybeShowSignInBenefitsIPH();
 
@@ -5214,18 +5136,7 @@ void BrowserView::OnThemeChanged() {
 bool BrowserView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  const bool parent_result =
-      views::ClientView::GetDropFormats(formats, format_types);
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (webui_tab_strip_) {
-    WebUITabStripContainerView::GetDropFormatsForView(formats, format_types);
-    return true;
-  } else {
-    return parent_result;
-  }
-#else
-  return parent_result;
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  return views::ClientView::GetDropFormats(formats, format_types);
 }
 
 bool BrowserView::AreDropTypesRequired() {
@@ -5233,25 +5144,12 @@ bool BrowserView::AreDropTypesRequired() {
 }
 
 bool BrowserView::CanDrop(const ui::OSExchangeData& data) {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (!webui_tab_strip_) {
-    return false;
-  }
-  return WebUITabStripContainerView::IsDraggedTab(data);
-#else
   return false;
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
 void BrowserView::OnDragEntered(const ui::DropTargetEvent& event) {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (!webui_tab_strip_) {
-    return;
-  }
-  if (WebUITabStripContainerView::IsDraggedTab(event.data())) {
-    webui_tab_strip_->OpenForTabDrag();
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  // TODO(421465978): Investigate if these drag related methods are necessary
+  // without WebUITabStrip.
 }
 
 views::View* BrowserView::GetViewByElementId(ui::ElementIdentifier element_id) {
@@ -5294,57 +5192,6 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 void BrowserView::InfoBarContainerStateChanged(bool is_animating) {
   ToolbarSizeChanged(is_animating);
-}
-
-void BrowserView::MaybeInitializeWebUITabStrip() {
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  TRACE_EVENT0("ui", "BrowserView::MaybeInitializeWebUITabStrip");
-  if (browser_->CanSupportWindowFeature(
-          Browser::WindowFeature::kFeatureTabStrip) &&
-      WebUITabStripContainerView::UseTouchableTabStrip(browser_.get())) {
-    if (!webui_tab_strip_) {
-      // We use |contents_container_| here so that enabling or disabling
-      // devtools won't affect the tab sizes. We still use only
-      // |contents_web_view_| for screenshotting and will adjust the
-      // screenshot accordingly. Ideally, the thumbnails should be sized
-      // based on a typical tab size, ignoring devtools or e.g. the
-      // downloads bar.
-      webui_tab_strip_ = top_container_->AddChildView(
-          std::make_unique<WebUITabStripContainerView>(
-              this, contents_container_, top_container_,
-              GetLocationBarView()->omnibox_view()));
-      loading_bar_ = top_container_->AddChildView(
-          std::make_unique<TopContainerLoadingBar>(browser_.get()));
-      loading_bar_->SetWebContents(GetActiveWebContents());
-
-      // Do not show Tab Search toolbar button when WebUI Tab Strip is enabled.
-      if (auto* tab_search_toolbar_button_controller =
-              TabSearchToolbarButtonController::From(browser_.get())) {
-        tab_search_toolbar_button_controller->UpdateBubbleHost(nullptr);
-      }
-    }
-  } else if (webui_tab_strip_) {
-    GetBrowserViewLayout()->set_webui_tab_strip(nullptr);
-    top_container_->RemoveChildView(webui_tab_strip_);
-    webui_tab_strip_.ClearAndDelete();
-
-    GetBrowserViewLayout()->set_loading_bar(nullptr);
-    top_container_->RemoveChildView(loading_bar_);
-    loading_bar_.ClearAndDelete();
-
-    // Show Tab Search pinned toolbar button when WebUI Tab Strip is disabled.
-    if (auto* tab_search_toolbar_button_controller =
-            TabSearchToolbarButtonController::From(browser_.get())) {
-      tab_search_toolbar_button_controller->UpdateBubbleHost(
-          tab_search_bubble_host_.get());
-    }
-  }
-  GetBrowserViewLayout()->set_webui_tab_strip(webui_tab_strip_);
-  GetBrowserViewLayout()->set_loading_bar(loading_bar_);
-  if (toolbar_) {
-    toolbar_->UpdateForWebUITabStrip();
-  }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
 void BrowserView::LoadingAnimationTimerCallback() {
@@ -5542,13 +5389,6 @@ void BrowserView::UpdateFastResizeForContentViews(bool fast_resize) {
 
 int BrowserView::GetClientAreaTop() {
   views::View* top_view = toolbar_;
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  // If webui_tab_strip is displayed, the client area starts at its top,
-  // otherwise at the top of the toolbar.
-  if (webui_tab_strip_ && webui_tab_strip_->GetVisible()) {
-    top_view = webui_tab_strip_;
-  }
-#endif
 
   // Get the top of the top view in browser view coordinates.
   return views::View::ConvertPointToTarget(top_view, this, top_view->origin())

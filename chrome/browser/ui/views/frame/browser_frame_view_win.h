@@ -61,7 +61,6 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   ui::ImageModel GetFaviconForTabIconView() override;
 
   bool IsMaximized() const;
-  bool IsWebUITabStrip() const;
 
   // Returns the y coordinate for the top of the frame, which in maximized mode
   // is the top of the screen and in restored mode is 1 pixel below the top of

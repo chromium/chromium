@@ -5591,10 +5591,6 @@ static_library("ui") {
 
   if (enable_webui_tab_strip) {
     sources += [
-      "views/frame/webui_tab_strip_container_view.cc",
-      "views/frame/webui_tab_strip_container_view.h",
-      "views/frame/webui_tab_strip_field_trial.cc",
-      "views/frame/webui_tab_strip_field_trial.h",
       "webui/tab_strip/tab_before_unload_tracker.cc",
       "webui/tab_strip/tab_before_unload_tracker.h",
       "webui/tab_strip/tab_strip_page_handler.cc",

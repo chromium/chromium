@@ -716,8 +716,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
+  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages)) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);
   }
   UMABrowsingActivityObserver::TabHelper::CreateForWebContents(web_contents);

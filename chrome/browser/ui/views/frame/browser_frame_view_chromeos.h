@@ -215,10 +215,6 @@ class BrowserFrameViewChromeOS
   // Returns whether the associated window is currently snapped or not.
   bool IsSnapped() const;
 
-  // True if the the associated browser window should be using the WebUI tab
-  // strip.
-  bool UseWebUITabStrip() const;
-
   // Returns the top level aura::Window for this browser window.
   const aura::Window* GetFrameWindow() const;
   aura::Window* GetFrameWindow();
