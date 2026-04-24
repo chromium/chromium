@@ -1979,6 +1979,64 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+TEST_F(DeepScanningReportingTest, CustomMessagePrioritization) {
+  SetFeatures(
+      /*enabled=*/{enterprise_data_protection::kEnableForceDownloadToCloud},
+      /*disabled=*/{});
+
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](DeepScanningRequestTest* test, base::RepeatingClosure quit_closure,
+             DownloadCheckResult result) {
+            test->SetLastResult(result);
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              quit_closure.Run();
+            }
+          },
+          base::Unretained(this), run_loop.QuitClosure()),
+      &download_protection_service_, settings().value(),
+      /*password=*/std::nullopt);
+
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+
+  // Rule 1: WARN with a custom message.
+  auto* result1 = response.add_results();
+  result1->set_tag("dlp");
+  result1->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* rule1 = result1->add_triggered_rules();
+  rule1->set_action(enterprise_connectors::TriggeredRule::WARN);
+  rule1->mutable_custom_rule_message()->add_message_segments()->set_text(
+      "Warn Custom Message");
+
+  // Rule 2: FORCE_SAVE_TO_CLOUD without a custom message.
+  auto* rule2 = result1->add_triggered_rules();
+  rule2->set_action(enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+  rule2->set_force_save_to_cloud_destination(
+      enterprise_connectors::TriggeredRule::CORP_G_DRIVE);
+
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      response);
+  download_protection_service_.GetFakeBinaryUploadService()
+      ->SetExpectedFinalAction(
+          enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
+
+  request.Start();
+  run_loop.Run();
+
+  // The final result should be FORCE_SAVE_TO_GDRIVE because it's higher
+  // precedence than WARN.
+  EXPECT_EQ(DownloadCheckResult::FORCE_SAVE_TO_GDRIVE, last_result_);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
   {
     enterprise_connectors::ContentAnalysisResponse response;

@@ -93,6 +93,19 @@ GetHighestPrecedenceForceSaveToCloudDestination(
   return TriggeredRule::UNSPECIFIED;
 }
 
+TriggeredRule::CustomRuleMessage GetForceSaveToCloudCustomRuleMessage(
+    const enterprise_connectors::ContentAnalysisResponse& response) {
+  for (const auto& result : response.results()) {
+    for (const auto& rule : result.triggered_rules()) {
+      if (rule.action() == TriggeredRule::FORCE_SAVE_TO_CLOUD &&
+          rule.has_custom_rule_message()) {
+        return rule.custom_rule_message();
+      }
+    }
+  }
+  return TriggeredRule::CustomRuleMessage();
+}
+
 DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
                                                DownloadCheckResult result_2) {
   // Don't use the enum's int values to determine precedence since that
@@ -733,6 +746,10 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
 
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
 
+  enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+      CustomRuleMessage custom_message =
+          GetForceSaveToCloudCustomRuleMessage(response);
+
   if (result == enterprise_connectors::ScanRequestUploadResult::kFileTooLarge &&
       analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
@@ -796,9 +813,9 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
                          weak_ptr_factory_.GetWeakPtr(),
                          DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
 
-      ShowForceSaveToCloudDialog(std::move(keep_closure),
-                                 std::move(discard_closure),
-                                 force_save_web_contents, /*file_count=*/1);
+      ShowForceSaveToCloudDialog(
+          std::move(keep_closure), std::move(discard_closure),
+          force_save_web_contents, custom_message, /*file_count=*/1);
       return;
     }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -949,7 +966,10 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
 
         ShowForceSaveToCloudDialog(
             std::move(keep_closure), std::move(discard_closure),
-            force_save_web_contents, save_package_files_.size());
+            force_save_web_contents,
+            enterprise_connectors::ContentAnalysisResponse::Result::
+                TriggeredRule::CustomRuleMessage(),
+            save_package_files_.size());
         return;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       }
@@ -1094,14 +1114,14 @@ void DeepScanningRequest::ShowForceSaveToCloudDialog(
     base::OnceClosure keep_closure,
     base::OnceClosure discard_closure,
     content::WebContents* web_contents,
+    const enterprise_connectors::ContentAnalysisResponse::Result::
+        TriggeredRule::CustomRuleMessage& custom_message,
     size_t file_count) {
   new enterprise_connectors::ContentAnalysisDialogController(
       std::make_unique<enterprise_connectors::ContentAnalysisDownloadsDelegate>(
           metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
           GURL(), false, std::move(keep_closure), std::move(discard_closure),
-          nullptr,
-          enterprise_connectors::ContentAnalysisResponse::Result::
-              TriggeredRule::CustomRuleMessage()),
+          nullptr, custom_message),
       true,  // Downloads are always cloud-based for now.
       web_contents, enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       file_count,

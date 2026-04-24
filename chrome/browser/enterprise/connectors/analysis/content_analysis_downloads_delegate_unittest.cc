@@ -182,6 +182,29 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
 }
 
 TEST_F(ContentAnalysisDownloadsDelegateTest,
+       TestCustomRuleMessageAndCustomMessageForceSaveToCloud) {
+  ContentAnalysisDownloadsDelegate delegate(
+      kTestFile, kTestMessage, GURL(kTestUrl), true,
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
+                     base::Unretained(this)),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
+                     base::Unretained(this)),
+      nullptr, CreateSampleCustomRuleMessage(kTestMessage2, kTestUrl2),
+      /*is_force_save_to_cloud=*/true);
+
+  EXPECT_TRUE(delegate.GetCustomMessage());
+  EXPECT_FALSE(delegate.GetCustomLearnMoreUrl());
+  EXPECT_TRUE(delegate.GetCustomRuleMessageRanges());
+
+  EXPECT_EQ(base::StrCat({kTestFile,
+                          u" has sensitive data. Your organization will "
+                          u"let you save it to cloud storage or discard it. "
+                          u"Your administrator says: ",
+                          kTestMessage2}),
+            *(delegate.GetCustomMessage()));
+}
+
+TEST_F(ContentAnalysisDownloadsDelegateTest,
        TestCustomRuleMessageAndCustomMessageInvalidUrl) {
   ContentAnalysisDownloadsDelegate delegate(
       u"foo.txt", kTestMessage, GURL(kTestUrl), true,

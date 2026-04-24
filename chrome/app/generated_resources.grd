@@ -18567,6 +18567,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE" desc="Button text to allow the user to save a file to cloud storage">
       <ph name="FILE_NAME">$1<ex>foo.txt</ex></ph> has sensitive data. Your organization will let you save it to cloud storage or discard it
     </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_CUSTOM_MESSAGE" desc="Message shown for force save with a custom message.">
+      <ph name="FILE_NAME">$1<ex>foo.txt</ex></ph> has sensitive data. Your organization will let you save it to cloud storage or discard it. Your administrator says: <ph name="CUSTOM_MESSAGE">$2<ex>Please don't upload this type of data.</ex></ph>
+    </message>
 
     <!-- Data sharing UI strings -->
     <message name="IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE" desc="Title of the data sharing bubble">
