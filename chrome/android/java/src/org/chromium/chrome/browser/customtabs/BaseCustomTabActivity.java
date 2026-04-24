@@ -363,7 +363,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                     rootLayout.findViewById(WebAppHeaderUtils.getWebAppHeaderContentId());
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
-            super.setContentView(linearLayout);
+            super.setContentView(rootLayout);
         } else if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(mIntentDataProvider)) {
             final View rootLayout =
                     getLayoutInflater().inflate(DesktopPopupHeaderUtils.getMainLayoutId(), null);
