@@ -38,7 +38,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.23.0"
+//! version = "1.23.1"
 //! # Lets you generate random UUIDs
 //! features = [
 //!     "v4",
@@ -138,7 +138,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.23.0"
+//! version = "1.23.1"
 //! features = [
 //!     "v4",
 //!     "v7",
@@ -153,7 +153,7 @@
 //!
 //! ```toml
 //! [dependencies.uuid]
-//! version = "1.23.0"
+//! version = "1.23.1"
 //! default-features = false
 //! ```
 //!
@@ -211,7 +211,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/uuid/1.23.0"
+    html_root_url = "https://docs.rs/uuid/1.23.1"
 )]
 
 #[cfg(any(feature = "std", test))]
