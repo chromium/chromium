@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_DETACHED_WEB_CONTENTS_H_
 
 #include "base/functional/callback_helpers.h"
+#include "base/types/pass_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -24,6 +25,11 @@ class Profile;
 class DetachedWebContents {
  public:
   DetachedWebContents(Profile* profile, const GURL& url);
+
+  // Constructor for testing purposes only which avoids creating a widget.
+  DetachedWebContents(base::PassKey<class PasswordChangeDelegateImplTest>,
+                      Profile* profile,
+                      const GURL& url);
   ~DetachedWebContents();
 
   content::WebContents* GetWebContents();

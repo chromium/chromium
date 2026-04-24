@@ -66,6 +66,12 @@ DetachedWebContents::DetachedWebContents(Profile* profile, const GURL& url)
   }
 }
 
+DetachedWebContents::DetachedWebContents(
+    base::PassKey<class PasswordChangeDelegateImplTest>,
+    Profile* profile,
+    const GURL& url)
+    : web_contents_(CreateWebContents(profile, url)) {}
+
 DetachedWebContents::~DetachedWebContents() = default;
 
 // static

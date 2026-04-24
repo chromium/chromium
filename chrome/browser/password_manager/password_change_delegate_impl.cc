@@ -111,7 +111,6 @@ std::unique_ptr<DetachedWebContents> CreateDetachedWebContents(
     const GURL& url) {
   auto detached_web_contents =
       std::make_unique<DetachedWebContents>(profile, url);
-
   // Manually create ChromeAutofillClient and ChromePasswordManagerClient
   autofill::AutofillClientProvider& autofill_client_provider =
       autofill::AutofillClientProviderFactory::GetForProfile(profile);
@@ -581,7 +580,7 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
                                ui::PAGE_TRANSITION_LINK,
                                /*is_renderer_initiated=*/false),
         /*navigation_handle_callback=*/{});
-  } else {
+  } else if (!hidden_executor_) {
     hidden_executor_ =
         CreateDetachedWebContents(profile_, change_password_url_);
   }

@@ -3540,24 +3540,6 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeDetatchedWebContents": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseDetachedWidget"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomatedPasswordChangeWithInterruptionDetection": [
         {
             "platforms": [

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
+#include "chrome/browser/password_manager/password_change/detached_web_contents.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
@@ -73,6 +74,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   void SetCustomUIController(
       std::unique_ptr<PasswordChangeUIController> controller) {
     ui_controller_ = std::move(controller);
+  }
+
+  void inject_hidden_executor_for_testing(
+      std::unique_ptr<DetachedWebContents> detached_web_contents) {
+    hidden_executor_ = std::move(detached_web_contents);
   }
 #endif
 
