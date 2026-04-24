@@ -18,9 +18,16 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/rules_service_observer_bridge.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 #import "ios/public/provider/chrome/browser/screenshot_protection/screenshot_protection_api.h"
 
 namespace {
@@ -54,11 +61,13 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 }  // namespace
 
-@interface DataProtectionSceneAgent () <IncognitoStateObserver,
+@interface DataProtectionSceneAgent () <DataProtectionTabHelperObserving,
+                                        IncognitoStateObserver,
                                         PrefObserverDelegate,
                                         ProfileStateObserver,
                                         RulesServiceObserving,
-                                        TabGridStateObserver>
+                                        TabGridStateObserver,
+                                        TabsDependencyInstalling>
 @end
 
 @implementation DataProtectionSceneAgent {
@@ -78,6 +87,13 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   // The last protection state that was applied.
   ProtectionState _currentProtectionState;
+
+  // Observes active WebState changes in the current Browser.
+  std::unique_ptr<TabsDependencyInstallerBridge> _tabDependencyInstallerBridge;
+
+  // Bridge to observe the protection state of the currently active WebState.
+  std::unique_ptr<DataProtectionTabHelperObserverBridge>
+      _tabHelperObserverBridge;
 }
 
 - (instancetype)init {
@@ -99,6 +115,9 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   // Observe prefs if profile was loaded.
   [self startObservingPrefs];
+
+  [self observeCurrentBrowser];
+
   [self updateScreenshotProtection];
 }
 
@@ -110,6 +129,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  [self observeCurrentBrowser];
   [self updateScreenshotProtection];
 }
 
@@ -125,6 +145,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   [sceneState removeObserver:self];
 
   [self stopObservingPrefs];
+  [self teardownBrowserObservers];
 }
 
 #pragma mark - ProfileStateObserver
@@ -150,10 +171,42 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 #pragma mark - IncognitoStateObserver
 
 - (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  // Monitor protection changes in the inconito browser.
+  [self observeCurrentBrowser];
   [self updateScreenshotProtection];
 }
 
 - (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
+  // Monitor protection changes in the regular browser.
+  [self observeCurrentBrowser];
+  [self updateScreenshotProtection];
+}
+
+#pragma mark - TabsDependencyInstalling
+
+- (void)newWebStateActivated:(web::WebState*)newActiveWebState
+           oldActiveWebState:(web::WebState*)oldActiveWebState {
+  [self observeActiveWebState];
+
+  [self updateScreenshotProtection];
+}
+
+- (void)webStateInserted:(web::WebState*)webState {
+  // No-op.
+}
+
+- (void)webStateRemoved:(web::WebState*)webState {
+  // No-op.
+}
+
+- (void)webStateDeleted:(web::WebState*)webState {
+  // No-op.
+}
+
+#pragma mark - DataProtectionTabHelperObserving
+
+- (void)screenshotProtectionDidChangeForWebState:(web::WebState*)webState
+                                     isProtected:(BOOL)isProtected {
   [self updateScreenshotProtection];
 }
 
@@ -175,6 +228,14 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 #pragma mark - Private
 
+- (Browser*)currentBrowser {
+  CHECK(self.sceneState.UIEnabled);
+  id<BrowserProvider> currentBrowserProvider =
+      self.sceneState.browserProviderInterface.currentBrowserProvider;
+
+  return currentBrowserProvider.browser;
+}
+
 // Whether the scene can be protected.
 - (BOOL)isSceneStateReadyForProtection {
   // Only protect the scene when in the foreground, the profile has been loaded
@@ -194,6 +255,42 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   _prefRegistrar.RemoveAll();
 }
 
+// Starts watching for changes in the protection of the current Browser's active
+// WebState. No-op if the scene's UI is not enabled yet. Safe to call multiple
+// times.
+- (void)observeCurrentBrowser {
+  if (!self.sceneState.UIEnabled) {
+    return;
+  }
+  // Make sure we always monitor the active WebState.
+  [self observeCurrentBrowserActiveWebStateChanges];
+  [self observeActiveWebState];
+}
+
+// Returns the current Browser's active WebState, if any.
+- (web::WebState*)activeWebState {
+  return [self currentBrowser]->GetWebStateList() -> GetActiveWebState();
+}
+
+// Monitor for changes in the current Browser's active WebState.
+- (void)observeCurrentBrowserActiveWebStateChanges {
+  CHECK(self.sceneState.UIEnabled);
+  [self teardownBrowserObservers];
+
+  _tabDependencyInstallerBridge =
+      std::make_unique<TabsDependencyInstallerBridge>();
+  _tabDependencyInstallerBridge->StartObserving(self, [self currentBrowser]);
+}
+
+// Cleans up Browser and WebState layer observers.
+- (void)teardownBrowserObservers {
+  _tabHelperObserverBridge.reset();
+  if (_tabDependencyInstallerBridge) {
+    _tabDependencyInstallerBridge->StopObserving();
+    _tabDependencyInstallerBridge.reset();
+  }
+}
+
 // Determines the current screenshot protection state and applies it to the
 // scene's window. If the target state is identical to the current active state,
 // this method acts as a no-op. The method is also a no-op if the scene is not
@@ -208,13 +305,9 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
     return;
   }
 
-  BOOL shouldProtect = NO;
-  if (self.sceneState.tabGridState.tabGridVisible) {
-    shouldProtect = [self isTabGridProtectionEnabled];
-  } else {
-    // TODO(crbug.com/485585995): Implement protection based on
-    // DataProtectionTabHelper.
-  }
+  BOOL shouldProtect = self.sceneState.tabGridState.tabGridVisible
+                           ? [self isTabGridProtectionEnabled]
+                           : [self isWebStateProtectionEnabled];
 
   ProtectionState targetState =
       shouldProtect ? ProtectionState::kEnabled : ProtectionState::kDisabled;
@@ -286,6 +379,24 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
          AreEnterpriseLookupsEnabled(*profile);
 }
 
+// Returns whether screenshot protection is enabled for the current Browser's
+// active WebState.
+- (BOOL)isWebStateProtectionEnabled {
+  CHECK([self isSceneStateReadyForProtection]);
+
+  Browser* currentBrowser = [self currentBrowser];
+  auto* activeWebState = currentBrowser->GetWebStateList()->GetActiveWebState();
+
+  if (!activeWebState) {
+    return NO;
+  }
+  DataProtectionTabHelper* tabHelper =
+      DataProtectionTabHelper::FromWebState(activeWebState);
+  CHECK(tabHelper);
+
+  return tabHelper->IsScreenshotProtectionEnabled();
+}
+
 // Returns the profile corresponding to the currently active UI (Main or
 // Incognito).
 - (ProfileIOS*)currentProfile {
@@ -312,6 +423,24 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   options.obfuscate_screenshots = isProtected;
   options.obfuscate_screen_recordings = isProtected;
   ios::provider::SetScreenshotProtection(window, options);
+}
+
+// Observes screenshot protection changes for the active WebState.
+- (void)observeActiveWebState {
+  CHECK(self.sceneState.UIEnabled);
+  // Cleanup the previous observer.
+  _tabHelperObserverBridge.reset();
+
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return;
+  }
+
+  DataProtectionTabHelper* tabHelper =
+      DataProtectionTabHelper::FromWebState(webState);
+  CHECK(tabHelper);
+  _tabHelperObserverBridge =
+      std::make_unique<DataProtectionTabHelperObserverBridge>(self, tabHelper);
 }
 
 @end

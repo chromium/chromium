@@ -6,5 +6,6 @@ include_rules = [
   "+components/prefs",
   "+ios/chrome/browser/enterprise/connectors",
   "+ios/chrome/browser/safe_browsing/model",
+  "+ios/chrome/browser/tabs/model",
   # keep-sorted end
 ]

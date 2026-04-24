@@ -13,12 +13,18 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -26,9 +32,13 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+const char kProtectedURL[] = "https://protected.com";
+const char kChromeVersionURL[] = "chrome://version";
+
 // Testing extension used for verifying calls to `applyScreenshotProtection`.
 @interface DataProtectionSceneAgent ()
 - (void)applyScreenshotProtection:(BOOL)isProtected toWindow:(UIWindow*)window;
+- (void)updateScreenshotProtection;
 @end
 
 // Base test fixture for DataProtectionSceneAgent. Subclasses customize the test
@@ -54,6 +64,27 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
 
     agent_ = [[DataProtectionSceneAgent alloc] init];
 
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+
+    ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(otr_profile, scene_state_);
+
+    StubBrowserProvider* main_provider = [[StubBrowserProvider alloc] init];
+    main_provider.browser = browser_.get();
+
+    StubBrowserProvider* incognito_provider =
+        [[StubBrowserProvider alloc] init];
+    incognito_provider.browser = incognito_browser_.get();
+
+    StubBrowserProviderInterface* interface =
+        [[StubBrowserProviderInterface alloc] init];
+    interface.mainBrowserProvider = main_provider;
+    interface.currentBrowserProvider = main_provider;
+    interface.incognitoBrowserProvider = incognito_provider;
+
+    scene_state_.browserProviderInterface = interface;
+
     mock_agent_ = OCMPartialMock(agent_);
     [mock_agent_ setExpectationOrderMatters:YES];
   }
@@ -71,6 +102,8 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
     agent_ = nil;
     scene_state_ = nil;
     profile_state_ = nil;
+    browser_.reset();
+    incognito_browser_.reset();
     profile_.reset();
     PlatformTest::TearDown();
   }
@@ -125,11 +158,33 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
                                             toWindow:OCMOCK_ANY]);
   }
 
+  // Adds a WebState to the regular or incognito browser with the given visible
+  // url. Also forces the creation of DataProtectionTabHelper for the WebState.
+  web::FakeWebState* AddActiveWebState(const GURL& url = GURL(),
+                                       bool incognito = false) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* web_state_ptr = web_state.get();
+    ProfileIOS* profile =
+        incognito ? profile_->GetOffTheRecordProfile() : profile_.get();
+    web_state->SetBrowserState(profile);
+    if (!url.is_empty()) {
+      web_state->SetVisibleURL(url);
+    }
+    DataProtectionTabHelper::CreateForWebState(web_state_ptr);
+    Browser* browser = incognito ? incognito_browser_.get() : browser_.get();
+    browser->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
+    return web_state_ptr;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
+  std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestBrowser> incognito_browser_;
 
   DataProtectionSceneAgent* agent_;
   id mock_agent_;
@@ -138,6 +193,20 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
 // Test fixture for verifying the initial state when the agent is connected.
 class DataProtectionSceneAgentInitTest
     : public DataProtectionSceneAgentTestBase {};
+
+// Tests that the agent doesn't apply any protection when no
+// policies apply and the tab grid is hidden (Single Tab state).
+TEST_F(DataProtectionSceneAgentInitTest, SingleTab_NoPolicy_NoOp) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  ExpectNoCallsToApplyScreenshotProtection();
+  [scene_state_ addAgent:agent_];
+}
 
 // Tests that the agent does not apply protection when there are no policies.
 TEST_F(DataProtectionSceneAgentInitTest, TabGrid_NoPolicy_NoOp) {
@@ -210,6 +279,45 @@ TEST_F(DataProtectionSceneAgentInitTest, TabGrid_WithPolicy_Protection) {
 
   SetDataControlsRulesPolicyManaged();
   scene_state_.tabGridState.tabGridVisible = YES;
+
+  ExpectApplyScreenshotProtection(YES);
+  [scene_state_ addAgent:agent_];
+}
+
+// Tests that the agent doesn't apply any protection when displaying a single
+// tab that has no protection.
+TEST_F(DataProtectionSceneAgentInitTest, SingleTab_WithPolicy_NoProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  SetDataControlsRulesPolicyManaged();
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  // No protection applied as this is the default state.
+  ExpectNoCallsToApplyScreenshotProtection();
+
+  [scene_state_ addAgent:agent_];
+}
+
+// Tests that the agent initializes protection right away with YES displaying a
+// single tab that requires protection.
+TEST_F(DataProtectionSceneAgentInitTest, SingleTab_WithPolicy_Protection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  SetDataControlsRulesPolicyManaged();
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState(GURL(kProtectedURL));
+  ASSERT_TRUE(DataProtectionTabHelper::FromWebState(web_state)
+                  ->IsScreenshotProtectionEnabled());
 
   ExpectApplyScreenshotProtection(YES);
   [scene_state_ addAgent:agent_];
@@ -425,4 +533,180 @@ TEST_F(DataProtectionSceneAgentTransitionTest, TabGrid_SwitchToRegular) {
   // Switch to Regular Tab Grid should enable the protection.
   ExpectApplyScreenshotProtection(YES);
   scene_state_.incognitoState.incognitoContentVisible = NO;
+}
+
+// Tests that the agent is a no-op when UI is disabled while displaying a single
+// tab.
+TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_NoOpWhenUIDisabled) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  scene_state_.UIEnabled = NO;
+  // Activating policies shouldn't trigger an update as the agent should stop
+  // observing everything.
+  ExpectNoCallsToApplyScreenshotProtection();
+  SetDataControlsRulesPolicyManaged();
+}
+
+// Tests that going from a protected Tab Grid to a single unprotected tab
+// disables the protection.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       TabGrid_To_SingleTab_NoProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  // Start in the Tab Grid with policy enabled.
+  SetDataControlsRulesPolicyManaged();
+  ExpectApplyScreenshotProtection(YES);
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Simulate exiting the Tab Grid to an unprotected tab.
+  ExpectApplyScreenshotProtection(NO);
+  scene_state_.tabGridState.tabGridVisible = NO;
+}
+
+// Tests that going from a protected Tab Grid to a single protected tab keeps
+// the protection enabled.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       TabGrid_To_SingleTab_Protection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  // Start in the Tab Grid.
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  web::FakeWebState* web_state = AddActiveWebState(GURL(kProtectedURL));
+  ASSERT_FALSE(DataProtectionTabHelper::FromWebState(web_state)
+                   ->IsScreenshotProtectionEnabled());
+
+  ExpectApplyScreenshotProtection(YES);
+
+  SetDataControlsRulesPolicyManaged();
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // At this point the protection should already be enabled.
+  // Switching to a single tab with protection should be a no-op as the window
+  // is already protected.
+  ExpectNoCallsToApplyScreenshotProtection();
+
+  // Simulate exiting the Tab Grid to the protected tab.
+  scene_state_.tabGridState.tabGridVisible = NO;
+}
+
+// Tests that switching to the Incognito Tab Grid correctly picks up
+// Incognito-specific protection state.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       TabGrid_SwitchToIncognito_NoProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  // Enabling lookups should protect the regular tab grid but not the incognito
+  // one. Lookups do not work in incognito.
+  SetRealTimeUrlCheckModePolicy(1);
+
+  // Start in Main Tab Grid with protection.
+  ExpectApplyScreenshotProtection(YES);
+  scene_state_.tabGridState.tabGridVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Switch to Incognito Tab Grid should disable the protection.
+  ExpectApplyScreenshotProtection(NO);
+
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+}
+
+// Tests that activating a protected tab while in single tab mode applies the
+// protection.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       SingleTab_ActiveTabChanged_Protection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  SetDataControlsRulesPolicyManaged();
+  ExpectApplyScreenshotProtection(YES);
+
+  web::FakeWebState* web_state = AddActiveWebState(GURL(kProtectedURL));
+  ASSERT_TRUE(DataProtectionTabHelper::FromWebState(web_state)
+                  ->IsScreenshotProtectionEnabled());
+}
+
+// Tests that going from a single unprotected tab to the protected Tab Grid
+// applies the protection.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       SingleTab_Enter_TabGrid_Protection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  ASSERT_FALSE(DataProtectionTabHelper::FromWebState(web_state)
+                   ->IsScreenshotProtectionEnabled());
+
+  SetDataControlsRulesPolicyManaged();
+  // Start in Single Tab mode with no protection on the active tab itself.
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  // Simulate entering the Tab Grid where the policy applies.
+  ExpectApplyScreenshotProtection(YES);
+  scene_state_.tabGridState.tabGridVisible = YES;
+}
+
+// Tests that switching to the incognito active tab will apply the
+// incognito-specific protection state.
+TEST_F(DataProtectionSceneAgentTransitionTest, SingleTab_SwitchBrowser) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  SetDataControlsRulesPolicyManaged();
+
+  // Activating a protected tab in the current (main) browser will apply the
+  // protection.
+  ExpectApplyScreenshotProtection(YES);
+  web::FakeWebState* web_state1 = AddActiveWebState(GURL(kProtectedURL));
+  ASSERT_TRUE(DataProtectionTabHelper::FromWebState(web_state1)
+                  ->IsScreenshotProtectionEnabled());
+
+  // Add an unprotected tab to the incognito profile. Chrome internal urls are
+  // not protected.
+  web::FakeWebState* web_state2 =
+      AddActiveWebState(GURL(kChromeVersionURL), /*incognito=*/true);
+  ASSERT_FALSE(DataProtectionTabHelper::FromWebState(web_state2)
+                   ->IsScreenshotProtectionEnabled());
+
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Switch to incognito browser, which has an unprotected tab.
+  ExpectApplyScreenshotProtection(NO);
+
+  scene_state_.browserProviderInterface.currentBrowserProvider =
+      scene_state_.browserProviderInterface.incognitoBrowserProvider;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
 }
