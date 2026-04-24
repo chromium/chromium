@@ -318,10 +318,21 @@ template("fuzzer_test") {
     }
 
     if (is_android) {
-      _template_type = "executable"
-    } else {
-      _template_type = "test"
+      _needs_icu = false
+      if (defined(invoker.deps)) {
+        _needs_icu = filter_include(invoker.deps,
+                                    [
+                                      "*//third_party/icu*",
+                                      "*//base:i18n*",
+                                    ]) != []
+      }
+      if (_needs_icu) {
+        # Some fuzzers use ICU. Since they are packaged as APKs, they need the ICU
+        # data file explicitly bundled as an asset.
+        test_deps += [ "//third_party/icu:icu_assets" ]
+      }
     }
+    _template_type = "test"
     target(_template_type, target_name) {
       forward_variables_from(invoker,
                              [

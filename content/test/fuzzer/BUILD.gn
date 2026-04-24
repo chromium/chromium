@@ -540,8 +540,9 @@ content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
 
 if (enable_mojom_fuzzer) {
   static_library("controller_presentation_service_delegate_for_fuzzing") {
-    # Should only be used in the fuzzer this was made for
-    visibility = [ ":presentation_service_mojolpm_fuzzer" ]
+    # Should only be used in the fuzzer this was made for, and its
+    # generated rules
+    visibility = [ ":*" ]
 
     sources = [
       "controller_presentation_service_delegate_for_fuzzing.cc",
