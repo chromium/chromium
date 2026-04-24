@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -720,7 +721,8 @@ BASE_FEATURE(kUsePrimaryAndTonalButtonsForPromos,
 
 bool IsExtensionsExplicitBrowserSigninEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return false;
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 #else
   return true;
 #endif

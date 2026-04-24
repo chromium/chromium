@@ -8,5 +8,6 @@ include_rules = [
   "+components/signin/public/identity_manager/primary_account_change_event.h",
   # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
   "+components/wallet/core/common/wallet_features.h",
+  "+components/sync/base/features.h",
   "+third_party/boringssl/src/include",
 ]
