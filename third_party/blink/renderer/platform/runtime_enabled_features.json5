@@ -3991,11 +3991,6 @@
       status: "experimental",
       depends_on: ["SetHTMLCanRunScripts", "StreamingSanitizer", "TrustedTypesCreateParserOptions"]
     },
-    // This is a killswitch flag, shipped in M144. It can be removed in M146.
-    {
-      name: "NoAriaDetailsForAnchorPos",
-      status: "stable",
-    },
     {
       // Fix for https://crbug.com/482862753
       name: "NoExtendSelectionToUserSelectNoneOutOfFlow",

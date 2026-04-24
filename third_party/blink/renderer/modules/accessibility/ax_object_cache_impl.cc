@@ -1271,11 +1271,6 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) const {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::GetPositionedObjectForAnchor(const AXObject* obj) {
-  CHECK(!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled());
-  return relation_cache_->GetPositionedObjectForAnchor(obj);
-}
-
 AXObject* AXObjectCacheImpl::GetAnchorForPositionedObject(const AXObject* obj) {
   return relation_cache_->GetAnchorForPositionedObject(obj);
 }

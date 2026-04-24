@@ -1360,17 +1360,6 @@ void AXRelationCache::UpdateCSSAnchorFor(Node* positioned_node) {
   object_cache_->MarkElementDirtyWithCleanLayout(anchor);
 }
 
-AXObject* AXRelationCache::GetPositionedObjectForAnchor(
-    const AXObject* anchor) {
-  CHECK(!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled());
-  HashMap<AXID, AXID>::const_iterator iter =
-      anchor_to_positioned_obj_mapping_.find(anchor->AXObjectID());
-  if (iter == anchor_to_positioned_obj_mapping_.end()) {
-    return nullptr;
-  }
-  return ObjectFromAXID(iter->value);
-}
-
 AXObject* AXRelationCache::GetAnchorForPositionedObject(
     const AXObject* positioned_obj) {
   HashMap<AXID, AXID>::const_iterator iter =
