@@ -4464,7 +4464,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
     content::WebContents* responsible_web_contents =
         web_contents->GetResponsibleWebContents();
-    bool is_from_embedded_page = web_contents != responsible_web_contents;
+    bool is_from_embedded_page =
+        web_contents != responsible_web_contents ||
+        guest_view::GuestViewBase::FromRenderFrameHost(opener);
     if (contextual_tasks_ui_service &&
         contextual_tasks_ui_service->HandleNavigation(std::move(url_params),
                                                       responsible_web_contents,

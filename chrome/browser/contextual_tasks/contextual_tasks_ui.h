@@ -108,6 +108,8 @@ class ContextualTasksUI
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
 
+    const GURL& last_committed_url() const { return last_committed_url_; }
+
    private:
     raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
     raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;

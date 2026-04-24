@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
@@ -991,6 +992,62 @@ TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnConstruction) {
       .Times(1);
 
   ContextualTasksUI controller(&web_ui);
+}
+
+class MockMPArchNavigationHandle : public content::MockNavigationHandle {
+ public:
+  MockMPArchNavigationHandle() = default;
+  ~MockMPArchNavigationHandle() override = default;
+
+  bool IsGuestViewMainFrame() const override { return is_guest_view_; }
+  void set_is_guest_view_main_frame(bool is_guest_view) {
+    is_guest_view_ = is_guest_view;
+  }
+
+ private:
+  bool is_guest_view_ = false;
+};
+
+TEST_F(ContextualTasksUiTest, FrameNavObserver_DidFinishNavigation_MPArch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGuestViewMPArch);
+
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", "test");
+  url = net::AppendQueryParameter(url, "mtid", "5678");
+
+  // Simulate an MPArch guest main frame navigation.
+  auto handle = std::make_unique<MockMPArchNavigationHandle>();
+  handle->set_url(url);
+  handle->set_has_committed(true);
+  handle->set_is_guest_view_main_frame(true);
+
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "5678"))
+      .Times(1);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillOnce(
+          Return(ContextualTask(base::Uuid::ParseCaseInsensitive(kUuid))));
+
+  observer->DidFinishNavigation(handle.get());
+
+  // Simulate a top-level navigation.
+  auto top_level_handle = std::make_unique<MockMPArchNavigationHandle>();
+  top_level_handle->set_url(url);
+  top_level_handle->set_has_committed(true);
+  top_level_handle->set_is_guest_view_main_frame(false);
+
+  // No interaction with the service should occur since top-level navs are
+  // filtered out.
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, "5678"))
+      .Times(0);
+
+  observer->DidFinishNavigation(top_level_handle.get());
 }
 
 }  // namespace contextual_tasks
