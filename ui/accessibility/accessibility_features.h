@@ -326,7 +326,7 @@ AX_BASE_EXPORT bool IsReadAnythingMenuShuffleExperimentEnabled();
 
 // Enable the select text feature for Read Anything Readability.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadabilitySelectText);
-AX_BASE_EXPORT bool IsReadaAnythingReadabilitySelectTextEnabled();
+AX_BASE_EXPORT bool IsReadAnythingReadabilitySelectTextEnabled();
 
 // Enable phrase highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);

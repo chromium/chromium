@@ -2294,6 +2294,71 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
   ASSERT_TRUE(result.empty());
 }
 
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       UpdateActiveTreeIfNeeded_Readability_Skips) {
+  ui::AXTreeID initial_tree_id = model().active_tree_id();
+  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Setup a tree with a child tree relationship so the model knows about
+  // the child.
+  ui::AXTreeUpdate root_update;
+  test::SetUpdateTreeID(&root_update, initial_tree_id);
+  ui::AXNodeData root_node;
+  root_node.id = 1;
+  root_node.AddChildTreeId(child_tree_id);
+  root_update.root_id = 1;
+  root_update.nodes = {root_node};
+  ApplyAccessibilityUpdates(initial_tree_id, {std::move(root_update)});
+
+  // Allow the model to use child trees for distillation.
+  model().AllowChildTreeForActiveTree(true);
+
+  // Set distillation method to Readability.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Call PrepareForAXTreeUpdates, which will call
+  // UpdateActiveTreeIfNeeded(child_tree_id).
+  model().PrepareForAXTreeUpdates(child_tree_id);
+
+  // Verify the active tree ID did NOT change to the child tree due to
+  // readability skip.
+  EXPECT_EQ(model().active_tree_id(), initial_tree_id);
+
+  // Changing distillation method should change active tree id.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  model().PrepareForAXTreeUpdates(child_tree_id);
+  EXPECT_EQ(model().active_tree_id(), child_tree_id);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       PostProcessSelection_Readability_ReturnsFalse) {
+  // Set distillation method to Readability.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Set a valid selection in the tree.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.has_tree_data = true;
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+
+  // PostProcessSelection should return false for Readability.
+  EXPECT_FALSE(model().PostProcessSelection());
+
+  // Confirm that UpdateSelectionEndpoints was called and the model's
+  // selection endpoints were updated.
+  EXPECT_EQ(model().start_node_id(), 2);
+  EXPECT_EQ(model().end_node_id(), 3);
+  EXPECT_EQ(model().start_offset(), 0);
+  EXPECT_EQ(model().end_offset(), 1);
+}
+
 TEST_F(ReadAnythingAppModelTest, IsWhatsNew_FalseForOtherPage) {
   ui::AXTreeID tree_id = SetupTree("https://www.google.com");
   model().SetRootTreeId(tree_id);

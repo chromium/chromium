@@ -400,6 +400,8 @@ suite('SelectionController', () => {
     suite('with readability enabled', () => {
       setup(() => {
         chrome.readingMode.isReadabilityEnabled = true;
+        chrome.readingMode.activeDistillationMethod =
+            chrome.readingMode.distillationTypeReadability;
       });
 
       test('does nothing when node content is missing', () => {

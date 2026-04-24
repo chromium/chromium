@@ -5342,3 +5342,59 @@ TEST_F(ReadAnythingAppControllerTest, ProcessModelUpdates_ResetsPdfDebouncer) {
   controller().Draw(/* recompute_display_nodes= */ true);
   EXPECT_TRUE(model().display_node_ids().contains(kId));
 }
+class ReadAnythingAppControllerReadabilitySelectTextTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  ReadAnythingAppControllerReadabilitySelectTextTest() = default;
+  ~ReadAnythingAppControllerReadabilitySelectTextTest() override = default;
+
+  void SetUp() override {
+    ReadAnythingAppControllerTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingWithReadability,
+         features::kReadAnythingReadabilitySelectText},
+        {});
+    model().set_next_distillation_method(
+        ReadAnythingAppModel::DistillationMethod::kReadability);
+    model().set_current_content_distillation_method(
+        ReadAnythingAppModel::DistillationMethod::kReadability);
+  }
+};
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       AccessibilityEventReceived_Readability_HandlesSelectionEvent) {
+  // Setup: A selection event on the active tree.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.has_tree_data = true;
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+
+  ui::AXEvent selection_event(2, ax::mojom::Event::kDocumentSelectionChanged);
+
+  // Initially no selection.
+  ASSERT_FALSE(model().has_selection());
+
+  // Send the event.
+  AccessibilityEventReceived({update}, {selection_event});
+
+  // Verification: ProcessModelUpdates should have been called, which calls
+  // PostProcessSelection, updating the selection state.
+  EXPECT_TRUE(model().has_selection());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       ProcessModelUpdates_Readability_OnlyProcessesSelection) {
+  // Setup: Model has a pending selection request.
+  model().set_requires_post_process_selection(true);
+  model().set_requires_distillation(false);
+
+  // Calling ProcessModelUpdates shouldn't change other states.
+  ProcessModelUpdates();
+
+  // Verification: The selection request was processed and cleared.
+  EXPECT_FALSE(model().requires_post_process_selection());
+}

@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {isDistilledByReadability} from '../shared/common.js';
 import {getTextNodeOffsets} from '../shared/dom_queries.js';
 
 import {NodeStore} from './node_store.js';
@@ -240,7 +241,7 @@ export class SelectionController {
       focusOffset: chrome.readingMode.endOffset,
     };
 
-    return chrome.readingMode.isReadabilityEnabled ?
+    return isDistilledByReadability() ?
         this.getNewSelectionWithoutAxIds_(container, selectionIds) :
         this.getNewSelectionWithAxIds_(selectionIds);
   }

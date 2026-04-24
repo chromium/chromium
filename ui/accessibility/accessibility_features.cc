@@ -455,7 +455,7 @@ bool IsReadAnythingWithReadabilityEnabled() {
 
 BASE_FEATURE(kReadAnythingReadabilitySelectText,
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsReadaAnythingReadabilitySelectTextEnabled() {
+bool IsReadAnythingReadabilitySelectTextEnabled() {
   return base::FeatureList::IsEnabled(
              ::features::kReadAnythingReadabilitySelectText) &&
          base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);

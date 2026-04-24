@@ -185,6 +185,13 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 
   UpdateSelectionEndpoints();
 
+  // TODO: crbug.com/505770261 - Implement selection_mode for readability.
+  // AXtree mapping is needed first and is_empty() must be redefined since a
+  // readability distillation doesn't use display_node_ids.
+  if (is_readability_next_distillation_method()) {
+    return false;
+  }
+
   // If the new selection came from the side panel, we don't need to draw
   // anything in the side panel, since whatever was being selected had to have
   // been drawn already.
@@ -655,6 +662,12 @@ void ReadAnythingAppModel::EnsureAXTreeExists(const ui::AXTreeID& tree_id) {
 
 void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
     const ui::AXTreeID& tree_id) {
+  // Readability distillation does not use child trees so skip to avoid
+  // triggering unnecessary re-distillation or tree-switching.
+  if (is_readability_next_distillation_method()) {
+    return;
+  }
+
   if (!may_use_child_for_active_tree_) {
     return;
   }
@@ -967,6 +980,12 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 #if BUILDFLAG(IS_MAC)
     VLOG(2) << "Non-generated event type: " << event.event_type;
 #endif
+    // Readability distillation ignores state change events as selection
+    // post-processing is the only required dynamic update.
+    if (is_readability_next_distillation_method()) {
+      continue;
+    }
+
     switch (event.event_type) {
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
@@ -1105,6 +1124,17 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
 #if BUILDFLAG(IS_MAC)
     VLOG(2) << "Generated event type: " << event.event_params->event;
 #endif
+
+    // Readability only requires selection events. This ensures the side
+    // panel selection stays synchronized with the main panel.
+    if (is_readability_next_distillation_method()) {
+      if (event.event_params->event ==
+          ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED) {
+        requires_post_process_selection_ = true;
+      }
+      continue;
+    }
+
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         requires_post_process_selection_ = true;
