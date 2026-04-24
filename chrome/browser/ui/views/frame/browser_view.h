@@ -720,6 +720,8 @@ class BrowserView : public BrowserWindow,
 
   // content::WebContentsObserver:
   void TitleWasSet(content::NavigationEntry* entry) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;

@@ -282,6 +282,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -2083,12 +2084,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   UpdateTitleBar();
 
   CHECK_DEREF(TranslateBubbleController::From(browser_.get())).CloseBubble();
-
-  // This is only done once when the app is first opened so that there is only
-  // one subscriber per web contents.
-  if (AppUsesUnframedMode() && !old_contents) {
-    SetWindowManagementPermissionSubscriptionForUnframedMode(new_contents);
-  }
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -3002,6 +2997,19 @@ void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
 
 void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
   UpdateAccessibleNameForRootView();
+}
+
+void BrowserView::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (AppUsesUnframedMode() && !window_management_subscription_id_) {
+    SetWindowManagementPermissionSubscriptionForUnframedMode(
+        navigation_handle->GetWebContents());
+  }
 }
 
 void BrowserView::TouchModeChanged() {

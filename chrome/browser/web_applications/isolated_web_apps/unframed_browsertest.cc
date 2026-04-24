@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/location.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -29,6 +30,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/liburlpattern/part.h"
@@ -127,6 +129,36 @@ void SetContentSetting(
                                      setting);
 }
 
+content::EvalJsResult WaitUntilCssDisplayModeIs(
+    Browser& browser,
+    blink::mojom::DisplayMode mode) {
+  std::string css_mode = blink::DisplayModeToString(mode);
+  std::string script = content::JsReplace(R"(
+    new Promise((resolve) => {
+      const mq = window.matchMedia('(display-mode: ' + $1 + ')');
+      if (mq.matches) {
+        return resolve(true);
+      } else {
+        mq.addEventListener('change', ({ matches }) => {
+          resolve(matches);
+        }, { once: true });
+      }
+    });
+  )",
+                                          css_mode);
+  return content::EvalJs(&WebContentsOf(browser), script);
+}
+
+Browser& CallWindowOpenAndReturnNewBrowser(Browser& browser,
+                                           std::string_view url_path) {
+  BrowserWaiter browser_waiter(nullptr);
+  CHECK(content::ExecJs(&WebContentsOf(browser),
+                        content::JsReplace("window.open($1)", url_path)));
+  Browser& new_browser = CHECK_DEREF(browser_waiter.AwaitAdded(FROM_HERE));
+  CHECK(content::WaitForLoadStop(&WebContentsOf(new_browser)));
+  return new_browser;
+}
+
 }  // namespace
 
 class UnframedTest : public WebAppBrowserTestBase {
@@ -148,6 +180,15 @@ class UnframedTest : public WebAppBrowserTestBase {
         CHECK_DEREF(LaunchWebAppToURL(profile(), app_url_info_->app_id(),
                                       app_origin_url().Resolve(url_path)));
     CHECK(content::WaitForLoadStop(&WebContentsOf(browser)));
+    return browser;
+  }
+
+  Browser& LaunchAppWithWindowOpenAndWait(std::string_view url_path) {
+    Browser& starting_browser =
+        CHECK_DEREF(LaunchWebAppBrowserAndWait(app_url_info_->app_id()));
+    Browser& browser =
+        CallWindowOpenAndReturnNewBrowser(starting_browser, url_path);
+    CloseBrowserSynchronously(&starting_browser);
     return browser;
   }
 
@@ -212,6 +253,27 @@ IN_PROC_BROWSER_TEST_F(UnframedTest,
   Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
   EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kStandalone);
   EXPECT_EQ(ReadAppMessage(browser), kNotUnframedMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(UnframedTest,
+                       AppSwitchesInAndOutOfUnframedAsPermissionChanges) {
+  SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
+
+  Browser& browser = LaunchAppWithWindowOpenAndWait(kUnframedPagePath);
+  EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
+  EXPECT_EQ(ReadAppMessage(browser), kUnframedMessage);
+
+  SetAppWindowManagementPermission(CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(true, WaitUntilCssDisplayModeIs(
+                      browser, blink::mojom::DisplayMode::kStandalone));
+  EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kStandalone);
+  EXPECT_EQ(ReadAppMessage(browser), kNotUnframedMessage);
+
+  SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(true, WaitUntilCssDisplayModeIs(
+                      browser, blink::mojom::DisplayMode::kUnframed));
+  EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
+  EXPECT_EQ(ReadAppMessage(browser), kUnframedMessage);
 }
 
 }  // namespace web_app
