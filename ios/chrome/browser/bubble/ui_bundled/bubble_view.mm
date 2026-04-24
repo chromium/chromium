@@ -944,7 +944,7 @@ UIStackView* PageControl(BubblePageControlPage page) {
   if (self.showsCloseButton) {
     textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding) +
                            kBubbleHorizontalPadding;
-  } else if (!self.titleLabel) {
+  } else {
     textHorizontalInset += kBubbleHorizontalPadding * 2;
   }
 
