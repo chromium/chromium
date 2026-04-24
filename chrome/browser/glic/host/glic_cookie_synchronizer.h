@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -68,6 +69,15 @@ class GlicCookieSynchronizer
  private:
   class SyncCookiesForDevelopmentTask;
   class ClearCookiesTask;
+  class Metrics {
+   public:
+    void BeginSync();
+    void EndSync(bool success);
+
+   private:
+    base::TimeTicks sync_start_time_;
+  };
+
   base::WeakPtr<GlicCookieSynchronizer> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -105,6 +115,7 @@ class GlicCookieSynchronizer
   std::unique_ptr<ClearCookiesTask> clear_cookies_task_;
   std::unique_ptr<SyncCookiesForDevelopmentTask>
       sync_cookies_for_development_task_;
+  Metrics metrics_;
   base::WeakPtrFactory<GlicCookieSynchronizer> weak_ptr_factory_{this};
 };
 

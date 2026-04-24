@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -167,12 +168,18 @@ class GlicCookieSynchronizerTest : public testing::Test {
 };
 
 TEST_F(GlicCookieSynchronizerTest, AuthSuccess) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
 
   cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
       result.GetCallback());
   EXPECT_TRUE(result.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.Latency.Success", 1);
+  histogram_tester.ExpectTotalCount("Glic.CookieSynchronization.Latency.Error",
+                                    0);
 }
 
 TEST_F(GlicCookieSynchronizerTest, MultipleRequestsAtOnce) {
@@ -188,12 +195,18 @@ TEST_F(GlicCookieSynchronizerTest, MultipleRequestsAtOnce) {
 }
 
 TEST_F(GlicCookieSynchronizerTest, AuthPersistentFailure) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> result;
   SetResponseForResult(signin::SetAccountsInCookieResult::kPersistentError);
 
   cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
       result.GetCallback());
   EXPECT_FALSE(result.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Glic.CookieSynchronization.Latency.Error",
+                                    1);
 }
 
 TEST_F(GlicCookieSynchronizerTest, AuthTransientSuccessOnRetry) {
@@ -227,6 +240,7 @@ TEST_F(GlicCookieSynchronizerTest, AuthTransientFailure_MaxRetry) {
 }
 
 TEST_F(GlicCookieSynchronizerTest, FailsOnTimeOut) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> result;
   cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
       result.GetCallback());
@@ -235,6 +249,11 @@ TEST_F(GlicCookieSynchronizerTest, FailsOnTimeOut) {
   EXPECT_FALSE(result.IsReady());
   task_environment_.FastForwardBy(base::Milliseconds(10));
   EXPECT_FALSE(result.Get());
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Glic.CookieSynchronization.Latency.Error",
+                                    1);
 }
 
 TEST_F(GlicCookieSynchronizerTest, FailsMultipleOnTimeOut) {

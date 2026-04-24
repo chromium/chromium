@@ -413,6 +413,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CookieSynchronization.Latency.Error" units="ms"
+    expires_after="2027-04-23">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the latency of the cookie synchronization operation for Glic when it
+    fails or times out. Recorded when the multilogin operation completes with
+    failure in OnAuthFinished or when it times out in OnTimeout.
+  </summary>
+</histogram>
+
+<histogram name="Glic.CookieSynchronization.Latency.Success" units="ms"
+    expires_after="2027-04-23">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the latency of the cookie synchronization operation for Glic when it
+    completes successfully. Recorded when the multilogin operation completes
+    with success in OnAuthFinished.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CountryFilteringResult" enum="GlicFilteringResult"
     expires_after="2026-08-01">
   <owner>harringtond@chromium.org</owner>

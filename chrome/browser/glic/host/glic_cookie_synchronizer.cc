@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/fre/fre_util.h"
@@ -313,6 +314,7 @@ void GlicCookieSynchronizer::BeginCookieSync() {
   if (base::FeatureList::IsEnabled(features::kGlicIgnoreOfflineState)) {
     parameters.wait_on_connectivity = false;
   }
+  metrics_.BeginSync();
   cookie_loader_ =
       identity_manager_->GetAccountsCookieMutator()
           ->SetAccountsInCookieForPartition(
@@ -343,6 +345,7 @@ void GlicCookieSynchronizer::OnTimeout() {
 }
 
 void GlicCookieSynchronizer::CompleteAuth(bool is_success) {
+  metrics_.EndSync(is_success);
   timeout_.Stop();
   cookie_loader_.reset();
 
@@ -359,6 +362,21 @@ content::StoragePartition* GlicCookieSynchronizer::GetStoragePartition() {
   content::StoragePartition* partition =
       context_->GetStoragePartition(GetGlicStoragePartitionConfig(context_));
   return partition;
+}
+
+void GlicCookieSynchronizer::Metrics::BeginSync() {
+  sync_start_time_ = base::TimeTicks::Now();
+}
+
+void GlicCookieSynchronizer::Metrics::EndSync(bool success) {
+  if (sync_start_time_.is_null()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(
+      success ? "Glic.CookieSynchronization.Latency.Success"
+              : "Glic.CookieSynchronization.Latency.Error",
+      base::TimeTicks::Now() - sync_start_time_);
+  sync_start_time_ = base::TimeTicks();
 }
 
 }  // namespace glic
