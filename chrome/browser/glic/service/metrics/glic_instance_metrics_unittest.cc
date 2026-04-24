@@ -717,4 +717,16 @@ TEST_F(GlicInstanceMetricsTest, OnInstanceDestroyed_LogsPerProfileTurnCount) {
                                        1);
 }
 
+TEST_F(GlicInstanceMetricsTest, ZoomChangeCount) {
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_);
+    metrics.OnZoomLevelChange();
+    metrics.OnZoomLevelChange();
+    metrics.OnZoomLevelChange();
+    metrics.OnClose();
+  }  // Destructor calls OnInstanceDestroyed
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
+}
+
 }  // namespace glic
