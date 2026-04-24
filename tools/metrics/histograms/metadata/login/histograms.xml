@@ -225,9 +225,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
-    expires_after="2026-05-30">
-  <owner>tbansal@chromium.org</owner>
+    expires_after="2027-05-30">
   <owner>yigu@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Type of login detected for a page load based on different heuristics.
