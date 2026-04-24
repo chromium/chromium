@@ -54,6 +54,7 @@ class DeviceInfoSyncClient {
   virtual bool GetDesktopToIOSPromoReceivingEnabled() const = 0;
   virtual MobilePromoOnDesktopPromoTypeSet GetDesktopToIOSPromoReceivingTypes()
       const = 0;
+  virtual bool GetGlicExperimentalTriggeringOptedIn() const = 0;
 };
 
 }  // namespace syncer

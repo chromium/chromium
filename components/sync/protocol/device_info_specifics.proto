@@ -128,6 +128,9 @@ message FeatureSpecificFields {
   // The values correspond to the MobilePromoOnDesktopPromoType enum.
   repeated SyncEnums.MobilePromoOnDesktopPromoType
       desktop_to_ios_promo_receiving_types = 5;
+
+  // Tracks whether the device has been opted into experimental triggering.
+  optional bool glic_experimental_triggering_opted_in = 6;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end

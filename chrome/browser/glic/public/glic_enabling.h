@@ -324,7 +324,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
 
   // Returns true if the given profile has completed the FRE and false
   // otherwise.
-  bool HasConsented();
+  bool HasConsented() const;
 
   // Returns the FRE status.
   prefs::FreStatus GetCompletedFre() const;
@@ -339,10 +339,18 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Sets whether user enabled actuation on web.
   void SetUserEnabledActuationOnWeb(bool enabled);
 
-  // Returns whether experimental triggering is enabled.
+  // Returns whether experimental triggering is enabled. This only checks the
+  // experimental triggering value, for a complete opt-in check, use
+  // `IsExperimentalTriggeringFullyOptedIn()`.
   bool GetExperimentalTriggeringEnabled() const;
+
   // Sets whether experimental triggering is enabled.
   void SetExperimentalTriggeringEnabled(bool enabled);
+
+  // Returns true if the user has all the opt ins required for experimental
+  // triggering. This requires that all of GLIC / Actuation / Experimental
+  // Triggering are enabled.
+  bool IsExperimentalTriggeringFullyOptedIn() const;
 
   // Checks if startup metrics have already been recorded, and if not, records
   // them.

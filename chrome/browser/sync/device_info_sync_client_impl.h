@@ -55,6 +55,9 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   MobilePromoOnDesktopPromoTypeSet GetDesktopToIOSPromoReceivingTypes()
       const override;
 
+  // syncer::DeviceInfoSyncClient:
+  bool GetGlicExperimentalTriggeringOptedIn() const override;
+
  private:
   const raw_ptr<Profile> profile_;
 };

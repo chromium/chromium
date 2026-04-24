@@ -224,6 +224,8 @@ const syncer::DeviceInfo kSampleForeignDeviceInfo{
     "",
     {},
     std::nullopt,
+    false,
+    {},
     false};
 
 class HistoryURLVisitDataFetcherTest : public testing::Test {

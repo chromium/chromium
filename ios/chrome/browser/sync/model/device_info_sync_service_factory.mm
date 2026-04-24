@@ -154,6 +154,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return enabled_types;
   }
 
+  // syncer::DeviceInfoSyncClient:
+  bool GetGlicExperimentalTriggeringOptedIn() const override { return false; }
+
  private:
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;

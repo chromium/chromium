@@ -772,7 +772,7 @@ bool GlicEnabling::IsAllowed() {
   return IsEnabledForProfile(profile_);
 }
 
-bool GlicEnabling::HasConsented() {
+bool GlicEnabling::HasConsented() const {
   return GetCompletedFre() == prefs::FreStatus::kCompleted;
 }
 
@@ -805,6 +805,11 @@ void GlicEnabling::SetUserEnabledActuationOnWeb(bool enabled) {
 bool GlicEnabling::GetExperimentalTriggeringEnabled() const {
   return profile_->GetPrefs()->GetBoolean(
       prefs::kGlicExperimentalTriggeringEnabled);
+}
+
+bool GlicEnabling::IsExperimentalTriggeringFullyOptedIn() const {
+  return HasConsented() && GetUserEnabledActuationOnWeb() &&
+         GetExperimentalTriggeringEnabled();
 }
 
 void GlicEnabling::SetExperimentalTriggeringEnabled(bool enabled) {

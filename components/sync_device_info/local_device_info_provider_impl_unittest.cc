@@ -73,6 +73,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetDesktopToIOSPromoReceivingTypes,
               (),
               (const override));
+  MOCK_METHOD(bool, GetGlicExperimentalTriggeringOptedIn, (), (const override));
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
@@ -250,6 +251,24 @@ TEST_F(LocalDeviceInfoProviderImplTest, DesktopToIOSPromoReceivingEnabled) {
                   .empty());
 }
 
+TEST_F(LocalDeviceInfoProviderImplTest, ExperimentalTriggeringOptedIn) {
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringOptedIn())
+      .WillByDefault(Return(true));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_TRUE(
+      provider_->GetLocalDeviceInfo()->glic_experimental_triggering_opted_in());
+
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringOptedIn())
+      .WillByDefault(Return(false));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_FALSE(
+      provider_->GetLocalDeviceInfo()->glic_experimental_triggering_opted_in());
+}
+
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(std::nullopt));
@@ -329,7 +348,10 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes,
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false);
+      /*desktop_to_ios_promo_receiving_enabled=*/false,
+      /*desktop_to_ios_promo_receiving_types=*/
+      MobilePromoOnDesktopPromoTypeSet{},
+      /*glic_experimental_triggering_opted_in=*/false);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

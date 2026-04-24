@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/base/data_type.h"
@@ -91,7 +92,10 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*sharing_info=*/std::nullopt, paask_info_opt,
       /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
       /*auto_sign_out_last_signin_timestamp=*/base::Time::Now(),
-      /*desktop_to_ios_promo_receiving_enabled=*/false);
+      /*desktop_to_ios_promo_receiving_enabled=*/false,
+      /*desktop_to_ios_promo_receiving_types=*/
+      MobilePromoOnDesktopPromoTypeSet{},
+      /*glic_experimental_triggering_opted_in=*/false);
 }
 
 TEST(CableV2FromSyncInfoTest, Basic) {

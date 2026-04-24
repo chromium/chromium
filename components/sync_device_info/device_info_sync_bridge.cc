@@ -204,7 +204,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
           specifics.invalidation_fields().interested_data_type_ids()),
       SpecificsToAutoSignOutLastSigninTimestamp(specifics),
       specifics.feature_fields().desktop_to_ios_promo_receiving_enabled(),
-      SpecificsToDesktopToIOSPromoReceivingTypes(specifics));
+      SpecificsToDesktopToIOSPromoReceivingTypes(specifics),
+      specifics.feature_fields().glic_experimental_triggering_opted_in());
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -288,6 +289,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
                 .ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   }
+  feature_fields->set_glic_experimental_triggering_opted_in(
+      info.glic_experimental_triggering_opted_in());
   const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
   if (sharing_info) {
@@ -367,7 +370,9 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->fcm_registration_token() &&
          current->interested_data_types() == stored->interested_data_types() &&
          current->auto_sign_out_last_signin_timestamp() ==
-             stored->auto_sign_out_last_signin_timestamp();
+             stored->auto_sign_out_last_signin_timestamp() &&
+         current->glic_experimental_triggering_opted_in() ==
+             stored->glic_experimental_triggering_opted_in();
 }
 
 int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {

@@ -76,9 +76,9 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      desktop_to_ios_promo_receiving_enabled);
-  device_info->set_desktop_to_ios_promo_receiving_types(
-      desktop_to_ios_promo_receiving_types);
+      desktop_to_ios_promo_receiving_enabled,
+      desktop_to_ios_promo_receiving_types,
+      /*glic_experimental_triggering_opted_in=*/false);
   return device_info;
 }
 

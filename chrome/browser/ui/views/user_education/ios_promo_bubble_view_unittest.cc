@@ -77,7 +77,10 @@ class MockIOSPromoTriggerService : public IOSPromoTriggerService {
       /*fcm_registration_token=*/"token",
       /*interested_data_types=*/syncer::DataTypeSet::All(),
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-      /*desktop_to_ios_promo_receiving_enabled=*/false};
+      /*desktop_to_ios_promo_receiving_enabled=*/false,
+      /*desktop_to_ios_promo_receiving_types=*/
+      MobilePromoOnDesktopPromoTypeSet{},
+      /*glic_experimental_triggering_opted_in=*/false};
 };
 
 std::unique_ptr<KeyedService> CreateMockIOSPromoTriggerService(

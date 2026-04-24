@@ -41,6 +41,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   // Pull new values for settings that aren't automatically updated.
   local_device_info_->set_send_tab_to_self_receiving_enabled(
       sync_client_->GetSendTabToSelfReceivingEnabled());
+  local_device_info_->set_glic_experimental_triggering_opted_in(
+      sync_client_->GetGlicExperimentalTriggeringOptedIn());
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
@@ -152,7 +154,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       /*auto_sign_out_last_signin_timestamp=*/
       auto_sign_out_last_signin_timestamp,
       sync_client_->GetDesktopToIOSPromoReceivingEnabled(),
-      sync_client_->GetDesktopToIOSPromoReceivingTypes());
+      sync_client_->GetDesktopToIOSPromoReceivingTypes(),
+      sync_client_->GetGlicExperimentalTriggeringOptedIn());
 
   full_hardware_class_ = full_hardware_class;
 

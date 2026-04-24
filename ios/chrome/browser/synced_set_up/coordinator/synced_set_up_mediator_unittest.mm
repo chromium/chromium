@@ -10,6 +10,7 @@
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/sync_device_info/device_info.h"
@@ -235,7 +236,10 @@ class SyncedSetUpMediatorTest : public PlatformTest {
         /*fcm_registration_token=*/std::string(),
         /*interested_data_types=*/syncer::DataTypeSet(),
         /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
-        /*desktop_to_ios_promo_receiving_enabled=*/false);
+        /*desktop_to_ios_promo_receiving_enabled=*/false,
+        /*desktop_to_ios_promo_receiving_types=*/
+        MobilePromoOnDesktopPromoTypeSet{},
+        /*glic_experimental_triggering_opted_in=*/false);
   }
 
   // Helper for configuring a TimestampedPrefValue.

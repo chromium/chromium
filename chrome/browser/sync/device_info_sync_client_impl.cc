@@ -10,6 +10,9 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -104,6 +107,14 @@ MobilePromoOnDesktopPromoTypeSet
 DeviceInfoSyncClientImpl::GetDesktopToIOSPromoReceivingTypes() const {
   // This is only required on iOS.
   return {};
+}
+
+bool DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringOptedIn() const {
+  auto* service = glic::GlicKeyedService::Get(profile_);
+  if (!service) {
+    return false;
+  }
+  return service->enabling().IsExperimentalTriggeringFullyOptedIn();
 }
 
 }  // namespace browser_sync

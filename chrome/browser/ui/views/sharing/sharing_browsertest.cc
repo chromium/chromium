@@ -156,7 +156,9 @@ void SharingBrowserTest::AddDeviceInfo(
           original_device.fcm_registration_token(),
           original_device.interested_data_types(),
           original_device.auto_sign_out_last_signin_timestamp(),
-          original_device.desktop_to_ios_promo_receiving_enabled());
+          original_device.desktop_to_ios_promo_receiving_enabled(),
+          original_device.desktop_to_ios_promo_receiving_types(),
+          original_device.glic_experimental_triggering_opted_in());
   fake_device_info_tracker_.Add(fake_device.get());
   device_infos_.push_back(std::move(fake_device));
 }

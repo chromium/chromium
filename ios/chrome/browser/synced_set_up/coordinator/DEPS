@@ -5,3 +5,9 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  ".*unittest\\.mm": [
+    "+components/desktop_to_mobile_promos/features.h",
+  ],
+}

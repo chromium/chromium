@@ -191,7 +191,8 @@ class DeviceInfo {
              std::optional<base::Time> auto_sign_out_last_signin_timestamp,
              bool desktop_to_ios_promo_receiving_enabled,
              const MobilePromoOnDesktopPromoTypeSet&
-                 desktop_to_ios_promo_receiving_types = {});
+                 desktop_to_ios_promo_receiving_types,
+             bool glic_experimental_triggering_opted_in);
 
   DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
@@ -279,6 +280,9 @@ class DeviceInfo {
   const MobilePromoOnDesktopPromoTypeSet& desktop_to_ios_promo_receiving_types()
       const;
 
+  // Returns whether experimental triggering is opted in.
+  bool glic_experimental_triggering_opted_in() const;
+
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
   // would lead to a stable unique id for a device which can potentially
@@ -306,6 +310,8 @@ class DeviceInfo {
   void set_desktop_to_ios_promo_receiving_enabled(bool new_value);
   void set_desktop_to_ios_promo_receiving_types(
       const MobilePromoOnDesktopPromoTypeSet& new_types);
+
+  void set_glic_experimental_triggering_opted_in(bool opted_in);
 
  private:
   const std::string guid_;
@@ -367,6 +373,8 @@ class DeviceInfo {
   // promo types feature is fully launched.
   bool desktop_to_ios_promo_receiving_enabled_;
   MobilePromoOnDesktopPromoTypeSet desktop_to_ios_promo_receiving_types_;
+
+  bool glic_experimental_triggering_opted_in_;
 
   // NOTE: when adding a member, don't forget to update
   // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else
