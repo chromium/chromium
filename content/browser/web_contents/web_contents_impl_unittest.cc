@@ -3426,7 +3426,8 @@ TEST_F(WebContentsImplTest, BadDownloadImageResponseFromRenderer) {
 TEST_F(WebContentsImplTest,
        GetCaptureHandleConfigBeforeSetIsCalledReturnsEmptyConfig) {
   const auto empty_config = blink::mojom::CaptureHandleConfig::New();
-  EXPECT_EQ(contents()->GetCaptureHandleConfig(), *empty_config);
+  EXPECT_EQ(contents()->GetPrimaryPage().GetCaptureHandleConfig(),
+            *empty_config);
 }
 
 TEST_F(WebContentsImplTest, SetAndGetCaptureHandleConfig) {
@@ -3434,16 +3435,16 @@ TEST_F(WebContentsImplTest, SetAndGetCaptureHandleConfig) {
   {
     auto config = blink::mojom::CaptureHandleConfig::New();
     config->capture_handle = u"Pay not attention";
-    contents()->SetCaptureHandleConfig(config->Clone());
-    EXPECT_EQ(*config, contents()->GetCaptureHandleConfig());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config->Clone());
+    EXPECT_EQ(*config, contents()->GetPrimaryPage().GetCaptureHandleConfig());
   }
 
   // New value set - new value returned.
   {
     auto config = blink::mojom::CaptureHandleConfig::New();
     config->capture_handle = u"to the man behind the curtain.";
-    contents()->SetCaptureHandleConfig(config->Clone());
-    EXPECT_EQ(*config, contents()->GetCaptureHandleConfig());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config->Clone());
+    EXPECT_EQ(*config, contents()->GetPrimaryPage().GetCaptureHandleConfig());
   }
 }
 
@@ -3451,14 +3452,14 @@ TEST_F(WebContentsImplTest, NoOnCaptureHandleConfigUpdateCallIfResettingEmpty) {
   const auto empty_config = blink::mojom::CaptureHandleConfig::New();
 
   // Reminder - empty in the beginning.
-  ASSERT_EQ(contents()->GetCaptureHandleConfig(),
+  ASSERT_EQ(contents()->GetPrimaryPage().GetCaptureHandleConfig(),
             *blink::mojom::CaptureHandleConfig::New());
 
   TestWebContentsObserver observer(contents());
   // Note that ExpectOnCaptureHandleConfigUpdate() is NOT called.
   // If OnCaptureHandleConfigUpdate() is called, the test will fail.
 
-  contents()->SetCaptureHandleConfig(empty_config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(empty_config.Clone());
 }
 
 TEST_F(WebContentsImplTest,
@@ -3466,7 +3467,7 @@ TEST_F(WebContentsImplTest,
   {
     auto config = blink::mojom::CaptureHandleConfig::New();
     config->capture_handle = u"Some handle.";
-    contents()->SetCaptureHandleConfig(config.Clone());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
   }
 
   {
@@ -3474,7 +3475,7 @@ TEST_F(WebContentsImplTest,
     config->capture_handle = u"A different handle.";
     TestWebContentsObserver observer(contents());
     observer.ExpectOnCaptureHandleConfigUpdate(config.Clone());
-    contents()->SetCaptureHandleConfig(config.Clone());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
   }
 }
 
@@ -3483,7 +3484,7 @@ TEST_F(WebContentsImplTest,
   {
     auto config = blink::mojom::CaptureHandleConfig::New();
     config->capture_handle = u"The ministry of redundancy ministry.";
-    contents()->SetCaptureHandleConfig(config.Clone());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
   }
 
   {
@@ -3492,7 +3493,7 @@ TEST_F(WebContentsImplTest,
     TestWebContentsObserver observer(contents());
     // Note that ExpectOnCaptureHandleConfigUpdate() is NOT called.
     // If OnCaptureHandleConfigUpdate() is called, the test will fail.
-    contents()->SetCaptureHandleConfig(config.Clone());
+    contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
   }
 }
 
@@ -3500,12 +3501,12 @@ TEST_F(WebContentsImplTest,
        OnCaptureHandleConfigUpdateCalledWhenClearingTheConfig) {
   auto config = blink::mojom::CaptureHandleConfig::New();
   config->capture_handle = u"Some handle.";
-  contents()->SetCaptureHandleConfig(config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
 
   auto empty_config = blink::mojom::CaptureHandleConfig::New();
   TestWebContentsObserver observer(contents());
   observer.ExpectOnCaptureHandleConfigUpdate(empty_config.Clone());
-  contents()->SetCaptureHandleConfig(empty_config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(empty_config.Clone());
 }
 
 TEST_F(WebContentsImplTest,
@@ -3521,7 +3522,7 @@ TEST_F(WebContentsImplTest,
   // Set a capture handle.
   auto config = blink::mojom::CaptureHandleConfig::New();
   config->capture_handle = u"Some handle.";
-  contents()->SetCaptureHandleConfig(config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
 
   // Expect that navigation to a new site will reset the capture handle config.
   const auto empty_config = blink::mojom::CaptureHandleConfig::New();
@@ -3531,10 +3532,11 @@ TEST_F(WebContentsImplTest,
   // Navigate to the second site.
   auto new_site_navigation = NavigationSimulator::CreateBrowserInitiated(
       GURL("http://www.google.com/b.html"), contents());
-  new_site_navigation->ReadyToCommit();
+  new_site_navigation->Commit();
 
   // Further proof that the config was reset.
-  EXPECT_EQ(contents()->GetCaptureHandleConfig(), *empty_config);
+  EXPECT_EQ(contents()->GetPrimaryPage().GetCaptureHandleConfig(),
+            *empty_config);
 }
 
 TEST_F(WebContentsImplTest,
@@ -3550,7 +3552,7 @@ TEST_F(WebContentsImplTest,
   // Set a capture handle.
   auto config = blink::mojom::CaptureHandleConfig::New();
   config->capture_handle = u"Some handle.";
-  contents()->SetCaptureHandleConfig(config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
 
   // ExpectOnCaptureHandleConfigUpdate() not called - the test will fail
   // if OnCaptureHandleConfigUpdate() is called.
@@ -3562,7 +3564,7 @@ TEST_F(WebContentsImplTest,
   new_site_navigation->ReadyToCommit();
 
   // Further proof that the config was not reset.
-  EXPECT_EQ(contents()->GetCaptureHandleConfig(), *config);
+  EXPECT_EQ(contents()->GetPrimaryPage().GetCaptureHandleConfig(), *config);
 }
 
 TEST_F(WebContentsImplTest,
@@ -3582,7 +3584,7 @@ TEST_F(WebContentsImplTest,
   // Set a capture handle.
   auto config = blink::mojom::CaptureHandleConfig::New();
   config->capture_handle = u"Some handle.";
-  contents()->SetCaptureHandleConfig(config.Clone());
+  contents()->GetPrimaryPage().SetCaptureHandleConfig(config.Clone());
 
   // ExpectOnCaptureHandleConfigUpdate() not called - the test will fail
   // if OnCaptureHandleConfigUpdate() is called.
@@ -3592,7 +3594,7 @@ TEST_F(WebContentsImplTest,
       GURL("http://www.google.com/c.html"), subframe);
 
   // Further proof that the config was not reset.
-  EXPECT_EQ(contents()->GetCaptureHandleConfig(), *config);
+  EXPECT_EQ(contents()->GetPrimaryPage().GetCaptureHandleConfig(), *config);
 }
 
 class TestCanonicalUrlLocalFrame : public content::FakeLocalFrame,

@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
@@ -130,6 +131,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   void set_favicon_urls(std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
     favicon_urls_ = std::move(favicon_urls);
   }
+
+  const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
+  void SetCaptureHandleConfig(
+      blink::mojom::CaptureHandleConfigPtr config) override;
 
   void OnThemeColorChanged(const std::optional<SkColor>& theme_color);
 
@@ -350,6 +355,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Candidate favicon URLs. Each page may have a collection and will be
   // displayed when active (i.e., upon activation for prerendering).
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls_;
+
+  // The capture handle configuration for this page. This allows the app in this
+  // page to opt-in to exposing information to apps that capture it.
+  blink::mojom::CaptureHandleConfig capture_handle_config_;
 
   // Whether the first visually non-empty paint has occurred.
   bool did_first_visually_non_empty_paint_ = false;

@@ -82,6 +82,21 @@ bool PageImpl::IsPrimary() const {
   return main_document_->IsInPrimaryMainFrame();
 }
 
+const blink::mojom::CaptureHandleConfig& PageImpl::GetCaptureHandleConfig() {
+  return capture_handle_config_;
+}
+
+void PageImpl::SetCaptureHandleConfig(
+    blink::mojom::CaptureHandleConfigPtr config) {
+  if (capture_handle_config_ == *config) {
+    return;
+  }
+  capture_handle_config_ = std::move(*config);
+
+  // Notify the tab-level observers via the delegate bridge.
+  main_document_->delegate()->OnCaptureHandleConfigUpdate(*this);
+}
+
 void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 

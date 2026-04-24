@@ -882,10 +882,6 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       bool stay_awake,
       bool is_activity) = 0;
 
-  // Getter for the capture handle, which allows a captured application to
-  // opt-in to exposing information to its capturer(s).
-  virtual const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() = 0;
-
   // Returns true if audio/screenshot/video is being captured by the embedder,
   // as indicated by calls to IncrementCapturerCount().
   virtual bool IsBeingCaptured() = 0;

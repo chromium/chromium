@@ -304,7 +304,7 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
                                               bad_message::MDDH_NOT_TOP_LEVEL);
               return;
             }
-            rfhi->delegate()->SetCaptureHandleConfig(std::move(config));
+            rfhi->GetPage().SetCaptureHandleConfig(std::move(config));
           },
           render_frame_host_id_, std::move(config)));
 }

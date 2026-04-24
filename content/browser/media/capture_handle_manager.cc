@@ -174,7 +174,7 @@ void CaptureHandleManager::Observer::UpdateCaptureHandleConfig() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* wc = web_contents();
   if (wc) {
-    OnCaptureHandleConfigUpdate(wc->GetCaptureHandleConfig());
+    OnCaptureHandleConfigUpdate(wc->GetPrimaryPage().GetCaptureHandleConfig());
   }
 }
 

@@ -107,6 +107,7 @@ struct AXLocationAndScrollUpdates;
 
 namespace content {
 class FrameTreeNode;
+class Page;
 class PrerenderHostRegistry;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
@@ -300,10 +301,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
 
-  // Setter for the capture handle config, which allows a captured application
-  // to opt-in to exposing information to its capturer(s).
-  virtual void SetCaptureHandleConfig(
-      blink::mojom::CaptureHandleConfigPtr config) {}
+  // Called when the capture handle configuration of a page changes. This
+  // propagates information exposed from an opted-in captured page to its
+  // capturer(s).
+  virtual void OnCaptureHandleConfigUpdate(Page& page) {}
 
   // Get the accessibility mode for the WebContents that owns this frame.
   virtual ui::AXMode GetAccessibilityMode();
