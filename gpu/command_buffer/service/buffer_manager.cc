@@ -557,7 +557,11 @@ void BufferManager::DoBufferSubData(
   buffer->SetRange(offset, size, data);
 
   if (!buffer->IsClientSideArray()) {
-    glBufferSubData(target, offset, size, data);
+    const void* upload_data = buffer->GetRange(offset, size);
+    if (!upload_data) {
+      upload_data = data;
+    }
+    glBufferSubData(target, offset, size, upload_data);
   }
 }
 

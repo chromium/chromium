@@ -2160,10 +2160,21 @@ void GLES2DecoderTestBase::DoBufferData(GLenum target, GLsizei size) {
 
 void GLES2DecoderTestBase::DoBufferSubData(
     GLenum target, GLint offset, GLsizei size, const void* data) {
-  EXPECT_CALL(*gl_,
-              BufferSubData(target, offset, size, shared_memory_address_.get()))
-      .Times(1)
-      .RetiresOnSaturation();
+  // The GL_ELEMENT_ARRAY_BUFFER's contents might be shadowed. If they
+  // are, then the address from which the data is uploaded to GL will
+  // be internal to the buffer. It's only allocated during the upload
+  // and is therefore impossible to know here. Skip verification of
+  // the upload address for element array buffers.
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    EXPECT_CALL(*gl_, BufferSubData(target, offset, size, _))
+        .Times(1)
+        .RetiresOnSaturation();
+  } else {
+    EXPECT_CALL(
+        *gl_, BufferSubData(target, offset, size, shared_memory_address_.get()))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
   memcpy(shared_memory_address_, data, size);
   cmds::BufferSubData cmd;
   cmd.Init(target, offset, size, shared_memory_id_, shared_memory_offset_);

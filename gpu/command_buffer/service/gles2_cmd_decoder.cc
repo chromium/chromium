@@ -16652,7 +16652,8 @@ bool GLES2DecoderImpl::UnmapBufferHelper(Buffer* buffer, GLenum target) {
     DCHECK(mapped_range->pointer);
     UNSAFE_TODO(memcpy(mapped_range->pointer, mem, mapped_range->size));
     if (buffer->shadowed()) {
-      buffer->SetRange(mapped_range->offset, mapped_range->size, mem);
+      buffer->SetRange(mapped_range->offset, mapped_range->size,
+                       mapped_range->pointer);
     }
   }
   buffer->RemoveMappedRange();
@@ -16743,7 +16744,7 @@ void GLES2DecoderImpl::DoFlushMappedBufferRange(
   UNSAFE_TODO(memcpy(gpu_data + offset, client_data + offset, size));
   if (buffer->shadowed()) {
     buffer->SetRange(mapped_range->offset + offset, size,
-                     UNSAFE_TODO(client_data + offset));
+                     UNSAFE_TODO(gpu_data + offset));
   }
   api()->glFlushMappedBufferRangeFn(target, offset, size);
 }
