@@ -744,11 +744,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      browser_completed_promo_limit);
 
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
-      profile,
-      /*enable_voice_search=*/true,
-      /*enable_lens_search=*/
-      profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled),
-      session_allows_drag_and_drop));
+      profile, {.enable_voice_search = true,
+                .enable_lens_search = profile->GetPrefs()->GetBoolean(
+                    prefs::kLensDesktopNTPSearchEnabled),
+                .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 
   webui::SetupWebUIDataSource(source, kNewTabPageResources,
                               IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);

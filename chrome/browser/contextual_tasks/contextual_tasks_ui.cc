@@ -299,8 +299,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   }
 
   source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
-      profile, /*enable_voice_search=*/true,
-      /*enable_lens_search=*/false, session_allows_drag_and_drop));
+      profile, {.enable_voice_search = true,
+                .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 #endif
   // Add strings.js
   source->UseStringsJs();

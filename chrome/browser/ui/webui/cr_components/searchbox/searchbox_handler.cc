@@ -313,11 +313,14 @@ const base::FeatureParam<bool> SearchboxHandler::kVoiceSearchRecordingAnimation{
     false};
 
 // static
+base::DictValue SearchboxHandler::GetWebUIDataSourceDict(Profile* profile) {
+  return GetWebUIDataSourceDict(profile, WebUIDataSourceOptions{});
+}
+
+// static
 base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
     Profile* profile,
-    bool enable_voice_search,
-    bool enable_lens_search,
-    bool session_allows_drag_and_drop) {
+    WebUIDataSourceOptions options) {
   base::DictValue dict;
 
   // The WebUI Omnibox code will override this to `true` to adjust various
@@ -441,8 +444,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   DefineChromeRefreshRealboxIcons();
   dict.Set("searchboxDefaultIcon", kSearchIconResourceName);
 
-  dict.Set("searchboxVoiceSearch", enable_voice_search);
-  dict.Set("searchboxLensSearch", enable_lens_search);
+  dict.Set("searchboxVoiceSearch", options.enable_voice_search);
+  dict.Set("searchboxLensSearch", options.enable_lens_search);
   dict.Set("searchboxLensVariations", GetBase64UrlVariations(profile));
   dict.Set("searchboxCr23Theming",
            base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
@@ -480,10 +483,9 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            l10n_util::GetPluralStringFUTF16(
                IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, max_pdfs));
 
-  dict.Set("composeboxContextDragAndDropEnabled", session_allows_drag_and_drop);
-  dict.Set("composeboxShowVoiceSearch", enable_voice_search);
-  dict.Set("composeboxContextDragAndDropEnabled", session_allows_drag_and_drop);
-  dict.Set("composeboxShowVoiceSearch", enable_voice_search);
+  dict.Set("composeboxContextDragAndDropEnabled",
+           options.session_allows_drag_and_drop);
+  dict.Set("composeboxShowVoiceSearch", options.enable_voice_search);
 
   // TODO(b/481663895): Remove "ConfigParam" from Next studies.
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
