@@ -60,6 +60,9 @@ target(libcxxabi_target_type, "libc++abi") {
 
   defines = [ "LIBCXXABI_SILENT_TERMINATE" ]
 
+  # TODO(crbug.com/469458284): Remove this once libc++abi is rolled again.
+  defines += [ "_LIBCPP_CONSTINIT=constinit" ]
+
   if (is_fuchsia || (is_posix && !is_apple)) {
     sources += [ "//third_party/libc++abi/src/src/cxa_thread_atexit.cpp" ]
 

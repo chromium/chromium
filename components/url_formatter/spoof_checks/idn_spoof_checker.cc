@@ -156,7 +156,7 @@ const size_t kNumberOfLabelsToCheck = 4;
 
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
-const char16_t* kAllowedWholeScriptConfusableWords[] = {
+constexpr std::u16string_view kAllowedWholeScriptConfusableWords[] = {
     u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
     u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
 
