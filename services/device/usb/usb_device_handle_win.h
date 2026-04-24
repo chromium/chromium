@@ -33,6 +33,8 @@ class UsbDeviceWin;
 // UsbDeviceHandle class provides basic I/O related functionalities.
 class UsbDeviceHandleWin : public UsbDeviceHandle {
  public:
+  class Request;
+
   UsbDeviceHandleWin(const UsbDeviceHandleWin&) = delete;
   UsbDeviceHandleWin& operator=(const UsbDeviceHandleWin&) = delete;
 
@@ -101,7 +103,6 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
  private:
   struct Interface;
-  class Request;
 
   using OpenInterfaceCallback = base::OnceCallback<void(Interface*)>;
 
