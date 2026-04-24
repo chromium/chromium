@@ -993,12 +993,23 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
               it->session_usage(), key.socket_tag(),
               it->network_anonymization_key(), it->secure_dns_policy(),
               it->disable_cert_verification_network_fetches());
-          MapKeyToAvailableSession(new_pool_alias_key, available_session,
-                                   std::move(pooled_alias_old_dns_aliases));
           auto old_it = it;
           ++it;
           available_session->RemovePooledAlias(*old_it);
-          available_session->AddPooledAlias(new_pool_alias_key);
+
+          if (available_sessions_.find(new_pool_alias_key) ==
+              available_sessions_.end()) {
+            MapKeyToAvailableSession(new_pool_alias_key, available_session,
+                                     std::move(pooled_alias_old_dns_aliases));
+            available_session->AddPooledAlias(new_pool_alias_key);
+          } else {
+            // If the new pool alias key is already used by another session, we
+            // just remove the old alias and don't add the new one.
+            // The request that triggered this re-mapping will eventually be
+            // satisfied by the session that already exists for
+            // `new_pool_alias_key` when `UpdatePendingRequests` is called
+            // below.
+          }
 
           // If this is desired key, no need to add an alias for the desired
           // key at the end of this method.

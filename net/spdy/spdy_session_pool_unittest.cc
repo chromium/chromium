@@ -862,6 +862,82 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
 }
 
 // Test IP pooling when the DNS responses have ALPNs.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SpdySessionPoolTest, IPPoolingSocketTagCrash) {
+  // Define two hosts with identical IP address.
+  constexpr int kTestPort = 443;
+  struct TestHosts {
+    std::string name;
+    std::string iplist;
+  };
+  SocketTag tag1(SocketTag::UNSET_UID, 1);
+  SocketTag tag2(SocketTag::UNSET_UID, 2);
+  auto test_hosts = std::to_array<TestHosts>({
+      {"www.example.org", "192.168.0.1"},
+      {"mail.example.org", "192.168.0.1"},
+  });
+
+  // Populate the HostResolver cache.
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  for (auto& test_host : test_hosts) {
+    session_deps_.host_resolver->rules()->AddIPLiteralRule(
+        test_host.name, test_host.iplist, std::string());
+  }
+
+  SpdySessionKey key_a_tag1(
+      HostPortPair(test_hosts[0].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, tag1,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow, false);
+  SpdySessionKey key_b_tag1(
+      HostPortPair(test_hosts[1].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, tag1,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow, false);
+  SpdySessionKey key_a_tag2(
+      HostPortPair(test_hosts[0].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, tag2,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow, false);
+  SpdySessionKey key_b_tag2(
+      HostPortPair(test_hosts[1].name, kTestPort), PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, tag2,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow, false);
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+
+  StaticSocketDataProvider data2(reads, base::span<MockWrite>());
+  data2.set_connect_data(connect_data);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+  AddSSLSocketData();
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  // Open Session 1 to A with tag 1
+  base::WeakPtr<SpdySession> session1 =
+      CreateSpdySession(http_session_.get(), key_a_tag1, NetLogWithSource());
+
+  // Pool B with tag 1 to Session 1
+  EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, key_b_tag1,
+                                          test_hosts[1].iplist));
+
+  // Open Session 2 to B with tag 2
+  base::WeakPtr<SpdySession> session2 =
+      CreateSpdySession(http_session_.get(), key_b_tag2, NetLogWithSource());
+
+  // Try to pool A with tag 2. This will find Session 1 (since it shares IP),
+  // see it has tag 1, and attempt to change its tag to 2.
+  // During this, it will remap Session 1's alias B tag 1 -> B tag 2.
+  // But B tag 2 is already in available_sessions_ (pointing to Session 2).
+  // This should crash if the bug is present.
+  TryCreateAliasedSpdySession(spdy_session_pool_, key_a_tag2,
+                              test_hosts[0].iplist);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
   // Define two hosts with identical IP address.
   constexpr int kTestPort = 443;
