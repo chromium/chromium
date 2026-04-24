@@ -117,4 +117,32 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuArm2BrowserTest, GlicInvokeArm2) {
   EXPECT_NE(nullptr, GetOnlyGlicInstance());
 }
 
+class GlicContextMenuArm3BrowserTest : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicContextMenuArm3BrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlic, {}},
+         {features::kGlicContextMenu,
+          {{features::kGlicContextMenuArm.name, "arm3"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuArm3BrowserTest, GlicInvokeArm3) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto menu = CreateContextMenu();
+
+  // Initially no Glic instance.
+  EXPECT_EQ(nullptr, GetOnlyGlicInstance());
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC, 0);
+
+  // Now Glic should be open.
+  ASSERT_TRUE(WaitForGlicOpen());
+  EXPECT_NE(nullptr, GetOnlyGlicInstance());
+}
+
 }  // namespace glic
