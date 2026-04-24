@@ -7,6 +7,10 @@
 
 namespace cc {
 
+void FakeLayerTreeHostImplClient::DidLoseLayerTreeFrameSinkOnImplThread() {
+  did_lose_layer_tree_frame_sink_on_impl_thread_ = true;
+}
+
 bool FakeLayerTreeHostImplClient::IsInsideDraw() {
   return false;
 }

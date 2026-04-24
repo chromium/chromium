@@ -66,6 +66,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
       int32_t layer_id,
       const std::vector<float>& tiling_scales_to_clean_up) override;
 
+  void FlushReceiverForTesting();
+
  private:
   // Serializes any changes to animation state on `tree` since the last push to
   // Viz. Any serialized changes are added to `update`.

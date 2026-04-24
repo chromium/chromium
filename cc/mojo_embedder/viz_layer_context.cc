@@ -1851,6 +1851,10 @@ VizLayerContext::MaybeSerializeAnimationTimeline(
   return wire;
 }
 
+void VizLayerContext::FlushReceiverForTesting() {
+  client_receiver_.FlushForTesting();  // IN-TEST
+}
+
 void VizLayerContext::OnMojoConnectionError(uint32_t custom_reason,
                                             const std::string& description) {
   if (!custom_reason) {

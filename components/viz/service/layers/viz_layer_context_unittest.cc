@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/test/run_until.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -299,6 +300,33 @@ TEST_F(VizLayerContextTest, FlushOnlyUpdate) {
 
   ASSERT_TRUE(fake_layer_context_.last_update_);
   EXPECT_TRUE(fake_layer_context_.last_update_->is_flush);
+}
+
+TEST_F(VizLayerContextTest, RecoveryFromMojoConnectionError) {
+  // Simulate a connection error with a custom reason from the service side.
+  // This is what LayerContextImpl::SubmitCompositorFrame does on failure.
+  fake_layer_context_.client_.ResetWithReason(1, "test failure");
+
+  viz_layer_context_->FlushReceiverForTesting();
+
+  // host_impl_->DidLoseLayerTreeFrameSink() should have been called, which
+  // in turn calls the client method.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return host_impl_->client()
+        ->did_lose_layer_tree_frame_sink_on_impl_thread();
+  }));
+}
+
+TEST_F(VizLayerContextTest, NoRecoveryFromNormalMojoDisconnect) {
+  // Simulate a connection error WITHOUT a custom reason from the service side.
+  // This happens when LayerContextImpl is destroyed normally.
+  fake_layer_context_.client_.reset();
+
+  viz_layer_context_->FlushReceiverForTesting();
+
+  // host_impl_->DidLoseLayerTreeFrameSink() should NOT have been called.
+  EXPECT_FALSE(
+      host_impl_->client()->did_lose_layer_tree_frame_sink_on_impl_thread());
 }
 
 }  // namespace viz

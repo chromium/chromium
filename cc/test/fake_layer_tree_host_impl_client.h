@@ -16,7 +16,7 @@ namespace cc {
 
 class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
  public:
-  void DidLoseLayerTreeFrameSinkOnImplThread() override {}
+  void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override {}
   void DidReceiveCompositorFrameAckOnImplThread() override {}
   void OnCanDrawStateChanged(bool can_draw) override {}
@@ -83,11 +83,16 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void reset_ready_to_draw() { ready_to_draw_ = false; }
   bool ready_to_draw() const { return ready_to_draw_; }
 
+  bool did_lose_layer_tree_frame_sink_on_impl_thread() const {
+    return did_lose_layer_tree_frame_sink_on_impl_thread_;
+  }
+
   void set_is_synchronous_composite(bool value) {
     is_synchronous_composite_ = value;
   }
 
  private:
+  bool did_lose_layer_tree_frame_sink_on_impl_thread_ = false;
   bool did_request_impl_side_invalidation_ = false;
   bool ready_to_activate_ = false;
   bool ready_to_draw_ = false;
