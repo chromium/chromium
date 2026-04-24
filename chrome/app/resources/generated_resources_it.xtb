@@ -578,7 +578,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1380028686461971526">Collegamento automatico alla rete</translation>
 <translation id="1381567580865186407">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato</translation>
 <translation id="1382174183118245544">Numeri carte di credito</translation>
-<translation id="1383065744946263511">Blocca sulla barra degli strumenti</translation>
+<translation id="1383065744946263511">Fissa sulla barra degli strumenti</translation>
 <translation id="1383381142702995121">Gestisci questa estensione</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383861834909034572">Apri al termine</translation>
@@ -1939,7 +1939,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2296218178174497398">Rilevamento dispositivi</translation>
 <translation id="2297705863329999812">Cerca stampanti</translation>
 <translation id="2297822946037605517">Condividi questa pagina</translation>
-<translation id="229871422646860597">Sblocca dalla barra degli strumenti</translation>
+<translation id="229871422646860597">Stacca dalla barra degli strumenti</translation>
 <translation id="2299685119225839832">Puoi ricevere un riepilogo di ciò che le persone dicono nelle loro recensioni</translation>
 <translation id="2299734369537008228">Cursore: da <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Includi tutti i file di log raccolti da debugd sotto forma di archivio separato.</translation>
@@ -4110,7 +4110,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3756578970075173856">Imposta il PIN</translation>
 <translation id="3756806135608816820">I siti possono chiedere di cercare dispositivi Bluetooth</translation>
-<translation id="3757567010566591880">Sblocca dalla barra degli strumenti</translation>
+<translation id="3757567010566591880">Stacca dalla barra degli strumenti</translation>
 <translation id="3757645900890881944">Strumenti di ricerca</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
 <translation id="3757825964096339958">Seleziona gruppo</translation>
@@ -4512,7 +4512,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3994878504415702912">&amp;Carattere</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="3995963973192100066">Riproduci l'animazione</translation>
-<translation id="399788104667917863">Blocca sulla barra degli strumenti</translation>
+<translation id="399788104667917863">Fissa sulla barra degli strumenti</translation>
 <translation id="3998780825367526465">Mostra immagini di anteprima della scheda</translation>
 <translation id="3998976413398910035">Gestisci stampanti</translation>
 <translation id="4000360130639414007">Non potrai utilizzare le app per Android o il Google Play Store</translation>
