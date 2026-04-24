@@ -13,9 +13,12 @@ First, connect an Android device by following the
 [Plug in your Android device](/docs/android_build_instructions.md#Plug-in-your-Android-device)
 steps. Prefer using a device running a userdebug build.
 
-Alternatively, you can pass the --x86 flag to `gn` to test on a local emulator
--- make sure you substitute `out/Debug` for `out/Debug-x86` in the instructions
-below.
+> Note: If you encounter permission issues when the test script attempts to
+> clear previous test logs, try running `adb root` before starting.
+
+Alternatively, you can pass the --x64 flag to `gn` to test on a local emulator
+-- make sure you substitute `out/Debug-arm64` for `out/Debug-x64` in the
+instructions below.
 
 ### Running Cronet Java unit tests
 
@@ -39,8 +42,8 @@ To run C++ and Java unit tests of net/ functionality:
 
 ```shell
 $ ./components/cronet/tools/cr_cronet.py gn
-$ autoninja -C out/Debug net_unittests
-$ ./out/Debug/bin/run_net_unittests --fast-local-dev
+$ autoninja -C out/Debug-arm64 net_unittests
+$ ./out/Debug-arm64/bin/run_net_unittests --fast-local-dev
 ```
 
 For more information about running net_unittests, read
