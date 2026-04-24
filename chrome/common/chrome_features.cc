@@ -1759,6 +1759,10 @@ BASE_FEATURE(kWebUISplitTabsButton, base::FEATURE_DISABLED_BY_DEFAULT);
 // crbug.com/470039765
 BASE_FEATURE(kWebUIHomeButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the app menu button will be replaced with WebUI loaded from
+// chrome://webui-toolbar.top-chrome.
+BASE_FEATURE(kWebUIAppMenuButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the back/forward buttons will be replaced with WebUI loaded
 // from chrome://webui-toolbar.top-chrome.
 // crbug.com/470038385

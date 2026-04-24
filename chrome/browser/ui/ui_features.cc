@@ -377,6 +377,11 @@ bool IsWebUIHomeButtonEnabled() {
          base::FeatureList::IsEnabled(features::kWebUIHomeButton);
 }
 
+bool IsWebUIAppMenuButtonEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUIAppMenuButton);
+}
+
 bool IsWebUIBackForwardButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUIBackForwardButton);
@@ -406,7 +411,8 @@ bool IsWebUIToolbarEnabled() {
   return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
          IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
          IsWebUIBackForwardButtonEnabled() ||
-         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled();
+         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled() ||
+         IsWebUIAppMenuButtonEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
