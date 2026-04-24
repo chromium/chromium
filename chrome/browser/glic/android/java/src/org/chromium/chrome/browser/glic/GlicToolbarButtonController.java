@@ -411,10 +411,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
         // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
         for (ActorTask task : tasks) {
-            modelList.add(
+            ListItemBuilder builder =
                     new ListItemBuilder()
                             .withTitle(task.getTitle())
-                            .withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp)
                             .withIsIncognito(false)
                             .withIsTextEllipsizedAtEnd(true)
                             .withClickListener(
@@ -422,8 +421,16 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                                         switchToActuatingTab(task.getLastActedTabs());
                                         mToggleGlicCallback.onClick(true);
                                         dismissMenu();
-                                    })
-                            .build());
+                                    });
+
+            if (mapTaskStateToButtonState(task.getState()) == ButtonState.NEEDS_REVIEW) {
+                builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp)
+                        .withEndIconRes(R.drawable.glic_menu_dot);
+            } else {
+                builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
+            }
+
+            modelList.add(builder.build());
         }
 
         // Divider
