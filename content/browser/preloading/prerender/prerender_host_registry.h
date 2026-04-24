@@ -48,6 +48,7 @@ class SimpleURLLoader;
 namespace content {
 
 class FrameTree;
+class FrameTreeNode;
 class NavigationRequest;
 class PrerenderCancellationReason;
 class PrerenderHost;
@@ -237,6 +238,11 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // the prerender host.
   PrerenderHost* FindPrewarmSearchResultHostForTesting(
       const GURL& search_prewarm_url);
+
+  // Returns the root FrameTreeNodes of prerender hosts managed by new tab
+  // handles. These are prerenders triggered with target_hint="_blank" that live
+  // in separate WebContents from the initiator.
+  std::vector<FrameTreeNode*> GetNewTabPrerenderFrameTreeNodes();
 
   // Returns whether `prerender_new_tab_handle_by_id_` has the given id.
   bool HasNewTabHandleByIdForTesting(PrerenderHostId prerender_host_id);

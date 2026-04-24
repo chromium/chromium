@@ -1,0 +1,17 @@
+Tests that new-tab prerender targets (target_hint="_blank") get auto-attached properly.
+{
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        subtype : prerender
+        targetId : <string>
+        title :
+        type : page
+        url :
+    }
+    waitingForDebugger : true
+}
+Navigation: http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+

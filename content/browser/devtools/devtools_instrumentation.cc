@@ -41,6 +41,7 @@
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -707,7 +708,9 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
           RenderFrameDevToolsAgentHost::GetFor(&new_node));
   // Disconnect old host entirely, so it detaches from renderer and does not
   // cause problem if renderer comes back from the BFCache.
-  previous_host->DisconnectWebContents();
+  if (previous_host) {
+    previous_host->DisconnectWebContents();
+  }
   host->SetFrameTreeNode(&new_node);
 }
 
@@ -845,6 +848,22 @@ void WillInitiatePrerender(FrameTree& frame_tree) {
   auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());
   if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc)) {
     host->WillInitiatePrerender(frame_tree.root());
+  }
+
+  // For new-tab prerenders (target_hint="_blank"), the prerender lives in a
+  // different WebContents from the initiator. Also notify the initiator's
+  // DevTools agent host so the prerender target appears in the initiator's
+  // DevTools session.
+  PrerenderHost* prerender_host =
+      PrerenderHost::GetFromFrameTreeNodeIfPrerendering(*frame_tree.root());
+  if (prerender_host) {
+    WebContents* initiator_wc = prerender_host->initiator_web_contents().get();
+    if (initiator_wc && initiator_wc != wc) {
+      if (auto* initiator_host =
+              WebContentsDevToolsAgentHost::GetFor(initiator_wc)) {
+        initiator_host->WillInitiatePrerender(frame_tree.root());
+      }
+    }
   }
 }
 
@@ -1210,6 +1229,23 @@ void CreateAndAddNavigationThrottles(NavigationThrottleRegistry& registry) {
         // initial navigation.
         agent_host->auto_attacher()->CreateAndAddNavigationThrottles(registry);
         return;
+      }
+      // For new-tab prerenders (target_hint="_blank"), also create throttles
+      // via the initiator's DevTools agent host.
+      PrerenderHost* prerender_host =
+          PrerenderHost::GetFromFrameTreeNodeIfPrerendering(*frame_tree_node);
+      if (prerender_host) {
+        WebContents* initiator_wc =
+            prerender_host->initiator_web_contents().get();
+        if (initiator_wc && initiator_wc != WebContentsImpl::FromFrameTreeNode(
+                                                frame_tree_node)) {
+          if (auto* initiator_agent_host =
+                  WebContentsDevToolsAgentHost::GetFor(initiator_wc)) {
+            initiator_agent_host->auto_attacher()
+                ->CreateAndAddNavigationThrottles(registry);
+            return;
+          }
+        }
       }
     }
   }

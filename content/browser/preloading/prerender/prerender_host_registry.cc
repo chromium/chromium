@@ -1349,6 +1349,20 @@ std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
   return result;
 }
 
+std::vector<FrameTreeNode*>
+PrerenderHostRegistry::GetNewTabPrerenderFrameTreeNodes() {
+  std::vector<FrameTreeNode*> result;
+  for (auto& [id, handle] : prerender_new_tab_handle_by_id_) {
+    PrerenderHost* host =
+        handle->GetPrerenderHostRegistry().FindNonReservedHostById(
+            handle->prerender_host_id());
+    if (host) {
+      result.push_back(host->GetPrerenderFrameTree().root());
+    }
+  }
+  return result;
+}
+
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   for (auto& iter : prerender_host_by_id_) {

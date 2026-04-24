@@ -13,6 +13,7 @@
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
@@ -94,6 +95,15 @@ class WebContentsDevToolsAgentHost::AutoAttacher
       if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
         hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(
             rfh->frame_tree_node()));
+      }
+      // Include prerender targets from new-tab prerenders
+      // (target_hint="_blank") that live in separate WebContents.
+      auto* wci = static_cast<WebContentsImpl*>(web_contents_.get());
+      if (auto* registry = wci->GetPrerenderHostRegistry()) {
+        for (FrameTreeNode* ftn :
+             registry->GetNewTabPrerenderFrameTreeNodes()) {
+          hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn));
+        }
       }
     }
     DispatchSetAttachedTargetsOfType(hosts, DevToolsAgentHost::kTypePage);
