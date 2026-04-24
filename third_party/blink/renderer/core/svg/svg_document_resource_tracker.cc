@@ -42,7 +42,8 @@ SVGDocumentResourceTracker::CacheKey SVGDocumentResourceTracker::MakeCacheKey(
   const KURL url_without_fragment =
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   return {url_without_fragment.GetString(),
-          params.GetResourceRequest().GetMode()};
+          {params.GetResourceRequest().GetMode(),
+           params.GetResourceRequest().GetCredentialsMode()}};
 }
 
 String SVGDocumentResourceTracker::MakeCacheIdentifier(

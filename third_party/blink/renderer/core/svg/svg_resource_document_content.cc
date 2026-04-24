@@ -47,16 +47,8 @@ bool CanReuseContent(const SVGResourceDocumentContent& content) {
 }
 
 bool AllowedRequestMode(const ResourceRequest& request) {
-  // Same-origin
-  if (request.GetMode() == network::mojom::blink::RequestMode::kSameOrigin) {
-    return true;
-  }
-  // CORS with same-origin credentials mode ("CORS anonymous").
-  if (request.GetMode() == network::mojom::blink::RequestMode::kCors) {
-    return request.GetCredentialsMode() ==
-           network::mojom::CredentialsMode::kSameOrigin;
-  }
-  return false;
+  return request.GetMode() == network::mojom::blink::RequestMode::kSameOrigin ||
+         request.GetMode() == network::mojom::blink::RequestMode::kCors;
 }
 
 }  // namespace
@@ -273,9 +265,7 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
     FetchParameters& params,
     Document& document) {
   CHECK(!params.Url().IsNull());
-  // Callers need to set the request and credentials mode to something suitably
-  // restrictive. This limits the actual modes (simplifies caching) that we
-  // allow and avoids accidental creation of overly privileged requests.
+  // Callers need to set a CORS-enabled request mode (kSameOrigin or kCors).
   CHECK(AllowedRequestMode(params.GetResourceRequest()));
 
   DCHECK_EQ(params.GetResourceRequest().GetRequestContext(),

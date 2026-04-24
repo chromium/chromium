@@ -44,9 +44,12 @@ class CORE_EXPORT SVGDocumentResourceTracker final
       scoped_refptr<base::SingleThreadTaskRunner>,
       const String& cache_identifier);
 
-  // The key is "URL (without fragment)" and the request mode (kSameOrigin or
-  // kCors - other modes should be filtered by AllowedRequestMode).
-  using CacheKey = std::pair<String, network::mojom::blink::RequestMode>;
+  // The key is URL (without fragment), the request mode (kSameOrigin or kCors,
+  // other modes are filtered out by AllowedRequestMode), and the credentials
+  // mode.
+  using CacheKey = std::pair<String,
+                             std::pair<network::mojom::blink::RequestMode,
+                                       network::mojom::CredentialsMode>>;
 
   static CacheKey MakeCacheKey(const FetchParameters& params);
   static String MakeCacheIdentifier(StringView browser_context_group_token);
