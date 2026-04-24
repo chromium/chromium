@@ -585,10 +585,6 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              renderer_id, value, autocomplete_attribute_has_username,
              is_likely_otp);
   }
-  void ShowPasswordSuggestions(
-      const PasswordSuggestionRequest& request) override {
-    DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, request);
-  }
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {
     DeferMsg(&mojom::PasswordManagerDriver::CheckSafeBrowsingReputation,

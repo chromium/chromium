@@ -635,19 +635,6 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
   client_->ResetSubmissionTrackingAfterTouchToFill();
 }
 
-void ContentPasswordManagerDriver::ShowPasswordSuggestions(
-    const autofill::PasswordSuggestionRequest& request) {
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(
-          render_frame_host_))
-    return;
-
-#if !BUILDFLAG(IS_ANDROID)
-  GetPasswordAutofillManager()->ShowSuggestions(request.field);
-#else
-  GetPasswordAutofillManager()->ShowKeyboardReplacingSurface(request);
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {

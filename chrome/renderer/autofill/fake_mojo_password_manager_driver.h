@@ -42,10 +42,6 @@ class FakeMojoPasswordManagerDriver
                bool is_likely_otp),
               (override));
   MOCK_METHOD(void,
-              ShowPasswordSuggestions,
-              (const autofill::PasswordSuggestionRequest& request),
-              (override));
-  MOCK_METHOD(void,
               PasswordFormSubmitted,
               (const autofill::FormData& form_data),
               (override));

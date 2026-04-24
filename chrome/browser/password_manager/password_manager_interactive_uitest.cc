@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -42,6 +44,32 @@ namespace {
 
 constexpr autofill::FieldGlobalId kElementId(autofill::LocalFrameToken(),
                                              autofill::FieldRendererId(1000));
+
+void TriggerPasswordSuggestionsAndWait(
+    autofill::ContentAutofillDriver* autofill_driver,
+    const autofill::FormData& form,
+    const gfx::RectF& element_bounds) {
+  autofill::TestAutofillManagerSingleEventWaiter waiter(
+      autofill_driver->GetAutofillManager(),
+      &autofill::AutofillManager::Observer::OnAfterAskForValuesToFill);
+
+  autofill_driver->renderer_events().AskForValuesToFill(
+      form, kElementId.renderer_id,
+      gfx::Rect(gfx::Point(element_bounds.x(), element_bounds.y()),
+                gfx::Size(0, 10)),
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      autofill::PasswordSuggestionRequest(
+          autofill::TriggeringField(kElementId,
+                                    autofill::AutofillSuggestionTriggerSource::
+                                        kFormControlElementClicked,
+                                    base::i18n::LEFT_TO_RIGHT, std::u16string(),
+                                    /*show_webauthn_credentials=*/false,
+                                    /*show_identity_credentials=*/false,
+                                    element_bounds),
+          form, autofill::FieldGlobalId(), autofill::FieldGlobalId()));
+
+  ASSERT_TRUE(std::move(waiter).Wait());
+}
 
 }  // namespace
 
@@ -300,16 +328,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                                  "username_field", "password_field", submit);
 }
 
-// TODO(https://crbug.com/455605090): Very flaky on
-// linux-blink-web-tests-force-accessibility-rel builder.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DeleteCredentialsUpdateDropdown \
-  DISABLED_DeleteCredentialsUpdateDropdown
-#else
-#define MAYBE_DeleteCredentialsUpdateDropdown DeleteCredentialsUpdateDropdown
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       MAYBE_DeleteCredentialsUpdateDropdown) {
+                       DeleteCredentialsUpdateDropdown) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       GetDefaultPasswordStore(browser()->profile());
 
@@ -345,8 +365,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // removes logins from the password store).
   autofill_client->SetKeepPopupOpenForTesting(true);
 
-  autofill::mojom::PasswordManagerDriver* driver =
-      ContentPasswordManagerDriver::GetForRenderFrameHost(
+  autofill::ContentAutofillDriver* autofill_driver =
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame());
 
   // Just fake a position of the <input> element within the content_area_bounds.
@@ -358,14 +378,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
   // Instruct Chrome to show the password dropdown.
   autofill::FormData form;
-  driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      autofill::TriggeringField(
-          kElementId,
-          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(),
-          /*show_webauthn_credentials=*/false,
-          /*show_identity_credentials=*/false, element_bounds),
-      form, {}, {}));
+  autofill::FormFieldData dummy_field;
+  dummy_field.set_renderer_id(kElementId.renderer_id);
+  form.set_fields({dummy_field});
+
+  TriggerPasswordSuggestionsAndWait(autofill_driver, form, element_bounds);
+
   autofill::AutofillSuggestionController* controller = nullptr;
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -388,15 +406,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Wait for the refetch to finish.
   EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
+
   // Reshow the dropdown.
-  driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      autofill::TriggeringField(
-          kElementId,
-          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(),
-          /*show_webauthn_credentials=*/false,
-          /*show_identity_credentials=*/false, element_bounds),
-      form, {}, {}));
+  TriggerPasswordSuggestionsAndWait(autofill_driver, form, element_bounds);
+
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return controller =
@@ -416,17 +429,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Wait for the refetch to finish.
   EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
+
   // Reshow the dropdown won't work because there is nothing to suggest.
-  driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      autofill::TriggeringField(
-          kElementId,
-          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
-          base::i18n::LEFT_TO_RIGHT, std::u16string(),
-          /*show_webauthn_credentials=*/false,
-          /*show_identity_credentials=*/false, element_bounds),
-      form, {}, {}));
-  // Showing the Autofill Popup is an asynchronous task.
-  base::RunLoop().RunUntilIdle();
+  TriggerPasswordSuggestionsAndWait(autofill_driver, form, element_bounds);
+
   EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
 
   WaitForElementValue("username_field", "");

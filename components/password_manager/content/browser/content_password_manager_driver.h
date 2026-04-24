@@ -185,8 +185,6 @@ class ContentPasswordManagerDriver final
                                     const std::u16string& value,
                                     bool autocomplete_attribute_has_username,
                                     bool is_likely_otp) override;
-  void ShowPasswordSuggestions(
-      const autofill::PasswordSuggestionRequest& request) override;
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(

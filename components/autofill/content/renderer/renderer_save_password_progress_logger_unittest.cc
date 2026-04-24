@@ -55,8 +55,6 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void PasswordFormCleared(const FormData& form_data) override {}
 
-  void ShowPasswordSuggestions(
-      const PasswordSuggestionRequest& request) override {}
 
   void RecordSavePasswordProgress(const std::string& log) override {
     called_record_save_ = true;

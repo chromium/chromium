@@ -197,16 +197,6 @@ interface PasswordManagerDriver {
     bool autocomplete_attribute_has_username,
     bool is_likely_otp);
 
-  // Instructs the browser to show a popup or accessory with password
-  // suggestions. The popup will use `request.text_direction` for displaying
-  // text. The accessory uses the `request.form` and the indices of username and
-  // password elements in the form (`request.username_field_index` and
-  // `request.password_field_index` respectively) to calculate submission
-  // readiness for the `request.form`. If the username field is not found,
-  // `request.username_field_index` is set to `request.form.fields.size()`.
-  // Similar for the password field.
-  ShowPasswordSuggestions(PasswordSuggestionRequest request);
-
   // Checks the safe browsing reputation of the website where the focused
   // username/password field is on.
   CheckSafeBrowsingReputation(

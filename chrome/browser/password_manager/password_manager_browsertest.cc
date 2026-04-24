@@ -895,8 +895,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('password_field').value = 'random';"
       "document.getElementById('submit_button').click();";
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
-  // This forces layout update.
-  RunUntilInputProcessed(RenderFrameHost()->GetRenderWidgetHost());
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
@@ -928,8 +926,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "document.getElementById('confirmation_password_field').value = 'random';"
       "document.getElementById('signup_submit_button').click();";
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
-  // This forces layout update.
-  RunUntilInputProcessed(RenderFrameHost()->GetRenderWidgetHost());
   std::string message;
 
   while (message_queue.WaitForMessage(&message)) {
@@ -957,8 +953,6 @@ IN_PROC_BROWSER_TEST_F(
       "document.getElementById('username_field').value = 'temp';"
       "document.getElementById('submit_button').click();";
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
-  // This forces layout update.
-  RunUntilInputProcessed(RenderFrameHost()->GetRenderWidgetHost());
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
@@ -986,8 +980,6 @@ IN_PROC_BROWSER_TEST_F(
       "document.getElementById('signup_username_field').value = 'temp';"
       "document.getElementById('signup_submit_button').click();";
   ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
-  // This forces layout update.
-  RunUntilInputProcessed(RenderFrameHost()->GetRenderWidgetHost());
 
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
@@ -4125,10 +4117,6 @@ class MockPrerenderPasswordManagerDriver
                bool is_likely_otp),
               (override));
   MOCK_METHOD(void,
-              ShowPasswordSuggestions,
-              (const autofill::PasswordSuggestionRequest&),
-              (override));
-  MOCK_METHOD(void,
               CheckSafeBrowsingReputation,
               (const GURL& form_action, const GURL& frame_url),
               (override));
@@ -4188,15 +4176,7 @@ class MockPrerenderPasswordManagerDriver
               renderer_id, value, autocomplete_attribute_has_username,
               is_likely_otp);
         });
-    ON_CALL(*this, ShowPasswordSuggestions)
-        .WillByDefault(
-            [this](const autofill::PasswordSuggestionRequest& request) {
-              autofill::PasswordSuggestionRequest copy = request;
-              copy.form_data = autofill::FormData();
-              copy.username_field_id = {};
-              copy.password_field_id = {};
-              impl_->ShowPasswordSuggestions(copy);
-            });
+
     ON_CALL(*this, CheckSafeBrowsingReputation)
         .WillByDefault([this](const GURL& form_action, const GURL& frame_url) {
           impl_->CheckSafeBrowsingReputation(form_action, frame_url);
