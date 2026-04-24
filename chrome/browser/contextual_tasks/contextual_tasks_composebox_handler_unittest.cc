@@ -1367,8 +1367,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
           [this](const base::UnguessableToken& file_token,
                  std::unique_ptr<lens::ContextualInputData> data,
                  std::optional<lens::ImageEncodingOptions> image_options) {
-            // The delay-upload tab is not an implicit upload.
-            EXPECT_FALSE(data->is_implicit_upload);
+            // The delay-upload tab is an implicit upload because it was
+            // auto-suggested.
+            EXPECT_TRUE(data->is_implicit_upload);
             PostUploadStatusChanged(
                 file_token, lens::MimeType::kUnknown,
                 contextual_search::ContextUploadStatus::kUploadSuccessful);

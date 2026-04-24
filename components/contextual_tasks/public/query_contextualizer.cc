@@ -370,8 +370,8 @@ void QueryContextualizer::OnContextRetrieved(
             context ? std::make_unique<ContextualTaskContext>(*context)
                     : nullptr,
             barrier_closure, update.id, update.is_recontextualization,
-            update.is_smart_selection, session_handle, upload_tracker,
-            on_ineligible_callback, on_processed_callback));
+            update.is_smart_selection, update.is_auto_suggested, session_handle,
+            upload_tracker, on_ineligible_callback, on_processed_callback));
   }
 }
 
@@ -382,6 +382,7 @@ void QueryContextualizer::OnTabContextualizationFetched(
     TabId tab_id,
     bool is_recontextualization,
     bool is_smart_selection,
+    bool is_auto_suggested,
     base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
         session_handle,
     scoped_refptr<UploadTracker> upload_tracker,
@@ -394,7 +395,8 @@ void QueryContextualizer::OnTabContextualizationFetched(
     return;
   }
 
-  page_content_data->is_implicit_upload = is_recontextualization;
+  page_content_data->is_implicit_upload =
+      is_recontextualization || is_auto_suggested;
   page_content_data->was_smart_tab_selection = is_smart_selection;
 
   if (GetIsProtectedPageErrorEnabled() &&
@@ -456,8 +458,9 @@ QueryContextualizer::GetTabsToUpdate(
 
   for (TabId id : tabs_to_force_contextualize) {
     if (!added_tabs.contains(id)) {
-      tabs_to_update.push_back(
-          {id, /*is_recontextualization=*/false, /*is_smart_selection=*/false});
+      tabs_to_update.push_back({id, /*is_recontextualization=*/false,
+                                /*is_smart_selection=*/false,
+                                /*is_auto_suggested=*/true});
       added_tabs.insert(id);
     }
   }
