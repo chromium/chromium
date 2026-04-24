@@ -595,7 +595,9 @@ struct ChromeMLAPI {
 
   // Gets parameters needed to construct a tokenizer.
   bool (*GetTokenizerParams)(ChromeMLModel model,
-                             const ChromeMLGetTokenizerParamsFn& fn);
+                             ChromeMLSession session,
+                             const ChromeMLGetTokenizerParamsFn& fn,
+                             bool use_optimization);
 
   // Gets parameters needed to construct a tokenizer.
   bool (*GetTokenizerParamsV2)(ChromeMLModel model,

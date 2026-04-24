@@ -448,7 +448,9 @@ void SetConstraintFns(const ChromeMLConstraintFns* fns) {
 }
 
 bool GetTokenizerParams(ChromeMLModel model,
-                        const ChromeMLGetTokenizerParamsFn& fn) {
+                        ChromeMLSession session,
+                        const ChromeMLGetTokenizerParamsFn& fn,
+                        bool use_optimization) {
   // Create a simple tokenizer mapping each byte to itself.
   std::string tokens;
   std::vector<uint32_t> token_lens;
@@ -472,7 +474,7 @@ bool GetTokenizerParams(ChromeMLModel model,
 bool GetTokenizerParamsV2(ChromeMLModel model,
                           ChromeMLSession session,
                           const ChromeMLGetTokenizerParamsFn& fn) {
-  return GetTokenizerParams(model, fn);
+  return GetTokenizerParams(session, model, fn, /*use_optimization=*/true);
 }
 
 ChromeMLTSModel CreateTSModel(const ChromeMLTSModelDescriptor* descriptor) {

@@ -200,12 +200,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
     }
   }
 
-  DISABLE_CFI_DLSYM
-  bool GetTokenizerParams(ChromeMLModel model,
-                          const ChromeMLGetTokenizerParamsFn& fn) const {
-    return api_->GetTokenizerParams(model, fn);
-  }
-
   // TODO (crbug.com/500473306): Remove the old GetTokenizerParams function and
   // rename the new one to GetTokenizerParams in the C-API.
   DISABLE_CFI_DLSYM
