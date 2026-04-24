@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   // When navigating to the New Tab Page, the Customize Chrome entry should be
   // available
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_TRUE(customize_chrome_side_panel_controller
                   ->IsCustomizeChromeEntryAvailable());
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   auto* customize_chrome_side_panel_controller =
       GetSidePanelController(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   customize_chrome_side_panel_controller->OpenSidePanel(
       SidePanelOpenTrigger::kAppMenu, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(
@@ -92,14 +92,14 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   // The Customize Chrome side panel should be contextual, opening on one tab
   // should not open it on other tabs.
-  AppendTab(browser(), GURL(chrome::kChromeUINewTabURL));
-  AppendTab(browser(), GURL(chrome::kChromeUINewTabURL));
+  AppendTab(browser(), chrome::ChromeUINewTabURLAsGURL());
+  AppendTab(browser(), chrome::ChromeUINewTabURLAsGURL());
   ActivateTabAt(browser(), 1);
   // Navigate to URL to allow WebUI to load, if not then callback that is set
   // in the New Tab Page constructor and run when
   // OpenSidePanel() is called will not be set.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   auto* customize_chrome_side_panel_controller1 =
       GetSidePanelController(browser());
   EXPECT_FALSE(
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   auto* customize_chrome_side_panel_controller =
       GetSidePanelController(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   customize_chrome_side_panel_controller->OpenSidePanel(
       SidePanelOpenTrigger::kAppMenu, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(

@@ -1173,13 +1173,13 @@ TEST_F(CustomizeChromePageHandlerTest, AttachedTabStateUpdated) {
           {side_panel::mojom::NewTabPageType::kNone,
            GURL("chrome-extension://someinvaldextension/index.html")},
           {side_panel::mojom::NewTabPageType::kFirstPartyWebUI,
-           GURL(chrome::kChromeUINewTabPageURL)},
+           chrome::ChromeUINewTabPageURLAsGURL()},
           {side_panel::mojom::NewTabPageType::kThirdPartyWebUI,
            GURL(chrome::kChromeUINewTabPageThirdPartyURL)},
           {side_panel::mojom::NewTabPageType::kIncognito,
-           GURL(chrome::kChromeUINewTabURL)},
+           chrome::ChromeUINewTabURLAsGURL()},
           {side_panel::mojom::NewTabPageType::kGuestMode,
-           GURL(chrome::kChromeUINewTabURL)}};
+           chrome::ChromeUINewTabURLAsGURL()}};
 
   for (const auto& ntp_type_and_url : ntp_types_and_urls) {
     if (ntp_type_and_url.first ==

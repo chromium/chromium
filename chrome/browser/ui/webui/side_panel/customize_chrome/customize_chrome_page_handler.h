@@ -215,7 +215,7 @@ class CustomizeChromePageHandler
 
   // Caches the attached tab state provided to the handler, in cases where the
   // value needs to be requeried by the page.
-  GURL last_source_url_{GURL(chrome::kChromeUINewTabPageURL)};
+  GURL last_source_url_{chrome::ChromeUINewTabPageURLAsGURL()};
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   PrefChangeRegistrar browser_pref_change_registrar_;

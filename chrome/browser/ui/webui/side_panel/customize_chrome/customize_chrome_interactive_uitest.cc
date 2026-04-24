@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer section exists.
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
                                     "#showToggleContainer"};
   RunTestSequence(
       // Open non-extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer section does not exist.
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
   RunTestSequence(
       // Open NTP with footer showing.
       Steps(AddInstrumentedTab(kNewTabElementId,
-                               GURL(chrome::kChromeUINewTabURL)),
+                               chrome::ChromeUINewTabURLAsGURL()),
             WaitForShow(kNtpFooterViewElementId)),
       // Click the footer toggle.
       Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
   LoadNtpOverridingExtension(1);
   RunTestSequence(
       // Open extension NTP.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Choose a 1P NTP theme from Customize Chrome.
       Steps(OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
             ClickElement(kLocalCustomizeChromeElementId, kEditThemeButton),
@@ -266,11 +266,11 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeInteractiveTest,
       // Ensure that both extensions were disabled, and the tab redirected to 1P
       // NTP with background.
       Steps(WaitForWebContentsNavigation(kNewTabElementId,
-                                         GURL(chrome::kChromeUINewTabURL)),
+                                         chrome::ChromeUINewTabURLAsGURL()),
             WaitForStateChange(kNewTabElementId, ntp_has_background)),
       // Ensure that opening a new tab redirects to the 1P NTP.
       Steps(AddInstrumentedTab(kLocalNewTabElementId,
-                               GURL(chrome::kChromeUINewTabURL)),
+                               chrome::ChromeUINewTabURLAsGURL()),
             WaitForStateChange(kLocalNewTabElementId, ntp_has_background)));
 }
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
 
   RunTestSequence(
       // Open non-extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer toggle is turned on but can't be toggled.
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(
             prefs::kEnterpriseCustomLabelForBrowser, "Custom Label");
       })),
       // Open non-extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer toggle is turned on but can't be toggled.
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
   LoadNtpOverridingExtension();
   RunTestSequence(
       // Open extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer toggle is turned on and can be toggled.
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
             prefs::kNTPFooterExtensionAttributionEnabled, false);
       })),
       // Open non-extension new tab page.
-      AddInstrumentedTab(kNewTabElementId, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kNewTabElementId, chrome::ChromeUINewTabURLAsGURL()),
       // Open customize chrome side panel.
       OpenCustomizeChromeSidePanel(kLocalCustomizeChromeElementId),
       // Check that the footer section does not exist.
