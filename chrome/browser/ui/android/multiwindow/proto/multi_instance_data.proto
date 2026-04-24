@@ -94,6 +94,21 @@ message InstanceData {
   optional bool incognito_selected = 12;
 
   optional bool marked_for_deletion = 13;
+
+  // Data for recovery from crash.
+  message CrashRecoveryData {
+    optional int32 display_id = 1;
+    optional bool is_foreground = 2;
+
+    message Rect {
+      optional int32 left = 1;
+      optional int32 top = 2;
+      optional int32 right = 3;
+      optional int32 bottom = 4;
+    }
+    optional Rect bounds = 3;
+  }
+  optional CrashRecoveryData crash_recovery_data = 14;
 }
 
 // Data representing the state of a specific windowing mode.
