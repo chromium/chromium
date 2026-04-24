@@ -196,25 +196,16 @@ macro_rules! fixed_mul_div {
 
         impl Div for $ty {
             type Output = Self;
-            #[inline(always)]
-            fn div(self, other: Self) -> Self::Output {
-                let mut sign = 1;
-                let mut a = self.0;
-                let mut b = other.0;
-                if a < 0 {
-                    a = -a;
-                    sign = -1;
-                }
-                if b < 0 {
-                    b = -b;
-                    sign = -sign;
-                }
-                let q = if b == 0 {
-                    0x7FFFFFFF
+            fn div(self, other: Self) -> Self {
+                let sign = (self.0 < 0) ^ (other.0 < 0);
+                let au = self.0.unsigned_abs() as u64;
+                let bu = other.0.unsigned_abs() as u64;
+                let q = if bu == 0 {
+                    0x7FFFFFFF_u32
                 } else {
-                    ((((a as u64) << 16) + ((b as u64) >> 1)) / (b as u64)) as u32
+                    (((au << 16) + (bu >> 1)) / bu) as u32
                 };
-                Self(if sign < 0 {
+                Self(if sign {
                     (q as i32).wrapping_neg()
                 } else {
                     q as i32
@@ -510,5 +501,17 @@ mod tests {
         let b = Fixed::from_f64(0.0028228759765625);
         // Just don't panic with overflow
         let _ = a.mul_div(Fixed::ONE, b);
+    }
+
+    #[test]
+    fn fixed_div_min_value() {
+        // i32::MIN.abs() overflows i32, unsigned_abs() handles this correctly
+        let min = Fixed(i32::MIN);
+        let one = Fixed::ONE;
+        // Just don't panic with overflow
+        let _ = min / one;
+        // Dividing by -1 is also an edge case
+        let neg_one = Fixed(-Fixed::ONE.0);
+        let _ = min / neg_one;
     }
 }

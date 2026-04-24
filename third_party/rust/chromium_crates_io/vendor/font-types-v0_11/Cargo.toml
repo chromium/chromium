@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.85"
 name = "font-types"
-version = "0.11.2"
+version = "0.11.3"
 build = false
 autolib = false
 autobins = false
