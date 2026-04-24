@@ -22,7 +22,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -30,7 +29,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
@@ -41,11 +39,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/update_did_run_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/activity_reporter/buildflags.h"
-#include "components/version_info/channel.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -61,41 +57,6 @@ typedef int (*DLL_MAIN)(HINSTANCE,
                         int64_t preread_end_ticks);
 
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
-
-std::wstring GetMachineGuid() {
-  base::win::RegKey key;
-  std::wstring value;
-  if (key.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography",
-               KEY_QUERY_VALUE | KEY_WOW64_64KEY) != ERROR_SUCCESS ||
-      key.ReadValue(L"MachineGuid", &value) != ERROR_SUCCESS || value.empty()) {
-    return std::wstring();
-  }
-  return value;
-}
-
-// Uses the machine GUID to determine whether preload should be skipped as part
-// of the SkipPreReadFileMainDllWin synthetic trial. The GUID is used to
-// be stable across sessions. This is important when affecting pre-reading
-// because there is a learning effect for preloading interventions at the OS
-// level.
-bool ShouldSkipPreReadFile() {
-  // The trial only runs on lower channels for now.
-  const version_info::Channel channel = install_static::GetChromeChannel();
-  if (channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
-    return false;
-  }
-
-  // Get the machine GUID, in case that fails return false to default to
-  // pre-reading.
-  const std::wstring machine_guid = GetMachineGuid();
-  if (machine_guid.empty()) {
-    return false;
-  }
-
-  // Returns true for 50% of clients.
-  return base::PersistentHash(base::as_byte_span(machine_guid)) % 2 == 0;
-}
 
 void RecordDidRun(const base::FilePath& dll_path) {
 #if BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
@@ -142,11 +103,10 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
                                 base::TimeTicks& preread_end_ticks) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
   if (is_browser) {
-    if (!ShouldSkipPreReadFile()) {
-      preread_begin_ticks = base::TimeTicks::Now();
-      base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
-      preread_end_ticks = base::TimeTicks::Now();
-    }
+    preread_begin_ticks = base::TimeTicks::Now();
+    // Always call PreReadFile() for the main browser process.
+    base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+    preread_end_ticks = base::TimeTicks::Now();
   } else {
     // The kNoPreReadMainDll experiment only impacts other processes. Isolate
     // the check so the experiment is easier to remove later if we land the

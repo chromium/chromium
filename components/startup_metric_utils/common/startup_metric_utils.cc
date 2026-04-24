@@ -83,10 +83,6 @@ base::TimeTicks CommonStartupMetricRecorder::MainEntryPointTicks() const {
   return chrome_main_entry_ticks_;
 }
 
-bool CommonStartupMetricRecorder::DidRecordPreRead() const {
-  return !preread_begin_ticks_.is_null();
-}
-
 base::TimeTicks CommonStartupMetricRecorder::StartupTimeToTimeTicks(
     base::Time time) {
   // First get a base which represents the same point in time in both units.

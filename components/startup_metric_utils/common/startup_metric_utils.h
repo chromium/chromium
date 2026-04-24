@@ -53,9 +53,6 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // thread.
   base::TimeTicks MainEntryPointTicks() const;
 
-  // Returns whether preread timings were recorded.
-  bool DidRecordPreRead() const;
-
  private:
   friend class BrowserStartupMetricRecorder;
   friend class GpuStartupMetricRecorder;
