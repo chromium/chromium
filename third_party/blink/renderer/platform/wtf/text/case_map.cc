@@ -6,6 +6,7 @@
 
 #include <unicode/casemap.h>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -32,7 +33,7 @@ inline bool LocaleIdMatchesLang(const AtomicString& locale_id,
   if (locale_id_impl->length() == lang_length) {
     return true;
   }
-  const UChar maybe_delimiter = (*locale_id_impl)[lang_length];
+  const UChar maybe_delimiter = UNSAFE_TODO((*locale_id_impl)[lang_length]);
   return maybe_delimiter == '-' || maybe_delimiter == '_' ||
          maybe_delimiter == '@';
 }

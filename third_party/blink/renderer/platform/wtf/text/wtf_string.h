@@ -219,7 +219,8 @@ class WTF_EXPORT String {
     if (!impl_ || index >= impl_->length()) {
       return 0;
     }
-    return (*impl_)[index];
+    // SAFETY: index checked against length above.
+    return UNSAFE_BUFFERS((*impl_)[index]);
   }
 
   // Returns the Unicode code point starting at the specified offset of this

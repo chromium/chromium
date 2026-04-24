@@ -955,7 +955,8 @@ StringImpl::size_type StringImpl::ReverseFind(const StringView& match_string,
 }
 
 bool StringImpl::StartsWith(UChar character) const {
-  return length_ && (*this)[0] == character;
+  // SAFETY: Non-zero length checked before access.
+  return length_ && UNSAFE_BUFFERS((*this)[0]) == character;
 }
 
 bool StringImpl::StartsWith(const StringView& prefix) const {
@@ -1011,7 +1012,8 @@ bool StringImpl::StartsWithIgnoringAsciiCase(const StringView& prefix) const {
 }
 
 bool StringImpl::EndsWith(UChar character) const {
-  return length_ && (*this)[length_ - 1] == character;
+  // SAFETY: Non-zero length checked before access.
+  return length_ && UNSAFE_BUFFERS((*this)[length_ - 1]) == character;
 }
 
 bool StringImpl::EndsWith(const StringView& suffix) const {

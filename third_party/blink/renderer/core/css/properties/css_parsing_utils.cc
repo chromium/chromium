@@ -12,6 +12,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
@@ -6838,13 +6839,13 @@ Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
   StringBuilder area_name;
   Vector<String> column_names;
   for (unsigned i = 0; i < text.length(); ++i) {
-    if (IsCSSSpace(text[i])) {
+    if (IsCSSSpace(UNSAFE_TODO(text[i]))) {
       if (!area_name.empty()) {
         column_names.push_back(area_name.ReleaseString());
       }
       continue;
     }
-    if (text[i] == '.') {
+    if (UNSAFE_TODO(text[i]) == '.') {
       if (area_name == ".") {
         continue;
       }
@@ -6852,14 +6853,14 @@ Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
         column_names.push_back(area_name.ReleaseString());
       }
     } else {
-      if (!IsNameCodePoint(text[i])) {
+      if (!IsNameCodePoint(UNSAFE_TODO(text[i]))) {
         return Vector<String>();
       }
       if (area_name == ".") {
         column_names.push_back(area_name.ReleaseString());
       }
     }
-    area_name.Append(text[i]);
+    area_name.Append(UNSAFE_TODO(text[i]));
   }
 
   if (!area_name.empty()) {

@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_functions.h"
@@ -1897,7 +1898,7 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
   // |input| must be well-formed UTF-16 so that there's no worry
   // about surrogate handling.
   for (unsigned i = 0; i < length; ++i) {
-    UChar character = input[i];
+    UChar character = UNSAFE_TODO(input[i]);
     if (Character::IsModernGeorgianUppercase(character)) {
       result.Append(Character::LowercaseModernGeorgianUppercase(character));
     } else {

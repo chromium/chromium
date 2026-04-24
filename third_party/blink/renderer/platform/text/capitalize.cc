@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -27,10 +28,10 @@ String Capitalize(const String& string, UChar previous_character) {
   for (unsigned i = 1; i < length + 1; i++) {
     // Replace &nbsp with a real space since ICU no longer treats &nbsp as a
     // word separator.
-    if (input[i - 1] == uchar::kNoBreakSpace) {
+    if (UNSAFE_TODO(input[i - 1]) == uchar::kNoBreakSpace) {
       string_with_previous[i] = uchar::kSpace;
     } else {
-      string_with_previous[i] = input[i - 1];
+      string_with_previous[i] = UNSAFE_TODO(input[i - 1]);
     }
   }
 
@@ -47,12 +48,12 @@ String Capitalize(const String& string, UChar previous_character) {
        start_of_word = end_of_word, end_of_word = boundary->next()) {
     if (start_of_word) {  // Ignore first char of previous string
       result.Append(
-          input[start_of_word - 1] == uchar::kNoBreakSpace
+          UNSAFE_TODO(input[start_of_word - 1]) == uchar::kNoBreakSpace
               ? uchar::kNoBreakSpace
               : unicode::ToTitleCase(string_with_previous[start_of_word]));
     }
     for (int i = start_of_word + 1; i < end_of_word; i++)
-      result.Append(input[i - 1]);
+      result.Append(UNSAFE_TODO(input[i - 1]));
   }
 
   return result.ToString();

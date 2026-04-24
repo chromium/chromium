@@ -406,9 +406,11 @@ class WTF_EXPORT StringImpl {
   scoped_refptr<StringImpl> Substring(size_type pos,
                                       size_type len = npos) const;
 
-  UChar operator[](size_type i) const {
+  // PRECONDITIONS: `i` must be less than `length`.
+  UNSAFE_BUFFER_USAGE UChar operator[](size_type i) const {
     SECURITY_DCHECK(i < length_);
-    // SAFETY: It's safe when i < length.
+    // SAFETY: Performance sensitive. Safety required from caller, enforced
+    // by UNSAFE_BUFFER_USAGE.
     UNSAFE_BUFFERS({
       if (Is8Bit()) {
         return reinterpret_cast<const LChar*>(this + 1)[i];
