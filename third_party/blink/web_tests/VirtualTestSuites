@@ -3020,27 +3020,6 @@
     "expires": "Nov 11, 2026"
   },
   {
-    "prefix": "selective-permissions-intervention",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win",
-      "Android",
-      "Fuchsia"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/issues/selective-permissions-intervention-issue.js"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=SelectivePermissionsIntervention"
-    ],
-    "owners": [
-      "jkarlin@google.com"
-    ],
-    "expires": "Jan 24, 2027"
-  },
-  {
     "prefix": "selectedcontent-spec-disabled",
     "platforms": [
       "Linux"

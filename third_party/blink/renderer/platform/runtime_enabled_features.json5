@@ -5222,7 +5222,7 @@
     {
       // See https://chromestatus.com/feature/4811835974615040
       name: "SelectivePermissionsIntervention",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Removes the forced overflow:hidden rules on the select element's
