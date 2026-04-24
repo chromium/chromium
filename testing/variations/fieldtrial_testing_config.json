@@ -3540,6 +3540,48 @@
             ]
         }
     ],
+    "AutomatedPasswordChangeAwaitPageStability": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AwaitPageStabilityTimeout": "4s"
+                    },
+                    "enable_features": [
+                        "AwaitPageStabilityForPasswordChange"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutomatedPasswordChangeRetryPageCapture": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CapturePageContentDelay": "500ms"
+                    },
+                    "enable_features": [
+                        "RetryCapturePageContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomatedPasswordChangeWithInterruptionDetection": [
         {
             "platforms": [
