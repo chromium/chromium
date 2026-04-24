@@ -7334,7 +7334,12 @@ void Element::SetCustomElementRegistry(CustomElementRegistry* registry,
   // "explicitly_set" flag so we can ensure the registry is retained in
   // scenarios like cross document/scope adoption.
   if (registry == GetTreeScope().customElementRegistry() && !explicitly_set) {
-    EnsureRareData().ClearCustomElementRegistry();
+    // Only touch rare data if it already exists and has a registry set.
+    if (const ElementRareDataVector* data = RareData()) {
+      if (data->HasCustomElementRegistrySet()) {
+        EnsureRareData().ClearCustomElementRegistry();
+      }
+    }
   } else {
     data_ = EnsureRareData().SetCustomElementRegistry(registry);
     GetDocument().SetScopedCustomElementRegistryUsed();
