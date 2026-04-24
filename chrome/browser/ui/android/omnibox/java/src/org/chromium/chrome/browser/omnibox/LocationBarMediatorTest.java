@@ -265,6 +265,7 @@ public class LocationBarMediatorTest {
                 .doReturn(mNewTabPageDelegate)
                 .when(mLocationBarDataProvider)
                 .getNewTabPageDelegate();
+        lenient().doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         lenient().doReturn(mWebContents).when(mTab).getWebContents();
         lenient().doReturn(GURL.emptyGURL()).when(mTab).getUrl();
         lenient().doReturn(mRootView).when(mLocationBarLayout).getRootView();
@@ -904,28 +905,39 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnConfigurationChanged_qwertyKeyboard() {
-        mMediator.onUrlFocusChange(true);
-        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        Configuration newConfig = new Configuration();
-        newConfig.keyboard = Configuration.KEYBOARD_QWERTY;
-        mMediator.onConfigurationChanged(newConfig);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        Configuration config = new Configuration();
+        OmniboxFeatures.setIsDesktopModeForTesting(true); // Adopt Desktop functionality.
 
+        mMediator.beginInput(input);
+        mMediator.onConfigurationChanged(config);
+        // Do not clear focus if autocomplete is engaged (= the user has likely typed text).
+        verify(mUrlCoordinator, never()).clearFocus();
+
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.onConfigurationChanged(config);
+        // Fall back to standby state and never clear focus, allowing the user to resume session by
+        // typing.
         verify(mUrlCoordinator, never()).clearFocus();
     }
 
     @Test
     public void testOnConfigurationChanged_nonQwertyKeyboard() {
-        Configuration newConfig = new Configuration();
-        newConfig.keyboard = Configuration.KEYBOARD_NOKEYS;
-        mMediator.onConfigurationChanged(newConfig);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        Configuration config = new Configuration();
+
+        OmniboxFeatures.setIsDesktopModeForTesting(false); // non-Desktop functionality.
+        mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator, never()).clearFocus();
 
-        mMediator.onUrlFocusChange(true);
-        mMediator.onConfigurationChanged(newConfig);
+        mMediator.beginInput(input);
+        mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator, never()).clearFocus();
 
-        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.onConfigurationChanged(newConfig);
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator).clearFocus();
     }
 
@@ -1753,7 +1765,6 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         mMediator.onTouchAfterFocus();
-        verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
     }
 
     @Test
@@ -1834,7 +1845,7 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mAutocompleteCoordinator, times(2)).beginInput(captor.capture());
+        verify(mAutocompleteCoordinator).beginInput(captor.capture());
         assertEquals("test query", captor.getValue().getAutocompleteInput().getUserText());
         clearInvocations(mAutocompleteCoordinator, mUrlCoordinator);
 

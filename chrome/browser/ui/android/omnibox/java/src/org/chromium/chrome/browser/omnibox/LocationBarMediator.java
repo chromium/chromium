@@ -1270,7 +1270,10 @@ class LocationBarMediator
         // This call is permitted to happen before anyone else is activated, and
         // must be called before everyone else cleans up.
         if (hasFocus) {
-            beginOrResumeInput(/* activateNewSession= */ true);
+            // Session may be pre-focused from the NTP.
+            if (mCurrentInput == null) {
+                beginOrResumeInput(/* activateNewSession= */ true);
+            }
         } else {
             endInputInternal();
         }
@@ -1904,11 +1907,9 @@ class LocationBarMediator
      * @return Whether the Omnibox is focused on a desktop. Lens and mic buttons should be
      *     suppressed if the Omnibox is focused and the device is in desktop mode.
      */
+    @EnsuresNonNullIf("mCurrentInput")
     private boolean isUrlBarFocusedOnDesktop() {
-        if (!mUrlHasFocus && !mIsUrlFocusChangeInProgress && !mUrlFocusedWithoutAnimations) {
-            return false;
-        }
-        return OmniboxFeatures.isDesktopMode();
+        return mCurrentInput != null && OmniboxFeatures.isDesktopMode();
     }
 
     @VisibleForTesting
@@ -2314,11 +2315,16 @@ class LocationBarMediator
         // into the omnibox after it gains focus due to hardware keyboard availability and a
         // subsequent tap will hide the suggestions dropdown shown for the typed text, while keeping
         // the scrim on the web contents, which is not desirable.
-        if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) return;
+        if (mCurrentInput == null
+                || mCurrentInput.getAutocompleteState() != AutocompleteState.STANDBY) {
+            return;
+        }
+
         recordOmniboxFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD);
-        beginInput(
-                new AutocompleteInput()
-                        .setFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD));
+        mCurrentInput
+                .setFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD)
+                .setAutocompleteState(AutocompleteState.ENABLED);
+        beginOrResumeInput(/* activateNewSession= */ false);
     }
 
     // BackPressHandler implementation.
@@ -2345,11 +2351,14 @@ class LocationBarMediator
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (mUrlHasFocus
-                && mUrlFocusedWithoutAnimations
-                && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
-            // If we lose the hardware keyboard and the focus animations were not run, then the
-            // user has not typed any text, so we will just clear the focus instead.
+        // If the user previously entered the STANDBY autocomplete state (no autocompletion), e.g.
+        // by opening a NTP or by pressing physical ESC key (~desktop mode behavior) but upon
+        // configuration change we detect we're no longer in desktop mode (e.g. keyboard has been
+        // disconnected) then we can confidently state the user has typed no text and we can clear
+        // the focus.
+        if (mCurrentInput != null
+                && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY
+                && !isUrlBarFocusedOnDesktop()) {
             endInput();
         }
     }
