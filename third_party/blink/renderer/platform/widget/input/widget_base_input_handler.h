@@ -80,6 +80,9 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
   // cursor.
   bool DidChangeCursor(const ui::Cursor& cursor);
 
+  WebInputEventResult HandleTouchEvent(
+      const WebCoalescedInputEvent& coalesced_event);
+
  private:
   class HandlingState;
   struct InjectScrollGestureParams {
@@ -88,9 +91,6 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
     cc::ElementId scrollable_area_element_id;
     blink::WebInputEvent::Type type;
   };
-
-  WebInputEventResult HandleTouchEvent(
-      const WebCoalescedInputEvent& coalesced_event);
 
   // Creates and handles scroll gestures based on parameters from
   // `injected_scroll_params`. `input_event`, `original_latency_info`, and

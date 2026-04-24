@@ -271,6 +271,7 @@ WebInputEventResult WidgetBaseInputHandler::HandleTouchEvent(
 
   const WebTouchEvent touch_event =
       static_cast<const WebTouchEvent&>(input_event);
+  auto weak_self = weak_ptr_factory_.GetWeakPtr();
   for (unsigned i = 0; i < touch_event.touches_length; ++i) {
     const WebTouchPoint& touch_point = touch_event.touches[i];
     if (touch_point.state != WebTouchPoint::State::kStateStationary) {
@@ -283,6 +284,9 @@ WebInputEventResult WidgetBaseInputHandler::HandleTouchEvent(
               coalesced_event.GetPredictedEventsPointers(),
               coalesced_event.latency_info());
       widget_->client()->HandleInputEvent(coalesced_pointer_event);
+      if (!weak_self) {
+        return WebInputEventResult::kNotHandled;
+      }
     }
   }
   return widget_->client()->DispatchBufferedTouchEvents();
@@ -566,6 +570,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, &original_timestamp);
   DCHECK(found_original_component);
 
+  auto weak_self = weak_ptr_factory_.GetWeakPtr();
   gfx::PointF position = PositionInWidgetFromInputEvent(input_event);
   for (const InjectScrollGestureParams& params : injected_scroll_params) {
     // Set up a new `LatencyInfo` for the injected scroll - this is the original
@@ -658,6 +663,9 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
               std::move(done_callback));
       widget_->client()->HandleInputEvent(
           WebCoalescedInputEvent(*gesture_event, scrollbar_latency_info));
+      if (!weak_self) {
+        return;
+      }
     }
   }
 }
