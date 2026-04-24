@@ -590,7 +590,17 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
 
 class PinSetupScreenTestEnterprise : public PinSetupScreenTest {
  public:
-  PinSetupScreenTestEnterprise() { login_as_enterprise_ = true; }
+  PinSetupScreenTestEnterprise(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features)
+      : scoped_feature_list_() {
+    login_as_enterprise_ = true;
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+  PinSetupScreenTestEnterprise()
+      : PinSetupScreenTestEnterprise(
+            /*enabled_features*/ {},
+            /*disabled_features*/ {features::kManagedLocalPinAndPassword}) {}
   ~PinSetupScreenTestEnterprise() override = default;
 
   // Set PINs as allowed for unlock.
@@ -598,6 +608,9 @@ class PinSetupScreenTestEnterprise : public PinSetupScreenTest {
     PinSetupScreenTest::SetUpOnMainThread();
     SetAllowPinUnlockPolicyForEnterpriseUsers();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the screen is not shown as a main factor for enterprise users even
@@ -698,13 +711,12 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupportPasswordlessSignin,
 class PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled
     : public PinSetupScreenTestEnterprise {
  public:
-  PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled() = default;
+  PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled()
+      : PinSetupScreenTestEnterprise(
+            /*enabled_features*/ {features::kManagedLocalPinAndPassword},
+            /*disabled_features*/ {}) {}
 
   ~PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kManagedLocalPinAndPassword};
 };
 
 IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithManagedLocalPinAndPasswordEnabled,

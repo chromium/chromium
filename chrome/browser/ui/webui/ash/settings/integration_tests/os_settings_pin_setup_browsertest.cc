@@ -29,6 +29,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -170,6 +171,11 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     policies.Set("WebAuthnFactors", policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                  policy_value.Clone(),
+                 /*external_data_fetcher=*/nullptr);
+
+    policies.Set(policy::key::kAllowedLocalAuthFactors,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, policy_value.Clone(),
                  /*external_data_fetcher=*/nullptr);
 
     provider_.UpdateChromePolicy(policies);
