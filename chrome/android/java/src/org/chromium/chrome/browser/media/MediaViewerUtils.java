@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -344,7 +345,7 @@ public class MediaViewerUtils {
         return ContentResolver.SCHEME_FILE.equals(uri.getScheme());
     }
 
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
     private static int getAllowUnsafeImplicitIntentFlag() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             try {

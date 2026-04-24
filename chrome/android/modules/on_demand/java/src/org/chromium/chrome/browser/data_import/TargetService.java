@@ -9,6 +9,7 @@ import android.os.ParcelFileDescriptor;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.grpc.Context;
 import io.grpc.Status;
@@ -128,7 +129,7 @@ public class TargetService extends TargetServiceGrpc.TargetServiceImplBase {
             BrowserFileMetadata fileMetadata =
                     BrowserFileMetadata.parseFrom(request.getFileMetadata().getValue());
             fileType = fileMetadata.getFileType();
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        } catch (InvalidProtocolBufferException e) {
             responseObserver.onError(
                     new StatusRuntimeException(
                             Status.INVALID_ARGUMENT.withDescription(

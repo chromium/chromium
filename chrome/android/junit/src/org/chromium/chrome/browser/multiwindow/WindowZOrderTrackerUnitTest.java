@@ -31,6 +31,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -58,13 +59,11 @@ public class WindowZOrderTrackerUnitTest {
         ApplicationStatus.onStateChangeForTesting(mActivity2, ActivityState.CREATED);
         mTracker = new WindowZOrderTracker(mCallback);
 
-        when(mWindowAndroid1.getActivity())
-                .thenReturn(new java.lang.ref.WeakReference<>(mActivity1));
+        when(mWindowAndroid1.getActivity()).thenReturn(new WeakReference<>(mActivity1));
         when(mWindowAndroid1.getDisplay()).thenReturn(mDisplay1);
         when(mDisplay1.getDisplayId()).thenReturn(DISPLAY_ID_1);
 
-        when(mWindowAndroid2.getActivity())
-                .thenReturn(new java.lang.ref.WeakReference<>(mActivity2));
+        when(mWindowAndroid2.getActivity()).thenReturn(new WeakReference<>(mActivity2));
         when(mWindowAndroid2.getDisplay()).thenReturn(mDisplay2);
         when(mDisplay2.getDisplayId()).thenReturn(DISPLAY_ID_2);
     }

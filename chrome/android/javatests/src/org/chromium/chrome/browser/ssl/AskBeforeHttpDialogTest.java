@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import android.net.Uri;
 
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,9 +33,11 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.ssl.AskBeforeHttpDialogFacility;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -194,15 +197,14 @@ public class AskBeforeHttpDialogTest {
 
         // Close the new tab, which should bring us back to the original tab and resume the dialog.
         ChromeTabUtils.closeCurrentTab(
-                androidx.test.platform.app.InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         // Wait for the dialog to be shown again on the original tab.
         org.chromium.base.test.util.CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
-        org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter(
+        ModalDialogTestUtils.checkCurrentPresenter(
                 mActivityTestRule.getActivity().getModalDialogManager(),
-                org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.TAB);
+                ModalDialogManager.ModalDialogType.TAB);
 
         // We should not log a user decision or double count SHOW, as we treat the dialog as still
         // being present.
@@ -263,9 +265,9 @@ public class AskBeforeHttpDialogTest {
         // Wait for the dialog to be shown again.
         org.chromium.base.test.util.CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
-        org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter(
+        ModalDialogTestUtils.checkCurrentPresenter(
                 mActivityTestRule.getActivity().getModalDialogManager(),
-                org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.TAB);
+                ModalDialogManager.ModalDialogType.TAB);
 
         // Verify we navigated to the http url that is displaying the dialog
         assertEquals(httpUrl, finalPage.getTab().getUrl().getSpec());
@@ -291,8 +293,7 @@ public class AskBeforeHttpDialogTest {
 
         // Close the tab.
         ChromeTabUtils.closeCurrentTab(
-                androidx.test.platform.app.InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         histogramWatcher.assertExpected();
     }

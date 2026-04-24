@@ -136,7 +136,7 @@ public class VirtualKeyboardResizeTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    private void assertWaitForVisualViewportHeight(Matcher<java.lang.Double> matcher) {
+    private void assertWaitForVisualViewportHeight(Matcher<Double> matcher) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {

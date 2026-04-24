@@ -14,6 +14,8 @@ import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.Metadata;
 import io.grpc.Server;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.ServerInterceptors;
 import io.grpc.binder.AndroidComponentAddress;
@@ -178,10 +180,10 @@ public class DataImporterServiceImpl extends SplitCompatService.Impl {
                 ParcelableUtils.metadataKey(PFD_KEY, ParcelFileDescriptor.CREATOR);
 
         @Override
-        public <ReqT, RespT> io.grpc.ServerCall.Listener<ReqT> interceptCall(
-                io.grpc.ServerCall<ReqT, RespT> call,
-                io.grpc.Metadata headers,
-                io.grpc.ServerCallHandler<ReqT, RespT> next) {
+        public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
+                ServerCall<ReqT, RespT> call,
+                Metadata headers,
+                ServerCallHandler<ReqT, RespT> next) {
             Context context = Context.current();
             if (headers.containsKey(PFD_METADATA_KEY)) {
                 context = context.withValue(PFD_CONTEXT_KEY, headers.get(PFD_METADATA_KEY));

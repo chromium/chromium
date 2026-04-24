@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -131,7 +132,7 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(mResources).when(mContext).getResources();
         doReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET - 1)
                 .when(mResources)
-                .getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
+                .getInteger(R.integer.min_screen_width_bucket);
         Assert.assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
     }
 

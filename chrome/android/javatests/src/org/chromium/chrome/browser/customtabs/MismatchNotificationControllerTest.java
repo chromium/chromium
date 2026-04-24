@@ -171,36 +171,21 @@ public class MismatchNotificationControllerTest {
         // Verify that the bottom sheet is displayed
         onView(
                         allOf(
-                                withId(
-                                        org.chromium.chrome.browser.ui.signin.R.id
-                                                .account_picker_header_title),
-                                withParent(
-                                        withId(
-                                                org.chromium.chrome.browser.ui.signin.R.id
-                                                        .account_picker_state_collapsed))))
+                                withId(R.id.account_picker_header_title),
+                                withParent(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
         onView(
                         allOf(
-                                withId(
-                                        org.chromium.chrome.browser.ui.signin.R.id
-                                                .account_picker_header_subtitle),
-                                withParent(
-                                        withId(
-                                                org.chromium.chrome.browser.ui.signin.R.id
-                                                        .account_picker_state_collapsed))))
+                                withId(R.id.account_picker_header_subtitle),
+                                withParent(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
         onView(withText(TestAccounts.ACCOUNT1.getFullName())).check(matches(isDisplayed()));
 
         // Accept sign in
         onView(
                         allOf(
-                                withId(
-                                        org.chromium.chrome.browser.ui.signin.R.id
-                                                .account_picker_continue_as_button),
-                                withParent(
-                                        withId(
-                                                org.chromium.chrome.browser.ui.signin.R.id
-                                                        .account_picker_state_collapsed))))
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed))))
                 .perform(click());
 
         mSigninTestRule.completeDeviceLockIfOnAutomotive();

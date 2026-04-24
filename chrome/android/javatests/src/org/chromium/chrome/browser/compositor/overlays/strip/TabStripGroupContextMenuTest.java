@@ -568,9 +568,7 @@ public class TabStripGroupContextMenuTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(
-                                org.chromium.chrome.tab_ui.R.plurals
-                                        .move_group_to_another_window_context_menu_item,
-                                2);
+                                R.plurals.move_group_to_another_window_context_menu_item, 2);
 
         // Click on "Move tab to other window" to open a submenu.
         onView(withText(moveToAnotherWindow)).perform(click());

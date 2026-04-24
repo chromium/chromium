@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,8 +56,8 @@ public class BottomSheetManagerUnitTest {
     @Mock private BottomSheetContent mSheetContent;
 
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
-    private final org.chromium.base.supplier.SettableMonotonicObservableSupplier<Boolean>
-            mOmniboxFocusStateSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
+            ObservableSuppliers.createMonotonic();
     private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
             ObservableSuppliers.createNullable();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =

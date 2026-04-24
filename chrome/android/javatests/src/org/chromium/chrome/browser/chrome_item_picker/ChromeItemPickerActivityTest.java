@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
@@ -28,6 +29,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
@@ -62,8 +64,7 @@ public class ChromeItemPickerActivityTest {
         // Wait until the TabListEditorLayout is present.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    android.view.View listEditorLayout =
-                            activity.findViewById(org.chromium.chrome.tab_ui.R.id.selectable_list);
+                    View listEditorLayout = activity.findViewById(R.id.selectable_list);
                     Criteria.checkThat(
                             "TabListEditorLayout must be present.",
                             listEditorLayout,
@@ -75,8 +76,7 @@ public class ChromeItemPickerActivityTest {
                     // Get the TabListEditorLayout background, which should reflect the theme color
                     // setfor the item picker (DecorView is now transparent to allow the paused
                     // Activity underneath to be visible).
-                    android.view.View listEditorLayout =
-                            activity.findViewById(org.chromium.chrome.tab_ui.R.id.selectable_list);
+                    View listEditorLayout = activity.findViewById(R.id.selectable_list);
                     assertNotNull("TabListEditorLayout must be present.", listEditorLayout);
 
                     Drawable background = listEditorLayout.getBackground();

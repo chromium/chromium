@@ -869,8 +869,7 @@ public class NewTabPageTest {
         View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
-                        .findViewById(
-                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
+                        .findViewById(R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
         verifyComposeplateUrlNavigation();
     }
@@ -887,8 +886,7 @@ public class NewTabPageTest {
         View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
-                        .findViewById(
-                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
+                        .findViewById(R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
         mOmnibox.checkFocus(true);
     }
@@ -906,8 +904,7 @@ public class NewTabPageTest {
         View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
-                        .findViewById(
-                                org.chromium.chrome.browser.composeplate.R.id.composeplate_view)
+                        .findViewById(R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
         verifyComposeplateUrlNavigation();
     }
@@ -931,8 +928,7 @@ public class NewTabPageTest {
     private void verifyMostVisitedTileMargin() {
         Resources res = mActivityTestRule.getActivity().getResources();
         View ntpLayout = mNtp.getLayout();
-        View mvTilesContainer =
-                ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
+        View mvTilesContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
 
         int expectedMvtLateralMargin =
                 res.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.accessibility_annotator.first_run;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -72,7 +73,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     }
 
     @Override
-    public @Nullable String getSheetContentDescription(android.content.Context context) {
+    public @Nullable String getSheetContentDescription(Context context) {
         // TODO(crbug.com/498909675): Replace with specific string id once implemented.
         return context.getString(R.string.accessibility_partial_custom_tab_bottom_sheet);
     }

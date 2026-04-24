@@ -49,6 +49,7 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_NEW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.RectF;
 import android.view.Surface;
 import android.view.View;
@@ -148,7 +149,7 @@ public class ManualFillingControllerTest {
     @Mock private Profile.Natives mProfileJniMock;
     @Mock private ContentView mMockContentView;
     @Mock private TabModelSelector mMockTabModelSelector;
-    @Mock private android.content.res.Resources mMockResources;
+    @Mock private Resources mMockResources;
     @Mock private KeyboardAccessoryCoordinator mMockKeyboardAccessory;
     @Mock private AccessorySheetCoordinator mMockAccessorySheet;
     @Mock private CompositorViewHolder mMockCompositorViewHolder;

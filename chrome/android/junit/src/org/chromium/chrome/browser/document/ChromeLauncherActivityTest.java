@@ -16,6 +16,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -33,6 +34,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -105,10 +107,8 @@ public class ChromeLauncherActivityTest {
         }
 
         @Override
-        protected void onApplyThemeResource(
-                android.content.res.Resources.Theme theme, int resid, boolean first) {
-            super.onApplyThemeResource(
-                    theme, org.chromium.chrome.R.style.Theme_Chromium_Activity, first);
+        protected void onApplyThemeResource(Resources.Theme theme, int resid, boolean first) {
+            super.onApplyThemeResource(theme, R.style.Theme_Chromium_Activity, first);
         }
     }
 

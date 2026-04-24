@@ -111,8 +111,7 @@ public class FamilyLinkControlsTest {
                                 withText(
                                         containsString(
                                                 settingsActivity.getString(
-                                                        org.chromium.chrome.test.R.string
-                                                                .managed_by_your_parent)))));
+                                                        R.string.managed_by_your_parent)))));
         settingsActivity.finish();
     }
 

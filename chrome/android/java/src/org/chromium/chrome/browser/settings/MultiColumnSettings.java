@@ -337,8 +337,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         int headerWidth =
                 resources.getDimensionPixelSize(
                         screenWidthDp >= WIDE_HEADER_SCREEN_WIDTH_DP
-                                ? org.chromium.chrome.R.dimen.settings_wide_header_width
-                                : org.chromium.chrome.R.dimen.settings_narrow_header_width);
+                                ? R.dimen.settings_wide_header_width
+                                : R.dimen.settings_narrow_header_width);
 
         boolean menuLayoutUpdated = mSlideable != getSlidingPaneLayout().isSlideable();
         mSlideable = getSlidingPaneLayout().isSlideable();

@@ -107,8 +107,7 @@ public final class ToolbarSecurityIconTest {
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
-        org.chromium.chrome.browser.toolbar.LocationBarModelJni.setInstanceForTesting(
-                mLocationBarModelJni);
+        LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
 
         GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(exampleUrl)

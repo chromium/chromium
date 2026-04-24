@@ -2257,7 +2257,7 @@ public class AutofillProfilesFragmentTest {
                 .show(
                         sSettingsActivityTestRule.getActivity(),
                         ContextUtils.getApplicationContext()
-                                .getString(org.chromium.chrome.R.string.help_context_autofill),
+                                .getString(R.string.help_context_autofill),
                         /* url= */ null);
     }
 }

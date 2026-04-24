@@ -182,9 +182,7 @@ public class NewTabPage
     private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
     private boolean mIsUseEdgeToEdgeForCustomizedTheme;
 
-    private NtpCustomizationConfigManager.@org.chromium.build.annotations.Nullable
-            HomepageStateListener
-            mHomepageStateListener;
+    private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     // A flag to use light tint on toolbar and status bar icons. The light tint isn't applied on
     // tablet mode.

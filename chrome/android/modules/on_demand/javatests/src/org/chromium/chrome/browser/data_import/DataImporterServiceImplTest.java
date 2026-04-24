@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.ParcelFileDescriptor;
@@ -22,6 +23,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.binder.AndroidComponentAddress;
 import io.grpc.binder.BinderChannelBuilder;
 import io.grpc.stub.MetadataUtils;
 
@@ -58,9 +60,9 @@ public class DataImporterServiceImplTest {
         Intent intent = new Intent(appContext, DataImporterService.class);
         // ServiceTestRule will start the service and keep it running.
         mServiceTestRule.bindService(intent);
-        io.grpc.binder.AndroidComponentAddress address =
-                io.grpc.binder.AndroidComponentAddress.forComponent(
-                        new android.content.ComponentName(appContext, DataImporterService.class));
+        AndroidComponentAddress address =
+                AndroidComponentAddress.forComponent(
+                        new ComponentName(appContext, DataImporterService.class));
         mChannel = BinderChannelBuilder.forAddress(address, appContext).build();
         mStub = TargetServiceGrpc.newBlockingStub(mChannel);
     }
@@ -90,9 +92,9 @@ public class DataImporterServiceImplTest {
         // because we'll make the next onBind return null.
         DataImporterServiceImpl.setFailNextOnBindForTesting(true);
         Context appContext = ApplicationProvider.getApplicationContext();
-        io.grpc.binder.AndroidComponentAddress address =
-                io.grpc.binder.AndroidComponentAddress.forComponent(
-                        new android.content.ComponentName(appContext, DataImporterService.class));
+        AndroidComponentAddress address =
+                AndroidComponentAddress.forComponent(
+                        new ComponentName(appContext, DataImporterService.class));
         ManagedChannel newChannel = BinderChannelBuilder.forAddress(address, appContext).build();
         try {
             TargetServiceGrpc.TargetServiceBlockingStub newStub =

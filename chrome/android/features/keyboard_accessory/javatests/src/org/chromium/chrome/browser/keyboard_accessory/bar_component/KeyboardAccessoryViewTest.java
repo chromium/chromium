@@ -49,6 +49,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -1176,7 +1177,7 @@ public class KeyboardAccessoryViewTest {
 
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
+        assertEquals(Gravity.LEFT | Gravity.TOP, params.gravity);
         assertEquals(verticalOffset, params.topMargin);
         assertEquals(0, view.getPaddingTop());
         assertEquals(
@@ -1209,7 +1210,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(topNotchStyle));
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
+        assertEquals(Gravity.LEFT | Gravity.TOP, params.gravity);
         assertEquals(verticalOffset, params.topMargin);
         assertEquals(0, view.getPaddingBottom());
         assertEquals(

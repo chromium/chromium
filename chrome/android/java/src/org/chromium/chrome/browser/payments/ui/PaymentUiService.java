@@ -71,6 +71,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PayerErrors;
+import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetails;
@@ -218,13 +219,15 @@ public class PaymentUiService
 
         /**
          * Called when the shipping address has changed by the user.
+         *
          * @param address The changed shipping address.
          */
-        void onShippingAddressChange(org.chromium.payments.mojom.PaymentAddress address);
+        void onShippingAddressChange(PaymentAddress address);
 
         /**
          * Called when the Payment UI service quits with an error. The observer should stop
          * referencing the Payment UI service.
+         *
          * @param error The diagnostic message that's exposed to developers.
          */
         void onUiServiceError(String error);

@@ -12,6 +12,7 @@ import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.browser.customtabs.ExperimentalPrefetch;
 import androidx.browser.customtabs.PrefetchOptions;
 
 import org.chromium.build.annotations.Initializer;
@@ -75,7 +76,7 @@ public class CustomTabsConnectionServiceImpl extends SplitCompatCustomTabsServic
     }
 
     @Override
-    @androidx.browser.customtabs.ExperimentalPrefetch
+    @ExperimentalPrefetch
     protected void prefetch(
             CustomTabsSessionToken sessionToken, List<Uri> urls, PrefetchOptions options) {
         if (!isFirstRunDone()) return;

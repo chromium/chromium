@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
 import org.junit.Before;
@@ -75,7 +76,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Mock private TabListEditorController mTabListEditorController;
     @Mock private TabContentManager mTabContentManager;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<android.graphics.Bitmap>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
 
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
 

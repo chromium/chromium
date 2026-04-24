@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,6 +64,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests Android printing. TODO(cimamoglu): Add a test with cancellation. TODO(cimamoglu): Add a
@@ -440,8 +442,8 @@ public class PrintingControllerTest {
                     assertTrue("Should be a native page.", currentTab.isNativePage());
                     assertFalse(
                             "Should return false to indicate the print is not allowed (by showing a"
-                                + " toast).",
-                            cta.onMenuOrKeyboardAction(org.chromium.chrome.R.id.print_id, false));
+                                    + " toast).",
+                            cta.onMenuOrKeyboardAction(R.id.print_id, false));
                 });
 
         ArgumentCaptor<Toast> toastCaptor = ArgumentCaptor.forClass(Toast.class);
@@ -605,8 +607,7 @@ public class PrintingControllerTest {
         WebPageStation page = mActivityTestRule.startOnUrl(URL);
 
         // Used in our callback to verify that cleanup occurred
-        final java.util.concurrent.atomic.AtomicBoolean called =
-                new java.util.concurrent.atomic.AtomicBoolean(false);
+        final AtomicBoolean called = new AtomicBoolean(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

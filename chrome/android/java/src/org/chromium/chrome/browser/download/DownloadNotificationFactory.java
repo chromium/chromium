@@ -257,9 +257,8 @@ public final class DownloadNotificationFactory {
                     contentText =
                             resources.getString(
                                     R.string.download_notification_completed_with_size,
-                                    org.chromium.components.browser_ui.util.DownloadUtils
-                                            .getStringForBytes(
-                                                    context, downloadUpdate.getTotalBytes()));
+                                    DownloadUtils.getStringForBytes(
+                                            context, downloadUpdate.getTotalBytes()));
                 } else {
                     contentText = resources.getString(R.string.download_notification_completed);
                 }

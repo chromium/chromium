@@ -55,6 +55,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.TimeoutException;
 
 /**
  * TestRule for permissions UI testing on Android.
@@ -647,7 +648,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
-            throws java.util.concurrent.TimeoutException {
+            throws TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
         TouchCommon.singleClickView(getActivityTab().getView());
     }

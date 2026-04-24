@@ -231,7 +231,7 @@ public class ModalDialogViewRenderTest {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 /* forceWrapContentHeight= */ true);
-        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        final var paragraphs = new ArrayList<CharSequence>();
         paragraphs.add(TextUtils.join("\n", Collections.nCopies(100, "Message")));
         createModel(
                 mModelBuilder
@@ -259,7 +259,7 @@ public class ModalDialogViewRenderTest {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 /* forceWrapContentHeight= */ true);
-        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        final var paragraphs = new ArrayList<CharSequence>();
         paragraphs.add(paragraph1);
         paragraphs.add(paragraph2);
         createModel(
@@ -641,7 +641,7 @@ public class ModalDialogViewRenderTest {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 /* forceWrapContentHeight= */ true);
-        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        final var paragraphs = new ArrayList<CharSequence>();
         paragraphs.add(TextUtils.join("\n", Collections.nCopies(10, "Message")));
         createModel(
                 mModelBuilder
@@ -665,7 +665,7 @@ public class ModalDialogViewRenderTest {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
                 /* forceWrapContentHeight= */ false);
-        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        final var paragraphs = new ArrayList<CharSequence>();
         paragraphs.add(TextUtils.join("\n", Collections.nCopies(50, "Message")));
         createModel(
                 mModelBuilder

@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -146,7 +147,7 @@ public class TabObserverTest {
         final String url = "about:blank";
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sTab.loadUrl(new org.chromium.content_public.browser.LoadUrlParams(url));
+                    sTab.loadUrl(new LoadUrlParams(url));
                 });
 
         urlUpdatedHelper.waitForCallback(callCount);

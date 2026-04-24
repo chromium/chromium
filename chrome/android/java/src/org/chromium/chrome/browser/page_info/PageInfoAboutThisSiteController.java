@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -218,7 +220,7 @@ public class PageInfoAboutThisSiteController {
         SiteInfo info = null;
         try {
             info = SiteInfo.parseFrom(result);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        } catch (InvalidProtocolBufferException e) {
             Log.e(TAG, "Could not parse proto: %s", e);
             assert false;
         }

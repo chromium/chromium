@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -115,7 +116,7 @@ public class PinnedTabStripItemViewTest {
     public void testSetTrailingIcon() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Drawable drawable = new ColorDrawable(android.graphics.Color.RED);
+                    Drawable drawable = new ColorDrawable(Color.RED);
                     mView.setTrailingIcon(drawable);
                     ImageView trailingIcon = mView.findViewById(R.id.trailing_icon);
                     assertEquals(drawable, trailingIcon.getDrawable());

@@ -751,9 +751,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             assumeNonNull(appHeaderState);
             layoutParams.topMargin = appHeaderState.getCaptionControlsTopOffset();
         } else {
-            layoutParams.addRule(
-                    RelativeLayout.BELOW,
-                    org.chromium.chrome.browser.web_app_header.R.id.web_app_header_layout);
+            layoutParams.addRule(RelativeLayout.BELOW, R.id.web_app_header_layout);
             layoutParams.topMargin = 0;
         }
 
@@ -789,9 +787,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mWebAppHeaderLayoutCoordinator =
                     new WebAppHeaderLayoutCoordinator(
                             mActivity,
-                            mActivity.findViewById(
-                                    org.chromium.chrome.browser.web_app_header.R.id
-                                            .web_app_header_layout),
+                            mActivity.findViewById(R.id.web_app_header_layout),
                             desktopWindowStateManager,
                             mActivityTabProvider.asObservable(),
                             mWebAppThemeColorProvider.get(),

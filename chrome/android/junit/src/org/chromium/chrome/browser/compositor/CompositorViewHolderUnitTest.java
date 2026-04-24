@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.IBinder;
@@ -74,6 +75,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -179,7 +181,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private ToolbarControlContainer mControlContainer;
     @Mock private View mContainerView;
-    @Mock private android.content.res.Resources mResources;
+    @Mock private Resources mResources;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
     @Mock private CompositorView mCompositorView;
@@ -1221,7 +1223,7 @@ public class CompositorViewHolderUnitTest {
     public void testAccessibilityNode_boundsAreCorrect() {
         mContext.getResources().getDisplayMetrics().density = 1.375f;
 
-        var virtualView = mock(org.chromium.chrome.browser.layouts.components.VirtualView.class);
+        var virtualView = mock(VirtualView.class);
         // Values in this test case are real numbers captured from clank running
         // in a maximized window.
         RectF dpRect = new RectF(100.36364f, 2.18182f, 337.36365f, 42.18182f);
@@ -1235,8 +1237,7 @@ public class CompositorViewHolderUnitTest {
         when(virtualView.getAccessibilityDescription()).thenReturn("test-node");
         doAnswer(
                         invocation -> {
-                            List<org.chromium.chrome.browser.layouts.components.VirtualView> list =
-                                    invocation.getArgument(0);
+                            List<VirtualView> list = invocation.getArgument(0);
                             list.add(virtualView);
                             return null;
                         })

@@ -63,7 +63,7 @@ public class AutofillTravelFragmentTest {
     public void testHelpMenuTriggersAutofillHelp() {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withId(org.chromium.chrome.test.R.id.menu_id_targeted_help)).perform(click());
+        onView(withId(R.id.menu_id_targeted_help)).perform(click());
 
         verify(mHelpAndFeedbackLauncher)
                 .show(

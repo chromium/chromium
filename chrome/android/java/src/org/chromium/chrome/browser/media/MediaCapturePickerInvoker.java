@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.FragmentActivity;
@@ -40,8 +41,7 @@ public class MediaCapturePickerInvoker {
         MediaCapturePickerDelegate impl =
                 ServiceLoaderUtil.maybeCreate(MediaCapturePickerDelegate.class);
         if (impl != null) {
-            android.content.Intent intent =
-                    impl.createScreenCaptureIntent(context, params, delegate);
+            Intent intent = impl.createScreenCaptureIntent(context, params, delegate);
             if (intent != null) {
                 Activity activity = ContextUtils.activityFromContext(context);
                 // We should always get a non-null ChromeActivity which is a FragmentActivity.

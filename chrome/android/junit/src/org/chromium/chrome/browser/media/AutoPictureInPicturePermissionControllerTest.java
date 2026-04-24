@@ -398,8 +398,7 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     private ButtonCompat findButton(AutoPipPermissionDialogView view, String text) {
-        ViewGroup buttonContainer =
-                view.findViewById(org.chromium.chrome.R.id.auto_pip_button_container);
+        ViewGroup buttonContainer = view.findViewById(R.id.auto_pip_button_container);
         for (int i = 0; i < buttonContainer.getChildCount(); i++) {
             ButtonCompat button = (ButtonCompat) buttonContainer.getChildAt(i);
             if (text.equals(button.getText())) {

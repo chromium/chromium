@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,7 +289,7 @@ public class SplashController extends CustomTabTabObserver
         // When in desktop windowing mode (where Activities have a border and caption bar), we've
         // got to update the task description for convertFromTranslucent to take effect. This was
         // fixed in Android 16, see https://crbug.com/390368429.
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             mActivity.setTaskDescription(new ActivityManager.TaskDescription());
         }
 

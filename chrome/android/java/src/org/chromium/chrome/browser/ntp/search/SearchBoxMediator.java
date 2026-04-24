@@ -60,9 +60,7 @@ class SearchBoxMediator implements DestroyObserver {
         mTransitionEndOffset =
                 !isTablet
                         ? context.getResources()
-                                .getDimensionPixelSize(
-                                        org.chromium.chrome.R.dimen
-                                                .ntp_search_box_transition_end_offset)
+                                .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -92,9 +90,7 @@ class SearchBoxMediator implements DestroyObserver {
 
     void setSearchEngineIcon(StatusProperties.@Nullable StatusIconResource newIcon) {
         if (newIcon == null) {
-            mModel.set(
-                    SearchBoxProperties.DSE_ICON_RESOURCE_ID,
-                    org.chromium.chrome.R.drawable.ic_search_24dp);
+            mModel.set(SearchBoxProperties.DSE_ICON_RESOURCE_ID, R.drawable.ic_search_24dp);
             return;
         }
 

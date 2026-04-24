@@ -32,6 +32,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.touch_selection.SelectionEventType;
 
 /** Tests the Related Searches Feature of Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -355,15 +356,9 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
                 () -> {
                     SelectionClient selectionClient = mManager.getContextualSearchSelectionClient();
                     selectionClient.onSelectionEvent(
-                            org.chromium.ui.touch_selection.SelectionEventType
-                                    .SELECTION_HANDLE_DRAG_STARTED,
-                            333,
-                            450);
+                            SelectionEventType.SELECTION_HANDLE_DRAG_STARTED, 333, 450);
                     selectionClient.onSelectionEvent(
-                            org.chromium.ui.touch_selection.SelectionEventType
-                                    .SELECTION_HANDLE_DRAG_STOPPED,
-                            303,
-                            450);
+                            SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 303, 450);
                 });
         assertPanelClosedOrUndefined();
 

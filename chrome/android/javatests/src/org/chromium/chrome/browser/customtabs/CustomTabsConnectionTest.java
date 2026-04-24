@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -1007,7 +1008,7 @@ public class CustomTabsConnectionTest {
     public void testMaybeAddAdditionalContentExtrasToOutboundIntent() {
         Intent outboundIntent = new Intent();
         BrowserServicesIntentDataProvider browserServicesIntentDataProvider =
-                org.mockito.Mockito.mock(BrowserServicesIntentDataProvider.class);
+                Mockito.mock(BrowserServicesIntentDataProvider.class);
         mCustomTabsConnection.maybeAddAdditionalContentExtrasToOutboundIntent(
                 () -> null, browserServicesIntentDataProvider, outboundIntent, 1);
 

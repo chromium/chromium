@@ -29,6 +29,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -53,7 +54,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import java.util.Collections;
 import java.util.List;
 
-@RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ChromeTabbedOnDragListenerUnitTest {
     private static final int SOURCE_INSTANCE_ID = 1;
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();

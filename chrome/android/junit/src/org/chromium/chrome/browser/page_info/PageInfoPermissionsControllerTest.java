@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
@@ -67,7 +68,7 @@ public class PageInfoPermissionsControllerTest {
 
         when(mRowView.getContext()).thenReturn(mContext);
         when(mContext.getResources())
-                .thenReturn(org.chromium.base.ContextUtils.getApplicationContext().getResources());
+                .thenReturn(ContextUtils.getApplicationContext().getResources());
         when(mMainController.getURL()).thenReturn(new GURL("https://example.com"));
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
 

@@ -125,7 +125,7 @@ public class GetDetailsConverter {
         result.type = convertItemType(item.getString(KEY_TYPE));
         String iconUrl = item.getString(KEY_ICON_URL);
         if (iconUrl != null) {
-            org.chromium.url.mojom.Url url = new Url();
+            Url url = new Url();
             url.url = iconUrl;
             result.iconUrls = new Url[] {url};
         } else {

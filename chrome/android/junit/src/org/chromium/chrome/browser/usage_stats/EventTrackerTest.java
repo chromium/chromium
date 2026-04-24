@@ -38,12 +38,7 @@ public class EventTrackerTest {
     @Mock private UsageStatsBridge mBridge;
 
     @Captor
-    private ArgumentCaptor<
-                    Callback<
-                            List<
-                                    org.chromium.chrome.browser.usage_stats.WebsiteEventProtos
-                                            .WebsiteEvent>>>
-            mLoadCallbackCaptor;
+    private ArgumentCaptor<Callback<List<WebsiteEventProtos.WebsiteEvent>>> mLoadCallbackCaptor;
 
     @Captor private ArgumentCaptor<Callback<Boolean>> mWriteCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteCallbackCaptor;

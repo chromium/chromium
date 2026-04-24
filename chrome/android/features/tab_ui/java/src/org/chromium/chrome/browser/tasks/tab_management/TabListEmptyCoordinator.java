@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessag
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
@@ -96,9 +97,7 @@ class TabListEmptyCoordinator {
 
         // Initialize empty state resource.
         mEmptyView =
-                (ViewGroup)
-                        android.view.LayoutInflater.from(mContext)
-                                .inflate(R.layout.empty_state_view, null);
+                (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.empty_state_view, null);
 
         mEmptyStateHeading = mEmptyView.findViewById(R.id.empty_state_text_title);
         mEmptyStateSubheading = mEmptyView.findViewById(R.id.empty_state_text_description);

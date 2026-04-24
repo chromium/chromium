@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.Backgr
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -94,6 +95,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for {@link CustomTabIntentDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -2564,7 +2566,7 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
 
         Intent outboundIntent = new Intent();
-        java.util.function.Supplier<org.chromium.chrome.browser.tab.Tab> tabProvider = () -> null;
+        Supplier<Tab> tabProvider = () -> null;
         int viewId = 123;
 
         dataProvider.maybeAddAdditionalContentExtrasToOutboundIntent(

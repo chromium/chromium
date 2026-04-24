@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -153,7 +155,7 @@ public class UsageStatsBridge {
             try {
                 WebsiteEvent event = WebsiteEvent.parseFrom(serialized);
                 events.add(event);
-            } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            } catch (InvalidProtocolBufferException e) {
                 // Consume exception for now, ignoring unparseable events.
             }
         }

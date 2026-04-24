@@ -99,7 +99,7 @@ public class CloseAllTabsDialogTest {
 
         if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -119,7 +119,7 @@ public class CloseAllTabsDialogTest {
         if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
         navigateToCloseAllTabsDialog(selector);
 
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button)).perform(click());
+        onViewWaiting(withId(R.id.negative_button)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -143,7 +143,7 @@ public class CloseAllTabsDialogTest {
 
         TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), mIsIncognito, 8);
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertUndoSnackbar(/* wasCloseAllTabsConfirmed= */ true));
@@ -161,7 +161,7 @@ public class CloseAllTabsDialogTest {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                 });
-        waitForView(withId(org.chromium.chrome.test.R.id.app_menu_list));
+        waitForView(withId(R.id.app_menu_list));
 
         // Click close all tabs.
         ThreadUtils.runOnUiThreadBlocking(

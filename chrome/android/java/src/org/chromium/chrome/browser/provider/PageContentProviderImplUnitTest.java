@@ -64,6 +64,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.TimeUnit;
@@ -104,7 +105,7 @@ public class PageContentProviderImplUnitTest {
         InnerTextBridgeJni.setInstanceForTesting(mInnerTextNatives);
         PageContentProtoProviderBridgeJni.setInstanceForTesting(mPageContentProtoProviderNatives);
         mActivityTabProvider.setForTesting(mTab);
-        org.chromium.url.GURL url = JUnitTestGURLs.GOOGLE_URL;
+        GURL url = JUnitTestGURLs.GOOGLE_URL;
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(url);

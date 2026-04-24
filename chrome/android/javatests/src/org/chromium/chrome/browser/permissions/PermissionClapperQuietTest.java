@@ -17,6 +17,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +36,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -274,7 +276,7 @@ public class PermissionClapperQuietTest {
                         String result =
                                 mPermissionRule.runJavaScriptCodeInCurrentTab(
                                         "window.promiseResolved");
-                        Criteria.checkThat(result, org.hamcrest.Matchers.is("true"));
+                        Criteria.checkThat(result, Matchers.is("true"));
                     } catch (Exception e) {
                         throw new CriteriaNotSatisfiedException(e);
                     }
@@ -495,19 +497,17 @@ public class PermissionClapperQuietTest {
 
         // Enter Tab Switcher via UI.
 
-        TabUiTestHelper.enterTabSwitcher(
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(),
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity());
+                (ChromeTabbedActivity) mPermissionRule.getActivity());
 
         onTabSwitchCallback.waitForCallback(0);
 
         histogramWatcher.assertExpected();
 
         ChromeTabUtils.switchTabInCurrentTabModel(
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity(),
-                0);
+                (ChromeTabbedActivity) mPermissionRule.getActivity(), 0);
 
         // The icon should reappear when switching back.
         waitForQuietIcon();
@@ -532,12 +532,10 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Enter Tab Switcher via UI.
-        TabUiTestHelper.enterTabSwitcher(
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
         onTabSwitchCallback.waitForCallback(0);
 
-        TabUiTestHelper.leaveTabSwitcher(
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.leaveTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
 
         // The icon should reappear when switching back.
         waitForQuietIcon();
@@ -656,7 +654,7 @@ public class PermissionClapperQuietTest {
 
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
-                (org.chromium.chrome.browser.ChromeTabbedActivity) mPermissionRule.getActivity(),
+                (ChromeTabbedActivity) mPermissionRule.getActivity(),
                 mPermissionRule.getURL(PAGE_URL),
                 /* incognito= */ false);
 

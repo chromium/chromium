@@ -130,8 +130,7 @@ public class ReaderModeManagerTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.setInstanceForTesting(
-                mDistillerTabUtilsJniMock);
+        DomDistillerTabUtilsJni.setInstanceForTesting(mDistillerTabUtilsJniMock);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(
                 DistillerHeuristicsType.ADABOOST_MODEL);

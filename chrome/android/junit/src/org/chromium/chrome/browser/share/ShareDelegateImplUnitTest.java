@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -508,8 +509,7 @@ public class ShareDelegateImplUnitTest {
 
     @Test
     public void androidShareSheetDisableNonU() {
-        Assert.assertEquals(
-                android.os.Build.VERSION.SDK_INT < 34, mShareDelegate.isSharingHubEnabled());
+        Assert.assertEquals(Build.VERSION.SDK_INT < 34, mShareDelegate.isSharingHubEnabled());
     }
 
     @Test

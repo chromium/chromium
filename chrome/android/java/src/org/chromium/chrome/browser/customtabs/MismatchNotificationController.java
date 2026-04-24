@@ -183,11 +183,10 @@ public class MismatchNotificationController
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 context.getString(
-                                        org.chromium.chrome.browser.ui.signin.R.string
-                                                .signin_account_picker_bottom_sheet_title))
+                                        R.string.signin_account_picker_bottom_sheet_title))
                         .setSubtitleString(
                                 context.getString(
-                                        org.chromium.chrome.browser.ui.signin.R.string
+                                        R.string
                                                 .signin_account_picker_bottom_sheet_benefits_subtitle))
                         .build();
         BottomSheetSigninAndHistorySyncConfig config =

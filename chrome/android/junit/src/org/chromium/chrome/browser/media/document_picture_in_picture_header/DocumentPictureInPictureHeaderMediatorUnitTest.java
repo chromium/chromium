@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -463,7 +464,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         // Capture the WebContentsObserver created by the mediator.
         // The mediator creates a new WebContentsObserver, which registers itself to the
         // WebContents.
-        var captor = org.mockito.ArgumentCaptor.forClass(WebContentsObserver.class);
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
         verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
         var observer = captor.getValue();
 

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ActionBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.AutofillProfilePayload;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -304,10 +304,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         BarItem.Type.ACTION_CHIP);
         ChipView chipView = (ChipView) viewHolder.itemView;
         viewHolder.bind(
-                new ActionBarItem(
-                        BarItem.Type.ACTION_CHIP,
-                        credmanAction,
-                        org.chromium.chrome.browser.keyboard_accessory.R.string.select_passkey),
+                new ActionBarItem(BarItem.Type.ACTION_CHIP, credmanAction, R.string.select_passkey),
                 chipView);
         chipView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -331,8 +328,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                 new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
                         generatePasswordAction,
-                        org.chromium.chrome.browser.keyboard_accessory.R.string
-                                .password_generation_accessory_button),
+                        R.string.password_generation_accessory_button),
                 view);
         view.setLayoutParams(
                 new ViewGroup.LayoutParams(

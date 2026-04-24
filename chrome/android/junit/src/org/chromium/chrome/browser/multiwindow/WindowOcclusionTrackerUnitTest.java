@@ -15,6 +15,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.Window;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,7 @@ public class WindowOcclusionTrackerUnitTest {
 
     private ActivityWindowAndroid createWindowAndroid(View view) {
         ActivityWindowAndroid window = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
-        android.view.Window androidWindow = org.mockito.Mockito.mock(android.view.Window.class);
+        Window androidWindow = org.mockito.Mockito.mock(Window.class);
         when(window.getWindow()).thenReturn(androidWindow);
         when(androidWindow.getDecorView()).thenReturn(view);
 

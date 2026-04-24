@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -269,7 +270,7 @@ public class ChromeActivityUnitTest {
         assertNotNull(result.getStructuredData());
 
         JSONObject jsonObject =
-                (JSONObject) new org.json.JSONTokener(result.getStructuredData()).nextValue();
+                (JSONObject) new JSONTokener(result.getStructuredData()).nextValue();
         var pageMetadata = jsonObject.getJSONObject("page_metadata");
         var isWorkProfile = pageMetadata.getBoolean("is_work_profile");
         var contentUri = pageMetadata.getString("content_uri");

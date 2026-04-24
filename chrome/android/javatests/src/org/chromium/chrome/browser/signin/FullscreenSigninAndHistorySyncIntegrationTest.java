@@ -509,7 +509,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and refuse.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.button_secondary)).perform(click());
+        onViewWaiting(withId(R.id.button_secondary)).perform(click());
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);

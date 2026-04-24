@@ -54,6 +54,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 
 /** Unit tests for {@link TabStripContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,9 +90,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
-        doAnswer(invocation -> java.util.Collections.emptyIterator())
-                .when((TabList) mTabModel)
-                .iterator();
+        doAnswer(invocation -> Collections.emptyIterator()).when((TabList) mTabModel).iterator();
 
         mCoordinator =
                 TabStripContextMenuCoordinator.createContextMenuCoordinator(

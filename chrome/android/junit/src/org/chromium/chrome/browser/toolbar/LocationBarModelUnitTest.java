@@ -53,7 +53,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Unit tests for the LocationBarModel. */
@@ -88,9 +90,7 @@ public class LocationBarModelUnitTest {
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
 
-    @Mock
-    private org.chromium.components.security_state.SecurityStateModel.Natives
-            mSecurityStateModelJni;
+    @Mock private SecurityStateModel.Natives mSecurityStateModelJni;
 
     @Mock private TabbedPaintPreview mTabbedPaintPreview;
 
@@ -488,8 +488,7 @@ public class LocationBarModelUnitTest {
     public void getSecurityIconResource_connectionWarning_httpsFirstWarning_returnsNoEncryption() {
         mLocationBarModel.initializeWithNative();
 
-        org.chromium.content_public.browser.WebContents webContentsMock =
-                Mockito.mock(org.chromium.content_public.browser.WebContents.class);
+        WebContents webContentsMock = Mockito.mock(WebContents.class);
         when(mRegularTabMock.getWebContents()).thenReturn(webContentsMock);
         doReturn(true).when(mRegularTabMock).isInitialized();
         doReturn(mExampleGurl)

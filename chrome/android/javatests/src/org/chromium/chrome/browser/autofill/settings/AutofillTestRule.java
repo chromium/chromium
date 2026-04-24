@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import android.content.DialogInterface;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
@@ -113,7 +114,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
                         () -> {
                             int updateCallCountBeforeButtonClick = mPreferenceUpdate.getCallCount();
                             int buttonType =
-                                    button == android.content.DialogInterface.BUTTON_POSITIVE
+                                    button == DialogInterface.BUTTON_POSITIVE
                                             ? ModalDialogProperties.ButtonType.POSITIVE
                                             : ModalDialogProperties.ButtonType.NEGATIVE;
 

@@ -238,7 +238,7 @@ public class FeedSurfaceCoordinator
         }
 
         @Override
-        public void onDraw(android.graphics.Canvas canvas) {
+        public void onDraw(Canvas canvas) {
             try (TraceEvent e = TraceEvent.scoped("Feed.RootView.onDraw")) {
                 super.onDraw(canvas);
             }

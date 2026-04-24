@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.webauth;
 
+import android.content.Context;
 import android.os.ConditionVariable;
 
 import androidx.test.filters.SmallTest;
@@ -132,7 +133,7 @@ public class GetMatchingCredentialsDelegateTest {
         mAuthenticationContextProvider =
                 new AuthenticationContextProvider() {
                     @Override
-                    public android.content.Context getContext() {
+                    public Context getContext() {
                         return ContextUtils.getApplicationContext();
                     }
 

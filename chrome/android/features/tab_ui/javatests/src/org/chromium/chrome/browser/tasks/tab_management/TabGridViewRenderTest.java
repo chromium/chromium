@@ -88,7 +88,7 @@ public class TabGridViewRenderTest {
     public void setUp() throws Exception {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
-        mActivity.setTheme(org.chromium.chrome.test.R.style.Theme_BrowserUI_DayNight);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(

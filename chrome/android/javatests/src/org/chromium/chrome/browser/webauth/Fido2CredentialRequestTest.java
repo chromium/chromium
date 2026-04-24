@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webauth;
 
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -49,6 +48,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
@@ -811,7 +811,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.attestation = org.chromium.blink.mojom.AttestationConveyancePreference.NONE;
+        customOptions.attestation = AttestationConveyancePreference.NONE;
         handleMakeCredentialRequestTestHelper(
                 customOptions, mBrowserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
         mCallback.blockUntilCalled();
@@ -828,8 +828,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.attestation =
-                org.chromium.blink.mojom.AttestationConveyancePreference.INDIRECT;
+        customOptions.attestation = AttestationConveyancePreference.INDIRECT;
         handleMakeCredentialRequestTestHelper(
                 customOptions, mBrowserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
         mCallback.blockUntilCalled();
@@ -846,7 +845,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.attestation = org.chromium.blink.mojom.AttestationConveyancePreference.DIRECT;
+        customOptions.attestation = AttestationConveyancePreference.DIRECT;
         handleMakeCredentialRequestTestHelper(
                 customOptions, mBrowserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
         mCallback.blockUntilCalled();
@@ -863,8 +862,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.attestation =
-                org.chromium.blink.mojom.AttestationConveyancePreference.ENTERPRISE;
+        customOptions.attestation = AttestationConveyancePreference.ENTERPRISE;
         handleMakeCredentialRequestTestHelper(
                 customOptions, mBrowserOptions, mOrigin, mOrigin, /* paymentOptions= */ null);
         mCallback.blockUntilCalled();

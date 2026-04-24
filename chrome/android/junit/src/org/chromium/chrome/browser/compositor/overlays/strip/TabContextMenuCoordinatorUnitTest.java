@@ -1124,8 +1124,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected text appearance ID to be set to"
                         + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
                         + " in incognito for submenu parent",
-                org.chromium.chrome.R.style
-                        .TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(0).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 2

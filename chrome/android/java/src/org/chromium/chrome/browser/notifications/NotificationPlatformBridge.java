@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -1358,7 +1359,7 @@ public class NotificationPlatformBridge {
 
         // Mark the title of the notification as being bold.
         spannableStringBuilder.setSpan(
-                new StyleSpan(android.graphics.Typeface.BOLD),
+                new StyleSpan(Typeface.BOLD),
                 0,
                 title.length(),
                 Spannable.SPAN_INCLUSIVE_INCLUSIVE);

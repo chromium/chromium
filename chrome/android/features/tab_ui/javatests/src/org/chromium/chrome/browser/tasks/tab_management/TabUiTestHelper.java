@@ -472,7 +472,7 @@ public class TabUiTestHelper {
      * @return View ID of the a nearby ancestor view.
      */
     public static int getTabSwitcherAncestorId(Context context) {
-        return org.chromium.chrome.browser.hub.R.id.hub_pane_host;
+        return R.id.hub_pane_host;
     }
 
     /**
@@ -771,8 +771,7 @@ public class TabUiTestHelper {
                         : "standard tab";
         onView(
                         allOf(
-                                isDescendantOfA(
-                                        withId(org.chromium.chrome.browser.hub.R.id.hub_toolbar)),
+                                isDescendantOfA(withId(R.id.hub_toolbar)),
                                 withContentDescription(containsString(contentDescription))))
                 .perform(click());
 

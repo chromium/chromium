@@ -90,7 +90,7 @@ public class CustomTabCookiesFetcher extends CookiesFetcher {
 
     @VisibleForTesting
     static List<File> getCctCookieFiles(File cookieDirectory) {
-        List<java.io.File> cctCookieFiles = new ArrayList<>();
+        List<File> cctCookieFiles = new ArrayList<>();
         if (!cookieDirectory.exists()) return cctCookieFiles;
 
         File[] cookieFiles = cookieDirectory.listFiles();

@@ -392,6 +392,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/page_content_annotations:factory_java",
       "//chrome/browser/prefs/android:java",
       "//chrome/browser/settings:search_java",
+      "//chrome/browser/ui/android/web_app_header:java_resources",
       "//components/credential_management/android:java",
       "//components/enterprise/client_certificates/android:browser_binding_java",
       "//components/media_router/browser/android:cast_options_provider_java",

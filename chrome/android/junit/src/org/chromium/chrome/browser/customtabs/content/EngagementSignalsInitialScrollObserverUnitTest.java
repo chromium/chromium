@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -139,7 +140,7 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
         verify(mGestureListenerManagerImpl, atLeastOnce())
                 .addListener(
                         gestureStateListenerArgumentCaptor.capture(),
-                        eq(org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE));
+                        eq(RootScrollOffsetUpdateFrequency.NONE));
         return gestureStateListenerArgumentCaptor.getValue();
     }
 

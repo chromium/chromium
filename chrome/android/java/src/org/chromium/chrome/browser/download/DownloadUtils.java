@@ -23,6 +23,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
@@ -538,8 +539,7 @@ public class DownloadUtils {
             return null;
         }
         String inferred =
-                android.webkit.MimeTypeMap.getSingleton()
-                        .getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext.toLowerCase(Locale.ROOT));
         if (!TextUtils.isEmpty(inferred) && !TextUtils.equals(inferred, originalMimeType)) {
             return inferred;
         }
