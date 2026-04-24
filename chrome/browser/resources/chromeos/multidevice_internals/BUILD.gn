@@ -88,7 +88,6 @@ js_type_check("closure_compile") {
     ":multidevice_internals",
     ":multidevice_logs_browser_proxy",
     ":multidevice_phonehub_browser_proxy",
-    ":multidevice_phonehub_browser_proxy",
     ":notification_form",
     ":notification_manager",
     ":phone_name_form",
