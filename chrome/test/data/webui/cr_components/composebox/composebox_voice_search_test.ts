@@ -804,6 +804,47 @@ suite('ComposeboxVoiceSearch', () => {
         assertTrue(finalResultFired);
         assertEquals(longTranscript, submittedResult);
       });
+
+  test(
+      'NO_MATCH error auto-closes after 24s when hasErrorTimer is true',
+      async () => {
+        // Setup.
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+        voiceSearchElement.hasErrorTimer = true;
+
+        let cancelEventFired = false;
+        voiceSearchElement.addEventListener('voice-search-cancel', () => {
+          cancelEventFired = true;
+        });
+        windowProxy.resetResolver('setTimeout');
+        mockSpeechRecognition.onnomatch!(new Event('nomatch'));
+        await microtasksFinished();
+
+        const [callback, timeoutMs] =
+            await windowProxy.whenCalled('setTimeout');
+
+        assertEquals(24000, timeoutMs);
+
+        callback();
+        await microtasksFinished();
+
+        // Assert: The voice-search-cancel event should be fired to close the
+        // UI.
+        assertTrue(cancelEventFired);
+
+        assertEquals(null, voiceSearchElement.detailedError_);
+
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.ERROR_CANCELING));
+      });
 });
 
 suite('ComposeboxVoiceSearchMetrics', () => {
