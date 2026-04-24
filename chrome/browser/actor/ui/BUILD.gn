@@ -27,7 +27,7 @@ source_set("states") {
 
   public_deps = [
     "//chrome/browser/actor:types",
-    "//components/actor/core:core",
+    "//components/actor/core",
   ]
 }
 
@@ -59,7 +59,7 @@ source_set("dom_node_geometry") {
     ":metrics",
     "//chrome/browser/actor:types",
     "//chrome/common:chrome_features",
-    "//components/actor/core:core",
+    "//components/actor/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
