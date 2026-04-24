@@ -3710,6 +3710,7 @@ if (!is_android) {
       "../browser/password_manager/password_change_from_checkup_browsertest.cc",
       "../browser/password_manager/password_manager_browsertest.cc",
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
+      "../browser/performance_manager/decorators/helpers/page_live_state_decorator_helper_browsertest.cc",
       "../browser/performance_manager/frame_node_impl_browsertest.cc",
       "../browser/performance_manager/mechanisms/page_discarder_browsertest.cc",
       "../browser/performance_manager/observers/page_load_metrics_observer_browsertest.cc",
