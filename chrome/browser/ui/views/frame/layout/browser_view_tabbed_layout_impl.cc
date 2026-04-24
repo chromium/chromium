@@ -71,13 +71,17 @@ constexpr double kVerticalTabStripOutlineFadeOnHover = 0.5;
 
 // Increases the leading or trailing exclusion padding to `minimum`.
 void IncreasePaddingToMinimum(BrowserLayoutParams& params, int minimum) {
-  if (params.leading_exclusion.content.width() > 0.0) {
-    params.leading_exclusion.horizontal_padding =
-        std::max(params.leading_exclusion.horizontal_padding,
-                 static_cast<float>(minimum));
-  } else {
+  // Default to increasing the trailing exclusion padding. On ChromeOS, the
+  // leading exclusion is sometimes used for a profile avatar while the trailing
+  // exclusion is used for the caption buttons. This keeps the padding
+  // consistent.
+  if (params.trailing_exclusion.content.width() > 0.0) {
     params.trailing_exclusion.horizontal_padding =
         std::max(params.trailing_exclusion.horizontal_padding,
+                 static_cast<float>(minimum));
+  } else {
+    params.leading_exclusion.horizontal_padding =
+        std::max(params.leading_exclusion.horizontal_padding,
                  static_cast<float>(minimum));
   }
 }

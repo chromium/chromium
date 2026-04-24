@@ -6,11 +6,17 @@
 
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 
 ProfileIndicatorIcon::ProfileIndicatorIcon() {
   // In RTL mode, the incognito icon should be looking the opposite direction.
   SetFlipCanvasOnPaintForRTLUI(true);
+
+  // In Vertical Tabs mode, this needs to paint to a layer to render over the
+  // VerticalTabStripRegionView.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 ProfileIndicatorIcon::~ProfileIndicatorIcon() = default;
