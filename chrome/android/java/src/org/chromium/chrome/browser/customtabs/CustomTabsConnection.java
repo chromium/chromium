@@ -89,7 +89,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -249,7 +248,6 @@ public class CustomTabsConnection {
 
     protected final boolean mLogRequests;
     private final AtomicBoolean mWarmupHasBeenCalled = new AtomicBoolean();
-    private final AtomicBoolean mWarmupHasBeenFinished = new AtomicBoolean();
 
     private @Nullable Callback<SessionHolder<?>> mDisconnectCallback;
 
@@ -446,11 +444,7 @@ public class CustomTabsConnection {
      * @return Whether native initialization has finished.
      */
     public boolean hasWarmUpBeenFinished() {
-        if (ChromeFeatureList.sCctFixWarmup.isEnabled()) {
-            return ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
-        } else {
-            return mWarmupHasBeenFinished.get();
-        }
+        return ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
     }
 
     /**
@@ -479,12 +473,9 @@ public class CustomTabsConnection {
         // 5. RequestThrottler first access has to be done only once.
 
         // (1)
-        final boolean fixWarmupEnabled = ChromeFeatureList.sCctFixWarmup.isEnabled();
         boolean shouldStartBrowser =
-                fixWarmupEnabled
-                        && !ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
-        boolean legacyShouldStartBrowser = !fixWarmupEnabled && !initialized;
-        if (shouldStartBrowser || legacyShouldStartBrowser) {
+                !ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
+        if (shouldStartBrowser) {
             tasks.add(
                     TaskTraits.UI_DEFAULT,
                     () -> {
@@ -493,7 +484,6 @@ public class CustomTabsConnection {
                             ChromeBrowserInitializer.getInstance()
                                     .handleSynchronousStartupWithGpuWarmUp();
                             ProcessInitializationHandler.getInstance().initNetworkChangeNotifier();
-                            if (legacyShouldStartBrowser) mWarmupHasBeenFinished.set(true);
                         }
                     });
         }
@@ -505,17 +495,6 @@ public class CustomTabsConnection {
                     () -> {
                         if (mHiddenTabHolder.hasHiddenTab()) return;
 
-                        // TODO(https://crbug.com/423415329): I'm pretty sure this is fixed, just
-                        // rolling this out with the flagged change in case it isn't fixed.
-                        if (!fixWarmupEnabled) {
-                            // Temporary fix for https://crbug.com/41362466.
-                            // TODO(lizeb): Properly fix instead of papering over the bug, this code
-                            // should not be scheduled unless startup is done. See
-                            // https://crbug.com/41362466.
-                            if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                                return;
-                            }
-                        }
                         try (TraceEvent e = TraceEvent.scoped("CreateSpareTab")) {
                             createSpareTab(ProfileManager.getLastUsedRegularProfile());
                         }
@@ -701,11 +680,9 @@ public class CustomTabsConnection {
                     doMayLaunchUrlOnUiThread(
                             lowConfidence,
                             session,
-                            uid,
                             urlString,
                             extras,
-                            otherLikelyBundles,
-                            true);
+                            otherLikelyBundles);
                 });
         return true;
     }
@@ -796,42 +773,11 @@ public class CustomTabsConnection {
     private void doMayLaunchUrlOnUiThread(
             final boolean lowConfidence,
             final SessionHolder<?> session,
-            final int uid,
             final @Nullable String urlString,
             final @Nullable Bundle extras,
-            final @Nullable List<Bundle> otherLikelyBundles,
-            boolean retryIfNotLoaded) {
+            final @Nullable List<Bundle> otherLikelyBundles) {
         ThreadUtils.assertOnUiThread();
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.mayLaunchUrlOnUiThread")) {
-            // TODO(https://crbug.com/423415329): I'm pretty sure this is fixed, just
-            // rolling this out with the flagged change in case it isn't fixed.
-            if (!ChromeFeatureList.sCctFixWarmup.isEnabled()) {
-                // doMayLaunchUrlInternal() is always called once the native level initialization is
-                // done, at least the initial profile load. However, at that stage the startup
-                // callback
-                // may not have run, which causes ProfileManager.getLastUsedRegularProfile() to
-                // throw an
-                // exception. But the tasks have been posted by then, so reschedule ourselves, only
-                // once.
-                if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                    if (retryIfNotLoaded) {
-                        PostTask.postTask(
-                                TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    doMayLaunchUrlOnUiThread(
-                                            lowConfidence,
-                                            session,
-                                            uid,
-                                            urlString,
-                                            extras,
-                                            otherLikelyBundles,
-                                            false);
-                                });
-                    }
-                    return;
-                }
-            }
-
             enableExperimentIdsIfNecessary(extras);
 
             if (lowConfidence) {
