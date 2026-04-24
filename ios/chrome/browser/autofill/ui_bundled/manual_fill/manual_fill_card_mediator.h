@@ -15,6 +15,10 @@ class CreditCard;
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace web {
+class WebState;
+}  // namespace web
+
 @protocol ManualFillContentInjector;
 @protocol ManualFillCardConsumer;
 @protocol CardListDelegate;
@@ -41,6 +45,7 @@ class PersonalDataManager;
                      reauthenticationModule:
                          (ReauthenticationModule*)reauthenticationModule
                      showAutofillFormButton:(BOOL)showAutofillFormButton
+                                   webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithCards:`.

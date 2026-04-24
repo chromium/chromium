@@ -78,10 +78,21 @@ class CreditCard;
   autofill::CreditCardAccessManager* creditCardAccessManager =
       autofillManager.GetCreditCardAccessManager();
   __weak __typeof(self) weakSelf = self;
+
+  BOOL isVirtualCard = (recordType == kVirtualCard);
   creditCardAccessManager->FetchCreditCard(
-      (recordType == kVirtualCard ? &virtualCard : &card),
+      (isVirtualCard ? &virtualCard : &card),
       base::BindOnce(^(const autofill::CreditCard& fetchedCard) {
-        [weakSelf onCreditCardFetched:fetchedCard fieldType:fieldType];
+        autofill::CreditCard resultCard = fetchedCard;
+        // The `CreditCardAccessManager` returns a card with record type
+        // `kFullServerCard` for unmasked cards. We need to force it back to
+        // `kVirtualCard` so that the iOS manual fill flow can recognize it
+        // correctly.
+        if (isVirtualCard) {
+          resultCard.set_record_type(
+              autofill::CreditCard::RecordType::kVirtualCard);
+        }
+        [weakSelf onCreditCardFetched:resultCard fieldType:fieldType];
       }));
 
   // TODO(crbug.com/40577448): closing CVC requester doesn't restore icon bar

@@ -34,16 +34,17 @@ class ManualFillVirtualCardCacheTest : public PlatformTest {
 // Tests that a card can be cached and retrieved by its GUID.
 TEST_F(ManualFillVirtualCardCacheTest, CacheAndRetrieveCard) {
   CreditCard card = GetVirtualCard();
-  std::string guid = card.guid();
+  card.set_server_id("test_server_id");
+  std::string server_id = card.server_id();
 
   // Initially, cache should be empty.
-  EXPECT_EQ(nullptr, cache()->GetUnmaskedCard(guid));
+  EXPECT_EQ(nullptr, cache()->GetUnmaskedCard(server_id));
 
   // Cache the card.
   cache()->CacheUnmaskedCard(card);
 
   // Verify retrieval.
-  const CreditCard* retrieved_card = cache()->GetUnmaskedCard(guid);
+  const CreditCard* retrieved_card = cache()->GetUnmaskedCard(server_id);
   ASSERT_NE(nullptr, retrieved_card);
   EXPECT_EQ(card.guid(), retrieved_card->guid());
   EXPECT_EQ(card.number(), retrieved_card->number());
@@ -57,20 +58,22 @@ TEST_F(ManualFillVirtualCardCacheTest, CacheIsolation) {
       ManualFillVirtualCardCache::FromWebState(&other_web_state);
 
   CreditCard card = GetVirtualCard();
+  card.set_server_id("test_server_id");
 
   // Cache in the main WebState.
   cache()->CacheUnmaskedCard(card);
 
   // Verify it is NOT available in the other WebState.
-  EXPECT_EQ(nullptr, other_cache->GetUnmaskedCard(card.guid()));
+  EXPECT_EQ(nullptr, other_cache->GetUnmaskedCard(card.server_id()));
 }
 
 // Tests that the cache is CLEARED when navigating to a new document (e.g. new
 // URL).
 TEST_F(ManualFillVirtualCardCacheTest, ClearsOnNewDocumentNavigation) {
   CreditCard card = GetVirtualCard();
+  card.set_server_id("test_server_id");
   cache()->CacheUnmaskedCard(card);
-  ASSERT_NE(nullptr, cache()->GetUnmaskedCard(card.guid()));
+  ASSERT_NE(nullptr, cache()->GetUnmaskedCard(card.server_id()));
 
   // Simulate a navigation to a new page.
   web::FakeNavigationContext context;
@@ -83,15 +86,16 @@ TEST_F(ManualFillVirtualCardCacheTest, ClearsOnNewDocumentNavigation) {
                                                                     &context);
 
   // Verify cache is cleared.
-  EXPECT_EQ(nullptr, cache()->GetUnmaskedCard(card.guid()));
+  EXPECT_EQ(nullptr, cache()->GetUnmaskedCard(card.server_id()));
 }
 
 // Tests that the cache PERSISTS when navigating within the same document (e.g.
 // anchor click).
 TEST_F(ManualFillVirtualCardCacheTest, PersistsOnSameDocumentNavigation) {
   CreditCard card = GetVirtualCard();
+  card.set_server_id("test_server_id");
   cache()->CacheUnmaskedCard(card);
-  ASSERT_NE(nullptr, cache()->GetUnmaskedCard(card.guid()));
+  ASSERT_NE(nullptr, cache()->GetUnmaskedCard(card.server_id()));
 
   // Simulate a same-document navigation (e.g. #fragment change).
   web::FakeNavigationContext context;
@@ -101,7 +105,7 @@ TEST_F(ManualFillVirtualCardCacheTest, PersistsOnSameDocumentNavigation) {
                                                                     &context);
 
   // Verify cache still exists.
-  EXPECT_NE(nullptr, cache()->GetUnmaskedCard(card.guid()));
+  EXPECT_NE(nullptr, cache()->GetUnmaskedCard(card.server_id()));
 }
 
 }  // namespace

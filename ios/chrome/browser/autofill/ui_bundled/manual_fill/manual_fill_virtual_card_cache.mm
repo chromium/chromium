@@ -14,13 +14,13 @@ ManualFillVirtualCardCache::~ManualFillVirtualCardCache() = default;
 
 void ManualFillVirtualCardCache::CacheUnmaskedCard(
     const autofill::CreditCard& card) {
-  guid_to_unmasked_card_map_[card.guid()] = card;
+  server_id_to_unmasked_card_map_[card.server_id()] = card;
 }
 
 const autofill::CreditCard* ManualFillVirtualCardCache::GetUnmaskedCard(
-    const std::string& guid) const {
-  auto it = guid_to_unmasked_card_map_.find(guid);
-  if (it != guid_to_unmasked_card_map_.end()) {
+    const std::string& server_id) const {
+  auto it = server_id_to_unmasked_card_map_.find(server_id);
+  if (it != server_id_to_unmasked_card_map_.end()) {
     return &it->second;
   }
   return nullptr;
@@ -31,7 +31,7 @@ void ManualFillVirtualCardCache::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   // Clear the sensitive cache whenever the user navigates to a new document.
   if (!navigation_context->IsSameDocument()) {
-    guid_to_unmasked_card_map_.clear();
+    server_id_to_unmasked_card_map_.clear();
   }
 }
 

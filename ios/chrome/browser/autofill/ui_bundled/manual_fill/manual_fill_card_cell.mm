@@ -630,8 +630,10 @@ CGFloat GPayIconTopAnchorOffset() {
 - (void)userDidTapCVC:(UIButton*)sender {
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
-  // For local card, insert real CVC stored.
-  if (self.card.recordType == autofill::CreditCard::RecordType::kLocalCard) {
+
+  // For cards that can be filled directly (e.g. local cards or unmasked virtual
+  // cards), insert the stored CVC.
+  if (self.card.canFillDirectly) {
     if (![self.contentInjector canUserInjectInPasswordField:NO
                                               requiresHTTPS:YES]) {
       return;

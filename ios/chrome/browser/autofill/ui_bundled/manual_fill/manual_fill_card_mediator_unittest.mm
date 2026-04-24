@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_mediator.h"
 
+#import <memory>
+
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/run_until.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -26,6 +29,14 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+
+@interface ManualFillCardItem (TestingCard)
+@property(nonatomic, readonly) ManualFillCreditCard* card;
+@end
+
+@interface ManualFillCardMediator (Testing)
+- (void)onPersonalDataChanged;
+@end
 
 using autofill::CreditCard;
 
@@ -66,7 +77,8 @@ class ManualFillCardMediatorTest : public PlatformTest {
     mediator_ = [[ManualFillCardMediator alloc]
         initWithPersonalDataManager:&test_personal_data_manager_
              reauthenticationModule:nil
-             showAutofillFormButton:NO];
+             showAutofillFormButton:NO
+                           webState:nullptr];
 
     consumer_ = OCMProtocolMock(@protocol(ManualFillCardConsumer));
     mediator_.consumer = consumer_;
@@ -98,7 +110,7 @@ class ManualFillCardMediatorTest : public PlatformTest {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- private:
+ protected:
   web::WebTaskEnvironment task_environment_;
   id consumer_;
   autofill::TestPersonalDataManager test_personal_data_manager_;
@@ -171,6 +183,7 @@ TEST_F(ManualFillCardMediatorTest,
 
   // Prepare test data.
   CreditCard card = autofill::test::GetVirtualCard();
+  card.set_server_id("test_server_id");
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
 
   // Simulate the request.
@@ -184,7 +197,7 @@ TEST_F(ManualFillCardMediatorTest,
       ManualFillVirtualCardCache::FromWebState(web_state.get());
   ASSERT_TRUE(cache);
 
-  const CreditCard* cached_card = cache->GetUnmaskedCard(card.guid());
+  const CreditCard* cached_card = cache->GetUnmaskedCard(card.server_id());
   ASSERT_TRUE(cached_card);
   EXPECT_EQ(cached_card->number(), card.number());
 }
@@ -208,6 +221,7 @@ TEST_F(ManualFillCardMediatorTest,
       profile.get(), web_state.get(), infobar_manager, /*bridge=*/nil);
 
   CreditCard card = autofill::test::GetMaskedServerCard();
+  card.set_server_id("test_server_id");
 
   [mediator()
       onFullCardRequestSucceeded:card
@@ -218,7 +232,7 @@ TEST_F(ManualFillCardMediatorTest,
       ManualFillVirtualCardCache::FromWebState(web_state.get());
 
   if (cache) {
-    EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.guid()));
+    EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.server_id()));
   }
 }
 
@@ -264,4 +278,67 @@ TEST_F(ManualFillCardMediatorTest,
 
   // Verify.
   EXPECT_OCMOCK_VERIFY(mock_delegate);
+}
+
+// Tests that the mediator uses the cached unmasked virtual card if available.
+TEST_F(ManualFillCardMediatorTest,
+       CreateManualFillCardItemsWithCachedVirtualCard) {
+  // Set up ScopedTestingWebClient with FakeWebClient.
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
+
+  // Create a REAL WebState.
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  web::WebState::CreateParams params(profile.get());
+  auto web_state = web::WebState::Create(params);
+
+  // Re-create mediator with the web_state.
+  [mediator() disconnect];
+  mediator_ = [[ManualFillCardMediator alloc]
+      initWithPersonalDataManager:&test_personal_data_manager_
+           reauthenticationModule:nil
+           showAutofillFormButton:NO
+                         webState:web_state.get()];
+  mediator_.consumer = consumer();
+
+  // Save a server card that's enrolled for virtual card.
+  CreditCard card =
+      CreateAndSaveCreditCard(kCardGuid1, /*enrolled_for_virtual_card=*/true);
+
+  // Create an unmasked virtual card and put it in the cache.
+  CreditCard unmaskedCard = CreditCard::CreateVirtualCard(card);
+  unmaskedCard.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"4234567890123456");
+  unmaskedCard.set_cvc(u"123");
+
+  ManualFillVirtualCardCache::CreateForWebState(web_state.get());
+  ManualFillVirtualCardCache::FromWebState(web_state.get())
+      ->CacheUnmaskedCard(unmaskedCard);
+
+  auto captured_card_items =
+      std::make_shared<NSArray<ManualFillCardItem*>*>(nil);
+  OCMExpect([consumer()
+      presentCards:[OCMArg checkWithBlock:^(
+                               NSArray<ManualFillCardItem*>* card_items) {
+        *captured_card_items = card_items;
+        return YES;
+      }]]);
+
+  // Trigger postCardsToConsumer by notifying personal data changed.
+  [mediator() onPersonalDataChanged];
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [captured_card_items]() { return *captured_card_items != nil; }));
+
+  EXPECT_OCMOCK_VERIFY(consumer());
+
+  EXPECT_EQ((*captured_card_items).count, 2u);
+
+  // The first item should be the virtual card.
+  // Verify it has the unmasked number and CVC.
+  EXPECT_NSEQ((*captured_card_items)[0].card.number,
+              base::SysUTF8ToNSString(kCardNumber));
+  EXPECT_NSEQ((*captured_card_items)[0].card.CVC, @"123");
+
+  // Disconnect to avoid dangling pointer to local web_state.
+  [mediator() disconnect];
 }

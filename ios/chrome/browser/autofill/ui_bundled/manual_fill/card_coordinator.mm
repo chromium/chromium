@@ -89,7 +89,9 @@
     _cardMediator = [[ManualFillCardMediator alloc]
         initWithPersonalDataManager:_personalDataManager
              reauthenticationModule:_reauthenticationModule
-             showAutofillFormButton:showAutofillFormButton];
+             showAutofillFormButton:showAutofillFormButton
+                           webState:self.browser->GetWebStateList()
+                                        ->GetActiveWebState()];
     _cardMediator.navigationDelegate = self;
     _cardMediator.contentInjector = super.injectionHandler;
     _cardMediator.consumer = _cardViewController;

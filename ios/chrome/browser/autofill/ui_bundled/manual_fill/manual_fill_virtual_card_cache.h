@@ -19,7 +19,8 @@ class ManualFillVirtualCardCache
   ~ManualFillVirtualCardCache() override;
 
   void CacheUnmaskedCard(const autofill::CreditCard& card);
-  const autofill::CreditCard* GetUnmaskedCard(const std::string& guid) const;
+  const autofill::CreditCard* GetUnmaskedCard(
+      const std::string& server_id) const;
 
  private:
   friend class web::WebStateUserData<ManualFillVirtualCardCache>;
@@ -30,7 +31,7 @@ class ManualFillVirtualCardCache
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  std::map<std::string, autofill::CreditCard> guid_to_unmasked_card_map_;
+  std::map<std::string, autofill::CreditCard> server_id_to_unmasked_card_map_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_VIRTUAL_CARD_CACHE_H_

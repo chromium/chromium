@@ -71,7 +71,6 @@ source_set("manual_fill") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model_shared",
-    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",

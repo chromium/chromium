@@ -37,7 +37,8 @@
       (creditCard.record_type() !=
        autofill::CreditCard::RecordType::kMaskedServerCard) &&
       (creditCard.record_type() !=
-       autofill::CreditCard::RecordType::kVirtualCard);
+           autofill::CreditCard::RecordType::kVirtualCard ||
+       !creditCard.cvc().empty());
 
   // Unicode characters used in card number:
   //  - 0x0020 - Space.

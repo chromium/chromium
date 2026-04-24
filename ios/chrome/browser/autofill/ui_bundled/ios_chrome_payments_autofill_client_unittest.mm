@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
@@ -787,6 +789,29 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   EXPECT_EQ(
       model->save_card_delegate()->GetSaveCreditCardOptions().source_feature,
       payments::PaymentsAutofillClient::SourceFeature::kScanCardSaveAndFill);
+}
+
+// Tests that OnCardDataAvailable populates the ManualFillVirtualCardCache.
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_CachesVirtualCard) {
+  // Create a virtual card
+  autofill::CreditCard card = autofill::test::GetVirtualCard();
+
+  autofill::FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+  options.cvc = u"123";
+
+  payments_client()->OnCardDataAvailable(options);
+
+  // Verify that the card is in the cache
+  ManualFillVirtualCardCache* cache =
+      ManualFillVirtualCardCache::FromWebState(web_state_.get());
+  ASSERT_TRUE(cache);
+
+  const autofill::CreditCard* cached_card =
+      cache->GetUnmaskedCard(card.server_id());
+  ASSERT_TRUE(cached_card);
+  EXPECT_EQ(cached_card->cvc(), u"123");
 }
 
 }  // namespace

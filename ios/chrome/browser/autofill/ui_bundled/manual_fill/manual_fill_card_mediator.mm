@@ -9,6 +9,7 @@
 #import "base/containers/to_vector.h"
 #import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,9 +18,8 @@
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
-#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
-#import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/full_card_request_result_delegate_bridge.h"
@@ -91,6 +91,9 @@ std::vector<CreditCard> FetchCards(
   // Personal data manager to be observed.
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
+  // The WebState associated with this mediator.
+  base::WeakPtr<web::WebState> _webState;
+
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
@@ -106,10 +109,12 @@ std::vector<CreditCard> FetchCards(
                     (autofill::PersonalDataManager*)personalDataManager
                      reauthenticationModule:
                          (ReauthenticationModule*)reauthenticationModule
-                     showAutofillFormButton:(BOOL)showAutofillFormButton {
+                     showAutofillFormButton:(BOOL)showAutofillFormButton
+                                   webState:(web::WebState*)webState {
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
+    _webState = webState ? webState->GetWeakPtr() : nullptr;
     _personalDataManagerObserver =
         std::make_unique<autofill::PersonalDataManagerObserverBridge>(
             _personalDataManager, self);
@@ -142,6 +147,7 @@ std::vector<CreditCard> FetchCards(
 - (void)disconnect {
   _personalDataManagerObserver = nullptr;
   _personalDataManager = nullptr;
+  _webState = nullptr;
 }
 
 #pragma mark - PersonalDataManagerObserver
@@ -174,6 +180,16 @@ std::vector<CreditCard> FetchCards(
     if (card.virtual_card_enrollment_state() ==
         CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(card);
+      if (_webState) {
+        ManualFillVirtualCardCache* cache =
+            ManualFillVirtualCardCache::FromWebState(_webState.get());
+        if (cache) {
+          if (const CreditCard* cachedCard =
+                  cache->GetUnmaskedCard(virtualCard.server_id())) {
+            virtualCard = *cachedCard;
+          }
+        }
+      }
       cardsToPresent.push_back(virtualCard);
     }
     cardsToPresent.push_back(card);
