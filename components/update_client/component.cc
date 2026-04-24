@@ -159,48 +159,59 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
         crx_component_->pk_hash, crx_component_->install_data_index,
         crx_component_->installer,
         base::BindRepeating(
-            [](base::raw_ref<Component> component, ComponentState state) {
-              component->state_hint_ = state;
+            [](base::WeakPtr<Component> component, ComponentState state) {
+              if (component) {
+                component->state_hint_ = state;
+              }
             },
-            base::raw_ref(*this)),
+            weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(&Component::AppendEvent, base::Unretained(this)),
         base::BindRepeating(
-            [](base::raw_ref<Component> component, int64_t downloaded_bytes,
+            [](base::WeakPtr<Component> component, int64_t downloaded_bytes,
                int64_t total_bytes) {
-              component->downloaded_bytes_ = downloaded_bytes;
-              component->total_bytes_ = total_bytes;
-              component->NotifyObservers();
-            },
-            base::raw_ref(*this)),
-        base::BindRepeating(
-            [](base::raw_ref<Component> component, int progress) {
-              if (progress >= 0 && progress <= 100) {
-                component->install_progress_ = progress;
+              if (component) {
+                component->downloaded_bytes_ = downloaded_bytes;
+                component->total_bytes_ = total_bytes;
+                component->NotifyObservers();
               }
-              component->NotifyObservers();
             },
-            base::raw_ref(*this)),
+            weak_ptr_factory_.GetWeakPtr()),
         base::BindRepeating(
-            [](base::raw_ref<Component> component,
-               const CrxInstaller::Result& result) {
-              component->installer_result_ = result;
-              component->error_category_ = result.result.category;
-              component->error_code_ = result.result.code;
-              component->extra_code1_ = result.result.extra;
+            [](base::WeakPtr<Component> component, int progress) {
+              if (component) {
+                if (progress >= 0 && progress <= 100) {
+                  component->install_progress_ = progress;
+                }
+                component->NotifyObservers();
+              }
             },
-            base::raw_ref(*this)),
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            [](base::WeakPtr<Component> component,
+               const CrxInstaller::Result& result) {
+              if (component) {
+                component->installer_result_ = result;
+                component->error_category_ = result.result.category;
+                component->error_code_ = result.result.code;
+                component->extra_code1_ = result.result.extra;
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()),
         crx_component_->action_handler, result.value(),
         base::BindOnce(
             base::BindOnce(
-                [](base::raw_ref<Component> component,
+                [](base::WeakPtr<Component> component,
                    base::expected<
                        base::OnceCallback<base::OnceClosure(
                            base::OnceCallback<void(const CategorizedError&)>)>,
                        CategorizedError> pipeline) {
-                  component->pipeline_ = std::move(pipeline);
-                  return true;
+                  if (component) {
+                    component->pipeline_ = std::move(pipeline);
+                    return true;
+                  }
+                  return false;
                 },
-                base::raw_ref(*this)))
+                weak_ptr_factory_.GetWeakPtr()))
             .Then(std::move(callback)));
   } else {
     pipeline_ = base::unexpected(

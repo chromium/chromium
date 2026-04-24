@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -394,6 +395,8 @@ class Component {
   // True if this component has reached a final state because all its states
   // have been handled.
   bool is_handled_ = false;
+
+  base::WeakPtrFactory<Component> weak_ptr_factory_{this};
 };
 
 using IdToComponentPtrMap = std::map<std::string, std::unique_ptr<Component>>;
