@@ -34,7 +34,10 @@ bool IsEligibleForQuarantineExclusion(NavigationHandle& navigation_handle) {
   // is exploitable by the web. "about:blank" is specifically the empty
   // blank no content page.
   const bool is_about_blank = navigation_handle.GetURL().IsAboutBlank();
-  return is_primary_main_frame && !is_about_blank;
+  // We ignore WebUI because it is a renderer designed to display browser UI and
+  // is not running web contents that have arbitrary scripts running.
+  const bool is_webui = navigation_handle.IsInitialWebUINavigation();
+  return is_primary_main_frame && !is_about_blank && !is_webui;
 }
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
