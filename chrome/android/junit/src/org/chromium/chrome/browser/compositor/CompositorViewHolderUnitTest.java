@@ -222,7 +222,7 @@ public class CompositorViewHolderUnitTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         // Setup the mock keyboard.
-        KeyboardVisibilityDelegate.setInstance(mMockKeyboard);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mMockKeyboard);
 
         mViewportInsets = ApplicationViewportInsetTracker.createForTests();
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(false);

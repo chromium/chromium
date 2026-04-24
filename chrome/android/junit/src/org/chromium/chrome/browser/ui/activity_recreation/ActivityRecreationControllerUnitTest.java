@@ -26,7 +26,6 @@ import android.os.PersistableBundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,7 +75,7 @@ public class ActivityRecreationControllerUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         ViewAndroidDelegate viewAndroidDelegate =
                 ViewAndroidDelegate.createBasicDelegate(mContentView);
-        KeyboardVisibilityDelegate.setInstance(mKeyboardVisibilityDelegate);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
         mActivityTabProvider.setForTesting(mActivityTab);
 
         doNothing().when(mToolbarManager).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
@@ -93,11 +92,6 @@ public class ActivityRecreationControllerUnitTest {
         doReturn("").when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
 
         initializeController();
-    }
-
-    @After
-    public void tearDown() {
-        KeyboardVisibilityDelegate.setInstance(null);
     }
 
     @Test

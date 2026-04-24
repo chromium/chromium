@@ -303,6 +303,7 @@ public class ToolbarManagerUnitTest {
                 ObservableSuppliers.createMonotonic();
         ManualFillingComponentSupplier.attach(unownedUserDataHost, manualFillingComponentSupplier);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         when(mInsetObserver.getSupplierForKeyboardInset())
                 .thenReturn(ObservableSuppliers.createNonNull(0));
