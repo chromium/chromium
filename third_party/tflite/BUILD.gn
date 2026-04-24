@@ -145,9 +145,7 @@ config("tflite_flags") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack",
-  ]
+  flags = [ "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack" ]
 }
 
 static_library("tflite_builtin_op_resolver_internals") {
