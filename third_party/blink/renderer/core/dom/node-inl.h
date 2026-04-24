@@ -22,6 +22,10 @@ DOMNodeId& Node::EnsureNodeID(base::PassKey<DOMNodeIds>) {
   return UnpackAndRefresh(EnsureRareData().NodeId());
 }
 
+bool Node::HasPseudoElements() const {
+  return data_ && data_->HasPseudoElements();
+}
+
 bool ContainerNode::HasRestyleFlag(DynamicRestyleFlags mask) const {
   if (const ElementRareDataVector* data = RareData()) {
     return data->HasRestyleFlag(mask);

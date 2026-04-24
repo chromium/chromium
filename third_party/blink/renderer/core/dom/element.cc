@@ -5908,8 +5908,11 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     // layout tree siblings.
     WhitespaceAttacher local_attacher;
     WhitespaceAttacher* child_attacher;
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupAfter,
-                                   local_attacher);
+    const bool has_pseudo_elements = HasPseudoElements();
+    if (has_pseudo_elements) {
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupAfter,
+                                     local_attacher);
+    }
     LayoutObject* layout_object = GetLayoutObject();
     if (layout_object || !HasDisplayContentsStyle()) {
       whitespace_attacher.DidVisitElement(this);
@@ -5923,32 +5926,38 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     }
     RebuildTransitionLayoutTree(*child_attacher);
     RebuildOverscrollAreaLayoutTree(*child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
+    if (has_pseudo_elements) {
+      RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
+    }
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
     } else {
       RebuildChildrenLayoutTrees(*child_attacher);
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockEnd,
-                                   local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineEnd,
-                                   local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineStart,
-                                   local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockStart,
-                                   local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
-                                   local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
+    if (has_pseudo_elements) {
+      RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockEnd,
+                                     local_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineEnd,
+                                     local_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineStart,
+                                     local_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockStart,
+                                     local_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
+                                     local_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
+    }
     RebuildFirstLetterLayoutTree();
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarker, *child_attacher);
-    RebuildColumnLayoutTrees(*child_attacher);
+    if (has_pseudo_elements) {
+      RebuildPseudoElementLayoutTree(kPseudoIdScrollMarker, *child_attacher);
+      RebuildColumnLayoutTrees(*child_attacher);
+    }
     ClearChildNeedsReattachLayoutTree();
   }
   DCHECK(!NeedsStyleRecalc());

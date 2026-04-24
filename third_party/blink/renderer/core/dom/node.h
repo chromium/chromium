@@ -1204,6 +1204,9 @@ class CORE_EXPORT Node : public EventTarget {
   // assignments changed, or the node got reparented by a moveBefore().
   void FlatTreeParentChanged();
 
+  // Defined in node-inl.h.
+  ALWAYS_INLINE bool HasPseudoElements() const;
+
  private:
   enum NodeFlags : uint32_t {
     // getNodeType() is called extensively. As it's called quite a bit its

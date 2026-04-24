@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -112,7 +113,20 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     pseudo_argument = pseudo_element.GetPseudoArgument();
     parent_element = DynamicTo<Element>(*node.parentNode());
     DCHECK(parent_element);
+  } else {
+    if (Node* next = FlatTreeTraversal::NextSibling(node)) {
+      return next;
+    }
+    parent_element = DynamicTo<Element>(FlatTreeTraversal::Parent(node));
+    if (!parent_element) {
+      return nullptr;
+    }
   }
+
+  if (!parent_element->HasPseudoElements()) {
+    return nullptr;
+  }
+
   switch (pseudo_id) {
     case kPseudoIdScrollMarkerGroupBefore:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdMarker)) {
@@ -185,15 +199,6 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdNone:
-      if (pseudo_id == kPseudoIdNone) {  // Not falling through
-        if (Node* next = FlatTreeTraversal::NextSibling(node)) {
-          return next;
-        }
-        parent_element = DynamicTo<Element>(FlatTreeTraversal::Parent(node));
-        if (!parent_element) {
-          return nullptr;
-        }
-      }
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return next;
       }
@@ -300,7 +305,20 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
     pseudo_argument = pseudo_element.GetPseudoArgument();
     parent_element = DynamicTo<Element>(*node.parentNode());
     DCHECK(parent_element);
+  } else {
+    if (Node* previous = FlatTreeTraversal::PreviousSibling(node)) {
+      return previous;
+    }
+    parent_element = DynamicTo<Element>(FlatTreeTraversal::Parent(node));
+    if (!parent_element) {
+      return nullptr;
+    }
   }
+
+  if (!parent_element->HasPseudoElements()) {
+    return nullptr;
+  }
+
   switch (pseudo_id) {
     case kPseudoIdScrollMarkerGroupAfter:
       if (Node* previous =
@@ -331,15 +349,6 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdNone:
-      if (pseudo_id == kPseudoIdNone) {  // Not falling through
-        if (Node* previous = FlatTreeTraversal::PreviousSibling(node)) {
-          return previous;
-        }
-        parent_element = DynamicTo<Element>(FlatTreeTraversal::Parent(node));
-        if (!parent_element) {
-          return nullptr;
-        }
-      }
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdBefore)) {
         return previous;
       }
@@ -420,7 +429,7 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
 
 Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
   const auto* current_element = DynamicTo<Element>(node);
-  if (!current_element) {
+  if (!current_element || !current_element->HasPseudoElements()) {
     return FlatTreeTraversal::LastChild(node);
   }
 
@@ -498,7 +507,7 @@ Node* LayoutTreeBuilderTraversal::Previous(const Node& node,
 
 Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   const auto* current_element = DynamicTo<Element>(node);
-  if (!current_element) {
+  if (!current_element || !current_element->HasPseudoElements()) {
     return FlatTreeTraversal::FirstChild(node);
   }
 
