@@ -632,7 +632,9 @@ void BluetoothSocketMac::OnChannelOpenComplete(
     const std::string& device_address,
     IOReturn status) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(is_connecting());
+  if (!is_connecting()) {
+    return;
+  }
 
   DVLOG(1) << device_address << " " << uuid_.canonical_value()
            << ": channel open complete.";

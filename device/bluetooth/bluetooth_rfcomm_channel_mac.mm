@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
@@ -184,8 +187,12 @@ void BluetoothRfcommChannelMac::OnChannelOpenComplete(
     DCHECK_EQ(status, kIOReturnSuccess);
   }
 
-  socket()->OnChannelOpenComplete(
-      BluetoothClassicDeviceMac::GetDeviceAddress([channel getDevice]), status);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothSocketMac::OnChannelOpenComplete,
+                                base::WrapRefCounted(socket()),
+                                BluetoothClassicDeviceMac::GetDeviceAddress(
+                                    [channel getDevice]),
+                                status));
 }
 
 void BluetoothRfcommChannelMac::OnChannelClosed(
