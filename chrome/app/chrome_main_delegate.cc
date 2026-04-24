@@ -1356,7 +1356,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // Register component_updater PathProvider after DIR_USER_DATA overridden by
   // command line flags. Maybe move the chrome PathProvider down here also?
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-                                          chrome::DIR_INTERNAL_PLUGINS,
                                           chrome::DIR_USER_DATA);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)

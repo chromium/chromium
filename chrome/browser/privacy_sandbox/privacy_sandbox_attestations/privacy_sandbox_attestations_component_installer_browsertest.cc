@@ -46,7 +46,7 @@ class PrivacySandboxAttestationsBrowserTestBase
   PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
       &mixin_host_};
 
-  // Override the user component directories that may have the downloaded
+  // Override the user component directory that may have the downloaded
   // attestation file.
   base::ScopedPathOverride user_dir_override_{
       component_updater::DIR_COMPONENT_USER};
@@ -62,12 +62,10 @@ class PrivacySandboxAttestationsBrowserTest
   ~PrivacySandboxAttestationsBrowserTest() override = default;
 
  private:
-  // Override the pre-install component directories that may have the
+  // Override the pre-install component directory that may have the
   // pre-installed attestation file.
   base::ScopedPathOverride preinstalled_dir_override_{
       component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -204,8 +202,6 @@ class PrivacySandboxAttestationPreInstallInteractionWithDownloadTest
  private:
   base::ScopedPathOverride preinstalled_dir_override_{
       component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 // If both pre-installed and downloaded attestation lists are available and they

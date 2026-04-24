@@ -76,12 +76,10 @@ IN_PROC_BROWSER_TEST_F(
     IwaKeyDistributionComponentInstallBrowserTest,
     CallComponentReadyWhenRegistrationFindsExistingComponent) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  // Override the pre-install component directory and its alternative directory
-  // so that the component update will not find the pre-loaded component.
+  // Override the pre-install component directory so that the component update
+  // will not find the pre-loaded component.
   base::ScopedPathOverride preinstalled_dir_override(
       component_updater::DIR_COMPONENT_PREINSTALLED);
-  base::ScopedPathOverride preinstalled_alt_dir_override(
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT);
 
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.0.0"),
                                                        CreateValidData()),

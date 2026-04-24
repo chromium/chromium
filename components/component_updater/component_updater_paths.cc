@@ -14,7 +14,6 @@ namespace {
 
 // This key gives the root directory of all the component installations.
 int g_components_preinstalled_root_key = -1;
-int g_components_preinstalled_root_key_alt = -1;
 int g_components_user_root_key = -1;
 
 }  // namespace
@@ -32,9 +31,6 @@ bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case DIR_COMPONENT_PREINSTALLED:
       return base::PathService::Get(g_components_preinstalled_root_key, result);
-    case DIR_COMPONENT_PREINSTALLED_ALT:
-      return base::PathService::Get(g_components_preinstalled_root_key_alt,
-                                    result);
     case DIR_COMPONENT_USER:
       return base::PathService::Get(g_components_user_root_key, result);
   }
@@ -63,23 +59,17 @@ bool PathProvider(int key, base::FilePath* result) {
 }
 
 void RegisterPathProvider(int components_preinstalled_root_key,
-                          int components_preinstalled_root_key_alt,
                           int components_user_root_key) {
   CHECK_EQ(g_components_preinstalled_root_key, -1);
-  CHECK_EQ(g_components_preinstalled_root_key_alt, -1);
   CHECK_EQ(g_components_user_root_key, -1);
   CHECK_GT(components_preinstalled_root_key, 0);
-  CHECK_GT(components_preinstalled_root_key_alt, 0);
   CHECK_GT(components_user_root_key, 0);
   CHECK(components_preinstalled_root_key < PATH_START ||
         components_preinstalled_root_key > PATH_END);
-  CHECK(components_preinstalled_root_key_alt < PATH_START ||
-        components_preinstalled_root_key_alt > PATH_END);
   CHECK(components_user_root_key < PATH_START ||
         components_user_root_key > PATH_END);
 
   g_components_preinstalled_root_key = components_preinstalled_root_key;
-  g_components_preinstalled_root_key_alt = components_preinstalled_root_key_alt;
   g_components_user_root_key = components_user_root_key;
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);
 }

@@ -181,7 +181,6 @@ void ChromeUnitTestSuite::InitializeProviders() {
   content::RegisterPathProvider();
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-                                          chrome::DIR_INTERNAL_PLUGINS,
                                           chrome::DIR_USER_DATA);
 
 #if BUILDFLAG(IS_CHROMEOS)

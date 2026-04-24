@@ -131,13 +131,10 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
       component_updater::kIwaKeyDistributionComponent};
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  // Override the pre-install component directory and its alternative directory
-  // so that the component update will not find the pre-installed key dist
-  // component.
+  // Override the pre-install component directory so that the component update
+  // will not find the pre-installed key dist component.
   base::ScopedPathOverride preinstalled_dir_override_{
       component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_P(

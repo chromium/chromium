@@ -85,9 +85,9 @@ void RegisterPathProviders() {
     ios::RegisterPathProvider();
 
     // Bundled components are not supported on ios, so DIR_USER_DATA is passed
-    // for all three arguments.
-    component_updater::RegisterPathProvider(
-        ios::DIR_USER_DATA, ios::DIR_USER_DATA, ios::DIR_USER_DATA);
+    // for both arguments.
+    component_updater::RegisterPathProvider(ios::DIR_USER_DATA,
+                                            ios::DIR_USER_DATA);
   }
 }
 

@@ -670,8 +670,6 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
       component_updater::DIR_COMPONENT_USER};
   base::ScopedPathOverride preinstalled_dir_override{
       component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,

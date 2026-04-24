@@ -364,7 +364,6 @@ class AwComponentUpdateServiceTest : public testing::Test {
     RegisterPathProvider();
     component_updater::RegisterPathProvider(
         /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
-        /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
         /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
   }
 

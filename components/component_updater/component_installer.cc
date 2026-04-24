@@ -484,14 +484,6 @@ void ComponentInstaller::StartRegistration(
       FindPreinstallation(root, registration_info)) {
   }
 
-  // If there is a distinct alternate root, check there as well, and override
-  // anything found in the basic root.
-  base::FilePath root_alternate;
-  if (base::PathService::Get(DIR_COMPONENT_PREINSTALLED_ALT, &root_alternate) &&
-      root != root_alternate &&
-      FindPreinstallation(root_alternate, registration_info)) {
-  }
-
   std::optional<base::FilePath> base_dir = GetComponentDirectory();
 
   if (!base_dir) {

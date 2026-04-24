@@ -30,8 +30,8 @@ void WebViewWebMainDelegate::BasicStartupComplete() {
   // Sets up logging so logging levels can be controlled.
   logging::InitLogging(logging::LoggingSettings());
 
-  component_updater::RegisterPathProvider(
-      base::DIR_APP_DATA, base::DIR_APP_DATA, base::DIR_APP_DATA);
+  component_updater::RegisterPathProvider(base::DIR_APP_DATA,
+                                          base::DIR_APP_DATA);
 }
 
 }  // namespace ios_web_view

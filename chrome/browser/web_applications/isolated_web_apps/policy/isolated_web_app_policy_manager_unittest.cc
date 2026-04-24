@@ -1534,8 +1534,6 @@ class IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest
 
   base::ScopedPathOverride preinstalled_dir_override_{
       component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 class IsolatedWebAppPolicyManagerOnDemandUpdatePreloadedTest
