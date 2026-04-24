@@ -4255,6 +4255,23 @@
       }
     ]
   },
+  "ONE_TIME_CODE": {
+    "en": [
+      {
+        "positive_pattern": "otp|verification.code|2fa|six.digit",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": [
+          "LABEL",
+          "NAME"
+        ],
+        "form_control_types": [
+          "INPUT_TEXT",
+          "INPUT_NUMBER"
+        ]
+      }
+    ]
+  },
   "OVERFLOW": {
     "de": [
       {

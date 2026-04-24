@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/form_parsing/loyalty_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/one_time_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
@@ -287,6 +288,13 @@ void FormFieldParser::ParseFormFields(ParsingContext& context,
   ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context, fields,
                       &IsRelevant, field_candidates);
 
+  // OTP pass.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableOneTimeCodeHeuristics)) {
+    ParseFormFieldsPass(OneTimeCodeFieldParser::Parse, context, fields,
+                        &IsRelevant, field_candidates);
+  }
+
   // IBAN pass.
   ParseFormFieldsPass(IbanFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
@@ -334,6 +342,10 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       IBAN_VALUE,
       LOYALTY_MEMBERSHIP_ID,
       MERCHANT_PROMO_CODE};
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableOneTimeCodeHeuristics)) {
+    permitted_single_field_types.insert(ONE_TIME_CODE);
+  }
   if (AddressFieldParser::IsStandaloneZipSupported(client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
@@ -396,6 +408,13 @@ void FormFieldParser::ParseSingleFields(ParsingContext& context,
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context, fields,
                       &IsRelevant, field_candidates);
+
+  // OTP pass.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableOneTimeCodeHeuristics)) {
+    ParseFormFieldsPass(OneTimeCodeFieldParser::Parse, context, fields,
+                        &IsRelevant, field_candidates);
+  }
 
   // IBAN pass.
   ParseFormFieldsPass(IbanFieldParser::Parse, context, fields, &IsRelevant,

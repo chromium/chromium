@@ -268,6 +268,35 @@ TEST_F(FormFieldParserTest, ParseFormFieldsFieldsEmailOrLoyaltyCard) {
   TestClassificationExpectations();
 }
 
+// Tests that OTP fields are parsed as part of `ParseFormFields` if the feature
+// flag is enabled.
+TEST_F(FormFieldParserTest, ParseFormFieldsOtpWithFeatureFlag) {
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  AddTextFormFieldData("", "OTP", ONE_TIME_CODE);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kAutofillEnableOneTimeCodeHeuristics);
+    // Both fields should be detected.
+    EXPECT_EQ(2, ParseFormFields());
+    TestClassificationExpectations();
+  }
+  ClearFieldsAndExpectations();
+
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  // We expect it NOT to be parsed when the feature is disabled.
+  AddTextFormFieldData("", "OTP", UNKNOWN_TYPE);
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kAutofillEnableOneTimeCodeHeuristics);
+    // Only the email field should be detected.
+    EXPECT_EQ(1, ParseFormFields());
+    TestClassificationExpectations();
+  }
+}
+
 // Test that `ParseStandaloneCvcField` parses standalone CVC fields.
 TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
   AddTextFormFieldData("", "CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
