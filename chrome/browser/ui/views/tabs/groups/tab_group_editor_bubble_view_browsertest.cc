@@ -157,23 +157,27 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   // Simulate focus shifting to the emoji picker (bubble deactivates).
   editor_bubble->Deactivate();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return !editor_bubble->IsActive(); }));
-  EXPECT_FALSE(editor_bubble->IsClosed());
+  base::WeakPtr<views::Widget> bubble_weak_ptr = editor_bubble->GetWeakPtr();
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return bubble_weak_ptr && !bubble_weak_ptr->IsActive();
+  }));
+  EXPECT_TRUE(bubble_weak_ptr && !bubble_weak_ptr->IsClosed());
 
   // Simulate user clicking back into the bubble (activating it and closing
   // picker).
   editor_bubble->Activate();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return editor_bubble->IsActive(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return bubble_weak_ptr && bubble_weak_ptr->IsActive();
+  }));
   emoji_picker.Hide();
-  EXPECT_FALSE(editor_bubble->IsClosed());
+  EXPECT_TRUE(bubble_weak_ptr && !bubble_weak_ptr->IsClosed());
 
   // Deactivate the bubble again (click away).
   editor_bubble->Deactivate();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return editor_bubble->IsClosed(); }));
-  EXPECT_TRUE(editor_bubble->IsClosed());
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !bubble_weak_ptr || bubble_weak_ptr->IsClosed();
+  }));
+  EXPECT_TRUE(!bubble_weak_ptr || bubble_weak_ptr->IsClosed());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
@@ -201,17 +205,20 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   // Deactivate the bubble (simulate clicking off the bubble while emoji picker
   // is open).
   editor_bubble->Deactivate();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return !editor_bubble->IsActive(); }));
-  EXPECT_FALSE(editor_bubble->IsClosed());
+  base::WeakPtr<views::Widget> bubble_weak_ptr = editor_bubble->GetWeakPtr();
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return bubble_weak_ptr && !bubble_weak_ptr->IsActive();
+  }));
+  EXPECT_TRUE(bubble_weak_ptr && !bubble_weak_ptr->IsClosed());
 
   // Simulate the emoji picker closing (clicking off both).
   emoji_picker.Hide();
 
   // Since the bubble was deactivated, it should close now.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() -> bool { return editor_bubble->IsClosed(); }));
-  EXPECT_TRUE(editor_bubble->IsClosed());
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !bubble_weak_ptr || bubble_weak_ptr->IsClosed();
+  }));
+  EXPECT_TRUE(!bubble_weak_ptr || bubble_weak_ptr->IsClosed());
 }
 #endif
 
