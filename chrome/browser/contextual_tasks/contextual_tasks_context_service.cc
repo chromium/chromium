@@ -240,6 +240,14 @@ const passage_embeddings::Embedding* GetTitleEmbedding(
   return it != tab_embeddings.end() ? &it->embedding : nullptr;
 }
 
+std::string GetFormattedQueryString(const std::string& query) {
+  std::string task = kQueryEmbeddingTask.Get();
+  if (!task.empty()) {
+    return absl::StrFormat("task: %s | query: %s", task, query);
+  }
+  return query;
+}
+
 }  // namespace
 
 ContextualTasksContextService::ContextualTasksContextService(Profile* profile)
@@ -323,7 +331,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   // computation.
   passage_embeddings::Embedder::TaskId task_id =
       embedder_->ComputePassagesEmbeddings(
-          passage_embeddings::PassagePriority::kUrgent, {query},
+          passage_embeddings::PassagePriority::kUrgent,
+          {GetFormattedQueryString(query)},
           base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
                          weak_ptr_factory_.GetWeakPtr(), query, options, now,
                          explicit_urls, request_id));
