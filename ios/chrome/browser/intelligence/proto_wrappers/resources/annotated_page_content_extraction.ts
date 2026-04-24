@@ -692,8 +692,6 @@ function getViewportRect(doc: Document): Rect {
       0, 0, doc.documentElement.clientWidth, doc.documentElement.clientHeight);
 }
 
-// TODO(crbug.com/480945289): Complete this function as more data becomes
-// available throughout iterations.
 /**
  * Determines if an element should be treated as a generic container.
  * This is a fallback classification for elements that don't match specific
