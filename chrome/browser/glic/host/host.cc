@@ -32,6 +32,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-#include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -532,7 +532,7 @@ content::WebContents* Host::webui_contents() const {
 }
 
 content::WebContents* Host::web_client_contents() const {
-  return web_client_contents_.get();
+  return content::WebContents::FromRenderFrameHost(GetGuestMainFrame());
 }
 
 bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
@@ -618,10 +618,9 @@ void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
 }
 
 content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
-  if (content::WebContents* contents = web_client_contents()) {
-    if (content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame()) {
-      return rfh->GetProcess();
-    }
+  auto* guest_frame = GetGuestMainFrame();
+  if (guest_frame) {
+    return guest_frame->GetProcess();
   }
   return nullptr;
 }
@@ -763,10 +762,6 @@ void Host::FloatingPanelCanAttachChanged(bool can_attach) {
   handler_info_->web_client->FloatingPanelCanAttachChanged(can_attach);
 }
 
-void Host::GuestAdded(content::WebContents* guest_contents) {
-  web_client_contents_ = guest_contents->GetWeakPtr();
-}
-
 HostManager::HostManager(
     Profile* profile,
     base::WeakPtr<GlicInstanceCoordinator> window_controller)
@@ -781,17 +776,16 @@ void HostManager::Shutdown() {
 }
 
 void HostManager::GuestAdded(content::WebContents* guest_contents) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
-#endif
-
   for (Host* host : GetPrimaryHosts()) {
-    if (!host->webui_contents()) {
+    auto* webui_contents = host->webui_contents();
+    if (!webui_contents) {
       continue;
     }
-
-    host->GuestAdded(guest_contents);
+    if (top != webui_contents) {
+      continue;
+    }
 
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(harringtond): This looks wrong, either fix or document this.

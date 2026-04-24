@@ -344,9 +344,6 @@ class Host : public GlicSharingManagerProvider {
   GlicPageHandler* FindPageHandlerForWebUiContents(
       const content::WebContents* webui_contents);
 
-  // Called when a glic guest (webview web contents) is added.
-  void GuestAdded(content::WebContents* guest_contents);
-
   //////////////////////////////////////////////////////////////////////////
   // Methods intended to be used by page handler or web client handler
   //////////////////////////////////////////////////////////////////////////
@@ -531,8 +528,6 @@ class Host : public GlicSharingManagerProvider {
 
   // Responsible for skill update logic.
   std::unique_ptr<GlicSkillsManager> skills_manager_;
-
-  base::WeakPtr<content::WebContents> web_client_contents_;
 
   mojom::MicrophoneStatus microphone_status_ =
       mojom::MicrophoneStatus::kUnknown;
