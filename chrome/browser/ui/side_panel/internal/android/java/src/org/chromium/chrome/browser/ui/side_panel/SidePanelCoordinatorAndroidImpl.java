@@ -91,12 +91,19 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
      * @param height The height of the starting bounds, or -1 if none.
      */
     @CalledByNative
-    private void populateSidePanel(View sidePanelNativeView, int x, int y, int width, int height) {
+    private void populateSidePanel(
+            View sidePanelNativeView,
+            int x,
+            int y,
+            int width,
+            int height,
+            boolean suppressAnimations) {
         log(TAG, "populateSidePanel", sidePanelNativeView, x, y, width, height);
         mSidePanelContainerCoordinator.populateContent(
                 new SidePanelContent(sidePanelNativeView),
                 result -> notifyOpenAnimationFinished(null),
-                createRectFromCoordinates(x, y, width, height));
+                createRectFromCoordinates(x, y, width, height),
+                suppressAnimations);
     }
 
     @CalledByNative

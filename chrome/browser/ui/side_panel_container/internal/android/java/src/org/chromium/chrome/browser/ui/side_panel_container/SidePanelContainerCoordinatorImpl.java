@@ -82,8 +82,9 @@ final class SidePanelContainerCoordinatorImpl
     public void populateContent(
             SidePanelContent content,
             Callback<@Nullable Void> onAnimationFinishedCallback,
-            @Nullable Rect startingBounds) {
-        log(TAG, "populateContent", content, startingBounds);
+            @Nullable Rect startingBounds,
+            boolean suppressAnimations) {
+        log(TAG, "populateContent", content, startingBounds, suppressAnimations);
         ThreadUtils.assertOnUiThread();
         mCurrentContent = content;
 
@@ -94,6 +95,8 @@ final class SidePanelContainerCoordinatorImpl
         @Px int sidePanelWidth = ViewUtils.dpToPx(mParentActivity, SIDE_PANEL_MIN_WIDTH_DP);
         mSideUiCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, sidePanelWidth));
+
+        onAnimationFinishedCallback.onResult(null);
     }
 
     @Override

@@ -100,18 +100,29 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
   // Handles the JNI call to Java to populate the side panel UI.
-  void PopulateJavaSidePanel(const base::android::JavaRef<jobject>& view);
+  void PopulateJavaSidePanel(const base::android::JavaRef<jobject>& view,
+                             bool suppress_animations);
 
-  // The current state of the Side Panel
+  // The current state of the Side Panel.
+  //
+  // A SidePanelEntry is considered current/active as soon as the state becomes
+  // `kOpening` and the entry will become inactive when the state becomes
+  // `kClosed`.
   SidePanelState state_ = SidePanelState::kClosed;
 
   // Tracks the hide reason for the current close operation.
+  // TODO(crbug.com/494001968): Consider using an optional or adding kUnknown.
+  // TODO(crbug.com/494001968): This may need to be a queue for many requests.
   SidePanelEntryHideReason pending_hide_reason_ =
       SidePanelEntryHideReason::kSidePanelClosed;
 
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
   JavaObjectWeakGlobalRef java_coordinator_;
+
+  // Tracks the previous entry that is being replaced, which we keep in state
+  // until animations have completed and it is fully replaced.
+  raw_ptr<SidePanelEntry> pending_replaced_entry_ = nullptr;
 
   std::optional<gfx::Rect> last_starting_bounds_;
 

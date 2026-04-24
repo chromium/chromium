@@ -79,7 +79,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -98,7 +99,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent1,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Act.
@@ -108,7 +110,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent2,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -130,7 +133,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                startingBounds));
+                                startingBounds,
+                                true));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -151,7 +155,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -174,7 +179,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Act.
@@ -208,7 +214,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -228,7 +235,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent1,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -247,7 +255,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         coordinator.populateContent(
                                 sidePanelContent,
                                 mOnAnimationFinishedCallbackMock,
-                                /* startingBounds= */ null));
+                                /* startingBounds= */ null,
+                                true));
         waitForContainerViewWithValidWidth(coordinator);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> coordinator.removeContentAndClose(mOnAnimationFinishedCallbackMock, true));

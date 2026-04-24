@@ -45,11 +45,13 @@ public interface SidePanelContainerCoordinator {
      * @param content Wrapper object for the content to show in the side panel.
      * @param onAnimationFinishedCallback Callback to invoke after content is populated.
      * @param startingBounds Optional bounds for the animation to start from.
+     * @param suppressAnimations Whether or not to suppress animations for this populate request.
      */
     void populateContent(
             SidePanelContent content,
             Callback<@Nullable Void> onAnimationFinishedCallback,
-            @Nullable Rect startingBounds);
+            @Nullable Rect startingBounds,
+            boolean suppressAnimations);
 
     /**
      * Removes {@link SidePanelContent} from this side panel container and closes the container.
