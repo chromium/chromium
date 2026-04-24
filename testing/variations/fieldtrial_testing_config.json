@@ -9011,7 +9011,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -9027,7 +9026,8 @@
                         "backend": "sql"
                     },
                     "enable_features": [
-                        "DiskCacheBackendExperiment"
+                        "DiskCacheBackendExperiment",
+                        "HttpCacheInitializeDiskCacheBackendEarly"
                     ]
                 }
             ]
@@ -12837,12 +12837,7 @@
     "HttpCacheInitializeDiskCacheBackendEarly": [
         {
             "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
