@@ -21,6 +21,7 @@ class WebContents;
 namespace views {
 class Textfield;
 class View;
+class Widget;
 }  // namespace views
 
 namespace record_replay {
@@ -36,9 +37,10 @@ class SaveRecordingBubbleView : public LocationBarBubbleDelegateView,
   // Creates and shows the bubble.
   // |anchor_view| is the view to anchor the bubble to (e.g. page action icon).
   // |controller| handles the logic. The view takes ownership of the controller.
-  static void Show(views::View* anchor_view,
-                   content::WebContents* web_contents,
-                   std::unique_ptr<SaveRecordingBubbleController> controller);
+  static views::Widget* Show(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      std::unique_ptr<SaveRecordingBubbleController> controller);
 
   // Use Show() to create and show.
   SaveRecordingBubbleView(
@@ -56,6 +58,8 @@ class SaveRecordingBubbleView : public LocationBarBubbleDelegateView,
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
+
+  views::Textfield* name_textfield_for_testing() { return name_textfield_; }
 
  private:
   std::unique_ptr<SaveRecordingBubbleController> controller_;

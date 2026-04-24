@@ -33,7 +33,7 @@
 namespace record_replay {
 
 // static
-void SaveRecordingBubbleView::Show(
+views::Widget* SaveRecordingBubbleView::Show(
     views::View* anchor_view,
     content::WebContents* web_contents,
     std::unique_ptr<SaveRecordingBubbleController> controller) {
@@ -44,8 +44,9 @@ void SaveRecordingBubbleView::Show(
       ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
           vector_icons::kPhotoIcon, 100,
           anchor_view->GetColorProvider()->GetColor(ui::kColorIcon)))));
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
+  return widget;
 }
 
 SaveRecordingBubbleView::SaveRecordingBubbleView(
@@ -123,8 +124,10 @@ void SaveRecordingBubbleView::Init() {
         base::UTF8ToUTF16(domain) + u"_" + base::UTF8ToUTF16(date_str);
   }
 
-  name_textfield_->SetPlaceholderText(placeholder_text);
+  name_textfield_->SetText(placeholder_text);
   name_textfield_->SetAccessibleName(placeholder_text);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !placeholder_text.empty());
+  DialogModelChanged();
   row_layout->SetFlexForView(name_textfield_, 1);
 
   // Focus the textfield initially.
