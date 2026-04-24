@@ -1,9 +1,9 @@
 {
-  "name": "SW background extension: Browser Action can call permisssions.request",
+  "name": "SW background extension: Action can call permisssions.request",
   "version": "1.0",
-  "manifest_version": 2,
-  "description": "Tests that browserAction.onClicked can call permisssions.request",
+  "manifest_version": 3,
+  "description": "Tests that action.onClicked can call permisssions.request",
   "optional_permissions": ["storage"],
-  "browser_action": {},
+  "action": {},
   "background": {"service_worker": "service_worker_background.js"}
 }

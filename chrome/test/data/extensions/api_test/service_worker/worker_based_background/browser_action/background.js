@@ -4,7 +4,7 @@
 
 const initialUserGesture = chrome.test.isProcessingUserGesture();
 
-chrome.browserAction.onClicked.addListener(() => {
+chrome.action.onClicked.addListener(() => {
   chrome.test.assertFalse(initialUserGesture);
 
   // We should be running with a user gesture.

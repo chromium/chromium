@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-chrome.browserAction.onClicked.addListener(() => {
+chrome.action.onClicked.addListener(() => {
   chrome.test.assertEq(undefined, chrome.storage);
   chrome.permissions.request({permissions: ['storage']}, (granted) => {
     chrome.test.assertNoLastError();
