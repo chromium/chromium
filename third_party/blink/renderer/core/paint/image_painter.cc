@@ -122,7 +122,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     if (content_size.IsEmpty())
       return;
     if (paint_info.IsPrivacyPreserving() &&
-        !layout_image_.ImageResource()->IsAccessAllowed()) {
+        !layout_image_.ImageResource()->IsCorsSameOrigin()) {
       return;
     }
   } else {

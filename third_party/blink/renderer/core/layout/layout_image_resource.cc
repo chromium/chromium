@@ -181,7 +181,7 @@ void LayoutImageResource::UseBrokenImage() {
   SetImageResource(broken_image);
 }
 
-bool LayoutImageResource::IsAccessAllowed() const {
+bool LayoutImageResource::IsCorsSameOrigin() const {
   return !cached_image_ || cached_image_->IsCorsSameOrigin();
 }
 
