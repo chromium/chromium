@@ -53,6 +53,10 @@ $.manageSkillsBtn.addEventListener('click', () => {
   getBrowser()!.showManageSkillsUi!();
 });
 
+$.browseSkillsBtn.addEventListener('click', () => {
+  getBrowser()!.showBrowseSkillsUi!();
+});
+
 function updateSkillsListUi(skillPreviews: SkillPreview[]) {
   while ($.skillsList.childNodes.length > 0) {
     $.skillsList.removeChild($.skillsList.firstChild!);

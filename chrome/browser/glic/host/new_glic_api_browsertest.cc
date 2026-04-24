@@ -16,6 +16,16 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "base/strings/string_util.h"
+#include "chrome/common/webui_url_constants.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skills_service.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -33,6 +43,7 @@ namespace {
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "NewGlicApiTest",
+      "NewGlicApiTestWithSkills",
   };
 }
 
@@ -242,6 +253,53 @@ IN_PROC_BROWSER_TEST_P(MAYBE_NewGlicApiTest,
   ExecuteJsTest();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class NewGlicApiTestWithSkills : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithSkills() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kSkillsEnabled);
+  }
+
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+    service_ = skills::SkillsServiceFactory::GetForProfile(GetProfile());
+    ASSERT_TRUE(service_);
+    service_->SetServiceStatusForTesting(
+        skills::SkillsService::ServiceStatus::kReady);
+#else
+    NOTREACHED();
+#endif
+    ASSERT_TRUE(OpenGlicForActiveTab());
+  }
+
+  void TearDownOnMainThread() override {
+    service_ = nullptr;
+    NewGlicApiTest::TearDownOnMainThread();
+  }
+
+  skills::SkillsService* SkillsService() { return service_; }
+
+  void WaitForSkillsTab(const std::string& path) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+      return tab && base::StartsWith(
+                        tab->GetContents()->GetLastCommittedURL().spec(),
+                        GURL(chrome::kChromeUISkillsURL).Resolve(path).spec());
+    }));
+  }
+
+ private:
+  raw_ptr<skills::SkillsService> service_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowBrowseSkillsUi) {
+  ExecuteJsTest();
+  WaitForSkillsTab(chrome::kChromeUISkillsBrowsePath);
+}
+#endif
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
@@ -250,4 +308,11 @@ INSTANTIATE_TEST_SUITE_P(,
                          MAYBE_NewGlicApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+// Skills are not supported yet on Android.
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithSkills,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+#endif
 }  // namespace glic

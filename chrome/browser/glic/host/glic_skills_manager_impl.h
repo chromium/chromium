@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_SKILLS_MANAGER_IMPL_H_
 
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -45,11 +46,13 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
                           base::OnceCallback<void(bool)> callback) override;
 
   void ShowManageSkillsUi() override;
+  void ShowBrowseSkillsUi() override;
 
   void NotifyPanelOpenedOrActivated() override;
 
  private:
   tabs::TabInterface* EnsureTabForSkills();
+  void ShowSkillsUiAtRelativePath(const std::string& path);
 
   // The function corresponding to our subscription.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);

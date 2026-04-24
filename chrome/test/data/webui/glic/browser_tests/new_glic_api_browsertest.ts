@@ -205,11 +205,22 @@ class InvokeTest extends ApiTests {
   }
 }
 
+class SkillsApiTests extends ApiTests {
+  async testShowBrowseSkillsUi() {
+    assertDefined(this.host.showBrowseSkillsUi);
+    this.host.showBrowseSkillsUi();
+  }
+}
+
 const TEST_FIXTURES = [
   ApiTests,
   FaviconTest,
   FaviconOmittedTest,
   InvokeTest,
 ];
+
+if (!navigator.userAgent.includes('Android')) {
+  TEST_FIXTURES.push(SkillsApiTests);
+}
 
 testMain(TEST_FIXTURES);

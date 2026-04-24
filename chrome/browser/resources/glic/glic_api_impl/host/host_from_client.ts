@@ -427,6 +427,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.showManageSkillsUi();
   }
 
+  glicBrowserShowBrowseSkillsUi(_request: void): void {
+    this.handler.showBrowseSkillsUi();
+  }
+
   async glicBrowserGetSkill(request: {
     id: string,
   }): Promise<{skill?: Skill}> {

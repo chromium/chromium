@@ -1387,6 +1387,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().skills_manager().ShowManageSkillsUi();
   }
 
+  void ShowBrowseSkillsUi() override {
+    if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+      receiver_.ReportBadMessage(
+          "ShowBrowseSkillsUi cannot be called without Skills enabled.");
+      return;
+    }
+
+    host().skills_manager().ShowBrowseSkillsUi();
+  }
+
   void GetSkill(const std::string& id, GetSkillCallback callback) override {
     if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       receiver_.ReportBadMessage(

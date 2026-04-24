@@ -187,6 +187,7 @@ export interface PageElementTypes {
   updateSkillBtn: HTMLButtonElement;
   getSkillBtn: HTMLButtonElement;
   manageSkillsBtn: HTMLButtonElement;
+  browseSkillsBtn: HTMLButtonElement;
   skillsList: HTMLUListElement;
   stressTestEngageBtn: HTMLButtonElement;
   stressTestEngageRetainBtn: HTMLButtonElement;
