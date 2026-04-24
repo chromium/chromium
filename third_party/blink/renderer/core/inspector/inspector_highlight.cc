@@ -1200,7 +1200,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNamesForGridLanes(
 }
 
 // Gets the rotation angle of the grid layout (clock-wise).
-int GetRotationAngle(LayoutObject* layout_object) {
+int GetRotationAngle(const LayoutObject* layout_object) {
   // Local vector has 135deg bearing to the Y axis.
   int local_vector_bearing = 135;
   gfx::PointF local_a(0, 0);
@@ -1577,14 +1577,16 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
     const InspectorGridHighlightConfig& grid_highlight_config,
     float scale) {
   LocalFrameView* containing_view = element->GetDocument().View();
-  auto* grid_lanes = To<LayoutGridLanes>(ContentLayoutBoxFromNode(element));
+  const auto* grid_lanes =
+      To<LayoutGridLanes>(ContentLayoutBoxFromNode(element));
+  const auto& style = grid_lanes->StyleRef();
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
 
   grid_info->setInteger("rotationAngle", GetRotationAngle(grid_lanes));
-  grid_info->setString("writingMode", GetWritingMode(grid_lanes->StyleRef()));
+  grid_info->setString("writingMode", GetWritingMode(style));
   const bool is_for_columns =
-      grid_lanes->StyleRef().GridLanesTrackSizingDirection() == kForColumns;
+      style.GridLanesTrackSizingDirection() == kForColumns;
 
   const Vector<LayoutUnit> grid_lanes_tracks =
       grid_lanes->GridTrackPositions(is_for_columns ? kForColumns : kForRows);
@@ -1595,11 +1597,15 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGridLanes(
       is_for_columns ? grid_lanes->ContentTop() : grid_lanes->ContentLeft();
   const LayoutUnit span_size =
       is_for_columns ? grid_lanes->ContentHeight() : grid_lanes->ContentWidth();
-  const LayoutUnit rtl_offset =
-      is_for_columns ? grid_lanes->LogicalWidth() - grid_lanes_tracks.back() -
-                           grid_lanes->BorderAndPaddingInlineEnd()
-                     : LayoutUnit();
-  const bool is_rtl = !grid_lanes->StyleRef().IsLeftToRightDirection();
+  const LayoutUnit border_padding_inline_end =
+      (grid_lanes->BorderOutsets() + grid_lanes->PaddingOutsets())
+          .ConvertToLogical(style.GetWritingDirection())
+          .inline_end;
+  const LayoutUnit rtl_offset = is_for_columns ? grid_lanes->LogicalWidth() -
+                                                     grid_lanes_tracks.back() -
+                                                     border_padding_inline_end
+                                               : LayoutUnit();
+  const bool is_rtl = !style.IsLeftToRightDirection();
   const std::optional<LayoutUnit> optional_rtl_offset =
       is_rtl ? std::optional<LayoutUnit>(rtl_offset) : std::nullopt;
 
@@ -1745,7 +1751,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   LocalFrameView* containing_view = element->GetDocument().View();
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
-  auto* grid = To<LayoutGrid>(ContentLayoutBoxFromNode(element));
+  const auto* grid = To<LayoutGrid>(ContentLayoutBoxFromNode(element));
+  const auto& style = grid->StyleRef();
   const Vector<LayoutUnit> rows = grid->GridTrackPositions(kForRows);
   const Vector<LayoutUnit> columns = grid->GridTrackPositions(kForColumns);
 
@@ -1755,18 +1762,22 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   // frontend assumes that the grid layout is in a horizontal-tb writing-mode.
   // It is the responsibility of the frontend to flip the rendering of the grid
   // overlay based on the following writingMode value.
-  grid_info->setString("writingMode", GetWritingMode(grid->StyleRef()));
+  grid_info->setString("writingMode", GetWritingMode(style));
 
   auto row_gap = grid->GridGap(kForRows) + grid->GridItemOffset(kForRows);
   auto column_gap =
       grid->GridGap(kForColumns) + grid->GridItemOffset(kForColumns);
-  const bool is_rtl = !grid->StyleRef().IsLeftToRightDirection();
+  const bool is_rtl = !style.IsLeftToRightDirection();
 
   // The last column in RTL will not go to the extent of the grid if not
   // necessary, and will stop sooner if the tracks don't take up the full size
   // of the grid.
-  LayoutUnit rtl_offset =
-      grid->LogicalWidth() - columns.back() - grid->BorderAndPaddingInlineEnd();
+  const LayoutUnit border_padding_inline_end =
+      (grid->BorderOutsets() + grid->PaddingOutsets())
+          .ConvertToLogical(style.GetWritingDirection())
+          .inline_end;
+  const LayoutUnit rtl_offset =
+      grid->LogicalWidth() - columns.back() - border_padding_inline_end;
   const std::optional<LayoutUnit> optional_rtl_offset =
       is_rtl ? std::optional<LayoutUnit>(rtl_offset) : std::nullopt;
 
@@ -1816,7 +1827,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   LayoutUnit column_top = rows.front();
   LayoutUnit column_height = rows.back() - rows.front();
 
-  if (grid->StyleRef().GetWritingMode() == WritingMode::kVerticalLr) {
+  if (style.GetWritingMode() == WritingMode::kVerticalLr) {
     grid_info->setValue(
         "writingModeRoot",
         BuildPosition(LocalToAbsolutePoint(

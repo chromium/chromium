@@ -217,20 +217,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return ComputedCSSPaddingRight();
   }
 
-  // Returns a WritingDirectionMode-aware logical padding value.
-  LayoutUnit PaddingBlockStart() const {
-    NOT_DESTROYED();
-    return PhysicalPaddingToLogical().BlockStart();
-  }
-  LayoutUnit PaddingBlockEnd() const {
-    NOT_DESTROYED();
-    return PhysicalPaddingToLogical().BlockEnd();
-  }
-  LayoutUnit PaddingInlineEnd() const {
-    NOT_DESTROYED();
-    return PhysicalPaddingToLogical().InlineEnd();
-  }
-
   virtual LayoutUnit BorderTop() const {
     NOT_DESTROYED();
     return LayoutUnit(StyleRef().BorderTopWidth());
@@ -246,24 +232,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit BorderRight() const {
     NOT_DESTROYED();
     return LayoutUnit(StyleRef().BorderRightWidth());
-  }
-
-  // Returns a WritingDirectionMode-aware logical border value.
-  LayoutUnit BorderBlockStart() const {
-    NOT_DESTROYED();
-    return PhysicalBorderToLogical().BlockStart();
-  }
-  LayoutUnit BorderBlockEnd() const {
-    NOT_DESTROYED();
-    return PhysicalBorderToLogical().BlockEnd();
-  }
-  LayoutUnit BorderInlineStart() const {
-    NOT_DESTROYED();
-    return PhysicalBorderToLogical().InlineStart();
-  }
-  LayoutUnit BorderInlineEnd() const {
-    NOT_DESTROYED();
-    return PhysicalBorderToLogical().InlineEnd();
   }
 
   LayoutUnit BorderWidth() const {
@@ -283,16 +251,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalBoxStrut PaddingOutsets() const {
     NOT_DESTROYED();
     return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
-  }
-
-  // Returns a WritingDirectionMode-aware logical border+padding value.
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockStart() const {
-    NOT_DESTROYED();
-    return BorderBlockStart() + PaddingBlockStart();
-  }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockEnd() const {
-    NOT_DESTROYED();
-    return BorderBlockEnd() + PaddingBlockEnd();
   }
 
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingHeight() const {
@@ -318,14 +276,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     }
     return IsHorizontalWritingMode() ? BorderAndPaddingWidth()
                                      : BorderAndPaddingHeight();
-  }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineStart() const {
-    NOT_DESTROYED();
-    return BorderInlineStart() + PhysicalPaddingToLogical().InlineStart();
-  }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineEnd() const {
-    NOT_DESTROYED();
-    return BorderInlineEnd() + PaddingInlineEnd();
   }
 
   virtual PhysicalBoxStrut MarginOutsets() const = 0;

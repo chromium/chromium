@@ -112,29 +112,32 @@ TEST_F(LayoutTableTest, CollapsedBorders) {
       "  </tr>"
       "</table>");
 
-  auto* table1 = GetTableByElementId("table1");
-  EXPECT_EQ(0, table1->BorderBlockStart());
-  EXPECT_EQ(4, table1->BorderBlockEnd());
-  EXPECT_EQ(0, table1->BorderInlineStart());
-  EXPECT_EQ(5, table1->BorderInlineEnd());
+  const PhysicalBoxStrut table1_borders =
+      GetTableByElementId("table1")->BorderOutsets();
+  EXPECT_EQ(0, table1_borders.top);
+  EXPECT_EQ(4, table1_borders.bottom);
+  EXPECT_EQ(0, table1_borders.left);
+  EXPECT_EQ(5, table1_borders.right);
 
   // All cells have hidden border.
-  auto* table2 = GetTableByElementId("table2");
-  EXPECT_EQ(0, table2->BorderBlockStart());
-  EXPECT_EQ(0, table2->BorderBlockEnd());
-  EXPECT_EQ(0, table2->BorderInlineStart());
-  EXPECT_EQ(0, table2->BorderInlineEnd());
+  const PhysicalBoxStrut table2_borders =
+      GetTableByElementId("table2")->BorderOutsets();
+  EXPECT_EQ(0, table2_borders.top);
+  EXPECT_EQ(0, table2_borders.bottom);
+  EXPECT_EQ(0, table2_borders.left);
+  EXPECT_EQ(0, table2_borders.right);
 
   // Cells have wider borders.
-  auto* table3 = GetTableByElementId("table3");
+  const PhysicalBoxStrut table3_borders =
+      GetTableByElementId("table3")->BorderOutsets();
   // Cell E's border-top won.
-  EXPECT_EQ(LayoutUnit(7.5), table3->BorderBlockStart());
+  EXPECT_EQ(LayoutUnit(7.5), table3_borders.top);
   // Cell H's border-bottom won.
-  EXPECT_EQ(20, table3->BorderBlockEnd());
+  EXPECT_EQ(20, table3_borders.bottom);
   // Cell G's border-left won.
-  EXPECT_EQ(LayoutUnit(15), table3->BorderInlineStart());
+  EXPECT_EQ(LayoutUnit(15), table3_borders.left);
   // Cell H's border-right won.
-  EXPECT_EQ(LayoutUnit(20), table3->BorderInlineEnd());
+  EXPECT_EQ(LayoutUnit(20), table3_borders.right);
 }
 
 TEST_F(LayoutTableTest, CollapsedBordersWithCol) {
@@ -173,29 +176,32 @@ TEST_F(LayoutTableTest, CollapsedBordersWithCol) {
   )HTML");
 
   // Table has hidden border.
-  auto* table1 = GetTableByElementId("table1");
-  EXPECT_EQ(0, table1->BorderBlockStart());
-  EXPECT_EQ(0, table1->BorderBlockEnd());
-  EXPECT_EQ(0, table1->BorderInlineStart());
-  EXPECT_EQ(0, table1->BorderInlineEnd());
+  const PhysicalBoxStrut table1_borders =
+      GetTableByElementId("table1")->BorderOutsets();
+  EXPECT_EQ(0, table1_borders.top);
+  EXPECT_EQ(0, table1_borders.bottom);
+  EXPECT_EQ(0, table1_borders.left);
+  EXPECT_EQ(0, table1_borders.right);
 
   // All cells have hidden border.
-  auto* table2 = GetTableByElementId("table2");
-  EXPECT_EQ(0, table2->BorderBlockStart());
-  EXPECT_EQ(0, table2->BorderBlockEnd());
-  EXPECT_EQ(0, table2->BorderInlineStart());
-  EXPECT_EQ(0, table2->BorderInlineEnd());
+  const PhysicalBoxStrut table2_borders =
+      GetTableByElementId("table2")->BorderOutsets();
+  EXPECT_EQ(0, table2_borders.top);
+  EXPECT_EQ(0, table2_borders.bottom);
+  EXPECT_EQ(0, table2_borders.left);
+  EXPECT_EQ(0, table2_borders.right);
 
   // Combined cell and col borders.
-  auto* table3 = GetTableByElementId("table3");
+  const PhysicalBoxStrut table3_borders =
+      GetTableByElementId("table3")->BorderOutsets();
   // The second col's border-top won.
-  EXPECT_EQ(10, table3->BorderBlockStart());
+  EXPECT_EQ(10, table3_borders.top);
   // The second col's border-bottom won.
-  EXPECT_EQ(10, table3->BorderBlockEnd());
+  EXPECT_EQ(10, table3_borders.bottom);
   // Cell E's border-left won.
-  EXPECT_EQ(6, table3->BorderInlineStart());
+  EXPECT_EQ(6, table3_borders.left);
   // The second col's border-right won.
-  EXPECT_EQ(10, table3->BorderInlineEnd());
+  EXPECT_EQ(10, table3_borders.right);
 }
 
 TEST_F(LayoutTableTest, WidthPercentagesExceedHundred) {
@@ -253,9 +259,6 @@ TEST_F(LayoutTableTest, PaddingWithCollapsedBorder) {
   EXPECT_EQ(0, table->PaddingRight());
   EXPECT_EQ(0, table->PaddingTop());
   EXPECT_EQ(0, table->PaddingBottom());
-  EXPECT_EQ(0, table->PaddingInlineEnd());
-  EXPECT_EQ(0, table->PaddingBlockStart());
-  EXPECT_EQ(0, table->PaddingBlockEnd());
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
