@@ -28,8 +28,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -722,25 +720,7 @@ TEST_F(ContextualTasksPageHandlerTest, OpenMyActivityUi) {
   page_handler_->OpenMyActivityUi();
 }
 
-TEST_F(ContextualTasksPageHandlerTest, OpenFeedbackUi) {
-  NiceMock<MockBrowserWindowInterface> local_mock_browser_window;
-  NiceMock<MockTabListInterface> local_mock_tab_list;
 
-  ON_CALL(local_mock_browser_window, GetUnownedUserDataHost())
-      .WillByDefault(ReturnRef(unowned_user_data_host_));
-
-  auto tab_list_registration =
-      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
-          unowned_user_data_host_, local_mock_tab_list);
-
-  page_handler_->set_skip_feedback_ui_for_testing(false);
-  EXPECT_CALL(*contextual_tasks_ui_, GetBrowser())
-      .WillRepeatedly(Return(&local_mock_browser_window));
-  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OpenFeedbackUi(&local_mock_browser_window, _))
-      .Times(1);
-  page_handler_->OpenFeedbackUi();
-}
 
 TEST_F(ContextualTasksPageHandlerTest, OpenOnboardingHelpUi) {
   // Navigation smoke test.
