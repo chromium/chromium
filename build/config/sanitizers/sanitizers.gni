@@ -296,7 +296,7 @@ if (sanitizer_coverage_flags == "") {
       # from discussion with centipede creators (though one is warned about at
       # https://github.com/google/centipede/blob/main/centipede_callbacks.cc#L68)
       sanitizer_coverage_flags = sanitizer_coverage_flags +
-                                 ",pc-table,trace-cmp,control-flow,trace-loads"
+                                 ",pc-table,trace-cmp,control-flow"
     }
   } else if (use_sanitizer_coverage) {
     sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
