@@ -21801,6 +21801,24 @@
             ]
         }
     ],
+    "SimplifiedHindiModel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260413",
+                    "enable_features": [
+                        "TranslateSimplifiedHindi"
+                    ]
+                }
+            ]
+        }
+    ],
     "SingleVideoFrameRateThrottling": [
         {
             "platforms": [
