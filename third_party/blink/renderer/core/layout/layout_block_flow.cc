@@ -272,7 +272,10 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
   if (parent_block_flow && made_boxes_non_inline &&
       IsMergeableAnonymousBlock(*this)) {
-    MoveAllChildrenTo(parent_block_flow, NextSibling(), true);
+    LayoutObject* next_sibling = NextSibling();
+    // Invoking RemoveChild may destroy `parent_block_flow`.
+    parent_block_flow->Children()->RemoveChildNode(parent_block_flow, this);
+    MoveAllChildrenTo(parent_block_flow, next_sibling, true);
     Destroy();
   }
 }
