@@ -495,6 +495,11 @@ void WebAppProvider::OnSyncBridgeReady(
       // this would cause a variety of crashes.
       break;
     case WebAppDatabaseOpenResult::kReadError:
+      // TODO(crbug.com/506131577): Handle read error properly here if it is
+      // ever produced by WebAppDatabase again. Note: kReadError is handled in
+      // WebAppDatabase by calling the error callback and returning early, so it
+      // should not reach here.
+      break;
     case WebAppDatabaseOpenResult::kDowngradeDetected:
       ui_manager_->ShowProfileErrorDialogForCorruptDB();
 

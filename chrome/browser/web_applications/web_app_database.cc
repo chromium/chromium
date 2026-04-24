@@ -788,26 +788,9 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
     log_->Append(base::DictValue()
                      .Set("message", "WebApps LevelDB read error")
                      .Set("error", error->ToString()));
-    std::vector<std::pair<webapps::AppId, GURL>> salvaged_apps;
-    if (data_records) {
-      ProtobufState state = ParseProtobufs(*data_records);
-      for (const auto& [app_id, app_proto] : state.apps) {
-        if (app_proto.has_sync_data() &&
-            app_proto.sync_data().has_start_url()) {
-          salvaged_apps.emplace_back(app_id,
-                                     GURL(app_proto.sync_data().start_url()));
-        }
-      }
-    }
-    // The recovery code will re-initialize a new data store object. While
-    // opening two WEB_APPS data stores simultaneously might have worked in
-    // tests and during initial manual testing, it is prudent to destroy this
-    // instance first. This ensures we only ever have one store open at a time,
-    // preventing potential violations of sync system invariants.
-    store_.reset();
-    std::move(callback).Run(Registry(), nullptr,
-                            WebAppDatabaseOpenResult::kReadError,
-                            std::move(salvaged_apps));
+    // TODO(crbug.com/506131577): Handle read error properly (e.g. trigger
+    // recovery, revert to in-memory database, disable os integration).
+    error_callback_.Run(*error);
     return;
   }
 
