@@ -40,6 +40,7 @@ if (current_toolchain == default_toolchain) {
       "bluetooth_scanning_chrome_refresh.icon",
       "business.icon",
       "business_chrome_refresh.icon",
+      "calendar_today.icon",
       "call.icon",
       "call_end.icon",
       "call_refresh.icon",
