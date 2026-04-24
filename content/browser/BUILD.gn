@@ -1621,6 +1621,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_canary_checker.h",
     "preloading/prefetch/prefetch_container.cc",
     "preloading/prefetch/prefetch_container.h",
+    "preloading/prefetch/prefetch_container_async_observer.cc",
+    "preloading/prefetch/prefetch_container_async_observer.h",
     "preloading/prefetch/prefetch_container_observer.h",
     "preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.cc",
     "preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.h",

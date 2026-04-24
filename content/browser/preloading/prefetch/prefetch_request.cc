@@ -7,7 +7,9 @@
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/prefetch_container_async_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -24,6 +26,18 @@ ukm::SourceId GetUkmSourceId(RenderFrameHostImpl& rfhi) {
   CHECK(
       !rfhi.IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering));
   return rfhi.GetPageUkmSourceId();
+}
+
+std::unique_ptr<PrefetchContainerObserver> CreateStatusListenerObserver(
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener) {
+  auto observer =
+      PrefetchContainerObserverForPrefetchRequestStatusListener::Create(
+          std::move(request_status_listener));
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchRequestStatusListenerAsync)) {
+    return PrefetchContainerAsyncObserver::Create(std::move(observer));
+  }
+  return observer;
 }
 
 }  // namespace
@@ -54,8 +68,7 @@ PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener)
     : embedder_histogram_suffix_(embedder_histogram_suffix),
       request_status_listener_observer_(
-          PrefetchContainerObserverForPrefetchRequestStatusListener::Create(
-              std::move(request_status_listener))) {
+          CreateStatusListenerObserver(std::move(request_status_listener))) {
   CHECK(!embedder_histogram_suffix_.empty());
 }
 

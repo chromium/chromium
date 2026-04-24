@@ -711,6 +711,11 @@ BASE_FEATURE(kPrefetchPrerenderIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
 // If explicitly disabled, prefetch proxy is not used.
 BASE_FEATURE(kPrefetchProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Make `PrefetchRequestStatusListener` notifications async.
+// https://crbug.com/496807663
+BASE_FEATURE(kPrefetchRequestStatusListenerAsync,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Killswitch for UA override issue fix (crbug.com/441612842) in preloading.
 BASE_FEATURE(kPreloadingRespectUserAgentOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
