@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
@@ -161,7 +162,7 @@ void ActorEngine::SetState(State new_state) {
 
 void ActorEngine::ExecuteNextAction() {
   if (next_action_index_ >= action_sequence_.size()) {
-    CompleteActions(ActionResult(ToolExecutionResult(base::ok())));
+    CompleteActions(ActionResult(ToolExecutionResult::Ok()));
     return;
   }
 
@@ -175,7 +176,7 @@ void ActorEngine::ExecuteNextAction() {
 
   // TODO(crbug.com/496195979): Add UI pre-invoke.
   SetState(State::kUiPreInvoke);
-  FinishedUiPreInvoke(ActionResult(ToolExecutionResult(base::ok())));
+  FinishedUiPreInvoke(ActionResult(ToolExecutionResult::Ok()));
 }
 
 void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
@@ -215,7 +216,7 @@ void ActorEngine::FinishedToolInvoke(ActionResult result) {
 
   // TODO(crbug.com/496195979): Add UI post-invoke.
   SetState(State::kUiPostInvoke);
-  FinishedUiPostInvoke(ActionResult(ToolExecutionResult(base::ok())));
+  FinishedUiPostInvoke(ActionResult(ToolExecutionResult::Ok()));
 }
 
 void ActorEngine::FinishedUiPostInvoke(ActionResult result) {

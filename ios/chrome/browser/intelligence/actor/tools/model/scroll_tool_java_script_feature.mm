@@ -70,8 +70,8 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
         (target.has_content_node_id() && target.has_document_identifier()));
 
   if (!web_frame) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kActorTargetWebFrameInvalidated}));
+    std::move(callback).Run(ToolExecutionResult(
+        ActorToolErrorCode::kActorTargetWebFrameInvalidated));
     return;
   }
 
@@ -101,9 +101,9 @@ void ScrollToolJavaScriptFeature::ExecuteScrollAction(
 
   if (!sent) {
     std::move(cb_for_error)
-        .Run(base::unexpected(ActorToolError{
+        .Run(ToolExecutionResult(
             ActorToolErrorCode::
-                kJavascriptFeatureFailedToCallJavaScriptFunction}));
+                kJavascriptFeatureFailedToCallJavaScriptFunction));
   }
 }
 

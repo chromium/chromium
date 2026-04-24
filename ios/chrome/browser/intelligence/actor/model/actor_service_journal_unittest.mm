@@ -6,6 +6,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
@@ -93,8 +94,8 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
       .WillOnce([](ToolExecutionCallback callback) {
-        std::move(callback).Run(base::unexpected(
-            ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}));
+        std::move(callback).Run(
+            ToolExecutionResult(ActorToolErrorCode::kNavigationInvalidURL));
       });
 
   ActorService service(profile_.get(), std::move(mock_factory));
@@ -147,7 +148,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
       .WillOnce([](ToolExecutionCallback callback) {
-        std::move(callback).Run(base::ok());
+        std::move(callback).Run(ToolExecutionResult::Ok());
       });
 
   ActorService service(profile_.get(), std::move(mock_factory));

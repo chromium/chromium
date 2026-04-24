@@ -6,6 +6,7 @@
 
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
@@ -23,10 +24,10 @@ class MockTool : public ActorTool {
 
   void Execute(ToolExecutionCallback callback) override {
     if (success_) {
-      std::move(callback).Run(ToolExecutionResult(base::ok()));
+      std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
-      std::move(callback).Run(ToolExecutionResult(base::unexpected(
-          ActorToolError(ActorToolErrorCode::kUnsupportedAction))));
+      std::move(callback).Run(
+          ToolExecutionResult(ActorToolErrorCode::kUnsupportedAction));
     }
   }
 
@@ -222,11 +223,11 @@ TEST_F(ActorEngineTest, InProgressActionIndex) {
 // overwrites a previously recorded success for the same action (e.g., if a
 // post-invoke step fails).
 TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
-  PushActionResult(ActionResult(ToolExecutionResult(base::ok())));
+  PushActionResult(ActionResult(ToolExecutionResult::Ok()));
   SetNextActionIndex(1);
 
-  CompleteActions(ActionResult(ToolExecutionResult(base::unexpected(
-      ActorToolError(ActorToolErrorCode::kUnsupportedAction)))));
+  CompleteActions(ActionResult(
+      ToolExecutionResult(ActorToolErrorCode::kUnsupportedAction)));
 
   EXPECT_EQ(GetActionResults().size(), 1ul);
   EXPECT_FALSE(GetActionResults()[0].tool_result.has_value());

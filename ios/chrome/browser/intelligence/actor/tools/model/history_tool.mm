@@ -8,6 +8,7 @@
 
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -35,8 +36,8 @@ HistoryTool::Create(
 void HistoryTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_->IsRealized() ||
       !web_state_->GetNavigationManager()) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
@@ -45,18 +46,18 @@ void HistoryTool::Execute(ToolExecutionCallback callback) {
   if (is_back_action_) {
     if (navigation_manager->CanGoBack()) {
       navigation_manager->GoBack();
-      std::move(callback).Run(base::ok());
+      std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
-      std::move(callback).Run(base::unexpected(
-          ActorToolError{ActorToolErrorCode::kHistoryBackNotPossible}));
+      std::move(callback).Run(
+          ToolExecutionResult(ActorToolErrorCode::kHistoryBackNotPossible));
     }
   } else {
     if (navigation_manager->CanGoForward()) {
       navigation_manager->GoForward();
-      std::move(callback).Run(base::ok());
+      std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
-      std::move(callback).Run(base::unexpected(
-          ActorToolError{ActorToolErrorCode::kHistoryForwardNotPossible}));
+      std::move(callback).Run(
+          ToolExecutionResult(ActorToolErrorCode::kHistoryForwardNotPossible));
     }
   }
 }

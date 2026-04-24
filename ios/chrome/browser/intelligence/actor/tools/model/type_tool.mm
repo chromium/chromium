@@ -62,15 +62,15 @@ base::expected<std::unique_ptr<TypeTool>, ActorToolError> TypeTool::Create(
 
 void TypeTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
     return;
   }
   web::WebFramesManager* frames_manager =
       js_feature_->GetWebFramesManager(web_state_.get());
   if (!frames_manager || !frames_manager->GetMainWebFrame()) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
@@ -93,7 +93,8 @@ void TypeTool::OnTargetFrameResolved(
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                    ActorToolError> result) {
   if (!result.has_value()) {
-    std::move(callback).Run(base::unexpected(result.error()));
+    std::move(callback).Run(ToolExecutionResult(result.error().external_code,
+                                                result.error().message));
     return;
   }
 
@@ -101,8 +102,8 @@ void TypeTool::OnTargetFrameResolved(
       result.value();
   web::WebFrame* target_web_frame = target_frame.frame;
   if (!target_web_frame) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 

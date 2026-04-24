@@ -49,8 +49,8 @@ void TypeToolJavaScriptFeature::Type(
          action.target().has_document_identifier()));
 
   if (!target_frame) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kActorTargetWebFrameInvalidated}));
+    std::move(callback).Run(ToolExecutionResult(
+        ActorToolErrorCode::kActorTargetWebFrameInvalidated));
     return;
   }
 
@@ -82,9 +82,9 @@ void TypeToolJavaScriptFeature::Type(
 
   if (!sent) {
     std::move(cb_for_error)
-        .Run(base::unexpected(ActorToolError{
+        .Run(ToolExecutionResult(
             ActorToolErrorCode::
-                kJavascriptFeatureFailedToCallJavaScriptFunction}));
+                kJavascriptFeatureFailedToCallJavaScriptFunction));
   }
 }
 

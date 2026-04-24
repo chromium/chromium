@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -43,23 +44,23 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
 // ActorService.
 void NavigateTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_list_ || !url_loader_) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
   GURL url(url_);
   if (!url.is_valid()) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kNavigationInvalidURL));
     return;
   }
 
   // Unrealized WebStates are restored, but not fully functional, tabs that
   // haven't been activated yet. They do not support navigation.
   if (!web_state_->IsRealized()) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kNavigationTabNotRealized}));
+    std::move(callback).Run(
+        ToolExecutionResult(ActorToolErrorCode::kNavigationTabNotRealized));
 
     return;
   }
@@ -73,7 +74,7 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params.web_params.is_renderer_initiated = false;
   url_loader_->LoadUrlInTab(params, web_state_.get());
-  std::move(callback).Run(base::ok());
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 NavigateTool::NavigateTool(const std::string& url,

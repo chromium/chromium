@@ -66,13 +66,12 @@ enum class ActorTaskStoppedReason {
 
 // Represents the result of an action execution.
 struct ActionResult {
-  ActionResult();
+  explicit ActionResult(ToolExecutionResult result);
   ~ActionResult();
   ActionResult(const ActionResult&) = delete;
   ActionResult& operator=(const ActionResult&) = delete;
   ActionResult(ActionResult&&);
   ActionResult& operator=(ActionResult&&);
-  explicit ActionResult(ToolExecutionResult result);
 
   // The result of the tool execution.
   ToolExecutionResult tool_result;
