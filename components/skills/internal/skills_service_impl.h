@@ -81,8 +81,9 @@ class SkillsServiceImpl : public SkillsService {
   void RefreshDiscoverySkills() override;
   void FetchDiscoverySkills() override;
   void Handle1pSkillsMap(
-      std::unique_ptr<SkillIdToProtoMap> skills_map) override;
+      std::unique_ptr<FirstPartySkillData> first_party_skill_data) override;
   const SkillIdToProtoMap& Get1PSkills() const override;
+  const std::vector<std::string>& Get1PTopics() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -130,8 +131,8 @@ class SkillsServiceImpl : public SkillsService {
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
 
-  // The map of loaded 1p discovery skill protos.
-  SkillIdToProtoMap first_party_skills_map_;
+  // The struct of loaded 1p discovery skill protos and topics list.
+  FirstPartySkillData first_party_data_;
 
   // The map of loaded 1p discovery skill objects.
   SkillIdToSkillMap first_party_skill_objects_map_;

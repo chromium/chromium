@@ -224,23 +224,26 @@ void SkillsPageHandler::GetInitial1PSkills(
 }
 
 void SkillsPageHandler::OnDiscoverySkillsUpdated(
-    const SkillIdToProtoMap* skills_map) {
+    const FirstPartySkillData* first_party_skill_data) {
   first_party_download_timer_.Stop();
   RecordSkillsDownloadRequestStatus(
       SkillsDownloadRequestStatus::kResponseReceived);
   if (pending_save_1p_request_.has_value()) {
     auto request = std::exchange(pending_save_1p_request_, std::nullopt);
-    bool valid_skill = !skills_map || skills_map->contains(request->skill_id);
+    bool valid_skill =
+        !first_party_skill_data ||
+        first_party_skill_data->skills_map.contains(request->skill_id);
     if (!valid_skill) {
       RecordSkillsManagementError(SkillsManagementError::k1pSkillDNE);
     }
     std::move(request->callback).Run(valid_skill);
   }
 
-  // If the map exists (even if empty) that means we have an updated list of
-  // skills.
-  if (skills_map) {
-    page_->Update1PMap(Translate1PSkillsMap(*skills_map));
+  // If the data exists that means we have an updated list of skills.
+  if (first_party_skill_data) {
+    page_->Update1PMap(
+        Translate1PSkillsMap(first_party_skill_data->skills_map));
+    // TODO (crbug.com/503394871): Notify the UI about the topics list.
   }
 }
 

@@ -185,7 +185,11 @@ const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
 }
 
 const SkillIdToProtoMap& SkillsServiceImpl::Get1PSkills() const {
-  return first_party_skills_map_;
+  return first_party_data_.skills_map;
+}
+
+const std::vector<std::string>& SkillsServiceImpl::Get1PTopics() const {
+  return first_party_data_.topics_list;
 }
 
 void SkillsServiceImpl::LoadInitialSkills(
@@ -275,18 +279,18 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
 }
 
 void SkillsServiceImpl::Handle1pSkillsMap(
-    std::unique_ptr<SkillIdToProtoMap> skills_map) {
+    std::unique_ptr<FirstPartySkillData> first_party_skill_data) {
   last_discovery_skills_fetch_time_ = base::Time::Now();
-  SkillIdToProtoMap* notification_ptr = nullptr;
-  // If skills_map is null, this means we don't have an updated value so we
-  // shouldn't modify the stored 1p map.
-  if (skills_map) {
-    first_party_skills_map_.swap(*skills_map);
-    notification_ptr = &first_party_skills_map_;
+  FirstPartySkillData* notification_ptr = nullptr;
+  // If first_party_skill_data is null, this means we don't have an updated
+  // value so we shouldn't modify the stored 1p data.
+  if (first_party_skill_data) {
+    first_party_data_ = std::move(*first_party_skill_data);
+    notification_ptr = &first_party_data_;
 
     first_party_skill_objects_map_.clear();
-    first_party_skill_objects_map_.reserve(first_party_skills_map_.size());
-    for (const auto& [id, proto_skill] : first_party_skills_map_) {
+    first_party_skill_objects_map_.reserve(first_party_data_.skills_map.size());
+    for (const auto& [id, proto_skill] : first_party_data_.skills_map) {
       Skill skill(id, proto_skill.name(), proto_skill.icon(),
                   proto_skill.prompt(), proto_skill.description(),
                   GURL(proto_skill.image_url()),
