@@ -78,6 +78,9 @@ class AmbientSigninController
   base::OnceClosure GetSignInCallback();
   void OnBubbleViewDestroyed();
 
+  void SetPageActionControllerForTesting(
+      page_actions::PageActionController* controller);
+
   base::WeakPtr<AmbientSigninController> GetWeakPtr();
 
  private:
@@ -119,6 +122,9 @@ class AmbientSigninController
   // Set when `Show()` is called. Retains the UI type until `Show()` is called
   // again.
   UiType ui_type_ = UiType::kNone;
+
+  raw_ptr<page_actions::PageActionController>
+      page_action_controller_test_override_ = nullptr;
 
   base::WeakPtrFactory<AmbientSigninController> weak_ptr_factory_{this};
 };

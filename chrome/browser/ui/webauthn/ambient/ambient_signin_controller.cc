@@ -249,8 +249,17 @@ void AmbientSigninController::TabDidEnterForeground(
   }
 }
 
+void AmbientSigninController::SetPageActionControllerForTesting(
+    page_actions::PageActionController* controller) {
+  page_action_controller_test_override_ = controller;
+}
+
 page_actions::PageActionController*
 AmbientSigninController::GetPageActionController() {
+  if (page_action_controller_test_override_) {
+    return page_action_controller_test_override_;
+  }
+
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents || web_contents->IsBeingDestroyed()) {

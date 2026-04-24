@@ -117,6 +117,7 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "ambient/ambient_signin_controller_unittest.cc",
       "context_menu_helper_unittest.cc",
       "passkey_deleted_confirmation_controller_unittest.cc",
       "passkey_not_accepted_bubble_controller_unittest.cc",
@@ -132,6 +133,7 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/passwords:test_support_ui",
+      "//chrome/browser/ui/views/page_action:test_support",
       "//chrome/test:test_support",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",
@@ -141,6 +143,7 @@ if (!is_android) {
       "//components/autofill/core/common:test_support",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:metrics_util",
+      "//components/tabs:test_support",
       "//content/test:test_support",
       "//device/fido",
       "//testing/gmock",
