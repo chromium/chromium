@@ -352,13 +352,20 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
         : key(key), cached_matched_properties(cached_matched_properties) {}
 
     bool IsHit() const { return cached_matched_properties; }
+    bool IsStyleAdjusted() const {
+      return cached_matched_properties->element_type
+          .CacheEntryIsStyleAdjusted();
+    }
   };
 
   CacheSuccess ApplyMatchedCache(StyleResolverState&,
                                  const StyleRequest&,
-                                 const MatchResult&);
-  void MaybeAddToMatchedPropertiesCache(StyleResolverState&,
-                                        const MatchedPropertiesCache::Key&);
+                                 const MatchResult&,
+                                 StyleAdjuster::ElementTypeForCache&);
+  void MaybeAddToMatchedPropertiesCache(
+      StyleResolverState& state,
+      const MatchedPropertiesCache::Key& key,
+      StyleAdjuster::ElementTypeForCache element_type);
 
   void ApplyPropertiesFromCascade(StyleResolverState&, StyleCascade& cascade);
 

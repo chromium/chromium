@@ -965,6 +965,11 @@
       base_feature: "none",
     },
     {
+      // For emergency flag flips in case we discover bad bugs.
+      name: "CacheStyleAdjuster",
+      status: "stable",
+    },
+    {
       name: "CallExitNodeWithoutLayoutObject",
       status: "stable",
     },

@@ -70,8 +70,10 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result,
 CachedMatchedProperties::CachedMatchedProperties(
     const ComputedStyle* style,
     const ComputedStyle* parent_style,
+    const ComputedStyle* layout_parent_style,
     const ComputedStyle* originating_element_style,
     const MatchedPropertiesVector& properties,
+    StyleAdjuster::ElementTypeForCache element_type,
     unsigned clock)
     : matched_properties(properties,
                          [](const MatchedProperties& property) {
@@ -79,7 +81,8 @@ CachedMatchedProperties::CachedMatchedProperties(
                                       property.mixin_parameter_bindings,
                                       property.data_};
                          }),
-      entries({Entry{style, parent_style, originating_element_style, clock}}) {}
+      entries({Entry{style, parent_style, layout_parent_style,
+                     originating_element_style, element_type, clock}}) {}
 
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
@@ -100,6 +103,8 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
 
 const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
     const Key& key,
+    StyleAdjuster::ElementTypeForCache element_type,
+    PseudoId style_type,
     const StyleResolverState& style_resolver_state) {
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end()) {
@@ -124,6 +129,12 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
   for (auto it2 = cache_item->entries.rbegin();
        it2 != cache_item->entries.rend(); ++it2) {
     CachedMatchedProperties::Entry& entry = *it2;
+
+    // If the stored style hasn't been through the StyleAdjuster, it can be used
+    // for any element type. Otherwise, the types need to match.
+    if (entry.HasRunStyleAdjuster() && element_type != entry.element_type) {
+      continue;
+    }
 
     // Highlight pseudo resolutions store a non-null
     // originating_element_computed_style; non-highlight resolutions store
@@ -166,6 +177,14 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
       if (!style_resolver_state.ParentStyle()
                ->InheritedEqualIncludingInheritedVariables(
                    *entry.parent_computed_style)) {
+        continue;
+      }
+      if (entry.HasRunStyleAdjuster() &&
+          (style_type != entry.computed_style->StyleType() ||
+           !StyleAdjuster::IsCacheCompatible(
+               *style_resolver_state.ParentStyle(),
+               *style_resolver_state.LayoutParentStyle(),
+               *entry.parent_computed_style, *entry.layout_parent_style))) {
         continue;
       }
 
@@ -269,19 +288,22 @@ void CachedMatchedProperties::RefreshKey(
 
 void MatchedPropertiesCache::Add(
     const Key& key,
+    StyleAdjuster::ElementTypeForCache element_type,
     const ComputedStyle* style,
     const ComputedStyle* parent_style,
+    const ComputedStyle* layout_parent_style,
     const ComputedStyle* originating_element_style) {
   Member<CachedMatchedProperties>& cache_item =
       cache_.insert(key.hash_, nullptr).stored_value->value;
 
   if (!cache_item) {
     cache_item = MakeGarbageCollected<CachedMatchedProperties>(
-        style, parent_style, originating_element_style,
-        key.result_.GetMatchedProperties(), clock_++);
+        style, parent_style, layout_parent_style, originating_element_style,
+        key.result_.GetMatchedProperties(), element_type, clock_++);
   } else {
-    cache_item->entries.emplace_back(style, parent_style,
-                                     originating_element_style, clock_++);
+    cache_item->entries.emplace_back(style, parent_style, layout_parent_style,
+                                     originating_element_style, element_type,
+                                     clock_++);
   }
   ++cache_entries_;
 }

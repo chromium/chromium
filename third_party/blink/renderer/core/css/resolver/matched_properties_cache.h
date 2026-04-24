@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
+#include "third_party/blink/renderer/core/element_type_enum.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -60,12 +62,16 @@ class CORE_EXPORT CachedMatchedProperties final
    public:
     Entry(const ComputedStyle* computed_style_arg,
           const ComputedStyle* parent_computed_style_arg,
+          const ComputedStyle* layout_parent_style_arg,
           const ComputedStyle* originating_element_computed_style_arg,
+          StyleAdjuster::ElementTypeForCache element_type_arg,
           unsigned last_used_arg)
         : computed_style(computed_style_arg),
           parent_computed_style(parent_computed_style_arg),
+          layout_parent_style(layout_parent_style_arg),
           originating_element_computed_style(
               originating_element_computed_style_arg),
+          element_type(element_type_arg),
           last_used(last_used_arg) {}
 
     // Note that we don't cache the original ComputedStyle instance. It may be
@@ -73,13 +79,20 @@ class CORE_EXPORT CachedMatchedProperties final
     // for the substructures and never used as-is.
     Member<const ComputedStyle> computed_style;
     Member<const ComputedStyle> parent_computed_style;
+    Member<const ComputedStyle> layout_parent_style;
     // nullptr except for highlight pseudos.
     Member<const ComputedStyle> originating_element_computed_style;
+    StyleAdjuster::ElementTypeForCache element_type;
     unsigned last_used;
+
+    bool HasRunStyleAdjuster() const {
+      return element_type.CacheEntryIsStyleAdjusted();
+    }
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(computed_style);
       visitor->Trace(parent_computed_style);
+      visitor->Trace(layout_parent_style);
       visitor->Trace(originating_element_computed_style);
     }
   };
@@ -89,8 +102,10 @@ class CORE_EXPORT CachedMatchedProperties final
   CachedMatchedProperties(
       const ComputedStyle* style,
       const ComputedStyle* parent_style,
+      const ComputedStyle* layout_parent_style,
       const ComputedStyle* originating_element_computed_style,
       const MatchedPropertiesVector&,
+      StyleAdjuster::ElementTypeForCache element_type,
       unsigned clock);
 
   void Clear();
@@ -133,17 +148,22 @@ class CORE_EXPORT MatchedPropertiesCache {
     unsigned hash_;
   };
 
-  const CachedMatchedProperties::Entry* Find(const Key&,
-                                             const StyleResolverState&);
+  const CachedMatchedProperties::Entry* Find(
+      const Key& key,
+      StyleAdjuster::ElementTypeForCache element_type,
+      PseudoId style_type,
+      const StyleResolverState& state);
   void Add(const Key&,
+           StyleAdjuster::ElementTypeForCache element_type,
            const ComputedStyle*,
            const ComputedStyle* parent_style,
+           const ComputedStyle* layout_parent_style,
            const ComputedStyle* originating_element_style);
 
   void Clear();
   void ClearViewportDependent();
 
-  static bool IsCacheable(const StyleResolverState&);
+  static bool IsCacheable(const StyleResolverState& state);
   static bool IsStyleCacheable(const ComputedStyleBuilder&);
 
   void Trace(Visitor*) const;

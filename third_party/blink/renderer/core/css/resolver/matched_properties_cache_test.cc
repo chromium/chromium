@@ -59,7 +59,8 @@ class MatchedPropertiesCacheTestCache {
            const ComputedStyle& style,
            const ComputedStyle& parent_style,
            const ComputedStyle* originating_element_style = nullptr) {
-    cache_.Add(key.InnerKey(), &style, &parent_style,
+    cache_.Add(key.InnerKey(), {ElementType::kHTMLBodyElement}, &style,
+               &parent_style, /*layout_parent_style=*/&parent_style,
                originating_element_style);
   }
 
@@ -73,10 +74,12 @@ class MatchedPropertiesCacheTestCache {
     StyleRequest style_request(&parent_style);
     style_request.pseudo_id = pseudo_id;
     style_request.originating_element_style = originating_element_style;
+    style_request.layout_parent_override = &parent_style;
     StyleResolverState state(document_, *document_.body(), style_recalc_context,
                              style_request);
     state.CreateNewClonedStyle(style);
-    return cache_.Find(key.InnerKey(), state);
+    return cache_.Find(key.InnerKey(), {ElementType::kHTMLBodyElement},
+                       PseudoId::kPseudoIdNone, state);
   }
 
  private:

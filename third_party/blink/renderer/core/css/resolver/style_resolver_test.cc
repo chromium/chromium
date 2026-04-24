@@ -728,6 +728,9 @@ TEST_F(StyleResolverTest, SingleAxisAdjustOverflow) {
     run_test("visible", EOverflow::kAuto, EOverflow::kScroll);
   }
 
+  // The MPC is not automatically reset when we manually flip a feature flag.
+  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
+
   {
     ScopedSingleAxisScrollContainersForTest single_axis_feature(true);
     run_test("clip", EOverflow::kClip, EOverflow::kScroll);

@@ -1490,6 +1490,15 @@ const ComputedStyle& StyleResolver::ResolveBaseStyle(
   return *state.TakeStyle();
 }
 
+static PseudoId FindStyleType(const Element& element,
+                              const StyleRequest& style_request) {
+  if (element.IsPseudoElement()) {
+    return element.GetPseudoIdForStyling();
+  } else {
+    return style_request.pseudo_id;
+  }
+}
+
 void StyleResolver::InitStyle(Element& element,
                               const StyleRequest& style_request,
                               const ComputedStyle& source_for_noninherited,
@@ -1517,11 +1526,7 @@ void StyleResolver::InitStyle(Element& element,
                              ? ComputedStyleBuilder::kAtShadowBoundary
                              : ComputedStyleBuilder::kNotAtShadowBoundary);
   }
-  if (element.IsPseudoElement()) {
-    state.StyleBuilder().SetStyleType(element.GetPseudoIdForStyling());
-  } else {
-    state.StyleBuilder().SetStyleType(style_request.pseudo_id);
-  }
+  state.StyleBuilder().SetStyleType(FindStyleType(element, style_request));
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.StyleBuilder().SetIsLink();
@@ -1795,8 +1800,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  CacheSuccess cache_success =
-      ApplyMatchedCache(state, style_request, match_result);
+  StyleAdjuster::ElementTypeForCache element_type_for_cache;
+  CacheSuccess cache_success = ApplyMatchedCache(
+      state, style_request, match_result, element_type_for_cache);
   ComputedStyleBuilder& builder = state.StyleBuilder();
 
   if (style_recalc_context.is_ensuring_style &&
@@ -1804,10 +1810,42 @@ void StyleResolver::ApplyBaseStyleNoCache(
     builder.SetIsEnsuredOutsideFlatTree();
   }
 
-  if (!cache_success.IsHit()) {
+  Element* element_if_not_pseudo =
+      IsForPseudoElement(*element, style_request) ? nullptr : element;
+  if (cache_success.IsHit()) {
+    if (!cache_success.IsStyleAdjusted()) {
+      StyleAdjuster::AdjustComputedStyle(state, element_if_not_pseudo);
+    }
+  } else {
     ApplyPropertiesFromCascade(state, cascade);
-    MaybeAddToMatchedPropertiesCache(state, cache_success.key);
+
+    // Cache whether our original display is inline. (This needs to be done
+    // after the properties have been applied, and before the StyleAdjuster
+    // modifies Display(). On a cache hit, we'll just copy this value
+    // from the cached element.)
+    builder.SetIsOriginalDisplayInlineType(
+        ComputedStyle::IsDisplayInlineType(builder.Display()));
+
+    if (element_type_for_cache.CacheEntryIsStyleAdjusted()) {
+      StyleAdjuster::AdjustComputedStyle(state, element_if_not_pseudo);
+      MaybeAddToMatchedPropertiesCache(state, cache_success.key,
+                                       element_type_for_cache);
+    } else {
+      MaybeAddToMatchedPropertiesCache(state, cache_success.key,
+                                       /*element_type=*/{});
+      StyleAdjuster::AdjustComputedStyle(state, element_if_not_pseudo);
+    }
   }
+
+  StyleAdjuster::RunUncacheableStyleAdjustment(
+      builder, *element,
+      state.IsForPseudoElement() ? state.GetPseudoElement() : element,
+      state.GetStyledElement());
+
+  // Everything below here depends on the MatchResult flags
+  // (e.g., what selectors were used to find the matched properties),
+  // not the matched properties themselves. Thus, we should not cache them
+  // in the MPC, which is primarily keyed by which properties matched.
 
   // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
   // can remove the cache-busting for ::highlight() in IsStyleCacheable
@@ -1869,18 +1907,14 @@ void StyleResolver::ApplyBaseStyleNoCache(
   // so we can set it once and for all.
   builder.SetInsideLink(state.InsideLink());
 
+  // Finally, some random stuff not related to neither MatchResult nor
+  // the matched properties.
+
   ApplyCallbackSelectors(state);
   if (element->IsLink() && (element->HasTagName(html_names::kATag) ||
                             element->HasTagName(html_names::kAreaTag))) {
     ApplyDocumentRulesSelectors(state, To<ContainerNode>(&element->TreeRoot()));
   }
-
-  // Cache our if our original display is inline.
-  builder.SetIsOriginalDisplayInlineType(
-      ComputedStyle::IsDisplayInlineType(builder.Display()));
-
-  StyleAdjuster::AdjustComputedStyle(
-      state, IsForPseudoElement(*element, style_request) ? nullptr : element);
 
   ApplyAnchorData(state);
 }
@@ -2697,7 +2731,8 @@ void StyleResolver::ClearResizedForViewportUnits() {
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     StyleResolverState& state,
     const StyleRequest& style_request,
-    const MatchResult& match_result) {
+    const MatchResult& match_result,
+    StyleAdjuster::ElementTypeForCache& element_type_for_style_adjuster) {
   Element& element = state.GetElement();
 
   // Add in a couple of fields from the parent to the hash; this reduces the
@@ -2712,6 +2747,8 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   inherited_hash ^= state.ParentStyle()->HashInheritedBitFields();
   inherited_hash ^= HashFloat(
       state.ParentStyle()->GetFont()->GetFontDescription().ComputedSize());
+  // Used by the StyleAdjuster.
+  inherited_hash ^= HashInt(state.LayoutParentStyle()->Display());
   MatchedPropertiesCache::Key key(
       match_result,
       MatchedPropertiesCache::Key::AdditionalHash(inherited_hash));
@@ -2726,8 +2763,15 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     can_use_cache = false;
   }
 
+  element_type_for_style_adjuster = StyleAdjuster::GetElementTypeCacheKey(
+      *state.LayoutParentStyle(), element);
+
+  PseudoId style_type = FindStyleType(element, style_request);
   const CachedMatchedProperties::Entry* cached_matched_properties =
-      can_use_cache ? matched_properties_cache_.Find(key, state) : nullptr;
+      can_use_cache
+          ? matched_properties_cache_.Find(key, element_type_for_style_adjuster,
+                                           style_type, state)
+          : nullptr;
 
   if (cached_matched_properties) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
@@ -2739,13 +2783,21 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     InitStyle(element, style_request, *style_to_clone, style_to_clone,
               style_to_clone, state);
 
+    ComputedStyleBuilder& builder = state.StyleBuilder();
+
     if (cached_matched_properties->computed_style->CanAffectAnimations()) {
       // Need to set this flag from the cached ComputedStyle to make
       // ShouldStoreOldStyle() correctly return true. We do not collect matching
       // rules when the cache is hit, and the flag is set as part of that
       // process for the full style resolution.
-      state.StyleBuilder().SetCanAffectAnimations();
+      builder.SetCanAffectAnimations();
     }
+
+    // See the non-MPC-hit case in ApplyBaseStyleNoCache for comments.
+    // (It is possible that we should just copy almost all extra_fields
+    // on an MPC hit?)
+    builder.SetIsOriginalDisplayInlineType(
+        style_to_clone->IsOriginalDisplayInlineType());
 
     // If the cache item parent style has identical inherited properties to
     // the current parent style then the resulting style will be identical
@@ -2756,7 +2808,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // ApplyProperty, hence we'll never set the flag on the parent.
     // (We do the same thing for independently inherited properties in
     // Element::RecalcOwnStyle().)
-    if (state.StyleBuilder().HasExplicitInheritance()) {
+    if (builder.HasExplicitInheritance()) {
       state.ParentStyle()->SetChildHasExplicitInheritance();
     }
     state.UpdateFont();
@@ -2802,14 +2854,16 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
 
 void StyleResolver::MaybeAddToMatchedPropertiesCache(
     StyleResolverState& state,
-    const MatchedPropertiesCache::Key& key) {
+    const MatchedPropertiesCache::Key& key,
+    StyleAdjuster::ElementTypeForCache element_type) {
   state.LoadPendingResources();
 
   if (key.IsCacheable() && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
     matched_properties_cache_.Add(
-        key, state.StyleBuilder().CloneStyle(), state.ParentStyle(),
+        key, element_type, state.StyleBuilder().CloneStyle(),
+        state.ParentStyle(), state.LayoutParentStyle(),
         state.IsForHighlight() ? state.OriginatingElementStyle() : nullptr);
   }
 }
