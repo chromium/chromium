@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -77,7 +78,7 @@ void ProfileCreationComplete(base::OnceClosure completion_callback,
                              Profile* profile) {
   ASSERT_TRUE(profile);
   // No browser should have been created for this profile yet.
-  EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
+  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1U);
   std::move(completion_callback).Run();
 }

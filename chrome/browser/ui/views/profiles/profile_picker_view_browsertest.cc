@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -1384,7 +1385,9 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   Profile* force_sign_in_profile = SignInForNewProfile(
       target_url, "joe.consumer@gmail.com", "Joe", kNoHostedDomainFound, true);
   // No browser for the created profile exist yet.
-  ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
+  ASSERT_EQ(
+      ProfileBrowserCollection::GetForProfile(force_sign_in_profile)->GetSize(),
+      0u);
   ASSERT_TRUE(ProfilePicker::IsOpen());
 
   ProfileAttributesEntry* entry =
@@ -1436,7 +1439,9 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
       target_url, "joe.consumer@gmail.com", "Joe", kNoHostedDomainFound, true);
   base::FilePath force_sign_in_profile_path = force_sign_in_profile->GetPath();
   // No browser for the created profile exist yet.
-  ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
+  ASSERT_EQ(
+      ProfileBrowserCollection::GetForProfile(force_sign_in_profile)->GetSize(),
+      0u);
   ASSERT_TRUE(ProfilePicker::IsOpen());
 
   ProfileAttributesStorage& storage =

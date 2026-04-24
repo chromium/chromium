@@ -16,7 +16,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +40,7 @@ ChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
   std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
   for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
-    if (chrome::GetBrowserCount(profile) == 0) {
+    if (ProfileBrowserCollection::GetForProfile(profile)->GetSize() == 0) {
       // The profile is loaded, but there's no opened browser for this profile.
       continue;
     }

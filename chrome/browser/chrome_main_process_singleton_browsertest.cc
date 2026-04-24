@@ -83,7 +83,9 @@ class ChromeMainTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunch) {
   Relaunch(GetCommandLineForRelaunch());
   ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(
+      2u,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {

@@ -7,7 +7,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -31,7 +31,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
   const webapps::AppId app_id = InstallPWA(start_url);
   apps::AppReadinessWaiter(profile(), app_id).Await();
 
-  size_t num_browsers = chrome::GetBrowserCount(browser()->profile());
+  size_t num_browsers =
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize();
   const int num_tabs = browser()->tab_strip_model()->count();
   content::WebContents* initial_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -52,7 +53,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
 
   Browser* const app_browser = browser_created_observer.Wait();
   EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
-  EXPECT_EQ(++num_browsers, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(
+      ++num_browsers,
+      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
   EXPECT_NE(browser(), app_browser);
   EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
   EXPECT_EQ(start_url, app_browser->tab_strip_model()
