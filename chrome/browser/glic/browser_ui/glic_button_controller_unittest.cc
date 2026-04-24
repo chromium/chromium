@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -53,6 +54,12 @@ class TestingGlicInstanceCoordinator
   }
 
   void NotifyShowHide() { global_show_hide_subscriptions_.Notify(); }
+
+  void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback) override {
+    std::move(success_status_callback).Run(true);
+  }
 
  private:
   base::RepeatingClosureList global_show_hide_subscriptions_;

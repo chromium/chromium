@@ -30,6 +30,15 @@ class MockSharingMessageSender : public SharingMessageSender {
                                  DelegateType,
                                  ResponseCallback));
 
+  MOCK_METHOD5(
+      SendMessageToServerTarget,
+      base::OnceClosure(
+          const components_sharing_message::ServerChannelConfiguration&,
+          base::TimeDelta,
+          components_sharing_message::SharingMessage,
+          DelegateType,
+          ResponseCallback));
+
   MOCK_METHOD2(OnAckReceived,
                void(const std::string& fcm_message_id,
                     std::unique_ptr<components_sharing_message::ResponseMessage>

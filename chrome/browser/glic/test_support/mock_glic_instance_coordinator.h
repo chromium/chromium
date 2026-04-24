@@ -98,6 +98,12 @@ class MockGlicInstanceCoordinator
               (content::RenderFrameHost*),
               (override));
 
+  MOCK_METHOD(void,
+              GetExperimentalTriggeringUpdates,
+              (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,
+               base::OnceCallback<void(bool)>),
+              (override));
+
  private:
   base::WeakPtrFactory<MockGlicInstanceCoordinator> weak_ptr_factory_{this};
 };

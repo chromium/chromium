@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -142,7 +143,7 @@ class GlicInstanceCoordinatorImpl
                             GlicInvokeOptions options);
   void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
-      base::OnceCallback<void(bool)> success_status_callback);
+      base::OnceCallback<void(bool)> success_status_callback) override;
 
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;

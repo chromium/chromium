@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -150,6 +151,11 @@ class GlicInstanceCoordinator {
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) = 0;
   virtual GlicInstance* GetActiveInstance() = 0;
+
+  // Registers a handler to observe experimental triggering related updates.
+  virtual void GetExperimentalTriggeringUpdates(
+      mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler> handler,
+      base::OnceCallback<void(bool)> success_status_callback) = 0;
 };
 
 }  // namespace glic
