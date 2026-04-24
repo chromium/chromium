@@ -13,6 +13,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
@@ -199,10 +200,8 @@ class RichAnswerText implements AnswerText {
         @StyleRes
         int largeRes =
                 useRichAnswerCard
-                        ? org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_Headline2Thick_Primary
-                        : org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_TextLarge_Primary;
+                        ? R.style.TextAppearance_Headline2Thick_Primary
+                        : R.style.TextAppearance_TextLarge_Primary;
         if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
                 && answerType != AnswerType.ANSWER_TYPE_FINANCE) {
             return new DownloadableFontTextAppearanceSpan(context, largeRes);
@@ -217,10 +216,8 @@ class RichAnswerText implements AnswerText {
                 wantPositiveColor ^= reverseStockTextColor;
                 int styleResource =
                         wantPositiveColor
-                                ? org.chromium.chrome.browser.omnibox.R.style
-                                        .TextAppearance_OmniboxAnswerDescriptionPositive
-                                : org.chromium.chrome.browser.omnibox.R.style
-                                        .TextAppearance_OmniboxAnswerDescriptionNegative;
+                                ? R.style.TextAppearance_OmniboxAnswerDescriptionPositive
+                                : R.style.TextAppearance_OmniboxAnswerDescriptionNegative;
                 yield new DownloadableFontTextAppearanceSpan(context, styleResource);
             }
             default -> new DownloadableFontTextAppearanceSpan(context, largeRes);
@@ -238,10 +235,8 @@ class RichAnswerText implements AnswerText {
         @StyleRes
         int res =
                 mUseRichAnswerCard
-                        ? org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_TextLarge_Secondary
-                        : org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_TextMedium_Secondary;
+                        ? R.style.TextAppearance_TextLarge_Secondary
+                        : R.style.TextAppearance_TextMedium_Secondary;
         return new DownloadableFontTextAppearanceSpan(mContext, res);
     }
 

@@ -23,6 +23,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /** The properties associated with the Fusebox bar. */
 @NullMarked
@@ -193,7 +194,7 @@ class FuseboxProperties {
             new WritableBooleanPropertyKey();
 
     /** Holds button data objects for each model that is to be shown. */
-    public static final WritableObjectPropertyKey<java.util.List<PopupButtonData>>
+    public static final WritableObjectPropertyKey<List<PopupButtonData>>
             POPUP_MODEL_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
 
     /** Whether the models divider in the popup is visible. */

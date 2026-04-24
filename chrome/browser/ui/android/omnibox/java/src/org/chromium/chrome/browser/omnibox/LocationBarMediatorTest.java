@@ -2351,7 +2351,7 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_visible() {
-        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        Mockito.clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(true);
     }
@@ -2359,7 +2359,7 @@ public class LocationBarMediatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hidden() {
-        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        Mockito.clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }
@@ -2368,7 +2368,7 @@ public class LocationBarMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hiddenWhenFocused() {
         mMediator.onUrlFocusChange(true);
-        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        Mockito.clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }
@@ -2377,7 +2377,7 @@ public class LocationBarMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testUpdateBackButtonVisibility_hiddenOnNtp() {
         doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
-        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        Mockito.clearInvocations(mLocationBarLayout);
         mMediator.updateBackButtonVisibility();
         verify(mLocationBarLayout).setBackButtonVisibility(false);
     }

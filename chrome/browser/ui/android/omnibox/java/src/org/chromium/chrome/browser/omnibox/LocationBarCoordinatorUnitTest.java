@@ -21,6 +21,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -54,8 +55,7 @@ public class LocationBarCoordinatorUnitTest {
         when(mUrlCoordinator.hasFocus()).thenReturn(true);
         when(mLocationBarLayout.findViewById(R.id.location_bar_attachments_add))
                 .thenReturn(mAddButton);
-        when(mLocationBarLayout.getContext())
-                .thenReturn(org.robolectric.RuntimeEnvironment.getApplication());
+        when(mLocationBarLayout.getContext()).thenReturn(RuntimeEnvironment.getApplication());
     }
 
     @Test

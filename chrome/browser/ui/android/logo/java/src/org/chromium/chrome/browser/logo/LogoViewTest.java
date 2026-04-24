@@ -15,6 +15,7 @@ import android.graphics.Bitmap.Config;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -63,8 +64,7 @@ public class LogoViewTest {
                 .getScenario()
                 .onActivity(
                         activity -> {
-                            android.widget.FrameLayout parent =
-                                    new android.widget.FrameLayout(activity);
+                            FrameLayout parent = new FrameLayout(activity);
                             mView = new LogoView(activity, null);
                             parent.addView(
                                     mView,

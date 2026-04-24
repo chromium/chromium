@@ -12,6 +12,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -134,13 +135,12 @@ public class UnsyncedSuggestionsListAnimationDriver
         if (mIsToolbarBottomAnchoredSupplier.getAsBoolean()) {
             return mContext.getResources()
                     .getDimensionPixelOffset(
-                            org.chromium.chrome.browser.omnibox.R.dimen
+                            R.dimen
                                     .omnibox_suggestion_list_bottom_animation_starting_vertical_offset);
         } else {
             return mContext.getResources()
                     .getDimensionPixelOffset(
-                            org.chromium.chrome.browser.omnibox.R.dimen
-                                    .omnibox_suggestion_list_animation_added_vertical_offset);
+                            R.dimen.omnibox_suggestion_list_animation_added_vertical_offset);
         }
     }
 }

@@ -322,10 +322,8 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
         int textAppearanceResId =
                 isIncognito
-                        ? org.chromium.components.browser_ui.styles.R.style
-                                .TextAppearance_TextMedium_Primary_Baseline_Dark
-                        : org.chromium.components.browser_ui.styles.R.style
-                                .TextAppearance_TextMedium_OnInverseSurface;
+                        ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                        : R.style.TextAppearance_TextMedium_OnInverseSurface;
         mAttachmentUploadFailedSnackbar.setTextAppearance(textAppearanceResId);
     }
 

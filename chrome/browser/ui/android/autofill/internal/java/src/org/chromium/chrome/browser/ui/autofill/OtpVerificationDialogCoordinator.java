@@ -60,10 +60,7 @@ class OtpVerificationDialogCoordinator {
         OtpVerificationDialogView otpVerificationDialogView =
                 (OtpVerificationDialogView)
                         LayoutInflater.from(context)
-                                .inflate(
-                                        org.chromium.chrome.browser.ui.autofill.internal.R.layout
-                                                .otp_verification_dialog,
-                                        null);
+                                .inflate(R.layout.otp_verification_dialog, null);
         return new OtpVerificationDialogCoordinator(
                 context, modalDialogManager, otpVerificationDialogView, delegate);
     }
@@ -166,12 +163,12 @@ class OtpVerificationDialogCoordinator {
                 .with(
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mContext.getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                R.string
                                         .autofill_payments_otp_verification_dialog_negative_button_label))
                 .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mContext.getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                R.string
                                         .autofill_payments_otp_verification_dialog_positive_button_label))
                 .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                 .with(

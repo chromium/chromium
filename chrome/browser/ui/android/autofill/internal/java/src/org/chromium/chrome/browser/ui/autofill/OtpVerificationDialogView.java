@@ -147,8 +147,7 @@ public class OtpVerificationDialogView extends RelativeLayout {
     private SpannableString buildOtpResendMessageLink(Context context, ViewDelegate viewDelegate) {
         return SpanApplier.applySpans(
                 context.getString(
-                        org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                .autofill_payments_otp_verification_dialog_cant_find_code_message),
+                        R.string.autofill_payments_otp_verification_dialog_cant_find_code_message),
                 new SpanInfo(
                         "<link>",
                         "</link>",

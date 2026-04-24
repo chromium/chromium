@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.RectProvider;
 
 /** Unit tests for {@link DynamicRectProvider}. */
@@ -100,9 +102,7 @@ public class DynamicRectProviderUnitTest {
 
     @Test
     public void testGetPopupWidth_floating() {
-        org.mockito.Mockito.when(
-                        mResources.getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen.fusebox_popup_width))
+        org.mockito.Mockito.when(mResources.getDimensionPixelSize(R.dimen.fusebox_popup_width))
                 .thenReturn(500);
         int width =
                 mDynamicRectProvider.getPopupWidth(
@@ -112,7 +112,7 @@ public class DynamicRectProviderUnitTest {
 
     @Test
     public void testGetPopupWidth_bottom() {
-        android.graphics.Rect rect = new android.graphics.Rect(0, 0, 300, 0);
+        Rect rect = new Rect(0, 0, 300, 0);
         when(mBottomDelegate.getRect()).thenReturn(rect);
         int width =
                 mDynamicRectProvider.getPopupWidth(FuseboxProperties.PopupState.BOTTOM, mResources);
@@ -121,7 +121,7 @@ public class DynamicRectProviderUnitTest {
 
     @Test
     public void testGetRect_nullDelegate_returnsEmptyRect() {
-        android.graphics.Rect rect = mDynamicRectProvider.getRect();
+        Rect rect = mDynamicRectProvider.getRect();
         assertTrue(rect.isEmpty());
     }
 }

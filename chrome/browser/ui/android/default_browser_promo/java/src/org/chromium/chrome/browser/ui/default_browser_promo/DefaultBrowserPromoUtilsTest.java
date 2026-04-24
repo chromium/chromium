@@ -36,6 +36,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowRoleManager;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
@@ -118,7 +119,7 @@ public class DefaultBrowserPromoUtilsTest {
 
         @Override
         protected void fetchDefaultBrowserInfo(
-                org.chromium.base.Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
+                Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
             // This approach is used so that the lambda code is returned immediately.
             callback.onResult(mTestInfo);
         }

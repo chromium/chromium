@@ -11,7 +11,7 @@ import android.util.SparseArray;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.components.omnibox.R;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -85,18 +85,14 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
                 new ActionIcon(
-                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow,
-                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow,
-                        org.chromium.chrome.browser.omnibox.R.drawable
-                                .search_spark_rainbow_incognito,
+                        R.drawable.search_spark_rainbow,
+                        R.drawable.search_spark_rainbow,
+                        R.drawable.search_spark_rainbow_incognito,
                         false));
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE,
                 new ActionIcon(
-                        org.chromium.chrome.browser.omnibox.R.drawable.tab,
-                        org.chromium.chrome.browser.omnibox.R.drawable.switch_to_tab,
-                        org.chromium.chrome.browser.omnibox.R.drawable.switch_to_tab,
-                        true));
+                        R.drawable.tab, R.drawable.switch_to_tab, R.drawable.switch_to_tab, true));
         return map;
     }
 

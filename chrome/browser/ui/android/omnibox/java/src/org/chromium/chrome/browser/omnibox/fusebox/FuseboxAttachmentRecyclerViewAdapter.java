@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import android.view.LayoutInflater;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -39,7 +41,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentType.ATTACHMENT_FILE,
                 (parent) -> {
                     return parent.getContext()
-                            .getSystemService(android.view.LayoutInflater.class)
+                            .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 FuseboxAttachmentViewBinder::bind);
@@ -47,7 +49,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 (parent) -> {
                     return parent.getContext()
-                            .getSystemService(android.view.LayoutInflater.class)
+                            .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_image_attachment_layout, parent, false);
                 },
                 FuseboxAttachmentViewBinder::bind);
@@ -55,7 +57,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentType.ATTACHMENT_TAB,
                 (parent) -> {
                     return parent.getContext()
-                            .getSystemService(android.view.LayoutInflater.class)
+                            .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 FuseboxAttachmentViewBinder::bind);

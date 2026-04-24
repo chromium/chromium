@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -81,16 +82,16 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return android.content.res.Resources.ID_NULL;
+        return Resources.ID_NULL;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return android.content.res.Resources.ID_NULL;
+        return Resources.ID_NULL;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return android.content.res.Resources.ID_NULL;
+        return Resources.ID_NULL;
     }
 }

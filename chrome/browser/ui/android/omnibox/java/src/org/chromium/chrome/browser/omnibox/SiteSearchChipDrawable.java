@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -18,6 +19,7 @@ import androidx.annotation.Px;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** A drawable that draws a site search chip. */
 @NullMarked
@@ -37,10 +39,8 @@ public class SiteSearchChipDrawable extends Drawable {
         mLabel = label;
         mPadding = OmniboxResourceProvider.getSideSpacing(context);
 
-        mBackgroundColor = android.graphics.Color.TRANSPARENT;
-        mTextColor =
-                org.chromium.components.browser_ui.styles.SemanticColorUtils
-                        .getDefaultTextColorLink(context);
+        mBackgroundColor = Color.TRANSPARENT;
+        mTextColor = SemanticColorUtils.getDefaultTextColorLink(context);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mBackgroundColor);

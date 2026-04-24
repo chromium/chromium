@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -196,7 +197,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                             public void onViewportChanged(
                                     int firstVisiblePage,
                                     int visiblePagesCount,
-                                    android.util.SparseArray pageLocations,
+                                    SparseArray pageLocations,
                                     float zoomLevel) {
                                 if (mDelegate != null
                                         && mPdfView != null

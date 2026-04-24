@@ -42,29 +42,14 @@ public class RichAnswerTextTest {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mGreenText =
                 new TextAppearanceSpan(
-                        mContext,
-                        org.chromium.chrome.browser.omnibox.test.R.style
-                                .TextAppearance_OmniboxAnswerDescriptionPositive);
+                        mContext, R.style.TextAppearance_OmniboxAnswerDescriptionPositive);
         mRedText =
                 new TextAppearanceSpan(
-                        mContext,
-                        org.chromium.chrome.browser.omnibox.test.R.style
-                                .TextAppearance_OmniboxAnswerDescriptionNegative);
-        mPrimaryText =
-                new TextAppearanceSpan(
-                        mContext,
-                        org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_TextLarge_Primary);
-        mMediumText =
-                new TextAppearanceSpan(
-                        mContext,
-                        org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_TextMedium_Secondary);
+                        mContext, R.style.TextAppearance_OmniboxAnswerDescriptionNegative);
+        mPrimaryText = new TextAppearanceSpan(mContext, R.style.TextAppearance_TextLarge_Primary);
+        mMediumText = new TextAppearanceSpan(mContext, R.style.TextAppearance_TextMedium_Secondary);
         mHeadlineText =
-                new TextAppearanceSpan(
-                        mContext,
-                        org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_Headline2Thick_Primary);
+                new TextAppearanceSpan(mContext, R.style.TextAppearance_Headline2Thick_Primary);
     }
 
     @Test

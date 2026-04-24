@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,9 +59,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
          *
          * @param promoAction the promo action corresponding to the account used to sign in.
          */
-        void recordUserSignInHistograms(
-                @org.chromium.components.signin.metrics.AccountConsistencyPromoAction
-                        int promoAction);
+        void recordUserSignInHistograms(@AccountConsistencyPromoAction int promoAction);
 
         /** Records histograms corresponding to the user dismissing the sign-in screen. */
         void recordSigninDismissedHistograms();

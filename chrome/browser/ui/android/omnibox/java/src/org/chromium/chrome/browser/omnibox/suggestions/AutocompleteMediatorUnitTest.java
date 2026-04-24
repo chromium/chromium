@@ -1735,7 +1735,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.allowPendingItemSelection();
         mKeywordModeEnteredCaptor.getValue().accept(null);
-        org.robolectric.shadows.ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mTextStateProvider).setSiteSearchChip(null);
         assertEquals("b", session.getAutocompleteInput().getUserText());
     }

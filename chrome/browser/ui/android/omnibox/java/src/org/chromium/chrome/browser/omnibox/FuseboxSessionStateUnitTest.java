@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link FuseboxSessionState}. */
@@ -70,7 +72,7 @@ public class FuseboxSessionStateUnitTest {
                     clearInvocations(mComposeboxQueryControllerBridge);
                     input.setHasAttachments(true);
                     verify(mComposeboxQueryControllerBridge, never())
-                            .setActiveTool(org.mockito.ArgumentMatchers.anyInt());
+                            .setActiveTool(ArgumentMatchers.anyInt());
                 };
 
         session.activate(mProfileSupplier, onFullyActivated);
@@ -199,8 +201,7 @@ public class FuseboxSessionStateUnitTest {
 
     @Test
     public void testDeactivate_taskScoped() {
-        org.chromium.content_public.browser.WebContents webContents =
-                mock(org.chromium.content_public.browser.WebContents.class);
+        WebContents webContents = mock(WebContents.class);
         FuseboxSessionState session = new FuseboxSessionState(webContents);
         session.activate(mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();

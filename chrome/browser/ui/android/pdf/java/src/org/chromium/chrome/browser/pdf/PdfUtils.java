@@ -29,6 +29,7 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
@@ -286,7 +287,7 @@ public class PdfUtils {
                             + URLEncoder.encode(downloadUrl, "UTF-8");
             recordIsPdfDownloadUrlEncoded(true);
             return pdfPageUrl;
-        } catch (java.io.UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             recordIsPdfDownloadUrlEncoded(false);
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;

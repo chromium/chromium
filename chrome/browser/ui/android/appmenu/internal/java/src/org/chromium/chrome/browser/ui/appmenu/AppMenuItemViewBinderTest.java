@@ -245,10 +245,7 @@ public class AppMenuItemViewBinderTest {
 
         standardModel.set(
                 AppMenuItemProperties.ICON,
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter));
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter));
         Assert.assertNotNull("Should have icon for item 1", itemIcon.getDrawable());
     }
 
@@ -405,10 +402,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testConvertView_Reused_TitleMenuItem_WithMenuIcon() {
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         createTitleMenuItem(MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, true, true);
         createTitleMenuItem(MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, true, false);
 
@@ -431,10 +425,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testConvertView_Reused_IconRow_SameButtonCount() {
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(
                 1,
                 MENU_ID1,
@@ -492,10 +483,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testConvertView_Reused_IconRow_IncreasingButtonCount() {
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(
                 1,
                 MENU_ID1,
@@ -545,10 +533,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testConvertView_Reused_IconRow_DecreasingButtonCount() {
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(
                 1, MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon, MENU_ID6, TITLE_6, icon,
                 MENU_ID7, TITLE_7, icon, MENU_ID8, TITLE_8, icon);
@@ -655,10 +640,7 @@ public class AppMenuItemViewBinderTest {
     @MediumTest
     public void testIconRowViewBinders() {
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         createIconRowMenuItem(
                 1, MENU_ID1, TITLE_1, icon, MENU_ID2, TITLE_2, icon, MENU_ID3, TITLE_3, icon,
                 MENU_ID4, TITLE_4, icon, MENU_ID5, TITLE_5, icon);
@@ -708,10 +690,7 @@ public class AppMenuItemViewBinderTest {
         PropertyModel model = createStandardMenuItem(MENU_ID1, TITLE_1);
 
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         model.set(AppMenuItemProperties.ICON, icon);
 
         // We are testing if setting ICON_NO_TINT to true will override the default grey tint that
@@ -735,10 +714,7 @@ public class AppMenuItemViewBinderTest {
 
         // Set an icon without the no_tint flag.
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         model.set(AppMenuItemProperties.ICON, icon);
         // Should trigger the default grey tint.
         model.set(AppMenuItemProperties.ICON_COLOR_RES, 0);
@@ -762,10 +738,7 @@ public class AppMenuItemViewBinderTest {
         int specificColorRes = android.R.color.holo_blue_light;
 
         Drawable icon =
-                AppCompatResources.getDrawable(
-                        mActivity,
-                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                                .test_ic_vintage_filter);
+                AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
         model.set(AppMenuItemProperties.ICON, icon);
         model.set(AppMenuItemProperties.ICON_COLOR_RES, specificColorRes);
 
