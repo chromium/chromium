@@ -12,17 +12,18 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -82,6 +83,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable AutocompleteInput mInput;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private boolean mDeferredInitialized;
+    private @Nullable FuseboxSessionState mPendingSession;
     private TemplateUrlService mTemplateUrlService;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
@@ -95,6 +97,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
+    private boolean mDestroyed;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -138,6 +141,33 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mDeferredInitialized) return;
         mDeferredInitialized = true;
 
+        mModel =
+                new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
+                        .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
+                        .with(
+                                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                                AutocompleteRequestType.SEARCH)
+                        // May not be correct, but the view side struggles to deal with a null here.
+                        // Init with a default, and it will be corrected by the mediator before it
+                        // matters.
+                        .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
+                        .with(
+                                FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
+                                OmniboxFeatures.sShowDedicatedModeButton.getValue())
+                        .with(FuseboxProperties.POPUP_STATE, FuseboxProperties.PopupState.HIDDEN)
+                        .build();
+
+        new AsyncLayoutInflater(mContext)
+                .inflate(
+                        R.layout.fusebox_context_popup,
+                        mParent,
+                        this::finishDeferredInitialization);
+    }
+
+    private void finishDeferredInitialization(
+            View popupView, int resid, @Nullable ViewGroup parent) {
+        if (mDestroyed) return;
+
         Resources res = mContext.getResources();
 
         // Prepare rect provider for the floating popup window.
@@ -151,7 +181,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         var dynamicRectProvider =
                 new DynamicRectProvider(viewRectProvider, mBottomSheetRectProvider);
 
-        var popupView = LayoutInflater.from(mContext).inflate(R.layout.fusebox_context_popup, null);
         mViewportRectProvider = new ViewportRectProvider(mContext);
         var contextButton = mParent.findViewById(R.id.location_bar_attachments_add);
 
@@ -181,22 +210,19 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         OmniboxFeatures.sShowBottomSheetPopup.getValue());
 
         mViewHolder = new FuseboxViewHolder(mParent, popup);
-        mModel =
-                new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
-                        .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
-                        .with(
-                                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
-                                AutocompleteRequestType.SEARCH)
-                        // May not be correct, but the view side struggles to deal with a null here.
-                        // Init with a default, and it will be corrected by the mediator before it
-                        // matters.
-                        .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
-                        .with(
-                                FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
-                                OmniboxFeatures.sShowDedicatedModeButton.getValue())
-                        .with(FuseboxProperties.POPUP_STATE, FuseboxProperties.PopupState.HIDDEN)
-                        .build();
-        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
+
+        if (mPendingSession != null) {
+            beginInput(mPendingSession);
+            mPendingSession = null;
+        }
+
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    if (mDestroyed || mModel == null || mViewHolder == null) return;
+
+                    PropertyModelChangeProcessor.create(
+                            mModel, mViewHolder, FuseboxViewBinder::bind);
+                });
     }
 
     @EnsuresNonNull("mMediator")
@@ -221,6 +247,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     public void destroy() {
+        mDestroyed = true;
         endInput();
         if (mMediator != null) {
             mMediator.destroy();
@@ -260,8 +287,16 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         var composeBox = session.getComposeboxQueryControllerBridge();
         if (composeBox == null) return;
 
-        if (!mDeferredInitialized) {
-            ensureDeferredInitialized();
+        if (mViewHolder == null) {
+            // - If mDeferredInitialized is false - this is the first time we run beginInput and we
+            //   need to make sure the UI is built.
+            // - If mDeferredInitialized is true, but mViewHolder is null - then we already
+            //   determined that the user or scenario is not eligible (e.g. feature flag disabled).
+            if (!mDeferredInitialized) {
+                mPendingSession = session;
+                ensureDeferredInitialized();
+            }
+            return;
         }
 
         // We can't do inclusive check due to missing `isPhone()` case in `DeviceInfo`.
@@ -284,8 +319,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // Terminate any current input to re-set session and re-install observers.
         // This should ideally be an assert ensuring that we don't begin a new input while the old
         // one is still active; will turn to an assert separately in case this scenario happens.
-        if (mModel == null
-                || !composeBox.isFuseboxEligible()
+        if (!composeBox.isFuseboxEligible()
                 || !isSupportedDeviceType
                 || !isSupportedPageClass
                 || !mDefaultSearchEngineIsGoogle) {
@@ -310,6 +344,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
         mInput = null;
         mMetrics = null;
+        mPendingSession = null;
     }
 
     // TemplateUrlServiceObserver
