@@ -166,6 +166,11 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   LoadState load_state() const { return load_state_; }
 
+  const std::optional<network::URLLoaderCompletionStatus>& completion_status()
+      const {
+    return completion_status_;
+  }
+
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

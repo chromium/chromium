@@ -46,8 +46,7 @@ class PrefetchContainerObserver final : public PrefetchContainer::Observer {
                                PreloadingEligibility eligibility) override;
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
-      const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status) override;
+      const PrefetchContainer& prefetch_container) override;
 
  private:
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>

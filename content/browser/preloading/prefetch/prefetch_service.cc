@@ -1850,11 +1850,11 @@ void PrefetchService::OnDeterminedHead(
 }
 
 void PrefetchService::OnPrefetchCompletedOrFailed(
-    const PrefetchContainer& prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status) {
+    const PrefetchContainer& prefetch_container) {
   TRACE_EVENT("loading", "PrefetchService::OnPrefetchCompletedOrFailed",
               "prefetch_url", prefetch_container.GetURL().spec(),
-              "completion_status.error_code", completion_status.error_code);
+              "completion_status.error_code",
+              prefetch_container.GetCompletionStatus()->error_code);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scheduler_->IsInActiveSet(prefetch_container));
 

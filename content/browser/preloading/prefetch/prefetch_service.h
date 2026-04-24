@@ -370,8 +370,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
                                PreloadingEligibility eligibility) override;
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
-      const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status) override;
+      const PrefetchContainer& prefetch_container) override;
 
   // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
   // (implicitly).

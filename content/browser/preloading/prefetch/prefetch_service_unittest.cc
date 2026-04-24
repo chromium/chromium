@@ -7405,8 +7405,7 @@ class RecordingPrefetchContainerObserver final
     AddEvent(Event::kObserverOnDeterminedHead);
   }
   void OnPrefetchCompletedOrFailed(
-      const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status) override {
+      const PrefetchContainer& prefetch_container) override {
     CHECK(prefetch_container.GetLoadState() ==
               PrefetchContainer::LoadState::kCompleted ||
           prefetch_container.GetLoadState() ==

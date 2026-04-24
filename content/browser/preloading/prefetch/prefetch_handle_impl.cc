@@ -53,16 +53,16 @@ void PrefetchContainerObserver::OnDeterminedHead(
 }
 
 void PrefetchContainerObserver::OnPrefetchCompletedOrFailed(
-    const PrefetchContainer& prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status) {
+    const PrefetchContainer& prefetch_container) {
   // `IsDecoy()` check is added to preserve the existing behavior.
   // https://crbug.com/400761083
   if (prefetch_container.IsDecoy()) {
     return;
   }
   if (on_prefetch_completed_or_failed_) {
-    on_prefetch_completed_or_failed_.Run(completion_status,
-                                         prefetch_container.GetResponseCode());
+    on_prefetch_completed_or_failed_.Run(
+        *prefetch_container.GetCompletionStatus(),
+        prefetch_container.GetResponseCode());
   }
 }
 

@@ -179,8 +179,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
                                PreloadingEligibility eligibility) override;
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
-      const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status) override;
+      const PrefetchContainer& prefetch_container) override;
 
   // Finds prefetch that matches to a navigation and is servable.
   //

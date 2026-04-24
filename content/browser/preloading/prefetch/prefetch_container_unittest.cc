@@ -1873,8 +1873,7 @@ class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
   }
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}
   void OnPrefetchCompletedOrFailed(
-      const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status) override {}
+      const PrefetchContainer& prefetch_container) override {}
 
   base::OnceClosure callback_;
 };

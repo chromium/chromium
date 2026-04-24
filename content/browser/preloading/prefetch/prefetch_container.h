@@ -280,8 +280,7 @@ class CONTENT_EXPORT PrefetchContainer
     // State: `PrefetchContainerLoadState::kCompleted` or
     // `PrefetchContainerLoadState::kFailed`.
     virtual void OnPrefetchCompletedOrFailed(
-        const PrefetchContainer& prefetch_container,
-        const network::URLLoaderCompletionStatus& completion_status) = 0;
+        const PrefetchContainer& prefetch_container) = 0;
   };
 
   // ----------------------------------------------------------------
@@ -334,6 +333,18 @@ class CONTENT_EXPORT PrefetchContainer
   // received. This is for the intentional usage of getting the non-2xxx
   // response code for failed response.
   std::optional<int> GetResponseCode() const;
+
+  // ----------------------------------------------------------------
+  // Values that can become non-null upon transitioning to
+  // `PrefetchContainerLoadState::kCompleted` or
+  // `PrefetchContainerLoadState::kFailed`, and
+  // never change after that.
+
+  // Returns the completion status. This returns non-null if and only if on
+  // `PrefetchContainerLoadState::kCompleted` or
+  // `PrefetchContainerLoadState::kFailed`.
+  const std::optional<network::URLLoaderCompletionStatus>& GetCompletionStatus()
+      const;
 
   // ----------------------------------------------------------------
 
@@ -713,13 +724,11 @@ class CONTENT_EXPORT PrefetchContainer
   // Should be called only from `OnPrefetchComplete()`, so that
   // `OnPrefetchCompletedOrFailed()` is always called after
   // `OnPrefetchCompleteInternal()`.
-  void OnPrefetchCompleteInternal(
-      const network::URLLoaderCompletionStatus& completion_status);
+  void OnPrefetchCompleteInternal();
 
   void NotifyPrefetchResponseReceived(
       const network::mojom::URLResponseHead& head);
-  void NotifyPrefetchRequestComplete(
-      const network::URLLoaderCompletionStatus& completion_status);
+  void NotifyPrefetchRequestComplete();
 
   // ----------------------------------------------------------------
   // Metrics:
@@ -815,6 +824,14 @@ class CONTENT_EXPORT PrefetchContainer
 
   // The redirect chain resulting from prefetching |GetURL()|.
   std::vector<std::unique_ptr<PrefetchSingleRedirectHop>> redirect_chain_;
+
+  // The completion status of prefetch. This is non-null if and only if on
+  // `PrefetchContainerLoadState::kCompleted` or
+  // `PrefetchContainerLoadState::kFailed`.
+  // TODO(crbug.com/432518638): Refer to the last
+  // `PrefetchResponseReader::completion_status_`. Currently failed completion
+  // can happen on non-last `PrefetchResponseReader`.
+  std::optional<network::URLLoaderCompletionStatus> completion_status_;
 
   // The network contexts used for this prefetch.
   scoped_refptr<network::SharedURLLoaderFactory>

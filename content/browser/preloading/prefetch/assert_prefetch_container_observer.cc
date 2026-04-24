@@ -93,8 +93,7 @@ void AssertPrefetchContainerObserver::OnDeterminedHead(
 }
 
 void AssertPrefetchContainerObserver::OnPrefetchCompletedOrFailed(
-    const PrefetchContainer& prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status) {
+    const PrefetchContainer& prefetch_container) {
   DUMP_WILL_BE_CHECK_EQ(&prefetch_container, prefetch_container_.get());
   DUMP_WILL_BE_CHECK(!on_will_be_destroyed_called_);
   DUMP_WILL_BE_CHECK(!prefetch_container_->is_in_dtor());

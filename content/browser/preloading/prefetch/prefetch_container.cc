@@ -991,6 +991,27 @@ std::optional<int> PrefetchContainer::GetResponseCode() const {
   return response_code;
 }
 
+const std::optional<network::URLLoaderCompletionStatus>&
+PrefetchContainer::GetCompletionStatus() const {
+  switch (GetLoadState()) {
+    case LoadState::kNotStarted:
+    case LoadState::kEligible:
+    case LoadState::kFailedIneligible:
+    case LoadState::kFailedHeldback:
+    case LoadState::kStarted:
+    case LoadState::kDeterminedHead:
+    case LoadState::kFailedDeterminedHead:
+      CHECK(!completion_status_);
+      break;
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
+      CHECK(completion_status_);
+      break;
+  }
+
+  return completion_status_;
+}
+
 void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   if (!streaming_loader_) {
     return;
@@ -1104,8 +1125,7 @@ void PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       std::move(callback);
 }
 
-void PrefetchContainer::OnPrefetchCompleteInternal(
-    const network::URLLoaderCompletionStatus& completion_status) {
+void PrefetchContainer::OnPrefetchCompleteInternal() {
   DVLOG(1) << *this << "::OnPrefetchComplete";
 
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
@@ -1128,10 +1148,9 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
   // TODO(crbug.com/40250089): Call
   // `devtools_instrumentation::OnPrefetchBodyDataReceived()` with body of the
   // response.
-  NotifyPrefetchRequestComplete(completion_status);
+  NotifyPrefetchRequestComplete();
 
-  int net_error = completion_status.error_code;
-  int64_t body_length = completion_status.decoded_body_length;
+  int net_error = GetCompletionStatus()->error_code;
 
   RecordPrefetchProxyPrefetchMainframeNetError(net_error);
 
@@ -1149,7 +1168,8 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
   if (net_error == net::OK) {
     prefetch_container_metrics_.time_prefetch_completed_successfully =
         base::TimeTicks::Now();
-    RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
+    RecordPrefetchProxyPrefetchMainframeBodyLength(
+        GetCompletionStatus()->decoded_body_length);
   }
 
   const PrefetchStatus prefetch_status = GetPrefetchStatus();
@@ -1185,7 +1205,7 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
 }
 
 // TODO(https://crbug.com/432518638): We should be able to calculate
-// `is_success` and `completion_status` from the last `PrefetchResponseReader`.
+// `is_success` from the last `PrefetchResponseReader`.
 // Before https://crbug.com/432518638 is fixed, we explicitly plumb them here to
 // ensure the correct `PrefetchResponseReader`'s states are used.
 void PrefetchContainer::OnPrefetchComplete(
@@ -1201,10 +1221,12 @@ void PrefetchContainer::OnPrefetchComplete(
   TRACE_EVENT("loading", "PrefetchContainer::OnPrefetchComplete",
               request_->preload_pipeline_info().GetFlow());
 
-  SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
-  OnPrefetchCompleteInternal(completion_status);
+  completion_status_ = completion_status;
 
-  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed, completion_status);
+  SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
+  OnPrefetchCompleteInternal();
+
+  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed);
 
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
     GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
@@ -1746,8 +1768,7 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
       ftn, GetDevtoolsRequestId(), GetCurrentURL(), head);
 }
 
-void PrefetchContainer::NotifyPrefetchRequestComplete(
-    const network::URLLoaderCompletionStatus& completion_status) {
+void PrefetchContainer::NotifyPrefetchRequestComplete() {
   // Ensured by the caller `PrefetchContainer::OnPrefetchCompleteInternal()`.
   CHECK(!IsDecoy());
 
@@ -1765,7 +1786,7 @@ void PrefetchContainer::NotifyPrefetchRequestComplete(
   }
 
   devtools_instrumentation::OnPrefetchRequestComplete(
-      ftn, GetDevtoolsRequestId(), completion_status);
+      ftn, GetDevtoolsRequestId(), *GetCompletionStatus());
 }
 
 std::string PrefetchContainer::GetMetricsSuffix() const {
