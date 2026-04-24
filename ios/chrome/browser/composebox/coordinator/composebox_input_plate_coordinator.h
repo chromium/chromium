@@ -11,6 +11,7 @@
 
 @protocol ComposeboxDebuggerLogger;
 @class ComposeboxInputPlateViewController;
+@class ComposeboxFocusParams;
 enum class ComposeboxEntrypoint;
 @class ComposeboxModeHolder;
 @class ComposeboxTheme;
@@ -38,8 +39,7 @@ class Browser;
 /// the omnibox.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                entrypoint:(ComposeboxEntrypoint)entrypoint
-                                     query:(NSString*)query
+                               focusParams:(ComposeboxFocusParams*)focusParams
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
                                      theme:(ComposeboxTheme*)theme
                                 modeHolder:(ComposeboxModeHolder*)modeHolder

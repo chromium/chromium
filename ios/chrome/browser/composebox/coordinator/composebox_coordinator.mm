@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_position.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -59,8 +60,6 @@
   ComposeboxNavigationMediator* _navigationMediator;
   // The entrypoint that triggered the composebox.
   ComposeboxEntrypoint _entrypoint;
-  // An optional query to pre-fill the omnibox.
-  NSString* _query;
   // The container view controller.
   ComposeboxViewController* _viewController;
   // The base of the composebox animations.
@@ -69,20 +68,22 @@
   ComposeboxModeHolder* _modeHolder;
   // Coordinator for the debugging UI of the composebox.
   ComposeboxDebuggerCoordinator* _debuggerCoordinator;
+  // Parameters used to focus and initialize the composebox.
+  ComposeboxFocusParams* _focusParams;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                entrypoint:(ComposeboxEntrypoint)entrypoint
-                                     query:(NSString*)query
+                               focusParams:(ComposeboxFocusParams*)focusParams
                    composeboxAnimationBase:
                        (id<ComposeboxAnimationBase>)animationBase {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _entrypoint = entrypoint;
-    _query = query;
+    _entrypoint = focusParams.entrypoint;
     _animationBase = animationBase;
     _modeHolder = [[ComposeboxModeHolder alloc] init];
+    _modeHolder.mode = focusParams.initialMode;
+    _focusParams = focusParams;
   }
   return self;
 }
@@ -124,8 +125,7 @@
   _aimComposeboxCoordinator = [[ComposeboxInputPlateCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                      entrypoint:_entrypoint
-                           query:_query
+                     focusParams:_focusParams
                        URLLoader:_navigationMediator
                            theme:[self createTheme]
                       modeHolder:_modeHolder];

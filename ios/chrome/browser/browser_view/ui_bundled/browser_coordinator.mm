@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
@@ -2960,9 +2961,16 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
                            withQuery:(NSString*)query {
+  ComposeboxFocusParams* params =
+      [[ComposeboxFocusParams alloc] initWithEntrypoint:entrypoint];
+  params.query = query;
+  [self showComposeboxWithParams:params];
+}
+
+- (void)showComposeboxWithParams:(ComposeboxFocusParams*)params {
   if (!IsComposeboxIOSEnabled()) {
     [_omniboxCommandsHandler focusOmnibox];
-    [_omniboxCommandsHandler insertTextToOmnibox:query];
+    [_omniboxCommandsHandler insertTextToOmnibox:params.query];
     return;
   }
 
@@ -2973,8 +2981,7 @@ const char kChromeAppStoreUrl[] =
   _composeboxCoordinator = [[ComposeboxCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                      entrypoint:entrypoint
-                           query:query
+                     focusParams:params
          composeboxAnimationBase:_toolbarCoordinator];
   [_composeboxCoordinator start];
   _browserOmniboxStateProvider.composeboxStateProvider = _composeboxCoordinator;

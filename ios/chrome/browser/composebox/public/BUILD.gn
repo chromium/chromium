@@ -10,6 +10,7 @@ group("public") {
     ":constants",
     ":entrypoint",
     ":features",
+    ":focus_params",
     ":input_plate_controls",
     ":input_plate_position",
     ":model_options",
@@ -76,5 +77,19 @@ source_set("entrypoint") {
 
 source_set("composebox_mode") {
   sources = [ "composebox_mode.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("focus_params") {
+  sources = [
+    "composebox_focus_params.h",
+    "composebox_focus_params.mm",
+  ]
+  public_deps = [
+    ":composebox_mode",
+    ":entrypoint",
+    ":model_options",
+    "//ios/web/public",
+  ]
   deps = [ "//base" ]
 }

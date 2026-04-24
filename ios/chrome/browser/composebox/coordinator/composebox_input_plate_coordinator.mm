@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -150,23 +151,25 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // Subscription for AIM eligibility changes.
   base::CallbackListSubscription _aimEligibilitySubscription;
+  // Parameters used to focus and initialize the composebox.
+  ComposeboxFocusParams* _focusParams;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                entrypoint:(ComposeboxEntrypoint)entrypoint
-                                     query:(NSString*)query
+                               focusParams:(ComposeboxFocusParams*)focusParams
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
                                      theme:(ComposeboxTheme*)theme
                                 modeHolder:(ComposeboxModeHolder*)modeHolder {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
-    _entrypoint = entrypoint;
-    _query = query;
+    _entrypoint = focusParams.entrypoint;
+    _query = focusParams.query;
     _URLLoader = URLLoader;
     _theme = theme;
     _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
     _modeHolder = modeHolder;
+    _focusParams = focusParams;
   }
   return self;
 }
@@ -288,6 +291,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
     [_omniboxCoordinator focusOmnibox];
   }
+
+  if (_focusParams) {
+    [self applyFocusParams:_focusParams];
+  }
 }
 
 - (void)stop {
@@ -334,6 +341,46 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)endEditing {
   [_omniboxCoordinator endEditing];
+}
+
+- (void)applyFocusParams:(ComposeboxFocusParams*)params {
+  _modeHolder.mode = params.initialMode;
+
+  if (params.initialModelOption != ComposeboxModelOption::kNone) {
+    [_mediator setModelOption:params.initialModelOption explicitUserAction:YES];
+  }
+
+  for (ComposeboxImageItem* item in params.initialImages) {
+    NSItemProvider* provider =
+        [[NSItemProvider alloc] initWithObject:item.image];
+    [_mediator processImageItemProvider:provider
+                                assetID:item.assetID
+                             completion:nil];
+  }
+
+  for (NSURL* url in params.initialFiles) {
+    GURL gurl(url.absoluteString.UTF8String);
+
+    UTType* contentType = nil;
+    BOOL accessing = [url startAccessingSecurityScopedResource];
+    [url getResourceValue:&contentType forKey:NSURLContentTypeKey error:nil];
+    BOOL isPDF = [contentType conformsToType:UTTypePDF];
+
+    auto stopAccessScopedResourcesIfNeeded = ^{
+      if (accessing) {
+        [url stopAccessingSecurityScopedResource];
+      }
+    };
+
+    [_mediator processFileURL:gurl
+                        isPDF:isPDF
+                   completion:stopAccessScopedResourcesIfNeeded];
+  }
+
+  if (!params.initialTabIDs.empty()) {
+    [_mediator attachSelectedTabsWithWebStateIDs:params.initialTabIDs
+                               cachedWebStateIDs:{}];
+  }
 }
 
 #pragma mark - ComposeboxInputPlateViewControllerDelegate

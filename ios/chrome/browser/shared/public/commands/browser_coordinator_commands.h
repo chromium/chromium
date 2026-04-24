@@ -24,6 +24,7 @@ enum class AccessPoint;
 namespace trusted_vault {
 enum class TrustedVaultUserActionTriggerForUMA;
 }
+@class ComposeboxFocusParams;
 
 // Protocol for commands that will be handled by the BrowserCoordinator.
 // TODO(crbug.com/41427057) : Rename this protocol to one that is more
@@ -64,6 +65,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the composebox from the `entryPoint` with `query`.
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entryPoint
                            withQuery:(NSString*)query;
+
+// Shows the composebox with the given `params`.
+- (void)showComposeboxWithParams:(ComposeboxFocusParams*)params;
 
 // Hides the composebox on the next run loop.
 - (void)hideComposebox;

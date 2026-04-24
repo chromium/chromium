@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol ComposeboxAnimationBase;
-enum class ComposeboxEntrypoint;
+@class ComposeboxFocusParams;
 
 // Coordinator that contains the composebox, presenting it modally.
 @interface ComposeboxCoordinator : ChromeCoordinator <OmniboxStateProvider>
@@ -19,11 +19,10 @@ enum class ComposeboxEntrypoint;
 @property(nonatomic, assign, getter=isPresented, readonly) BOOL presented;
 
 /// Initializes the coordinator with the `baseViewController`, `browser`,
-/// `entrypoint` and an optional `query` to pre-fill the omnibox.
+/// and `focusParams`.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
-                                entrypoint:(ComposeboxEntrypoint)entrypoint
-                                     query:(NSString*)query
+                               focusParams:(ComposeboxFocusParams*)focusParams
                    composeboxAnimationBase:
                        (id<ComposeboxAnimationBase>)composeboxAnimationBase
     NS_DESIGNATED_INITIALIZER;

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 
 @implementation ComposeboxInttestCoordinator {
   ComposeboxCoordinator* _composeboxCoordinator;
@@ -17,11 +18,13 @@
   AutocompleteBrowserAgent::CreateForBrowser(self.browser);
 
   // Start coordinator.
+  ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kOther];
+
   _composeboxCoordinator = [[ComposeboxCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                      entrypoint:ComposeboxEntrypoint::kOther
-                           query:nil
+                     focusParams:params
          composeboxAnimationBase:nil];
   [_composeboxCoordinator start];
 }

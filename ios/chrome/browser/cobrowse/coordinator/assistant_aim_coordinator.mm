@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -117,11 +118,12 @@ class AssistantAIMUIStateProvider
       initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottom
                        incognito:NO
                            isNTP:NO];
+  ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kCobrowse];
   _inputPlateCoordinator = [[ComposeboxInputPlateCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
-                      entrypoint:ComposeboxEntrypoint::kCobrowse
-                           query:nil
+                     focusParams:focusParams
                        URLLoader:_mediator
                            theme:theme
                       modeHolder:_modeHolder];
