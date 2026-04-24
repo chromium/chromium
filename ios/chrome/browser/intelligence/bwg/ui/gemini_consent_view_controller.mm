@@ -84,13 +84,7 @@ NSString* const kSouthKoreaCountryCode = @"kr";
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.navigationItem.hidesBackButton = YES;
-}
-
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-  if (!_mainStackView) {
-    [self configureMainStackView];
-  }
+  [self configureMainStackView];
 }
 
 #pragma mark - GeminiFREViewControllerProtocol

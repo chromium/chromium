@@ -110,9 +110,6 @@ const CGFloat kInsetAdjustment = 20;
   [self setupChildViewControllers];
   [self setupSubviews];
   [self configureSheetPresentation];
-  _currentChildViewController =
-      _showPromo ? _promoViewController : _consentViewController;
-
   [self updateButtonConfiguration];
   [self updateAccessibilityVisibility];
 }
@@ -299,6 +296,9 @@ const CGFloat kInsetAdjustment = 20;
                        FREType:_FREType
                        country:_country];
   _consentViewController.mutator = self.mutator;
+
+  _currentChildViewController =
+      _showPromo ? _promoViewController : _consentViewController;
 }
 
 // Configures modal presentation settings. We use a custom detent with a height
