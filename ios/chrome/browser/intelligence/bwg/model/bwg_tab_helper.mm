@@ -659,7 +659,12 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 
   badge_config.badgeText = cue_label;
   badge_config.shouldHideBadgeAfterChipCollapse = true;
-  [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
+  bool responds = [(id)location_bar_badge_commands_handler_
+      respondsToSelector:@selector(updateBadgeConfig:)];
+  DCHECK(responds);
+  if (responds) {
+    [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
+  }
 }
 
 // Computes Gemini eligibility based on the presence of metadata.
