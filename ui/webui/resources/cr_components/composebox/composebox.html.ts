@@ -79,7 +79,8 @@ export function getHtml(this: ComposeboxElement) {
                         exportparts="tool-chip-label"
                         .inputState="${this.inputState}"
                         .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
-                        @tool-click="${this.onToolClick}">
+                        @tool-click="${this.onToolClick}"
+                        part="tool-chip">
                       </cr-composebox-tool-chip>
                   </div>
                   ` : ''}
