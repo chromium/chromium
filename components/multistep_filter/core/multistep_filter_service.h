@@ -24,6 +24,7 @@ class IdentityManager;
 namespace multistep_filter {
 
 class AnnotationIndexClient;
+class MultistepFilterLogRouter;
 class MultistepFilterServiceTestApi;
 class FilterExtractor;
 class FilterStore;
@@ -49,7 +50,8 @@ class MultistepFilterService : public KeyedService {
   MultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
       std::unique_ptr<FilterStore> filter_store,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      MultistepFilterLogRouter* log_router);
 
   MultistepFilterService(const MultistepFilterService&) = delete;
   MultistepFilterService& operator=(const MultistepFilterService&) = delete;
@@ -58,12 +60,13 @@ class MultistepFilterService : public KeyedService {
 
   // Parses the given url to extract a `FilterAnnotation`. A filter annotation
   // is a set of normalized filter attributes.
-  virtual void ExtractAnnotation(const GURL& url);
+  virtual void ExtractAnnotation(int64_t navigation_id, const GURL& url);
 
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Results are returned via the
   // `callback`.
   virtual void GenerateFilterSuggestions(
+      int64_t navigation_id,
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 
@@ -71,10 +74,14 @@ class MultistepFilterService : public KeyedService {
   friend class MultistepFilterServiceTestApi;
 
   // Callback for when an annotation is extracted.
-  void OnExtractionFinished(std::optional<base::Uuid> annotation_id);
+  void OnExtractionFinished(int64_t navigation_id,
+                            const GURL& url,
+                            std::optional<base::Uuid> annotation_id);
 
   // Callback for when a suggestion is generated.
   void OnSuggestionGenerated(
+      int64_t navigation_id,
+      const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       std::optional<UrlFilterSuggestion> suggestion);
 
@@ -101,6 +108,9 @@ class MultistepFilterService : public KeyedService {
   // Used to check if the user is signed in, as the feature is only available
   // for signed-in users.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Log router for the internals page.
+  const raw_ptr<MultistepFilterLogRouter> log_router_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

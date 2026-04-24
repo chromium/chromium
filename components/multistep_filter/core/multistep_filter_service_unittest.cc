@@ -33,6 +33,8 @@ namespace multistep_filter {
 
 using ::testing::_;
 
+constexpr int64_t kTestNavigationId = 12345;
+
 class MockFilterExtractor : public FilterExtractor {
  public:
   MockFilterExtractor(AnnotationIndexClient& annotation_index_client,
@@ -91,7 +93,7 @@ class MultistepFilterServiceTest : public testing::Test {
 
     service_ = std::make_unique<MultistepFilterService>(
         std::move(annotation_index_client), std::move(filter_store),
-        identity_manager);
+        identity_manager, /*log_router=*/nullptr);
 
     MultistepFilterServiceTestApi(*service_).set_filter_extractor(
         std::move(filter_extractor));
@@ -136,7 +138,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
   EXPECT_CALL(*mock_observer_,
               OnExtractionFinished(testing::Optional(mock_uuid)));
 
-  service_->ExtractAnnotation(kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
@@ -146,7 +148,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NullIdentityManager) {
@@ -156,7 +158,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NullIdentityManager) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
@@ -173,7 +175,7 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
   EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
-  service_->ExtractAnnotation(kUrl);
+  service_->ExtractAnnotation(kTestNavigationId, kUrl);
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
@@ -195,7 +197,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
               OnSuggestionGenerated(testing::Optional(mock_suggestion)));
   EXPECT_CALL(mock_callback, Run(testing::Optional(mock_suggestion)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
@@ -210,7 +213,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
               OnSuggestionGenerated(testing::Eq(std::nullopt)));
   EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest,
@@ -226,7 +230,8 @@ TEST_F(MultistepFilterServiceTest,
               OnSuggestionGenerated(testing::Eq(std::nullopt)));
   EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
@@ -248,7 +253,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
               OnSuggestionGenerated(testing::Eq(std::nullopt)));
   EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullCallback) {
@@ -260,7 +266,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullCallback) {
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
 
-  service_->GenerateFilterSuggestions(kUrl, base::NullCallback());
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      base::NullCallback());
 }
 
 }  // namespace multistep_filter

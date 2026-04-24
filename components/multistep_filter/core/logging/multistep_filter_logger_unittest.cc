@@ -78,8 +78,7 @@ TEST(MultistepFilterLoggerTest, ScopedLogMessageWithDetail) {
   {
     ScopedLogMessage(&router, kTestNavigationId1, LogEventType::kUiShown,
                      "example.com")
-        .WithDetail("key1", "val1")
-        .WithDetail("key2", 42);
+        << LogDetail{"key1", "val1"} << LogDetail{"key2", 42};
   }
 
   ASSERT_EQ(router.entries().size(), 1u);
@@ -101,7 +100,7 @@ TEST(MultistepFilterLoggerTest, MacroLoggingEnabled) {
 
   MULTISTEP_FILTER_LOG(&router, kTestNavigationId2, LogEventType::kUiAccepted,
                        "test.com")
-      .WithDetail("detail_key", "detail_val");
+      << LogDetail{"detail_key", "detail_val"};
 
   ASSERT_EQ(router.entries().size(), 1u);
   const LogEntry& entry = router.entries().front();
@@ -120,7 +119,7 @@ TEST(MultistepFilterLoggerTest, MacroLoggingDisabled) {
 
   MULTISTEP_FILTER_LOG(&router, kTestNavigationId3, LogEventType::kUiDismissed,
                        "test.com")
-      .WithDetail("detail_key", "detail_val");
+      << LogDetail{"detail_key", "detail_val"};
 
   EXPECT_EQ(router.entries().size(), 0u);
 }

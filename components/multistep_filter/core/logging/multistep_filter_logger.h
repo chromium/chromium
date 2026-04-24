@@ -15,6 +15,14 @@
 
 namespace multistep_filter {
 
+// A helper struct to enable adding key-value pairs to log entries via
+// operator<<.
+template <typename T>
+struct LogDetail {
+  std::string_view key;
+  T value;
+};
+
 // A scoped helper for constructing a LogEntry and routing it to the
 // MultistepFilterLogRouter when it goes out of scope.
 class ScopedLogMessage {
@@ -31,8 +39,8 @@ class ScopedLogMessage {
   base::DictValue& details() { return entry_.details; }
 
   template <typename T>
-  ScopedLogMessage& WithDetail(std::string_view key, T&& value) {
-    entry_.details.Set(key, std::forward<T>(value));
+  ScopedLogMessage& operator<<(LogDetail<T> detail) {
+    entry_.details.Set(detail.key, std::move(detail.value));
     return *this;
   }
 
@@ -48,7 +56,7 @@ class ScopedLogMessage {
 // Convenience macro for logging messages with a MultistepFilterLogRouter.
 // Only executes the ScopedLogMessage construction if logging is enabled.
 // Uses a for loop to avoid dangling-else and empty-if-block warnings while
-// supporting chaining of .WithDetail() calls.
+// supporting chaining of << operator calls.
 // Evaluates 'logger' only once.
 #define MULTISTEP_FILTER_LOG(logger, navigation_id, type, source_etld_plus_1) \
   for (multistep_filter::MultistepFilterLogRouter* multistep_logger_ =        \

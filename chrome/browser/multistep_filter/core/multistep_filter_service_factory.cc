@@ -5,6 +5,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
@@ -36,6 +37,7 @@ MultistepFilterServiceFactory::MultistepFilterServiceFactory()
     : ProfileKeyedServiceFactory("MultistepFilterService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(MultistepFilterLogRouterFactory::GetInstance());
 }
 
 MultistepFilterServiceFactory::~MultistepFilterServiceFactory() = default;
@@ -50,6 +52,9 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
+  MultistepFilterLogRouter* log_router =
+      MultistepFilterLogRouterFactory::GetForProfile(profile);
+
   std::unique_ptr<AnnotationIndexClient> annotation_index_client =
       AnnotationIndexClient::Create(
           context->GetDefaultStoragePartition()
@@ -58,7 +63,7 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<MultistepFilterService>(
       std::move(annotation_index_client), std::make_unique<FilterStore>(),
-      identity_manager);
+      identity_manager, log_router);
 }
 
 }  // namespace multistep_filter

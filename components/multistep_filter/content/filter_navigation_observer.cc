@@ -67,6 +67,7 @@ void FilterNavigationObserver::DidFinishNavigation(
   }
 
   NavigationMetadata metadata(navigation_handle);
+  int64_t navigation_id = navigation_handle->GetNavigationId();
 
   // Avoid clearing suggestions for same-document navigations or same-URL
   // re-commits (including reloads). These are often intermediate states during
@@ -92,7 +93,7 @@ void FilterNavigationObserver::DidFinishNavigation(
   // click, omnibox navigation, or bookmark). This avoids extracting from
   // automatic client-side redirects.
   if (metadata.has_user_gesture) {
-    service_->ExtractAnnotation(metadata.url);
+    service_->ExtractAnnotation(navigation_id, metadata.url);
   }
 
   // Prevent showing suggestions for same-site navigations to avoid spamming
@@ -109,7 +110,7 @@ void FilterNavigationObserver::DidFinishNavigation(
   }
 
   service_->GenerateFilterSuggestions(
-      metadata.url,
+      navigation_id, metadata.url,
       base::BindOnce(&MultistepFilterUiDelegate::OnSuggestionGenerated,
                      delegate_->GetWeakPtr()));
 }

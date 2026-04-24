@@ -56,13 +56,18 @@ class MockMultistepFilterService : public MultistepFilterService {
       std::unique_ptr<FilterStore> filter_store)
       : MultistepFilterService(std::move(annotation_index_client),
                                std::move(filter_store),
-                               /*identity_manager=*/nullptr) {}
+                               /*identity_manager=*/nullptr,
+                               /*log_router=*/nullptr) {}
 
-  MOCK_METHOD(void, ExtractAnnotation, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              ExtractAnnotation,
+              (int64_t navigation_id, const GURL& url),
+              (override));
   MOCK_METHOD(
       void,
       GenerateFilterSuggestions,
-      (const GURL& url,
+      (int64_t navigation_id,
+       const GURL& url,
        base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
       (override));
 };
@@ -119,8 +124,8 @@ class ChromeFilterNavigationObserverTest
   NavigateAndGetCallback(const GURL& url) {
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
         captured_callback;
-    EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(url, _))
-        .WillOnce(MoveArg<1>(&captured_callback));
+    EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(_, url, _))
+        .WillOnce(MoveArg<2>(&captured_callback));
     auto simulator =
         content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
     simulator->SetHasUserGesture(true);
@@ -193,8 +198,8 @@ TEST_F(ChromeFilterNavigationObserverTest, NavigationClearsSuggestion) {
   // Navigate to a new URL, which should trigger ClearSuggestion on the
   // delegate.
   EXPECT_CALL(*mock_controller, ClearSuggestion());
-  EXPECT_CALL(*mock_service(),
-              GenerateFilterSuggestions(GURL("https://www.example2.com"), _));
+  EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(
+                                   _, GURL("https://www.example2.com"), _));
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://www.example2.com"), main_rfh());
   simulator->SetHasUserGesture(true);
@@ -255,13 +260,13 @@ TEST_F(ChromeFilterNavigationObserverTest, NavigationWithController) {
   filter_ui_controller.emplace(*mock_tab_);
 
   const GURL url("https://www.example.com");
-  EXPECT_CALL(*mock_service(), ExtractAnnotation(url));
+  EXPECT_CALL(*mock_service(), ExtractAnnotation(_, url));
   NavigateAndGetCallback(url);
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, NavigationWithNullController) {
   const GURL url("https://www.example.com");
-  EXPECT_CALL(*mock_service(), ExtractAnnotation(url));
+  EXPECT_CALL(*mock_service(), ExtractAnnotation(_, url));
   NavigateAndGetCallback(url);
 }
 
