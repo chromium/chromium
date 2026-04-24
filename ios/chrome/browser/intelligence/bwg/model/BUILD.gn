@@ -233,6 +233,7 @@ source_set("unit_tests") {
     "gemini_page_context_unittest.mm",
     "gemini_page_state_change_handler_unittest.mm",
     "gemini_scroll_observer_unittest.mm",
+    "gemini_service_factory_unittest.mm",
     "gemini_service_impl_unittest.mm",
     "gemini_session_handler_unittest.mm",
     "gemini_suggestion_handler_unittest.mm",
