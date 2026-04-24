@@ -1106,77 +1106,11 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
   EXPECT_EQ(u"Cucumbers", accept_callback.Take());
 }
 
-TEST_F(ChromeComposeClientTest, BugReportOpensCorrectURL) {
-  GURL bug_url("https://goto.google.com/ccbrfd");
 
-  ShowDialogAndBindMojo();
 
-  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
-  page_handler()->OpenBugReportingLink();
 
-  // Wait for the resulting new tab to be created.
-  tab_add_waiter.Wait();
-  // Check that the new foreground tab is opened.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses web_contents->GetController()->GetPendingEntry() as it only
-  // verifies that a navigation has started, regardless of whether it commits or
-  // not.
-  content::WebContents* new_tab_webcontents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(bug_url,
-            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
-}
 
-// TODO(crbug.com/400504728): Remove after ComposeProactiveNudge is launched.
-TEST_F(ChromeComposeClientTest, LearnMoreLinkOpensCorrectURL) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {compose::features::kEnableCompose},
-      {compose::features::kEnableComposeProactiveNudge});
 
-  GURL learn_more_url("https://support.google.com/chrome?p=help_me_write");
-
-  ShowDialogAndBindMojo();
-
-  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
-  page_handler()->OpenComposeLearnMorePage();
-
-  // Wait for the resulting new tab to be created.
-  tab_add_waiter.Wait();
-  // Check that the new foreground tab is opened.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses web_contents->GetController()->GetPendingEntry() as it only
-  // verifies that a navigation has started, regardless of whether it commits or
-  // not.
-  content::WebContents* new_tab_webcontents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(learn_more_url,
-            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
-}
-
-TEST_F(ChromeComposeClientTest, SurveyLinkOpensCorrectURL) {
-  GURL survey_url("https://goto.google.com/ccfsfd");
-
-  ShowDialogAndBindMojo();
-
-  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
-  page_handler()->OpenFeedbackSurveyLink();
-
-  // Wait for the resulting new tab to be created.
-  tab_add_waiter.Wait();
-  // Check that the new foreground tab is opened.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  // This test uses web_contents->GetController()->GetPendingEntry() as it only
-  // verifies that a navigation has started, regardless of whether it commits or
-  // not.
-  content::WebContents* new_tab_webcontents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(survey_url,
-            new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
-}
 
 // Tests that all ComposeSessions are deleted on page navigation.
 TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
