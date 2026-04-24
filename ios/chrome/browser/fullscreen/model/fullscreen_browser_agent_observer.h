@@ -30,6 +30,9 @@ class FullscreenBrowserAgentObserver : public base::CheckedObserver {
   // Called when the fullscreen transition completes.
   virtual void FullscreenDidTransition(FullscreenBrowserAgent* agent,
                                        FullscreenTransition transition) {}
+
+  // Called when the FullscreenBrowserAgent is shutting down.
+  virtual void WillShutDown(FullscreenBrowserAgent* agent) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_MODEL_FULLSCREEN_BROWSER_AGENT_OBSERVER_H_

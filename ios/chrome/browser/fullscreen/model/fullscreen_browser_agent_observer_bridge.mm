@@ -53,3 +53,11 @@ void FullscreenBrowserAgentObserverBridge::FullscreenDidTransition(
     [observer_ fullscreen:agent didTransition:transition];
   }
 }
+
+void FullscreenBrowserAgentObserverBridge::WillShutDown(
+    FullscreenBrowserAgent* agent) {
+  scoped_observation_.Reset();
+  if ([observer_ respondsToSelector:@selector(fullscreenWillShutDown:)]) {
+    [observer_ fullscreenWillShutDown:agent];
+  }
+}

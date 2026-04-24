@@ -31,7 +31,11 @@ void UpdateProgress(CGFloat& progress, CGFloat scroll, CGFloat delta) {
 FullscreenBrowserAgent::FullscreenBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {}
 
-FullscreenBrowserAgent::~FullscreenBrowserAgent() {}
+FullscreenBrowserAgent::~FullscreenBrowserAgent() {
+  for (auto& observer : observers_) {
+    observer.WillShutDown(this);
+  }
+}
 
 void FullscreenBrowserAgent::AddObserver(
     FullscreenBrowserAgentObserver* observer) {

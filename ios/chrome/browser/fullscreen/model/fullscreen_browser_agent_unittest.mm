@@ -32,12 +32,17 @@ class TestFullscreenBrowserAgentObserver
     did_transition_called_ = true;
     transition_ = transition;
   }
+  void WillShutDown(FullscreenBrowserAgent* agent) override {
+    will_shut_down_called_ = true;
+    agent->RemoveObserver(this);
+  }
 
   bool will_update_called_ = false;
   bool did_update_called_ = false;
   bool will_update_obscured_inset_range_called_ = false;
   bool did_update_obscured_inset_range_called_ = false;
   bool did_transition_called_ = false;
+  bool will_shut_down_called_ = false;
   FullscreenTransition transition_ = FullscreenTransition::kEnterFullscreen;
 };
 
@@ -327,4 +332,21 @@ TEST_F(FullscreenBrowserAgentTest, State) {
   // Disable fullscreen (which also exits fullscreen).
   agent->IncrementDisabledCounter(PassKey(), /*animated=*/false);
   EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+}
+
+// Tests that WillShutDown is called correctly.
+TEST_F(FullscreenBrowserAgentTest, WillShutDown) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  TestFullscreenBrowserAgentObserver observer;
+  agent->AddObserver(&observer);
+
+  EXPECT_FALSE(observer.will_shut_down_called_);
+
+  // Destroy the browser, which destroys the agent.
+  browser_.reset();
+
+  EXPECT_TRUE(observer.will_shut_down_called_);
 }

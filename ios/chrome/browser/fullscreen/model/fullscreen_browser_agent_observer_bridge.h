@@ -32,6 +32,9 @@
 - (void)fullscreen:(FullscreenBrowserAgent*)agent
      didTransition:(FullscreenTransition)transition;
 
+// Called when the FullscreenBrowserAgent is shutting down.
+- (void)fullscreenWillShutDown:(FullscreenBrowserAgent*)agent;
+
 @end
 
 // Bridge class that listens for `FullscreenBrowserAgent` notifications and
@@ -52,6 +55,7 @@ class FullscreenBrowserAgentObserverBridge
   void DidUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override;
   void FullscreenDidTransition(FullscreenBrowserAgent* agent,
                                FullscreenTransition transition) override;
+  void WillShutDown(FullscreenBrowserAgent* agent) override;
 
   __weak id<FullscreenBrowserAgentObserving> observer_;
   base::ScopedObservation<FullscreenBrowserAgent,

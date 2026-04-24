@@ -1084,6 +1084,10 @@ void GeminiBrowserAgent::DidUpdateObscuredInsetRange(
                                                 GetFloatyProgress());
 }
 
+void GeminiBrowserAgent::WillShutDown(FullscreenBrowserAgent* agent) {
+  agent->RemoveObserver(this);
+}
+
 #pragma mark - Private
 
 void GeminiBrowserAgent::PrepareFloatyToBeShown() {

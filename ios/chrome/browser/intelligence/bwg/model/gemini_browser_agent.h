@@ -213,6 +213,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // FullscreenBrowserAgentObserver:
   void WillUpdateState(FullscreenBrowserAgent* agent) override;
   void DidUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override;
+  void WillShutDown(FullscreenBrowserAgent* agent) override;
 
   // Returns true if the user has completed the FRE.
   bool HasCompletedFirstRun();
