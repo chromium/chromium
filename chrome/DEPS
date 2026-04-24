@@ -33,13 +33,13 @@ include_rules = [
   "+mojo/public",
 
   # Don't allow inclusion of these other libs we shouldn't be calling directly.
-  "-webkit",
   "-tools",
 
   # Required for process launching.
   "+services/service_manager",
 
-  # Allow inclusion of WebKit API files.
+  # Allow inclusion of Blink API files only.
+  "-third_party/blink",
   "+third_party/blink/public/common",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/public_buildflags.h",
