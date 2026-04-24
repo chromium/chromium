@@ -524,6 +524,97 @@ class SelectAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class DialogAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(AnyAriaAttributeNameValuePair(),
+                           AnyHtmlAttributeNameValuePair());
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return AnyCssDeclaration();
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  static constexpr int kNumNodes = 8;
+  int GetMaxDomNodes() override { return kNumNodes; }
+  int GetMaxAttributesPerNode() override { return 4; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  bool AllowReparenting() override { return false; }
+  std::optional<PredefinedNodesConfig> GetPredefinedNodes() override {
+    auto tag = [](html_names::HTMLTag t) {
+      return html_names::TagToQualifiedName(t);
+    };
+    auto nodes = std::vector<NodeSpecification>{
+        // <div> (parent: root) index 0.
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <dialog> (parent: root) index 1.
+        {.tag = tag(html_names::HTMLTag::kDialog),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <button> (parent: dialog 1) index 2 — focusable dialog content.
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = 1}},
+        // <span> (parent: root) index 3.
+        {.tag = tag(html_names::HTMLTag::kSpan),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <dialog> (parent: root) index 4.
+        {.tag = tag(html_names::HTMLTag::kDialog),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <input> (parent: dialog 4) index 5 — focusable dialog content.
+        {.tag = tag(html_names::HTMLTag::kInput),
+         .initial_state = {.parent_index = 4}},
+        // <button> (parent: root) index 6 — focusable sibling.
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <div> (parent: root) index 7.
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+    };
+    // Dialog nodes get an attribute domain that includes `open`, so the
+    // toggle logic exercises both close and showModal paths. The `open`
+    // entry is repeated to weight it higher than ARIA/HTML attributes,
+    // since it's the only way to start a dialog in the open state.
+    auto dialog_attrs = fuzztest::OneOf(
+        AnyAriaAttributeNameValuePair(), AnyHtmlAttributeNameValuePair(),
+        AttributeNameValuePairDomain(html_names::kOpenAttr,
+                                     fuzztest::Just(std::string(""))),
+        AttributeNameValuePairDomain(html_names::kOpenAttr,
+                                     fuzztest::Just(std::string(""))),
+        AttributeNameValuePairDomain(html_names::kOpenAttr,
+                                     fuzztest::Just(std::string(""))));
+    auto make_states_domain = [&]() {
+      return fuzztest::Map(
+          [](std::vector<NodeState> regular, NodeState dialog1,
+             NodeState dialog4) {
+            std::vector<NodeState> result;
+            result.push_back(std::move(regular[0]));
+            result.push_back(std::move(dialog1));
+            result.push_back(std::move(regular[1]));
+            result.push_back(std::move(regular[2]));
+            result.push_back(std::move(dialog4));
+            result.push_back(std::move(regular[3]));
+            result.push_back(std::move(regular[4]));
+            result.push_back(std::move(regular[5]));
+            return result;
+          },
+          fuzztest::VectorOf(AnyNodeState(this, kNumNodes,
+                                          AnyAttributeNameValuePair(),
+                                          AnyStyles()))
+              .WithSize(kNumNodes - 2),
+          AnyNodeState(this, kNumNodes, dialog_attrs, AnyStyles()),
+          AnyNodeState(this, kNumNodes, dialog_attrs, AnyStyles()));
+    };
+    return PredefinedNodesConfig{std::move(nodes), make_states_domain(),
+                                 make_states_domain()};
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -537,6 +628,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void AnimationAndAria(const DomScenario& input) { RunTest(input); }
   void ReadingFlowAndOrder(const DomScenario& input) { RunTest(input); }
   void SelectAndAria(const DomScenario& input) { RunTest(input); }
+  void DialogAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -589,5 +681,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, ReadingFlowAndOrder)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, SelectAndAria)
     .WithDomains(BuildDomScenarios<SelectAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, DialogAndAria)
+    .WithDomains(BuildDomScenarios<DialogAndAria>());
 
 }  // namespace blink

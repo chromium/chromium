@@ -199,6 +199,7 @@ test("blink_unittests") {
     "AccessibilityDomScenarioRunner.MathMLAndAria",
     "AccessibilityDomScenarioRunner.ProblematicMarkup",
     "AccessibilityDomScenarioRunner.ReadingFlowAndOrder",
+    "AccessibilityDomScenarioRunner.DialogAndAria",
     "AccessibilityDomScenarioRunner.SelectAndAria",
     "AccessibilityDomScenarioRunner.ValidTableAndAria",
     "HTMLDomScenarioRunner.HTML",
