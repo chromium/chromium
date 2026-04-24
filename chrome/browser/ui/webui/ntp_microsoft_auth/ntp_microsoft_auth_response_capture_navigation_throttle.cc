@@ -79,8 +79,8 @@ void NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateAndAdd(
   // Must be a profile using the first party NTP.
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile ||
-      search::GetNewTabPageURL(profile) != chrome::kChromeUINewTabPageURL) {
+  if (!profile || search::GetNewTabPageURL(profile) !=
+                      chrome::ChromeUINewTabPageURLAsGURL()) {
     return;
   }
 
