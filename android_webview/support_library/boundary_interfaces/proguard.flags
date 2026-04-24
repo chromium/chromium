@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This file is NOT read by the Chrome build system, but is maintained to ensure
+# proguard flag settings in AndroidX builds. Since these interfaces are used for
+# cross-project reflection, they should not be removed.
+
 # We need to avoid obfuscating the support library boundary interface because
 # this API is shared with the Android Support Library.
 # Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
 # any sub-packages of that package can still be obfuscated.
-# The "allowcodereplacement" is necessary to prevent R8 from making assumptions
-# about the implementations of these interfaces (b/503109544).
--keep,allowcodereplacement public class org.chromium.support_lib_boundary.* { public *; }
+-keep public class org.chromium.support_lib_boundary.* { public *; }

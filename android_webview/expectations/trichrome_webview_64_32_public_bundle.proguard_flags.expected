@@ -231,19 +231,6 @@
   public static void check*(...);
 }
 
-# File: ../../android_webview/support_library/boundary_interfaces/proguard.flags
-# Copyright 2018 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# We need to avoid obfuscating the support library boundary interface because
-# this API is shared with the Android Support Library.
-# Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
-# any sub-packages of that package can still be obfuscated.
-# The "allowcodereplacement" is necessary to prevent R8 from making assumptions
-# about the implementations of these interfaces (b/503109544).
--keep,allowcodereplacement public class org.chromium.support_lib_boundary.* { public *; }
-
 # File: ../../android_webview/nonembedded/java/proguard.flags
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -339,6 +326,23 @@
 -keepclasseswithmembers class !cr_allowunused,**J.N {
   public long *_HASH;
 }
+
+# File: ../../android_webview/support_library/proguard.flags
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is located above the directory where it is used in order to avoid it
+# being copied over to AndroidX.
+
+# We need to avoid obfuscating the support library boundary interface because
+# this API is shared with the Android Support Library.
+# Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
+# any sub-packages of that package can still be obfuscated.
+
+# The "allowcodereplacement" is necessary to prevent R8 from making assumptions
+# about the implementations of these interfaces (b/503109544).
+-keep,allowcodereplacement public class org.chromium.support_lib_boundary.* { public *; }
 
 # File: obj/third_party/androidx/androidx_appcompat_appcompat_java/proguard.txt
 # Copyright (C) 2018 The Android Open Source Project

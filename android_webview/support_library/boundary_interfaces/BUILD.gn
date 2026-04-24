@@ -59,7 +59,10 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/util/Features.java",
   ]
 
-  proguard_configs = [ "proguard.flags" ]
+  proguard_configs = [
+    # Include rules that should not be copied to AndroidX.
+    "../proguard.flags",
+  ]
 
   # Our choice of deps is limited, because boundary_interfaces/ must continue to
   # build when we mirror this into AndroidX. We are only permitted to depend on
