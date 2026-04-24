@@ -13916,9 +13916,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithDBPromoFirst",
+                    "name": "EnabledRemoveSignInAndSync",
                     "params": {
-                        "updated-first-run-sequence-param": "1"
+                        "updated-first-run-sequence-param": "2"
                     },
                     "enable_features": [
                         "UpdatedFirstRunSequence"

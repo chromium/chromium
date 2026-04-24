@@ -114,24 +114,25 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     /// Show the First Run UI at startup.
     firstRunConfig.additional_args.push_back("-FirstRunForceEnabled");
     firstRunConfig.additional_args.push_back("true");
+    firstRunConfig.additional_args.push_back(
+        "--enable-features=UpdatedFirstRunSequence:updated-first-run-sequence-"
+        "param/2");
     firstRunConfig.features_disabled.push_back(kBestOfAppFRE);
     firstRunConfig.relaunch_policy = ForceRelaunchByCleanShutdown;
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:firstRunConfig];
-    /// Go through first run screens by tapping the secondary action twice
-    /// (skipping default browser settings and sign-in.)
+    /// Go through first run screens by tapping the secondary action once
+    /// (skipping default browser settings.)
     id<GREYMatcher> buttonMatcher = ButtonStackSecondaryButton();
     id<GREYMatcher> scrollViewMatcher =
         grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
     id<GREYAction> searchAction =
         grey_scrollInDirection(kGREYDirectionDown, 200);
-    for (int i = 0; i < 2; i++) {
-      GREYElementInteraction* element =
-          [[EarlGrey selectElementWithMatcher:buttonMatcher]
-                 usingSearchAction:searchAction
-              onElementWithMatcher:scrollViewMatcher];
-      [element performAction:grey_tap()];
-    }
+    GREYElementInteraction* element =
+        [[EarlGrey selectElementWithMatcher:buttonMatcher]
+               usingSearchAction:searchAction
+            onElementWithMatcher:scrollViewMatcher];
+    [element performAction:grey_tap()];
     /// Verify the visibility of the entry point, and register reminder.
     SetReminderOnSafariDataImportEntryPoint();
 
