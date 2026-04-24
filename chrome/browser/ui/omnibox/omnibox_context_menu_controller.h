@@ -113,6 +113,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
                            GetMaxTabSuggestions_UsesServerLimit);
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            GetIconForInputType_Drive);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           ExecuteCommand_DriveInputType);
 
   // Keeps track of various bits of info that are necessary to dynamically
   // render the contents of the context menu, based on the InputState received
