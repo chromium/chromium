@@ -484,7 +484,6 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       // A task was created, so stopping the timer to not trigger
       // the password being saved.
       verification_timer_.Stop();
-      RegisterAutoSelectCredential(task);
     } else {
       return;
     }
@@ -492,6 +491,17 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
 
   // Ignore unrelated tasks.
   if (verification_task_id_ && *verification_task_id_ != task.id()) {
+    return;
+  }
+
+  if (IsTaskInterrupted(new_state)) {
+    if (auto logger = GetLoggerIfAvailable(client_)) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_CANCEL_FLOW);
+    }
+    task.Stop(actor::ActorTask::StoppedReason::kShutdown);
+    actor_task_state_subscription_ = {};
+    saved_form_manager_.reset();
     return;
   }
 

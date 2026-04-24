@@ -54,6 +54,7 @@ class PasswordChangeFromCheckupDelegate {
     return verification_task_id_;
   }
   std::u16string generated_password() const { return generated_password_; }
+  bool has_saved_form_manager() const { return saved_form_manager_ != nullptr; }
 #endif
 
  private:
