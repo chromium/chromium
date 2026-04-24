@@ -108,11 +108,11 @@ inline ThreadSpecific<T>::operator T*() {
 #if defined(__GLIBC__) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FREEBSD)
   // TLS is fast on these platforms.
   // TODO(csharrison): Qualify this statement for Android.
-  const bool kMainThreadAlwaysChecksTLS = true;
+  const bool kMainThreadAlwaysChecksTls = true;
   T** ptr = &off_thread_ptr;
   off_thread_ptr = static_cast<T*>(Get());
 #else
-  const bool kMainThreadAlwaysChecksTLS = false;
+  const bool kMainThreadAlwaysChecksTls = false;
   T** ptr = &main_thread_storage_;
   if (MayNotBeMainThread()) [[unlikely]] {
     off_thread_ptr = static_cast<T*>(Get());
@@ -128,7 +128,7 @@ inline ThreadSpecific<T>::operator T*() {
 
     // Even if we didn't realize we're on the main thread, we might still be.
     // We need to double-check so that |main_thread_storage_| is populated.
-    if (!kMainThreadAlwaysChecksTLS && ptr != &main_thread_storage_ &&
+    if (!kMainThreadAlwaysChecksTls && ptr != &main_thread_storage_ &&
         IsMainThread()) [[unlikely]] {
       main_thread_storage_ = *ptr;
     }
