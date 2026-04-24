@@ -178,8 +178,8 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     bwg_session_handler_ = [[GeminiSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     if (IsGeminiCopresenceEnabled()) {
-      gemini_view_state_handler_ = [[GeminiViewStateChangeHandler alloc]
-          initWithBrowserAgent:weak_factory_.GetWeakPtr()];
+      gemini_view_state_handler_ =
+          [[GeminiViewStateChangeHandler alloc] initWithTarget:this];
       bwg_session_handler_.geminiViewStateDelegate = gemini_view_state_handler_;
       gemini_link_opening_handler_.geminiViewStateDelegate =
           gemini_view_state_handler_;
@@ -265,6 +265,9 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 
   [gemini_link_opening_handler_ disconnect];
   gemini_link_opening_handler_ = nil;
+
+  [gemini_view_state_handler_ disconnect];
+  gemini_view_state_handler_ = nil;
 
   gemini_actuation_handler_ = nil;
 

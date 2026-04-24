@@ -4,26 +4,33 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "base/memory/raw_ptr.h"
 
 @implementation GeminiViewStateChangeHandler {
-  base::WeakPtr<GeminiBrowserAgent> _agent;
+  raw_ptr<GeminiViewStateChangeHandlerTarget> _target;
 }
 
-- (instancetype)initWithBrowserAgent:(base::WeakPtr<GeminiBrowserAgent>)agent {
+- (instancetype)initWithTarget:(GeminiViewStateChangeHandlerTarget*)target {
   if ((self = [super init])) {
-    _agent = agent;
+    _target = target;
   }
   return self;
+}
+
+- (void)disconnect {
+  _target = nullptr;
 }
 
 #pragma mark - GeminiViewStateDelegate
 
 - (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState {
-  if (_agent && viewState == ios::provider::GeminiViewState::kExpanded) {
-    _agent->OnGeminiViewStateExpanded();
+  if (!_target) {
+    return;
   }
-  _agent->SetLastShownViewState(viewState);
+  if (viewState == ios::provider::GeminiViewState::kExpanded) {
+    _target->OnGeminiViewStateExpanded();
+  }
+  _target->SetLastShownViewState(viewState);
 }
 
 - (void)didUpdateProcessingStatus:
@@ -34,12 +41,13 @@
 }
 
 - (void)switchToViewState:(ios::provider::GeminiViewState)viewState {
-  if (!_agent) {
+  if (!_target) {
     return;
   }
 
+  // Only handle collapsed state for now.
   if (viewState == ios::provider::GeminiViewState::kCollapsed) {
-    _agent->CollapseFloatyIfInvoked();
+    _target->CollapseFloatyIfInvoked();
   }
 }
 
