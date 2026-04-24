@@ -4035,12 +4035,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_READ_ALOUD" desc="Title name for the read aloud option in the preference.">
         Listen to this page
       </message>
-      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_PAGE_SUMMARY" desc="Title name for the page_summary option in the preference.">
-        Summarize this page
-      </message>
-      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_PAGE_SUMMARY_DESCRIPTION" desc="Description for the page_summary option in the preference.">
-        Invokes AI Assistant
-      </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_BASED_ON_YOUR_USAGE" desc="Title name for the based on your usage option in the preference.">
         Based on your usage
       </message>
@@ -4085,12 +4079,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_VOICE_SEARCH_IPH_SETTINGS" desc="An in-product-help message for the voice search button referring to toolbar settings.">
         Quickly search with your voice. To edit this shortcut, go to Settings.
-      </message>
-      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PAGE_SUMMARY_IPH" desc="An in-product-help message for the page summary button.">
-        Summarize page with AI
-      </message>
-      <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_REVIEW_PDF_IPH" desc="An in-product-help message for the review PDF button.">
-        Review PDF with AI
       </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_MENU_EDIT_SHORTCUT" desc="The menu option for opening adaptive toolbar settings.">
         Edit shortcut
