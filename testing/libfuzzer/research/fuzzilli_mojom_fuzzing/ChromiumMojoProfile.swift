@@ -48,7 +48,7 @@ extension ILType {
     fileprivate static let jsLockRequestCallbackRouterReceiverHelper: ILType =
         .object(
             ofGroup: MojoStrings.lockRequestCallbackRouterReceiverHelper,
-            withMethods: ["associateAndPassRemote"])
+            withMethods: ["associateAndPassRemote", "closeBindings"])
     fileprivate static let jsLockRequestRemote: ILType = .object(
         ofGroup: MojoStrings.lockRequestRemote)
 
@@ -78,9 +78,10 @@ extension ILType {
         withMethods: ["close"])
 
     // Data types
-    // TODO(crbug.com/500001059) Update typing for jsLockMode and jsWaitMode to use int enums
-    fileprivate static let jsLockMode: ILType = .integer
-    fileprivate static let jsWaitMode: ILType = .integer
+    fileprivate static let jsLockMode: ILType = .intEnumeration(
+        ofName: MojoStrings.lockMode, withValues: [0, 1])
+    fileprivate static let jsWaitMode: ILType = .intEnumeration(
+        ofName: MojoStrings.waitMode, withValues: [0, 1, 2])
     fileprivate static let jsLockInfo: ILType = .object(
         ofGroup: MojoStrings.lockInfo,
         withProperties: [
@@ -185,7 +186,8 @@ private let lockHandleCallbackRouterReceiverHelper = ObjectGroup(
     instanceType: .jsLockHandleCallbackRouterReceiverHelper,
     properties: [:],
     methods: [
-        "associateAndPassRemote": [] => .jsLockHandleRemote
+        "associateAndPassRemote": [] => .jsLockHandleRemote,
+        "closeBindings": [] => .undefined,
     ]
 )
 
@@ -220,16 +222,10 @@ private let lockInfo = ObjectGroup(
 
 private let mojoBuiltins: [String: ILType] = [
     MojoStrings.lockManager: .jsLockManager,
-    MojoStrings.lockManagerRemote: .constructor([] => .jsLockManagerRemote),
     MojoStrings.lockRequestCallbackRouter: .constructor(
         [] => .jsLockRequestCallbackRouter),
     MojoStrings.lockHandleCallbackRouter: .constructor(
         [] => .jsLockHandleCallbackRouter),
-    MojoStrings.lockHandleRemote: .constructor([] => .jsLockHandleRemote),
-    MojoStrings.lockMode: .object(withProperties: ["SHARED", "EXCLUSIVE"]),
-    MojoStrings.waitMode: .object(withProperties: [
-        "WAIT", "NO_WAIT", "PREEMPT",
-    ]),
 ]
 
 // Program Template to force Mojo usage
@@ -287,42 +283,12 @@ private let MojoLockManagerRemoteGenerator = CodeGenerator(
 /// code, this dedicated generator increases the frequency of LockRequestRemote
 /// objects in programs.
 private let MojoLockRequestRemoteGenerator = CodeGenerator(
-    "MojoLockRequestRemoteGenerator"
-) { b in
-    let router = b.findOrGenerateType(.jsLockRequestCallbackRouter)
+    "MojoLockRequestRemoteGenerator",
+    inputs: .required(.jsLockRequestCallbackRouter),
+    produces: [.jsLockRequestRemote]
+) { b, router in
     let helper = b.getProperty("$", of: router)
     b.callMethod("associateAndPassRemote", on: helper, withArgs: [])
-}
-
-/// Produces a requestLock call, generating requied arguments on demand.
-/// Although existing generators can together generate the same code, this
-/// dedicated generator increases the frequency of correct requestLock calls in
-/// programs.
-///
-///TODO(crbug.com/500001059) Remove MojoRequestLockGenerator
-private let MojoRequestLockGenerator = CodeGenerator("MojoRequestLockGenerator") { b in
-    let lockManagerRemote = b.findOrGenerateType(.jsLockManagerRemote)
-    let requestRemote = b.findOrGenerateType(.jsLockRequestRemote)
-
-    // Reuse strings often to trigger lock collisions, queuing, NO_WAIT failing, and PREEMPT breaking locks.
-    let lockName: Variable
-    if probability(0.7), let existingName = b.randomVariable(ofType: .string) {
-        lockName = existingName
-    } else {
-        lockName = b.loadString(b.randomString())
-    }
-
-    // Mojo enums are numeric in JS:
-    // LockMode: SHARED = 0, EXCLUSIVE = 1
-    let mode = b.loadInt(probability(0.5) ? 0 : 1)
-
-    // WaitMode: WAIT = 0, NO_WAIT = 1, PREEMPT = 2
-    let waitModeValue = chooseUniform(from: [0, 1, 2])
-    let waitMode = b.loadInt(Int64(waitModeValue))
-
-    b.callMethod(
-        "requestLock", on: lockManagerRemote,
-        withArgs: [lockName, mode, waitMode, requestRemote])
 }
 
 /// Emits code for adding a callback to a callback router. Since correctly
@@ -333,7 +299,6 @@ private let MojoRouterListenerGenerator = CodeGenerator(
     "MojoRouterListenerGenerator",
     inputs: .required(.jsLockRequestCallbackRouter)
 ) { b, router in
-
     guard
         let eventName = ILType.jsLockRequestCallbackRouter.properties
             .subtracting(["$"])
@@ -366,15 +331,11 @@ private func isTargetObject(type: ILType) -> Bool {
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generates emits random
-/// method calls, and if a type required in the signature are not avaialble, it will
-/// provide an object of a different type.
+/// method calls, generating any arguments that are not available.
 private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     b in
-    let targetVars = b.visibleVariables.filter {
-        isTargetObject(type: b.type(of: $0))
-    }
-    guard !targetVars.isEmpty else { return }
-    let obj = chooseUniform(from: targetVars)
+    let targetVar = b.findVariable { isTargetObject(type: b.type(of: $0)) }
+    guard let obj = targetVar else { return }
 
     // ~20% of the time, try to close the object if it has a `$` wrapper.
     // This triggers disconnected channels while requests are queued or held.
@@ -389,7 +350,9 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     // Only call known Mojo methods to avoid random JS pollution
     guard let methodName = b.type(of: obj).randomMethod() else { return }
 
-    let arguments = b.randomArguments(forCallingMethod: methodName, on: obj)
+    let signatures = b.methodSignatures(of: methodName, on: obj)
+    let signature = chooseUniform(from: signatures)
+    let arguments = b.findOrGenerateArguments(forSignature: signature)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
@@ -400,11 +363,8 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
 private let MojoPropertyRetrievalGenerator = CodeGenerator(
     "MojoPropertyRetrievalGenerator"
 ) { b in
-    let targetVars = b.visibleVariables.filter {
-        isTargetObject(type: b.type(of: $0))
-    }
-    guard !targetVars.isEmpty else { return }
-    let obj = chooseUniform(from: targetVars)
+    let targetVar = b.findVariable { isTargetObject(type: b.type(of: $0)) }
+    guard let obj = targetVar else { return }
 
     let propertyName =
         b.type(of: obj).randomProperty() ?? b.randomCustomPropertyName()
@@ -412,15 +372,11 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 }
 
 private let keepGenerators = [
-    "IntegerGenerator", "StringGenerator", "PlainFunctionGenerator",
-    "SubroutineReturnGenerator", "AsyncFunctionGenerator",
-    "MojoBuiltinGenerator", "MojoLockRequestCallbackRouterGenerator",
-    "MojoLockManagerRemoteGenerator",
-    "MojoRouterListenerGenerator",
-    "MojoLockRequestRemoteGenerator", "MojoRequestLockGenerator",
-    "MojoMethodCallGenerator",
-    "MojoPropertyRetrievalGenerator",
+    "IntegerGenerator", "StringGenerator", "TernaryOperationGenerator",
+    "PlainFunctionGenerator", "AsyncFunctionGenerator", "AwaitGenerator",
+    "SubroutineReturnGenerator", "TryCatchGenerator",
 ]
+
 private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
     .filter {
         !keepGenerators.contains($0)
@@ -446,14 +402,14 @@ let chromiumMojoProfile = Profile(
     ] + v8Profile.startupTests,
     // TODO(crbug.com/500389756) Investigate automatic generation of weights
     additionalCodeGenerators: [
-        (MojoBuiltinGenerator, 5),
-        (MojoLockRequestCallbackRouterGenerator, 10),
-        (MojoLockManagerRemoteGenerator, 10),
-        (MojoRouterListenerGenerator, 25),
-        (MojoLockRequestRemoteGenerator, 15),
-        (MojoRequestLockGenerator, 150),
-        (MojoMethodCallGenerator, 25),
-        (MojoPropertyRetrievalGenerator, 25),
+        (MojoBuiltinGenerator, 100),
+        (MojoMethodCallGenerator, 80),
+        (MojoPropertyRetrievalGenerator, 80),
+        (MojoLockRequestCallbackRouterGenerator, 100),
+        (MojoLockManagerRemoteGenerator, 100),
+        (MojoLockRequestRemoteGenerator, 100),
+        (MojoRouterListenerGenerator, 80),
+
     ],
     additionalProgramTemplates: WeightedList([
         // Heavily bias Fuzzilli to use the ProgramTemplate that establishes a Mojo connection.
@@ -477,6 +433,8 @@ let chromiumMojoProfile = Profile(
         lockHandleRemoteWrapper,
         lockInfo,
     ],
-    additionalEnumerations: [],
+    additionalEnumerations: [
+        .jsLockMode, .jsWaitMode,
+    ],
     optionalPostProcessor: nil
 )
