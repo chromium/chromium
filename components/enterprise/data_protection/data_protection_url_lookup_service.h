@@ -19,8 +19,6 @@
 
 namespace enterprise_data_protection {
 
-extern const size_t kVerdictCacheMaxSize;
-
 using LookupCallback =
     base::OnceCallback<void(std::unique_ptr<safe_browsing::RTLookupResponse>)>;
 

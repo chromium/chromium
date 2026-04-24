@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "components/enterprise/data_protection/features.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -480,11 +481,6 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   }
 
   DCHECK(pending_navigation_callback_.is_null());
-}
-
-// static
-size_t DataProtectionNavigationObserver::GetVerdictCacheMaxSize() {
-  return kVerdictCacheMaxSize;
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DataProtectionNavigationObserver);

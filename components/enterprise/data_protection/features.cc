@@ -9,4 +9,10 @@ namespace enterprise_data_protection {
 BASE_FEATURE(kEnableDeepScanVerdictCacheSize,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(size_t,
+                   kVerdictCacheMaxSize,
+                   &kEnableDeepScanVerdictCacheSize,
+                   /*name=*/"verdict_cache_max_size",
+                   /*default_value=*/200);
+
 }  // namespace enterprise_data_protection

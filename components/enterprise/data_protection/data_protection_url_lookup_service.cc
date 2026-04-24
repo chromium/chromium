@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/enterprise/data_protection/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 
 namespace {
@@ -36,8 +37,6 @@ int GetCacheDurationSec(safe_browsing::RTLookupResponse* rt_lookup_response) {
 
 }  // namespace
 namespace enterprise_data_protection {
-
-const size_t kVerdictCacheMaxSize = 200;
 
 DataProtectionUrlLookupService::Verdict::Verdict() = default;
 DataProtectionUrlLookupService::Verdict::Verdict(Verdict&&) = default;
@@ -114,7 +113,12 @@ bool DataProtectionUrlLookupService::IsVerdictExpired(const Verdict& verdict) {
 
 // static
 size_t DataProtectionUrlLookupService::GetVerdictCacheMaxSize() {
-  return kVerdictCacheMaxSize;
+  size_t max_value = enterprise_data_protection::kVerdictCacheMaxSize.Get();
+
+  // Defensive check to ensure a valid size for the verdict cache.
+  return max_value > 0
+             ? max_value
+             : enterprise_data_protection::kVerdictCacheMaxSize.default_value;
 }
 
 }  // namespace enterprise_data_protection
