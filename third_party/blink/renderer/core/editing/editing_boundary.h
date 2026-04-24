@@ -34,6 +34,14 @@ enum EditingBoundaryCrossingRule {
   kCanSkipOverEditingBoundary
 };
 
+// |WordSide| is used as a parameter of |StartOfWordPosition()| and
+// |EndOfWordPosition()| to control a returning position when they are called
+// for a position before word boundary.
+enum WordSide {
+  kNextWordIfOnBoundary = false,
+  kPreviousWordIfOnBoundary = true
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_BOUNDARY_H_

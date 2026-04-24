@@ -10,6 +10,30 @@
 
 namespace blink {
 
+enum class SentenceTrailingSpaceBehavior { kIncludeSpace, kOmitSpace };
+
+// ----- sentences -----
+// Definitions are in position_units_sentence.cc.
+// Note: EndOfSentence returns PositionWithAffinity (not bare Position) because
+// affinity is semantically relevant at sentence boundaries, unlike other
+// boundary functions. The *Position suffix is therefore omitted.
+CORE_EXPORT Position StartOfSentencePosition(const Position&);
+CORE_EXPORT PositionInFlatTree
+StartOfSentencePosition(const PositionInFlatTree&);
+CORE_EXPORT PositionWithAffinity
+EndOfSentence(const Position&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
+CORE_EXPORT PositionInFlatTreeWithAffinity
+EndOfSentence(const PositionInFlatTree&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
+CORE_EXPORT PositionInFlatTree
+PreviousSentencePosition(const PositionInFlatTree&);
+CORE_EXPORT PositionInFlatTree NextSentencePosition(const PositionInFlatTree&);
+EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange&);
+EphemeralRange ExpandRangeToSentenceBoundary(const EphemeralRange&);
+
 // ----- document -----
 CORE_EXPORT Position StartOfDocument(const Position&);
 CORE_EXPORT PositionInFlatTree StartOfDocument(const PositionInFlatTree&);
