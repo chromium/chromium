@@ -1487,17 +1487,18 @@ void ClientControlledShellSurface::UpdateBackdrop() {
 }
 
 void ClientControlledShellSurface::UpdateFrameWidth() {
-  int width = -1;
+  std::optional<int> width_in_pixels;
   if (shadow_bounds_) {
     float device_scale_factor =
         GetWidget()->GetNativeWindow()->layer()->device_scale_factor();
     int dp_width =
         gfx::ScaleToRoundedSize(shadow_bounds_->size(), 1.f / GetScale())
             .width();
-    width = base::ClampRound(dp_width * device_scale_factor);
+    width_in_pixels = base::ClampRound(dp_width * device_scale_factor);
   }
+
   static_cast<chromeos::HeaderView*>(GetFrameView()->GetHeaderView())
-      ->SetWidthInPixels(width);
+      ->SetWidthInPixels(width_in_pixels);
 }
 
 void ClientControlledShellSurface::CloseWideFrame(

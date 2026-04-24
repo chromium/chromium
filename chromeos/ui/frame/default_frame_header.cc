@@ -75,7 +75,7 @@ DefaultFrameHeader::DefaultFrameHeader(
 
 DefaultFrameHeader::~DefaultFrameHeader() = default;
 
-void DefaultFrameHeader::SetWidthInPixels(int width_in_pixels) {
+void DefaultFrameHeader::SetWidthInPixels(std::optional<int> width_in_pixels) {
   if (width_in_pixels_ == width_in_pixels)
     return;
   width_in_pixels_ = width_in_pixels;
@@ -136,14 +136,14 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
 
   const int corner_radius = header_corner_radius();
   flags.setAntiAlias(corner_radius > 0);
-  if (width_in_pixels_ > 0) {
+  if (width_in_pixels_ && width_in_pixels_.value() > 0) {
     canvas->Save();
     float layer_scale =
         target_widget()->GetNativeWindow()->layer()->device_scale_factor();
     float canvas_scale = canvas->UndoDeviceScaleFactor();
     gfx::Rect rect =
         ScaleToEnclosingRect(GetPaintedBounds(), canvas_scale, canvas_scale);
-    rect.set_width(width_in_pixels_ * canvas_scale / layer_scale);
+    rect.set_width(width_in_pixels_.value() * canvas_scale / layer_scale);
     TileRoundRect(canvas, flags, rect,
                   static_cast<int>(corner_radius * canvas_scale));
     canvas->Restore();
