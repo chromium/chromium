@@ -27,9 +27,11 @@ AccessibilityAnnotatorInfoPageHandler::AccessibilityAnnotatorInfoPageHandler(
     mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
         receiver,
     base::OnceCallback<void(InfoDialogResult)> callback,
+    AccessibilityAnnotatorInfoUI& info_ui,
     content::WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
       callback_(std::move(callback)),
+      info_ui_(info_ui),
       web_contents_(web_contents) {}
 
 AccessibilityAnnotatorInfoPageHandler::
@@ -115,6 +117,10 @@ void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
             /*is_renderer_initiated=*/false),
         /*navigation_handle_callback=*/base::DoNothing());
   }
+}
+
+void AccessibilityAnnotatorInfoPageHandler::ShowUi() {
+  info_ui_->ShowUI();
 }
 
 }  // namespace accessibility_annotator::info

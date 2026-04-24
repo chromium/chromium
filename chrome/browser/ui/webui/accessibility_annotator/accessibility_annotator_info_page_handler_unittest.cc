@@ -13,6 +13,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/accessibility_annotator/core/url_constants.h"
@@ -43,15 +44,18 @@ class AccessibilityAnnotatorInfoPageHandlerTest
     test_web_ui_.set_web_contents(web_contents());
     webui::SetBrowserWindowInterface(web_contents(), &mock_browser_interface_);
 
+    info_ui_ = std::make_unique<AccessibilityAnnotatorInfoUI>(&test_web_ui_);
+
     handler_ = std::make_unique<AccessibilityAnnotatorInfoPageHandler>(
         page_handler_.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
             [this](InfoDialogResult result) { result_ = result; }),
-        test_web_ui_.GetWebContents());
+        *info_ui_, test_web_ui_.GetWebContents());
   }
 
   void TearDown() override {
     handler_.reset();
+    info_ui_.reset();
     test_web_ui_.set_web_contents(nullptr);
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -67,6 +71,7 @@ class AccessibilityAnnotatorInfoPageHandlerTest
       identity_test_env_adaptor_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_interface_;
   mojo::Remote<accessibility_annotator::info::mojom::PageHandler> page_handler_;
+  std::unique_ptr<AccessibilityAnnotatorInfoUI> info_ui_;
   std::unique_ptr<AccessibilityAnnotatorInfoPageHandler> handler_;
   InfoDialogResult result_ = InfoDialogResult::kDismissed;
   base::UserActionTester user_action_tester_;

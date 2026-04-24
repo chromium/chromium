@@ -93,7 +93,6 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(dialog_view), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   dialog_widget_ = base::WrapUnique(widget);
-  dialog_widget_->Show();
 
   // Ensure that the dialog is closed synchronously when the widget is
   // destroyed.

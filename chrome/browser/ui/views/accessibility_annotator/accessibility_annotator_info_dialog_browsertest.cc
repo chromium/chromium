@@ -50,9 +50,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
 
   views::Widget* widget = controller->GetWidgetForTesting();
   ASSERT_TRUE(widget);
-  EXPECT_TRUE(widget->IsVisible());
 
   navigation_observer.Wait();
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(widget->IsVisible());
 
   controller->CloseDialog();
 }
@@ -79,9 +80,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
 
   views::Widget* widget = controller->GetWidgetForTesting();
   ASSERT_TRUE(widget);
-  EXPECT_TRUE(widget->IsVisible());
 
   navigation_observer.Wait();
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  EXPECT_TRUE(widget->IsVisible());
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
 

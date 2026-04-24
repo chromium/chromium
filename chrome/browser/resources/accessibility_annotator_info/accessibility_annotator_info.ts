@@ -42,6 +42,7 @@ export class AccessibilityAnnotatorInfoElement extends CrLitElement {
             this.email_ = response.info.email;
             this.avatarUrl_ = response.info.avatarUrl;
           }
+          AccessibilityAnnotatorInfoBrowserProxy.getInstance().handler.showUi();
         });
   }
 

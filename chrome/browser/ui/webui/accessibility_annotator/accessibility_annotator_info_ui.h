@@ -42,6 +42,9 @@ class AccessibilityAnnotatorInfoUI : public TopChromeWebUIController {
       mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
           receiver);
   void SetDialogCallback(base::OnceCallback<void(InfoDialogResult)> callback);
+
+  void ShowUI();
+
  private:
   std::unique_ptr<AccessibilityAnnotatorInfoPageHandler> page_handler_;
   base::OnceCallback<void(InfoDialogResult)> dialog_callback_ =

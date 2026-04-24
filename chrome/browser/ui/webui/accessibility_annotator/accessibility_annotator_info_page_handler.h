@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info.mojom.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,6 +25,7 @@ class AccessibilityAnnotatorInfoPageHandler
       mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
           receiver,
       base::OnceCallback<void(InfoDialogResult)> callback,
+      AccessibilityAnnotatorInfoUI& info_ui,
       content::WebContents* web_contents);
   AccessibilityAnnotatorInfoPageHandler(
       const AccessibilityAnnotatorInfoPageHandler&) = delete;
@@ -37,10 +39,12 @@ class AccessibilityAnnotatorInfoPageHandler
   void OnInfoDismissed() override;
   void OnManageSettingsClicked() override;
   void OnLearnMoreClicked() override;
+  void ShowUi() override;
 
  private:
   mojo::Receiver<accessibility_annotator::info::mojom::PageHandler> receiver_;
   base::OnceCallback<void(InfoDialogResult)> callback_;
+  const raw_ref<AccessibilityAnnotatorInfoUI> info_ui_;
   raw_ptr<content::WebContents> web_contents_;
 };
 

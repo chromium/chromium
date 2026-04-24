@@ -57,8 +57,14 @@ void AccessibilityAnnotatorInfoUI::BindInterface(
     mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
         receiver) {
   page_handler_ = std::make_unique<AccessibilityAnnotatorInfoPageHandler>(
-      std::move(receiver), std::move(dialog_callback_),
+      std::move(receiver), std::move(dialog_callback_), *this,
       web_ui()->GetWebContents());
+}
+
+void AccessibilityAnnotatorInfoUI::ShowUI() {
+  if (embedder()) {
+    embedder()->ShowUI();
+  }
 }
 
 void AccessibilityAnnotatorInfoUI::SetDialogCallback(

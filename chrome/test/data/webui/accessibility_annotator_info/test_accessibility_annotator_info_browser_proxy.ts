@@ -17,6 +17,7 @@ class TestAccessibilityAnnotatorInfoPageHandler extends TestBrowserProxy
       'onInfoDismissed',
       'onManageSettingsClicked',
       'onLearnMoreClicked',
+      'showUi',
     ]);
   }
 
@@ -39,6 +40,10 @@ class TestAccessibilityAnnotatorInfoPageHandler extends TestBrowserProxy
 
   onLearnMoreClicked() {
     this.methodCalled('onLearnMoreClicked');
+  }
+
+  showUi() {
+    this.methodCalled('showUi');
   }
 
   setAccountInfo(accountInfo: AccountInfo) {

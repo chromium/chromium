@@ -25,4 +25,7 @@ interface PageHandler {
 
   // Called when the user clicks the "Learn More" button.
   OnLearnMoreClicked();
+
+  // Asks the receiver to show the UI.
+  ShowUi();
 };
