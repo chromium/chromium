@@ -122,7 +122,8 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   if (!error) {
     if (base::FeatureList::IsEnabled(kContextMenuPreviewDownsampleImage)) {
       CGSize originalPixelSize = ImageSizeFromData(safeImageData);
-      CGFloat screenWidth = UIScreen.mainScreen.bounds.size.width;
+      CGFloat screenWidth =
+          self.view.window.windowScene.screen.bounds.size.width;
       CGFloat pointWidth = originalPixelSize.width / kPreviewImageScale;
       CGFloat aspect = originalPixelSize.height / originalPixelSize.width;
       CGFloat fitWidth = std::min(pointWidth, screenWidth);
