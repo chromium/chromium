@@ -72,9 +72,9 @@ class LoadProgressSimulator {
 
     /** Cancels simulating load progress. */
     public void cancel() {
-        if ((!ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
-                        || (mIsStarted && !MathUtils.areFloatsEqual(mProgress, 1.0f)))
-                && ChromeFeatureList.sAndroidApb144Patch7.isEnabled()) {
+        if (!ChromeFeatureList.sAndroidApb144Patch7.isEnabled()
+                || !ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
+                || (mIsStarted && !MathUtils.areFloatsEqual(mProgress, 1.0f))) {
             mModel.set(
                     LoadProgressProperties.COMPLETION_STATE,
                     LoadProgressProperties.CompletionState.FINISHED_DONT_ANIMATE);
