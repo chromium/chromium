@@ -232,6 +232,14 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
   return passkeyAssertionOutput.credential;
 }
 
+// NOTE: If you change the domain matching logic in this method, please also
+// update the corresponding logic in
+// components/webauthn/ios/passkey_tab_helper.mm
+// (CanPerformAutomaticPasskeyUpgrade).
+// That code can't be reused here due to language constraints (these values come
+// from a credential store that only holds Obj-C objects) and dependencies
+// (//net is a large library not currently included in the extension), but the
+// rules enforced by the two should be kept in sync.
 - (BOOL)hasMatchingPassword:(NSArray<id<Credential>>*)credentials {
   if (!credentials.count) {
     return NO;

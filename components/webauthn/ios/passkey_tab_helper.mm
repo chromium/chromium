@@ -6,8 +6,10 @@
 
 #import "base/check_deref.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/webauthn/core/browser/client_data_json.h"
@@ -24,6 +26,7 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace webauthn {
@@ -32,6 +35,18 @@ namespace {
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
+
+// Time threshold within which a password must have been used to be eligible for
+// automatic passkey upgrade.
+constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
+
+// Returns the domain and registry for a given host, or the host itself if it's
+// an IP or has no registry.
+std::string GetDomainAndRegistryOrHost(std::string_view host) {
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return domain.empty() ? std::string(host) : domain;
+}
 
 class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
  public:
@@ -333,11 +348,28 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   HandleRegistration(std::move(params));
 }
 
+// NOTE: If you change the domain matching logic in this method, please also
+// update the corresponding logic in
+// ios/chrome/credential_provider_extension/passkey_request_details.mm
+// (hasMatchingPassword:).
 bool PasskeyTabHelper::CanPerformAutomaticPasskeyUpgrade(
-    const RegistrationRequestParams& params) const {
-  // TODO(crbug.com/460486709): Add a proper check similar to the
-  // PasskeyUpgradeRequestController on Desktop.
-  return true;
+    const RegistrationRequestParams& params,
+    const std::vector<password_manager::PasswordForm>& logins) const {
+  std::string username = params.UserEntity().name;
+  std::string domain_rp_id = GetDomainAndRegistryOrHost(params.RpId());
+
+  for (const password_manager::PasswordForm& form : logins) {
+    if (base::UTF16ToUTF8(form.username_value) == username &&
+        GetDomainAndRegistryOrHost(form.url.host()) == domain_rp_id) {
+      base::TimeDelta time_since_last_use =
+          base::Time::Now() - form.date_last_used;
+      if (!time_since_last_use.is_negative() &&
+          time_since_last_use <= kPasskeyUpgradeRecencyThreshold) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
@@ -358,8 +390,7 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   bool is_conditional =
       request_type == PasskeyRequestParams::RequestType::kConditionalCreate;
 
-  bool can_upgrade = CanPerformAutomaticPasskeyUpgrade(params);
-  if (is_conditional && !can_upgrade) {
+  if (is_conditional && !password_store_) {
     // Automatic passkey upgrade is not allowed, defer to renderer.
     DeferToRenderer(std::move(request_info), request_type);
     return;
@@ -370,8 +401,10 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
 
   if (is_conditional) {
     // Automatic passkey upgrade is allowed, create a passkey.
-    CHECK(can_upgrade);
-    StartPasskeyCreation(passkey_request_id);
+    if (!is_querying_password_store_) {
+      is_querying_password_store_ = true;
+      password_store_->GetAutofillableLogins(weak_factory_.GetWeakPtr());
+    }
   } else {
     // Open the creation confirmation bottom sheet. A passkey will end up being
     // created by StartPasskeyCreation() below upon confirmation by the user.
@@ -830,6 +863,42 @@ bool PasskeyTabHelper::ShowCreationInterstitialIfNecessary(
     return true;
   }
   return false;
+}
+
+void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
+    password_manager::PasswordStoreInterface* store,
+    password_manager::LoginsResultOrError results_or_error) {
+  is_querying_password_store_ = false;
+
+  std::vector<std::string> request_ids_to_process;
+  for (const auto& [id, params] : registration_requests_) {
+    if (params.Type() ==
+        PasskeyRequestParams::RequestType::kConditionalCreate) {
+      request_ids_to_process.push_back(id);
+    }
+  }
+
+  const std::vector<password_manager::PasswordForm>* results = nullptr;
+  if (std::holds_alternative<password_manager::LoginsResult>(
+          results_or_error)) {
+    results = &std::get<password_manager::LoginsResult>(results_or_error);
+  }
+
+  for (const std::string& id : request_ids_to_process) {
+    auto it = registration_requests_.find(id);
+    if (it == registration_requests_.end()) {
+      continue;
+    }
+
+    const RegistrationRequestParams& params = it->second;
+
+    if (results && CanPerformAutomaticPasskeyUpgrade(params, *results)) {
+      StartPasskeyCreation(id);
+    } else {
+      DeferToRenderer(params.RequestInfo(), params.Type());
+      registration_requests_.erase(it);
+    }
+  }
 }
 
 }  // namespace webauthn

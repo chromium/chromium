@@ -10,6 +10,7 @@
 #import "base/test/run_until.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -75,11 +76,21 @@ class PasskeyTabHelperTest : public PlatformTest {
         {PasskeyJavaScriptFeature::GetInstance(),
          autofill::AutofillJavaScriptFeature::GetInstance()});
 
+    test_password_store_ =
+        base::MakeRefCounted<password_manager::TestPasswordStore>();
+    test_password_store_->Init(/*affiliated_match_helper=*/nullptr);
     auto client = std::make_unique<FakeIOSPasskeyClient>();
     client_ = client.get();
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
-                                        /*password_store=*/nullptr,
+                                        test_password_store_,
                                         std::move(client));
+  }
+
+  ~PasskeyTabHelperTest() override {
+    if (test_password_store_) {
+      test_password_store_->ShutdownOnUIThread();
+    }
+    client_ = nullptr;
   }
 
  protected:
@@ -89,6 +100,13 @@ class PasskeyTabHelperTest : public PlatformTest {
 
   bool HasExcludedPasskey(const RegistrationRequestParams& params) {
     return passkey_tab_helper()->HasExcludedPasskey(params);
+  }
+
+  bool CanPerformAutomaticPasskeyUpgrade(
+      const RegistrationRequestParams& params,
+      const std::vector<password_manager::PasswordForm>& logins) {
+    return passkey_tab_helper()->CanPerformAutomaticPasskeyUpgrade(params,
+                                                                   logins);
   }
 
   // Returns the list of passkeys filtered by the allowed credentials list.
@@ -178,9 +196,10 @@ class PasskeyTabHelperTest : public PlatformTest {
       std::make_unique<TestPasskeyModel>();
   web::FakeBrowserState fake_browser_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  web::FakeWebState fake_web_state_;
   raw_ptr<FakeIOSPasskeyClient> client_ = nullptr;
   password_manager::MockPasswordManager password_manager_;
+  scoped_refptr<password_manager::TestPasswordStore> test_password_store_;
+  web::FakeWebState fake_web_state_;
 };
 
 TEST_F(PasskeyTabHelperTest, LogsEventFromGetRequested) {
@@ -534,6 +553,69 @@ TEST_F(PasskeyTabHelperTest, HandleRegistrationDefersWhenGpmDisabled) {
 
   EXPECT_FALSE(client_->DidShowCreationBottomSheet());
   EXPECT_FALSE(client_->DidFetchKeys());
+}
+
+// Tests that automatic passkey upgrade is allowed for a valid, recent login.
+TEST_F(PasskeyTabHelperTest, AutomaticPasskeyUpgradeSuccess) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.url = GURL("https://example.com");
+  form.date_last_used = base::Time::Now();
+
+  std::vector<password_manager::PasswordForm> results;
+  results.push_back(form);
+
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+
+  EXPECT_TRUE(CanPerformAutomaticPasskeyUpgrade(params, results));
+}
+
+// Tests that automatic passkey upgrade is denied if the login is too old.
+TEST_F(PasskeyTabHelperTest, AutomaticPasskeyUpgradeThresholdEnforcement) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.url = GURL("https://example.com");
+  form.date_last_used = base::Time::Now() - base::Minutes(6);
+
+  std::vector<password_manager::PasswordForm> results;
+  results.push_back(form);
+
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+
+  EXPECT_FALSE(CanPerformAutomaticPasskeyUpgrade(params, results));
+}
+
+// Tests that automatic passkey upgrade is denied if no logins are found.
+TEST_F(PasskeyTabHelperTest, AutomaticPasskeyUpgradeRemovalHandling) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.url = GURL("https://example.com");
+  form.date_last_used = base::Time::Now();
+
+  std::vector<password_manager::PasswordForm> results;
+  results.push_back(form);
+
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+
+  EXPECT_TRUE(CanPerformAutomaticPasskeyUpgrade(params, results));
+
+  results.clear();
+  EXPECT_FALSE(CanPerformAutomaticPasskeyUpgrade(params, results));
+}
+
+// Tests that automatic passkey upgrade allows matching subdomains via eTLD+1.
+TEST_F(PasskeyTabHelperTest, AutomaticPasskeyUpgradeRpIdNormalization) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.url = GURL("https://sub.example.com");
+  form.date_last_used = base::Time::Now();
+
+  std::vector<password_manager::PasswordForm> results;
+  results.push_back(form);
+
+  RegistrationRequestParams params = BuildRegistrationRequestParams({});
+
+  EXPECT_TRUE(CanPerformAutomaticPasskeyUpgrade(params, results));
 }
 
 }  // namespace webauthn
