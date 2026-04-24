@@ -96,6 +96,27 @@ suite('ReportUnsafeSiteTest', () => {
     assertTrue(sendButton.disabled);
   });
 
+  test('SendButtonDisabledWhenUserClicksSend', async () => {
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: 'example.com',
+          screenshotDataUri: '',
+        });
+    const app = document.createElement('report-unsafe-site-app');
+    document.body.appendChild(app);
+
+    await browserProxy.getPageHandler().whenCalled('getTriggeringPageInfo');
+    await microtasksFinished();
+    const sendButton =
+        app.shadowRoot.querySelector<HTMLButtonElement>('.action-button');
+    assertTrue(!!sendButton);
+    assertFalse(sendButton.disabled);
+    sendButton.click();
+    await browserProxy.getPageHandler().whenCalled('sendReport');
+    assertTrue(sendButton.disabled);
+    assertEquals(1, browserProxy.getPageHandler().getCallCount('closeDialog'));
+  });
+
   test('IncludeScreenshotCheckbox_HasScreenshot', async () => {
     browserProxy.getPageHandler().setPromiseResolveFor(
         'getTriggeringPageInfo', {

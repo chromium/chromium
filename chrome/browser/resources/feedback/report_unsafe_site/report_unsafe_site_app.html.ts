@@ -39,8 +39,15 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
       $i18n{cancel}
     </cr-button>
     <cr-button class="action-button" @click="${this.onActionButtonClick_}"
-        ?disabled="${this.pageUrl_ === ''}">
-      $i18n{reportUnsafeSiteDialogSendButtonLabel}
+        ?disabled="${this.pageUrl_ === '' || this.isSendingCsdPing_}">
+      ${this.isSendingCsdPing_ ? html`
+        <div class="sending-content">
+          $i18n{reportUnsafeSiteDialogSendingButtonLabel}
+          <div class="spinner"></div>
+        </div>
+      ` : html`
+        $i18n{reportUnsafeSiteDialogSendButtonLabel}
+      `}
     </cr-button>
   </div>
 </div>
