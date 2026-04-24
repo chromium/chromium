@@ -290,8 +290,8 @@ void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, i
 void av1_get_horver_correlation_full_neon(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 #define av1_get_horver_correlation_full av1_get_horver_correlation_full_neon
 
-void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
-void av1_get_nz_map_contexts_neon(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
+void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const int eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
+void av1_get_nz_map_contexts_neon(const uint8_t *const levels, const int16_t *const scan, const int eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_neon
 
 void av1_highbd_inv_txfm_add_c(const tran_low_t *input, uint8_t *dest, int stride, const TxfmParam *txfm_param);
