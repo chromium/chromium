@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -26,11 +27,11 @@ std::string FormatSPKIName(const std::string& name) {
 }
 
 std::string FormatAcceptedKeyName(const std::string& name) {
-  return "k" + name + "AcceptableCerts";
+  return base::StrCat({"k", name, "AcceptableCerts"});
 }
 
 std::string FormatRejectedKeyName(const std::string& name) {
-  return "k" + name + "RejectedCerts";
+  return base::StrCat({"k", name, "RejectedCerts"});
 }
 
 std::string FormatPinsetName(const std::string& name) {
@@ -46,7 +47,7 @@ std::string FormatBool(bool value) {
 bool ReplaceTag(const std::string& name,
                 const std::string& value,
                 std::string* tpl) {
-  std::string tag = "[[" + name + "]]";
+  std::string tag = base::StrCat({"[[", name, "]]"});
 
   size_t start_pos = tpl->find(tag);
   if (start_pos == std::string::npos) {
@@ -90,8 +91,8 @@ std::string FormatVectorAsArray(const std::vector<uint8_t>& bytes) {
 
 std::string WritePinsetList(const std::string& name,
                             const std::vector<std::string>& pins) {
-  std::string output =
-      "static constexpr SHA256HashValue const * " + name + "[] = {";
+  std::string output = base::StrCat(
+      {"static constexpr SHA256HashValue const * ", name, "[] = {"});
   output.append(kNewLine);
 
   for (const auto& pin_name : pins) {
@@ -204,8 +205,8 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
     const std::string& name = current.first;
     const SPKIHash& hash = current.second;
 
-    output.append("static constexpr SHA256HashValue " + FormatSPKIName(name) +
-                  " = {");
+    base::StrAppend(&output, {"static constexpr SHA256HashValue ",
+                              FormatSPKIName(name), " = {"});
     output.append(kNewLine);
 
     for (size_t i = 0; i < hash.size() / 16; ++i) {
@@ -254,11 +255,11 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
       certs_output.append(kNewLine);
     }
 
-    pinsets_output.append(
-        "static constexpr net::TransportSecurityStateSource::Pinset " +
-        FormatPinsetName(uppercased_name) + " = {" + accepted_pins_names +
-        ", " + rejected_pins_names + "};");
-    pinsets_output.append(kNewLine);
+    base::StrAppend(
+        &pinsets_output,
+        {"static constexpr net::TransportSecurityStateSource::Pinset ",
+         FormatPinsetName(uppercased_name), " = {", accepted_pins_names, ", ",
+         rejected_pins_names, "};", kNewLine});
   }
 
 

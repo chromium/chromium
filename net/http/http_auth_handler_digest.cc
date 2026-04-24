@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -452,7 +453,7 @@ std::string HttpAuthHandlerDigest::AssembleCredentials(
       AssembleResponseDigest(method, path, credentials, cnonce, nc);
   // No need to call HttpUtil::Quote() as the response digest cannot contain
   // any characters needing to be escaped.
-  authorization += ", response=\"" + response + "\"";
+  base::StrAppend(&authorization, {", response=\"", response, "\""});
 
   if (!opaque_.empty()) {
     authorization += ", opaque=" + HttpUtil::Quote(opaque_);

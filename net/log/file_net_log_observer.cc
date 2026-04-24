@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/clamped_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
@@ -727,7 +728,7 @@ base::FilePath FileNetLogObserver::FileWriter::GetEventFilePath(
   DCHECK_LT(index, total_num_event_files_);
   DCHECK(IsBoundedAndStitchable());
   return inprogress_dir_path_.AppendASCII(
-      "event_file_" + base::NumberToString(index) + ".json");
+      base::StrCat({"event_file_", base::NumberToString(index), ".json"}));
 }
 
 base::FilePath FileNetLogObserver::FileWriter::GetConstantsFilePath() const {

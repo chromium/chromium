@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -294,7 +295,7 @@ int QuicSessionPoolTestBase::GetSourcePortForNewSessionInner(
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
-  GURL url("https://" + destination.host() + "/");
+  GURL url(base::StrCat({"https://", destination.host(), "/"}));
   RequestBuilder builder(this);
   builder.destination = destination;
   builder.url = url;

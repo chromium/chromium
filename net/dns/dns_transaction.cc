@@ -33,6 +33,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -534,7 +535,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     for (const auto& suffix : config.search) {
       std::optional<std::vector<uint8_t>> qname =
           dns_names_util::DottedNameToNetwork(
-              hostname_ + "." + suffix,
+              base::StrCat({hostname_, ".", suffix}),
               /*require_valid_internet_hostname=*/true);
       // Ignore invalid (too long) combinations.
       if (!qname.has_value())

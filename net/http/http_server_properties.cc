@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -571,12 +572,12 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
         base::Time::Exploded exploded;
         brokenness_expiration.LocalExplode(&exploded);
         std::string broken_info_string =
-            " (broken until " +
-            base::StringPrintf("%04d-%02d-%02d %0d:%0d:%0d", exploded.year,
-                               exploded.month, exploded.day_of_month,
-                               exploded.hour, exploded.minute,
-                               exploded.second) +
-            ")";
+            base::StrCat({" (broken until ",
+                          base::StringPrintf(
+                              "%04d-%02d-%02d %0d:%0d:%0d", exploded.year,
+                              exploded.month, exploded.day_of_month,
+                              exploded.hour, exploded.minute, exploded.second),
+                          ")"});
         alternative_service_string.append(broken_info_string);
       }
       alternative_service_list.Append(std::move(alternative_service_string));

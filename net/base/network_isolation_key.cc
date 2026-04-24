@@ -110,8 +110,9 @@ std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
           ? ""
           : " " + GetNetworkIsolationPartitionStringForCacheKey(
                       GetNetworkIsolationPartition());
-  return GetTopFrameSite()->Serialize() + " " + GetFrameSite()->Serialize() +
-         network_isolation_partition_string;
+  return base::StrCat({GetTopFrameSite()->Serialize(), " ",
+                       GetFrameSite()->Serialize(),
+                       network_isolation_partition_string});
 }
 
 std::string NetworkIsolationKey::ToDebugString() const {

@@ -151,7 +151,7 @@ std::string ProxyChain::ToDebugString() const {
     }
     debug_string += ProxyServerToProxyUri(proxy_server);
   }
-  debug_string = "[" + debug_string + "]";
+  debug_string = base::StrCat({"[", debug_string, "]"});
   if (ip_protection_chain_id_ == 0) {
     debug_string += " (IP Protection)";
   } else if (ip_protection_chain_id_ >= 0) {

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -116,7 +117,7 @@ void AddBypassRules(const std::string& scheme,
       continue;
     // '?' is not one of the specified pattern characters above.
     DCHECK_EQ(std::string::npos, pattern.find('?'));
-    bypass_rules->AddRuleFromString(scheme + "://" + pattern);
+    bypass_rules->AddRuleFromString(base::StrCat({scheme, "://", pattern}));
   }
 }
 

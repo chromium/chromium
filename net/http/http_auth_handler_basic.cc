@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
@@ -90,9 +91,9 @@ int HttpAuthHandlerBasic::GenerateAuthTokenImpl(
   // Firefox, Safari and Chromium all use UTF-8 encoding; IE uses iso-8859-1.
   // RFC7617 does not specify a default encoding, but UTF-8 is the only allowed
   // value for the optional charset parameter on the challenge.
-  std::string base64_username_password =
-      base::Base64Encode(base::UTF16ToUTF8(credentials->username()) + ":" +
-                         base::UTF16ToUTF8(credentials->password()));
+  std::string base64_username_password = base::Base64Encode(
+      base::StrCat({base::UTF16ToUTF8(credentials->username()), ":",
+                    base::UTF16ToUTF8(credentials->password())}));
   *auth_token = "Basic " + base64_username_password;
   return OK;
 }

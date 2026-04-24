@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/http/http_response_headers.h"
@@ -22,7 +23,7 @@ namespace {
 const char kMockHostname[] = "mock.hanging.read";
 
 GURL GetMockUrl(const std::string& scheme, const std::string& hostname) {
-  return GURL(scheme + "://" + hostname + "/");
+  return GURL(base::StrCat({scheme, "://", hostname, "/"}));
 }
 
 class MockJobInterceptor : public URLRequestInterceptor {

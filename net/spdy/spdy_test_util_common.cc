@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -675,7 +676,7 @@ std::string SpdyTestUtil::ConstructSpdyReplyString(
     for (const std::string& value :
          base::SplitString(it->second, std::string_view("\0", 1),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      reply_string += key + ": " + value + "\n";
+      base::StrAppend(&reply_string, {key, ": ", value, "\n"});
     }
   }
   return reply_string;

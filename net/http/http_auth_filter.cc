@@ -4,6 +4,7 @@
 
 #include "net/http/http_auth_filter.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -51,8 +52,9 @@ void HttpAuthFilterAllowlist::SetAllowlist(
   // HttpAuthFilterAllowlist is trying to use ProxyHostMatchingRules as a
   // generic URL filter. However internally it has some implicit rules for
   // localhost and linklocal addresses.
-  rules_.ParseFromString(ProxyHostMatchingRules::GetRulesToSubtractImplicit() +
-                         ";" + server_allowlist);
+  rules_.ParseFromString(
+      base::StrCat({ProxyHostMatchingRules::GetRulesToSubtractImplicit(), ";",
+                    server_allowlist}));
 }
 
 }  // namespace net

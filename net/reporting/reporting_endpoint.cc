@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_target_type.h"
@@ -88,13 +89,13 @@ bool operator>(const ReportingEndpointGroupKey& lhs,
 }
 
 std::string ReportingEndpointGroupKey::ToString() const {
-  return "Source: " +
-         (reporting_source ? reporting_source->ToString() : "null") +
-         "; NAK: " + network_anonymization_key.ToDebugString() +
-         "; Origin: " + (origin ? origin->Serialize() : "null") +
-         "; Group name: " + group_name + "; Target type: " +
-         (target_type == ReportingTargetType::kDeveloper ? "developer"
-                                                         : "enterprise");
+  return base::StrCat(
+      {"Source: ", (reporting_source ? reporting_source->ToString() : "null"),
+       "; NAK: ", network_anonymization_key.ToDebugString(),
+       "; Origin: ", (origin ? origin->Serialize() : "null"),
+       "; Group name: ", group_name, "; Target type: ",
+       (target_type == ReportingTargetType::kDeveloper ? "developer"
+                                                       : "enterprise")});
 }
 
 const int ReportingEndpoint::EndpointInfo::kDefaultPriority = 1;

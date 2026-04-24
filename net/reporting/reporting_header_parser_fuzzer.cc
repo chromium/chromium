@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -31,8 +32,9 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  std::optional<base::Value> data_value = base::JSONReader::Read(
-      "[" + data_json + "]", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  std::optional<base::Value> data_value =
+      base::JSONReader::Read(base::StrCat({"[", data_json, "]"}),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!data_value)
     return;
 

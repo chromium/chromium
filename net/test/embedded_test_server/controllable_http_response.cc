@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -105,7 +106,7 @@ void ControllableHttpResponse::Send(
       "HTTP/1.1 %d %s\nContent-type: %s\n", static_cast<int>(http_status),
       net::GetHttpReasonPhrase(http_status), content_type.c_str()));
   for (auto& cookie : cookies)
-    content_data += "Set-Cookie: " + cookie + "\n";
+    base::StrAppend(&content_data, {"Set-Cookie: ", cookie, "\n"});
   for (auto& header : extra_headers)
     content_data += header + "\n";
   content_data += "\n";

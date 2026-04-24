@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "crypto/hash.h"
 #include "net/cert/two_qwac.h"
@@ -65,10 +66,12 @@ class TwoQwacCertBindingBuilder {
     return cert_chain_.back().get();
   }
 
-  std::string GetJWS() { return GetHeader() + ".." + GetSignature(); }
+  std::string GetJWS() {
+    return base::StrCat({GetHeader(), "..", GetSignature()});
+  }
 
   std::string GetJWSWithInvalidSignature() {
-    return GetHeader() + ".." + GetInvalidSignature();
+    return base::StrCat({GetHeader(), "..", GetInvalidSignature()});
   }
 
   const std::string& GetHeader() {

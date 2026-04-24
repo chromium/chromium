@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
@@ -116,7 +117,7 @@ bool ExtractSubjectNameFromCertificate(X509* certificate, std::string* name) {
                                   &organizational_unit)) {
       return false;
     }
-    result = organization + " " + organizational_unit;
+    result = base::StrCat({organization, " ", organizational_unit});
   }
 
   name->assign(result);

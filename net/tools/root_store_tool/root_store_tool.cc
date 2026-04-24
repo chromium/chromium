@@ -501,7 +501,7 @@ bool WriteEvCppFile(const RootStore& root_store,
       if (i < oids_size) {
         oid = anchor.ev_policy_oids(i);
       }
-      string_to_write += "            \"" + oid + "\",\n";
+      base::StrAppend(&string_to_write, {"            \"", oid, "\",\n"});
     }
 
     // End struct

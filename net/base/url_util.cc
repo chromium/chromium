@@ -76,8 +76,8 @@ GURL AppendQueryParameter(const GURL& url,
   if (!query.empty())
     query += "&";
 
-  query += (base::EscapeQueryParamValue(name, true) + "=" +
-            base::EscapeQueryParamValue(value, true));
+  base::StrAppend(&query, {base::EscapeQueryParamValue(name, true), "=",
+                           base::EscapeQueryParamValue(value, true)});
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);
@@ -107,7 +107,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
       if (!should_keep_param)
         continue;
 
-      key_value_pair = param_name + "=" + param_value;
+      key_value_pair = base::StrCat({param_name, "=", param_value});
     } else {
       key_value_pair = std::string(
           input.substr(key_range.begin, value_range.end() - key_range.begin));
@@ -121,7 +121,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
     if (!output.empty())
       output += "&";
 
-    output += (param_name + "=" + param_value);
+    base::StrAppend(&output, {param_name, "=", param_value});
   }
   GURL::Replacements replacements;
   replacements.SetQueryStr(output);

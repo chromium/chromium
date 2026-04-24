@@ -16,6 +16,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "crypto/evp.h"
@@ -55,8 +56,8 @@ std::string GetOriginTrialToken(const GURL& base_url) {
   std::string payload = base::WriteJson(token_data).value_or(std::string());
   std::array<uint8_t, 4> payload_size = base::U32ToBigEndian(payload.size());
   // Version 3
-  std::string data_to_sign =
-      "\x03" + std::string(payload_size.begin(), payload_size.end()) + payload;
+  std::string data_to_sign = base::StrCat(
+      {"\x03", std::string(payload_size.begin(), payload_size.end()), payload});
 
   std::array<uint8_t, ED25519_SIGNATURE_LEN> signature;
 
@@ -66,9 +67,9 @@ std::string GetOriginTrialToken(const GURL& base_url) {
     return "";
   }
 
-  std::string token = "\x03" + std::string(signature.begin(), signature.end()) +
-                      std::string(payload_size.begin(), payload_size.end()) +
-                      payload;
+  std::string token =
+      base::StrCat({"\x03", base::as_string_view(signature),
+                    base::as_string_view(payload_size), payload});
 
   return base::Base64Encode(token);
 }
@@ -172,8 +173,9 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
   } else if (request.relative_url.starts_with("/set_early_challenge")) {
     std::string challenge = request.GetURL().GetQuery();
     CHECK(!challenge.empty());
-    response->AddCustomHeader("Secure-Session-Challenge",
-                              "\"" + challenge + "\";id=\"session_id\"");
+    response->AddCustomHeader(
+        "Secure-Session-Challenge",
+        base::StrCat({"\"", challenge, "\";id=\"session_id\""}));
     response->set_content_type("text/html");
     return response;
   } else if (request.relative_url.starts_with("/ensure_authenticated")) {

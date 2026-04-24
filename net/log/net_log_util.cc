@@ -128,7 +128,8 @@ base::Value GetActiveFieldTrialList() {
   base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   base::ListValue field_trial_groups;
   for (const auto& group : active_groups) {
-    field_trial_groups.Append(group.trial_name + ":" + group.group_name);
+    field_trial_groups.Append(
+        base::StrCat({group.trial_name, ":", group.group_name}));
   }
   return base::Value(std::move(field_trial_groups));
 }

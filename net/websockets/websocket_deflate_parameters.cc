@@ -6,6 +6,7 @@
 
 #include <vector>  // for iterating over extension.parameters()
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace net {
@@ -36,7 +37,7 @@ bool DuplicateError(const std::string& name, std::string* failure_message) {
 }
 
 bool InvalidError(const std::string& name, std::string* failure_message) {
-  *failure_message = "Received invalid " + name + " parameter";
+  *failure_message = base::StrCat({"Received invalid ", name, " parameter"});
   return false;
 }
 

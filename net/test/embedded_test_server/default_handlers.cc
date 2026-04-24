@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -184,8 +185,8 @@ std::unique_ptr<HttpResponse> HandleEcho(const HttpRequest& request) {
 std::unique_ptr<HttpResponse> HandleEchoTitle(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");
-  http_response->set_content("<!doctype html><title>" + request.content +
-                             "</title>");
+  http_response->set_content(
+      base::StrCat({"<!doctype html><title>", request.content, "</title>"}));
   return http_response;
 }
 
@@ -213,12 +214,12 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
       body += query + "\n";
   }
 
-  body +=
-      "</pre>"
-      "<h1>Request Headers:</h1><pre id='request-headers'>" +
-      request.all_headers + "</pre>" +
-      "<h1>Response nonce:</h1><pre id='response-nonce'>" +
-      base::UnguessableToken::Create().ToString() + "</pre>";
+  base::StrAppend(&body,
+                  {"</pre>"
+                   "<h1>Request Headers:</h1><pre id='request-headers'>",
+                   request.all_headers, "</pre>",
+                   "<h1>Response nonce:</h1><pre id='response-nonce'>",
+                   base::UnguessableToken::Create().ToString(), "</pre>"});
 
   http_response->set_content_type("text/html");
   http_response->set_content(body);
@@ -359,7 +360,7 @@ std::unique_ptr<HttpResponse> HandleSetHeader(const HttpRequest& request) {
   auto headers = ExtractHeadersFromQuery(request_url);
   for (const auto& [key, value] : headers) {
     http_response->AddCustomHeader(key, value);
-    content += key + ": " + value;
+    base::StrAppend(&content, {key, ": ", value});
   }
 
   http_response->set_content(content);
@@ -489,8 +490,8 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
   if (!authed) {
     http_response->set_code(HTTP_UNAUTHORIZED);
     http_response->set_content_type("text/html");
-    http_response->AddCustomHeader("WWW-Authenticate",
-                                   "Basic realm=\"" + realm + "\"");
+    http_response->AddCustomHeader(
+        "WWW-Authenticate", base::StrCat({"Basic realm=\"", realm, "\""}));
     if (query.find("set-cookie-if-challenged") != query.end())
       http_response->AddCustomHeader("Set-Cookie", "got_challenged=true");
     if (query.find("set-secure-cookie-if-challenged") != query.end())

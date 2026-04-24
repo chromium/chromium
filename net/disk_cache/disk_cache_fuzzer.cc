@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -258,7 +259,7 @@ std::string ToKey(uint64_t key_num) {
 
   // Otherwise, use a value based on the key id and fuzzy padding.
   std::string padding(key_num & 0xFFFF, 'A');
-  return "Key" + padding + base::NumberToString(key_num);
+  return base::StrCat({"Key", padding, base::NumberToString(key_num)});
 }
 
 net::RequestPriority GetRequestPriority(

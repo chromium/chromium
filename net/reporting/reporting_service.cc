@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -126,8 +127,9 @@ class ReportingServiceImpl : public ReportingService {
     if (header_string.size() > kMaxJsonSize)
       return;
 
-    std::optional<base::Value> header_value = base::JSONReader::Read(
-        "[" + header_string + "]", base::JSON_PARSE_RFC, kMaxJsonDepth);
+    std::optional<base::Value> header_value =
+        base::JSONReader::Read(base::StrCat({"[", header_string, "]"}),
+                               base::JSON_PARSE_RFC, kMaxJsonDepth);
     if (!header_value)
       return;
 

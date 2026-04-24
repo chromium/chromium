@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 
 using std::string;
@@ -60,26 +61,24 @@ struct UriTemplateConfig {
     const std::string& joiner = use_prefix ? prefix_ : joiner_;
     if (requires_variable_assignment_) {
       if (value.empty() && no_variable_assignment_if_empty_) {
-        target->append(joiner + EscapedValue(variable));
+        base::StrAppend(target, {joiner, EscapedValue(variable)});
       } else {
-        target->append(joiner + EscapedValue(variable) + "=" +
-                       EscapedValue(value));
+        base::StrAppend(
+            target, {joiner, EscapedValue(variable), "=", EscapedValue(value)});
       }
     } else {
-      target->append(joiner + EscapedValue(value));
+      base::StrAppend(target, {joiner, EscapedValue(value)});
     }
   }
 
  private:
   string EscapedValue(const string& value) const {
-    string escaped;
     if (allow_reserved_expansion_) {
       // Reserved expansion passes through reserved and pct-encoded characters.
-      escaped = base::EscapeExternalHandlerValue(value);
-    } else {
-      escaped = base::EscapeAllExceptUnreserved(value);
+      return base::EscapeExternalHandlerValue(value);
     }
-    return escaped;
+
+    return base::EscapeAllExceptUnreserved(value);
   }
 
   std::string prefix_;

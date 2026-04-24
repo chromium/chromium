@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,7 +88,7 @@ std::string DoFileIO(const base::FilePath& file_path) {
 // For a given file |path| and |scheme|, return the URL served by the
 // URlRequestMockHTTPJob.
 GURL GetMockUrlForScheme(const std::string& path, const std::string& scheme) {
-  return GURL(scheme + "://" + kMockHostname + "/" + path);
+  return GURL(base::StrCat({scheme, "://", kMockHostname, "/", path}));
 }
 
 }  // namespace

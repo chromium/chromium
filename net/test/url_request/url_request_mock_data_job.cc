@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -64,7 +65,7 @@ GURL GetMockUrl(const std::string& scheme,
                 int data_repeat_count,
                 bool request_client_certificate) {
   DCHECK_GT(data_repeat_count, 0);
-  std::string url(scheme + "://" + hostname + "/");
+  std::string url(base::StrCat({scheme, "://", hostname, "/"}));
   url.append("?data=");
   url.append(data);
   url.append("&repeat=");

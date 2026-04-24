@@ -145,9 +145,9 @@ bool WebSocketHandshakeStreamBase::ValidateExtensions(
 
         header_values.emplace_back(*header_value);
       } else {
-        *failure_message = "Found an unsupported extension '" +
-                           extension.name() +
-                           "' in 'Sec-WebSocket-Extensions' header";
+        *failure_message =
+            base::StrCat({"Found an unsupported extension '", extension.name(),
+                          "' in 'Sec-WebSocket-Extensions' header"});
         return false;
       }
     }
