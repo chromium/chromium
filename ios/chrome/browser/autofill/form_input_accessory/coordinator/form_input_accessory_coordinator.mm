@@ -282,6 +282,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
 - (void)resetLoadingStates {
   [_formInputAccessoryViewController resetLoadingStates];
+  [_formInputAccessoryMediator resetSuggestions];
 }
 
 #pragma mark - Presenting Children

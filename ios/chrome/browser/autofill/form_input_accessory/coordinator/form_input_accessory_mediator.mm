@@ -390,6 +390,11 @@ bool IsStateless() {
   }
 }
 
+- (void)resetSuggestions {
+  [self.consumer showAccessorySuggestions:@[]];
+  [self updateSuggestionsIfNeeded];
+}
+
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {

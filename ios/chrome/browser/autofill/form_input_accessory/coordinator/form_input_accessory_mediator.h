@@ -78,6 +78,9 @@ class WebStateList;
 // Retrieves the first responder and reloads its input views if possible.
 - (void)reloadFirstResponderInputViews;
 
+// Clears suggestions and requests suggestions again for the same form.
+- (void)resetSuggestions;
+
 @end
 
 // Methods to allow injection in tests.
