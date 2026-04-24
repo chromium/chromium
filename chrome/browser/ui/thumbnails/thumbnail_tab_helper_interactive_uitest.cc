@@ -185,7 +185,7 @@ class ThumbnailTabHelperUpdatedInteractiveTest
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
                        TabLoadTriggersScreenshot) {
   RunTestSequence(
-      AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
+      AddInstrumentedTab(kFirstTab, chrome::ChromeUINewTabURLAsGURL(), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
       SelectTab(kTabStripElementId, 1),
       CheckResult([this]() { return GetTabCount(); }, 2,
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
                        TabDiscardPreservesScreenshot) {
   RunTestSequence(
-      AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
+      AddInstrumentedTab(kFirstTab, chrome::ChromeUINewTabURLAsGURL(), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
       SelectTab(kTabStripElementId, 1), WaitForAndVerifyThumbnail(0),
       CheckTabHasThumbnailData(0, true), TryDiscardTab(0),
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
   // triggering shutdown.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabURL),
+      browser(), chrome::ChromeUINewTabURLAsGURL(),
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   set_target_browser(browser_created_observer.Wait());
@@ -219,11 +219,11 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
   RunTestSequence(
       InContext(
           BrowserElements::From(target_browser())->GetContext(),
-          AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 1),
+          AddInstrumentedTab(kFirstTab, chrome::ChromeUINewTabURLAsGURL(), 1),
           WaitForWebContentsReady(kFirstTab),
-          AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL), 2),
+          AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
           WaitForWebContentsReady(kSecondTab),
-          AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUINewTabURL), 3),
+          AddInstrumentedTab(kThirdTab, chrome::ChromeUINewTabURLAsGURL(), 3),
           WaitForWebContentsReady(kThirdTab)),
       CheckTabCountInBrowser(4), CheckActiveTabInBrowser(3),
       ObserveState(kBrowserRemovedState, [this]() { return target_browser(); }),

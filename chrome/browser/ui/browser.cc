@@ -761,7 +761,7 @@ GURL Browser::GetNewTabURL() const {
   if (auto* const app_browser_controller = app_controller()) {
     return app_browser_controller->GetAppNewTabUrl();
   }
-  return GURL(chrome::kChromeUINewTabURL);
+  return chrome::ChromeUINewTabURLAsGURL();
 }
 
 gfx::Image Browser::GetCurrentPageIcon() const {

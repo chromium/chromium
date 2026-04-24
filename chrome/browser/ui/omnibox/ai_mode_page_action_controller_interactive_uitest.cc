@@ -97,12 +97,12 @@ class AiModePageActionControllerInteractiveUiTest
 
   InteractiveTestApi::MultiStep OpenTabWithPageUrlAndFocusOmnibox(
       bool is_ntp = false) {
-    const std::string url =
-        is_ntp ? chrome::kChromeUINewTabPageURL : kTestPageUrl;
+    const GURL url =
+        is_ntp ? chrome::ChromeUINewTabPageURLAsGURL() : GURL(kTestPageUrl);
 
     return Steps(
         InteractiveBrowserWindowTestApi::InstrumentTab(kTabId),
-        InteractiveBrowserWindowTestApi::NavigateWebContents(kTabId, GURL(url)),
+        InteractiveBrowserWindowTestApi::NavigateWebContents(kTabId, url),
         InteractiveBrowserWindowTestApi::WaitForWebContentsReady(kTabId),
         ui::test::InteractiveTestApi::FocusElement(kOmniboxElementId));
   }

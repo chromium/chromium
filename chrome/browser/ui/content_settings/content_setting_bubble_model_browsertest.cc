@@ -162,13 +162,13 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 
   content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-          browser(), GURL(chrome::kChromeUINewTabURL), 1);
+          browser(), chrome::ChromeUINewTabURLAsGURL(), 1);
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             web_contents->GetLastCommittedURL());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
+  EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL(),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
   // Create a bubble with the given camera and microphone access state.

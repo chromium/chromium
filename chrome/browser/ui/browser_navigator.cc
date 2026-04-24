@@ -954,7 +954,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         if (params->source_contents) {
           if (params->source_contents->GetController().CanGoBack() ||
               (params->source_contents->GetLastCommittedURL().spec() !=
-                   chrome::kChromeUINewTabURL &&
+                   chrome::ChromeUINewTabURLAsGURL() &&
                params->source_contents->GetLastCommittedURL().spec() !=
                    url::kAboutBlankURL)) {
             // Blur location bar before state save in ActivateTabAt() below.

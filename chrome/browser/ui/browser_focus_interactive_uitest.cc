@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, OmniboxFocusStateAcrossHistory) {
       InstrumentTab(kWebContentsId),
       ObserveState(views::test::kCurrentFocusedViewId,
                    GetWidgetForBrowser(browser())),
-      NavigateWebContents(kWebContentsId, GURL(chrome::kChromeUINewTabURL)),
+      NavigateWebContents(kWebContentsId, chrome::ChromeUINewTabURLAsGURL()),
       NavigateWebContents(kWebContentsId,
                           embedded_test_server()->GetURL("/title1.html")),
       MoveMouseTo(ContentsWebView::kContentsWebViewElementId), ClickMouse(),
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, OmniboxFocusStateAcrossHistory) {
       // focus the location bar, but that is not the current behavior.
       PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kWebContentsId,
-                                   GURL(chrome::kChromeUINewTabURL)),
+                                   chrome::ChromeUINewTabURLAsGURL()),
       WaitForState(views::test::kCurrentFocusedViewId,
                    testing::Ne(kOmniboxElementId)),
       // Navigate forward. Should focus the body.

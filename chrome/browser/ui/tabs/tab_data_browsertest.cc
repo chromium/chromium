@@ -219,8 +219,8 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
   TestCase test_cases[] = {
       {GURL("https://example.com"), true},
       {GURL(chrome::kChromeUIVersionURL), true},
-      {GURL(chrome::kChromeUINewTabURL), false},
-      {GURL(chrome::kChromeUINewTabPageURL), false},
+      {chrome::ChromeUINewTabURLAsGURL(), false},
+      {chrome::ChromeUINewTabPageURLAsGURL(), false},
       {GURL(chrome::kChromeUITabSearchURL), false},
   };
 

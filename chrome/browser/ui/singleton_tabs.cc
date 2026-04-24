@@ -54,7 +54,7 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
       params->browser->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
-    if (contents_url == chrome::kChromeUINewTabURL ||
+    if (contents_url == chrome::ChromeUINewTabURLAsGURL() ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
       int tab_index =
           GetIndexOfExistingTabMatchingURL(params->browser, *params);

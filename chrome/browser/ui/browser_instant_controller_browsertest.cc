@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInstantControllerTest,
     // Tests for which tabs finish in the NTP should start in the default NTP
     // before the provider is changed.
     if (test.end_in_ntp) {
-      EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
+      EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL(),
                 observers.back()->current_url());
     }
   }

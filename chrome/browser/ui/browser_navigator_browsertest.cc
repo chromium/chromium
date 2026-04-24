@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        MAYBE_NavigateFromNTPToOptionsInSameTab) {
   NavigateParams params(MakeNavigateParams());
-  params.url = GURL(chrome::kChromeUINewTabURL);
+  params.url = chrome::ChromeUINewTabURLAsGURL();
   ui_test_utils::NavigateToURL(&params);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),

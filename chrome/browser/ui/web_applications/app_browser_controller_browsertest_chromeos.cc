@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
 
   // Create tab2 with URL not from app, it will open in the NORMAL browser.
-  chrome::AddTabAt(app_browser_, GURL(chrome::kChromeUINewTabURL), -1, true);
+  chrome::AddTabAt(app_browser_, chrome::ChromeUINewTabURLAsGURL(), -1, true);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   EXPECT_NE(browser(), app_browser_);
   EXPECT_TRUE(browser()->is_type_normal());

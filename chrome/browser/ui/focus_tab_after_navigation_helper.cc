@@ -94,7 +94,7 @@ bool FocusTabAfterNavigationHelper::ShouldFocusTabContents(
 bool FocusTabAfterNavigationHelper::IsNtpURL(const GURL& url) {
   // TODO(lukasza): https://crbug.com/40664076: Try to avoid special-casing
   // kChromeUINewTabURL below and covering it via IsNTPOrRelatedURL instead.
-  if (url == GURL(chrome::kChromeUINewTabURL)) {
+  if (url == chrome::ChromeUINewTabURLAsGURL()) {
     return true;
   }
 

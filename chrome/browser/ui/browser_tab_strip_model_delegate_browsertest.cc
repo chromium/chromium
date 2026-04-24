@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
 
   ASSERT_EQ(incognito_browser->tab_strip_model()->count(), 2);
   ASSERT_EQ(incognito_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
-            chrome::kChromeUINewTabURL);
+            chrome::ChromeUINewTabURLAsGURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, DuplicateSplitTab) {

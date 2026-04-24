@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DenialOfService) {
 // Verify that an onunload popup does not show up for about:blank.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, Regress427477) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 

@@ -121,7 +121,7 @@ class NavigateAndroidBrowserTest : public BrowserWindowAndroidBrowserTestBase {
 
   void SetTabToNewTabPageWithNoHistory() {
     content::NavigationController::LoadURLParams params{
-        GURL(chrome::kChromeUINewTabURL)};
+        chrome::ChromeUINewTabURLAsGURL()};
     params.should_replace_current_entry = true;
     web_contents_->GetController().LoadURLWithParams(params);
     content::TestNavigationObserver observer(web_contents_);
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(
   // 2. Navigate to NTP in the same tab. This tab now has history (can go back
   // to url1).
   ASSERT_TRUE(
-      content::NavigateToURL(web_contents_, GURL(chrome::kChromeUINewTabURL)));
+      content::NavigateToURL(web_contents_, chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_EQ(1, tab_list_->GetTabCount());
   content::NavigationController& controller = web_contents_->GetController();
   ASSERT_TRUE(controller.CanGoBack());
