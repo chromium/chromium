@@ -26,9 +26,8 @@ AnnouncementView::AnnouncementView(gfx::NativeView parent,
   announcement_label_ = AddChildView(std::make_unique<AnnouncementLabel>(name));
   announcement_label_->SetLineHeight(0);
 
-  views::Widget* const widget = BubbleDialogDelegate::CreateBubble(
-      base::WrapUnique(this),
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  views::Widget* const widget =
+      BubbleDialogDelegate::CreateBubble(base::WrapUnique(this));
   // Set the window size to 0 and put it outside screen to make sure users don't
   // see it.
   widget->SetSize(gfx::Size(0, 0));

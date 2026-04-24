@@ -277,9 +277,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
 
   views::BubbleDialogDelegate* bubble_ptr = bubble.get();
   g_instance_for_test = bubble_ptr;
-  views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-      ->Show();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 
   return bubble_ptr;
 }

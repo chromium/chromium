@@ -70,8 +70,7 @@ void ExtensionsRequestAccessHoverCardCoordinator::ShowBubble(
   bubble->SetCanActivate(false);
   bubble_tracker_.SetView(bubble->GetContentsView());
 
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   // Ensure the hover card Widget assumes a higher z-order to avoid occlusion
   // by other secondary UI Widgets
   widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);

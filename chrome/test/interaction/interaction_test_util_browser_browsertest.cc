@@ -132,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
       WithView(kTopContainerElementId,
                [&widget](views::View* anchor) {
                  widget = views::BubbleDialogDelegate::CreateBubble(
-                     std::make_unique<ScreenshotSurfaceTestDialog>(anchor),
-                     views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+                     std::make_unique<ScreenshotSurfaceTestDialog>(anchor));
                  widget->Show();
                }),
       WaitForShow(ScreenshotSurfaceTestDialog::kTitleElementId),

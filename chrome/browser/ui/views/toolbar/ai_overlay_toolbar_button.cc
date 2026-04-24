@@ -203,10 +203,7 @@ void AiOverlayToolbarButton::OnOptionsButtonPressed() {
   persona_toggle->GetViewAccessibility().SetName(u"Persona");
 
   bubble_delegate->SetContentsView(std::move(contents_view));
-  views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble_delegate),
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-      ->Show();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
 
 std::unique_ptr<views::ActionViewInterface>

@@ -93,9 +93,7 @@ void ShowIdleBubble(BrowserWindowInterface* bwi,
       dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
 
-  views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-      ->ShowInactive();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();
 }
 
 views::BubbleFrameView* GetIdleBubble(BrowserWindowInterface* bwi) {

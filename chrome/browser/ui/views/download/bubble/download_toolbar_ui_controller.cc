@@ -967,9 +967,8 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
-  views::Widget* bubble_widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble_delegate),
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  views::Widget* bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   CHECK(bubble_widget);
 
   if (!is_primary_partial_view_ && !button_click_time_.is_null()) {

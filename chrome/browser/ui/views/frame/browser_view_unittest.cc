@@ -535,8 +535,7 @@ TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   auto* bubble_ptr = bubble.get();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
 
   // OK button cannot be retrieved until CreateBubble has been called.

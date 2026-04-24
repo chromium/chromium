@@ -582,8 +582,8 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
 
   bubble_delegate->SetCloseCallback(std::move(post_save_callback));
 
-  views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  views::Widget* const widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
 
   bookmark_bubble_->GetBubbleFrameView()->SetProperty(

@@ -182,9 +182,7 @@ class DownloadBubbleContentsViewTest
     // The contents view has to be set up before the bubble is shown, because it
     // sets initially focused view on the delegate (which cannot be set after
     // the widget is shown).
-    views::BubbleDialogDelegate::CreateBubble(
-        std::move(bubble_delegate),
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
   }
 

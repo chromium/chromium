@@ -747,8 +747,8 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       // `bubble` is initialized, at which point it must still be alive.
       base::Unretained(bubble.get()), std::move(header)));
 
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
   return widget;
 }
