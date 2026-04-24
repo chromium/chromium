@@ -256,8 +256,6 @@ bool InSameParagraph(const VisiblePosition&,
 EphemeralRange ExpandToParagraphBoundary(const EphemeralRange&);
 
 // document
-CORE_EXPORT Position StartOfDocument(const Position&);
-CORE_EXPORT PositionInFlatTree StartOfDocument(const PositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfDocument(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfDocument(const VisiblePositionInFlatTree&);
@@ -265,8 +263,6 @@ bool IsStartOfDocument(const VisiblePosition&);
 bool IsEndOfDocument(const VisiblePosition&);
 
 // editable content
-PositionInFlatTree StartOfEditableContent(const PositionInFlatTree&);
-PositionInFlatTree EndOfEditableContent(const PositionInFlatTree&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(const VisiblePosition&);
 CORE_EXPORT bool IsEndOfEditableOrNonEditableContent(
     const VisiblePositionInFlatTree&);

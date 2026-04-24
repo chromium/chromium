@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
+#include "third_party/blink/renderer/core/editing/position_units.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -386,44 +387,16 @@ static Node* ParentEditingBoundary(const PositionTemplate<Strategy>& position) {
 
 // ---------
 
-template <typename Strategy>
-static PositionTemplate<Strategy> StartOfDocumentAlgorithm(
-    const PositionTemplate<Strategy>& position) {
-  const Node* const node = position.AnchorNode();
-  if (!node || !node->GetDocument().documentElement())
-    return PositionTemplate<Strategy>();
-
-  return PositionTemplate<Strategy>::FirstPositionInNode(
-      *node->GetDocument().documentElement());
-}
-
-Position StartOfDocument(const Position& c) {
-  return StartOfDocumentAlgorithm<EditingStrategy>(c);
-}
-
-PositionInFlatTree StartOfDocument(const PositionInFlatTree& c) {
-  return StartOfDocumentAlgorithm<EditingInFlatTreeStrategy>(c);
-}
-
-template <typename Strategy>
-static VisiblePositionTemplate<Strategy> EndOfDocumentAlgorithm(
-    const VisiblePositionTemplate<Strategy>& visible_position) {
-  DCHECK(visible_position.IsValid()) << visible_position;
-  Node* node = visible_position.DeepEquivalent().AnchorNode();
-  if (!node || !node->GetDocument().documentElement())
-    return VisiblePositionTemplate<Strategy>();
-
-  Element* doc = node->GetDocument().documentElement();
-  return CreateVisiblePosition(
-      PositionTemplate<Strategy>::LastPositionInNode(*doc));
-}
-
 VisiblePosition EndOfDocument(const VisiblePosition& c) {
-  return EndOfDocumentAlgorithm<EditingStrategy>(c);
+  DCHECK(c.IsValid()) << c;
+  return CreateVisiblePosition(
+      EndOfDocument(c.DeepEquivalent()));
 }
 
 VisiblePositionInFlatTree EndOfDocument(const VisiblePositionInFlatTree& c) {
-  return EndOfDocumentAlgorithm<EditingInFlatTreeStrategy>(c);
+  DCHECK(c.IsValid()) << c;
+  return CreateVisiblePosition(
+      EndOfDocument(c.DeepEquivalent()));
 }
 
 bool IsStartOfDocument(const VisiblePosition& p) {
@@ -438,22 +411,6 @@ bool IsEndOfDocument(const VisiblePosition& p) {
 }
 
 // ---------
-
-PositionInFlatTree StartOfEditableContent(const PositionInFlatTree& position) {
-  ContainerNode* highest_root = HighestEditableRoot(position);
-  if (!highest_root)
-    return PositionInFlatTree();
-
-  return PositionInFlatTree::FirstPositionInNode(*highest_root);
-}
-
-PositionInFlatTree EndOfEditableContent(const PositionInFlatTree& position) {
-  ContainerNode* highest_root = HighestEditableRoot(position);
-  if (!highest_root)
-    return PositionInFlatTree();
-
-  return PositionInFlatTree::LastPositionInNode(*highest_root);
-}
 
 bool IsEndOfEditableOrNonEditableContent(const VisiblePosition& position) {
   DCHECK(position.IsValid()) << position;
