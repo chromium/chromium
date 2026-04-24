@@ -857,7 +857,7 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     (voiceSearchElement as any).onCloseClick_();
     await microtasksFinished();
 
-    // Verify: Action logged CLOSED_BY_USER.
+    // Verify: Action logged CANCELED_BY_USER.
     assertEquals(
         1,
         metrics.count(
@@ -983,4 +983,57 @@ suite('ComposeboxVoiceSearchMetrics', () => {
                 'VoiceSearch.Errors.NTP_REALBOX',
                 VoiceSearchError.AUDIO_CAPTURE));
       });
+
+  test('Records aggregated base metric for Actions', async () => {
+    // Trigger an action: Start voice search via icon click.
+    (voiceSearchElement as any).onCloseClick_();
+
+    // Wait for the async metric recording to complete.
+    await microtasksFinished();
+
+    // Verify the sliced metric (e.g., specific to NTP_REALBOX).
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.CANCELED_BY_USER));
+
+    // Verify the newly added aggregated base metric (total across all
+    // surfaces).
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action', VoiceSearchAction.CANCELED_BY_USER));
+
+    // Clean up internal state to prevent leaking into the next test.
+    (voiceSearchElement as any).state_ = -1;
+    (voiceSearchElement as any).voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
+  test('Records aggregated base metric for Errors', async () => {
+    // Trigger an error: Simulate a network error.
+    const errorEvent = new Event('error') as any;
+    errorEvent.error = 'network';
+    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
+
+    // Wait for the async metric recording to complete.
+    await microtasksFinished();
+
+    // Verify the sliced metric (e.g., specific to NTP_REALBOX).
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Errors.NTP_REALBOX', VoiceSearchError.NETWORK));
+
+    // Verify the newly added aggregated base metric (total across all
+    // surfaces).
+    assertEquals(
+        1, metrics.count('VoiceSearch.Errors', VoiceSearchError.NETWORK));
+
+    // Clean up internal state to prevent leaking into the next test.
+    (voiceSearchElement as any).state_ = -1;
+    (voiceSearchElement as any).voiceRecognition_.abort();
+    await microtasksFinished();
+  });
 });
