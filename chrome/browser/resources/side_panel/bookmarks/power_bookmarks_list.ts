@@ -102,6 +102,7 @@ export interface PowerBookmarksListElement {
     heading: HTMLElement,
     footer: HTMLElement,
     labels: PowerBookmarksLabelsElement,
+    scroller: HTMLElement,
   };
 }
 
@@ -468,7 +469,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (this.bookmarkShouldShow_(bookmark)) {
       this.updateShoppingCollectionFolderId_();
 
-      const scrollTop = this.$.bookmarks.scrollTop;
+      const scrollTop = this.$.scroller.scrollTop;
       this.updateDisplayLists_();
       if (bookmark.url) {
         getAnnouncerInstance().announce(loadTimeData.getStringF(
@@ -487,7 +488,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
             listElement.scrollToIndex(indexInList);
           } else {
             afterNextRender(this, () => {
-              this.$.bookmarks.scrollTop = scrollTop;
+              this.$.scroller.scrollTop = scrollTop;
             });
           }
           break;
@@ -510,13 +511,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
     } else if (
         (shouldShow !== isShowing) ||
         (shouldShow && this.hasSomeActiveFilter_)) {
-      const scrollTop = this.$.bookmarks.scrollTop;
+      const scrollTop = this.$.scroller.scrollTop;
       this.updateDisplayLists_();
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
           getBookmarkName(newParent)));
       afterNextRender(this, () => {
-        this.$.bookmarks.scrollTop = scrollTop;
+        this.$.scroller.scrollTop = scrollTop;
       });
     }
     this.updatedElementIds_ = [newParent.id, oldParent.id];
@@ -534,7 +535,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (this.$.contextMenu.anyBookmarkMatches(bookmark.id)) {
       this.$.contextMenu.close();
     }
-    const scrollTop = this.$.bookmarks.scrollTop;
+    const scrollTop = this.$.scroller.scrollTop;
     this.updateDisplayLists_();
     const isShown = this.bookmarkIsShowing_(bookmark);
     if (isShown) {
@@ -542,7 +543,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkDeleted', getBookmarkName(bookmark)));
       afterNextRender(this, () => {
-        this.$.bookmarks.scrollTop = scrollTop;
+        this.$.scroller.scrollTop = scrollTop;
       });
     }
 
@@ -1432,7 +1433,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.notifyBookmarksListResize_();
 
     this.hasScrollbars_ =
-        this.$.bookmarks.scrollHeight > this.$.bookmarks.offsetHeight;
+        this.$.scroller.scrollHeight > this.$.scroller.offsetHeight;
   }
 }
 
