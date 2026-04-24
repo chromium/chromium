@@ -1583,9 +1583,12 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     // allows us to verify that it matches the viz service calculation.
     // Note: The client might report damage outside the root surface content
     // rect (e.g. from a filter), so we must intersect with the content rect.
-    gfx::Rect damage_rect = tree.RootRenderSurface()->GetDamageRect();
-    damage_rect.Subtract(viewport_damage_rect);
-    damage_rect.Intersect(tree.RootRenderSurface()->content_rect());
+    gfx::Rect damage_rect;
+    if (frame_has_damage) {
+      damage_rect = tree.RootRenderSurface()->GetDamageRect();
+      damage_rect.Subtract(viewport_damage_rect);
+      damage_rect.Intersect(tree.RootRenderSurface()->content_rect());
+    }
     update->root_layer_damage_rect = damage_rect;
   }
   update->full_tree_damaged = property_trees.full_tree_damaged();
