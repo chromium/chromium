@@ -622,6 +622,8 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
     bool is_full_page_plugin,
     GuestViewMessageHandler::AttachToEmbedderFrameCallback
         attachment_callback) {
+  CHECK_EQ(owned_this.get(), this);
+
   // Stop tracking the old embedder's zoom level.
   // TODO(crbug.com/40436245): We should assert that we're not tracking the
   // embedder at this point, since guest reattachment is no longer possible.
