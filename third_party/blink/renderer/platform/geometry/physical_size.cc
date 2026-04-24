@@ -26,8 +26,7 @@ PhysicalSize PhysicalSize::FitToAspectRatio(const PhysicalSize& aspect_ratio,
 }
 
 String PhysicalSize::ToString() const {
-  return String::Format("%sx%s", width.ToString().Ascii().c_str(),
-                        height.ToString().Ascii().c_str());
+  return StrCat({width.ToString(), "x", height.ToString()});
 }
 
 std::ostream& operator<<(std::ostream& os, const PhysicalSize& value) {

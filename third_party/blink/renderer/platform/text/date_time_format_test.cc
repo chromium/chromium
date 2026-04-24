@@ -66,7 +66,8 @@ class DateTimeFormatTest : public testing::Test {
           return builder.ToString();
         }
         default:
-          return String::Format("Token(%d, %d)", field_type, count);
+          return StrCat({"Token(", String::Number(static_cast<int>(field_type)),
+                         ", ", String::Number(count), ")"});
       }
     }
   };

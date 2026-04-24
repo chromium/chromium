@@ -750,20 +750,15 @@ String FontDescription::ToString(
 }
 
 String FontDescription::VariantLigatures::ToString() const {
-  return UNSAFE_TODO(String::Format(
-      "common=%s, discretionary=%s, historical=%s, contextual=%s",
-      FontDescription::ToString(static_cast<LigaturesState>(common))
-          .Ascii()
-          .data(),
-      FontDescription::ToString(static_cast<LigaturesState>(discretionary))
-          .Ascii()
-          .data(),
-      FontDescription::ToString(static_cast<LigaturesState>(historical))
-          .Ascii()
-          .data(),
-      FontDescription::ToString(static_cast<LigaturesState>(contextual))
-          .Ascii()
-          .data()));
+  return StrCat(
+      {"common=",
+       FontDescription::ToString(static_cast<LigaturesState>(common)),
+       ", discretionary=",
+       FontDescription::ToString(static_cast<LigaturesState>(discretionary)),
+       ", historical=",
+       FontDescription::ToString(static_cast<LigaturesState>(historical)),
+       ", contextual=",
+       FontDescription::ToString(static_cast<LigaturesState>(contextual))});
 }
 
 String FontDescription::Size::ToString() const {
@@ -773,10 +768,8 @@ String FontDescription::Size::ToString() const {
 }
 
 String FontDescription::FamilyDescription::ToString() const {
-  return String::Format(
-      "generic_family=%s, family=[%s]",
-      FontDescription::ToString(generic_family).Ascii().c_str(),
-      family.ToString().Ascii().c_str());
+  return StrCat({"generic_family=", FontDescription::ToString(generic_family),
+                 ", family=[", family.ToString(), "]"});
 }
 
 String FontDescription::ToString(FontVariantPosition variant_position) {

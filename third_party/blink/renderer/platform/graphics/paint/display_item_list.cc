@@ -28,8 +28,8 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
   wtf_size_t i = first_item_index;
   for (auto& item : display_items) {
     if (option == kCompact) {
-      json_array->PushString(String::Format(
-          "%u: %s", i, item.IdAsString(paint_artifact).Utf8().c_str()));
+      json_array->PushString(
+          StrCat({String::Number(i), ": ", item.IdAsString(paint_artifact)}));
     } else {
       auto json = std::make_unique<JSONObject>();
       json->SetInteger("index", i);

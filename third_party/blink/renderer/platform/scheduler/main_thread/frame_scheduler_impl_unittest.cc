@@ -1115,12 +1115,14 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
                     {true, FrameScheduler::FrameType::kSubframe,
                      FrameScheduler::NavigationType::kSameDocument, true, 1}};
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(String::Format(
-        "FrameType: %d, NavigationType: %d : TaskTime.is_zero %d, CallCount %d",
-        static_cast<int>(test_case.frame_type),
-        static_cast<int>(test_case.navigation_type),
-        test_case.expect_unreported_task_time_zero,
-        test_case.expected_total_calls));
+    SCOPED_TRACE(StrCat(
+        {"FrameType: ", String::Number(static_cast<int>(test_case.frame_type)),
+         ", NavigationType: ",
+         String::Number(static_cast<int>(test_case.navigation_type)),
+         " : TaskTime.is_zero ",
+         String::Number(
+             static_cast<int>(test_case.expect_unreported_task_time_zero)),
+         ", CallCount ", String::Number(test_case.expected_total_calls)}));
     ResetFrameScheduler(test_case.embedded_frame_tree, test_case.frame_type);
     EXPECT_TRUE(GetUnreportedTaskTime().is_zero());
     EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());

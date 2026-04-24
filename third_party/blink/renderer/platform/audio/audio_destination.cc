@@ -408,8 +408,10 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
   TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
                "detect_silence", detect_silence);
-  SendLogMessage(__func__,
-                 String::Format("({detect_silence=%d})", detect_silence));
+  SendLogMessage(
+      __func__,
+      StrCat({"({detect_silence=",
+              String::Number(static_cast<int>(detect_silence)), "})"}));
 
   web_audio_device_->SetDetectSilence(detect_silence);
 }
@@ -452,14 +454,16 @@ AudioDestination::AudioDestination(
       is_output_buffer_bypassed_(BypassOutputBuffer()) {
   CHECK(web_audio_device_);
 
-  SendLogMessage(__func__, String::Format("({output_channels=%u})",
-                                          number_of_output_channels));
   SendLogMessage(__func__,
-                 String::Format("=> (FIFO size=%u bytes)", fifo_->length()));
+                 StrCat({"({output_channels=",
+                         String::Number(number_of_output_channels), "})"}));
+  SendLogMessage(
+      __func__,
+      StrCat({"=> (FIFO size=", String::Number(fifo_->length()), " bytes)"}));
 
   SendLogMessage(__func__,
-                 String::Format("=> (device callback buffer size=%u frames)",
-                                callback_buffer_size_));
+                 StrCat({"=> (device callback buffer size=",
+                         String::Number(callback_buffer_size_), " frames)"}));
   SendLogMessage(__func__, String::Format("=> (device sample rate=%.0f Hz)",
                                           web_audio_device_->SampleRate()));
   if (is_output_buffer_bypassed_) {
@@ -599,7 +603,7 @@ bool AudioDestination::RequestRender(size_t frames_requested,
   metric_reporter_.BeginTrace();
 
   if (frames_elapsed_ == 0) {
-    SendLogMessage(__func__, String::Format("=> (rendering is now alive)"));
+    SendLogMessage(__func__, "=> (rendering is now alive)");
   }
 
   // FIFO contains audio at the output device sample rate.
@@ -700,11 +704,9 @@ void AudioDestination::TransferElapsedFramesFrom(
 
 void AudioDestination::SendLogMessage(const String& function_name,
                                       const String& message) const {
-  WebRtcLogMessage(
-      String::Format("[WA]AD::%s %s [state=%s]", function_name.Utf8().c_str(),
-                     message.Utf8().c_str(),
-                     DeviceStateToString(device_state_).Utf8().c_str())
-          .Utf8());
+  WebRtcLogMessage(StrCat({"[WA]AD::", function_name, " ", message,
+                           " [state=", DeviceStateToString(device_state_), "]"})
+                       .Utf8());
 }
 
 }  // namespace blink

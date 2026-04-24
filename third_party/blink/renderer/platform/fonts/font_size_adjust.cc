@@ -39,15 +39,12 @@ String FontSizeAdjust::ToString() const {
   }
 
   if (metric_ == Metric::kExHeight) {
-    return IsFromFont()
-               ? "from-font"
-               : String::Format("%s", String::Number(value_).Ascii().c_str());
+    return IsFromFont() ? "from-font" : String::Number(value_);
   }
 
   return IsFromFont()
-             ? String::Format("%s from-font", ToString(metric_).Ascii().c_str())
-             : String::Format("%s %s", ToString(metric_).Ascii().c_str(),
-                              String::Number(value_).Ascii().c_str());
+             ? StrCat({ToString(metric_), " from-font"})
+             : StrCat({ToString(metric_), " ", String::Number(value_)});
 }
 
 }  // namespace blink
