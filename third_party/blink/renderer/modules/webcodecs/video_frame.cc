@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
@@ -837,6 +839,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     auto client_shared_image = sbi->GetSharedImage();
     CHECK(client_shared_image);
     gfx_color_space = client_shared_image->color_space();
+    if (!gfx_color_space.IsValid()) {
+      SCOPED_CRASH_KEY_STRING64("AcceleratedSBISharedImage", "DebugLabel",
+                                client_shared_image->debug_label());
+      base::debug::DumpWithoutCrashing();
+    }
     frame = media::VideoFrame::WrapSharedImage(
         format, std::move(client_shared_image), sbi->GetSyncToken(),
         std::move(release_cb), parsed_init.visible_rect,
