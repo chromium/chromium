@@ -218,11 +218,21 @@ public abstract class ChildConnectionAllocator {
         // costs of the app zygote are not recovered. See https://crbug.com/1044579 for context and
         // experimental results.
         disableZygote = SysUtils.isLowEndDevice() || disableZygote;
-        String suffix = disableZygote ? NON_ZYGOTE_SUFFIX : ZYGOTE_SUFFIX;
-        if (fallbackServiceClassName != null) {
-            fallbackServiceClassName += suffix;
+
+        // WebView renderers are always spawned from WebView Zygote.
+        boolean forceZygote = !bindAsExternalService;
+        String suffix;
+        if (forceZygote) {
+            fallbackServiceClassName = null;
+            suffix = ZYGOTE_SUFFIX;
         } else {
-            fallbackServiceClassName = disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+            suffix = disableZygote ? NON_ZYGOTE_SUFFIX : ZYGOTE_SUFFIX;
+            if (fallbackServiceClassName != null) {
+                fallbackServiceClassName += suffix;
+            } else {
+                fallbackServiceClassName =
+                        disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+            }
         }
         return new VariableSizeAllocatorImpl(
                 launcherHandler,
