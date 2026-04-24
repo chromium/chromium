@@ -33,7 +33,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -126,39 +126,43 @@ class MockComposeDialog : public compose::mojom::ComposeUntrustedDialog {
 
 }  // namespace
 
-class ChromeComposeClientTest : public BrowserWithTestWindowTest {
+class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
  public:
   ChromeComposeClientTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Allows early registration of an override of the factory that instantiates
+    // OptimizationGuideKeyedService and SegmentationPlatformService.
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ChromeComposeClientTest::SetTestingFactories,
+                base::Unretained(this)));
+  }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {
-        TestingProfile::TestingFactory{
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetInstance(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
+  void SetTestingFactories(content::BrowserContext* context) {
+    segmentation_platform::SegmentationPlatformServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   testing::NiceMock<MockSegmentationPlatformService>>();
-            })},
-        TestingProfile::TestingFactory{
-            OptimizationGuideKeyedServiceFactory::GetInstance(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  testing::NiceMock<MockOptimizationGuideKeyedService>>();
-            })},
-    };
+            }));
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockOptimizationGuideKeyedService>>();
+        }));
   }
 
   void SetUp() override {
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            GetProfile(), base::BindRepeating(&BuildMockHatsService)));
+            profile(), base::BindRepeating(&BuildMockHatsService)));
     EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
 
@@ -174,10 +178,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         std::make_unique<TestModelQualityLogsUploaderService>(
             TestingBrowserProcess::GetGlobal()->local_state()));
 
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
-                                         true);
+    profile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE, true);
     SetPrefsForComposeMSBBState(true);
-    AddTab(browser(), GetPageUrl());
+    NavigateAndCommit(GetPageUrl());
+    ChromeComposeClient::CreateForWebContents(web_contents());
 
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
@@ -253,11 +257,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     ukm_recorder_.reset();
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
-    BrowserWithTestWindowTest::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void SetPrefsForComposeMSBBState(bool msbb_state) {
-    PrefService* prefs = GetProfile()->GetPrefs();
+    PrefService* prefs = profile()->GetPrefs();
     prefs->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         msbb_state);
@@ -329,11 +333,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
   autofill::FormFieldData& field_data() { return field_data_; }
 
-  // Get the WebContents for the first browser tab.
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-  }
-
   mojo::Remote<compose::mojom::ComposeClientUntrustedPageHandler>&
   client_page_handler() {
     return client_page_handler_;
@@ -361,20 +360,19 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockSegmentationPlatformService& GetSegmentationPlatformService() {
     return *static_cast<MockSegmentationPlatformService*>(
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(GetProfile()));
+            GetForProfile(profile()));
   }
 
   MockOptimizationGuideKeyedService& GetOptimizationGuide() {
     return *static_cast<MockOptimizationGuideKeyedService*>(
-        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile()));
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
   }
 
  protected:
   optimization_guide::proto::ComposePageMetadata ComposePageMetadata() {
     optimization_guide::proto::ComposePageMetadata page_metadata;
     page_metadata.set_page_url(GetPageUrl().spec());
-    page_metadata.set_page_title(base::UTF16ToUTF8(
-        browser()->tab_strip_model()->GetWebContentsAt(0)->GetTitle()));
+    page_metadata.set_page_title(base::UTF16ToUTF8(web_contents()->GetTitle()));
     return page_metadata;
   }
 
@@ -442,6 +440,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription subscription_;
 
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
@@ -472,8 +471,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
   raw_ptr<MockHatsService> mock_hats_service_;
 };
-
-
 
 TEST_F(ChromeComposeClientTest, TestComposeServerResponses) {
   ShowDialogAndBindMojo();
@@ -641,7 +638,7 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
 
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 }
 
 
@@ -824,7 +821,7 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
 }
 
 TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
+  NavigateAndCommit(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip showing the dialog here as there is no dialog required at this URL.
   BindMojo();
 
@@ -867,7 +864,7 @@ TEST_F(ChromeComposeClientTest, TestCloseUI) {
 // Tests that closing the session at chrome-untrusted://compose does not crash
 // the browser, even though there is no dialog shown at that URL.
 TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
+  NavigateAndCommit(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip showing the dialog here as there is no dialog required at this
   // URL.
   BindMojo();
@@ -1128,7 +1125,7 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
 
   // Navigate to a new page.
   GURL next_page("http://example.com/a.html");
-  NavigateAndCommit(web_contents(), next_page);
+  NavigateAndCommit(next_page);
 
   // All sessions should be deleted.
   EXPECT_EQ(0, client().GetSessionCountForTest());
@@ -1168,7 +1165,7 @@ TEST_F(ChromeComposeClientTest, ExpiredSessionBlocksSavedStateNudgeTest) {
 
 TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
   // Enable FRE and show the dialog.
-  PrefService* prefs = GetProfile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kPrefHasCompletedComposeFRE, false);
 
   ShowDialogAndBindMojo();
@@ -1179,7 +1176,7 @@ TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
   // Make sure the async calls complete before naviagating away.
   FlushMojo();
   // Navigate page away to upload session close metrics.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   // Check the expected event count metrics.
   std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
@@ -1210,7 +1207,7 @@ TEST_F(ChromeComposeClientTest,
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
-  PrefService* prefs = GetProfile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
 
   auto test_url = GURL("http://foo");
   auto test_origin = url::Origin::Create(test_url);
@@ -1237,7 +1234,7 @@ TEST_F(ChromeComposeClientTest,
                   .Find(test_origin.Serialize()));
   EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
                                            trigger_source));
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   histograms().ExpectBucketCount(
       compose::kComposeProactiveNudgeCtr,
@@ -1271,7 +1268,7 @@ TEST_F(ChromeComposeClientTest,
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
-  PrefService* prefs = GetProfile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
 
   auto test_url = GURL("http://foo");
   auto test_origin = url::Origin::Create(test_url);
@@ -1302,7 +1299,7 @@ TEST_F(ChromeComposeClientTest,
                   .Find(test_origin.Serialize()));
   EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
                                            trigger_source));
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   histograms().ExpectUniqueSample(
       compose::kComposeSelectionNudgeCtr,
@@ -1334,7 +1331,7 @@ TEST_F(ChromeComposeClientTest, DisableComposeBlocksProactiveNudgeTest) {
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
-  PrefService* prefs = GetProfile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
 
   autofill::FormData form_data;
@@ -1362,7 +1359,7 @@ TEST_F(ChromeComposeClientTest, DisableComposeBlocksProactiveNudgeTest) {
   EXPECT_FALSE(
       client().ShouldTriggerPopup(form_data, field_data, trigger_source));
 
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   histograms().ExpectBucketCount(
       compose::kComposeProactiveNudgeCtr,
@@ -1395,7 +1392,7 @@ TEST_F(ChromeComposeClientTest, DisableComposeBlocksSelectionNudgeTest) {
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
-  PrefService* prefs = GetProfile()->GetPrefs();
+  PrefService* prefs = profile()->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
 
   autofill::FormData form_data;
@@ -1426,7 +1423,7 @@ TEST_F(ChromeComposeClientTest, DisableComposeBlocksSelectionNudgeTest) {
   EXPECT_FALSE(
       client().ShouldTriggerPopup(form_data, field_data, trigger_source));
 
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   histograms().ExpectUniqueSample(
       compose::kComposeSelectionNudgeCtr,
@@ -1614,8 +1611,7 @@ TEST_F(ChromeComposeClientTest, TestNoAutoComposeBeforeFirstRun) {
   EXPECT_CALL(model_executor(), ExecuteModel(_, _, _, _)).Times(0);
 
   // Enable FRE and show the dialog.
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
-                                       false);
+  profile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE, false);
   // Valid selection for auto compose to use.
   std::u16string selection = u"testing alpha bravo charlie";
   SetSelection(selection);
@@ -1705,7 +1701,7 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
       compose::ComposeSessionEventTypes::kAnyModifierUsed, 0);
 
   // Navigate page away to upload UKM metrics to the collector.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
@@ -1812,7 +1808,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   FlushMojo();
 
   // Navigate page away to upload UKM metrics to the collector.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
@@ -1947,7 +1943,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   FlushMojo();
 
   // Navigate page away to upload UKM metrics to the collector.
-  NavigateAndCommitActiveTab(GURL("about:blank"));
+  NavigateAndCommit(GURL("about:blank"));
 
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
@@ -2253,7 +2249,7 @@ TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
 TEST_F(ChromeComposeClientTest,
        TestCannotSendMessagesAfterClosingDialogAtChromeCompose) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
+  NavigateAndCommit(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();
