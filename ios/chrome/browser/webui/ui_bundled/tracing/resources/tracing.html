@@ -1,0 +1,116 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tracing</title>
+  <style>
+    body {
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 {
+      font-weight: 500;
+      color: #202124;
+    }
+    p {
+      color: #5f6368;
+      line-height: 1.5;
+    }
+    .button-container {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #1557b0;
+    }
+    button:disabled {
+      background-color: #dadce0;
+      color: #80868b;
+      cursor: not-allowed;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: 500;
+    }
+    .status-recording {
+      color: #d93025;
+    }
+    .status-processing {
+      color: #0a17ca;
+    }
+    .status-stopped {
+      color: #188038;
+    }
+  </style>
+</head>
+<body>
+  <h1>Perfetto Tracing</h1>
+  <p>
+    Record a trace of Chrome's activity to diagnose performance issues.
+    Once stopped, you will be prompted to share the resulting
+    <code>.perfetto-trace</code> file which can be viewed at
+    <a href="https://ui.perfetto.dev">ui.perfetto.dev</a>.
+  </p>
+
+  <div class="button-container">
+    <button id="start-button">Start Recording</button>
+    <button id="stop-button" disabled>Stop and Share Trace</button>
+  </div>
+
+  <div id="status" class="status-stopped">Status: Ready</div>
+
+  <!-- Import iOS WebUI bindings to define chrome.send -->
+  <script type="module">
+    import 'chrome://resources/js/ios/web_ui.js';
+  </script>
+
+  <script>
+    const startButton = document.getElementById('start-button');
+    const stopButton = document.getElementById('stop-button');
+    const statusText = document.getElementById('status');
+
+    startButton.addEventListener('click', () => {
+      startButton.disabled = true;
+      stopButton.disabled = false;
+      chrome.send('startTracing');
+    });
+
+    stopButton.addEventListener('click', () => {
+      startButton.disabled = true;
+      stopButton.disabled = true;
+      statusText.textContent = 'Status: Processing trace...';
+      statusText.className = 'status-processing';
+      chrome.send('stopTracing');
+    });
+
+    window.onRecordingStarted = () => {
+      statusText.textContent = 'Status: Recording';
+      statusText.className = 'status-recording';
+    }
+
+    window.onFinishedProcessingTrace = () => {
+      startButton.disabled = false;
+      stopButton.disabled = true;
+      statusText.textContent = 'Status: Ready';
+      statusText.className = 'status-stopped';
+    }
+  </script>
+</body>
+</html>

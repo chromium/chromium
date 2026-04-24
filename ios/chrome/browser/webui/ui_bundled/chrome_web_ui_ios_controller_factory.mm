@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals/regional_capabilities_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/signin_internals_ui_ios.h"
 #import "ios/chrome/browser/webui/ui_bundled/terms_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/tracing/tracing_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/translate_internals/translate_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/ukm_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/user_actions_ui.h"
@@ -193,6 +194,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   }
   if (url_host == kChromeUITermsHost) {
     return &NewWebUIIOS<TermsUI>;
+  }
+  if (url_host == kChromeUITracingHost) {
+    return &NewWebUIIOS<TracingUI>;
   }
   if (url_host == kChromeUITranslateInternalsHost) {
     return &NewWebUIIOS<TranslateInternalsUI>;

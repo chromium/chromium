@@ -11,6 +11,7 @@
       <include name="IDR_IOS_ON_DEVICE_LLM_INTERNALS_HTML" file="../../browser/optimization_guide/resources/on_device_llm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_HTML" file="omaha/omaha.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_JS" file="omaha/omaha.js" type="BINDATA" />
+      <include name="IDR_IOS_TRACING_HTML" file="../../browser/webui/ui_bundled/tracing/resources/tracing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
     </includes>
   </release>
 </grit>

@@ -38,6 +38,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model/translate_service_ios.h",
   "+ios/chrome/browser/web/model/java_script_console",
   "+ios/components/webui",
+  "+ios/web/common/uikit_ui_util.h",
   "+mojo/public",
   # keep-sorted end
 ]

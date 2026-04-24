@@ -39,6 +39,7 @@ inline constexpr char kChromeUIPolicyTestURL[] = "chrome://policy/test";
 inline constexpr char kChromeUISafeBrowsingURL[] = "chrome://safe-browsing";
 inline constexpr char kChromeUISettingsURL[] = "chrome://settings/";
 inline constexpr char kChromeUITermsURL[] = "chrome://terms/";
+inline constexpr char kChromeUITracingURL[] = "chrome://tracing/";
 inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 
 // URL components for Chrome on iOS.
@@ -79,6 +80,7 @@ inline constexpr char kChromeUIProfileInternalsHost[] = "profile-internals";
 inline constexpr char kChromeUISafeBrowsingHost[] = "safe-browsing";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
 inline constexpr char kChromeUITermsHost[] = "terms";
+inline constexpr char kChromeUITracingHost[] = "tracing";
 inline constexpr char kChromeUITranslateInternalsHost[] = "translate-internals";
 inline constexpr char kChromeUIURLKeyedMetricsHost[] = "ukm";
 inline constexpr char kChromeUIUserActionsHost[] = "user-actions";

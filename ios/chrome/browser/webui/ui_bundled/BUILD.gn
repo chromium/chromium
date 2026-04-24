@@ -36,6 +36,8 @@ source_set("coordinator") {
     "prefs_internals_ui.h",
     "terms_ui.h",
     "terms_ui.mm",
+    "tracing/tracing_ui.h",
+    "tracing/tracing_ui.mm",
     "ukm_internals_ui.h",
     "ukm_internals_ui.mm",
     "user_actions_handler.h",
@@ -112,16 +114,20 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tracing",
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/webui/model",
     "//ios/chrome/browser/webui/ui_bundled/inspect",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
+    "//ios/web/common:uikit",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
     "//net",
+    "//services/tracing/public/cpp",
+    "//third_party/perfetto:libperfetto",
     "//ui/base",
     "//url",
   ]
@@ -203,6 +209,7 @@ source_set("eg2_tests") {
   sources = [
     "inspect/inspect_ui_egtest.mm",
     "policy/policy_egtest.mm",
+    "tracing/tracing_ui_egtest.mm",
     "web_ui_egtest.mm",
   ]
   deps = [
