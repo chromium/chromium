@@ -1718,10 +1718,15 @@ void CompositorFrameSinkSupport::OnSaveTransitionDirectiveProcessed(
         directive.sequence_id());
   }
 
+  // Subtle: the iterator `it` may be invalidated after the call to
+  // `CacheSurfaceAnimationManager` due to new SurfaceAnimationManager being
+  // created and put into the map. This can happen due to the FrameSinkObserver
+  // getting notified of the view transition saving surface being activated.
   if (directive.maybe_cross_frame_sink()) {
     frame_sink_manager_->CacheSurfaceAnimationManager(
         directive.transition_token(), std::move(it->second));
-    view_transition_token_to_animation_manager_.erase(it);
+    view_transition_token_to_animation_manager_.erase(
+        directive.transition_token());
   }
 }
 
