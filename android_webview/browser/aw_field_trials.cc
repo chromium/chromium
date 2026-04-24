@@ -70,6 +70,13 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       input::features::kUpdateScrollPredictorInputMapping);
 
+  // InputVizard is disabled on WebView as it is a Chrome-only feature that
+  // moves input handling to the VizCompositor thread, which is out of scope
+  // for WebView's Synchronous Compositor architecture.
+  aw_feature_overrides.DisableFeature(input::features::kInputOnViz);
+  aw_feature_overrides.DisableFeature(
+      input::features::kInputVizardSpeculativeTransfer);
+
   // Disable enforcing `noopener` on Blob URL navigations on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kEnforceNoopenerOnBlobURLNavigation);
