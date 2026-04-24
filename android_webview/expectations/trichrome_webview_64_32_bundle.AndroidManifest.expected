@@ -188,6 +188,17 @@
         android:exported="true"
         android:process=":webview_service">
     </service>  # DIFF-ANCHOR: dc926e35
+    <service  # DIFF-ANCHOR: 55f101d6
+        android:name="org.chromium.content.app.NativeOnlySandboxedProcessService0"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:nativeService="true"
+        android:process=":sandboxed_process0"
+        android:visibleToInstantApps="true">
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME" android:value="NativeChildProcessService_onCreate"/>
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME" android:value="libmonochrome_64.so"/>
+    </service>  # DIFF-ANCHOR: 55f101d6
     <service  # DIFF-ANCHOR: b1e3e8bd
         android:name="org.chromium.content.app.SandboxedProcessService0"
         android:exported="true"

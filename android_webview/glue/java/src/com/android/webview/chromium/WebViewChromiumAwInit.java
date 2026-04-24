@@ -679,7 +679,12 @@ public class WebViewChromiumAwInit {
                         mFactory.addWebViewAssetPath(ContextUtils.getApplicationContext());
                     }
 
-                    AwBrowserProcess.configureChildProcessLauncher();
+                    AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                    boolean isNativeWebViewZygoteEnabled =
+                            delegate != null
+                                    && delegate.isNativeWebViewZygoteEnabled(
+                                            mFactory.getWebViewDelegate());
+                    AwBrowserProcess.configureChildProcessLauncher(isNativeWebViewZygoteEnabled);
 
                     // finishVariationsInitLocked() must precede native initialization so
                     // the seed is available when AwFeatureListCreator::SetUpFieldTrials()

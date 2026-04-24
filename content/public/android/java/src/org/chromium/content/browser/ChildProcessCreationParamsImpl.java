@@ -35,6 +35,7 @@ public class ChildProcessCreationParamsImpl {
     // Use only the explicit WebContents.setImportance signal, and ignore other implicit
     // signals in content.
     private static boolean sIgnoreVisibilityForImportance;
+    private static boolean sForceNativeSandboxedService;
 
     private static boolean sInitialized;
 
@@ -47,14 +48,19 @@ public class ChildProcessCreationParamsImpl {
             boolean isExternalSandboxedService,
             int libraryProcessType,
             boolean bindToCallerCheck,
-            boolean ignoreVisibilityForImportance) {
+            boolean ignoreVisibilityForImportance,
+            boolean forceNativeSandboxedService) {
         assert !sInitialized;
+        if (forceNativeSandboxedService && !isNativeSandboxedServiceSupported()) {
+            throw new IllegalStateException("Native sandboxed service forced but not available");
+        }
         sPackageNameForPrivilegedService = privilegedPackageName;
         sPackageNameForSandboxedService = sandboxedPackageName;
         sIsSandboxedServiceExternal = isExternalSandboxedService;
         sLibraryProcessType = libraryProcessType;
         sBindToCallerCheck = bindToCallerCheck;
         sIgnoreVisibilityForImportance = ignoreVisibilityForImportance;
+        sForceNativeSandboxedService = forceNativeSandboxedService;
         sInitialized = true;
     }
 
@@ -98,13 +104,18 @@ public class ChildProcessCreationParamsImpl {
         return PRIVILEGED_SERVICES_NAME;
     }
 
-    public static boolean isNativeSandboxedServiceEnabled() {
+    private static boolean isNativeSandboxedServiceSupported() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
                 && BuildConfig.JAVALESS_RENDERERS_AVAILABLE
                 // Incremental install disables isolated processes, which are required for
                 // javaless renderers.
-                && !BuildConfig.IS_INCREMENTAL_INSTALL
-                && JavalessRenderersFeatureList.isEnabled();
+                && !BuildConfig.IS_INCREMENTAL_INSTALL;
+    }
+
+    public static boolean isNativeSandboxedServiceEnabled() {
+        return sForceNativeSandboxedService
+                || (isNativeSandboxedServiceSupported()
+                        && JavalessRenderersFeatureList.isEnabled());
     }
 
     public static String getSandboxedServicesName() {

@@ -113,7 +113,8 @@ public class ChildProcessLauncherHelperTest {
                 /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
-                /* ignoreVisibilityForImportance= */ false);
+                /* ignoreVisibilityForImportance= */ false,
+                /* forceNativeSandboxedService= */ false);
         testWarmUpImpl();
     }
 

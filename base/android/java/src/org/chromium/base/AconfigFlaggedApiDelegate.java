@@ -497,4 +497,13 @@ public interface AconfigFlaggedApiDelegate {
     default boolean sendShowRestrictedContentIntent(Uri uri) {
         return false;
     }
+
+    /**
+     * Checks if the Native WebView Zygote is enabled.
+     *
+     * @param delegate the WebViewDelegate used to check the state.
+     */
+    default boolean isNativeWebViewZygoteEnabled(WebViewDelegate delegate) {
+        return false;
+    }
 }

@@ -25,13 +25,15 @@ public final class ChildProcessCreationParams {
             boolean isExternalSandboxedService,
             int libraryProcessType,
             boolean bindToCallerCheck,
-            boolean ignoreVisibilityForImportance) {
+            boolean ignoreVisibilityForImportance,
+            boolean forceNativeSandboxedService) {
         ChildProcessCreationParamsImpl.set(
                 privilegedPackageName,
                 sandboxedPackageName,
                 isExternalSandboxedService,
                 libraryProcessType,
                 bindToCallerCheck,
-                ignoreVisibilityForImportance);
+                ignoreVisibilityForImportance,
+                forceNativeSandboxedService);
     }
 }

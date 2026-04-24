@@ -244,6 +244,21 @@ by a child template that "extends" this file.
                      tools:ignore="ExportedService"
                      android:visibleToInstantApps="true" />
         {% endfor %}
+        {% if javaless_renderers is defined %}
+        <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService0"
+                 android:nativeService="true"
+                 android:process=":sandboxed_process0"
+                 android:isolatedProcess="true"
+                 android:exported="true"
+                 android:externalService="true"
+                 tools:ignore="ExportedService"
+                 android:visibleToInstantApps="true">
+            <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
+                      android:value="{{ library|default('libwebviewchromium.so') }}" />
+            <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME"
+                      android:value="NativeChildProcessService_onCreate" />
+        </service>
+        {% endif %}
         <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
                    android:value="0" />
         {% if trichrome_library is defined %}
