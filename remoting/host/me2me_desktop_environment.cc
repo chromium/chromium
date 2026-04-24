@@ -207,8 +207,10 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
   // function to be used here and in CurtainMode::ActivateCurtain().
   bool want_user_interface = getuid() != 0;
 #else
-  bool want_user_interface =
-      desktop_environment_options().enable_user_interface();
+  // TODO: crbug.com/499225384 - Re-enable this and extract the value from
+  // desktop_environment_options().enable_user_interface() after the network
+  // process has been split into low- and high-trust processes.
+  bool want_user_interface = true;
 #endif
 
   if (want_user_interface) {
