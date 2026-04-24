@@ -5003,11 +5003,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
             ->GetSafeRef();
   } else if (response_should_be_rendered_) {
     std::string* reason_output =
-        (base::FeatureList::IsEnabled(
-             features::kHoldbackDebugReasonStringRemoval) ||
-         IsInitialWebUINavigation())
-            ? &rfh_selected_reason
-            : nullptr;
+        IsInitialWebUINavigation() ? &rfh_selected_reason : nullptr;
 
     if (auto result =
             frame_tree_node_->render_manager()->GetFrameHostForNavigation(

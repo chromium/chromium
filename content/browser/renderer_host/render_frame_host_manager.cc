@@ -1976,22 +1976,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // Now compute the SiteInstance to use for the navigation.
   IsSameSiteGetter is_same_site_getter(is_same_site);
-  std::string site_instance_reason;
-  std::string* reason_output =
-      (base::FeatureList::IsEnabled(
-           features::kHoldbackDebugReasonStringRemoval) ||
-       request->IsInitialWebUINavigation())
-          ? &site_instance_reason
-          : reason;
   scoped_refptr<SiteInstanceImpl> dest_site_instance =
       GetSiteInstanceForNavigationRequest(request, is_same_site_getter,
-                                          browsing_context_group_swap,
-                                          reason_output);
-  if (reason && (base::FeatureList::IsEnabled(
-                     features::kHoldbackDebugReasonStringRemoval) ||
-                 request->IsInitialWebUINavigation())) {
-    reason->append(site_instance_reason);
-  }
+                                          browsing_context_group_swap, reason);
 
   // A subframe should always be in the same BrowsingInstance as the parent
   // (see also https://crbug.com/1107269).

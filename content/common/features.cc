@@ -122,10 +122,6 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 BASE_FEATURE(kHidePastePopupOnGSB, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Holdback the removal of debug reason strings in crrev.com/c/6312375
-// to measure the impact.
-BASE_FEATURE(kHoldbackDebugReasonStringRemoval,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
