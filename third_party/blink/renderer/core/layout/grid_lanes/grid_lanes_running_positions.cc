@@ -508,6 +508,20 @@ LayoutUnit GridLanesRunningPositions::FinalizeItemSpanAndGetMaxPosition(
     const GridLayoutTrackCollection& track_collection) {
   LayoutUnit max_running_position;
   const auto grid_axis_direction = track_collection.Direction();
+
+  // Auto-placed subgrids have their span temporarily translated to the
+  // beginning of the grid-lanes container during track sizing (see
+  // `GridLanesNode::ComputeSetIndicesForSubgrid`). Reset the span back to
+  // indefinite here so the grid lanes placement algorithm places it per the
+  // auto-placement rules.
+  if (grid_lanes_item.IsSubgrid() && grid_lanes_item.is_auto_placed) {
+    grid_lanes_item.resolved_position.SetSpan(
+        GridSpan::IndefiniteGridSpan(
+            grid_lanes_item.SpanSize(grid_axis_direction)),
+        grid_axis_direction);
+    grid_lanes_item.ResetPlacementIndices();
+  }
+
   const GridSpan item_span =
       grid_lanes_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
   if (item_span.IsIndefinite()) {

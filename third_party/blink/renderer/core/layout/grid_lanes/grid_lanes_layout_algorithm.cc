@@ -469,6 +469,45 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         running_positions.FinalizeItemSpanAndGetMaxPosition(
             grid_axis_start_offset, grid_lanes_item, track_collection);
 
+    // For auto-placed subgrids, the inherited track collection in the
+    // subgridded (grid) axis was built from the temporary placement at the
+    // beginning of the container during track sizing. Now that the grid lanes
+    // placement algorithm has determined the final position, rebuild the
+    // subgrid's inherited track collection using the updated range indices so
+    // the subgrid layout uses the correct tracks.
+    //
+    // TODO(almaher): What about nested subgrids? Those won't be updated
+    // correctly. Will this require a separate pass, or do we just need to
+    // make this update for the rest of its subtree, as well?
+    //
+    // TODO(almaher): Also, note that this only updates the inherited track
+    // collection. For cases where the opposing axis depends on the sizing in
+    // the grid axis, we will need to run another pass altogether to ensure
+    // accurate sizing. We will likely need a way to store the final position
+    // for these subgrids before the second pass.
+    if (is_subgrid && grid_lanes_item.is_auto_placed &&
+        grid_lanes_item.StartLine(grid_axis_direction) !=
+            grid_axis_start_offset) {
+      CHECK(child_layout_subtree);
+      GridLayoutData* child_layout_data = child_layout_subtree->LayoutData();
+      CHECK(child_layout_data->HasSubgriddedAxis(grid_axis_direction));
+
+      const SubgriddedItemData subgridded_item_data(
+          grid_lanes_item, &layout_data, container_writing_mode);
+      const ConstraintSpace subgrid_space =
+          CreateConstraintSpaceForLayout(subgridded_item_data);
+      const FragmentGeometry subgrid_fragment_geometry =
+          CalculateInitialFragmentGeometryForSubgrid(grid_lanes_item,
+                                                     subgrid_space);
+
+      const GridLayoutAlgorithm subgrid_algorithm(
+          {grid_lanes_item.node, subgrid_fragment_geometry, subgrid_space});
+      child_layout_data->SetTrackCollection(CreateSubgridTrackCollection(
+          subgridded_item_data, grid_lanes_item.node.Style(), subgrid_space,
+          subgrid_algorithm.BorderScrollbarPadding(),
+          subgrid_algorithm.GetGridAvailableSize(), grid_axis_direction));
+    }
+
     // During track sizing, we may force a specific inline size on an item
     // if the available space in that direction is indefinite, particularly for
     // orthogonal items. In Grid, that constraint is maintained during layout
