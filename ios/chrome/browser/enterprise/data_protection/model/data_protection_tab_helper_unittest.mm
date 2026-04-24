@@ -62,6 +62,15 @@ class FakeRealTimeUrlLookupService
     is_rt_lookup_successful_ = successful;
   }
 
+  void RunResponseCallback(
+      std::unique_ptr<safe_browsing::RTLookupResponse> response) {
+    ASSERT_FALSE(pending_callbacks_.empty());
+    std::move(pending_callbacks_.front())
+        .Run(is_rt_lookup_successful_, /*is_cached_response=*/false,
+             std::move(response));
+    pending_callbacks_.pop();
+  }
+
   size_t start_lookup_count() const { return start_lookup_count_; }
 
   // RealTimeUrlLookupServiceBase:
@@ -84,14 +93,11 @@ class FakeRealTimeUrlLookupService
           referring_app_info,
       bool use_cache) override {
     start_lookup_count_++;
-    std::move(response_callback)
-        .Run(is_rt_lookup_successful_, /*is_cached_response=*/false,
-             fake_response_ ? std::make_unique<safe_browsing::RTLookupResponse>(
-                                  *fake_response_)
-                            : nullptr);
+    pending_callbacks_.push(std::move(response_callback));
   }
 
  private:
+  base::queue<safe_browsing::RTLookupResponseCallback> pending_callbacks_;
   std::unique_ptr<safe_browsing::RTLookupResponse> fake_response_;
   bool is_rt_lookup_successful_ = true;
   size_t start_lookup_count_ = 0;
@@ -192,6 +198,20 @@ class DataProtectionTabHelperTest : public PlatformTest {
     return context;
   }
 
+  void VerifyInitialProtection(const GURL& url, bool expected_enabled) {
+    auto web_state =
+        std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+    web_state->SetBrowserState(profile_.get());
+    web_state->SetVisibleURL(url);
+
+    DataProtectionTabHelper::CreateForWebState(web_state.get());
+    DataProtectionTabHelper* helper =
+        DataProtectionTabHelper::FromWebState(web_state.get());
+
+    EXPECT_EQ(helper->IsScreenshotProtectionEnabled(), expected_enabled);
+    EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
+  }
+
   void SetScreenshotBlockRule(const std::string& url_pattern) {
     data_controls::SetDataControls(profile_->GetPrefs(),
                                    {base::StringPrintf(R"({
@@ -233,56 +253,75 @@ TEST_F(DataProtectionTabHelperTest, DataControlsBlock) {
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
 }
 
-// Tests that screenshot protection is NOT enabled when Data Controls don't
-// block.
-TEST_F(DataProtectionTabHelperTest, DataControlsAllow) {
-  GURL unprotected_url(kUnprotectedUrl);
+// Tests that the initial URL is checked when the helper is created.
+TEST_F(DataProtectionTabHelperTest, InitialURLChecked) {
+  SetScreenshotBlockRule(kProtectedUrl);
 
-  auto context = CreateNavigationContext(unprotected_url);
+  VerifyInitialProtection(GURL(kProtectedUrl), /*expected_enabled=*/true);
+}
 
-  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
-  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+// Tests that the tab helper is a no-op (no protection, no lookups) when no
+// enterprise policies (Data Controls or real-time lookups) are enabled.
+TEST_F(DataProtectionTabHelperTest, NoOpWhenNoPolicy) {
+  // Disable real-time lookup.
+  profile_->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_DISABLED);
 
-  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
-  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+  VerifyInitialProtection(GURL(kProtectedUrl), /*expected_enabled=*/false);
 }
 
 // Tests that screenshot protection is enabled by real-time lookup.
 TEST_F(DataProtectionTabHelperTest, RealTimeLookupBlock) {
   GURL protected_url(kProtectedUrl);
 
-  // Prepare response.
+  auto context = CreateNavigationContext(protected_url);
+
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+
+  // Still false until committed.
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  // Lookup pending state after commit.
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  // Finish lookup with BLOCK.
   auto response = std::make_unique<safe_browsing::RTLookupResponse>();
   auto* threat_info = response->add_threat_info();
   threat_info->mutable_matched_url_navigation_rule()->set_block_screenshot(
       true);
-  fake_rt_lookup_service_->set_fake_response(std::move(response));
+  fake_rt_lookup_service_->RunResponseCallback(std::move(response));
 
-  auto context = CreateNavigationContext(protected_url);
-
-  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
-  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
-
-  EXPECT_TRUE(observer_.Wait());
   EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
 }
 
-// Tests that screenshot protection is NOT enabled when real-time lookup fails.
+// Tests that screenshot protection stays enabled when real-time lookup fails.
 TEST_F(DataProtectionTabHelperTest, RealTimeLookupFailed) {
   GURL protected_url(kProtectedUrl);
 
+  auto context = CreateNavigationContext(protected_url);
+
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+
+  // Still false until committed.
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+
+  // Lookup pending state after commit (fail-closed).
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
   // Simulate failed lookup.
   fake_rt_lookup_service_->set_is_rt_lookup_successful(false);
+  fake_rt_lookup_service_->RunResponseCallback(nullptr);
 
-  web::FakeNavigationContext context;
-  context.SetUrl(protected_url);
-  context.SetHasCommitted(true);
-
-  tab_helper()->DidStartNavigation(web_state_.get(), &context);
-  tab_helper()->DidFinishNavigation(web_state_.get(), &context);
-
-  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+  // Stays enabled because it's fail-closed.
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
 }
 
@@ -384,6 +423,7 @@ TEST_F(DataProtectionTabHelperTest, RedirectsChecked) {
   context.SetUrl(initial_url);
 
   tab_helper()->DidStartNavigation(web_state_.get(), &context);
+  // Still false until committed.
   EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
 
@@ -393,11 +433,66 @@ TEST_F(DataProtectionTabHelperTest, RedirectsChecked) {
   context.SetHasCommitted(true);
   tab_helper()->DidFinishNavigation(web_state_.get(), &context);
 
-  EXPECT_TRUE(observer_.Wait());
   EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
   // No new lookup should have been triggered for the redirect because it was
   // blocked by Data Controls.
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+}
+
+// Tests that screenshot protection remains enabled as long as there is at least
+// one pending lookup for the current navigation (e.g. during redirects).
+TEST_F(DataProtectionTabHelperTest, EnableProtectionDuringLookups) {
+  GURL url1("https://url1.com");
+  GURL url2("https://url2.com");
+  GURL url3("https://url3.com");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(url1);
+
+  tab_helper()->DidStartNavigation(web_state_.get(), &context);
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 1u);
+
+  // Redirect to url2.
+  context.SetUrl(url2);
+  tab_helper()->DidRedirectNavigation(web_state_.get(), &context);
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 2u);
+
+  // Redirect to url3.
+  context.SetUrl(url3);
+  tab_helper()->DidRedirectNavigation(web_state_.get(), &context);
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 3u);
+
+  context.SetHasCommitted(true);
+  tab_helper()->DidFinishNavigation(web_state_.get(), &context);
+
+  // Should be in fail-closed (pending) state.
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  auto allow_response = []() {
+    auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+    response->add_threat_info()
+        ->mutable_matched_url_navigation_rule()
+        ->set_block_screenshot(false);
+    return response;
+  };
+
+  // Receive ALLOW for url1.
+  fake_rt_lookup_service_->RunResponseCallback(allow_response());
+  // State should NOT change because we are still waiting for url2 and url3.
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  // Receive ALLOW for url2.
+  fake_rt_lookup_service_->RunResponseCallback(allow_response());
+  // State should NOT change because we are still waiting for url3.
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  // Receive ALLOW for url3.
+  fake_rt_lookup_service_->RunResponseCallback(allow_response());
+
+  // Now it should be disabled.
+  EXPECT_FALSE(observer_.Wait());
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
 }
 
 // Tests that protection is latched if any URL in redirect chain is protected.

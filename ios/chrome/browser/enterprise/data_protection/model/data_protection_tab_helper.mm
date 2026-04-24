@@ -26,6 +26,11 @@
 
 namespace {
 
+using ProtectionState = DataProtectionTabHelper::ProtectionState;
+using Enabled = DataProtectionTabHelper::Enabled;
+using Disabled = DataProtectionTabHelper::Disabled;
+using LookupPending = DataProtectionTabHelper::LookupPending;
+
 // Returns the navigation ID associated with the given `context`, or 0 if the
 // context is null.
 int64_t GetNavigationId(web::NavigationContext* context) {
@@ -36,6 +41,39 @@ int64_t GetNavigationId(web::NavigationContext* context) {
 bool SkipUrl(const GURL& url) {
   return !url.is_valid() || url.SchemeIs(kChromeUIScheme) ||
          url.SchemeIs(content_settings::kChromeUIUntrustedScheme);
+}
+
+// Returns the next state when a new real-time lookup is initiated.
+ProtectionState ComputeNextStateOnLookupStart(
+    const ProtectionState& current_state) {
+  if (std::holds_alternative<Enabled>(current_state)) {
+    return current_state;
+  }
+  if (const auto* pending = std::get_if<LookupPending>(&current_state)) {
+    return ProtectionState(
+        LookupPending{.pending_count = pending->pending_count + 1});
+  }
+  return ProtectionState(LookupPending{.pending_count = 1});
+}
+
+// Returns the next state based on the current state and the result of a
+// real-time lookup.
+ProtectionState ComputeNextStateOnLookupResponse(
+    const ProtectionState& current_state,
+    bool protection_enabled) {
+  if (protection_enabled) {
+    return ProtectionState(Enabled{});
+  }
+
+  if (const auto* pending = std::get_if<LookupPending>(&current_state)) {
+    if (pending->pending_count > 1) {
+      return ProtectionState(
+          LookupPending{.pending_count = pending->pending_count - 1});
+    }
+    return ProtectionState(Disabled{});
+  }
+
+  return current_state;
 }
 
 }  // namespace
@@ -49,6 +87,11 @@ DataProtectionTabHelper::DataProtectionTabHelper(web::WebState* web_state)
 }
 
 DataProtectionTabHelper::~DataProtectionTabHelper() = default;
+
+DataProtectionTabHelper::NavigationState::NavigationState(
+    std::optional<int64_t> navigation_id)
+    : navigation_id(navigation_id) {}
+DataProtectionTabHelper::NavigationState::~NavigationState() = default;
 
 void DataProtectionTabHelper::AddObserver(
     DataProtectionTabHelperObserver* observer) {
@@ -68,9 +111,9 @@ void DataProtectionTabHelper::DidStartNavigation(
   }
 
   // Reset the pending navigation state for this new navigation.
-  pending_navigation_ = {.navigation_id = GetNavigationId(navigation_context)};
+  pending_navigation_ = NavigationState(GetNavigationId(navigation_context));
 
-  PerformChecks(navigation_context);
+  PerformChecks(navigation_context->GetUrl(), pending_navigation_);
 }
 
 void DataProtectionTabHelper::DidRedirectNavigation(
@@ -83,103 +126,11 @@ void DataProtectionTabHelper::DidRedirectNavigation(
 
   // Once screenshot protection is enabled for a navigation, it stays enabled
   // for all subsequent redirects. No further checks are needed.
-  if (pending_navigation_.screenshot_protection_enabled) {
+  if (std::holds_alternative<Enabled>(pending_navigation_.protection_state)) {
     return;
   }
 
-  PerformChecks(navigation_context);
-}
-
-void DataProtectionTabHelper::CheckPolicyForInitialURL() {
-  const GURL& url = web_state_->GetVisibleURL();
-  if (SkipUrl(url)) {
-    return;
-  }
-
-  committed_navigation_.navigation_id = std::nullopt;
-  if (IsScreenshotBlockedByDataControls(url)) {
-    UpdateScreenshotProtectionState(true);
-  } else {
-    EvaluateRealTimePolicy(url, committed_navigation_.navigation_id);
-  }
-}
-
-void DataProtectionTabHelper::PerformChecks(
-    web::NavigationContext* navigation_context) {
-  CHECK(!pending_navigation_.screenshot_protection_enabled);
-  if (SkipUrl(navigation_context->GetUrl())) {
-    return;
-  }
-
-  pending_navigation_.screenshot_protection_enabled =
-      IsScreenshotBlockedByDataControls(navigation_context->GetUrl());
-
-  if (!pending_navigation_.screenshot_protection_enabled) {
-    EvaluateRealTimePolicy(navigation_context->GetUrl(),
-                           pending_navigation_.navigation_id);
-  }
-}
-
-bool DataProtectionTabHelper::IsScreenshotBlockedByDataControls(
-    const GURL& url) {
-  CHECK(GetRulesService());
-  return GetRulesService()->BlockScreenshots(url);
-}
-
-bool DataProtectionTabHelper::ShouldPerformRealTimeLookup() const {
-  ProfileIOS* profile = GetProfile();
-  if (!profile || profile->IsOffTheRecord()) {
-    return false;
-  }
-
-  auto* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
-
-  return connectors_service &&
-         connectors_service->GetDMTokenForRealTimeUrlCheck().has_value() &&
-         GetRealTimeLookupService() && GetLookupService();
-}
-
-void DataProtectionTabHelper::EvaluateRealTimePolicy(
-    const GURL& url,
-    std::optional<int64_t> navigation_id) {
-  if (!ShouldPerformRealTimeLookup()) {
-    return;
-  }
-
-  GetLookupService()->DoLookup(
-      GetRealTimeLookupService(), url,
-      base::BindOnce(&DataProtectionTabHelper::OnRealTimeLookupResult,
-                     weak_factory_.GetWeakPtr(), navigation_id),
-      web_state_->GetUniqueIdentifier().ToSessionID());
-}
-
-void DataProtectionTabHelper::OnRealTimeLookupResult(
-    std::optional<int64_t> navigation_id,
-    std::unique_ptr<safe_browsing::RTLookupResponse> response) {
-  if (!response) {
-    return;
-  }
-
-  enterprise_data_protection::UrlSettings settings =
-      enterprise_data_protection::GetUrlSettings(std::string(), response.get());
-
-  if (settings.allow_screenshots) {
-    return;  // No need to do anything if not blocked.
-  }
-
-  // If this result is for the currently pending navigation, latch the
-  // protection state.
-  if (navigation_id == pending_navigation_.navigation_id) {
-    pending_navigation_.screenshot_protection_enabled = true;
-  }
-
-  // If this result is for the *already committed* navigation (e.g. an
-  // asynchronous lookup finished after commit), update the live state
-  // immediately.
-  if (navigation_id == committed_navigation_.navigation_id) {
-    UpdateScreenshotProtectionState(true);
-  }
+  PerformChecks(navigation_context->GetUrl(), pending_navigation_);
 }
 
 void DataProtectionTabHelper::DidFinishNavigation(
@@ -199,30 +150,118 @@ void DataProtectionTabHelper::DidFinishNavigation(
   if (navigation_context->HasCommitted()) {
     // This navigation is now committed.
     committed_navigation_.navigation_id = nav_id;
-    UpdateScreenshotProtectionState(
-        pending_navigation_.screenshot_protection_enabled);
+    SetCommittedProtectionState(pending_navigation_.protection_state);
   }
 
   // Reset pending state now that the navigation has finished.
-  pending_navigation_ = {};
+  pending_navigation_ = NavigationState();
 }
 
-void DataProtectionTabHelper::UpdateScreenshotProtectionState(bool new_state) {
-  if (committed_navigation_.screenshot_protection_enabled == new_state) {
+void DataProtectionTabHelper::CheckPolicyForInitialURL() {
+  const GURL& url = web_state_->GetVisibleURL();
+  PerformChecks(url, committed_navigation_);
+}
+
+void DataProtectionTabHelper::PerformChecks(const GURL& url,
+                                            NavigationState& navigation) {
+  // If protection is already explicitly enabled, no further checks are needed.
+  CHECK(!std::holds_alternative<Enabled>(navigation.protection_state));
+
+  if (SkipUrl(url)) {
     return;
   }
-  committed_navigation_.screenshot_protection_enabled = new_state;
+
+  if (GetRulesService()->BlockScreenshots(url)) {
+    SetProtectionState(navigation, ProtectionState(Enabled{}));
+    return;
+  }
+
+  EvaluateRealTimePolicy(url, navigation);
+}
+
+bool DataProtectionTabHelper::ShouldPerformRealTimeLookup() const {
+  ProfileIOS* profile = GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  enterprise_connectors::ConnectorsService* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
+
+  return connectors_service &&
+         connectors_service->GetDMTokenForRealTimeUrlCheck().has_value() &&
+         GetRealTimeLookupService() && GetLookupService();
+}
+
+void DataProtectionTabHelper::EvaluateRealTimePolicy(
+    const GURL& url,
+    NavigationState& navigation) {
+  if (!ShouldPerformRealTimeLookup()) {
+    return;
+  }
+
+  SetProtectionState(
+      navigation, ComputeNextStateOnLookupStart(navigation.protection_state));
+
+  GetLookupService()->DoLookup(
+      GetRealTimeLookupService(), url,
+      base::BindOnce(&DataProtectionTabHelper::OnRealTimeLookupResult,
+                     weak_factory_.GetWeakPtr(), navigation.navigation_id),
+      web_state_->GetUniqueIdentifier().ToSessionID());
+}
+
+void DataProtectionTabHelper::OnRealTimeLookupResult(
+    std::optional<int64_t> navigation_id,
+    std::unique_ptr<safe_browsing::RTLookupResponse> response) {
+  // If the lookup failed, we default to the enabled state (fail-closed).
+  bool protection_enabled = true;
+  if (response) {
+    enterprise_data_protection::UrlSettings settings =
+        enterprise_data_protection::GetUrlSettings(std::string(),
+                                                   response.get());
+    protection_enabled = !settings.allow_screenshots;
+  }
+
+  if (navigation_id == pending_navigation_.navigation_id) {
+    pending_navigation_.protection_state = ComputeNextStateOnLookupResponse(
+        pending_navigation_.protection_state, protection_enabled);
+  }
+
+  if (navigation_id == committed_navigation_.navigation_id) {
+    SetCommittedProtectionState(ComputeNextStateOnLookupResponse(
+        committed_navigation_.protection_state, protection_enabled));
+  }
+}
+
+void DataProtectionTabHelper::SetProtectionState(NavigationState& navigation,
+                                                 ProtectionState state) {
+  if (&navigation == &committed_navigation_) {
+    SetCommittedProtectionState(state);
+  } else {
+    navigation.protection_state = state;
+  }
+}
+
+void DataProtectionTabHelper::SetCommittedProtectionState(
+    ProtectionState new_state) {
+  bool old_value = IsScreenshotProtectionEnabled();
+  committed_navigation_.protection_state = new_state;
+
+  if (old_value == IsScreenshotProtectionEnabled()) {
+    return;
+  }
+
   for (auto& observer : observers_) {
-    observer.ScreenshotProtectionDidChange(
-        web_state_, committed_navigation_.screenshot_protection_enabled);
+    observer.ScreenshotProtectionDidChange(web_state_,
+                                           IsScreenshotProtectionEnabled());
   }
 }
 
 void DataProtectionTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
-  pending_navigation_ = {};
-  committed_navigation_ = {};
+  pending_navigation_ = NavigationState();
+  committed_navigation_ = NavigationState();
 }
 
 ProfileIOS* DataProtectionTabHelper::GetProfile() const {

@@ -6,12 +6,14 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_MODEL_DATA_PROTECTION_TAB_HELPER_H_
 
 #include <optional>
+#include <variant>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "url/gurl.h"
 
 class DataProtectionTabHelperObserver;
 class ProfileIOS;
@@ -51,14 +53,24 @@ class DataProtectionTabHelper
 
   ~DataProtectionTabHelper() override;
 
+  // State of the screenshot protection.
+  struct Disabled {};
+  struct Enabled {};
+  struct LookupPending {
+    int pending_count = 0;
+  };
+  using ProtectionState = std::variant<Disabled, Enabled, LookupPending>;
+
   // Adds/removes observers to listen for data protection state changes.
   void AddObserver(DataProtectionTabHelperObserver* observer);
   void RemoveObserver(DataProtectionTabHelperObserver* observer);
 
   // Returns the current screenshot protection state for the tab.
   // This state is based on the currently committed navigation.
+  // Returns true if the state is Enabled or LookupPending (fail-closed).
   bool IsScreenshotProtectionEnabled() const {
-    return committed_navigation_.screenshot_protection_enabled;
+    return !std::holds_alternative<Disabled>(
+        committed_navigation_.protection_state);
   }
 
   // web::WebStateObserver:
@@ -87,9 +99,12 @@ class DataProtectionTabHelper
 
   // State for a single navigation attempt.
   struct NavigationState {
+    explicit NavigationState(
+        std::optional<int64_t> navigation_id = std::nullopt);
+    ~NavigationState();
+
     std::optional<int64_t> navigation_id;
-    // True if screenshot protection is enabled for this navigation.
-    bool screenshot_protection_enabled = false;
+    ProtectionState protection_state = Disabled{};
   };
 
   // Initiates policy checks for the initial URL (the one visible when the
@@ -97,20 +112,15 @@ class DataProtectionTabHelper
   void CheckPolicyForInitialURL();
 
   // Initiates policy checks (Data Controls and Real-time lookup) for the
-  // given navigation context.
-  void PerformChecks(web::NavigationContext* navigation_context);
-
-  // Returns true if the given `url` should have screenshot protection enabled
-  // based on local Data Controls rules.
-  bool IsScreenshotBlockedByDataControls(const GURL& url);
+  // given URL and navigation.
+  void PerformChecks(const GURL& url, NavigationState& navigation);
 
   // Returns true if a real-time URL lookup should be performed.
   bool ShouldPerformRealTimeLookup() const;
 
   // Initiates a real-time URL lookup for the given `url` if enterprise lookup
   // is enabled.
-  void EvaluateRealTimePolicy(const GURL& url,
-                              std::optional<int64_t> navigation_id);
+  void EvaluateRealTimePolicy(const GURL& url, NavigationState& navigation);
 
   // Callback invoked when a real-time lookup result is received.
   // Updates the pending or committed state based on the navigation_id.
@@ -118,9 +128,12 @@ class DataProtectionTabHelper
       std::optional<int64_t> navigation_id,
       std::unique_ptr<safe_browsing::RTLookupResponse> response);
 
+  // Updates the protection state for the given `navigation`.
+  void SetProtectionState(NavigationState& navigation, ProtectionState state);
+
   // Updates the tab's screenshot protection state and notifies observers
-  // if the state actually changes.
-  void UpdateScreenshotProtectionState(bool new_state);
+  // if the overall protection (IsScreenshotProtectionEnabled()) changes.
+  void SetCommittedProtectionState(ProtectionState new_state);
 
   // Helper methods to access services from the Profile.
   ProfileIOS* GetProfile() const;
