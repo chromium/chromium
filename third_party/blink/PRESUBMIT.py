@@ -165,7 +165,7 @@ def _CommonChecks(input_api, output_api):
 def FilterPaths(input_api):
     """Returns input files with certain paths removed."""
     files = []
-    for f in input_api.AffectedFiles():
+    for f in input_api.AffectedFiles(include_deletes=False):
         file_path = f.AbsoluteLocalPath()
         # Filter out changes in web_tests/ so they are not linted. Some files
         # are intentionally malformed for testing. Also, external WPTs may have
