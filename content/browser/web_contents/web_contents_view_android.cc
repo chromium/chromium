@@ -29,7 +29,6 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
@@ -154,9 +153,6 @@ WebContentsViewAndroid::WebContentsViewAndroid(
         std::make_unique<BackForwardTransitionAnimationManagerAndroid>(
             this, &web_contents_->GetController());
   }
-
-  drag_drop_oopif_enabled_ =
-      base::FeatureList::IsEnabled(features::kAndroidDragDropOopif);
 }
 
 WebContentsViewAndroid::~WebContentsViewAndroid() {
@@ -483,9 +479,7 @@ void WebContentsViewAndroid::StartDragging(
     OnSystemDragEnded(source_rwh);
     return;
   }
-  if (drag_drop_oopif_enabled_) {
-    drag_security_info_.OnDragInitiated(source_rwh, drop_data);
-  }
+  drag_security_info_.OnDragInitiated(source_rwh, drop_data);
 
   const SkBitmap* bitmap = image.bitmap();
   SkBitmap dummy_bitmap;
@@ -612,24 +606,12 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
 
 void WebContentsViewAndroid::OnDragEntered(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
-  if (drag_drop_oopif_enabled_) {
-    // Android does not pass a valid location for ACTION_DRAG_STARTED, so do not
-    // try to find GetRenderWidgetHostAtPointAsynchronously().
-    DragEnteredCallback(location, screen_location,
-                        static_cast<RenderWidgetHostViewBase*>(
-                            web_contents_->GetRenderWidgetHostView())
-                            ->GetWeakPtr());
-    return;
-  }
-
-  blink::DragOperationsMask allowed_ops =
-      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
-                                             blink::kDragOperationMove);
-  web_contents_->GetRenderViewHost()
-      ->GetWidget()
-      ->DragTargetDragEnterWithMetaData(drag_metadata_, location,
-                                        screen_location, allowed_ops, 0,
-                                        base::DoNothing());
+  // Android does not pass a valid location for ACTION_DRAG_STARTED, so do not
+  // try to find GetRenderWidgetHostAtPointAsynchronously().
+  DragEnteredCallback(location, screen_location,
+                      static_cast<RenderWidgetHostViewBase*>(
+                          web_contents_->GetRenderWidgetHostView())
+                          ->GetWeakPtr());
 }
 
 void WebContentsViewAndroid::DragEnteredCallback(
@@ -681,22 +663,13 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
     }
   }
 
-  if (drag_drop_oopif_enabled_) {
-    web_contents_->GetRenderWidgetHostAtPointAsynchronously(
-        static_cast<RenderWidgetHostViewBase*>(
-            web_contents_->GetRenderWidgetHostView()),
-        location,
-        base::BindOnce(&WebContentsViewAndroid::DragUpdatedCallback,
-                       weak_ptr_factory_.GetWeakPtr(), location,
-                       screen_location));
-    return;
-  }
-
-  blink::DragOperationsMask allowed_ops =
-      static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
-                                             blink::kDragOperationMove);
-  web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDragOver(
-      location, screen_location, allowed_ops, 0, base::DoNothing());
+  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      static_cast<RenderWidgetHostViewBase*>(
+          web_contents_->GetRenderWidgetHostView()),
+      location,
+      base::BindOnce(&WebContentsViewAndroid::DragUpdatedCallback,
+                     weak_ptr_factory_.GetWeakPtr(), location,
+                     screen_location));
 }
 
 void WebContentsViewAndroid::DragUpdatedCallback(
@@ -737,35 +710,21 @@ void WebContentsViewAndroid::DragUpdatedCallback(
 }
 
 void WebContentsViewAndroid::OnDragExited() {
-  if (drag_drop_oopif_enabled_) {
-    if (current_target_rwh_for_drag_) {
-      current_target_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(),
-                                                        gfx::PointF());
-    }
-  } else {
-    web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDragLeave(
-        gfx::PointF(), gfx::PointF());
+  if (current_target_rwh_for_drag_) {
+    current_target_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(),
+                                                      gfx::PointF());
   }
 }
 
 void WebContentsViewAndroid::OnPerformDrop(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
-  if (drag_drop_oopif_enabled_) {
-    web_contents_->GetRenderWidgetHostAtPointAsynchronously(
-        static_cast<RenderWidgetHostViewBase*>(
-            web_contents_->GetRenderWidgetHostView()),
-        location,
-        base::BindOnce(&WebContentsViewAndroid::PerformDropCallback,
-                       weak_ptr_factory_.GetWeakPtr(), location,
-                       screen_location));
-    return;
-  }
-
-  web_contents_->Focus();
-  web_contents_->GetRenderViewHost()->GetWidget()->FilterDropData(
-      drop_data_.get());
-  web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDrop(
-      *drop_data_, location, screen_location, 0, base::DoNothing());
+  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      static_cast<RenderWidgetHostViewBase*>(
+          web_contents_->GetRenderWidgetHostView()),
+      location,
+      base::BindOnce(&WebContentsViewAndroid::PerformDropCallback,
+                     weak_ptr_factory_.GetWeakPtr(), location,
+                     screen_location));
 }
 
 void WebContentsViewAndroid::PerformDropCallback(
@@ -797,13 +756,7 @@ void WebContentsViewAndroid::PerformDropCallback(
 }
 
 void WebContentsViewAndroid::OnSystemDragEnded(RenderWidgetHost* source_rwh) {
-  if (drag_drop_oopif_enabled_) {
-    web_contents_->SystemDragEnded(source_rwh);
-  } else {
-    web_contents_->GetRenderViewHost()
-        ->GetWidget()
-        ->DragSourceSystemDragEnded();
-  }
+  web_contents_->SystemDragEnded(source_rwh);
 
   // Restore the selection popups and the text handles if necessary.
   if (auto* selection_popup_controller = GetSelectionPopupController()) {
@@ -816,21 +769,14 @@ void WebContentsViewAndroid::OnSystemDragEnded(RenderWidgetHost* source_rwh) {
 }
 
 void WebContentsViewAndroid::OnDragEnded() {
-  if (drag_drop_oopif_enabled_) {
-    if (current_source_rwh_for_drag_) {
-      web_contents_->DragSourceEndedAt(
-          drag_location_.x(), drag_location_.y(), drag_screen_location_.x(),
-          drag_screen_location_.y(), ui::mojom::DragOperation::kNone,
-          current_source_rwh_for_drag_.get());
-      OnSystemDragEnded(current_source_rwh_for_drag_.get());
-    }
-    drag_security_info_.OnDragEnded();
-  } else {
-    web_contents_->GetRenderViewHost()->GetWidget()->DragSourceEndedAt(
-        drag_location_, drag_screen_location_, ui::mojom::DragOperation::kNone,
-        base::DoNothing());
-    OnSystemDragEnded(web_contents_->GetRenderViewHost()->GetWidget());
+  if (current_source_rwh_for_drag_) {
+    web_contents_->DragSourceEndedAt(
+        drag_location_.x(), drag_location_.y(), drag_screen_location_.x(),
+        drag_screen_location_.y(), ui::mojom::DragOperation::kNone,
+        current_source_rwh_for_drag_.get());
+    OnSystemDragEnded(current_source_rwh_for_drag_.get());
   }
+  drag_security_info_.OnDragEnded();
 
   drag_metadata_.clear();
   current_source_rwh_for_drag_.reset();

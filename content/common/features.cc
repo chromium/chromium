@@ -46,9 +46,6 @@ BASE_FEATURE(kAndroidDesktopStyleScrollbars, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDownloadableFontsMatching,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Adds OOPIF support for android drag and drop.
-BASE_FEATURE(kAndroidDragDropOopif, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 // Flag guard for Windows Arabic Indic digit input solution.
 // crbug.com/440381284

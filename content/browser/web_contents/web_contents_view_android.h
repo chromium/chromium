@@ -255,8 +255,6 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
 
   // Source RenderWidgetHost when dragging out of this WebContents.
   base::WeakPtr<RenderWidgetHostImpl> current_source_rwh_for_drag_;
-  // base::FeatureList::IsEnabled(features::kAndroidDragDropOopif).
-  bool drag_drop_oopif_enabled_ = false;
   // Current drop data set on drop event.
   std::unique_ptr<DropData> drop_data_;
   // Metadata for the current drag.
