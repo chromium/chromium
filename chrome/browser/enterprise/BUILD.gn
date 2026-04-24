@@ -304,6 +304,7 @@ source_set("enterprise") {
       "profile_management/oidc_auth_response_capture_navigation_throttle.h",
       "profile_management/profile_management_features.h",
       "profile_management/profile_management_navigation_throttle.h",
+      "remote_commands/extension_update_check_job.h",
       "remote_commands/rotate_attestation_credential_job.h",
       "reporting/saas_usage/navigation_handle_data_delegate.h",
       "reporting/saas_usage/saas_usage_navigation_observer.h",
@@ -750,6 +751,7 @@ source_set("impl") {
       "profile_management/oidc_auth_response_capture_navigation_throttle.cc",
       "profile_management/profile_management_features.cc",
       "profile_management/profile_management_navigation_throttle.cc",
+      "remote_commands/extension_update_check_job.cc",
       "remote_commands/rotate_attestation_credential_job.cc",
       "reporting/saas_usage/navigation_handle_data_delegate.cc",
       "reporting/saas_usage/saas_usage_navigation_observer.cc",
@@ -783,6 +785,7 @@ source_set("impl") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+      "//chrome/browser/extensions",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
   }

@@ -50,6 +50,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/extensions/updater/extension_updater.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
 
@@ -257,6 +261,39 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS, result.result());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, ExtensionUpdateCheck) {
+  em::RemoteCommand command;
+  command.set_type(em::RemoteCommand_Type_EXTENSION_UPDATE_CHECK);
+  command.set_command_id(kCommandId);
+  command.set_payload("{}");
+  AddPendingRemoteCommand(command);
+
+  auto* remote_command_service =
+      enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+          profile());
+
+  if (!base::FeatureList::IsEnabled(kUserRemoteCommands)) {
+    ASSERT_FALSE(remote_command_service);
+    return;
+  }
+
+  ASSERT_TRUE(remote_command_service);
+
+  base::test::TestFuture<void> update_started;
+  extensions::ExtensionUpdater::Get(profile())
+      ->SetUpdatingStartedCallbackForTesting(
+          update_started.GetRepeatingCallback());
+
+  remote_command_service->Init();
+
+  em::RemoteCommandResult result = WaitForResult(kCommandId);
+
+  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS, result.result());
+  EXPECT_TRUE(update_started.IsReady());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
