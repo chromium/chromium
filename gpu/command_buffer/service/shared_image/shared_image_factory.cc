@@ -850,28 +850,16 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       !is_angle_metal && !is_skia_graphite;
   shared_image_caps.supports_r16_shared_images =
       is_angle_metal || is_skia_graphite;
-  if (context_state_) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-    auto* surface_factory =
-        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-    shared_image_caps.supports_ycbcr_nv12_sampling =
-        surface_factory->IsFormatSupportedForTexturing(
-            viz::MultiPlaneFormat::kNV12) &&
-        IsNativeBufferSupported(viz::MultiPlaneFormat::kNV12,
-                                gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                gpu_extra_info_);
-    shared_image_caps.supports_ycbcr_p010_sampling =
-        surface_factory->IsFormatSupportedForTexturing(
-            viz::MultiPlaneFormat::kP010);
-#elif BUILDFLAG(IS_APPLE)
-    shared_image_caps.supports_ycbcr_nv12_sampling = true;
-    shared_image_caps.supports_ycbcr_p010_sampling = true;
-#endif
-  }
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
   shared_image_caps.disable_webgpu_shared_images =
       workarounds_.disable_webgpu_shared_images;
+  if (context_state_) {
+    shared_image_caps.supports_ycbcr_nv12_sampling =
+        shared_image_manager_->SupportsNV12TextureSampling();
+    shared_image_caps.supports_ycbcr_p010_sampling =
+        shared_image_manager_->SupportsP010TextureSampling();
+  }
   if (!context_state_) {
     shared_image_caps.is_r16f_supported = false;
   } else if (is_skia_graphite || gr_context_type_ == GrContextType::kVulkan) {

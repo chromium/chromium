@@ -39,6 +39,7 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -642,6 +643,49 @@ bool SharedImageManager::SupportsScanoutImages() {
   return supports_overlays_on_ozone_;
 #elif BUILDFLAG(IS_WIN)
   return gl::DirectCompositionTextureSupported();
+#else
+  return false;
+#endif
+}
+
+void SharedImageManager::QueryMultiplanarTextureSamplingSupport() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  auto* ozone_platform = ui::OzonePlatform::GetInstance();
+  auto* surface_factory = ozone_platform->GetSurfaceFactoryOzone();
+  supports_ycbcr_nv12_sampling_ =
+      surface_factory->IsFormatSupportedForTexturing(
+          viz::MultiPlaneFormat::kNV12) &&
+      ozone_platform->IsNativePixmapConfigSupported(
+          viz::MultiPlaneFormat::kNV12,
+          gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  supports_ycbcr_p010_sampling_ =
+      surface_factory->IsFormatSupportedForTexturing(
+          viz::MultiPlaneFormat::kP010);
+  is_texture_sampling_queried_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+}
+
+bool SharedImageManager::SupportsNV12TextureSampling() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  if (!is_texture_sampling_queried_) {
+    QueryMultiplanarTextureSamplingSupport();
+  }
+  return supports_ycbcr_nv12_sampling_;
+#elif BUILDFLAG(IS_APPLE)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool SharedImageManager::SupportsP010TextureSampling() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  if (!is_texture_sampling_queried_) {
+    QueryMultiplanarTextureSamplingSupport();
+  }
+  return supports_ycbcr_p010_sampling_;
+#elif BUILDFLAG(IS_APPLE)
+  return true;
 #else
   return false;
 #endif
