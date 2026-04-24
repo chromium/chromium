@@ -113,10 +113,6 @@ template("partitioned_shared_library") {
         ]
       }
 
-      if (use_debug_fission) {
-        args += [ "--split-dwarf" ]
-        outputs += [ invoker.unstripped_output + ".dwp" ]
-      }
       args += [ rebase_path(sources[0], root_build_dir) ]
     }
   }

@@ -27,7 +27,6 @@ template("android_clang_toolchain") {
     toolchain_args = {
       forward_variables_from(invoker.toolchain_args, "*")
       current_os = "android"
-      use_debug_fission = false
       is_high_end_android = is_high_end_android_secondary_toolchain
       chrome_pgo_phase_default_toolchain = chrome_pgo_phase_default_toolchain
     }

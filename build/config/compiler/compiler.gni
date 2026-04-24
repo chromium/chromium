@@ -141,8 +141,11 @@ declare_args() {
 
   # use_debug_fission: whether to use split DWARF debug info files. This can
   # reduce link time significantly.
-  use_debug_fission = symbol_level >= 1 && !is_android && !is_fuchsia &&
-                      !is_apple && !is_win && use_lld
+  use_debug_fission =
+      # dwp did not work properly for Android official builds, so disable in
+      # order to be able to archive symbols properly. https://crbug.com/40203231
+      symbol_level >= 1 && !(is_android && is_official_build) && !is_fuchsia &&
+      !is_apple && !is_win && (use_lld || experimental_linker_path != "")
 
   # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
