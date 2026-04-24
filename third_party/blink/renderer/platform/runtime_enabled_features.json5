@@ -4740,6 +4740,13 @@
       name: "RemoveCharsetAutoDetectionForISO2022JP",
       status: "stable",
     },
+    {
+      // Optimize ReplaceChildren() to use RemoveChildren() for batch removal
+      // instead of looping RemoveChild(). This batches style invalidations
+      // improving performance.
+      name: "RemoveChildrenInReplaceChildren",
+      status: "stable",
+    },
     // After paste operation removes the placeholder <br> tag
     // that gets inserted in contenteditable as placeholder for newline
     {

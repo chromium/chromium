@@ -1907,10 +1907,15 @@ void ContainerNode::ReplaceChildren(const VectorOf<Node>& nodes,
 
   // 3. Replace all with node within this.
   ChildListMutationScope mutation(*this);
-  while (Node* first_child = firstChild()) {
-    RemoveChild(first_child, exception_state);
-    if (exception_state.HadException()) {
-      return;
+
+  if (RuntimeEnabledFeatures::RemoveChildrenInReplaceChildrenEnabled()) {
+    RemoveChildren();
+  } else {
+    while (Node* first_child = firstChild()) {
+      RemoveChild(first_child, exception_state);
+      if (exception_state.HadException()) {
+        return;
+      }
     }
   }
 
