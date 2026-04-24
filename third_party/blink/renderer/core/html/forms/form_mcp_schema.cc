@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/files/file_path.h"
-#include "form_mcp_schema.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/base_text_input_type.h"
+#include "third_party/blink/renderer/core/html/forms/form_mcp_schema.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
