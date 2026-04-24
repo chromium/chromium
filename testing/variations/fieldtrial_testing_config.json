@@ -23998,6 +23998,28 @@
             ]
         }
     ],
+    "V8InputHandlingLongerWindow": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_100_2026_04_20",
+                    "params": {
+                        "use_case_longer_input_window_extension_ms": "100ms"
+                    },
+                    "enable_features": [
+                        "UseCaseLongerInputWindow"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ManagedZoneMemory": [
         {
             "platforms": [
