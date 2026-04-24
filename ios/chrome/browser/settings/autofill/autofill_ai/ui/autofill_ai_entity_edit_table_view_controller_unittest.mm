@@ -36,7 +36,7 @@
 - (void)didChangeDate:(NSDate*)date
               forItem:(AutofillAIEntityEditDateItem*)item {
 }
-- (autofill::DenseSet<autofill::AttributeType>)getMissingRequiredFieldsFor:
+- (autofill::DenseSet<autofill::AttributeType>)getMissingImportConstraintsFor:
     (const autofill::DenseSet<autofill::AttributeType>&)presentAttributes {
   return _missingFields;
 }

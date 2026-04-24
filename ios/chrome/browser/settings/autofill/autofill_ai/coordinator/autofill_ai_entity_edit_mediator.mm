@@ -276,18 +276,19 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   [self.consumer updateItem:item];
 }
 
-- (autofill::DenseSet<autofill::AttributeType>)getMissingRequiredFieldsFor:
+- (autofill::DenseSet<autofill::AttributeType>)getMissingImportConstraintsFor:
     (const autofill::DenseSet<autofill::AttributeType>&)presentAttributes {
-  bool satisfied = std::ranges::any_of(
-      _entityInstance->type().required_fields(), [&](const auto& constraint) {
-        return presentAttributes.contains_all(constraint);
-      });
+  bool satisfied =
+      std::ranges::any_of(_entityInstance->type().import_constraints(),
+                          [&](const auto& constraint) {
+                            return presentAttributes.contains_all(constraint);
+                          });
   if (satisfied) {
     return {};
   }
 
   autofill::DenseSet<autofill::AttributeType> missingTypes;
-  for (const auto& constraint : _entityInstance->type().required_fields()) {
+  for (const auto& constraint : _entityInstance->type().import_constraints()) {
     for (auto type : constraint) {
       if (!presentAttributes.contains(type)) {
         missingTypes.insert(type);

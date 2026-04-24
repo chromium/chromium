@@ -502,15 +502,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return present;
 }
 
-- (autofill::DenseSet<autofill::AttributeType>)missingRequiredFields {
+- (autofill::DenseSet<autofill::AttributeType>)missingFields {
   const autofill::DenseSet<autofill::AttributeType> presentAttributes =
       [self presentAttributes];
-  return [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+  return [self.mutator getMissingImportConstraintsFor:presentAttributes];
 }
 
 - (BOOL)validateFields {
   const autofill::DenseSet<autofill::AttributeType> missingFields =
-      [self missingRequiredFields];
+      [self missingFields];
 
   NSMutableArray<TableViewItem*>* itemsToReconfigure =
       [[NSMutableArray alloc] init];
