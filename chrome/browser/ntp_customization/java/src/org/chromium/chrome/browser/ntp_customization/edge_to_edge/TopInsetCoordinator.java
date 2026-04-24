@@ -168,13 +168,26 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
                         onNtpBackgroundReset(oldType);
                     }
                 };
-        NtpCustomizationConfigManager.getInstance()
-                .addListener(mHomepageStateListener, context, /* skipNotify= */ false);
+        NtpCustomizationConfigManager manager = NtpCustomizationConfigManager.getInstance();
+        manager.addListener(mHomepageStateListener, context, /* skipNotify= */ false);
 
         mWindowInsetsConsumer = this::onApplyWindowInsets;
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.TOP_INSET_COORDINATOR);
-        mInsetObserver.retriggerOnApplyWindowInsets();
+
+        // The BackgroundType of NtpCustomizationConfigManager has been set in
+        // ChromeTabbedActivity#performPreInflationStartup() when StatusBarColorController is
+        // initialized.
+        if (manager.getBackgroundType() == NtpBackgroundType.DEFAULT) {
+            return;
+        }
+
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl())) {
+            // Calls #retriggerOnApplyWindowInsets() if the current showing Tab is a NTP with a
+            // customized background.
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
     }
 
     // WindowInsetsConsumer implementation.
