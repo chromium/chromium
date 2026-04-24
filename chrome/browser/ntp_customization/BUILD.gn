@@ -104,6 +104,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayout.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataBase.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataColor.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataCustomizedColor.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataThemeCollection.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataUploadImage.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataUtils.java",
   ]
   deps = [
     ":java_resources",
@@ -294,6 +300,11 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataColorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataCustomizedColorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataThemeCollectionUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataUploadImageUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme_history/data/NtpBackgroundDataUtilsUnitTest.java",
   ]
   deps = [
     ":java",
