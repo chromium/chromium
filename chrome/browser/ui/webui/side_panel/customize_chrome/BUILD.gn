@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android)
+assert(!is_android || enable_webui_ntp)
 
 mojom("mojo_bindings") {
   sources = [

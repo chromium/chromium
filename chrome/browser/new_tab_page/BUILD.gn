@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
 
 # The public API target.
 source_set("new_tab_page") {
@@ -194,26 +196,29 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "chrome_colors/chrome_colors_service_browsertest.cc",
-    "new_tab_page_util_browsertest.cc",
-  ]
-  deps = [
-    ":impl",
-    ":new_tab_page",
-    "//chrome/browser",
-    "//chrome/browser/new_tab_page/chrome_colors",
-    "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
-    "//chrome/browser/sync",
-    "//chrome/browser/ui/webui/cr_components/theme_color_picker",
-    "//chrome/test:test_support",
-    "//components/ntp_tiles:pref_names",
-    "//components/variations/service",
-    "//content/test:test_support",
-    "//testing/gtest",
-    "//ui/base:test_support",
-  ]
+# TODO(b/502297163): Enable tests.
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "chrome_colors/chrome_colors_service_browsertest.cc",
+      "new_tab_page_util_browsertest.cc",
+    ]
+    deps = [
+      ":impl",
+      ":new_tab_page",
+      "//chrome/browser",
+      "//chrome/browser/new_tab_page/chrome_colors",
+      "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+      "//chrome/test:test_support",
+      "//components/ntp_tiles:pref_names",
+      "//components/variations/service",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base:test_support",
+    ]
+  }
 }

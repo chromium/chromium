@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
 
 build_webui("build") {
   grd_prefix = "new_tab_page_third_party"

@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android)
+assert(enable_webui_ntp)
 
 generate_grd("build_grdp") {
   grd_prefix = "new_tab_page"

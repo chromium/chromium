@@ -4,8 +4,9 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android && !is_ios)
+assert((!is_android && !is_ios) || enable_webui_ntp)
 
 mojom("mojom") {
   sources = [ "most_visited.mojom" ]

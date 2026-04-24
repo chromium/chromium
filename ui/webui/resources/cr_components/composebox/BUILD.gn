@@ -4,8 +4,9 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android && !is_ios)
+assert((!is_android && !is_ios) || enable_webui_ntp)
 
 mojom("mojo_bindings") {
   sources = [ "composebox.mojom" ]
@@ -14,7 +15,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/composebox:mojo_bindings",
-    "//mojo/public//mojom/base",
+    "//mojo/public/mojom/base",
   ]
 }
 

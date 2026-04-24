@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
-import("//ui/webui/resources/tools/build_webui.gni")
-
-assert(!is_android)
+assert(enable_webui_ntp)
 
 grd_prefix = "new_tab_page"
-
 build_webui("build") {
   icons_html_files = [
     "modules/icons.html",

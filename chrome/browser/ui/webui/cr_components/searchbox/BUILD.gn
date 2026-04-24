@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_ntp)
 
 source_set("searchbox") {
   sources = [
@@ -60,19 +62,27 @@ source_set("searchbox_impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_list",
-    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/contextual_search",
-    "//chrome/browser/ui/lens",
     "//chrome/browser/ui/omnibox",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
+    "//components/contextual_tasks/public:query_contextualizer",
     "//components/google/core/common",
     "//components/omnibox/browser:vector_icons",
     "//components/search",
     "//components/sessions",
+    "//components/vector_icons",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/tabs",
+    ]
+  }
 }

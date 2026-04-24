@@ -31,6 +31,9 @@ declare_args() {
   # compatible build configurations (see comment for the
   # `enable_webui_generate_code_cache` update below).
   enable_webui_generate_code_cache = true
+
+  # Enable the WebUI version of the New Tab Page.
+  enable_webui_ntp = !is_android && !is_ios
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

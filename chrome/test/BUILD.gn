@@ -1453,6 +1453,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/usb:platform_browser_tests",
+    "//chrome/browser/web_applications/proto",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -7241,6 +7242,7 @@ test("unit_tests") {
     "//chrome/browser/visited_url_ranking",
     "//chrome/browser/visited_url_ranking:unit_tests",
     "//chrome/browser/vr:unit_tests",
+    "//chrome/browser/web_applications/proto",
     "//chrome/browser/web_share_target:unit_tests",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
@@ -8390,7 +8392,6 @@ test("unit_tests") {
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_ui_unittest.cc",
-      "../browser/ui/webui/new_tab_page/untrusted_source_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle_unittest.cc",
       "../browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler_unittest.cc",
@@ -8914,6 +8915,12 @@ test("unit_tests") {
     if (include_js2gtest_tests && is_chromeos) {
       data += js2gtest_js_libraries
     }
+  }
+
+  if (enable_webui_ntp) {
+    sources +=
+        [ "../browser/ui/webui/new_tab_page/untrusted_source_unittest.cc" ]
+    deps += [ "//chrome/browser/new_tab_page" ]
   }
 
   if (!is_android && !is_chromeos) {

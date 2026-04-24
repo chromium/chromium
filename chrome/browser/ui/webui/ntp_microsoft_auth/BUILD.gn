@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/webui_features.gni")
 
-assert(!is_android)
+assert(enable_webui_ntp)
 
 mojom("shared") {
   sources = [ "ntp_microsoft_auth_shared_ui.mojom" ]
