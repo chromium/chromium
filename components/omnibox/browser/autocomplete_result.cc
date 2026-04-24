@@ -70,6 +70,7 @@
 #endif
 
 using metrics::OmniboxEventProto;
+using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
 
 typedef AutocompleteMatchType ACMatchType;
 
@@ -96,6 +97,32 @@ constexpr size_t kMaxPedalCount =
 // Maximum index of a match in a result for which the pedal should be displayed.
 constexpr size_t kMaxPedalMatchIndex =
     is_ios ? 3 : std::numeric_limits<size_t>::max();
+
+// Index cutoffs for actions in the suggestion list.
+constexpr size_t kActionsInSuggestCutoffThreshold = 1;
+constexpr size_t kPedalsCutoffThreshold = 3;
+
+// Returns the maximum index (inclusive) at which this action type is allowed.
+constexpr size_t GetActionInSuggestCutoff(TemplateAction::ActionType type) {
+  switch (type) {
+    case TemplateAction::CALL:
+    case TemplateAction::DIRECTIONS:
+    case TemplateAction::REVIEWS:
+      return kActionsInSuggestCutoffThreshold;
+    default:
+      return std::numeric_limits<size_t>::max();
+  }
+}
+
+// Returns if the ACTION_IN_SUGGEST exceeds its allowed position.
+bool ShouldRemoveActionInSuggest(const scoped_refptr<OmniboxAction>& action,
+                                 const size_t match_index) {
+  auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
+  if (!action_in_suggest) {
+    return false;
+  }
+  return match_index > GetActionInSuggestCutoff(action_in_suggest->Type());
+}
 
 }  // namespace
 
@@ -765,29 +792,37 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   //   (Android only)
   // - TAB_SWITCH actions are not considered because they're never attached.
   //   On Android, the tab switch match is attached as ACTION_IN_SUGGEST.
-  if constexpr (is_android || is_ios) {
-    static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 1;
-    static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
-    std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
-                                             OmniboxActionId::PEDAL};
-    std::vector<OmniboxActionId> include_pedals_and_others;
-    std::vector<OmniboxActionId> exclude_pedals;
-    if constexpr (is_android) {
-      include_pedals_and_others.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
-      exclude_pedals.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
-    }
-    include_pedals_and_others.push_back(OmniboxActionId::PEDAL);
+  if constexpr (!is_android && !is_ios) {
+    return;
+  }
 
-    for (size_t index = 0u; index < matches_.size(); ++index) {
-      matches_[index].FilterOmniboxActions(
-          (!is_zero_suggest && index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD)
-              ? include_all
-          : index < PEDALS_CUTOFF_THRESHOLD ? include_pedals_and_others
-                                            : exclude_pedals);
-      if (index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD) {
-        matches_[index].FilterAndSortActionsInSuggest();
-      }
+  std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                           OmniboxActionId::PEDAL};
+  std::vector<OmniboxActionId> include_pedals_and_others;
+  std::vector<OmniboxActionId> exclude_pedals;
+  if constexpr (is_android) {
+    include_pedals_and_others.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
+    exclude_pedals.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
+  }
+  include_pedals_and_others.push_back(OmniboxActionId::PEDAL);
+
+  for (size_t index = 0u; index < matches_.size(); ++index) {
+    matches_[index].FilterOmniboxActions(
+        (!is_zero_suggest && index < kActionsInSuggestCutoffThreshold)
+            ? include_all
+        : index < kPedalsCutoffThreshold ? include_pedals_and_others
+                                         : exclude_pedals);
+    if (index < kActionsInSuggestCutoffThreshold) {
+      matches_[index].FilterAndSortActionsInSuggest();
     }
+
+    if constexpr (!is_android) {
+      continue;
+    }
+    // Android-specific fine-grained filtering of ACTION_IN_SUGGEST.
+    std::erase_if(matches_[index].actions, [index](const auto& action) {
+      return ShouldRemoveActionInSuggest(action, index);
+    });
   }
 }
 
@@ -1046,10 +1081,8 @@ void AutocompleteResult::ConvertOpenTabMatches(
           if constexpr (is_android) {
             // On Android, attach the action as ActionInSuggest that will be
             // interpreted as either action button or chip per the form factor.
-            omnibox::SuggestTemplateInfo::TemplateAction template_action;
-            template_action.set_action_type(
-                omnibox::
-                    SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);
+            TemplateAction template_action;
+            template_action.set_action_type(TemplateAction::CHROME_TAB_SWITCH);
             template_action.set_action_uri(match.destination_url.spec());
             auto action_in_suggest =
                 base::MakeRefCounted<OmniboxActionInSuggest>(
