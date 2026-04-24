@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -14,7 +15,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/prefetch_request_status_listener.h"
 
 namespace content {
 namespace {
@@ -53,7 +53,9 @@ PrefetchBrowserInitiatorInfo::PrefetchBrowserInitiatorInfo(
     const std::string& embedder_histogram_suffix,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener)
     : embedder_histogram_suffix_(embedder_histogram_suffix),
-      request_status_listener_(std::move(request_status_listener)) {
+      request_status_listener_observer_(
+          PrefetchContainerObserverForPrefetchRequestStatusListener::Create(
+              std::move(request_status_listener))) {
   CHECK(!embedder_histogram_suffix_.empty());
 }
 

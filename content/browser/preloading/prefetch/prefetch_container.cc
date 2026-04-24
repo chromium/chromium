@@ -43,7 +43,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -333,6 +332,13 @@ PrefetchContainer::PrefetchContainer(
   }
 
   assert_observer_ = std::make_unique<AssertPrefetchContainerObserver>(*this);
+
+  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
+    if (auto* request_status_listener_observer =
+            browser_initiator_info->request_status_listener_observer()) {
+      AddObserver(request_status_listener_observer);
+    }
+  }
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -390,6 +396,13 @@ PrefetchContainer::~PrefetchContainer() {
   }
 
   TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
+
+  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
+    if (auto* request_status_listener_observer =
+            browser_initiator_info->request_status_listener_observer()) {
+      RemoveObserver(request_status_listener_observer);
+    }
+  }
 
   // Destroy `assert_observer_` before `WeakPtr`s are invalidated to allow it
   // call `RemoveObserver()`.
@@ -806,7 +819,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
           PrefetchStatusFromIneligibleReason(eligibility);
       MaybeRecordPrefetchStatusToUMA(new_prefetch_status);
       SetPrefetchStatusWithoutUpdatingTriggeringOutcome(new_prefetch_status);
-      OnInitialPrefetchFailedIneligible(eligibility);
     }
 
     if (request().attempt()) {
@@ -1189,24 +1201,6 @@ void PrefetchContainer::OnPrefetchCompleteInternal() {
       }
     }
   }
-
-  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
-    if (auto* listener = browser_initiator_info->request_status_listener()) {
-      switch (prefetch_status) {
-        case PrefetchStatus::kPrefetchSuccessful:
-        case PrefetchStatus::kPrefetchResponseUsed:
-          listener->OnPrefetchResponseCompleted();
-          break;
-        case PrefetchStatus::kPrefetchFailedNon2XX:
-          listener->OnPrefetchResponseServerError(
-              GetResponseCode().value_or(0));
-          break;
-        default:
-          listener->OnPrefetchResponseError();
-          break;
-      }
-    }
-  }
 }
 
 // TODO(https://crbug.com/432518638): We should be able to calculate
@@ -1548,17 +1542,6 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "Failed";
     case PrefetchContainer::LoadState::kFailedHeldback:
       return ostream << "FailedHeldback";
-  }
-}
-
-void PrefetchContainer::OnInitialPrefetchFailedIneligible(
-    PreloadingEligibility eligibility) {
-  CHECK(redirect_chain_.size() == 1);
-  CHECK_NE(eligibility, PreloadingEligibility::kEligible);
-  if (auto* browser_initiator_info = request().GetBrowserInitiatorInfo()) {
-    if (auto* listener = browser_initiator_info->request_status_listener()) {
-      listener->OnPrefetchStartFailedGeneric();
-    }
   }
 }
 

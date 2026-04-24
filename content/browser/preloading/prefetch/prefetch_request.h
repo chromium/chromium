@@ -29,6 +29,7 @@
 namespace content {
 
 class BrowserContext;
+class PrefetchContainerObserver;
 class PrefetchDocumentManager;
 class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
@@ -102,8 +103,8 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
   const std::string& embedder_histogram_suffix() const {
     return embedder_histogram_suffix_;
   }
-  PrefetchRequestStatusListener* request_status_listener() const {
-    return request_status_listener_.get();
+  PrefetchContainerObserver* request_status_listener_observer() const {
+    return request_status_listener_observer_.get();
   }
 
  private:
@@ -111,9 +112,9 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
   // recorded per trigger.
   std::string embedder_histogram_suffix_;
 
-  // Listener of prefetch request. Currently used for WebView initiated
-  // prefetch.
-  std::unique_ptr<PrefetchRequestStatusListener> request_status_listener_;
+  // `PrefetchContainerObserver` connected to `PrefetchStatusListener`.
+  // Currently used for WebView initiated prefetch.
+  std::unique_ptr<PrefetchContainerObserver> request_status_listener_observer_;
 };
 
 // `PrefetchRequest` represents request parameters to `PrefetchService` or

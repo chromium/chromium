@@ -1622,6 +1622,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_container.cc",
     "preloading/prefetch/prefetch_container.h",
     "preloading/prefetch/prefetch_container_observer.h",
+    "preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.cc",
+    "preloading/prefetch/prefetch_container_observer_for_prefetch_request_status_listener.h",
     "preloading/prefetch/prefetch_cookie_listener.cc",
     "preloading/prefetch/prefetch_cookie_listener.h",
     "preloading/prefetch/prefetch_data_pipe_tee.cc",

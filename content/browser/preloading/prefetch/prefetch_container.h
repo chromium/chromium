@@ -653,11 +653,6 @@ class CONTENT_EXPORT PrefetchContainer
   const PrefetchSingleRedirectHop& GetPreviousSingleRedirectHopToPrefetch()
       const;
 
-  // Called when a prefetch request could not be started because of eligibility
-  // reasons. Should only be called for the initial prefetch request and not
-  // redirects.
-  void OnInitialPrefetchFailedIneligible(PreloadingEligibility eligibility);
-
   std::optional<PrefetchErrorOnResponseReceived>
   OnPrefetchResponseStartedInternal(network::mojom::URLResponseHead* head);
 
