@@ -10500,24 +10500,6 @@
             ]
         }
     ],
-    "FRESignInHeaderTextUpdate": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FRESignInHeaderTextUpdateParam": "Arm0"
-                    },
-                    "enable_features": [
-                        "FRESignInHeaderTextUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairHandshakeLongTermRefactor": [
         {
             "platforms": [
