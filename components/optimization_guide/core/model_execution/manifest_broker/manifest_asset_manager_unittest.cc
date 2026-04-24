@@ -669,5 +669,13 @@ TEST_F(ManifestAssetManagerTest, BackgroundDownloadForManifestEnabledUseCase) {
   EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
 }
 
+// TODO(crbug.com/504749700): Verify these scenarios from these
+// OnDeviceModelServiceControllerTest tests are covered by
+// ManifestAssetManagerTests BaseModelToBeInstalled BaseModelAvailableAfterInit
+// MidSessionModelUpdate
+// SessionBeforeAndAfterModelUpdate
+// UpdatingSafetyModelEnablesModels
+// SessionRequiresSafetyModel
+
 }  // namespace
 }  // namespace optimization_guide
