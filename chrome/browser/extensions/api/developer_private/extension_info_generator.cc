@@ -278,6 +278,18 @@ std::vector<developer::SiteControl> GetSpecificSiteControls(
   return controls;
 }
 
+// Returns `permissions` if non-null, or an empty PermissionSet otherwise.
+// GetGrantedPermissions() and GetRuntimeGrantedPermissions() can return nullptr
+// if no extension prefs exist for an extension (e.g., during
+// installation/uninstallation race conditions or corrupted profile data).
+std::unique_ptr<const PermissionSet> GetPermissionsOrEmpty(
+    std::unique_ptr<const PermissionSet> permissions) {
+  if (!permissions) {
+    return std::make_unique<PermissionSet>();
+  }
+  return permissions;
+}
+
 // Creates and returns a RuntimeHostPermissions object with the
 // given extension's host permissions.
 developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
@@ -295,12 +307,12 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   // hosts.
   if (!PermissionsManager::Get(browser_context)
            ->HasWithheldHostPermissions(extension)) {
-    granted_permissions =
-        extension_prefs->GetGrantedPermissions(extension.id());
+    granted_permissions = GetPermissionsOrEmpty(
+        extension_prefs->GetGrantedPermissions(extension.id()));
     runtime_host_permissions.host_access = developer::HostAccess::kOnAllSites;
   } else {
-    granted_permissions =
-        extension_prefs->GetRuntimeGrantedPermissions(extension.id());
+    granted_permissions = GetPermissionsOrEmpty(
+        extension_prefs->GetRuntimeGrantedPermissions(extension.id()));
     if (granted_permissions->effective_hosts().is_empty()) {
       runtime_host_permissions.host_access = developer::HostAccess::kOnClick;
     } else if (granted_permissions->ShouldWarnAllHosts(false)) {
@@ -349,15 +361,8 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
   // the extension if ever requested.
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
   std::unique_ptr<const PermissionSet> granted_permissions =
-      extension_prefs->GetGrantedPermissions(extension.id());
-
-  // GetGrantedPermissions() can return nullptr if no extension prefs exist
-  // for this extension (e.g., during installation/uninstallation race
-  // conditions or corrupted profile data). Use an empty PermissionSet in
-  // this case to avoid null pointer dereference.
-  if (!granted_permissions) {
-    granted_permissions = std::make_unique<PermissionSet>();
-  }
+      GetPermissionsOrEmpty(
+          extension_prefs->GetGrantedPermissions(extension.id()));
 
   const PermissionMessageProvider* message_provider =
       PermissionMessageProvider::Get();
