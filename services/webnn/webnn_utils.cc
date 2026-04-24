@@ -401,4 +401,29 @@ webnn::Pool2dKind FromMojoPool2dType(mojom::Pool2d::Kind kind) {
   }
 }
 
+webnn::ReduceKind FromMojoReduceType(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return webnn::ReduceKind::kL1;
+    case mojom::Reduce::Kind::kL2:
+      return webnn::ReduceKind::kL2;
+    case mojom::Reduce::Kind::kLogSum:
+      return webnn::ReduceKind::kLogSum;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return webnn::ReduceKind::kLogSumExp;
+    case mojom::Reduce::Kind::kMax:
+      return webnn::ReduceKind::kMax;
+    case mojom::Reduce::Kind::kMean:
+      return webnn::ReduceKind::kMean;
+    case mojom::Reduce::Kind::kMin:
+      return webnn::ReduceKind::kMin;
+    case mojom::Reduce::Kind::kProduct:
+      return webnn::ReduceKind::kProduct;
+    case mojom::Reduce::Kind::kSum:
+      return webnn::ReduceKind::kSum;
+    case mojom::Reduce::Kind::kSumSquare:
+      return webnn::ReduceKind::kSumSquare;
+  }
+}
+
 }  // namespace webnn

@@ -58,31 +58,6 @@ BASE_FEATURE(kWebNNUseXNNPackForConstantTransposeFolding,
 using DependentOperationsMap =
     base::flat_map<OperandId, base::flat_set<OperationId>>;
 
-webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
-  switch (kind) {
-    case mojom::Reduce::Kind::kL1:
-      return webnn::ReduceKind::kL1;
-    case mojom::Reduce::Kind::kL2:
-      return webnn::ReduceKind::kL2;
-    case mojom::Reduce::Kind::kLogSum:
-      return webnn::ReduceKind::kLogSum;
-    case mojom::Reduce::Kind::kLogSumExp:
-      return webnn::ReduceKind::kLogSumExp;
-    case mojom::Reduce::Kind::kMax:
-      return webnn::ReduceKind::kMax;
-    case mojom::Reduce::Kind::kMean:
-      return webnn::ReduceKind::kMean;
-    case mojom::Reduce::Kind::kMin:
-      return webnn::ReduceKind::kMin;
-    case mojom::Reduce::Kind::kProduct:
-      return webnn::ReduceKind::kProduct;
-    case mojom::Reduce::Kind::kSum:
-      return webnn::ReduceKind::kSum;
-    case mojom::Reduce::Kind::kSumSquare:
-      return webnn::ReduceKind::kSumSquare;
-  }
-}
-
 webnn::RecurrentNetworkDirection MojoRecurrentNetworkDirectionToComponent(
     mojom::RecurrentNetworkDirection direction) {
   switch (direction) {
@@ -2586,7 +2561,7 @@ bool OperationValidationContext::ValidateReduce(const mojom::Reduce& reduce,
 
   const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateReduceAndInferOutput(
-          *context_properties_, MojoReduceTypeToComponent(reduce.kind),
+          *context_properties_, FromMojoReduceType(reduce.kind),
           input->descriptor, reduce.label, reduce.axes, reduce.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
