@@ -8097,24 +8097,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.ShelfIcon.AnimationSmoothness{ShelfIconAnimationType}"
-    units="%" expires_after="2021-03-30">
-  <owner>andrewxu@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Relative smoothness of animations of the shelf icons. 100% represents
-    ideally smooth 60 frames per second. Recorded when shelf icon animations are
-    completed, including icon move, icon fade-in and icon fade-out.
-    {ShelfIconAnimationType}
-  </summary>
-  <token key="ShelfIconAnimationType">
-    <variant name=""/>
-    <variant name=".FadeIn" summary="Shelf icon fade-in animation"/>
-    <variant name=".FadeOut" summary="Shelf icon fade-out animation"/>
-    <variant name=".Move" summary="Shelf icon move animation"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.ShortcutCustomization.AddAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2026-09-14">
   <owner>jimmyxgong@chromium.org</owner>

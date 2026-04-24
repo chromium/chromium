@@ -17,7 +17,6 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -54,7 +53,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/scoped_observation.h"
@@ -76,7 +74,6 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -136,13 +133,6 @@ using BoundsAnimatorDelegate = gfx::AnimationDelegate;
 constexpr int kSeparatorSize = 20;
 constexpr int kSeparatorThickness = 1;
 
-constexpr char kShelfIconMoveAnimationHistogram[] =
-    "Ash.ShelfIcon.AnimationSmoothness.Move";
-constexpr char kShelfIconFadeInAnimationHistogram[] =
-    "Ash.ShelfIcon.AnimationSmoothness.FadeIn";
-constexpr char kShelfIconFadeOutAnimationHistogram[] =
-    "Ash.ShelfIcon.AnimationSmoothness.FadeOut";
-
 // A class to temporarily disable a given bounds animator.
 class BoundsAnimatorDisabler {
  public:
@@ -165,18 +155,6 @@ class BoundsAnimatorDisabler {
   // The bounds animator which gets used.
   raw_ptr<views::BoundsAnimator> bounds_animator_;
 };
-
-void ReportMoveAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentage(kShelfIconMoveAnimationHistogram, smoothness);
-}
-
-void ReportFadeInAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentage(kShelfIconFadeInAnimationHistogram, smoothness);
-}
-
-void ReportFadeOutAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentage(kShelfIconFadeOutAnimationHistogram, smoothness);
-}
 
 // Returns the id of the display on which |view| is shown.
 int64_t GetDisplayIdForView(const View* view) {
@@ -1496,11 +1474,6 @@ void ShelfView::OnTabletModeChanged() {
 void ShelfView::AnimateToIdealBounds() {
   CalculateIdealBounds();
 
-  move_animation_tracker_.emplace(
-      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
-  move_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
-      base::BindRepeating(&ReportMoveAnimationSmoothness)));
-
   for (size_t i = 0; i < view_model_->view_size(); ++i) {
     View* view = view_model_->view_at(i);
     bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
@@ -1560,11 +1533,6 @@ void ShelfView::FadeIn(views::View* view) {
   fade_in_animation_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   fade_in_animation_settings.AddObserver(fade_in_animation_delegate_.get());
-
-  ui::AnimationThroughputReporter reporter(
-      fade_in_animation_settings.GetAnimator(),
-      metrics_util::ForSmoothnessV3(
-          base::BindRepeating(&ReportFadeInAnimationSmoothness)));
 
   view->layer()->SetOpacity(1.f);
 }
@@ -1992,11 +1960,6 @@ void ShelfView::OnFadeInAnimationEnded() {
 }
 
 void ShelfView::OnFadeOutAnimationEnded() {
-  if (fade_out_animation_tracker_) {
-    fade_out_animation_tracker_->Stop();
-    fade_out_animation_tracker_.reset();
-  }
-
   // Call PreferredSizeChanged() to notify container to re-layout at the end
   // of removal animation.
   PreferredSizeChanged();
@@ -2350,15 +2313,6 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   if (view->GetVisible() && view->layer()->opacity() > 0.0f) {
     UpdateShelfItemViewsVisibility();
 
-    // There could be multiple fade out animations running. Only start
-    // tracking for the first one.
-    if (!fade_out_animation_tracker_) {
-      fade_out_animation_tracker_.emplace(
-          GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
-      fade_out_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
-          base::BindRepeating(&ReportFadeOutAnimationSmoothness)));
-    }
-
     // The first animation fades out the view. When done we'll animate the rest
     // of the views to their target location.
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
@@ -2685,11 +2639,6 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void ShelfView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  if (move_animation_tracker_) {
-    move_animation_tracker_->Stop();
-    move_animation_tracker_.reset();
-  }
-
   if (snap_back_from_rip_off_view_ && animator == bounds_animator_.get()) {
     if (!animator->IsAnimating(snap_back_from_rip_off_view_)) {
       // Coming here the animation of the ShelfAppButton is finished and the

@@ -31,7 +31,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -786,12 +785,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   raw_ptr<views::FocusSearch, DanglingUntriaged> focus_search_ = nullptr;
 
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
-
-  // Tracks the icon move animation.
-  std::optional<ui::ThroughputTracker> move_animation_tracker_;
-
-  // Tracks the icon fade-out animation.
-  std::optional<ui::ThroughputTracker> fade_out_animation_tracker_;
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;
