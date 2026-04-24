@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "apps/launcher.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/guest_view/app_view/chrome_app_view_guest_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/common/content_features.h"
@@ -15,24 +22,21 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_paths.h"
-#include "extensions/shell/browser/shell_app_delegate.h"
-#include "extensions/shell/browser/shell_app_view_guest_delegate.h"
-#include "extensions/shell/browser/shell_content_browser_client.h"
-#include "extensions/shell/browser/shell_extension_system.h"
-#include "extensions/shell/browser/shell_extensions_api_client.h"
-#include "extensions/shell/browser/shell_extensions_browser_client.h"
-#include "extensions/shell/test/shell_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 
+static_assert(BUILDFLAG(IS_CHROMEOS));
+
+namespace extensions {
 namespace {
 
-class MockShellAppDelegate : public extensions::ShellAppDelegate {
+class MockAppDelegate : public ChromeAppDelegate {
  public:
-  MockShellAppDelegate() {
+  explicit MockAppDelegate(Profile* profile)
+      : ChromeAppDelegate(profile, /*keep_alive=*/false) {
     EXPECT_EQ(instance_, nullptr);
     instance_ = this;
   }
-  ~MockShellAppDelegate() override { instance_ = nullptr; }
+  ~MockAppDelegate() override { instance_ = nullptr; }
 
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -54,82 +58,72 @@ class MockShellAppDelegate : public extensions::ShellAppDelegate {
     run_loop.Run();
   }
 
-  static MockShellAppDelegate* Get() { return instance_; }
+  static MockAppDelegate* Get() { return instance_; }
 
  private:
   bool media_access_requested_ = false;
   base::OnceClosure media_access_request_quit_closure_;
 
-  static MockShellAppDelegate* instance_;
+  static MockAppDelegate* instance_;
 };
 
-MockShellAppDelegate* MockShellAppDelegate::instance_ = nullptr;
+MockAppDelegate* MockAppDelegate::instance_ = nullptr;
 
-class MockShellAppViewGuestDelegate
-    : public extensions::ShellAppViewGuestDelegate {
+class MockAppViewGuestDelegate : public ChromeAppViewGuestDelegate {
  public:
-  MockShellAppViewGuestDelegate() = default;
+  MockAppViewGuestDelegate() = default;
 
   extensions::AppDelegate* CreateAppDelegate(
       content::BrowserContext* browser_context) override {
-    return new MockShellAppDelegate();
+    return new MockAppDelegate(Profile::FromBrowserContext(browser_context));
   }
 };
 
-class MockExtensionsAPIClient : public extensions::ShellExtensionsAPIClient {
+class MockExtensionsAPIClient : public ChromeExtensionsAPIClient {
  public:
   MockExtensionsAPIClient() = default;
 
   std::unique_ptr<extensions::AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override {
-    return std::make_unique<MockShellAppViewGuestDelegate>();
+    return std::make_unique<MockAppViewGuestDelegate>();
   }
 };
 
-}  // namespace
-
-namespace extensions {
-
-class AppViewTest : public AppShellTest,
-                    public testing::WithParamInterface<bool> {
+class AppViewApiTest : public ExtensionBrowserTest,
+                       public testing::WithParamInterface<bool> {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
     return info.param ? "MPArch" : "InnerWebContents";
   }
 
-  AppViewTest() {
+  AppViewApiTest() {
     scoped_feature_list_.InitWithFeatureState(features::kGuestViewMPArch,
                                               GetParam());
   }
 
  protected:
   void SetUpOnMainThread() override {
-    AppShellTest::SetUpOnMainThread();
-    content::BrowserContext* context =
-        ShellContentBrowserClient::Get()->GetBrowserContext();
+    ExtensionBrowserTest::SetUpOnMainThread();
     test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-        context, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
+        profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   void TearDownOnMainThread() override {
     test_guest_view_manager_ = nullptr;
-    AppShellTest::TearDownOnMainThread();
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   content::WebContents* GetFirstAppWindowWebContents() {
     const AppWindowRegistry::AppWindowList& app_window_list =
-        AppWindowRegistry::Get(browser_context_)->app_windows();
+        AppWindowRegistry::Get(profile())->app_windows();
     EXPECT_EQ(1U, app_window_list.size());
     return (*app_window_list.begin())->web_contents();
   }
 
   const Extension* LoadApp(const std::string& app_location) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath test_data_dir;
-    base::PathService::Get(DIR_TEST_DATA, &test_data_dir);
-    test_data_dir = test_data_dir.AppendASCII(app_location.c_str());
-    return extension_system_->LoadApp(test_data_dir);
+    return LoadExtension(test_data_dir_.AppendASCII(app_location));
   }
 
   void RunTest(const std::string& test_name,
@@ -140,7 +134,8 @@ class AppViewTest : public AppShellTest,
     const Extension* app_embedded = LoadApp(app_to_embed);
     ASSERT_TRUE(app_embedded);
 
-    extension_system_->LaunchApp(app_embedder->id());
+    apps::LaunchPlatformApp(profile(), app_embedder,
+                            AppLaunchSource::kSourceUntracked);
 
     ExtensionTestMessageListener launch_listener("LAUNCHED");
     ASSERT_TRUE(launch_listener.WaitUntilSatisfied());
@@ -166,14 +161,13 @@ class AppViewTest : public AppShellTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         AppViewTest,
+                         AppViewApiTest,
                          testing::Bool(),
-                         AppViewTest::DescribeParams);
+                         AppViewApiTest::DescribeParams);
 
 // Tests that <appview> correctly processes parameters passed on connect.
-IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewGoodDataShouldSucceed) {
-  RunTest("testAppViewGoodDataShouldSucceed",
-          "app_view/apitest",
+IN_PROC_BROWSER_TEST_P(AppViewApiTest, TestAppViewGoodDataShouldSucceed) {
+  RunTest("testAppViewGoodDataShouldSucceed", "app_view/apitest",
           "app_view/apitest/skeleton");
   // Note that the callback of the appview connect method runs after guest
   // creation, but not necessarily after attachment. So we now ensure that the
@@ -183,44 +177,47 @@ IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewGoodDataShouldSucceed) {
 }
 
 // Tests that <appview> can handle media permission requests.
-IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewMediaRequest) {
+IN_PROC_BROWSER_TEST_P(AppViewApiTest, TestAppViewMediaRequest) {
   // TODO(crbug.com/40202416): Implement for MPArch.
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
   }
 
-  static_cast<ShellExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
+  // In browser_tests, the ExtensionsBrowserClient is always a
+  // ChromeExtensionsBrowserClient. Null it first to delete the old one
+  // before creating the new one.
+  static_cast<ChromeExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
       ->SetAPIClientForTest(nullptr);
-  static_cast<ShellExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
-      ->SetAPIClientForTest(new MockExtensionsAPIClient);
+  static_cast<ChromeExtensionsBrowserClient*>(ExtensionsBrowserClient::Get())
+      ->SetAPIClientForTest(std::make_unique<MockExtensionsAPIClient>());
 
   RunTest("testAppViewMediaRequest", "app_view/apitest",
           "app_view/apitest/media_request");
 
-  MockShellAppDelegate::Get()->WaitForRequestMediaPermission();
+  MockAppDelegate::Get()->WaitForRequestMediaPermission();
 }
 
 // Tests that <appview> correctly processes parameters passed on connect.
 // This test should fail to connect because the embedded app (skeleton) will
 // refuse the data passed by the embedder app and deny the request.
-IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewRefusedDataShouldFail) {
-  RunTest("testAppViewRefusedDataShouldFail",
-          "app_view/apitest",
+IN_PROC_BROWSER_TEST_P(AppViewApiTest, TestAppViewRefusedDataShouldFail) {
+  RunTest("testAppViewRefusedDataShouldFail", "app_view/apitest",
           "app_view/apitest/skeleton");
 }
 
 // Tests that <appview> is able to navigate to another installed app.
-IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
-  RunTest("testAppViewWithUndefinedDataShouldSucceed",
-          "app_view/apitest",
+IN_PROC_BROWSER_TEST_P(AppViewApiTest,
+                       TestAppViewWithUndefinedDataShouldSucceed) {
+  RunTest("testAppViewWithUndefinedDataShouldSucceed", "app_view/apitest",
           "app_view/apitest/skeleton");
   EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(
       test_guest_view_manager()->WaitForSingleGuestViewCreated()));
 }
 
-IN_PROC_BROWSER_TEST_P(AppViewTest, TestAppViewNoEmbedRequestListener) {
+IN_PROC_BROWSER_TEST_P(AppViewApiTest, TestAppViewNoEmbedRequestListener) {
   RunTest("testAppViewNoEmbedRequestListener", "app_view/apitest",
           "app_view/apitest/no_embed_request_listener");
 }
 
+}  // namespace
 }  // namespace extensions

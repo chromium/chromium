@@ -1330,10 +1330,8 @@ if (enable_extensions) {
     public_deps = [ "//content/test:test_support" ]
 
     if (is_chromeos) {
-      sources += [
-        "api/media_perception_private/media_perception_private_apitest.cc",
-        "guest_view/app_view/app_view_apitest.cc",
-      ]
+      sources +=
+          [ "api/media_perception_private/media_perception_private_apitest.cc" ]
 
       deps += [
         "//chromeos/ash/components/audio",

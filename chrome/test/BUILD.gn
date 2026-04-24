@@ -4983,6 +4983,7 @@ if (!is_android) {
           "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
           "../browser/extensions/delayed_setting_change_browsertest.cc",
+          "../browser/extensions/guest_view/app_view/app_view_apitest.cc",
           "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
         ]
 

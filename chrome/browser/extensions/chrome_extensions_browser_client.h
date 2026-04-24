@@ -322,6 +322,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<image_fetcher::ImageDecoder> CreateImageDecoder() override;
   bool CanUseNonComponentExtensions(content::BrowserContext* context) override;
 
+  void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
+
   static void set_did_chrome_update_for_testing(bool did_update);
 
   void set_on_clear_back_forward_cache_for_test(base::OnceClosure closure) {

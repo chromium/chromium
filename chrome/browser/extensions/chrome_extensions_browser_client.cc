@@ -1196,4 +1196,9 @@ bool ChromeExtensionsBrowserClient::CanUseNonComponentExtensions(
       Profile::FromBrowserContext(context));
 }
 
+void ChromeExtensionsBrowserClient::SetAPIClientForTest(
+    std::unique_ptr<ExtensionsAPIClient> client) {
+  api_client_ = std::move(client);
+}
+
 }  // namespace extensions
