@@ -140,6 +140,12 @@ void SkillsDownloader::OnUrlDownloadComplete(
   }
 
   auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
+  // If a skill curated by field is not set, default to Chrome
+  for (auto& skill : *skills_list->mutable_skills()) {
+    if (!skill.has_curated_by() || skill.curated_by().empty()) {
+      skill.set_curated_by("Chrome");
+    }
+  }
   first_party_skill_data->skills_list.insert(
       first_party_skill_data->skills_list.end(),
       std::make_move_iterator(skills_list->mutable_skills()->begin()),

@@ -32,6 +32,9 @@ message Skill {
   // exactly with the proto defined in
   // google3/chrome/breve/cacao/boq/skills/config/skill.proto.
   optional string image_url = 8;
+
+  // The name of the curator for this skill, if any.
+  optional string curated_by = 9;
 }
 
 // Contains a list of Skills received from the server.

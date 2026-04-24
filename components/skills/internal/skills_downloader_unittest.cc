@@ -95,6 +95,7 @@ TEST_F(SkillsDownloaderTest, ReturnsValidSkills) {
   EXPECT_EQ(skill.id(), "test-id");
   EXPECT_EQ(skill.name(), "/test-skill");
   EXPECT_EQ(skill.image_url(), "https://example.com/some-image.png");
+  EXPECT_EQ(skill.curated_by(), "Chrome");
 
   ASSERT_EQ(result->topics_list.size(), 1u);
   EXPECT_EQ(result->topics_list[0], "test-topic");

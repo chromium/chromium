@@ -49,6 +49,9 @@ struct Skill {
   // The description of the skill.
   string description;
 
+  // The name of the curator for this skill, if any.
+  string? curated_by;
+
   // The image URL for the skill.
   url.mojom.Url? image_url;
 

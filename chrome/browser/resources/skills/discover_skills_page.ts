@@ -176,10 +176,10 @@ export class DiscoverSkillsPageElement extends CrLitElement {
       return skills;
     }
 
-    // TODO(b/503394871): Add filter to check against curated_by field.
     return skills.filter(
         skill => skill.name.toLowerCase().includes(term) ||
-            skill.description.toLowerCase().includes(term));
+            skill.description.toLowerCase().includes(term) ||
+            (skill.curatedBy && skill.curatedBy.toLowerCase().includes(term)));
   }
 
   protected shouldShowNoSearchResults_(): boolean {
