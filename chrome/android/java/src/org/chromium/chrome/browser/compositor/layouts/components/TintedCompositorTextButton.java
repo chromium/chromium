@@ -22,6 +22,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
     private @Nullable String mText;
     private int mTextResourceId;
     private final @Nullable TintedCompositorButton mDismissButton;
+    private boolean mDismissButtonClicked;
 
     public TintedCompositorTextButton(
             Context context,
@@ -80,7 +81,9 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
 
     @Override
     public boolean click(float x, float y, int buttons) {
+        mDismissButtonClicked = false;
         if (mDismissButton != null && mDismissButton.click(x, y, buttons)) {
+            mDismissButtonClicked = true;
             return true;
         }
         return super.click(x, y, buttons);
@@ -106,7 +109,8 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
 
     @Override
     public void handleClick(long time, int buttons, int modifiers) {
-        if (mDismissButton != null && mDismissButton.isPressed()) {
+        if (mDismissButton != null && mDismissButtonClicked) {
+            mDismissButtonClicked = false;
             mDismissButton.handleClick(time, buttons, modifiers);
         } else {
             super.handleClick(time, buttons, modifiers);

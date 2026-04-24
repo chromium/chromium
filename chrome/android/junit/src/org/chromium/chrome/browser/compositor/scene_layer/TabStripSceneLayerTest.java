@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
@@ -71,6 +72,7 @@ public class TabStripSceneLayerTest {
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
+    private TintedCompositorButton mGlicDismissButton;
     @Mock private TintedCompositorButton mCloseButton;
     @Mock private StripLayoutGroupTitle mStripGroupTitle;
     @Mock private StripLayoutTrailingButtonsCoordinator mTrailingButtonsCoordinator;
@@ -107,6 +109,20 @@ public class TabStripSceneLayerTest {
     private void initializeTest() {
         mTabStripSceneLayer = new TabStripSceneLayer(DP_TO_PX);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
+        mGlicDismissButton =
+                new TintedCompositorButton(
+                        mContext,
+                        false,
+                        ButtonType.GLIC_DISMISS_NUDGE,
+                        null,
+                        24.f,
+                        24.f,
+                        mTooltipHandler,
+                        mOnClickHandler,
+                        mKeyboardFocusHandler,
+                        R.drawable.btn_close,
+                        Resources.ID_NULL,
+                        8.f);
         mGlicButton =
                 new TintedCompositorTextButton(
                         mContext,
@@ -121,7 +137,7 @@ public class TabStripSceneLayerTest {
                         R.drawable.ic_spark_4c_16dp,
                         8.f,
                         /* hasLongClickAction= */ false,
-                        /* dismissButton= */ null);
+                        mGlicDismissButton);
         mModelSelectorButton =
                 new TintedCompositorButton(
                         mContext,
@@ -696,7 +712,15 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyFloat(),
                         anyFloat(),
-                        anyFloat());
+                        anyFloat(),
+                        anyInt(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt());
     }
 
     @Test

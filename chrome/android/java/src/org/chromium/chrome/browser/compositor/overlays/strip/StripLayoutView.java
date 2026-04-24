@@ -423,6 +423,10 @@ public abstract class StripLayoutView implements VirtualView {
 
     @Override
     public void getTouchTarget(RectF outTarget) {
+        if (!isVisible()) {
+            outTarget.setEmpty();
+            return;
+        }
         outTarget.set(mTouchTargetBounds);
     }
 

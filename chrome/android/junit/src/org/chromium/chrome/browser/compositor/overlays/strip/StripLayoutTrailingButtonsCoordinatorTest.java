@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTrailingButtonsCoordinator.StripLayoutTrailingButtonsObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +47,7 @@ import org.chromium.ui.base.TestActivity;
 public class StripLayoutTrailingButtonsCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private GlicKeyedService mGlicKeyedService;
@@ -63,6 +65,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mCoordinator =
                 new StripLayoutTrailingButtonsCoordinator(
                         mActivity,
+                        mUpdateHost,
                         mRenderHost,
                         mGlicClickHandler,
                         /* density= */ 1.0f,
@@ -172,5 +175,28 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse(
                 "Glic button should not be pressed when UI is hidden globally.",
                 mCoordinator.getGlicButton().isPressed());
+    }
+
+    @Test
+    public void testGlicDismissNudgeButton() {
+        mCoordinator.setGlicButtonText("Glic Nudge Text");
+        mCoordinator.setGlicDismissNudgeButtonVisible(true);
+        var glicButton = mCoordinator.getGlicButton();
+        var dismissButton = glicButton.getDismissButton();
+
+        // Verify initial state: Dismiss button visible, Glic button text correct.
+        assertNotNull("Dismiss button should exist", dismissButton);
+        assertTrue("Dismiss button should be visible", dismissButton.isVisible());
+        assertEquals("Glic text should match setup text", "Glic Nudge Text", glicButton.getText());
+
+        // Simulate pressing the dismiss button.
+        dismissButton.handleClick(0, 0, 0);
+
+        // Verify dismiss button hides and Glic button text restores to default.
+        assertFalse("Dismiss button should have hidden itself securely", dismissButton.isVisible());
+        assertEquals(
+                "Glic button text should have been restored to default",
+                mActivity.getString(R.string.glic_button_entrypoint_ask_gemini_label),
+                glicButton.getText());
     }
 }

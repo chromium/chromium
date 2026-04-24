@@ -107,7 +107,15 @@ class TabStripSceneLayer : public SceneLayer {
                         int32_t text_texture_id,
                         float button_start_padding,
                         float icon_text_padding,
-                        float corner_radius);
+                        float corner_radius,
+                        int32_t dismiss_resource_id,
+                        float dismiss_x,
+                        float dismiss_y,
+                        bool dismiss_visible,
+                        int32_t dismiss_tint,
+                        bool dismiss_is_keyboard_focused,
+                        int32_t dismiss_keyboard_focus_ring_resource_id,
+                        int32_t dismiss_keyboard_focus_ring_color);
 
   void UpdateModelSelectorButton(JNIEnv* env,
                                  int32_t resource_id,
@@ -264,6 +272,9 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_;
   scoped_refptr<cc::slim::SolidColorLayer> glic_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_text_;
+  scoped_refptr<cc::slim::UIResourceLayer> glic_dismiss_nudge_button_;
+  scoped_refptr<cc::slim::UIResourceLayer>
+      glic_dismiss_nudge_button_keyboard_focus_ring_;
   scoped_refptr<cc::slim::UIResourceLayer> glic_button_keyboard_focus_ring_;
 
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;

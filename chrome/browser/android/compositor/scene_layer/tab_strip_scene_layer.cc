@@ -47,6 +47,9 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       glic_button_(cc::slim::UIResourceLayer::Create()),
       glic_button_background_(cc::slim::SolidColorLayer::Create()),
       glic_button_text_(cc::slim::UIResourceLayer::Create()),
+      glic_dismiss_nudge_button_(cc::slim::UIResourceLayer::Create()),
+      glic_dismiss_nudge_button_keyboard_focus_ring_(
+          cc::slim::UIResourceLayer::Create()),
       glic_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
@@ -59,6 +62,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   glic_button_->SetIsDrawable(true);
   glic_button_background_->SetIsDrawable(true);
   glic_button_text_->SetIsDrawable(true);
+  glic_dismiss_nudge_button_->SetIsDrawable(true);
   model_selector_button_->SetIsDrawable(true);
   model_selector_button_background_->SetIsDrawable(true);
 
@@ -122,6 +126,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(glic_button_);
   tab_strip_layer_->AddChild(glic_button_text_);
   tab_strip_layer_->AddChild(glic_button_keyboard_focus_ring_);
+  tab_strip_layer_->AddChild(glic_dismiss_nudge_button_);
+  tab_strip_layer_->AddChild(glic_dismiss_nudge_button_keyboard_focus_ring_);
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(model_selector_button_keyboard_focus_ring_);
@@ -306,27 +312,25 @@ void TabStripSceneLayer::UpdateNewTabButton(
 
 // The Glic button layer can be constructed with the following dynamic layout:
 //
-// <------------------------------- e -------------------------------->
-// ====================================================================
-// ^                                                                  |
-// |           ==========         =====================               |
-// |           |        |         |                   |               |
-// d <-- a --> |  Icon  | <- b -> |       Text        | <---- c ----> |
-// |           |        |         |                   |               |
-// |           ==========         =====================               |
-// v                                                                  |
-// ====================================================================
+//   <----------------------- e ----------------------->
+//   ┌─────────────────────────────────────────────────┐
+// ^ │                                                 │
+// │ │       ┌────┐       ┌──────┐       ┌────┐        │
+// d │ <-a-> │Icon│ <-b-> │ Text │ <-b-> │Btn │ <-c->  │
+// │ │       └────┘       └──────┘       └────┘        │
+// v │                                                 │
+//   └─────────────────────────────────────────────────┘
 //
 // Where the values are:
-//   a = button_start_padding: The distance from the button's leading edge to
-//   the icon. b = icon_text_padding: The horizontal gap between the icon and
-//   the text. c = button_end_padding: The distance from the text's trailing
-//   edge to the button's end.
-//                           (Note: this is implicitly handled by the total
-//                           `button_width`).
-//   d = button_height: The total height of the button.
-//   e = button_width: The total dynamic width of the button, calculated to wrap
-//   the icon, text, and all paddings.
+//   * a = button_start_padding: The distance from the button's leading edge to
+//         the icon.
+//   * b = icon_text_padding: The distance between the icon/btn and the text.
+//   * c = button_end_padding: The distance from the last visible child
+//         layer's end to the button's end. This is implicitly handled by the
+//         total `button_width`.
+//   * d = button_height: The total height of the button.
+//   * e = button_width: The total dynamic width of the button, calculated to
+//         wrap the icons, text, and paddings.
 void TabStripSceneLayer::UpdateGlicButton(
     JNIEnv* env,
     int32_t resource_id,
@@ -346,7 +350,15 @@ void TabStripSceneLayer::UpdateGlicButton(
     int32_t text_texture_id,
     float button_start_padding,
     float icon_text_padding,
-    float corner_radius) {
+    float corner_radius,
+    int32_t dismiss_resource_id,
+    float dismiss_x,
+    float dismiss_y,
+    bool dismiss_visible,
+    int32_t dismiss_tint,
+    bool dismiss_is_keyboard_focused,
+    int32_t dismiss_keyboard_focus_ring_resource_id,
+    int32_t dismiss_keyboard_focus_ring_color) {
   DCHECK(resource_manager_);
   ui::Resource* icon_resource;
   if (should_tint) {
@@ -434,6 +446,21 @@ void TabStripSceneLayer::UpdateGlicButton(
   } else {
     glic_button_keyboard_focus_ring_->SetIsDrawable(false);
   }
+
+  // 5. Dismiss Button
+  ui::Resource* dismiss_icon_resource =
+      resource_manager_->GetStaticResourceWithTint(dismiss_resource_id,
+                                                   dismiss_tint);
+  ui::Resource* dismiss_focus_ring_drawable =
+      resource_manager_->GetStaticResourceWithTint(
+          dismiss_keyboard_focus_ring_resource_id,
+          dismiss_keyboard_focus_ring_color, true);
+
+  UpdateCompositorButton(
+      glic_dismiss_nudge_button_, nullptr, dismiss_icon_resource, nullptr,
+      dismiss_x, dismiss_y, dismiss_visible, false, button_alpha,
+      glic_dismiss_nudge_button_keyboard_focus_ring_,
+      dismiss_is_keyboard_focused, dismiss_focus_ring_drawable);
 }
 
 void TabStripSceneLayer::UpdateModelSelectorButton(
@@ -486,25 +513,28 @@ void TabStripSceneLayer::UpdateCompositorButton(
   button->SetHideLayerAndSubtree(!visible);
   button->SetOpacity(button_alpha);
 
-  gfx::Size background_size = background_resource->size();
   gfx::Size button_size = button_resource->size();
-  float x_offset = (background_size.width() - button_size.width()) / 2;
-  float y_offset = (background_size.height() - button_size.height()) / 2;
+  gfx::Size background_size =
+      background_resource ? background_resource->size() : button_size;
+  float x_offset = (background_size.width() - button_size.width()) / 2.f;
+  float y_offset = (background_size.height() - button_size.height()) / 2.f;
   // Round this so that the keyboard focus ring looks centered with respect to
   // the rest of the button (see comment below).
   button->SetPosition(
       gfx::PointF(std::round(x + x_offset), std::round(y + y_offset)));
 
-  if (!should_apply_hover_highlight) {
-    background->SetHideLayerAndSubtree(true);
-  } else {
-    background->SetUIResourceId(background_resource->ui_resource()->id());
-    // Round this so that the keyboard focus ring looks centered with respect to
-    // the rest of the button (see comment below).
-    background->SetPosition(gfx::PointF(std::round(x), std::round(y)));
-    background->SetBounds(background_resource->size());
-    background->SetHideLayerAndSubtree(!visible);
-    background->SetOpacity(button_alpha);
+  if (background) {
+    if (!should_apply_hover_highlight) {
+      background->SetHideLayerAndSubtree(true);
+    } else if (background_resource) {
+      background->SetUIResourceId(background_resource->ui_resource()->id());
+      // Round this so that the keyboard focus ring looks centered with respect
+      // to the rest of the button (see comment below).
+      background->SetPosition(gfx::PointF(std::round(x), std::round(y)));
+      background->SetBounds(background_resource->size());
+      background->SetHideLayerAndSubtree(!visible);
+      background->SetOpacity(button_alpha);
+    }
   }
 
   if (is_keyboard_focused) {

@@ -586,6 +586,7 @@ public class StripLayoutHelperManager
         mTrailingButtonsCoordinator =
                 new StripLayoutTrailingButtonsCoordinator(
                         context,
+                        mUpdateHost,
                         mRenderHost,
                         glicClickHandler,
                         mDensity,
@@ -1300,9 +1301,7 @@ public class StripLayoutHelperManager
         if (mBrowserControlsStateProvider.getTopControlOffset() < 0) return;
 
         getActiveStripLayoutHelper().getVirtualViews(views);
-        if (mTrailingButtonsCoordinator.isGlicButtonVisible()) {
-            views.add(mTrailingButtonsCoordinator.getGlicButton());
-        }
+        mTrailingButtonsCoordinator.getVirtualViews(views);
         if (mModelSelectorButton != null && mModelSelectorButton.isVisible()) {
             views.add(mModelSelectorButton);
         }

@@ -202,8 +202,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getKeyboardFocusRingColor());
 
         TintedCompositorTextButton glicButton = trailingButtonsCoordinator.getGlicButton();
-        if (glicButton != null) {
+        if (glicButton != null && glicButton.getDismissButton() != null) {
+            TintedCompositorButton dismissNudge = glicButton.getDismissButton();
             boolean glicButtonVisible = glicButton.isVisible();
+            boolean dismissVisible = dismissNudge.isVisible() && glicButtonVisible;
             TabStripSceneLayerJni.get()
                     .updateGlicButton(
                             mNativePtr,
@@ -231,7 +233,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                                             * mDpToPx),
                             Math.round(
                                     StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_CORNER_RADIUS
-                                            * mDpToPx));
+                                            * mDpToPx),
+                            dismissNudge.getResourceId(),
+                            Math.round(dismissNudge.getDrawX() * mDpToPx),
+                            Math.round(dismissNudge.getDrawY() * mDpToPx),
+                            dismissVisible,
+                            dismissNudge.getTint(),
+                            dismissNudge.isKeyboardFocused(),
+                            TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
+                            dismissNudge.getKeyboardFocusRingColor());
         }
 
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -489,7 +499,15 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int textTextureId,
                 float buttonStartPadding,
                 float buttonTextPadding,
-                float cornerRadius);
+                float cornerRadius,
+                @DrawableRes int dismissResourceId,
+                float dismissX,
+                float dismissY,
+                boolean dismissVisible,
+                @ColorInt int dismissTint,
+                boolean dismissIsKeyboardFocused,
+                @DrawableRes int dismissKeyboardFocusRingResourceId,
+                @ColorInt int dismissKeyboardFocusRingColor);
 
         void updateModelSelectorButton(
                 long nativeTabStripSceneLayer,
