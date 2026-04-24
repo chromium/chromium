@@ -322,11 +322,6 @@ bool HTMLFormControlElementWithState::ShouldSaveAndRestoreFormControlState()
   if (!isConnected()) {
     return false;
   }
-  // TODO(crbug.com/1419161): remove this after M113 has been stable for a bit.
-  if (RuntimeEnabledFeatures::
-          FormControlRestoreStateIfAutocompleteOffEnabled()) {
-    return ShouldAutocomplete();
-  }
   if (Form() && !Form()->ShouldAutocomplete()) {
     return false;
   }
