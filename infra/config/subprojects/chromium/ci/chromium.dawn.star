@@ -2100,24 +2100,30 @@ ci.thin_tester(
             "webgpu_cts_dedicated_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
-            "webgpu_cts_fxc_tests": targets.mixin(
-                # ASAN builds taking a bit longer so needs extra shards to not timeout.
-                swarming = targets.swarming(
-                    shards = 14,
-                ),
+            "webgpu_cts_fxc_tests": targets.remove(
+                reason = "Tests timeout, pool oversubscribed crbug.com/506180945",
             ),
+            # "webgpu_cts_fxc_tests": targets.mixin(
+            #     # ASAN builds taking a bit longer so needs extra shards to not timeout.
+            #     swarming = targets.swarming(
+            #         shards = 14,
+            #     ),
+            # ),
             "webgpu_cts_service_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
-            "webgpu_cts_tests": targets.mixin(
-                # ASAN builds taking a bit longer so needs extra shards to not timeout.
-                swarming = targets.swarming(
-                    shards = 16,
-                ),
+            "webgpu_cts_tests": targets.remove(
+                reason = "Tests timeout, pool oversubscribed crbug.com/506180945",
             ),
+            # "webgpu_cts_tests": targets.mixin(
+            #     # ASAN builds taking a bit longer so needs extra shards to not timeout.
+            #     swarming = targets.swarming(
+            #         shards = 16,
+            #     ),
+            # ),
         },
     ),
     targets_settings = targets.settings(
