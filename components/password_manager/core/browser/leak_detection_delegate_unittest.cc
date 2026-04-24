@@ -826,6 +826,44 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
   WaitForPasswordStore();
 }
 
+TEST_F(LeakDetectionDelegateTest, ApcNotSuggestedWhenFederatedLoginDetected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreventAPCOnFederatedLogin);
+  const PasswordForm form = CreateTestForm();
+
+  MockPasswordChangeService mock_password_change_service;
+
+  EXPECT_CALL(client(), GetProfilePasswordStore())
+      .WillRepeatedly(Return(profile_store()));
+  EXPECT_CALL(client(), GetPasswordChangeService())
+      .WillRepeatedly(Return(&mock_password_change_service));
+  EXPECT_CALL(client(), GetPageLanguage())
+      .WillRepeatedly(Return(autofill::LanguageCode("en")));
+  EXPECT_CALL(mock_password_change_service,
+              IsPasswordChangeSupported(form, autofill::LanguageCode("en")))
+      .WillRepeatedly(Return(true));
+
+  ExpectPasswords({});
+  auto check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
+  LeakDetectionCheck::LeakDetectionCallback callback;
+  EXPECT_CALL(*check_instance, Start(_, _, _)).WillOnce(MoveArg<2>(&callback));
+
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl(),
+                            /*is_non_password_login_detected=*/true);
+
+  EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
+                            password_manager::CreateLeakType(
+                                IsSaved(false), IsReused(false),
+                                IsSyncing(false), HasChangePasswordUrl(false)),
+                            form, /* in_account_store = */ false)));
+  std::move(callback).Run(IsLeaked(true));
+  WaitForPasswordStore();
+}
+
 TEST_F(LeakDetectionDelegateTest,
        LeakDetectionWithkMarkAllCredentialsAsLeaked) {
   base::test::ScopedFeatureList features;

@@ -144,6 +144,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   bool IsSavingAllowed() const { return is_saving_allowed_; }
 
+  bool IsNonPasswordLoginDetected() const {
+    return is_non_password_login_detected_;
+  }
+  void SetNonPasswordLoginDetected(bool detected) {
+    is_non_password_login_detected_ = detected;
+  }
+
   // Returns true if |*this| manages http authentication.
   bool IsHttpAuth() const;
 
@@ -518,6 +525,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // The decision is captured at the provisional save time while it can be
   // already different for the landing page.
   bool is_saving_allowed_ = true;
+
+  // Stores if a non-password login was detected.
+  bool is_non_password_login_detected_ = false;
 
   // Stores if Save() was called when FormFetcher was in WAITING state.
   // In that case we should schedule a Save() call, when FormFecher is ready.

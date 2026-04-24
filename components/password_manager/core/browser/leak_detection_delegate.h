@@ -18,7 +18,6 @@
 
 namespace password_manager {
 
-class LeakDetectionCheck;
 class LeakDetectionDelegateHelper;
 enum class LeakDetectionInitiator;
 class PasswordManagerClient;
@@ -44,11 +43,13 @@ class LeakDetectionDelegate {
 
   void StartLeakCheck(LeakDetectionInitiator initiator,
                       const PasswordForm& credentials,
-                      const GURL& form_url);
+                      const GURL& form_url,
+                      bool is_non_password_login_detected = false);
 
  private:
   void OnLeakDetectionDone(PasswordForm credentials,
                            base::Time check_start_time,
+                           bool is_non_password_login_detected,
                            base::expected<IsLeaked, LeakDetectionError> result);
   void OnError(LeakDetectionError error);
 
@@ -65,6 +66,7 @@ class LeakDetectionDelegate {
 
   // Notifies `client_` about leaked credentials.
   void NotifyUserCredentialsWereLeaked(base::Time check_start_time,
+                                       bool is_non_password_login_detected,
                                        LeakedPasswordDetails details);
 
   raw_ptr<PasswordManagerClient> client_;

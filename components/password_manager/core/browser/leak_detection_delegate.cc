@@ -57,9 +57,11 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
-void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
-                                           const PasswordForm& credentials,
-                                           const GURL& form_url) {
+void LeakDetectionDelegate::StartLeakCheck(
+    LeakDetectionInitiator initiator,
+    const PasswordForm& credentials,
+    const GURL& form_url,
+    bool is_non_password_login_detected) {
   if (client_->IsOffTheRecord()) {
     return;
   }
@@ -85,13 +87,14 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
         initiator, credentials,
         base::BindOnce(&LeakDetectionDelegate::OnLeakDetectionDone,
                        weak_ptr_factory_.GetWeakPtr(), credentials,
-                       base::Time::Now()));
+                       base::Time::Now(), is_non_password_login_detected));
   }
 }
 
 void LeakDetectionDelegate::OnLeakDetectionDone(
     PasswordForm credentials,
     base::Time check_start_time,
+    bool is_non_password_login_detected,
     base::expected<IsLeaked, LeakDetectionError> result) {
   if (!result.has_value()) {
     OnError(result.error());
@@ -110,7 +113,8 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
 
   auto notify_callback =
       base::BindOnce(&LeakDetectionDelegate::NotifyUserCredentialsWereLeaked,
-                     weak_ptr_factory_.GetWeakPtr(), check_start_time);
+                     weak_ptr_factory_.GetWeakPtr(), check_start_time,
+                     is_non_password_login_detected);
   auto barrier_callback =
       base::BarrierCallback<std::optional<LeakedPasswordDetails>>(
           /*num_callbacks=*/2,
@@ -120,7 +124,7 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
   // the affiliation service.
   affiliations::AffiliationService* affiliation_service =
       client_->GetAffiliationService();
-  if (affiliation_service &&
+  if (affiliation_service && !is_non_password_login_detected &&
       base::FeatureList::IsEnabled(
           features::kFetchChangePasswordUrlForPasswordChange)) {
     affiliation_service->PrefetchChangePasswordURL(
@@ -191,12 +195,13 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
 
 void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
     base::Time check_start_time,
+    bool is_non_password_login_detected,
     LeakedPasswordDetails details) {
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",
                           base::Time::Now() - check_start_time);
 
   HasChangePasswordUrl has_change_url(
-      client_->GetPasswordChangeService() &&
+      !is_non_password_login_detected && client_->GetPasswordChangeService() &&
       client_->GetPasswordChangeService()->IsPasswordChangeSupported(
           details.credentials, client_->GetPageLanguage()));
   if (has_change_url) {
