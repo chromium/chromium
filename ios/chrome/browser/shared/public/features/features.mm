@@ -88,8 +88,7 @@ BASE_FEATURE(kTCRexKillSwitch,
              "kTCRexKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
-BASE_FEATURE(kTabGridNewTransitions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabGridNewTransitions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNewTabGridTransitionsEnabled() {
   if (IsChromeNextIaEnabled()) {

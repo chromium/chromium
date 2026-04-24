@@ -13478,21 +13478,6 @@
             ]
         }
     ],
-    "IOSNewTabGridTransitions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGridNewTransitions"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSOneTapMiniMapRestrictions": [
         {
             "platforms": [
