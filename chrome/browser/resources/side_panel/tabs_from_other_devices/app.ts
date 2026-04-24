@@ -38,13 +38,11 @@ export class TabsFromOtherDevicesAppElement extends
   static override get properties() {
     return {
       syncedDevices_: {type: Array},
-      loading_: {type: Boolean},
       selectedDeviceTag_: {type: String},
     };
   }
 
   protected accessor syncedDevices_: ForeignSession[] = [];
-  protected accessor loading_: boolean = true;
   protected accessor selectedDeviceTag_: string|null = null;
 
   private foreignSessionHandler: ForeignSessionPageHandlerRemote =
@@ -75,7 +73,6 @@ export class TabsFromOtherDevicesAppElement extends
 
   private setForeignSessions_(sessions: ForeignSession[]) {
     this.syncedDevices_ = sessions;
-    this.loading_ = false;
     if (!this.selectedDeviceTag_ && sessions.length > 0) {
       this.selectedDeviceTag_ = sessions[0]!.tag;
     }

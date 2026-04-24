@@ -11,12 +11,10 @@ export function getHtml(this: TabsFromOtherDevicesAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
-  ${this.loading_ ? html`<div class="loading">$i18n{loading}</div>` : ''}
-
-  ${!this.loading_ && this.syncedDevices_.length === 0 ?
+  ${this.syncedDevices_.length === 0 ?
       html`<div class="empty-message">$i18n{noSyncedResults}</div>` : ''}
 
-  ${!this.loading_ && this.syncedDevices_.length > 0 ?
+  ${this.syncedDevices_.length > 0 ?
       html`
     <div id="picker-container">
       <cr-button id="picker-button" @click="${this.onDeviceSelectClick_}">
