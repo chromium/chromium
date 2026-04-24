@@ -39,6 +39,8 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   QuickSettingsMediaView& operator=(const QuickSettingsMediaView&) = delete;
   ~QuickSettingsMediaView() override;
 
+  void Init();
+
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -59,8 +61,6 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   // media items, the height needs to be larger to display the pagination view.
   int GetMediaViewHeight() const;
 
-  // Helper functions for testing.
-  PaginationModel* pagination_model_for_testing() { return &pagination_model_; }
   std::map<const std::string,
            raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
   items_for_testing() {
@@ -71,8 +71,6 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
  private:
   raw_ptr<QuickSettingsMediaViewController> controller_ = nullptr;
-
-  PaginationModel pagination_model_{this};
 
   std::unique_ptr<PaginationController> pagination_controller_;
 

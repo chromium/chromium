@@ -122,6 +122,8 @@ void QuickSettingsMediaViewController::OnMediaItemUIShowDevices(
 std::unique_ptr<views::View> QuickSettingsMediaViewController::CreateView() {
   auto media_view = std::make_unique<QuickSettingsMediaView>(this);
   media_view_ = media_view->AsWeakPtr();
+  pagination_model_ = std::make_unique<PaginationModel>(media_view_.get());
+  media_view_->Init();
   media_item_manager_->SetDialogDelegate(this);
   return std::move(media_view);
 }

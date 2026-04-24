@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MEDIA_QUICK_SETTINGS_MEDIA_VIEW_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
@@ -73,7 +74,8 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // Returns the current desired height of the media view.
   int GetMediaViewHeight();
 
-  // Helper functions for testing.
+  PaginationModel* pagination_model() { return pagination_model_.get(); }
+
   QuickSettingsMediaView* media_view_for_testing() { return media_view_.get(); }
 
  private:
@@ -86,6 +88,8 @@ class ASH_EXPORT QuickSettingsMediaViewController
 
   global_media_controls::MediaItemUIObserverSet media_item_ui_observer_set_{
       this};
+
+  std::unique_ptr<PaginationModel> pagination_model_;
 
   base::WeakPtr<QuickSettingsMediaView> media_view_;
 };

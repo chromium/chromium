@@ -34,12 +34,15 @@ class QuickSettingsMediaViewTest : public NoSessionAshTestBase {
         media_message_center::test::MockMediaNotificationItem>>();
   }
 
-  QuickSettingsMediaView* view() {
+  QuickSettingsMediaViewController* controller() {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->unified_system_tray_controller()
-        ->media_view_controller()
-        ->media_view_for_testing();
+        ->media_view_controller();
+  }
+
+  QuickSettingsMediaView* view() {
+    return controller()->media_view_for_testing();
   }
 
   base::WeakPtr<media_message_center::test::MockMediaNotificationItem> item() {
@@ -59,16 +62,16 @@ TEST_F(QuickSettingsMediaViewTest, ShowOrHideItem) {
           global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
 
   EXPECT_EQ(0u, view()->items_for_testing().size());
-  EXPECT_EQ(-1, view()->pagination_model_for_testing()->total_pages());
+  EXPECT_EQ(-1, controller()->pagination_model()->total_pages());
 
   view()->ShowItem(item_id, std::move(item_ui));
   EXPECT_EQ(1u, view()->items_for_testing().size());
   EXPECT_TRUE(view()->items_for_testing().contains(item_id));
-  EXPECT_EQ(1, view()->pagination_model_for_testing()->total_pages());
+  EXPECT_EQ(1, controller()->pagination_model()->total_pages());
 
   view()->HideItem(item_id);
   EXPECT_EQ(0u, view()->items_for_testing().size());
-  EXPECT_EQ(0, view()->pagination_model_for_testing()->total_pages());
+  EXPECT_EQ(0, controller()->pagination_model()->total_pages());
 }
 
 // Tests that there is no crash when perform scroll fling gesture on the media
@@ -82,7 +85,7 @@ TEST_F(QuickSettingsMediaViewTest, NoCrashOnScrollFlingStart) {
           global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
 
   view()->ShowItem(item_id, std::move(item_ui));
-  EXPECT_EQ(1, view()->pagination_model_for_testing()->total_pages());
+  EXPECT_EQ(1, controller()->pagination_model()->total_pages());
 
   // Generate a horizontal scroll fling event.
   const gfx::Point gesture_start_point = view()->GetBoundsInScreen().origin();
