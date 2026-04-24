@@ -224,10 +224,13 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       FontUniqueNameLookupService::GetTaskRunner());
 #endif
 #if BUILDFLAG(IS_WIN)
-  registry->AddInterface(
-      base::BindRepeating(&DWriteFontProxyImpl::Create),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
+  if (!features::IsFontDataServiceEnabled()) {
+    // DWriteFontProxy is superseded by FontDataService.
+    registry->AddInterface(
+        base::BindRepeating(&DWriteFontProxyImpl::Create),
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
+  }
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(

@@ -102,12 +102,15 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     sandbox_support->BindReceiver(std::move(r));
     return;
   }
-  if (auto r = receiver.As<blink::mojom::DWriteFontProxy>()) {
-    base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::USER_BLOCKING, base::MayBlock()})
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&DWriteFontProxyImpl::Create, std::move(r)));
-    return;
+  if (!features::IsFontDataServiceEnabled()) {
+    if (auto r = receiver.As<blink::mojom::DWriteFontProxy>()) {
+      // Skip DWriteFontProxy when FontDataService handles font lookups.
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock()})
+          ->PostTask(FROM_HERE, base::BindOnce(&DWriteFontProxyImpl::Create,
+                                               std::move(r)));
+      return;
+    }
   }
 #endif
 
