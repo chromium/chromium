@@ -830,3 +830,27 @@ TEST_F(AccountConsistencyServiceTest, ChromeAddSessionWithEmail) {
   EXPECT_EQ(1, delegate_.add_account_call_count_);
   EXPECT_EQ("test@gmail.com", delegate_.add_account_email_);
 }
+
+// Tests that the X-Chrome-Manage-Accounts header is ignored in a subframe.
+TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsIgnoredInSubframe) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kIgnoreChromeManageAccountsInSubframes);
+
+  NSDictionary* headers =
+      [NSDictionary dictionaryWithObject:@"action=DEFAULT"
+                                  forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+
+  SetWebStateHandler(&delegate_);
+
+  // When feature is enabled, header is ignored and response is allowed.
+  EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
+                                             /* for_main_frame = */ false));
+  web_state_.SetCurrentURL(net::GURLWithNSURL(response.URL));
+  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ(0, delegate_.total_call_count());
+}

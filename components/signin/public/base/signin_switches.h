@@ -471,6 +471,10 @@ BASE_DECLARE_FEATURE(kIdentityInAuthErrorFollowUps);
 #endif
 
 #if BUILDFLAG(IS_IOS)
+// Killswitch for ignoring X-Chrome-Manage-Accounts header in subframes.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kIgnoreChromeManageAccountsInSubframes);
+
 // Feature flag to ignore invalid grant errors in AuthenticationService.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);

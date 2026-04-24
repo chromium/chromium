@@ -22,6 +22,7 @@
 #import "components/signin/core/browser/chrome_connected_header_helper.h"
 #import "components/signin/core/browser/signin_header_helper.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "google_apis/gaia/gaia_constants.h"
@@ -221,6 +222,13 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
   NSHTTPURLResponse* http_response =
       base::apple::ObjCCast<NSHTTPURLResponse>(response);
   if (!http_response) {
+    std::move(callback).Run(PolicyDecision::Allow());
+    return;
+  }
+
+  if (!response_info.for_main_frame &&
+      base::FeatureList::IsEnabled(
+          switches::kIgnoreChromeManageAccountsInSubframes)) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }

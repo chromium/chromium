@@ -512,6 +512,9 @@ BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIgnoreChromeManageAccountsInSubframes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Feature flag to ignore invalid grant errors in AuthenticationService.
 BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
