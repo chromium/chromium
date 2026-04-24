@@ -561,7 +561,6 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   DCHECK(
       [self.headerViewController.view isDescendantOfView:self.containerView]);
-  self.headerViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   // The view controllers have to be added in reverse order, so the array is
   // then reversed to reflect the visible order.
@@ -1952,6 +1951,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   // controller.
   [viewController willMoveToParentViewController:parentViewController];
   [parentViewController addChildViewController:viewController];
+  viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self.collectionView addSubview:viewController.view];
   [viewController didMoveToParentViewController:parentViewController];
 

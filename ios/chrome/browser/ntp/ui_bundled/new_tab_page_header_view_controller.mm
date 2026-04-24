@@ -338,7 +338,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     self.headerView.placeholderText = self.placeholderText;
     self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.headerView];
-    AddSameConstraints(self.headerView, self.view);
+    AddSameConstraintsToSides(
+        self.headerView, self.view,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+    NSLayoutConstraint* bottomConstraint = [self.headerView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor];
+    bottomConstraint.priority = UILayoutPriorityRequired - 1;
+    bottomConstraint.active = YES;
 
     [self addFakeOmnibox];
 
