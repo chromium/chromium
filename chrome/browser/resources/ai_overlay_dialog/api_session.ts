@@ -277,6 +277,28 @@ export class ApiSession {
     }
   }
 
+  /**
+   * Sends a context update as a user turn without marking it as complete.
+   * This is used for "priming" the model with untrusted environment data.
+   */
+  sendContextUpdate(text: string) {
+    const msg: ClientContentMessage = {
+      clientContent: {
+        turns: [{
+          role: 'user',
+          parts: [{text}],
+        }],
+        turnComplete: false,
+      },
+    };
+    const json = JSON.stringify(msg);
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(json);
+    } else if (this.ws?.readyState === WebSocket.CONNECTING) {
+      this.messageQueue.push(json);
+    }
+  }
+
   sendText(text: string) {
     const msg: ClientContentMessage = {
       clientContent: {

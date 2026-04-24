@@ -11,7 +11,7 @@ import {Journal} from './journal.js';
 import {debugLog, DebugLogTag, errorLog, log} from './logging.js';
 import type {PageContext, PageContextChangeEvent} from './page_context_manager.js';
 import {PageContextChangeType, PageContextManager} from './page_context_manager.js';
-import {buildSystemInstruction, formatPageVisitHistory, formatTranscript} from './persona.js';
+import {buildContextPrimingTurn, buildSystemInstruction, formatPageVisitHistory, formatTranscript} from './persona.js';
 
 
 const FILE = 'Conversation';
@@ -95,7 +95,9 @@ export class Conversation implements ApiSessionDelegate {
     log(FILE, `Conversation with ${config.persona.name}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
-    this.toolExecutor = new ToolExecutor(toolsRemote);
+    this.toolExecutor = new ToolExecutor(
+        toolsRemote, this.pageContextManager, this.journal,
+        config.persona.name);
 
     this.pageContextManager.registerListener((event) => {
       this.onPageContextChange(event);
@@ -297,9 +299,8 @@ export class Conversation implements ApiSessionDelegate {
     const transcript = formatTranscript(turns, this.config.persona.name);
     const pageHistory = formatPageVisitHistory(pages);
 
-    const systemInstruction = buildSystemInstruction(
-        this.config, context?.url || '', context?.title ?? '',
-        context?.content ?? '', transcript, pageHistory);
+    // Behavioral rules are sent in the system instruction (Static/Trusted).
+    const systemInstruction = buildSystemInstruction(this.config);
 
     debugLog(FILE, DebugLogTag.SYSTEM_INSTRUCTION, systemInstruction);
 
@@ -313,7 +314,22 @@ export class Conversation implements ApiSessionDelegate {
 
     this.session = new ApiSession(apiSessionConfig, this.toolDefinitions, this);
     await this.session.connect();
+
+    // Untrusted page context and history are sent as a priming turn
+    // (Dynamic/Untrusted).
+    let content = context?.content ?? '';
+    if (content.length > 1000) {
+      content = content.substring(0, 1000) +
+          '... (truncated, use get_page_content for more)';
+    }
+
+    const primingTurn = buildContextPrimingTurn(
+        context?.url || '', context?.title ?? '', content, transcript,
+        pageHistory);
+
+    this.session.sendContextUpdate(primingTurn);
   }
+
 
   private onPageContextChange(event: PageContextChangeEvent) {
     if (!this.connected) {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+
+import type {Journal} from '../journal.js';
+import type {PageContextManager} from '../page_context_manager.js';
+import {formatPageVisitHistory, formatTranscript} from '../persona.js';
 import {ScrollGranularity} from '../tools.mojom-webui.js';
 import type {AiOverlayToolsRemote} from '../tools.mojom-webui.js';
 
@@ -54,17 +59,40 @@ type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
     {name: 'play_video', args: Record<string, unknown>}|
     {name: 'pause_video', args: Record<string, unknown>}|
     {name: 'translate_page', args: TranslatePageArgs}|
+    {name: 'get_page_content', args: Record<string, unknown>}|
+    {name: 'get_session_history', args: Record<string, unknown>}|
     {name: 'invoke_glic', args: InvokeGlicArgs};
 
 export class ToolExecutor {
   private readonly toolsRemote: AiOverlayToolsRemote;
+  private readonly pageContextManager: PageContextManager;
+  private readonly journal: Journal;
+  private readonly personaName: string;
 
-  constructor(toolsRemote: AiOverlayToolsRemote) {
+  constructor(
+      toolsRemote: AiOverlayToolsRemote, pageContextManager: PageContextManager,
+      journal: Journal, personaName: string) {
     this.toolsRemote = toolsRemote;
+    this.pageContextManager = pageContextManager;
+    this.journal = journal;
+    this.personaName = personaName;
   }
 
   getToolDefinitions(): string {
-    return kBuiltInToolDefinitions;
+    const tools = JSON.parse(kBuiltInToolDefinitions);
+    assert(tools.length > 0 && tools[0].functionDeclarations);
+    tools[0].functionDeclarations.push(
+        {
+          name: 'get_page_content',
+          description: 'Use `get_page_content` if you need the ' +
+              'full text of the current page.',
+        },
+        {
+          name: 'get_session_history',
+          description: 'Use `get_session_history` to recall ' +
+              'details from earlier in the session.',
+        });
+    return JSON.stringify(tools);
   }
 
   async executeTool(name: string, args: Record<string, unknown>):
@@ -124,6 +152,20 @@ export class ToolExecutor {
         }
         case 'translate_page': {
           await this.toolsRemote.translatePage(call.args.target_language);
+          break;
+        }
+        case 'get_page_content': {
+          outResult['content'] = this.pageContextManager.pageContext?.content ||
+              'No content available for this page.';
+          break;
+        }
+        case 'get_session_history': {
+          const turns = this.journal.getTurnEntries();
+          const pages = this.journal.getPageVisitEntries();
+          const transcript = formatTranscript(turns, this.personaName);
+          const pageHistory = formatPageVisitHistory(pages);
+          outResult['history'] = `## Pages Visited\n${pageHistory}\n\n` +
+              `## Conversation History\n${transcript}`;
           break;
         }
         case 'invoke_glic': {
