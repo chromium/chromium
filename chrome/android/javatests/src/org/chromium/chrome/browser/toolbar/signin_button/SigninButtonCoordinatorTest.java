@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -332,12 +331,13 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "TODO(crbug.com/502537801): re-enable this test.")
+    // TODO(crbug.com/496912352): Not including Brya as inconsistent test state causes flakiness.
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testSigninButtonHiddenOnIncognitoNtp() {
         // Initially visible on NTP.
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
-        mPage.openAppMenu().openNewIncognitoTab();
+        mPage.openNewIncognitoTabOrWindowFast();
 
         // Signin button should not be visible on incognito NTP.
         // It may not be inflated yet in the new incognito tab, so we check for both the
