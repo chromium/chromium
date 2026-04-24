@@ -227,6 +227,16 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
                 ? kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier
                 : kFileDestinationPickerFilesAccessibilityIdentifier
           : kFileDestinationPickerDriveAccessibilityIdentifier;
+
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
+  if (selected) {
+    cell.accessibilityTraits |= UIAccessibilityTraitSelected;
+  }
+  if ([self.actionDelegate shouldBlockDownloadToFile] &&
+      destination == FileDestination::kFiles) {
+    cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+
   cell.contentConfiguration = configuration;
   return cell;
 }

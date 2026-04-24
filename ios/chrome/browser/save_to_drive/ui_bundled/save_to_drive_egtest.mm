@@ -228,6 +228,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:FileDestinationFilesButton()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kFileDestinationPickerFilesAccessibilityIdentifier),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:FileDestinationFilesButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
