@@ -18,17 +18,17 @@ chrome.test.runTests([
       id: 'script1',
       matches: ['*://a.com/*'],
       js: ['dynamic_1.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     // All that dynamic_1.js does is send a message, which can be used to verify
     // that the script has been injected.
-    chrome.runtime.onMessage.addListener(function passTest(
-        message, sender, sendResponse) {
-      chrome.runtime.onMessage.removeListener(passTest);
-      chrome.test.assertEq('SCRIPT_INJECTED', message);
-      chrome.test.succeed();
-    });
+    chrome.runtime.onMessage.addListener(
+        function passTest(message, sender, sendResponse) {
+          chrome.runtime.onMessage.removeListener(passTest);
+          chrome.test.assertEq('SCRIPT_INJECTED', message);
+          chrome.test.succeed();
+        });
 
     await chrome.scripting.registerContentScripts(scripts);
     const config = await chrome.test.getConfig();
@@ -47,7 +47,7 @@ chrome.test.runTests([
 
     const scripts = [
       {id: scriptId, matches: ['*://notused.com/*'], js: ['dynamic_1.js']},
-      {id: scriptId, matches: ['*://notused.com/*'], js: ['inject_element.js']}
+      {id: scriptId, matches: ['*://notused.com/*'], js: ['inject_element.js']},
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -68,7 +68,7 @@ chrome.test.runTests([
 
     const results = await Promise.allSettled([
       chrome.scripting.registerContentScripts(scripts),
-      chrome.scripting.registerContentScripts(scripts)
+      chrome.scripting.registerContentScripts(scripts),
     ]);
 
     chrome.test.assertEq('fulfilled', results[0].status);
@@ -184,7 +184,7 @@ chrome.test.runTests([
     const scripts = [{
       id: 'invalidMatchPattern',
       matches: ['invalid**match////'],
-      js: ['dynamic_1.js']
+      js: ['dynamic_1.js'],
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -203,12 +203,12 @@ chrome.test.runTests([
     const scripts = [{
       id: scriptId,
       matches: ['chrome://newtab/'],
-      js: ['dynamic_1.js']
+      js: ['dynamic_1.js'],
     }];
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.registerContentScripts(scripts),
-        `Error: Script with ID '${scriptId}' has invalid value for `+
+        `Error: Script with ID '${scriptId}' has invalid value for ` +
             `matches[0]: Invalid scheme.`);
 
     chrome.test.succeed();
@@ -222,12 +222,12 @@ chrome.test.runTests([
     const scripts = [{
       id: scriptId,
       matches: ['chrome-extension://abcdefghijklmnopabcdefghijklmnop/'],
-      js: ['dynamic_1.js']
+      js: ['dynamic_1.js'],
     }];
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.registerContentScripts(scripts),
-        `Error: Script with ID '${scriptId}' has invalid value for `+
+        `Error: Script with ID '${scriptId}' has invalid value for ` +
             `matches[0]: Invalid scheme.`);
 
     chrome.test.succeed();
@@ -240,13 +240,15 @@ chrome.test.runTests([
     const scriptId = 'disallowedMatchPatternSchemeIsolatedAppUrl';
     const scripts = [{
       id: scriptId,
-      matches: ['isolated-app://aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/'],
-      js: ['dynamic_1.js']
+      matches: [
+        'isolated-app://aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/',
+      ],
+      js: ['dynamic_1.js'],
     }];
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.registerContentScripts(scripts),
-        `Error: Script with ID '${scriptId}' has invalid value for `+
+        `Error: Script with ID '${scriptId}' has invalid value for ` +
             `matches[0]: Invalid scheme.`);
 
     chrome.test.succeed();
@@ -260,7 +262,7 @@ chrome.test.runTests([
       id: 'matchOriginAsFallbackWithPath',
       matches: ['https://example/path'],
       matchOriginAsFallback: true,
-      js: ['dynamic_1.js']
+      js: ['dynamic_1.js'],
     }];
 
     await chrome.test.assertPromiseRejects(
@@ -291,18 +293,18 @@ chrome.test.runTests([
       id: 'noHostPerms',
       matches: ['*://nohostperms.com/*'],
       js: ['change_title.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     // check_title.js (manifest content script, for which host permissions do
     // not apply), is run at document_idle. The test passes if the document
     // title sent by check_title.js matches the expected title.
-    chrome.runtime.onMessage.addListener(function passTest(
-        message, sender, sendResponse) {
-      chrome.runtime.onMessage.removeListener(passTest);
-      chrome.test.assertEq('DOCUMENT_TITLE: OK', message);
-      chrome.test.succeed();
-    });
+    chrome.runtime.onMessage.addListener(
+        function passTest(message, sender, sendResponse) {
+          chrome.runtime.onMessage.removeListener(passTest);
+          chrome.test.assertEq('DOCUMENT_TITLE: OK', message);
+          chrome.test.succeed();
+        });
 
     await chrome.scripting.registerContentScripts(scripts);
     const config = await chrome.test.getConfig();
@@ -318,7 +320,7 @@ chrome.test.runTests([
       id: 'hostPerms',
       matches: ['*://hostperms.com/*'],
       js: ['change_title.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.scripting.registerContentScripts(scripts);
@@ -336,7 +338,7 @@ chrome.test.runTests([
       id: 'inject_element',
       matches: ['*://*/*'],
       js: ['inject_element.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.scripting.registerContentScripts(scripts);

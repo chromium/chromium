@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 chrome.scripting.globalParams = {
-  value: 'changed'
+  value: 'changed',
 };

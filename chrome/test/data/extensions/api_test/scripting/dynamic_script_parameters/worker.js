@@ -14,17 +14,17 @@ chrome.test.runTests([
       id: 'script1',
       matches: ['*://a.com/*'],
       js: ['check_params.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     // Verify that the default params value seen by the content script is an
     // empty JS object.
-    chrome.runtime.onMessage.addListener(function passTest(
-        message, sender, sendResponse) {
-      chrome.runtime.onMessage.removeListener(passTest);
-      chrome.test.assertEq('GLOBALPARAMS: {}', message);
-      chrome.test.succeed();
-    });
+    chrome.runtime.onMessage.addListener(
+        function passTest(message, sender, sendResponse) {
+          chrome.runtime.onMessage.removeListener(passTest);
+          chrome.test.assertEq('GLOBALPARAMS: {}', message);
+          chrome.test.succeed();
+        });
 
     await chrome.scripting.registerContentScripts(scripts);
     const config = await chrome.test.getConfig();
@@ -44,24 +44,24 @@ chrome.test.runTests([
         id: 'script1',
         matches: ['*://a.com/*'],
         js: ['change_params.js'],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'script2',
         matches: ['*://a.com/*'],
         js: ['check_params.js'],
-        runAt: 'document_idle'
-      }
+        runAt: 'document_idle',
+      },
     ];
 
     // Verify that the params object seen by `script2` contains the field added
     // by `script1`.
-    chrome.runtime.onMessage.addListener(function passTest(
-        message, sender, sendResponse) {
-      chrome.runtime.onMessage.removeListener(passTest);
-      chrome.test.assertEq('GLOBALPARAMS: {"value":"changed"}', message);
-      chrome.test.succeed();
-    });
+    chrome.runtime.onMessage.addListener(
+        function passTest(message, sender, sendResponse) {
+          chrome.runtime.onMessage.removeListener(passTest);
+          chrome.test.assertEq('GLOBALPARAMS: {"value":"changed"}', message);
+          chrome.test.succeed();
+        });
 
     await chrome.scripting.registerContentScripts(scripts);
     const config = await chrome.test.getConfig();
@@ -80,7 +80,7 @@ chrome.test.runTests([
     const url = `http://a.com:${config.testServer.port}/simple.html`;
     const tab = await openTab(url);
 
-    const checkParams = () => !!chrome.scripting ?
+    const checkParams = () => chrome.scripting ?
         JSON.stringify(chrome.scripting.globalParams) :
         'undefined';
 

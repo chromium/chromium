@@ -11,7 +11,7 @@ async function testGetTitleByFrameId() {
     target: {tabId: tabId, frameIds: [prerenderingFrameId]},
     func: () => {
       return document.title;
-    }
+    },
   });
   chrome.test.assertEq(1, results.length);
   chrome.test.assertEq('prerendering', results[0].result);
@@ -23,7 +23,7 @@ async function testGetTitleByDocumentId() {
     target: {tabId: tabId, documentIds: [prerenderingDocumentId]},
     func: () => {
       return document.title;
-    }
+    },
   });
   chrome.test.assertEq(1, results.length);
   chrome.test.assertEq('prerendering', results[0].result);
@@ -40,7 +40,7 @@ async function testActivationOnExecution() {
               resolve('ok');
             });
           });
-        }
+        },
       },
       results => {
         chrome.test.assertEq(1, results.length);
@@ -51,7 +51,7 @@ async function testActivationOnExecution() {
     target: {tabId: tabId},
     func: () => {
       window.location.href = './prerendering.html';
-    }
+    },
   });
 }
 
@@ -68,7 +68,7 @@ async function testEventRouter() {
 
             chrome.storage.local.set({test: 1}).then(() => {});
           });
-        }
+        },
       },
       results => {
         chrome.test.assertEq(1, results.length);

@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 async function registerScript() {
-  const script =
-      {
-        id: 'script',
-        matches: ['http://example.com/*'],
-        runAt: 'document_end',
-        js: ['script.js']
-      };
+  const script = {
+    id: 'script',
+    matches: ['http://example.com/*'],
+    runAt: 'document_end',
+    js: ['script.js'],
+  };
   await chrome.scripting.registerContentScripts([script]);
   chrome.test.succeed();
 }

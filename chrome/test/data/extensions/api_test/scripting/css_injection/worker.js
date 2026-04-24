@@ -161,7 +161,9 @@ chrome.test.runTests([
 
     const fontSizes = await chrome.scripting.executeScript({
       target: target,
-      func: function() { return getComputedStyle(document.body).fontSize; },
+      func: function() {
+        return getComputedStyle(document.body).fontSize;
+      },
     });
 
     chrome.test.assertEq(1, fontSizes.length);
@@ -186,7 +188,7 @@ chrome.test.runTests([
   async function noSuchFile() {
     const noSuchFile = 'no_such_file.css';
     const query = {url: 'http://example.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
         chrome.scripting.insertCSS({
           target: {
@@ -200,7 +202,7 @@ chrome.test.runTests([
 
   async function noFilesSpecified() {
     const query = {url: 'http://example.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
         chrome.scripting.insertCSS({
           target: {
@@ -214,7 +216,7 @@ chrome.test.runTests([
 
   async function duplicateFilesSpecified() {
     const query = {url: 'http://example.com/*'};
-    let tab = await getSingleTab(query);
+    const tab = await getSingleTab(query);
     await chrome.test.assertPromiseRejects(
         chrome.scripting.insertCSS({
           target: {

@@ -21,7 +21,7 @@ chrome.test.runTests([
       js: ['inject_element.js'],
       css: ['nothing.css'],
       runAt: 'document_end',
-      allFrames: true
+      allFrames: true,
     }];
 
     const updatedScripts = [{
@@ -30,7 +30,7 @@ chrome.test.runTests([
       excludeMatches: ['*://def.com/*'],
       js: ['inject_element_2.js'],
       allFrames: false,
-      persistAcrossSessions: false
+      persistAcrossSessions: false,
     }];
 
     await chrome.scripting.registerContentScripts(scripts);
@@ -58,7 +58,7 @@ chrome.test.runTests([
       allFrames: false,
       matchOriginAsFallback: false,
       persistAcrossSessions: false,
-      world: chrome.scripting.ExecutionWorld.ISOLATED
+      world: chrome.scripting.ExecutionWorld.ISOLATED,
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -102,7 +102,7 @@ chrome.test.runTests([
       allFrames: false,
       matchOriginAsFallback: false,
       persistAcrossSessions: true,
-      world: chrome.scripting.ExecutionWorld.ISOLATED
+      world: chrome.scripting.ExecutionWorld.ISOLATED,
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -138,7 +138,7 @@ chrome.test.runTests([
         matches: ['*://abc.com/*'],
         js: ['inject_element_2.js'],
         runAt: 'document_end',
-      }
+      },
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -153,7 +153,7 @@ chrome.test.runTests([
       allFrames: false,
       matchOriginAsFallback: false,
       persistAcrossSessions: true,
-      world: chrome.scripting.ExecutionWorld.ISOLATED
+      world: chrome.scripting.ExecutionWorld.ISOLATED,
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -194,7 +194,7 @@ chrome.test.runTests([
       allFrames: false,
       matchOriginAsFallback: false,
       persistAcrossSessions: true,
-      world: chrome.scripting.ExecutionWorld.ISOLATED
+      world: chrome.scripting.ExecutionWorld.ISOLATED,
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -215,15 +215,15 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         js: ['inject_element.js'],
         runAt: 'document_end',
-        allFrames: true
+        allFrames: true,
       },
       {
         id: 'script_2',
         matches: ['*://*/*'],
         js: ['inject_element_2.js'],
         runAt: 'document_end',
-        allFrames: true
-      }
+        allFrames: true,
+      },
     ];
 
     // First, register 2 scripts that each inject a different element into the
@@ -242,7 +242,7 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       js: ['inject_element_3.js'],
       allFrames: false,
-      persistAcrossSessions: false
+      persistAcrossSessions: false,
     }];
 
     const updatedScript2 = [{
@@ -250,12 +250,12 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       js: ['inject_element_4.js'],
       allFrames: true,
-      persistAcrossSessions: false
+      persistAcrossSessions: false,
     }];
 
     await Promise.allSettled([
       chrome.scripting.updateContentScripts(updatedScript1),
-      chrome.scripting.updateContentScripts(updatedScript2)
+      chrome.scripting.updateContentScripts(updatedScript2),
     ]);
 
     tab = await navigateToRequestedUrl();

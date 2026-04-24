@@ -47,7 +47,7 @@ chrome.test.runTests([
         id: 'too_big_part2',
         matches: ['https://example.com/*'],
         js: [bigScriptFile],
-      }
+      },
     ];
 
     await chrome.test.assertPromiseRejects(

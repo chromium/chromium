@@ -76,13 +76,13 @@ chrome.test.runTests([
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
     const args = [
-        42,
-        0.07,
-        'foo',
-        true,
-        [1, 2, 3],
-        { key: 'value' },
-        null,
+      42,
+      0.07,
+      'foo',
+      true,
+      [1, 2, 3],
+      {key: 'value'},
+      null,
     ];
     const results = await chrome.scripting.executeScript({
       target: {
@@ -100,7 +100,7 @@ chrome.test.runTests([
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
     const args = [
-        { key: 'value', nullKey: null },
+      {key: 'value', nullKey: null},
     ];
     const results = await chrome.scripting.executeScript({
       target: {
@@ -113,7 +113,7 @@ chrome.test.runTests([
     // Currently, null values in objects are not preserved. We should fix this,
     // but the IDL extension schema currently does not support the preserveNull
     // attribute, and adding it in for arrays is non-trivial.
-    chrome.test.assertEq([{ key: 'value' }], results[0].result);
+    chrome.test.assertEq([{key: 'value'}], results[0].result);
     chrome.test.succeed();
   },
 
@@ -179,7 +179,9 @@ chrome.test.runTests([
     // When `world` is unspecified, it defaults to an isolated world.
     await chrome.scripting.executeScript({
       target: target,
-      func: () => { window.isolatedWorldFlag = 'from isolated world' },
+      func: () => {
+        window.isolatedWorldFlag = 'from isolated world';
+      },
     });
     let results = await chrome.scripting.executeScript({
       target: target,
@@ -211,7 +213,9 @@ chrome.test.runTests([
     // Set a flag in the isolated world.
     await chrome.scripting.executeScript({
       target: target,
-      func: () => { window.isolatedWorldFlag = 'from isolated world' },
+      func: () => {
+        window.isolatedWorldFlag = 'from isolated world';
+      },
     });
 
     // The script executing in the main world should not see the flag from the
@@ -314,8 +318,8 @@ chrome.test.runTests([
     // and that the order was preserved (since the first sets the title used
     // in the second).
     chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(NEW_TITLE_FROM_FILE + ' From Second Script',
-                         results[0].result);
+    chrome.test.assertEq(
+        NEW_TITLE_FROM_FILE + ' From Second Script', results[0].result);
     chrome.test.succeed();
   },
 
@@ -331,7 +335,7 @@ chrome.test.runTests([
           function: injectedFunction,
         }),
         `Error: Both 'func' and 'function' were specified. ` +
-        `Only 'func' should be used.`);
+            `Only 'func' should be used.`);
     chrome.test.succeed();
   },
 
@@ -424,14 +428,12 @@ chrome.test.runTests([
   async function unserializableCurriedArguments() {
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
-    const expectedError =
-        'Error in invocation of scripting.executeScript(' +
+    const expectedError = 'Error in invocation of scripting.executeScript(' +
         'scripting.ScriptInjection injection, optional function callback): ' +
         'Error at parameter \'injection\': Error at property \'args\': ' +
         'Error at index 0: Value is unserializable.';
     chrome.test.assertThrows(
-        chrome.scripting.executeScript,
-        [{
+        chrome.scripting.executeScript, [{
           target: {
             tabId: tab.id,
           },
@@ -445,8 +447,7 @@ chrome.test.runTests([
   async function argsPassedWithFiles() {
     const query = {url: 'http://example.com/*'};
     const tab = await getSingleTab(query);
-    const expectedError =
-    await chrome.test.assertPromiseRejects(
+    const expectedError = await chrome.test.assertPromiseRejects(
         chrome.scripting.executeScript({
           target: {
             tabId: tab.id,
@@ -456,5 +457,5 @@ chrome.test.runTests([
         }),
         `Error: 'args' may not be used with file injections.`);
     chrome.test.succeed();
-  }
+  },
 ]);

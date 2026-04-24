@@ -100,12 +100,12 @@ chrome.test.runTests([
     const tab = await getSingleTab(query);
     const frames = await getFramesInTab(tab.id);
     const frameIds = [
-        findFrameIdWithHostname(frames, 'a.com'),
-        findFrameIdWithHostname(frames, 'b.com'),
+      findFrameIdWithHostname(frames, 'a.com'),
+      findFrameIdWithHostname(frames, 'b.com'),
     ];
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'a.com'),
-        findDocumentIdWithHostname(frames, 'b.com'),
+      findDocumentIdWithHostname(frames, 'a.com'),
+      findDocumentIdWithHostname(frames, 'b.com'),
     ];
 
     let results = await chrome.scripting.executeScript({
@@ -124,8 +124,7 @@ chrome.test.runTests([
     });
     chrome.test.assertEq(['a.com', 'b.com'], resultUrls.sort());
     chrome.test.assertEq(
-        frameIds,
-        results.map(result => result.frameId).sort());
+        frameIds, results.map(result => result.frameId).sort());
 
     // Now try the via documentId.
     results = await chrome.scripting.executeScript({
@@ -144,8 +143,7 @@ chrome.test.runTests([
     });
     chrome.test.assertEq(['a.com', 'b.com'], resultUrls.sort());
     chrome.test.assertEq(
-        documentIds.sort(),
-        results.map(result => result.documentId).sort());
+        documentIds.sort(), results.map(result => result.documentId).sort());
 
     chrome.test.succeed();
   },
@@ -196,12 +194,12 @@ chrome.test.runTests([
       return (new URL(frame.url)).hostname == 'c.com';
     });
     const frameIds = [
-        findFrameIdWithHostname(frames, 'b.com'),
-        findFrameIdWithHostname(frames, 'c.com'),
+      findFrameIdWithHostname(frames, 'b.com'),
+      findFrameIdWithHostname(frames, 'c.com'),
     ];
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'b.com'),
-        findDocumentIdWithHostname(frames, 'c.com'),
+      findDocumentIdWithHostname(frames, 'b.com'),
+      findDocumentIdWithHostname(frames, 'c.com'),
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -235,12 +233,12 @@ chrome.test.runTests([
     const nonExistentFrameId = 99999;
     const nonExistentDocumentId = '0123456789ABCDEF0123456789ABCDEF';
     const frameIds = [
-        findFrameIdWithHostname(frames, 'b.com'),
-        nonExistentFrameId,
+      findFrameIdWithHostname(frames, 'b.com'),
+      nonExistentFrameId,
     ];
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'b.com'),
-        nonExistentDocumentId,
+      findDocumentIdWithHostname(frames, 'b.com'),
+      nonExistentDocumentId,
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -274,10 +272,10 @@ chrome.test.runTests([
     const tab = await getSingleTab(query);
     const frames = await getFramesInTab(tab.id);
     const frameIds = [
-        findFrameIdWithHostname(frames, 'b.com'),
+      findFrameIdWithHostname(frames, 'b.com'),
     ];
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'b.com'),
+      findDocumentIdWithHostname(frames, 'b.com'),
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -313,10 +311,10 @@ chrome.test.runTests([
     const tab = await getSingleTab(query);
     const frames = await getFramesInTab(tab.id);
     const frameIds = [
-        findFrameIdWithHostname(frames, 'b.com'),
+      findFrameIdWithHostname(frames, 'b.com'),
     ];
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'b.com'),
+      findDocumentIdWithHostname(frames, 'b.com'),
     ];
 
     await chrome.test.assertPromiseRejects(
@@ -324,7 +322,7 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
             documentIds: documentIds,
-            frameIds: frameIds
+            frameIds: frameIds,
           },
           func: injectedFunction,
         }),
@@ -340,14 +338,14 @@ chrome.test.runTests([
     const tab_d = await getSingleTab(query_d);
     const frames = await getFramesInTab(tab_d.id);
     const documentIds = [
-        findDocumentIdWithHostname(frames, 'b.com'),
+      findDocumentIdWithHostname(frames, 'b.com'),
     ];
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.executeScript({
           target: {
             tabId: tab_a.id,
-            documentIds: documentIds
+            documentIds: documentIds,
           },
           func: injectedFunction,
         }),

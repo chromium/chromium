@@ -16,8 +16,8 @@ chrome.test.runTests([
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['#script.js']});
 
-    chrome.test.assertEq(['hashtag_script'],
-        await getInjectedElementIds(tab.id));
+    chrome.test.assertEq(
+        ['hashtag_script'], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },
@@ -32,8 +32,8 @@ chrome.test.runTests([
     await chrome.scripting.executeScript(
         {target: {tabId: tab.id}, files: ['%23script.js']});
 
-    chrome.test.assertEq(['hashtag_script_escaped'],
-        await getInjectedElementIds(tab.id));
+    chrome.test.assertEq(
+        ['hashtag_script_escaped'], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },

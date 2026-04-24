@@ -21,14 +21,14 @@ chrome.test.runTests([
         id: 'inject_element_1',
         matches: ['*://*/*'],
         js: ['inject_element.js'],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'inject_element_2',
         matches: ['*://*/*'],
         js: ['inject_element_2.js'],
-        runAt: 'document_end'
-      }
+        runAt: 'document_end',
+      },
     ];
 
     await chrome.scripting.registerContentScripts(scripts);
@@ -65,14 +65,14 @@ chrome.test.runTests([
         id: 'contentScript1',
         matches: ['*://*/*'],
         js: ['inject_element.js'],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'contentScript2',
         matches: ['*://*/*'],
         js: ['inject_element_2.js'],
-        runAt: 'document_end'
-      }
+        runAt: 'document_end',
+      },
     ];
 
     await chrome.scripting.registerContentScripts(contentScripts);
@@ -109,14 +109,14 @@ chrome.test.runTests([
         id: 'contentScript1',
         matches: ['*://*/*'],
         js: ['inject_element.js'],
-        runAt: 'document_end'
+        runAt: 'document_end',
       },
       {
         id: 'contentScript2',
         matches: ['*://*/*'],
         js: ['inject_element_2.js'],
-        runAt: 'document_end'
-      }
+        runAt: 'document_end',
+      },
     ];
 
     await chrome.scripting.registerContentScripts(contentScripts);
@@ -163,7 +163,7 @@ chrome.test.runTests([
       id: validId,
       matches: ['*://*/*'],
       js: ['inject_element.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     await chrome.scripting.registerContentScripts(scripts);

@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 // NOTE: Using `var` because multiple scripts are injected that append divs.
-var div = document.createElement('div');
+var div = document.createElement('div');  // eslint-disable-line no-var
 div.id = 'injected_4';
 document.body.appendChild(div);

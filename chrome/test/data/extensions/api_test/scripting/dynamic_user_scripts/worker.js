@@ -17,14 +17,14 @@ chrome.test.runTests([
       id: 'contentScript',
       matches: ['*://*/*'],
       js: ['content_script.js'],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
     const userScripts = [{
       id: 'userScript',
       matches: ['*://*/*'],
       js: [{file: 'user_script.js'}],
-      runAt: 'document_end'
+      runAt: 'document_end',
     }];
 
 

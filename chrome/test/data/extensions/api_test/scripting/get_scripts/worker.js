@@ -24,8 +24,8 @@ chrome.test.runTests([
         js: ['/dynamic_1.js'],
         runAt: 'document_end',
         persistAcrossSessions: false,
-        world: chrome.scripting.ExecutionWorld.MAIN
-      }
+        world: chrome.scripting.ExecutionWorld.MAIN,
+      },
     ];
 
     // Some fields are populated with their default values from
@@ -40,7 +40,7 @@ chrome.test.runTests([
         runAt: 'document_idle',
         matchOriginAsFallback: true,
         persistAcrossSessions: true,
-        world: chrome.scripting.ExecutionWorld.ISOLATED
+        world: chrome.scripting.ExecutionWorld.ISOLATED,
       },
       {
         id: 'GRS_2',
@@ -50,8 +50,8 @@ chrome.test.runTests([
         runAt: 'document_end',
         matchOriginAsFallback: false,
         persistAcrossSessions: false,
-        world: chrome.scripting.ExecutionWorld.MAIN
-      }
+        world: chrome.scripting.ExecutionWorld.MAIN,
+      },
     ];
 
     await chrome.scripting.registerContentScripts(scriptsToRegister);

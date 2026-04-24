@@ -34,8 +34,8 @@ async function runFirstSession() {
       matches: ['*://*/*'],
       js: ['inject_element_3.js'],
       runAt: 'document_end',
-      persistAcrossSessions: false
-    }
+      persistAcrossSessions: false,
+    },
   ];
 
   await chrome.scripting.registerContentScripts(scripts);
@@ -101,12 +101,12 @@ async function runSecondSession() {
       matches: ['*://*/*'],
       js: ['inject_element_3.js'],
       runAt: 'document_end',
-      persistAcrossSessions: false
+      persistAcrossSessions: false,
     },
     {
       id: 'new_script_not_persistent',
       matches: ['*://*/*'],
-      js: ['inject_element_4.js']
+      js: ['inject_element_4.js'],
     },
   ];
 
@@ -114,7 +114,7 @@ async function runSecondSession() {
 
   const updates = [
     {id: 'new_script_persistent', persistAcrossSessions: true},
-    {id: 'new_script_not_persistent', persistAcrossSessions: false}
+    {id: 'new_script_not_persistent', persistAcrossSessions: false},
   ];
 
   await chrome.scripting.updateContentScripts(updates);
@@ -154,13 +154,14 @@ async function runThirdSession() {
 // every browser start, so we call chrome.test.sendMessage
 chrome.runtime.onStartup.addListener(async () => {});
 
-chrome.test.sendMessage('ready',testName => {
-  if (testName === 'PRE_PRE_PersistentDynamicContentScripts')
+chrome.test.sendMessage('ready', testName => {
+  if (testName === 'PRE_PRE_PersistentDynamicContentScripts') {
     runFirstSession();
-  else if (testName === 'PRE_PersistentDynamicContentScripts')
+  } else if (testName === 'PRE_PersistentDynamicContentScripts') {
     runSecondSession();
-  else if (testName === 'PersistentDynamicContentScripts')
+  } else if (testName === 'PersistentDynamicContentScripts') {
     runThirdSession();
-  else
+  } else {
     chrome.test.fail();
+  }
 });

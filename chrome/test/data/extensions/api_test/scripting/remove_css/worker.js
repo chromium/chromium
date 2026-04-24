@@ -31,12 +31,13 @@ const removeCSS = chrome.scripting.removeCSS;
 async function getFrameIds(tabId) {
   // TODO(devlin: Promise-ify webNavigation.
   const frames = await new Promise(resolve => {
-      chrome.webNavigation.getAllFrames({tabId}, resolve);
+    chrome.webNavigation.getAllFrames({tabId}, resolve);
   });
 
   // Sort frames by frameId.
-  const sortedFrames = frames.sort(
-      (a, b) => a.frameId < b.frameId ? -1 : a.frameId > b.frameId ? 1 : 0);
+  const sortedFrames = frames.sort((a, b) => {
+    return a.frameId < b.frameId ? -1 : a.frameId > b.frameId ? 1 : 0;
+  });
 
   // Validate the frames - there should be 5 total, and the main frame should
   // be first.
@@ -60,7 +61,7 @@ async function getCurrentColor(tabId, frameId) {
       return style.getPropertyValue('color');
     },
   });
-  chrome.test.assertEq(1, scriptResults.length)
+  chrome.test.assertEq(1, scriptResults.length);
   return scriptResults[0].result;
 }
 
@@ -77,8 +78,11 @@ let frameIds = [];
 // Each frame is a child of the frame preceding it. Frames 0 through 3 are
 // <iframe src="..."> while frame 4 is <iframe srcdoc="..."> (about:srcdoc).
 const expectedColorsForFrames = [
-  ORIGINAL_COLOR, ORIGINAL_COLOR, ORIGINAL_COLOR, ORIGINAL_COLOR,
-  ORIGINAL_COLOR
+  ORIGINAL_COLOR,
+  ORIGINAL_COLOR,
+  ORIGINAL_COLOR,
+  ORIGINAL_COLOR,
+  ORIGINAL_COLOR,
 ];
 
 // Updates the expected state in `expectedColorsForFrames`. Undefined values in
@@ -108,12 +112,13 @@ async function createTab(url) {
     // Wait for `url` to finish loading.
     chrome.tabs.onUpdated.addListener(
         async function listener(updatedTabId, {status}) {
-      if (status != 'complete')
-        return;
-      chrome.tabs.onUpdated.removeListener(listener);
+          if (status != 'complete') {
+            return;
+          }
+          chrome.tabs.onUpdated.removeListener(listener);
 
-      resolve(updatedTabId);
-    });
+          resolve(updatedTabId);
+        });
 
     chrome.tabs.create({url});
   });
@@ -134,9 +139,13 @@ chrome.test.runTests([
   async function insertCSSShouldSucceed() {
     // Insert CSS into every frame.
     await insertCSS({target: {tabId, allFrames: true}, css: CSS});
-    updateExpectedState(
-        [INJECTED_COLOR, INJECTED_COLOR, INJECTED_COLOR,
-         INJECTED_COLOR, INJECTED_COLOR]);
+    updateExpectedState([
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
@@ -144,7 +153,13 @@ chrome.test.runTests([
     // When no frame ID is specified, the CSS is removed from the top frame
     // Others should be unaffected (and keep the injected color).
     await removeCSS({target: {tabId}, css: CSS});
-    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
@@ -169,9 +184,14 @@ chrome.test.runTests([
   async function removeCSSWithFrameIdShouldSucceed() {
     // When a frame ID is specified, the CSS is removed only from the given
     // frame.
-    await removeCSS(
-        {target: {tabId, frameIds: [frameIds[1]]}, css: CSS});
-    updateExpectedState([ , ORIGINAL_COLOR, , , , ]);
+    await removeCSS({target: {tabId, frameIds: [frameIds[1]]}, css: CSS});
+    updateExpectedState([
+      ,
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
@@ -179,31 +199,46 @@ chrome.test.runTests([
     // When "allFrames" is set to true, the CSS is removed from all
     // frames.
     await removeCSS({target: {tabId, allFrames: true}, css: CSS});
-    updateExpectedState([ORIGINAL_COLOR, ORIGINAL_COLOR, ORIGINAL_COLOR,
-                         ORIGINAL_COLOR, ORIGINAL_COLOR]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ORIGINAL_COLOR,
+      ORIGINAL_COLOR,
+      ORIGINAL_COLOR,
+      ORIGINAL_COLOR,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
   async function insertCSSWithFileShouldSucceed() {
     // Insert some CSS using a file (to then be removed).
     await insertCSS({target: {tabId, allFrames: true}, files: [FILE]});
-    updateExpectedState([INJECTED_COLOR, INJECTED_COLOR, INJECTED_COLOR,
-                         INJECTED_COLOR, INJECTED_COLOR]);
+    updateExpectedState([
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+      INJECTED_COLOR,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
   async function removeCSSWithFileShouldSucceed() {
     // When no frame ID is specified, the CSS is removed from the top frame.
     await removeCSS({target: {tabId}, files: [FILE]});
-    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
   async function removeCSSWithDifferentFileShouldDoNothing() {
     // The CSS is not removed when passing a different file (even though the
     // contents of /file.css and /other.css are identical).
-    await removeCSS(
-        {target: {tabId, allFrames: true}, files: ['/other.css']});
+    await removeCSS({target: {tabId, allFrames: true}, files: ['/other.css']});
     await checkColors();
     chrome.test.succeed();
   },
@@ -211,12 +246,24 @@ chrome.test.runTests([
     // Insert two style sheets. The second should "win", since it's latest
     // injected.
     await insertCSS({target: {tabId}, files: [FILE, FILE2]});
-    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR2,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     // Remove both previously-injected files.
     await removeCSS({target: {tabId}, files: [FILE, FILE2]});
-    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     chrome.test.succeed();
@@ -225,17 +272,35 @@ chrome.test.runTests([
     // Insert two style sheets. The second should "win", since it's latest
     // injected.
     await insertCSS({target: {tabId}, files: [FILE, FILE2]});
-    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR2,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     // Remove only one of the previously-injected files.
     await removeCSS({target: {tabId}, files: [FILE2]});
-    updateExpectedState([INJECTED_COLOR, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     // Now, remove the second.
     await removeCSS({target: {tabId}, files: [FILE]});
-    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     chrome.test.succeed();
@@ -244,24 +309,48 @@ chrome.test.runTests([
     // Start by inserting the second CSS (which is a different color) into the
     // top frame.
     await insertCSS({target: {tabId}, css: CSS2});
-    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR2,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     // Then, re-insert the first CSS. The top frame should be updated.
     await insertCSS({target: {tabId}, css: CSS});
-    updateExpectedState([INJECTED_COLOR, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
   async function removeCSSWithDuplicateCodeShouldSucceed() {
     // Remove the first CSS. The second-inserted CSS should take effect again.
     await removeCSS({target: {tabId}, css: CSS});
-    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    updateExpectedState([
+      INJECTED_COLOR2,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
 
     // Remove the second CSS. The color should go back to the original color of
     // the frame.
     await removeCSS({target: {tabId}, css: CSS2});
-    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    updateExpectedState([
+      ORIGINAL_COLOR,
+      ,
+      ,
+      ,
+      ,
+    ]);
     await checkColors();
     chrome.test.succeed();
   },
