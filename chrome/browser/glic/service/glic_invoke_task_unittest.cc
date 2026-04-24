@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -184,6 +186,32 @@ TEST(GlicInvokeTaskTest, NestedParallelInSequential) {
   EXPECT_CALL(start_cb2a, Run()).Times(1);
   EXPECT_CALL(done_cb, Run()).Times(1);
   task1a_ptr->Complete();
+}
+
+TEST(GlicInvokeTaskTest, PostCallbackTask) {
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+
+  base::MockCallback<base::OnceClosure> done_cb;
+  base::MockCallback<base::OnceClosure> mock_callback;
+
+  PostCallbackTask task(base::BindOnce(
+      [](base::OnceClosure mock_cb, base::OnceClosure quit_cb) {
+        std::move(mock_cb).Run();
+        std::move(quit_cb).Run();
+      },
+      mock_callback.Get(), run_loop.QuitClosure()));
+
+  EXPECT_CALL(mock_callback, Run()).Times(0);
+  EXPECT_CALL(done_cb, Run()).Times(1);
+
+  task.Start(done_cb.Get());
+
+  // The callback should not have run yet because it was posted.
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback, Run()).Times(1);
+  run_loop.Run();
 }
 
 }  // namespace glic

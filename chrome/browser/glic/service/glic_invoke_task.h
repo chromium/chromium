@@ -132,6 +132,17 @@ class NotifyIsInvokingTask : public GlicInvokeTask {
   bool is_invoking_;
 };
 
+// Task that posts a callback asynchronously.
+class PostCallbackTask : public GlicInvokeTask {
+ public:
+  explicit PostCallbackTask(base::OnceClosure callback);
+  ~PostCallbackTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+ private:
+  base::OnceClosure callback_;
+};
+
 // Task that waits for the layout to stabilize after showing the panel.
 class StabilizationTask : public GlicInvokeTask,
                           public content::WebContentsObserver {

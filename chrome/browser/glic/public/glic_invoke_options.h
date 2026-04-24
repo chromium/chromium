@@ -22,6 +22,7 @@ class TabInterface;
 class BrowserWindowInterface;
 
 namespace glic {
+class GlicInstance;
 
 // Use ongoing conversation for the tab if it exists. Otherwise, fall back
 // to the default behavior for opening the UI (typically a new conversation).
@@ -192,6 +193,10 @@ struct GlicInvokeOptions {
 
   // Browser-specific callback for when the invocation successfully completes.
   base::OnceClosure on_success;
+
+  // Browser-specific callback for when the web client connects (i.e., the
+  // initialization handshake with the web client is complete).
+  base::OnceCallback<void(GlicInstance*)> on_client_connected;
 
   // Browser-specific callback for when the invocation fails.
   base::OnceCallback<void(GlicInvokeError)> on_error;

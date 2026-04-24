@@ -266,8 +266,13 @@ class GlicInstanceImpl : public GlicInstance,
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
+
   GlicActorTaskManager* GetActorTaskManager() {
     return actor_task_manager_.get();
+  }
+
+  base::WeakPtr<GlicInstanceImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   // ActorTaskDelegate:

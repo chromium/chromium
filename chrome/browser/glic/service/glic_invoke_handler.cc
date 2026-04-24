@@ -165,6 +165,16 @@ void GlicInvokeHandler::Invoke() {
       std::make_unique<ShowInstanceTask>(&*instance_, show_options));
   tasks.push_back(
       std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
+  if (options_.on_client_connected) {
+    tasks.push_back(std::make_unique<PostCallbackTask>(base::BindOnce(
+        [](base::WeakPtr<GlicInstanceImpl> instance,
+           base::OnceCallback<void(GlicInstance*)> cb) {
+          if (instance) {
+            std::move(cb).Run(instance.get());
+          }
+        },
+        instance_->GetWeakPtr(), std::move(options_.on_client_connected))));
+  }
   // TODO(b/505086089): Handle client disconnects.
   tasks.push_back(
       std::make_unique<NotifyIsInvokingTask>(&instance_->host(), true));

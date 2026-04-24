@@ -1182,6 +1182,40 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeCallsOnClientConnected) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<GlicInstance*> connected_future;
+
+  GlicInvokeOptions options(glic::Target(tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+  options.on_client_connected = connected_future.GetCallback();
+
+  // Verify there is no connected web client before starting.
+  auto* instance_before = coordinator().GetInstanceForTab(tab);
+  EXPECT_TRUE(!instance_before ||
+              !instance_before->host().IsWebClientConnected());
+
+  // Call invoke. This will create the instance and wait for WebClientSet.
+  coordinator().Invoke(std::move(options));
+
+  // The connected callback should be called after observing WebClientSet.
+  EXPECT_TRUE(connected_future.Wait());
+
+  // Verify that there is a connected web client when our callback fires.
+  GlicInstance* instance = connected_future.Get();
+  ASSERT_TRUE(instance);
+  EXPECT_TRUE(instance->host().IsWebClientConnected());
+
+  // Verify that the passed instance is the correct one.
+  EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab));
+
+  // The success callback should be called after full completion.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWithWaitForPanelOpen) {
   // Create a tab with a loaded page to measure width.
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());

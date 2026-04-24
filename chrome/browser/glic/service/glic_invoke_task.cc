@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -129,6 +130,19 @@ NotifyIsInvokingTask::~NotifyIsInvokingTask() = default;
 
 void NotifyIsInvokingTask::Start(base::OnceClosure done_callback) {
   host_->NotifyIsInvoking(is_invoking_);
+  std::move(done_callback).Run();
+}
+
+PostCallbackTask::PostCallbackTask(base::OnceClosure callback)
+    : callback_(std::move(callback)) {}
+
+PostCallbackTask::~PostCallbackTask() = default;
+
+void PostCallbackTask::Start(base::OnceClosure done_callback) {
+  if (callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback_));
+  }
   std::move(done_callback).Run();
 }
 
