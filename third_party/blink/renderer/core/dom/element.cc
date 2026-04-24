@@ -7595,6 +7595,7 @@ bool Element::AttachDeclarativeShadowRoot(
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       waiting_for_scoped_registry) {
     shadow_root.SetKeepCustomElementRegistryNull(true);
+    GetDocument().SetScopedCustomElementRegistryUsed();
   }
   // 10.8.NEW. Process shadowrootadoptedstylesheets attribute.
   if (RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(

@@ -1274,11 +1274,23 @@ Element* HTMLConstructionSite::CreateElement(
     // intended parent is a template element, which means it will create a
     // document fragment, the custom element registry should be null.
     if (open_elements_.StackDepth() > 1) {
-      if ((IsA<HTMLTemplateElement>(CurrentNode()) && is_parsing_fragment_) ||
-          document.IsTemplateDocument()) {
+      if (auto* tmpl =
+              DynamicTo<HTMLTemplateElement>(CurrentNode())) {
+        if (tmpl->IsShadowRootModeTemplate()) {
+          // For declarative shadow root templates, the insertion target is the
+          // shadow root itself. Use the shadow root's registry so elements get
+          // the correct tree scope registry (null for scoped-waiting, global
+          // for non-scoped).
+          registry =
+              To<ShadowRoot>(tmpl->InsertionTarget())->customElementRegistry();
+        } else {
+          // Regular <template> element: content goes into a template content
+          // document which has no browsing context, so no registry can exist.
+          registry = nullptr;
+        }
+      } else if (document.IsTemplateDocument()) {
         // Template content documents have no browsing context, so no registry
-        // can exist. This covers both direct children of <template> and deeper
-        // descendants inside template content.
+        // can exist. This covers deeper descendants inside template content.
         registry = nullptr;
       } else if (is_parsing_fragment_ ||
                  document.ScopedCustomElementRegistryUsed() ||

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] An element's null customElementRegistry should not mutate after removal from a declarative shadow root with shadowrootcustomelementregistry.
+  assert_equals: customElementRegistry should be null while in null-registry shadow root expected (object) null but got (undefined) undefined
+Harness: the test ran to completion.
