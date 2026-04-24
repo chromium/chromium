@@ -423,6 +423,8 @@ if (build_with_model_execution) {
   static_library("manifest_broker_test_support") {
     testonly = true
     sources = [
+      "model_execution/manifest_broker/test/fake_manifest_broker.cc",
+      "model_execution/manifest_broker/test/fake_manifest_broker.h",
       "model_execution/manifest_broker/test/scenario_builder.cc",
       "model_execution/manifest_broker/test/scenario_builder.h",
       "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
