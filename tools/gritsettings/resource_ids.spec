@@ -378,6 +378,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3640],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/slow/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [3650],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/supervision/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [3660],

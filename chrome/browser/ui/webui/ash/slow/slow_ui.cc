@@ -13,8 +13,9 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/slow_resources.h"
+#include "chrome/grit/slow_resources_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -50,9 +51,8 @@ void CreateAndAddSlowUIHTMLSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddResourcePath("slow.js", IDR_SLOW_JS);
-  source->AddResourcePath("slow.css", IDR_SLOW_CSS);
-  source->SetDefaultResource(IDR_SLOW_HTML);
+  source->AddResourcePaths(kSlowResources);
+  source->SetDefaultResource(IDR_SLOW_SLOW_HTML);
 }
 
 // The handler for Javascript messages related to the "slow" view.

@@ -16,6 +16,7 @@ static_library("slow") {
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/slow:resources",
     "//chrome/common",
     "//components/feedback/content",
     "//content/public/browser",

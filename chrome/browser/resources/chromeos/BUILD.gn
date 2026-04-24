@@ -46,6 +46,7 @@ group("resources") {
     "sensor_info:resources",
     "set_time_dialog:resources",
     "skyvault:resources",
+    "slow:resources",
     "supervision:resources",
     "sys_internals:resources",
     "vm:resources",
@@ -94,10 +95,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_local") {
-  deps = [
-    ":power",
-    ":slow",
-  ]
+  deps = [ ":power" ]
 }
 
 js_library("power") {
@@ -106,12 +104,4 @@ js_library("power") {
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:util",
   ]
-}
-
-js_library("slow") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:util",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }
