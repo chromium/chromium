@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `toml_edit-0.25.8+spec-1.1.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "toml_edit"
+version = "0.25.8+spec-1.1.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"debug" = []
+"default" = []
+"display" = []
+"parse" = []
+"serde" = []
+"unbounded" = []
+
+[dependencies.indexmap]
+version = "^2.13.0"
+default_features = false
+[dependencies.toml_datetime]
+version = "^1.1.0"
+default_features = false
+[dependencies.toml_parser]
+version = "^1.1.0"
+default_features = false
+[dependencies.winnow]
+version = "^1.0.0"
+default_features = false

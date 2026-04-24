@@ -1,0 +1,11 @@
+Name: num_enum_derive
+URL: https://crates.io/crates/num_enum_derive
+Version: 0.7.5
+Revision: 984e150eb0753cfe17ac514e714d443db4aeea4a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/num_enum_derive-v0_7/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Internal implementation details for ::num_enum (Procedural macros to make inter-operation between primitives and enums easier)
