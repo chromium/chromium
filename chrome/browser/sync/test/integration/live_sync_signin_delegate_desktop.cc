@@ -76,6 +76,11 @@ bool LiveSyncSigninDelegateDesktop::ConfirmSync() {
     LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";
     return false;
   }
+  // OneClickSigninSyncStarter observer is created with a real user sign in.
+  // It is deleted on certain conditions which are not satisfied by our tests,
+  // and this causes the SigninTracker observer to stay hanging at shutdown.
+  // Calling LoginUIService::SyncConfirmationUIClosed forces the observer to
+  // be removed. http://crbug.com/40416788
   LoginUIServiceFactory::GetForProfile(profile_.get())
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   return true;

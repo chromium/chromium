@@ -134,8 +134,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/trusted_vault/command_line_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -856,21 +854,6 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
                          /*enable_history_sync_in_transport_mode=*/true)) {
     return false;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (server_type_ == EXTERNAL_LIVE_SERVER) {
-    // OneClickSigninSyncStarter observer is created with a real user sign in.
-    // It is deleted on certain conditions which are not satisfied by our tests,
-    // and this causes the SigninTracker observer to stay hanging at shutdown.
-    // Calling LoginUIService::SyncConfirmationUIClosed forces the observer to
-    // be removed. http://crbug.com/40416788
-    for (int i = 0; i < num_clients_; ++i) {
-      LoginUIServiceFactory::GetForProfile(GetProfile(i))
-          ->SyncConfirmationUIClosed(
-              LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    }
-  }
-#endif
 
   DLOG(INFO) << "SyncTest::SetupSync() completed.";
   return true;
