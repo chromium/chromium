@@ -100,6 +100,15 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                  float sheight,
                                  GPUImageCopyTextureTagged* destination,
                                  ExceptionState& exception_state);
+  void copyElementImageToTexture(const V8UnionElementOrElementImage* source,
+                                 float sx,
+                                 float sy,
+                                 float swidth,
+                                 float sheight,
+                                 uint32_t width,
+                                 uint32_t height,
+                                 GPUImageCopyTextureTagged* destination,
+                                 ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
 
  private:

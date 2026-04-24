@@ -55,6 +55,12 @@
     </div>
   </canvas>
 
+  <canvas layoutsubtree>
+    <div class="draw-element-wrapper outline" outset="10" xscale="2" yscale="0.5">
+      <color-grid></color-grid>
+    </div>
+  </canvas>
+
 <script type="module">
 import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
@@ -65,6 +71,12 @@ import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal
     await new Promise(setTimeout);
     const target = cvs.firstElementChild;
     let args = [];
+
+    let xscale, yscale;
+    if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+      xscale = Number.parseFloat(target.getAttribute("xscale"));
+      yscale = Number.parseFloat(target.getAttribute("yscale"));
+    }
     if (target.hasAttribute("outset")) {
       const outset = Number.parseFloat(target.getAttribute("outset"));
       const targetStyle = getComputedStyle(target);
@@ -75,8 +87,14 @@ import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal
       const swidth = targetWidth + 2*outset;
       const sheight = targetHeight + 2*outset;
       args = [sx, sy, swidth, sheight];
-    } else {
-      args = [];
+      if (xscale !== undefined && yscale !== undefined) {
+        const destWidth = swidth * xscale * (cvs.width / cvs.clientWidth);
+        const destHeight = sheight * yscale * (cvs.height / cvs.clientHeight);
+        args = args.concat([destWidth, destHeight]);
+      }
+    } else if (xscale !== undefined && yscale !== undefined) {
+      const [destWidth, destHeight] = computeScaledDestinationSize(cvs, target, xscale, yscale);
+      args = [destWidth, destHeight];
     }
 
     const offscreen = cvs.transferControlToOffscreen();

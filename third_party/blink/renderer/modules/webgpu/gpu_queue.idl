@@ -53,5 +53,11 @@
         (Element or ElementImage) source,
         float sx, float sy, float swidth, float sheight,
         GPUImageCopyTextureTagged destination);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] void copyElementImageToTexture(
+        (Element or ElementImage) source,
+        float sx, float sy, float swidth, float sheight,
+        GPUIntegerCoordinate width,
+        GPUIntegerCoordinate height,
+        GPUImageCopyTextureTagged destination);
 };
 GPUQueue includes GPUObjectBase;

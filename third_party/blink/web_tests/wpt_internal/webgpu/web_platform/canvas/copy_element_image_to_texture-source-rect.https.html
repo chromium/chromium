@@ -55,8 +55,13 @@
     </div>
   </canvas>
 
+  <canvas layoutsubtree>
+    <div class="draw-element-wrapper outline" outset="10" xscale="2" yscale="0.5">
+      <color-grid></color-grid>
+    </div>
+  </canvas>
+
 <script type="module">
-console.log("Hello, world!");
 import { resizeToPixelGrid, copyElementImageToWebGPUCanvas } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
 const adapter = await navigator.gpu.requestAdapter();
@@ -73,19 +78,24 @@ Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
     alphaMode: "premultiplied",
   });
   const target = cvs.firstElementChild;
-  let sx, sy, swidth, sheight;
+  let xscale, yscale, left, top, width, height;
+  if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+    xscale = Number.parseFloat(target.getAttribute("xscale"));
+    yscale = Number.parseFloat(target.getAttribute("yscale"));
+  }
   if (target.hasAttribute("outset")) {
     const outset = Number.parseFloat(target.getAttribute("outset"));
     const targetStyle = getComputedStyle(target);
     const targetWidth = Number.parseFloat(targetStyle.width);
     const targetHeight = Number.parseFloat(targetStyle.height);
-    copyElementImageToWebGPUCanvas(
-      queue, ctx, target, undefined, undefined,
-      -outset, -outset, targetWidth + 2*outset, targetHeight + 2*outset);
-  } else {
-    const outset = Number.parseFloat(target.getAttribute("outset"));
-    copyElementImageToWebGPUCanvas(queue, ctx, target);
+    left = -outset;
+    width = targetWidth + 2*outset;
+    top = -outset;
+    height = targetHeight + 2*outset;
   }
+  copyElementImageToWebGPUCanvas(
+    queue, ctx, target, xscale, yscale,
+    left, top, width, height);
 })).then(takeScreenshot);
 </script>
 </html>

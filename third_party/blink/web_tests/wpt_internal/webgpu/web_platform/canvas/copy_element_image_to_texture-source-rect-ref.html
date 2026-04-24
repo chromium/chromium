@@ -36,6 +36,10 @@
   <color-grid class="outline"></color-grid>
 </div>
 
+<div class="draw-element-wrapper outline" outset="10" xscale="2" yscale="0.5">
+  <color-grid></color-grid>
+</div>
+
 <script type="text/javascript">
 // Theoretical client rect dimensions of the canvas.
 var canvasCssWidth, canvasCssHeight;
@@ -48,7 +52,12 @@ const canvasCssHeight = 256;
 Array.from(document.querySelectorAll(".draw-element-wrapper")).forEach(wrapper => {
   // Imitate the behavior of (sx|sy) arguments to copyElementImageToTexture
   const outset = Number.parseFloat(wrapper.getAttribute("outset") || "0");
-  wrapper.style.transform = `translate(${outset}px, ${outset}px)`;
+  const xscale = Number.parseFloat(wrapper.getAttribute("xscale") || "1");
+  const yscale = Number.parseFloat(wrapper.getAttribute("yscale") || "1");
+
+  wrapper.style.transformOrigin = "top left";
+  wrapper.style.transform =
+    `translate(${outset*xscale}px, ${outset*yscale}px) scale(${xscale}, ${yscale})`;
 
   // Imitate clipping behavior of canvas
   wrapper.style.clipPath =

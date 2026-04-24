@@ -35,8 +35,8 @@ self.onmessage = async function(e) {
       const destination = { texture: ctx.getCurrentTexture() };
 
       if (args.length === 6) {
-        // [destWidth, destHeight, sx, sy, swidth, sheight]
-        queue.copyElementImageToTexture(target, args[2], args[3], args[4], args[5], args[0], args[1], destination);
+        // [sx, sy, swidth, sheight, destWidth, destHeight]
+        queue.copyElementImageToTexture(target, args[0], args[1], args[2], args[3], args[4], args[5], destination);
       } else if (args.length === 4) {
         // [sx, sy, swidth, sheight]
         queue.copyElementImageToTexture(target, args[0], args[1], args[2], args[3], destination);
