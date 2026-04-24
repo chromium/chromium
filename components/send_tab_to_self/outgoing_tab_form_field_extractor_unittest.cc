@@ -35,17 +35,23 @@ using autofill::FormStructure;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::SizeIs;
 using ::testing::Test;
 
-MATCHER_P4(MatchesFormField,
+// TODO(crbug.com/485145029): Consider introducing
+// components/send_tab_to_self/test_matchers.h since matchers are duplicated
+// across files.
+MATCHER_P6(MatchesFormField,
            id_attribute,
            name_attribute,
            form_control_type,
            value,
+           form_signature,
+           field_signature,
            "") {
   return testing::ExplainMatchResult(
              testing::Field("id_attribute",
@@ -64,6 +70,16 @@ MATCHER_P4(MatchesFormField,
              arg, result_listener) &&
          testing::ExplainMatchResult(
              testing::Field("value", &PageContext::FormField::value, value),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Field("form_signature",
+                            &PageContext::FormField::form_signature,
+                            form_signature),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Field("field_signature",
+                            &PageContext::FormField::field_signature,
+                            field_signature),
              arg, result_listener);
 }
 
@@ -115,8 +131,8 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, u"value1"),
-                          MatchesFormField(u"id2", _, _, u"value2")));
+              ElementsAre(MatchesFormField(u"id1", _, _, u"value1", _, _),
+                          MatchesFormField(u"id2", _, _, u"value2", _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
@@ -140,7 +156,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterEmptyFields) {
@@ -238,7 +254,41 @@ TEST_F(OutgoingTabFormFieldExtractorTest,
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _, _, _)));
+}
+
+TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {
+  const GURL kUrl("https://www.example.com");
+  auto form_structure =
+      std::make_unique<FormStructure>(autofill::test::GetFormData(
+          {.fields = {{.id_attribute = u"id1",
+                       .value = u"value1",
+                       .origin = url::Origin::Create(kUrl)},
+                      {.id_attribute = u"id2",
+                       .value = u"value2",
+                       .origin = url::Origin::Create(kUrl)}},
+           .url = kUrl.spec()}));
+
+  form_structure->field(0)->AddFieldModifier(autofill::FieldModifier::kUser);
+  form_structure->field(1)->AddFieldModifier(autofill::FieldModifier::kUser);
+
+  // Hardcoded values are used to detect changes in Autofill's signature
+  // calculation algorithms, to know if the protocol potentially needs to be
+  // updated.
+  const uint64_t expected_form_signature = 3892079296185715679ULL;
+  const uint32_t expected_field_sig1 = 1318412689;
+  const uint32_t expected_field_sig2 = 1318412689;
+
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
+                                           url::Origin::Create(kUrl))
+                  .fields,
+              ElementsAre(MatchesFormField(_, _, _, _, expected_form_signature,
+                                           expected_field_sig1),
+                          MatchesFormField(_, _, _, _, expected_form_signature,
+                                           expected_field_sig2)));
 }
 
 }  // namespace

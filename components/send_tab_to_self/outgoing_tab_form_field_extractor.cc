@@ -129,6 +129,8 @@ PageContext::FormFieldInfo ExtractOutgoingTabFormFieldsInternal(
         field_data.form_control_type = std::string(
             autofill::FormControlTypeToString(field->form_control_type()));
         field_data.value = field->value();
+        field_data.form_signature = form.form_signature().value();
+        field_data.field_signature = field->GetFieldSignature().value();
         form_field_info.fields.push_back(std::move(field_data));
       }
     }
