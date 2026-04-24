@@ -132,71 +132,6 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
   }
 }
 
-// Returns the input plate control for the given tool mode.
-std::optional<ComposeboxMode> ModeForToolMode(omnibox::ToolMode tool_mode) {
-  switch (tool_mode) {
-    case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      return ComposeboxMode::kCanvas;
-    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      return ComposeboxMode::kDeepSearch;
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE:
-      return ComposeboxMode::kImageGeneration;
-    case omnibox::ToolMode::TOOL_MODE_AIM:
-      return ComposeboxMode::kAIM;
-    default:
-      return std::nullopt;
-  }
-}
-
-// Returns the server strings object from a given input state.
-ComposeboxStrings* ServerStringsFromInputState(
-    const contextual_search::InputState& input_state) {
-  std::unordered_map<ComposeboxMode, ComposeboxStringBundle*> tool_mapping;
-  for (const omnibox::ToolConfig& tool_config : input_state.tool_configs) {
-    NSString* menuLabel = base::SysUTF8ToNSString(tool_config.menu_label());
-    NSString* chipLabel = base::SysUTF8ToNSString(tool_config.chip_label());
-    NSString* hintText = base::SysUTF8ToNSString(tool_config.hint_text());
-    std::optional<ComposeboxMode> mode = ModeForToolMode(tool_config.tool());
-    if (mode) {
-      tool_mapping[*mode] =
-          [[ComposeboxStringBundle alloc] initWithMenuLabel:menuLabel
-                                                  chipLabel:chipLabel
-                                                   hintText:hintText];
-    }
-  }
-
-  std::unordered_map<ComposeboxModelOption, ComposeboxStringBundle*>
-      model_mapping;
-  for (const omnibox::ModelConfig& model_config : input_state.model_configs) {
-    NSString* menuLabel = base::SysUTF8ToNSString(model_config.menu_label());
-    NSString* hintText = base::SysUTF8ToNSString(model_config.hint_text());
-    model_mapping[ModelOptionForModelMode(model_config.model())] =
-        [[ComposeboxStringBundle alloc] initWithMenuLabel:menuLabel
-                                                chipLabel:nil
-                                                 hintText:hintText];
-  }
-
-  NSString* modelSectionHeader = @"";
-  NSString* toolsSectionHeader = @"";
-
-  if (input_state.model_section_config) {
-    modelSectionHeader =
-        base::SysUTF8ToNSString(input_state.model_section_config->header());
-  }
-
-  if (input_state.tools_section_config) {
-    toolsSectionHeader =
-        base::SysUTF8ToNSString(input_state.tools_section_config->header());
-  }
-
-  return [[ComposeboxStrings alloc] initWithToolMapping:tool_mapping
-                                           modelMapping:model_mapping
-                                     modelSectionHeader:modelSectionHeader
-                                     toolsSectionHeader:toolsSectionHeader];
-}
-
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
@@ -390,8 +325,6 @@ class QueryContextualizerDelegateBridge
   // Browser agent to manage the cobrowse context.
   raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
 
-  // Cached server strings.
-  ComposeboxStrings* _strings;
   // Cached current tab favicon.
   UIImage* _currentTabFavicon;
 
@@ -472,9 +405,6 @@ class QueryContextualizerDelegateBridge
                          entrypoint:(ComposeboxEntrypoint)entrypoint {
   self = [super init];
   if (self) {
-    // Initialize with local fallback strings. These will be overwritten
-    // when server-side strings become available via the input state model.
-    _strings = [ComposeboxStrings localFallbackStrings];
     _entrypoint = entrypoint;
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
@@ -519,13 +449,16 @@ class QueryContextualizerDelegateBridge
         _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
     _stateManager = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:_webStateList
+                   modeHolder:_modeHolder
                   prefService:_prefService
         aimEligibilityService:_aimEligibilityService
               identityManager:identityManager
+           templateURLService:_templateURLService
                 sessionHandle:_contextualSearchSession.get()
                    entrypoint:_entrypoint
                   isIncognito:_isIncognito];
     _stateManager.delegate = self;
+    _stateManager.items = _items;
 
     contextual_tasks::ContextualTasksService* tasksService =
         IOSContextualTasksServiceFactory::GetForProfile(_profile);
@@ -538,7 +471,7 @@ class QueryContextualizerDelegateBridge
     }
 
     if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
-      CHECK([self isEligibleToAIM])
+      CHECK([_stateManager isEligibleToAIM])
           << "The Cobrowse entry point requires AIM eligibility. Accessing it "
              "without valid eligibility represents an illegal state.";
     }
@@ -599,57 +532,15 @@ class QueryContextualizerDelegateBridge
 }
 
 - (BOOL)canAddMoreAttachments {
-  return [self remainingAttachmentCapacity] > 0;
-}
-
-// The absolute value for the maximum number of attachments available,
-// regardless the type.
-- (NSUInteger)totalAttachmentLimit {
-  if (EnableComposeboxServerSideState()) {
-    return _stateManager.inputState.max_total_inputs;
-  }
-
-  return kAttachmentLimit;
+  return [_stateManager canAddMoreAttachments];
 }
 
 - (NSUInteger)remainingAttachmentCapacity {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  NSUInteger availableSlots = [self totalAttachmentLimit] - _items.count;
-  switch (_modeHolder.mode) {
-    case ComposeboxMode::kRegularSearch:
-    case ComposeboxMode::kCanvas:
-    case ComposeboxMode::kAIM:
-    // TODO(crbug.com/481280186): Check deep search attachment limtitation.
-    case ComposeboxMode::kDeepSearch: {
-      // For Regular search, canvas & AIM allow up to kAttachmentLimit items.
-      return availableSlots;
-    }
-    case ComposeboxMode::kImageGeneration: {
-      // For ImageGeneration, allow 1 image if no images are present, otherwise
-      // 0.
-      return _items.hasImage
-                 ? 0
-                 : MIN(availableSlots, kAttachmentLimitForImageGeneration);
-    }
-  }
+  return [_stateManager remainingAttachmentCapacity];
 }
 
 - (NSUInteger)remainingNumberOfImagesAllowed {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
-  if (EnableComposeboxServerSideState()) {
-    auto limits = _stateManager.inputState.max_inputs_by_type;
-    auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
-    if (limits.count(type)) {
-      int serverLimit = limits[type];
-      int remainingSlots = serverLimit - _items.imagesCount;
-      return MIN(remainingSlots, remainingAttachmentCapacity);
-    }
-  }
-
-  return remainingAttachmentCapacity;
+  return [_stateManager remainingNumberOfImagesAllowed];
 }
 
 #pragma mark - ComposeboxInputPlateMutator
@@ -1016,22 +907,7 @@ class QueryContextualizerDelegateBridge
 }
 
 - (NSUInteger)maxTabAttachmentCount {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
-  int tabsCount = _items.tabsCount;
-  int capacityForTabs = remainingAttachmentCapacity + tabsCount;
-
-  if (EnableComposeboxServerSideState()) {
-    auto limits = _stateManager.inputState.max_inputs_by_type;
-    auto type = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
-    if (limits.count(type)) {
-      int serverLimit = limits[type];
-      return MIN(serverLimit, capacityForTabs);
-    }
-  }
-
-  return capacityForTabs;
+  return [_stateManager maxTabAttachmentCount];
 }
 
 - (void)attachSelectedTabsWithWebStateIDs:
@@ -1237,7 +1113,7 @@ class QueryContextualizerDelegateBridge
 
 - (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![self canAddMoreAttachments]) {
+  if (![_stateManager canAddMoreAttachments]) {
     [self.delegate showAttachmentLimitError];
     return;
   }
@@ -1343,26 +1219,26 @@ class QueryContextualizerDelegateBridge
       [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
       break;
     case ComposeboxMode::kAIM:
-      if (![self isEligibleToAIM]) {
+      if (![_stateManager isEligibleToAIM]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self setActiveTool:omnibox::TOOL_MODE_UNSPECIFIED];
       break;
     case ComposeboxMode::kImageGeneration:
-      if (![self imageToolAllowed]) {
+      if (![_stateManager imageToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self cleanAttachmentsForImageGeneration];
       [self updateImageGenerationToolMode];
       break;
     case ComposeboxMode::kCanvas:
-      if (![self canvasToolAllowed]) {
+      if (![_stateManager canvasToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self setActiveTool:omnibox::TOOL_MODE_CANVAS];
       break;
     case ComposeboxMode::kDeepSearch:
-      if (![self deepSearchToolAllowed]) {
+      if (![_stateManager deepSearchToolAllowed]) {
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self setActiveTool:omnibox::TOOL_MODE_DEEP_SEARCH];
@@ -1973,308 +1849,9 @@ class QueryContextualizerDelegateBridge
       }));
 }
 
-// Checks whether the user is eligibile to share content (enterprise policy).
-- (BOOL)isContentSharingEnabled {
-  return _prefService && _contextualSearchSession &&
-         _contextualSearchSession->CheckSearchContentSharingSettings(
-             _prefService);
-}
-
-// Checks if the user is eligible for AIM, taking into account experimental
-// settings overrides.
-- (BOOL)isEligibleToAIM {
-  if (IsAssistantContainerDebugEnabled()) {
-    return YES;
-  }
-  if (experimental_flags::ShouldForceDisableComposeboxAIM()) {
-    return NO;
-  }
-  if (IsComposeboxAIMDisabled()) {
-    return NO;
-  }
-  if (!_aimEligibilityService) {
-    return NO;
-  }
-  return _aimEligibilityService->IsFuseboxEligible();
-}
-
-// Checks if the user is allowed to create images, taking into account
-// eligibility and experimental settings overrides.
-- (BOOL)imageToolAllowed {
-  if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return
-        [self toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsCreateImagesEligible();
-  }
-}
-
-// Whether the client is allowed to access canvas mode.
-- (BOOL)canvasToolAllowed {
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return NO;
-  }
-  if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self toolAllowedInInputState:omnibox::TOOL_MODE_CANVAS];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsCanvasEligible();
-  }
-}
-
-// Whether the client is allowed to access deep search mode.
-- (BOOL)deepSearchToolAllowed {
-  if (!ShowDeepSearchTool()) {
-    return NO;
-  }
-  if (experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self toolAllowedInInputState:omnibox::TOOL_MODE_DEEP_SEARCH];
-  } else {
-    if (!_aimEligibilityService) {
-      return NO;
-    }
-    return _aimEligibilityService->IsDeepSearchEligible();
-  }
-}
-
-// Checks if the user is eligible to upload PDFs, taking into account
-// experimental settings overrides.
-- (BOOL)isEligibleToUploadPdf {
-  if (experimental_flags::ShouldForceDisableComposeboxPdfUpload()) {
-    return NO;
-  }
-  if (!_aimEligibilityService || ![self isContentSharingEnabled]) {
-    return NO;
-  }
-  return _aimEligibilityService->IsPdfUploadEligible();
-}
-
-// Whether Create Image is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)imageToolDisabled {
-  // Allow deselecting the mode.
-  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
-    return NO;
-  }
-  BOOL generateImageDisabled =
-      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN] ||
-      [self toolDisabledInInputState:omnibox::ToolMode::
-                                         TOOL_MODE_IMAGE_GEN_UPLOAD];
-  BOOL hasTabOrFile = _items.hasTabOrFile;
-  return generateImageDisabled || hasTabOrFile;
-}
-
-// Whether Canvas is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)canvasToolDisabled {
-  // Allow deselecting the mode.
-  if (_modeHolder.mode == ComposeboxMode::kCanvas) {
-    return NO;
-  }
-  return [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_CANVAS];
-}
-
-// Whether Deep Search is in the list of disabled tools.
-// If restricted, the tool will persist in the UI with a 'disabled' status,
-// pending a change in state.
-- (BOOL)deepSearchToolDisabled {
-  // Allow deselecting the mode.
-  if (_modeHolder.mode == ComposeboxMode::kDeepSearch) {
-    return NO;
-  }
-  return
-      [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
-}
-
-#pragma mark - InputState rules helpers
-
-// Whether the given mode is allowed in the input state.
-- (BOOL)toolAllowedInInputState:(omnibox::ToolMode)toolMode {
-  if (!EnableComposeboxServerSideState()) {
-    return YES;
-  }
-  return std::find(_stateManager.inputState.allowed_tools.begin(),
-                   _stateManager.inputState.allowed_tools.end(),
-                   toolMode) != _stateManager.inputState.allowed_tools.end();
-}
-
-// Whether the given mode is disabled in the input state.
-- (BOOL)toolDisabledInInputState:(omnibox::ToolMode)toolMode {
-  if (!EnableComposeboxServerSideState()) {
-    return NO;
-  }
-  return std::find(_stateManager.inputState.disabled_tools.begin(),
-                   _stateManager.inputState.disabled_tools.end(),
-                   toolMode) != _stateManager.inputState.disabled_tools.end();
-}
-
-// The list of model options available based on the input model.
-- (std::unordered_set<ComposeboxModelOption>)allowedModels {
-  std::unordered_set<ComposeboxModelOption> allowed = {};
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return allowed;
-  }
-  for (auto modelType : _stateManager.inputState.allowed_models) {
-    allowed.insert(ModelOptionForModelMode(modelType));
-  }
-
-  return allowed;
-}
-
-// The list of model options disabled based on the input model.
-- (std::unordered_set<ComposeboxModelOption>)disabledModels {
-  std::unordered_set<ComposeboxModelOption> disabled = {};
-  if (!ShowComposeboxAdditionalAdvancedTools()) {
-    return disabled;
-  }
-  for (auto modelType : _stateManager.inputState.disabled_models) {
-    disabled.insert(ModelOptionForModelMode(modelType));
-  }
-
-  return disabled;
-}
-
-#pragma mark - Attachments availability checks
-
-// Whether the current input state disables the given input type.
-- (BOOL)inputStateDisablesType:(omnibox::InputType)inputType {
-  return std::find(_stateManager.inputState.disabled_input_types.begin(),
-                   _stateManager.inputState.disabled_input_types.end(),
-                   inputType) !=
-         _stateManager.inputState.disabled_input_types.end();
-}
-
-// Whether the current input state allows the given input type.
-- (BOOL)inputStateAllowsType:(omnibox::InputType)inputType {
-  return std::find(_stateManager.inputState.allowed_input_types.begin(),
-                   _stateManager.inputState.allowed_input_types.end(),
-                   inputType) !=
-         _stateManager.inputState.allowed_input_types.end();
-}
-
-// Whether the current state allows tab attachments.
-- (BOOL)tabAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateAllowsType:omnibox::INPUT_TYPE_BROWSER_TAB];
-  }
-
-  return YES;
-}
-
-// Whether the current state allows tab attachments.
-- (BOOL)fileAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_FILE];
-  } else {
-    return [self isEligibleToUploadPdf];
-  }
-}
-
-// Whether the current state allows image attachments.
-- (BOOL)imageAttachmentAllowed {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState() &&
-      ![self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_IMAGE]) {
-    return NO;
-  }
-
-  return YES;
-}
-
-// Disables tab attachment.
-- (BOOL)tabAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_BROWSER_TAB];
-  }
-
-  BOOL isImageCreationMode =
-      _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  return isImageCreationMode;
-}
-
-// Whether the current state allows tab attachments.
-- (BOOL)fileAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_FILE];
-  }
-
-  BOOL isImageCreationMode =
-      _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  return isImageCreationMode;
-}
-
-// Whether the current state allows image attachments.
-- (BOOL)imageAttachmentDisabled {
-  if (![self canAddMoreAttachments]) {
-    return YES;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self inputStateDisablesType:omnibox::INPUT_TYPE_LENS_IMAGE];
-  }
-
-  return NO;
-}
-
-- (BOOL)attachmentsAvailable {
-  if (![self isContentSharingEnabled]) {
-    return NO;
-  }
-
-  BOOL canSearchWithAI = [self isEligibleToAIM];
-  BOOL canCreateImage = [self imageToolAllowed];
-  BOOL canUseCanvas = [self canvasToolAllowed];
-  BOOL canUseDeepSearch = [self deepSearchToolAllowed];
-  return canUseCanvas || canCreateImage || canUseDeepSearch || canSearchWithAI;
-}
-
-- (BOOL)isDSEGoogle {
-  if (!_templateURLService) {
-    return NO;
-  }
-  return search::DefaultSearchProviderIsGoogle(_templateURLService);
-}
-
 - (BOOL)compactModeRequired {
-  BOOL dseGoogle = [self isDSEGoogle];
-  BOOL eligibleToAIM = [self isEligibleToAIM];
+  BOOL dseGoogle = [_stateManager isDSEGoogle];
+  BOOL eligibleToAIM = [_stateManager isEligibleToAIM];
   BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
 
   // If multimodal actions are disabled (e.g., when DSE is not Google), compact
@@ -2396,21 +1973,8 @@ class QueryContextualizerDelegateBridge
 
 // Whether the current tab is attachable.
 - (BOOL)canAttachActiveTab {
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    return NO;
-  }
-
-  std::set<web::WebStateID> alreadyProcessedIDs =
-      [self attachedWebStateIDsInCurrentContext];
-  BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
-  BOOL alreadyProcessed =
-      alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
-
-  BOOL canAttachTab =
-      !isNTP && !alreadyProcessed && [self isContentSharingEnabled];
-
-  return canAttachTab;
+  return [_stateManager canAttachActiveTabWithAttachedWebStateIDs:
+                            [self attachedWebStateIDsInCurrentContext]];
 }
 
 // Reacts to a change in the model choice.
@@ -2424,8 +1988,8 @@ class QueryContextualizerDelegateBridge
 
   BOOL applyDefaultSelection = _modelOption == kNone;
   if (applyDefaultSelection) {
-    auto allowedModels = [self allowedModels];
-    auto disabledModel = [self disabledModels];
+    auto allowedModels = [_stateManager allowedModels];
+    auto disabledModel = [_stateManager disabledModels];
     BOOL autoAllowed = allowedModels.contains(kAuto);
     BOOL autoDisabled = disabledModel.contains(kAuto);
     BOOL defaultToAuto = autoAllowed && !autoDisabled;
@@ -2471,10 +2035,10 @@ class QueryContextualizerDelegateBridge
   BOOL compactMode = [self compactModeRequired];
   BOOL hasAttachments = !_items.empty;
   BOOL hasContent = hasAttachments || _hasText;
-  BOOL dseGoogle = [self isDSEGoogle];
-  BOOL eligibleToAIM = [self isEligibleToAIM];
+  BOOL dseGoogle = [_stateManager isDSEGoogle];
+  BOOL eligibleToAIM = [_stateManager isEligibleToAIM];
   BOOL lensAvailable = lens_availability::CheckAvailabilityForLensEntryPoint(
-      LensEntrypoint::Composebox, [self isDSEGoogle]);
+      LensEntrypoint::Composebox, [_stateManager isDSEGoogle]);
   BOOL compactInCobrowse = compactMode && self.isCobrowse;
   BOOL allowsMultimodalActions =
       dseGoogle && eligibleToAIM && !compactInCobrowse;
@@ -2573,80 +2137,10 @@ class QueryContextualizerDelegateBridge
 
 /// Updates the consumer UI input state.
 - (void)updateUIInputState {
-  ComposeboxUIInputState* state = [[ComposeboxUIInputState alloc] init];
-
-  state.currentTabFavicon = _currentTabFavicon;
-  state.remainingAttachmentCapacity = [self remainingAttachmentCapacity];
-  state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
-  state.activeTool = _modeHolder.mode;
-  state.activeModel =
-      _modeHolder.isRegularSearch ? ComposeboxModelOption::kNone : _modelOption;
-
-  state.strings = _strings;
-
-  // Populate allowed/disabled attachments
-  std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;
-  std::unordered_set<ComposeboxAttachmentOption> disabledAttachments;
-
-  if ([self canAttachActiveTab] && [self tabAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kCurrentTab);
-  }
-  if ([self tabAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kTab);
-  }
-  if ([self tabAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kTab);
-  }
-  if ([self fileAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kFile);
-  }
-  if ([self fileAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kFile);
-  }
-  if ([self imageAttachmentAllowed]) {
-    allowedAttachments.insert(ComposeboxAttachmentOption::kGallery);
-    allowedAttachments.insert(ComposeboxAttachmentOption::kCamera);
-  }
-  if ([self imageAttachmentDisabled]) {
-    disabledAttachments.insert(ComposeboxAttachmentOption::kGallery);
-    disabledAttachments.insert(ComposeboxAttachmentOption::kCamera);
-  }
-
-  state.allowedAttachments = allowedAttachments;
-  state.disabledAttachments = disabledAttachments;
-
-  // Populate allowed/disabled tools
-  std::unordered_set<ComposeboxMode> allowedTools;
-  std::unordered_set<ComposeboxMode> disabledTools;
-
-  if ([self imageToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kImageGeneration);
-  }
-  if ([self imageToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kImageGeneration);
-  }
-  if ([self canvasToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kCanvas);
-  }
-  if ([self canvasToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kCanvas);
-  }
-  if ([self deepSearchToolAllowed]) {
-    allowedTools.insert(ComposeboxMode::kDeepSearch);
-  }
-  if ([self deepSearchToolDisabled]) {
-    disabledTools.insert(ComposeboxMode::kDeepSearch);
-  }
-  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
-    allowedTools.insert(ComposeboxMode::kAIM);
-  }
-
-  state.allowedTools = allowedTools;
-  state.disabledTools = disabledTools;
-
-  state.allowedModels = [self allowedModels];
-  state.disabledModels = [self disabledModels];
-
+  ComposeboxUIInputState* state = [_stateManager
+      computeUIInputStateWithFavicon:_currentTabFavicon
+                 attachedWebStateIDs:[self
+                                         attachedWebStateIDsInCurrentContext]];
   [self.consumer setUIInputState:state];
 }
 
@@ -2669,10 +2163,6 @@ class QueryContextualizerDelegateBridge
 
 - (void)inputStateManager:(ComposeboxInputStateManager*)manager
       didUpdateInputState:(const contextual_search::InputState&)inputState {
-  if (EnableComposeboxServerSideState()) {
-    _strings = ServerStringsFromInputState(inputState);
-  }
-
   [self changeModeForInputState:inputState];
   if (!_modeHolder.isRegularSearch) {
     ComposeboxModelOption requiredModel =
@@ -2687,7 +2177,7 @@ class QueryContextualizerDelegateBridge
 
 - (void)searchEngineChanged {
   lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-      LensEntrypoint::Composebox, [self isDSEGoogle]);
+      LensEntrypoint::Composebox, [_stateManager isDSEGoogle]);
   [self commitUIUpdates];
 }
 

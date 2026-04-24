@@ -10,7 +10,9 @@
 #import <map>
 #import <memory>
 #import <optional>
+#import <set>
 #import <string>
+#import <unordered_set>
 #import <vector>
 
 #import "components/contextual_search/input_state_model.h"
@@ -23,6 +25,7 @@
 class AimEligibilityService;
 class PrefService;
 class WebStateList;
+class TemplateURLService;
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
@@ -32,7 +35,16 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace web {
+class WebStateID;
+}  // namespace web
+
 @class ComposeboxInputStateManager;
+@class ComposeboxInputItem;
+@class ComposeboxUIInputState;
+@class UIImage;
+@class ComposeboxModeHolder;
+@class ComposeboxInputItemCollection;
 
 // Delegate protocol for ComposeboxInputStateManager.
 @protocol ComposeboxInputStateManagerDelegate <NSObject>
@@ -59,12 +71,17 @@ class IdentityManager;
 // The current input state.
 @property(nonatomic, readonly) const contextual_search::InputState& inputState;
 
+// The collection of items attached to the composebox.
+@property(nonatomic, weak) ComposeboxInputItemCollection* items;
+
 // Initializes the manager.
 - (instancetype)
      initWithWebStateList:(WebStateList*)webStateList
+               modeHolder:(ComposeboxModeHolder*)modeHolder
               prefService:(PrefService*)prefService
     aimEligibilityService:(AimEligibilityService*)aimEligibilityService
           identityManager:(signin::IdentityManager*)identityManager
+       templateURLService:(TemplateURLService*)templateURLService
             sessionHandle:
                 (contextual_search::ContextualSearchSessionHandle*)sessionHandle
                entrypoint:(ComposeboxEntrypoint)entrypoint
@@ -97,6 +114,50 @@ class IdentityManager;
                                      mimeTypes:
                                          (const std::vector<lens::MimeType>&)
                                              mimeTypes;
+
+// Checks if the user is eligible for AIM.
+- (BOOL)isEligibleToAIM;
+
+// Checks if the user is allowed to create images.
+- (BOOL)imageToolAllowed;
+
+// Whether the client is allowed to access canvas mode.
+- (BOOL)canvasToolAllowed;
+
+// Whether the client is allowed to access deep search mode.
+- (BOOL)deepSearchToolAllowed;
+
+// Checks if the Default Search Engine is Google.
+- (BOOL)isDSEGoogle;
+
+// Whether more attachments can be added.
+- (BOOL)canAddMoreAttachments;
+
+// The remaining attachment capacity.
+- (NSUInteger)remainingAttachmentCapacity;
+
+// The list of model options available based on the input model.
+- (std::unordered_set<ComposeboxModelOption>)allowedModels;
+
+// The list of model options disabled based on the input model.
+- (std::unordered_set<ComposeboxModelOption>)disabledModels;
+
+// Whether the user can ask about the current Tab.
+- (BOOL)canAttachActiveTabWithAttachedWebStateIDs:
+    (const std::set<web::WebStateID>&)attachedWebStateIDs;
+
+// Returns the maximum number of tabs allowed to be attached.
+- (NSUInteger)maxTabAttachmentCount;
+
+// Returns the remaining number of images allowed.
+- (NSUInteger)remainingNumberOfImagesAllowed;
+
+// Computes the full UI input state based on favicon, and attached web state
+// IDs.
+- (ComposeboxUIInputState*)
+    computeUIInputStateWithFavicon:(UIImage*)currentTabFavicon
+               attachedWebStateIDs:
+                   (const std::set<web::WebStateID>&)attachedWebStateIDs;
 
 @end
 

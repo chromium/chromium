@@ -290,6 +290,7 @@ source_set("unit_tests") {
     ":mode_holder",
     "//base",
     "//base/test:test_support",
+    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_search:test_support",
     "//components/contextual_search/internal:test_support",
