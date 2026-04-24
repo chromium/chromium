@@ -2089,6 +2089,9 @@ bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(
   // FIXME: Use rounded rect if border radius is present.
   if (StyleRef().HasBorderRadius())
     return false;
+  if (StyleRef().HasBorderShape()) {
+    return false;
+  }
   if (HasClipPath())
     return false;
   if (StyleRef().HasBlendMode())
