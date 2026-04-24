@@ -180,13 +180,18 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                 wtf_size_t gap_index) const;
 
   // Gap Decorations are painted relative to intersection points within a gap.
-  // This methods returns a Vector of ordered intersection offsets for the gap
-  // at `gap_index`. The general pattern is: container content-start ->
+  // This method fills `intersections` with the ordered intersection offsets for
+  // the gap at `gap_index`. The general pattern is: container content-start ->
   // MainxCross intersections -> container content-end. The middle intersections
   // depend on the container type and direction.
-  Vector<GapIntersection> GenerateIntersectionListForGap(
+  //
+  // We reset `intersections` (Shrink(0)) before populating, so the buffer's
+  // capacity is preserved through loop iterations. This makes reuse across a
+  // gap loop allocation-free after the first call.
+  void GenerateIntersectionListForGap(
       GridTrackSizingDirection direction,
-      wtf_size_t gap_index) const;
+      wtf_size_t gap_index,
+      Vector<GapIntersection>& intersections) const;
 
   // Determines whether the intersection at `intersection_index` within
   // `gap_index` lies on the container boundary. Typically, the first and last
@@ -331,15 +336,15 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                LayoutUnit cross_decoration_width) const;
 
  private:
-  // Returns a list of intersection offsets for a main gap at `gap_index`. This
-  // list includes:
+  // Fills `intersections` for a main gap at `gap_index`. The list includes:
   // - container content start
   // - Intersections with cross gaps (container-specific)
   // - container content end.
   // All offsets are in increasing order along `direction`.
-  Vector<GapIntersection> GenerateMainIntersectionList(
+  void GenerateMainIntersectionList(
       GridTrackSizingDirection direction,
-      wtf_size_t gap_index) const;
+      wtf_size_t gap_index,
+      Vector<GapIntersection>& intersections) const;
 
   // Fills `intersections` for a flex main gap at `gap_index`, which includes:
   // 1. Cross gaps that appear before the main gap
@@ -349,13 +354,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t gap_index,
       Vector<GapIntersection>& intersections) const;
 
-  // Returns a list of intersection offsets for a cross gap. For grid
-  // containers, this includes the container content edges and every main gap
-  // offset. For flex containers, it includes the cross-gap start offset and its
-  // computed end offset.
-  Vector<GapIntersection> GenerateCrossIntersectionList(
+  // Fills `intersections` for a cross gap at `gap_index`. For grid containers,
+  // this includes the container content edges and every main gap offset. For
+  // flex containers, it includes the cross-gap start offset and its computed
+  // end offset.
+  void GenerateCrossIntersectionList(
       GridTrackSizingDirection direction,
-      wtf_size_t gap_index) const;
+      wtf_size_t gap_index,
+      Vector<GapIntersection>& intersections) const;
 
   // Fills `intersections` for a grid cross gap at `gap_index`, which includes:
   // 1. The content-start edge
