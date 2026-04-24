@@ -25305,6 +25305,14 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="New Cache"/>
 </enum>
 
+<enum name="SimpleCacheIndexWriteResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to create directory"/>
+  <int value="2" label="Failed to get file info"/>
+  <int value="3" label="Failed to write pickle"/>
+  <int value="4" label="Failed to replace file"/>
+</enum>
+
 <enum name="SimpleCacheOpenEntryIndexState">
   <int value="0" label="No index"/>
   <int value="1" label="Hit"/>

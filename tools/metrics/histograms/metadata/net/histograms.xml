@@ -9594,6 +9594,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SimpleCache.{CacheInstance}IndexWriteResult"
+    enum="SimpleCacheIndexWriteResult" expires_after="2026-10-11">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The result of writing the index file to disk. Recorded each time the index
+    is written to disk. {CacheInstance}
+  </summary>
+</histogram>
+
 <histogram name="SimpleCache.{CacheInstance}MaxCacheSizeOnInit2" units="MB"
     expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>

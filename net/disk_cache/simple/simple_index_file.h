@@ -164,7 +164,25 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
                           base::Time* out_cache_last_modified,
                           SimpleIndexLoadResult* out_result);
 
-  // Writes the index file to disk atomically.
+  enum class IndexWriteResult {
+    kSuccess = 0,
+    kFailedToCreateDir = 1,
+    kFailedToGetFileInfo = 2,
+    kFailedToWritePickle = 3,
+    kFailedToReplaceFile = 4,
+    kMaxValue = kFailedToReplaceFile,
+  };
+
+  // Writes the index file to disk atomically. Returns the result.
+  static IndexWriteResult SyncWriteToDiskInternal(
+      std::unique_ptr<BackendFileOperations> file_operations,
+      net::CacheType cache_type,
+      const base::FilePath& cache_directory,
+      const base::FilePath& index_filename,
+      const base::FilePath& temp_index_filename,
+      std::unique_ptr<base::Pickle> pickle);
+
+  // Writes the index file to disk atomically and records UMA.
   static void SyncWriteToDisk(
       std::unique_ptr<BackendFileOperations> file_operations,
       net::CacheType cache_type,

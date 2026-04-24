@@ -296,7 +296,7 @@ bool SimpleIndexFile::IndexMetadata::Deserialize(base::PickleIterator* it) {
   return true;
 }
 
-void SimpleIndexFile::SyncWriteToDisk(
+SimpleIndexFile::IndexWriteResult SimpleIndexFile::SyncWriteToDiskInternal(
     std::unique_ptr<BackendFileOperations> file_operations,
     net::CacheType cache_type,
     const base::FilePath& cache_directory,
@@ -309,7 +309,7 @@ void SimpleIndexFile::SyncWriteToDisk(
   if (!file_operations->DirectoryExists(index_file_directory) &&
       !file_operations->CreateDirectory(index_file_directory)) {
     LOG(ERROR) << "Could not create a directory to hold the index file";
-    return;
+    return IndexWriteResult::kFailedToCreateDir;
   }
 
   // There is a chance that the index containing all the necessary data about
@@ -322,21 +322,37 @@ void SimpleIndexFile::SyncWriteToDisk(
       file_operations->GetFileInfo(cache_directory);
   if (!file_info) {
     LOG(ERROR) << "Could not obtain information about cache age";
-    return;
+    return IndexWriteResult::kFailedToGetFileInfo;
   }
   cache_dir_mtime = file_info->last_modified;
   SerializeFinalData(cache_dir_mtime, pickle.get());
   if (!WritePickleFile(file_operations.get(), pickle.get(),
                        temp_index_filename)) {
     LOG(ERROR) << "Failed to write the temporary index file";
-    return;
+    return IndexWriteResult::kFailedToWritePickle;
   }
 
   // Atomically rename the temporary index file to become the real one.
   if (!file_operations->ReplaceFile(temp_index_filename, index_filename,
                                     nullptr)) {
-    return;
+    return IndexWriteResult::kFailedToReplaceFile;
   }
+  return IndexWriteResult::kSuccess;
+}
+
+// static
+void SimpleIndexFile::SyncWriteToDisk(
+    std::unique_ptr<BackendFileOperations> file_operations,
+    net::CacheType cache_type,
+    const base::FilePath& cache_directory,
+    const base::FilePath& index_filename,
+    const base::FilePath& temp_index_filename,
+    std::unique_ptr<base::Pickle> pickle) {
+  IndexWriteResult result = SyncWriteToDiskInternal(
+      std::move(file_operations), cache_type, cache_directory, index_filename,
+      temp_index_filename, std::move(pickle));
+  SIMPLE_CACHE_UMA(ENUMERATION, "IndexWriteResult", cache_type, result,
+                   IndexWriteResult::kMaxValue);
 }
 
 bool SimpleIndexFile::IndexMetadata::CheckIndexMetadata() {
