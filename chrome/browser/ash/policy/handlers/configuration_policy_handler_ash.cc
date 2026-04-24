@@ -390,7 +390,7 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::ListValue filtered_list,
         ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, std::move(entry));
     pinned_apps_list.Append(std::move(app_dict));
   }
-  prefs->SetValue(prefs::kPolicyPinnedLauncherApps,
+  prefs->SetValue(ash::prefs::kPolicyPinnedLauncherApps,
                   base::Value(std::move(pinned_apps_list)));
 }
 

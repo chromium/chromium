@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -2567,7 +2568,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+  profile()->GetPrefs()->SetList(ash::prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
 
   // Check web app is pinned and fixed.
@@ -2596,7 +2597,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+  profile()->GetPrefs()->SetList(ash::prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
 
   // Check web app is not pinned.
@@ -2633,7 +2634,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+  profile()->GetPrefs()->SetList(ash::prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
 
   // Check web app policy is ignored.
@@ -2657,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
     entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, kAppUrl);
     base::ListValue policy_value;
     policy_value.Append(std::move(entry));
-    profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+    profile()->GetPrefs()->SetList(ash::prefs::kPolicyPinnedLauncherApps,
                                    std::move(policy_value));
   }
   {
@@ -3064,7 +3065,7 @@ IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
             file_manager::kFileManagerAppId);
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+  profile()->GetPrefs()->SetList(ash::prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
 
   // Ensure shelf is updated.

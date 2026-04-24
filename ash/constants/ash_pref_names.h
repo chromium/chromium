@@ -3254,6 +3254,39 @@ inline constexpr char kOfficeMoveConfirmationShownForOneDriveSyncable[] =
     "filebrowser.office.move_confirmation_shown_for_onedrive_syncable";
 
 //-----------------------------------------------------------------------------
+// Shelf related Prefs
+//-----------------------------------------------------------------------------
+
+inline constexpr char kPolicyPinnedLauncherApps[] =
+    "policy_pinned_launcher_apps";
+
+// Keeps names of rolled default pin layouts for shelf in order not to apply
+// this twice. Names are separated by comma.
+inline constexpr char kShelfDefaultPinLayoutRolls[] =
+    "shelf_default_pin_layout_rolls";
+
+// Same as kShelfDefaultPinLayoutRolls, but for tablet form factor devices.
+inline constexpr char kShelfDefaultPinLayoutRollsForTabletFormFactor[] =
+    "shelf_default_pin_layout_rolls_for_tablet_form_factor";
+
+// Keeps track of whether the Gemini app was pinned to shelf as a default app,
+// to prevent applying the default pin twice (after the user unpins the app).
+// NOTE: The Gemini app was previously referred to as the container app.
+inline constexpr char kShelfGeminiAppPinRolls[] =
+    "shelf_container_app_pin_layout_rolls";
+
+// Keeps track of whether the Mall app was pinned to shelf as a default app,
+// to prevent applying the default pin twice (after the user unpins the app).
+inline constexpr char kShelfMallAppPinRolls[] =
+    "shelf_mall_app_pin_layout_rolls";
+
+// Keeps track of whether the NotebookLM app was pinned to shelf as a default
+// app, to prevent applying the default pin twice (after the user unpins the
+// app).
+inline constexpr char kShelfNotebookLmAppPinRolls[] =
+    "shelf_notebook_lm_app_pin_layout_rolls";
+
+//-----------------------------------------------------------------------------
 // End of Life related Prefs
 //-----------------------------------------------------------------------------
 

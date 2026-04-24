@@ -212,10 +212,10 @@ struct PinInfo {
 // positions and pin preferences.
 std::string GetShelfDefaultPinLayoutPref() {
   if (ash::switches::IsTabletFormFactor()) {
-    return prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
+    return ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
   }
 
-  return prefs::kShelfDefaultPinLayoutRolls;
+  return ash::prefs::kShelfDefaultPinLayoutRolls;
 }
 
 // Returns true in case default pin layout configuration could be applied
@@ -319,7 +319,9 @@ void AddGeminiAppPinIfNeeded(
     return;
   }
 
-  if (!profile->GetPrefs()->GetList(prefs::kShelfGeminiAppPinRolls).empty()) {
+  if (!profile->GetPrefs()
+           ->GetList(ash::prefs::kShelfGeminiAppPinRolls)
+           .empty()) {
     return;
   }
 
@@ -331,7 +333,7 @@ void AddGeminiAppPinIfNeeded(
       syncable_service->GetSyncItem(ash::kGeminiAppId);
   if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
     ScopedListPrefUpdate update(profile->GetPrefs(),
-                                prefs::kShelfGeminiAppPinRolls);
+                                ash::prefs::kShelfGeminiAppPinRolls);
     update->Append("v1");
     return;
   }
@@ -341,7 +343,7 @@ void AddGeminiAppPinIfNeeded(
                                    CreateFirstPinPosition(syncable_service));
   {
     ScopedListPrefUpdate update(profile->GetPrefs(),
-                                prefs::kShelfGeminiAppPinRolls);
+                                ash::prefs::kShelfGeminiAppPinRolls);
     update->Append("v1");
   }
 #endif  // GOOGLE_CHROME_BRANDING
@@ -397,12 +399,12 @@ void AddNotebookLmAppPinIfNeeded(
   if (!ShelfControllerHelper::IsAppDefaultInstalled(profile,
                                                     ash::kNotebookLmAppId) ||
       !profile->GetPrefs()
-           ->GetList(prefs::kShelfNotebookLmAppPinRolls)
+           ->GetList(ash::prefs::kShelfNotebookLmAppPinRolls)
            .empty()) {
     return;
   }
   ScopedListPrefUpdate update(profile->GetPrefs(),
-                              prefs::kShelfNotebookLmAppPinRolls);
+                              ash::prefs::kShelfNotebookLmAppPinRolls);
   update->Append("v1");
 
   PinAfterChromeIfNotPresent(syncable_service, {ash::kGeminiAppId},
@@ -417,7 +419,9 @@ void AddMallPinIfNeeded(Profile* profile,
   // When Mall SWA is enabled, pin the Mall SWA once, and use a synced pref to
   // make sure it doesn't pin a second time. Users have the option to unpin the
   // SWA.
-  if (!profile->GetPrefs()->GetList(prefs::kShelfMallAppPinRolls).empty()) {
+  if (!profile->GetPrefs()
+           ->GetList(ash::prefs::kShelfMallAppPinRolls)
+           .empty()) {
     return;
   }
 
@@ -427,7 +431,7 @@ void AddMallPinIfNeeded(Profile* profile,
   }
 
   ScopedListPrefUpdate update(profile->GetPrefs(),
-                              prefs::kShelfMallAppPinRolls);
+                              ash::prefs::kShelfMallAppPinRolls);
   update->Append("v1");
 
   std::vector<std::string> skip_app_ids = {ash::kGeminiAppId,
@@ -450,21 +454,21 @@ ChromeShelfPrefs::~ChromeShelfPrefs() = default;
 
 void ChromeShelfPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kPolicyPinnedLauncherApps);
+  registry->RegisterListPref(ash::prefs::kPolicyPinnedLauncherApps);
   registry->RegisterListPref(
-      prefs::kShelfDefaultPinLayoutRolls,
+      ash::prefs::kShelfDefaultPinLayoutRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterListPref(
-      prefs::kShelfGeminiAppPinRolls,
+      ash::prefs::kShelfGeminiAppPinRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
-      prefs::kShelfNotebookLmAppPinRolls,
+      ash::prefs::kShelfNotebookLmAppPinRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
-      prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
+      ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
       PrefRegistry::NO_REGISTRATION_FLAGS);
   registry->RegisterListPref(
-      prefs::kShelfMallAppPinRolls,
+      ash::prefs::kShelfMallAppPinRolls,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
@@ -472,8 +476,8 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
 // is no longer in stable (end of 2024, or mid 2025 is ok).
 void ChromeShelfPrefs::CleanupPreloadPrefs(PrefService* profile_prefs) {
   constexpr std::array<const char*, 2> kPrefNames{
-      prefs::kShelfDefaultPinLayoutRolls,
-      prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
+      ash::prefs::kShelfDefaultPinLayoutRolls,
+      ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
 
   for (auto* const pref_name : kPrefNames) {
     // Deduplicate items in list.
@@ -508,7 +512,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     Profile* profile) {
   CHECK(profile);
   const base::ListValue& policy_apps =
-      profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
+      profile->GetPrefs()->GetList(ash::prefs::kPolicyPinnedLauncherApps);
   if (policy_apps.empty()) {
     return {};
   }
@@ -768,12 +772,13 @@ bool ChromeShelfPrefs::ShouldAddDefaultApps() const {
   }
   // Apply default apps in case profile syncing is done. Otherwise there is a
   // risk that applied default apps would be overwritten by sync once it is
-  // completed. prefs::kPolicyPinnedLauncherApps overrides any default layout.
-  // This also limits applying experimental configuration only for users who
-  // have the default pin layout specified by |kDefaultPinnedApps| or for
+  // completed. ash::prefs::kPolicyPinnedLauncherApps overrides any default
+  // layout. This also limits applying experimental configuration only for users
+  // who have the default pin layout specified by |kDefaultPinnedApps| or for
   // fresh users who have no pin information at all. Default configuration is
   // not applied if any of experimental layout was rolled.
-  return !profile_->GetPrefs()->HasPrefPath(prefs::kPolicyPinnedLauncherApps) &&
+  return !profile_->GetPrefs()->HasPrefPath(
+             ash::prefs::kPolicyPinnedLauncherApps) &&
          IsSafeToApplyDefaultPinLayout(profile_);
 }
 

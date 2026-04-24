@@ -726,7 +726,7 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
            "mall, gmail, cal, files, messages, meet, play, youtube, photos"}));
   auto get_prefs = [&]() {
     return profile_->GetPrefs()
-        ->GetList(prefs::kShelfDefaultPinLayoutRolls)
+        ->GetList(ash::prefs::kShelfDefaultPinLayoutRolls)
         .DebugString();
   };
 
@@ -757,8 +757,8 @@ TEST_F(ChromeShelfPrefsTest, PinPreloadEmpty) {
 TEST_F(ChromeShelfPrefsTest, CleanupPreloadPrefs) {
   PrefService* prefs = profile_->GetPrefs();
   std::vector<std::string> pref_names = {
-      prefs::kShelfDefaultPinLayoutRolls,
-      prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
+      ash::prefs::kShelfDefaultPinLayoutRolls,
+      ash::prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor};
 
   const struct {
     std::vector<std::string> pref_list;

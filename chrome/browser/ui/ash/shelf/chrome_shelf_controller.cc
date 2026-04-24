@@ -1724,7 +1724,7 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
 
   pref_change_registrar_.Init(profile()->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kPolicyPinnedLauncherApps,
+      ash::prefs::kPolicyPinnedLauncherApps,
       base::BindRepeating(&ChromeShelfController::UpdatePinnedAppsFromSync,
                           base::Unretained(this)));
   pref_change_registrar_.Add(

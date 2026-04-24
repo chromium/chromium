@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
@@ -78,7 +78,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   }
 
   const base::ListValue& policy_apps =
-      profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
+      profile->GetPrefs()->GetList(ash::prefs::kPolicyPinnedLauncherApps);
 
   for (const base::Value& policy_dict_entry : policy_apps) {
     if (!policy_dict_entry.is_dict()) {
