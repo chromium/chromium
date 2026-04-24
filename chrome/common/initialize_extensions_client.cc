@@ -10,11 +10,11 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
-#include "chrome/common/extensions/webstore_override.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/user_scripts_availability.h"
+#include "extensions/common/webstore_override.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/controlled_frame/controlled_frame.h"

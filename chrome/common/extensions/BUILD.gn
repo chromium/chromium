@@ -26,7 +26,6 @@ source_set("extensions") {
     "permissions/chrome_permission_message_rules.h",
     "sync_helper.h",
     "webstore_install_result.h",
-    "webstore_override.h",
   ]
 
   # Files that can only be included from here.
@@ -52,7 +51,6 @@ source_set("extensions") {
     "permissions/chrome_permission_message_rules.cc",
     "sync_helper.cc",
     "webstore_install_result.cc",
-    "webstore_override.cc",
   ]
 
   public_deps = [
