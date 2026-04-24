@@ -578,12 +578,6 @@ BASE_FEATURE_PARAM(bool,
                    "persistence_enabled",
                    true);
 
-BASE_FEATURE_PARAM(bool,
-                   kHttpCacheNoVarySearchKeepNotSuitable,
-                   &kHttpCacheNoVarySearch,
-                   "keep_not_suitable",
-                   true);
-
 BASE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

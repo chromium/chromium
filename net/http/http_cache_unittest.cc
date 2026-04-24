@@ -14646,17 +14646,10 @@ TEST_P(HttpCacheNoVarySearchTest, ExternalHit) {
               ElementsAre(new_url_cache_key, nvs_url_cache_key));
 }
 
-class HttpCacheNoVarySearchKeepNotSuitableTest
+class HttpCacheNoVarySearchStaleEntryTest
     : public HttpCacheNoVarySearchTestBase {
  public:
   static constexpr int kMaxAgeZero = 0;
-
-  void SetKeepNotSuitable(bool keep) {
-    keep_not_suitable_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kHttpCacheNoVarySearch,
-        {{features::kHttpCacheNoVarySearchKeepNotSuitable.name,
-          base::ToString(keep)}});
-  }
 
   void InsertStaleNonRevalidatableEntry(std::string_view params) {
     // Insert a No-Vary-Search entry that will match and is not capable of being
@@ -14674,46 +14667,14 @@ class HttpCacheNoVarySearchKeepNotSuitableTest
     RunTransactionTestWithResponseInfo(cache(), transaction, &info);
     return info;
   }
-
- private:
-  base::test::ScopedFeatureList keep_not_suitable_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         HttpCacheNoVarySearchKeepNotSuitableTest,
+                         HttpCacheNoVarySearchStaleEntryTest,
                          ::testing::Bool(),
                          split_cache_parameter_name);
 
-// With the default behavior, an in-memory hint that the response is stale and
-// not validatable triggers erasing the entry from the NoVarySearchCache.
-TEST_P(HttpCacheNoVarySearchKeepNotSuitableTest, InMemoryHintTriggersErase) {
-  SetKeepNotSuitable(false);
-
-  InsertStaleNonRevalidatableEntry("q=fred&a=1");
-
-  // The first transaction doesn't permit a stale response. The response has an
-  // empty No-Vary-Search header so it will not result in an entry in the
-  // NoVarySearchCache.
-  const HttpResponseInfo info1 =
-      RunTransactionTestWithMaxAgeZeroNoEtag("q=fred", LOAD_NORMAL);
-  EXPECT_FALSE(info1.was_cached);
-  EXPECT_TRUE(info1.network_accessed);
-
-  // The second transaction permits a stale response, but doesn't get one
-  // because it has already been deleted.
-  HttpResponseInfo info2 = RunTransactionTestWithMaxAgeZeroNoEtag(
-      "q=fred&a=77", LOAD_SKIP_CACHE_VALIDATION);
-  EXPECT_FALSE(info2.was_cached);
-  EXPECT_TRUE(info2.network_accessed);
-}
-
-// This test is almost identical to the previous one, except that the feature
-// parameter is set which changes the behavior to not delete the
-// NoVarySearchCache entry.
-TEST_P(HttpCacheNoVarySearchKeepNotSuitableTest,
-       InMemoryHintDoesNotTriggerErase) {
-  SetKeepNotSuitable(true);
-
+TEST_P(HttpCacheNoVarySearchStaleEntryTest, InMemoryHintDoesNotTriggerErase) {
   InsertStaleNonRevalidatableEntry("q=fred&a=1");
 
   // The first transaction doesn't permit a stale response. The response has an

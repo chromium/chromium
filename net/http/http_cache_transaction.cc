@@ -1193,8 +1193,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     // If the URL was rewritten by the NoVarySearchCache we may want to use it
     // again. The transaction will be restarted with the unmodified URL, so we
     // don't need to delete the entry for correctness.
-    if (!(features::kHttpCacheNoVarySearchKeepNotSuitable.Get() &&
-          IsUsingURLFromNoVarySearchCache())) {
+    if (!IsUsingURLFromNoVarySearchCache()) {
       cache_->GetCurrentBackend()->DoomEntry(cache_key_, priority_,
                                              base::DoNothing());
     }
@@ -1313,9 +1312,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   if (IsUsingURLFromNoVarySearchCache()) {
     if (result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
       return RestartWithoutNoVarySearchCache(
-          features::kHttpCacheNoVarySearchKeepNotSuitable.Get()
-              ? RestartCacheEntryAction::kDontErase
-              : RestartCacheEntryAction::kErase,
+          RestartCacheEntryAction::kDontErase,
           NoVarySearchUseResult::kNotSuitable);
     }
 
