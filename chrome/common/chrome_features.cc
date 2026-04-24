@@ -508,11 +508,6 @@ const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  86};
 
-const base::FeatureParam<int> kGlicFreInitialWidth{
-    &kGlic, "glic-fre-initial-width", 512};
-const base::FeatureParam<int> kGlicFreInitialHeight{
-    &kGlic, "glic-fre-initial-height", 512};
-
 // Quality value in the range [0, 100]. For use with gfx::JPEGCodec::Encode().
 const base::FeatureParam<int> kGlicScreenshotEncodeQuality{
     &kGlic, "glic-screenshot-encode-quality", 100};

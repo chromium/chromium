@@ -112,49 +112,6 @@ TEST_F(GlicFreControllerTest, RejectFre) {
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
 }
 
-TEST_F(GlicFreControllerTest, DismissUninitialized) {
-  base::UserActionTester tester;
-  glic_fre_controller().SetIsShowingDialogForTesting(true);
-  glic_fre_controller().DismissFre(mojom::FreWebUiState::kUninitialized);
-  // The FRE can be dismissed for many reasons that are not direct user actions.
-  // When it is dismissed by a non-user action it is called with Panel type
-  // kUninitialized.
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.UninitializedPanelClosed"), 1);
-}
-
-TEST_F(GlicFreControllerTest, DismissReady) {
-  base::UserActionTester tester;
-  glic_fre_controller().SetIsShowingDialogForTesting(true);
-  glic_fre_controller().DismissFre(mojom::FreWebUiState::kReady);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.ReadyPanelClosed"), 1);
-}
-
-TEST_F(GlicFreControllerTest, DismissOffline) {
-  base::UserActionTester tester;
-  glic_fre_controller().SetIsShowingDialogForTesting(true);
-  glic_fre_controller().DismissFre(mojom::FreWebUiState::kOffline);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.OfflinePanelClosed"), 1);
-}
-
-TEST_F(GlicFreControllerTest, DismissLoading) {
-  base::UserActionTester tester;
-  glic_fre_controller().SetIsShowingDialogForTesting(true);
-  glic_fre_controller().DismissFre(mojom::FreWebUiState::kShowLoading);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.LoadingPanelClosed"), 1);
-}
-
-TEST_F(GlicFreControllerTest, DismissError) {
-  base::UserActionTester tester;
-  glic_fre_controller().SetIsShowingDialogForTesting(true);
-  glic_fre_controller().DismissFre(mojom::FreWebUiState::kError);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.ErrorPanelClosed"), 1);
-}
-
 TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {
   PrefService* const pref_service = g_browser_process->local_state();
   ASSERT_FALSE(GlicLauncherConfiguration::IsEnabled());

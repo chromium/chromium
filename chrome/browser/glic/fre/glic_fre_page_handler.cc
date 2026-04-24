@@ -145,10 +145,6 @@ void GlicFrePageHandler::OnAcceptedByOtherInstance() {
   close_reason_ = CloseReason::kAcceptedByOtherInstance;
 }
 
-void GlicFrePageHandler::DismissFre(mojom::FreWebUiState panel_state) {
-  GetGlicService()->fre_controller().DismissFre(panel_state);
-}
-
 void GlicFrePageHandler::FreReloaded() {
   base::RecordAction(
       base::UserMetricsAction("Glic.Fre.ErrorPanelTryAgainClicked"));

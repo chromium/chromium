@@ -29,10 +29,6 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace version_info {
 enum class Channel;
 }
@@ -108,9 +104,6 @@ class GlicFreController {
   virtual base::CallbackListSubscription AddWebUiStateChangedCallback(
       WebUiStateChangedCallback callback);
 
-  // Close any windows and destroy web contents.
-  void Shutdown();
-
   // Returns whether the FRE dialog should be shown.
   bool ShouldShowFreDialog();
 
@@ -125,9 +118,6 @@ class GlicFreController {
   // possible.
   void OpenFreDialogInNewTab(base::WeakPtr<BrowserWindowInterface> bwi,
                              mojom::InvocationSource source);
-
-  // Closes the FRE dialog if it is open on the active tab of `browser`.
-  void DismissFreIfOpenOnActiveTab(BrowserWindowInterface* browser);
 #endif
 
   // Closes the FRE dialog and immediately opens a glic window attached to
@@ -137,9 +127,6 @@ class GlicFreController {
 
   // Rejects the FRE dialog.
   void RejectFre();
-
-  // Closes the FRE dialog.
-  void DismissFre(mojom::FreWebUiState panel);
 
   void CloseWithFreReason(GlicFreWidgetClosedReason reason);
 
@@ -152,29 +139,14 @@ class GlicFreController {
   // Notify FRE controller that the user clicked on a link.
   void OnLinkClicked(const GURL& url);
 
-  // Returns the WebContents from the dialog view.
-  content::WebContents* GetWebContents();
-
   // Preconnect to the server that hosts the FRE, so that it loads faster.
   // Does nothing if the FRE should not be shown.
   void MaybePreconnect();
-
-  bool IsShowingDialog() const;
-
-  bool IsShowingDialogAndStateInitialized() const;
-
-  gfx::Size GetFreInitialSize();
-
-  void UpdateFreWidgetSize(const gfx::Size& new_size);
 
   Profile* profile() { return profile_; }
 
   base::WeakPtr<GlicFreController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  void SetIsShowingDialogForTesting(bool is_showing) {
-    is_showing_dialog_for_testing_ = is_showing;
   }
 
   void RecordFrameworkStartTime();
@@ -204,14 +176,6 @@ class GlicFreController {
                                    tabs::TabInterface::DetachReason reason);
 
   raw_ptr<Profile> const profile_;
-  // TODO(b:498255995): Clean up unused dialog variables and functions.
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<views::Widget> fre_widget_;
-#endif
-  // This is owned by the GlicFreDialogView but we retain a pointer to it so
-  // that we can continue to reference it even after `fre_view_` relinquishes
-  // ownership to the widget.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
 #if !BUILDFLAG(IS_ANDROID)
   // The invocation source browser.
@@ -235,8 +199,6 @@ class GlicFreController {
   // the moment it's fully loaded. This is logged before the WebUI controller is
   // created.
   std::optional<base::TimeTicks> pending_framework_start_time_;
-
-  std::optional<bool> is_showing_dialog_for_testing_;
 
   // List of active PageHandlers (one per FRE UI instance).
   // Safe because GlicFrePageHandler explicitly calls UnregisterPageHandler in

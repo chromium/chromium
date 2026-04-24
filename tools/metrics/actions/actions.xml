@@ -15048,6 +15048,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.DisabledByAdminPanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>dewittj@google.com</owner>
   <owner>glic@google.com</owner>
   <description>
@@ -15066,6 +15067,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.ErrorPanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
@@ -15099,6 +15101,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.LoadingPanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
@@ -15128,6 +15131,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.OfflinePanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
@@ -15151,6 +15155,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.ReadyPanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>User closed the FRE while it was fully loaded.</description>
@@ -15175,6 +15180,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.UninitializedPanelClosed">
+  <obsolete>Feature removed April 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>

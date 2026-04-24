@@ -238,7 +238,6 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   instance_coordinator().Shutdown();
-  fre_controller_->Shutdown();
   web_contents_warming_pool_->Clear();
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
@@ -590,16 +589,6 @@ void GlicKeyedService::TryPreloadAfterDelay() {
 }
 
 void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
-  if (fre_controller_->IsShowingDialog()) {
-    if (auto* fre_contents = fre_controller_->GetWebContents()) {
-      if (fre_contents ==
-          content::WebContents::FromRenderFrameHost(render_frame_host)) {
-        fre_contents->GetController().Reload(
-            content::ReloadType::BYPASSING_CACHE,
-            /*check_for_repost=*/false);
-      }
-    }
-  }
   instance_coordinator().Reload(render_frame_host);
 }
 

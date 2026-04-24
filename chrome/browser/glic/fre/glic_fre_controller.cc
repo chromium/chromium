@@ -38,7 +38,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -62,10 +61,6 @@ void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
 base::CallbackListSubscription GlicFreController::AddWebUiStateChangedCallback(
     WebUiStateChangedCallback callback) {
   return webui_state_callback_list_.Add(std::move(callback));
-}
-
-void GlicFreController::Shutdown() {
-  DismissFre(webui_state_);
 }
 
 bool GlicFreController::ShouldShowFreDialog() {
@@ -118,23 +113,6 @@ void GlicFreController::RecordFrameworkStartTime() {
   pending_framework_start_time_ = base::TimeTicks::Now();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void GlicFreController::DismissFreIfOpenOnActiveTab(
-    BrowserWindowInterface* browser) {
-  if (!browser) {
-    return;
-  }
-
-  tabs::TabInterface* tab = browser->GetActiveTabInterface();
-
-  // If the FRE is being shown on the current tab, close it.
-  if (fre_widget_ && tab_showing_modal_ == tab) {
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.CloseWithToggle"));
-    DismissFre(webui_state_);
-  }
-}
-#endif
-
 void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
   // Notify other handlers that they lost the race.
   for (GlicFrePageHandler* other_handler : handlers_) {
@@ -170,53 +148,6 @@ void GlicFreController::RejectFre() {
 
 void GlicFreController::CloseWithFreReason(GlicFreWidgetClosedReason reason) {
   base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2", reason);
-  DismissFre(webui_state_);
-}
-
-void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
-  if (IsShowingDialog()) {
-    switch (panel) {
-      case mojom::FreWebUiState::kError:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.ErrorPanelClosed"));
-        break;
-      case mojom::FreWebUiState::kDisabledByAdmin:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.DisabledByAdminPanelClosed"));
-        break;
-      case mojom::FreWebUiState::kOffline:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.OfflinePanelClosed"));
-        break;
-      case mojom::FreWebUiState::kBeginLoading:
-      case mojom::FreWebUiState::kShowLoading:
-      case mojom::FreWebUiState::kHoldLoading:
-      case mojom::FreWebUiState::kFinishLoading:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.LoadingPanelClosed"));
-        break;
-      case mojom::FreWebUiState::kReady:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.ReadyPanelClosed"));
-        break;
-      case mojom::FreWebUiState::kUninitialized:
-        base::RecordAction(
-            base::UserMetricsAction("Glic.Fre.UninitializedPanelClosed"));
-        break;
-    }
-  }
-  web_contents_ = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  source_browser_ = nullptr;
-
-  if (fre_widget_) {
-    base::UmaHistogramEnumeration("Glic.FreModalWebUiState.FinishState2",
-                                  webui_state_);
-    fre_widget_.reset();
-    tab_showing_modal_ = nullptr;
-    will_detach_subscription_ = {};
-  }
-#endif
 }
 
 void GlicFreController::PrepareForClient(
@@ -272,10 +203,6 @@ void GlicFreController::OnLinkClicked(const GURL& url) {
         base::UserMetricsAction("Glic.Fre.MyActivityLinkOpened"));
     return;
   }
-}
-
-content::WebContents* GlicFreController::GetWebContents() {
-  return web_contents_;
 }
 
 namespace {
@@ -378,42 +305,6 @@ void GlicFreController::OnTabShowingModalWillDetach(
       break;
   }
   base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2", glic_reason);
-  DismissFre(webui_state_);
-}
-
-bool GlicFreController::IsShowingDialog() const {
-  if (is_showing_dialog_for_testing_.has_value()) {
-    return is_showing_dialog_for_testing_.value();
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  return !!fre_widget_;
-#else
-  return false;
-#endif
-}
-
-bool GlicFreController::IsShowingDialogAndStateInitialized() const {
-#if !BUILDFLAG(IS_ANDROID)
-  return !!fre_widget_ &&
-         (webui_state_ != mojom::FreWebUiState::kUninitialized);
-#else
-  return false;
-#endif
-}
-
-gfx::Size GlicFreController::GetFreInitialSize() {
-  return gfx::Size(features::kGlicFreInitialWidth.Get(),
-                   features::kGlicFreInitialHeight.Get());
-}
-
-void GlicFreController::UpdateFreWidgetSize(const gfx::Size& new_size) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!fre_widget_) {
-    return;
-  }
-
-  fre_widget_->SetSize(new_size);
-#endif
 }
 
 GlicFreController::InitTimestamps GlicFreController::RegisterPageHandler(

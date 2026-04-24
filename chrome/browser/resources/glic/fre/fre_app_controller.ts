@@ -120,7 +120,7 @@ export class FreAppController {
         if (parentPanel) {
           button.addEventListener('click', () => {
             chrome.histograms.recordUserAction('Glic.Fre.CloseWithX');
-            this.dismissFre(this.panelIdToEnum(parentPanel.id));
+            this.onCloseCallback?.();
           });
         }
       }
@@ -135,7 +135,7 @@ export class FreAppController {
       disabledByAdminButton.addEventListener('click', () => {
         chrome.histograms.recordUserAction(
             'Glic.Fre.DisabledByAdminPanelCloseButton');
-        this.dismissFre(this.panelIdToEnum(parentPanel.id));
+        this.onCloseCallback?.();
       });
 
       const disabledByAdminLink =
@@ -187,7 +187,7 @@ export class FreAppController {
       const source = url.searchParams.get('source');
       if (source === 'x_button') {
         chrome.histograms.recordUserAction(`Glic.Fre.CloseWithX`);
-        this.dismissFre(FreWebUiState.kReady);
+        this.onCloseCallback?.();
       } else {
         this.rejectFre();
       }
@@ -489,23 +489,6 @@ export class FreAppController {
     this.setState(FreWebUiState.kError);
   }
 
-  private panelIdToEnum(panelId: string): FreWebUiState {
-    switch (panelId) {
-      case 'freGuestPanel':
-        return FreWebUiState.kReady;
-      case 'freOfflinePanel':
-        return FreWebUiState.kOffline;
-      case 'freErrorPanel':
-        return FreWebUiState.kError;
-      case 'freLoadingPanel':
-        return FreWebUiState.kShowLoading;
-      case 'freDisabledByAdminPanel':
-        return FreWebUiState.kDisabledByAdmin;
-      default:
-        return FreWebUiState.kUninitialized;
-    }
-  }
-
   // Destroy the current webview and create a new one. This is necessary because
   // webview does not support unloading content by setting src=""
   destroyWebview(): void {
@@ -526,11 +509,6 @@ export class FreAppController {
   createWebview(): void {
     this.destroyWebview();
     this.webview = this.newWebview();
-  }
-
-  private dismissFre(state: FreWebUiState): void {
-    this.freHandler.dismissFre(state);
-    this.onCloseCallback?.();
   }
 
   private acceptFre(): void {

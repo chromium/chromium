@@ -21,10 +21,6 @@ interface FrePageHandler {
   // Rejects the glic FRE modal dialog.
   RejectFre();
 
-  // Closes the glic FRE modal dialog. The `panel` identifies which panel was
-  // closed.
-  DismissFre(FreWebUiState panel);
-
   // Called when the user clicks 'Try Again'.
   FreReloaded();
 
@@ -50,7 +46,6 @@ interface FrePageHandler {
   LogWebUiLoadComplete();
 };
 
-// LINT.IfChange(FreWebUiState)
 enum FreWebUiState {
   // Glic fre app controller not started.
   kUninitialized,
@@ -74,4 +69,3 @@ enum FreWebUiState {
   // The admin has explicitly disabled Glic.
   kDisabledByAdmin,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:FreWebUiState)

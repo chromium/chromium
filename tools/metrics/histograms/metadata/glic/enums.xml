@@ -85,30 +85,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre_controller.cc:FreErrorStateReason) -->
 
-<!-- LINT.IfChange(FreWebUiState) -->
-
-<enum name="FreWebUiState">
-  <int value="0" label="Glic fre app controller not started."/>
-  <int value="1" label="Web client begins loading; no visible UI."/>
-  <int value="2"
-      label="Loading panel is displayed. This state, combined with the
-             `hold-loading` state, will be held for `kMinHoldLoadingTimeMs`
-             if entered."/>
-  <int value="3"
-      label="Loading panel is still displayed, but the web client is ready.
-             This state will be held for the remainder of
-             `kMinHoldLoadingTimeMs`."/>
-  <int value="4"
-      label="Loading panel is displayed until web client is ready, or until
-             `kMaxWaitTimeMs` timeout is reached."/>
-  <int value="5" label="'Something went wrong' error panel is displayed."/>
-  <int value="6" label="Connection offline panel is displayed."/>
-  <int value="7" label="Web view is displayed."/>
-  <int value="8" label="'Disabled by Admin' error panel is displayed."/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre.mojom:FreWebUiState) -->
-
 <!-- LINT.IfChange(GeminiNavigationCaptureResult) -->
 
 <enum name="GeminiNavigationCaptureResult">

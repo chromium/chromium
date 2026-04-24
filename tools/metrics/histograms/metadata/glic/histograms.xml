@@ -653,13 +653,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.FreModalWebUiState.FinishState2" enum="FreWebUiState"
-    expires_after="2026-07-26">
-  <owner>cuianthony@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>Record the current state of the FRE modal when it closes.</summary>
-</histogram>
-
 <histogram name="Glic.FrePresentationTime" units="ms"
     expires_after="2026-09-27">
   <owner>dewittj@google.com</owner>
