@@ -502,8 +502,8 @@ if (build_with_chromium && current_cpu == target_cpu && host_os == "win") {
     outputs = [ stamp_file ]
 
     args = [
-      "--stamp=" + rebase_path(stamp_file, root_out_dir),
-      "--dir=" + rebase_path(root_out_dir, root_out_dir),
+      "--stamp=" + rebase_path(stamp_file, root_build_dir),
+      "--dir=" + rebase_path(root_out_dir, root_build_dir),
     ]
   }
 }
