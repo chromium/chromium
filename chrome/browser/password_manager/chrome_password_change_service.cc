@@ -27,7 +27,6 @@
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -45,13 +44,6 @@ inline constexpr base::TimeDelta kThrottleDuration = base::Days(14);
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
 
-
-std::string GetVariationConfigCountryCode() {
-  variations::VariationsService* variation_service =
-      g_browser_process->variations_service();
-  return variation_service ? variation_service->GetLatestCountry()
-                           : std::string();
-}
 
 optimization_guide::prefs::FeatureOptInState GetFeatureState(
     PrefService* pref_service) {
@@ -123,12 +115,11 @@ void ChromePasswordChangeService::RecordLoginAttemptQuality(
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(
-    const password_manager::PasswordForm& form,
-    const autofill::LanguageCode& page_language) const {
+    const password_manager::PasswordForm& form) const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  auto availability = GetPerSiteAvailability(form, page_language);
+  auto availability = GetPerSiteAvailability(form);
   base::UmaHistogramEnumeration("PasswordManager.PasswordChangeAvailability",
                                 availability);
 
@@ -329,8 +320,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
 }
 
 PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
-    const password_manager::PasswordForm& form,
-    const autofill::LanguageCode& page_language) const {
+    const password_manager::PasswordForm& form) const {
   auto [log_manager, logger] = CreateLoggerPair(log_router_);
 
   auto general_availability = GetGeneralAvailability();
@@ -354,26 +344,6 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_OVERRIDDEN_BY_SWITCH);
     }
     return PasswordChangeAvailability::kAvailable;
-  }
-
-  if (page_language != autofill::LanguageCode("en") &&
-      page_language != autofill::LanguageCode("en-US") &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kReduceRequirementsForPasswordChange)) {
-    if (logger) {
-      logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_UNSUPPORTED_LANGUAGE);
-    }
-    return PasswordChangeAvailability::kUnsupportedLanguage;
-  }
-
-  const std::string country_code = GetVariationConfigCountryCode();
-  if (country_code != "us" &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kReduceRequirementsForPasswordChange)) {
-    if (logger) {
-      logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_UNSUPPORTED_COUNTRY);
-    }
-    return PasswordChangeAvailability::kUnsupportedCountryCode;
   }
 
   const bool has_change_url =

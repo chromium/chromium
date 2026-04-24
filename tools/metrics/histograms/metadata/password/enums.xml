@@ -808,9 +808,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Model execution not allowed"/>
   <int value="3" label="Password saving disabled"/>
   <int value="4" label="Disabled by policy"/>
-  <int value="5" label="Feature disabled"/>
-  <int value="6" label="Unsupported language"/>
-  <int value="7" label="Unsupported country"/>
+  <int value="5" label="(Obsolete) Feature disabled"/>
+  <int value="6" label="(Obsolete) Unsupported language"/>
+  <int value="7" label="(Obsolete) Unsupported country"/>
   <int value="8" label="Unsupported site"/>
   <int value="9" label="User has no saved passwords"/>
   <int value="10" label="Throttled"/>

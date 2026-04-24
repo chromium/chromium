@@ -206,9 +206,6 @@ BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 // classifications.
 BASE_DECLARE_FEATURE(kProactivelyDownloadModelForPasswordChange);
 
-// Removes country and language restrictions for password change. This allows to
-// control locale/country server side.
-BASE_DECLARE_FEATURE(kReduceRequirementsForPasswordChange);
 
 // Triggers password change glow invoking Glic from settings.
 // This flag is only for the prototype version.
