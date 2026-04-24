@@ -31,6 +31,7 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/filtering_details_url_generator.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/resolution_details.h"
@@ -209,6 +210,20 @@ class ResolveContext;
 class URLRequestContext;
 
 DnsConfig CreateValidDnsConfig();
+
+class ScopedSetFilteringDetailsUrlGeneratorForTesting {
+ public:
+  ScopedSetFilteringDetailsUrlGeneratorForTesting();
+  ~ScopedSetFilteringDetailsUrlGeneratorForTesting();
+
+  ScopedSetFilteringDetailsUrlGeneratorForTesting(
+      const ScopedSetFilteringDetailsUrlGeneratorForTesting&) = delete;
+  ScopedSetFilteringDetailsUrlGeneratorForTesting& operator=(
+      const ScopedSetFilteringDetailsUrlGeneratorForTesting&) = delete;
+
+ private:
+  FilteringDetailsUrlGenerator generator_;
+};
 
 DnsResourceRecord BuildTestDnsRecord(std::string name,
                                      uint16_t type,
