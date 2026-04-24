@@ -37,6 +37,9 @@ bool OnTaskLockedController::is_locked_for_on_task() const {
 }
 
 void OnTaskLockedController::set_locked_for_on_task(bool locked) {
+  if (is_locked_for_on_task_ == locked) {
+    return;
+  }
   is_locked_for_on_task_ = locked;
   locked_for_on_task_updated_callbacks_.Notify(locked);
 }
