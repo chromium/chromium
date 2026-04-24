@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <TargetConditionals.h>
+
+#import "base/ios/ios_util.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
@@ -266,7 +269,14 @@ void VerifySaveNewEntityFlow() {
 }
 
 // Tests submitting a redress form.
+// TODO(crbug.com/506106151): Fix and re-enable on iOS 18 devices.
 - (void)testSubmitRedressForm {
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS18OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Disabled on iOS 18 devices due to crbug.com/506106151");
+  }
+#endif
   [self loadRedressNumberPage];
 
   // Filling is done in JavaScript to avoid flakiness.
@@ -280,7 +290,14 @@ void VerifySaveNewEntityFlow() {
 
 // Tests saving a new passport from a web form, verifying that it appears in
 // Settings and then deleting it.
+// TODO(crbug.com/506106151): Fix and re-enable on iOS 18 devices.
 - (void)testSavePassportForm {
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS18OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Disabled on iOS 18 devices due to crbug.com/506106151");
+  }
+#endif
   [self loadPassportPage];
 
   // Tap on fill button.
@@ -356,7 +373,14 @@ void VerifySaveNewEntityFlow() {
 }
 
 // Tests that a wallet failure shows an error dialog when attempting to fill.
+// TODO(crbug.com/506106151): Fix and re-enable on iOS 18 devices.
 - (void)testWalletFailureShowsErrorDialog {
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS18OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Disabled on iOS 18 devices due to crbug.com/506106151");
+  }
+#endif
   // Add server wallet passport entity.
   NSString* uuid = [AutofillAppInterface saveServerWalletPassportEntity];
 
