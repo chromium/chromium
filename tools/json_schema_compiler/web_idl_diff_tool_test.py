@@ -43,6 +43,8 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('usb.idl', 'usb.webidl'),
         ('chrome_url_overrides.idl', 'chrome_url_overrides.webidl'),
         ('cross_origin_isolation.idl', 'cross_origin_isolation.webidl'),
+        ('enterprise_reporting_private.idl',
+         'enterprise_reporting_private.webidl'),
         ('file_handlers.idl', 'file_handlers.webidl'),
         ('oauth2.idl', 'oauth2.webidl'),
         ('protocol_handlers.idl', 'protocol_handlers.webidl'),

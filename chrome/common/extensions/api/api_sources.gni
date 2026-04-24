@@ -79,7 +79,7 @@ if (enable_extensions) {
     "braille_display_private.webidl",
     "command_line_private.json",
     "crash_report_private.webidl",
-    "enterprise_reporting_private.idl",
+    "enterprise_reporting_private.webidl",
     "experimental_actor.idl",
     "experimental_ai_data.idl",
     "image_writer_private.idl",
