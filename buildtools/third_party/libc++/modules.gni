@@ -149,7 +149,6 @@ if (use_clang_modules) {
 template("modulemap_config") {
   config(target_name) {
     path = rebase_path(invoker.source, root_build_dir)
-    cflags_cc = [ "-fmodule-map-file=${path}" ]
     swiftflags = [ "-Xcc=-fmodule-map-file=${path}" ]
   }
 }
