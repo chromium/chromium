@@ -2986,6 +2986,12 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "FontDataService",
+      base_feature: "none",
+      // No status, as the web platform runtime enabled feature is controlled by
+      // a Chromium level feature (kFontDataServiceAllWebContents).
+    },
+    {
       name: "FontFallbackForTabSize",
       status: "stable",
     },

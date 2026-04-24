@@ -1925,6 +1925,10 @@ component("platform") {
       "/wd4334",  # Result of 32-bit shift implicitly converted to 64 bits.
       "/wd4724",  # Modulo by 0.
     ]
+    deps += [
+      # For FontDataService mojom used by FontUniqueNameLookupWin.
+      "//components/services/font_data/public/mojom:mojom_blink",
+    ]
 
     # TODO(crbug.com/40915226): Remove the need to ignore this warning.
     if (is_component_build) {
