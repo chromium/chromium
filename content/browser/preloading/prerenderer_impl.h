@@ -58,6 +58,11 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
 
   void CancelStartedPrerenders();
 
+  // Upgrades a prerender-until-script host to a full prerender. Updates the
+  // PrerenderInfo action and logs a console message. Returns true if the
+  // upgrade was performed.
+  bool TryUpgradePrerenderUntilScriptToFull(PrerenderInfo& prerender_info);
+
   // Used only for metric that counts received prerenders per
   // primary page changed.
   void RecordReceivedPrerendersCountToMetrics();

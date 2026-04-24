@@ -117,6 +117,12 @@ interface PageBroadcast {
   ActivatePrerenderedPage(
       PrerenderPageActivationParams prerender_page_activation_params) => ();
 
+  // Upgrades a prerender-until-script page to a full prerender, resuming
+  // JavaScript execution. The page remains in prerendering state (i.e.,
+  // document.prerendering stays true). This is distinct from activation,
+  // which transitions the page from prerendering to the primary frame tree.
+  UpgradePrerenderUntilScriptToFullPrerender();
+
   // Notifies the renderer when updating a set of blink preferences.
   UpdateWebPreferences(blink.mojom.WebPreferences preferences);
 

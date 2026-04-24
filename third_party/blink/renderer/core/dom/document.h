@@ -690,6 +690,11 @@ class CORE_EXPORT Document : public ContainerNode,
   // only once (upon activation).
   bool IsScriptBlockedUntilPrerenderActivation() const;
 
+  // Called when a prerender-until-script page is upgraded to a full prerender.
+  // Similar to UnblockScriptExecutionForPrerenderActivation(), but the page
+  // remains in prerendering state (document.prerendering stays true).
+  void UnblockScriptExecutionForPrerenderUpgrade();
+
   bool IsForExternalHandler() const { return is_for_external_handler_; }
 
   StyleEngine& GetStyleEngine() const {
@@ -2639,6 +2644,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // Note that not all prerendering pages block script execution; prerendering
   // pages' triggers can determine whether or not to block scripts.
   void UnblockScriptExecutionForPrerenderActivation();
+
+  // Resume script execution after either prerender activation or
+  // prerender-until-script upgrade.
+  void ResumeBlockedScriptExecution();
 
   // Slow path for GetViewTransitions() when view_transitions_ does not already
   // exist.

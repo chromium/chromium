@@ -3543,6 +3543,12 @@ void WebViewImpl::ActivatePrerenderedPage(
   std::move(callback).Run();
 }
 
+void WebViewImpl::UpgradePrerenderUntilScriptToFullPrerender() {
+  TRACE_EVENT0("navigation",
+               "WebViewImpl::UpgradePrerenderUntilScriptToFullPrerender");
+  GetPage()->UpgradePrerenderUntilScriptToFullPrerender();
+}
+
 void WebViewImpl::RegisterRendererPreferenceWatcher(
     CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
         watcher) {

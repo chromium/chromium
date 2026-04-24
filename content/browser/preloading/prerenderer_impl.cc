@@ -20,6 +20,7 @@
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -47,8 +48,6 @@ PreloadingType ConvertSpeculationActionToPreloadingType(
 
 }  // namespace
 
-// TODO(crbug.com/428500219): We should allow prerender-until-script to be
-// upgraded to prerender.
 struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
@@ -134,6 +133,31 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
   ResetReceivedPrerendersCountForMetrics();
 }
 
+bool PrerendererImpl::TryUpgradePrerenderUntilScriptToFull(
+    PrerenderInfo& prerender_info) {
+  CHECK(base::FeatureList::IsEnabled(features::kPrerenderUntilScriptUpgrade));
+  if (prerender_info.prerender_host_id.is_null()) {
+    return false;
+  }
+  if (prerender_info.action !=
+      blink::mojom::SpeculationAction::kPrerenderUntilScript) {
+    return false;
+  }
+  PrerenderHost* host =
+      registry_->FindNonReservedHostById(prerender_info.prerender_host_id);
+  if (!host) {
+    return false;
+  }
+  host->UpgradeToFullPrerender();
+  prerender_info.action = blink::mojom::SpeculationAction::kPrerender;
+  render_frame_host_->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kInfo,
+      base::StringPrintf("Prerender-until-script for %s was upgraded to "
+                         "full prerender. JavaScript execution has resumed.",
+                         host->GetInitialUrl().spec().c_str()));
+  return true;
+}
+
 // TODO(isaboori) Part of the logic in |ProcessCandidatesForPrerender| method is
 // about making preloading decisions and could be moved to PreloadingDecider
 // class.
@@ -146,8 +170,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
-  // TODO(https://crbug.com/428500219): Add warning message if prerender and
-  // prerender-until-script are applied to the same URL.
+  // If both prerender and prerender-until-script are applied to the same URL,
+  // the existing prerender-until-script host will be upgraded to a full
+  // prerender.
   std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
       prerender_candidates;
   for (const auto& candidate : candidates) {
@@ -161,9 +186,20 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   enable_cross_origin_prerender_iframes_ |=
       enable_cross_origin_prerender_iframes;
 
-  std::ranges::stable_sort(
-      prerender_candidates, std::less<>(),
-      [](const auto& p) { return PrerenderInfo(p.second); });
+  // Sort by PrerenderInfo (URL + target hint), with kPrerender before
+  // kPrerenderUntilScript as tiebreaker so that when both are candidates
+  // for the same URL, the dedup loop prefers starting a full prerender.
+  std::ranges::stable_sort(prerender_candidates,
+                           [](const auto& a, const auto& b) {
+                             PrerenderInfo pa(a.second), pb(b.second);
+                             if (pa != pb) {
+                               return pa < pb;
+                             }
+                             // Within the same group, prefer kPrerender (action
+                             // value 2) over kPrerenderUntilScript (action
+                             // value 3).
+                             return a.second->action < b.second->action;
+                           });
   std::vector<std::pair<size_t, blink::mojom::SpeculationCandidatePtr>>
       candidates_to_start;
 
@@ -238,6 +274,23 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
                 .insert(std::move(matching_candidate_prerender_info))
                 .second) {
           candidates_to_start.push_back(std::move(matching_candidate));
+        }
+      }
+    } else if (!matching_candidates.empty() &&
+               base::FeatureList::IsEnabled(
+                   features::kPrerenderUntilScriptUpgrade)) {
+      // Check if we should upgrade an existing prerender-until-script host to
+      // a full prerender. This handles the case where both actions target the
+      // same URL and the prerender-until-script host was started in an earlier
+      // update.
+      bool has_full_prerender_candidate =
+          std::ranges::any_of(matching_candidates, [](const auto& c) {
+            return c.second->action ==
+                   blink::mojom::SpeculationAction::kPrerender;
+          });
+      if (has_full_prerender_candidate) {
+        for (PrerenderInfo& prerender : matching_prerenders) {
+          TryUpgradePrerenderUntilScriptToFull(prerender);
         }
       }
     }
@@ -357,6 +410,19 @@ bool PrerendererImpl::MaybePrerender(
       PrerenderInfo::PrerenderInfoComparator);
   // cannot currently start a second prerender with the same URL and target_hint
   if (begin != end) {
+    // Check if we should upgrade an existing prerender-until-script host
+    // to full prerender. This handles the case where a prerender candidate is
+    // enacted after a prerender-until-script host is already running for the
+    // same URL, e.g. prerender-until-script triggered on hover (moderate
+    // eagerness) followed by prerender on click (conservative).
+    if (candidate->action == blink::mojom::SpeculationAction::kPrerender &&
+        base::FeatureList::IsEnabled(features::kPrerenderUntilScriptUpgrade)) {
+      for (auto it = begin; it != end; ++it) {
+        if (TryUpgradePrerenderUntilScriptToFull(*it)) {
+          return true;
+        }
+      }
+    }
     return false;
   }
 

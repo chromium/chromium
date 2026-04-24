@@ -291,6 +291,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::PrerenderPageActivationParamsPtr
           prerender_page_activation_params,
       ActivatePrerenderedPageCallback callback) override;
+  void UpgradePrerenderUntilScriptToFullPrerender() override;
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(

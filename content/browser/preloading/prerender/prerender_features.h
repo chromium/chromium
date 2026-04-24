@@ -65,6 +65,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2DisallowNonTrustworthyHttp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForImmediate);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
 
+// If enabled, allows upgrading a prerender-until-script session to a full
+// prerender when a matching prerender speculation rule is added.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerenderUntilScriptUpgrade);
+
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
 }  // namespace features
 

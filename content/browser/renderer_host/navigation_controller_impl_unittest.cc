@@ -168,6 +168,8 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (bool supports_draggable_regions),
               (override));
 
+  MOCK_METHOD(void, UpgradePrerenderUntilScriptToFullPrerender, (), (override));
+
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }

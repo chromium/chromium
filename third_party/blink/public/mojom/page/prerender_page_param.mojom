@@ -18,7 +18,8 @@ struct PrerenderParam {
   // then the intermediate result can be reused after activation.
   bool should_prepare_paint_tree;
 
-  // If true, pauses JavaScript execution until the page is activated.
-  // TODO(crbug.com/428500219): Allow upgrading to a full prerender.
+  // If true, pauses JavaScript execution until the page is activated or
+  // upgraded to a full prerender via
+  // PageBroadcast::UpgradePrerenderUntilScriptToFullPrerender().
   bool should_pause_javascript_execution;
 };

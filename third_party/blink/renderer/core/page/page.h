@@ -434,6 +434,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return should_pause_javascript_execution_on_prerender_;
   }
 
+  // Upgrades a prerender-until-script page to a full prerender by resuming
+  // JavaScript execution. The page remains in prerendering state.
+  void UpgradePrerenderUntilScriptToFullPrerender();
+
   void SetMediaFeatureOverride(const AtomicString& media_feature,
                                const String& value);
   const MediaFeatureOverrides* GetMediaFeatureOverrides() const {

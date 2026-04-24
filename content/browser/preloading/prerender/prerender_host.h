@@ -399,13 +399,21 @@ class CONTENT_EXPORT PrerenderHost {
 
   bool should_pause_javascript_execution() const {
     return attributes_.prerender_action_type ==
-           blink::mojom::SpeculationAction::kPrerenderUntilScript;
+               blink::mojom::SpeculationAction::kPrerenderUntilScript &&
+           !upgraded_to_full_prerender_;
   }
   blink::mojom::SpeculationAction speculation_action() const {
+    if (upgraded_to_full_prerender_) {
+      return blink::mojom::SpeculationAction::kPrerender;
+    }
     return attributes_.prerender_action_type;
   }
 
   bool form_submission() const { return attributes_.form_submission; }
+
+  // Upgrades a prerender-until-script host to a full prerender, resuming
+  // JavaScript execution while keeping the page in prerendering state.
+  void UpgradeToFullPrerender();
 
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
@@ -562,6 +570,12 @@ class CONTENT_EXPORT PrerenderHost {
                                 no_vary_search_with_parse_error);
 
   const PrerenderAttributes attributes_;
+
+  // Set to true when this prerender-until-script host has been upgraded to a
+  // full prerender. This changes the behavior of
+  // `should_pause_javascript_execution()` and `speculation_action()` without
+  // modifying the const `attributes_`.
+  bool upgraded_to_full_prerender_ = false;
 
   // The unique id of this PrerenderHost.
   const PrerenderHostId prerender_host_id_;

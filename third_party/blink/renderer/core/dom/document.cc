@@ -5249,6 +5249,19 @@ void Document::ExecuteScriptsWaitingForResources() {
 
 void Document::UnblockScriptExecutionForPrerenderActivation() {
   CHECK(!IsScriptBlockedUntilPrerenderActivation());
+  ResumeBlockedScriptExecution();
+}
+
+void Document::UnblockScriptExecutionForPrerenderUpgrade() {
+  // The Page has already cleared should_pause_javascript_execution, so
+  // IsScriptBlockedUntilPrerenderActivation() returns false.
+  CHECK(!IsScriptBlockedUntilPrerenderActivation());
+  // The page should still be in prerendering state after upgrade.
+  CHECK(is_prerendering_);
+  ResumeBlockedScriptExecution();
+}
+
+void Document::ResumeBlockedScriptExecution() {
   if (ScriptableDocumentParser* parser = GetScriptableDocumentParser()) {
     parser->ExecuteScriptsWaitingForPrerenderActivation();
   }

@@ -1610,6 +1610,31 @@ void Page::PrepareForLeakDetection() {
   }
 }
 
+void Page::UpgradePrerenderUntilScriptToFullPrerender() {
+  CHECK(IsPrerendering());
+  CHECK(ShouldPauseJavaScriptExecutionOnPrerender());
+  should_pause_javascript_execution_on_prerender_ = false;
+
+  // Collect local documents first. Unblocking script execution can
+  // synchronously run parser scripts, which may mutate the frame tree
+  // (e.g. inserting or removing iframes). Snapshotting avoids issues with
+  // iterating a tree that changes under us. This mirrors the pattern used
+  // by WebViewImpl::ActivatePrerenderedPage().
+  HeapVector<Member<Document>> documents;
+  for (Frame* frame = MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      if (Document* document = local_frame->GetDocument()) {
+        documents.push_back(document);
+      }
+    }
+  }
+
+  for (auto& document : documents) {
+    document->UnblockScriptExecutionForPrerenderUpgrade();
+  }
+}
+
 // Ensure the 10 bits reserved for connected frame count in NodeRareData are
 // sufficient.
 static_assert(kMaxNumberOfFrames <

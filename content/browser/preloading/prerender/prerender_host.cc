@@ -39,6 +39,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -1960,6 +1961,39 @@ bool PrerenderHost::IsInitiatorOverridingUserAgent() {
 
 base::WeakPtr<PrerenderHost> PrerenderHost::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void PrerenderHost::UpgradeToFullPrerender() {
+  CHECK(base::FeatureList::IsEnabled(features::kPrerenderUntilScriptUpgrade));
+  CHECK_EQ(attributes_.prerender_action_type,
+           blink::mojom::SpeculationAction::kPrerenderUntilScript);
+
+  if (upgraded_to_full_prerender_) {
+    return;
+  }
+
+  // Verify the IPC target exists before committing state. If the renderer
+  // crashed or the frame was destroyed, keep the host in prerender-until-script
+  // state (JS paused) rather than entering a half-upgraded state where the
+  // browser thinks JS is running but it isn't.
+  RenderFrameHostImpl* main_rfh =
+      GetPrerenderFrameTree().root()->current_frame_host();
+  if (!main_rfh || !main_rfh->render_view_host()) {
+    return;
+  }
+
+  upgraded_to_full_prerender_ = true;
+
+  // TODO(502133187): Notify DevTools that the prerender-until-script attempt
+  // has been upgraded.
+
+  // Send the upgrade IPC to every RenderViewHost in the prerender frame tree,
+  // mirroring how PageImpl::Activate propagates activation. This ensures all
+  // renderer-side pages backing this prerender clear their paused-JS state.
+  GetPrerenderFrameTree().ForEachRenderViewHost([](RenderViewHostImpl* rvh) {
+    rvh->GetAssociatedPageBroadcast()
+        ->UpgradePrerenderUntilScriptToFullPrerender();
+  });
 }
 
 }  // namespace content

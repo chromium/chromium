@@ -38,6 +38,8 @@ void TestPageBroadcast::ActivatePrerenderedPage(
   std::move(callback).Run();
 }
 
+void TestPageBroadcast::UpgradePrerenderUntilScriptToFullPrerender() {}
+
 void TestPageBroadcast::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {}
 
