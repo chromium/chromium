@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -41,6 +40,7 @@ import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.MockitoHelper;
 
 /** Tests for {@link SingleActionMessage}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -312,9 +312,9 @@ public class SingleActionMessageTest {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel(1);
         PropertyModel m2 = createBasicSingleActionMessageModel(2);
-        Callback<Boolean> callback1 = Mockito.mock(Callback.class);
+        Callback<Boolean> callback1 = MockitoHelper.mockCallback();
         m1.set(MessageBannerProperties.ON_FULLY_VISIBLE, callback1);
-        Callback<Boolean> callback2 = Mockito.mock(Callback.class);
+        Callback<Boolean> callback2 = MockitoHelper.mockCallback();
         m2.set(MessageBannerProperties.ON_FULLY_VISIBLE, callback2);
 
         var fullyVisible =

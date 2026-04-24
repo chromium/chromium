@@ -76,7 +76,7 @@ public class HistorySyncTest {
 
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule(BlankUiTestActivity.class);
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 

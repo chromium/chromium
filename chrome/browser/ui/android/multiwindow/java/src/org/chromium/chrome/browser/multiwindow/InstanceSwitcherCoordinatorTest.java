@@ -699,7 +699,7 @@ public class InstanceSwitcherCoordinatorTest {
         onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
                 .inRoot(isDialog())
                 .check(matches(withEffectiveVisibility(VISIBLE)));
-        onView(allOf(withText(R.string.cancel)))
+        onView(withText(R.string.cancel))
                 .inRoot(isDialog())
                 .check(matches(withEffectiveVisibility(VISIBLE)));
 

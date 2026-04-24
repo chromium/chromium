@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -96,6 +97,8 @@ public class HubManagerImplUnitTest {
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private BottomBarHostManager mBottomBarHostManager;
     @Mock private BottomSheetController mBottomSheetController;
+
+    @Captor private ArgumentCaptor<NonNullObservableSupplier<Integer>> mMarginSupplierCaptor;
 
     private final MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier =
             ObservableSuppliers.alwaysNull();
@@ -199,14 +202,12 @@ public class HubManagerImplUnitTest {
 
         hubController.onHubLayoutShow();
 
-        ArgumentCaptor<NonNullObservableSupplier> marginSupplierCaptor =
-                ArgumentCaptor.forClass(NonNullObservableSupplier.class);
         verify(mSnackbarManager)
                 .pushParentViewOverride(
-                        eq(ParentOverrideSlot.HUB), any(), marginSupplierCaptor.capture());
+                        eq(ParentOverrideSlot.HUB), any(), mMarginSupplierCaptor.capture());
 
-        assertNotNull(marginSupplierCaptor.getValue());
-        assertEquals(Integer.valueOf(0), marginSupplierCaptor.getValue().get());
+        assertNotNull(mMarginSupplierCaptor.getValue());
+        assertEquals(Integer.valueOf(0), mMarginSupplierCaptor.getValue().get());
     }
 
     @Test

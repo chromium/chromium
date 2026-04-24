@@ -394,7 +394,8 @@ public class SignOutCoordinatorTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {
-                            args.getArgument(0, Callback.class).onResult(mUnsyncedDataTypes);
+                            Callback<Set<Integer>> callback = args.getArgument(0);
+                            callback.onResult(mUnsyncedDataTypes);
                             return null;
                         })
                 .when(mSyncService)

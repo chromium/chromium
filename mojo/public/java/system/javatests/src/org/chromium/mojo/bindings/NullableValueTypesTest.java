@@ -310,11 +310,11 @@ public class NullableValueTypesTest {
             // Explicitly test defaulting behaviour.
             @ExtensibleEnum.EnumType
             Integer[] extensibleEnumValues = {null, 555, ExtensibleEnum.UNKNOWN};
-            Map<Integer, Boolean> boolMap = new HashMap();
+            Map<Integer, Boolean> boolMap = new HashMap<>();
             boolMap.put(0, true);
             boolMap.put(1, null);
             boolMap.put(2, false);
-            Map<Integer, Integer> intMap = new HashMap();
+            Map<Integer, Integer> intMap = new HashMap<>();
             intMap.put(0, 10);
             intMap.put(1, null);
             intMap.put(2, 12);

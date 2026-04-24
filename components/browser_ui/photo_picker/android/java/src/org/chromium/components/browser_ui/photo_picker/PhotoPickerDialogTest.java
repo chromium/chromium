@@ -99,11 +99,11 @@ public class PhotoPickerDialogTest
     private Uri[] mLastSelectedPhotos;
 
     // A list of view IDs we receive from an animating event in the order the events occurred.
-    private final List<Long> mLastViewAnimatingIds = new ArrayList();
+    private final List<Long> mLastViewAnimatingIds = new ArrayList<>();
 
     // A list of view alpha values we receive from an animating event in the order the events
     // occurred.
-    private final List<Float> mLastViewAnimatingAlphas = new ArrayList();
+    private final List<Float> mLastViewAnimatingAlphas = new ArrayList<>();
 
     // The list of currently selected photos (built piecemeal).
     private List<PickerBitmap> mCurrentPhotoSelection;

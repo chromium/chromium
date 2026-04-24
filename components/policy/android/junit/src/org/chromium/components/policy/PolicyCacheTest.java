@@ -228,7 +228,7 @@ public final class PolicyCacheTest {
      *     {@link PolicyCache#cachePolicies}.
      */
     private void cachePolicies(Map<String, Pair<PolicyCache.Type, Object>> policies) {
-        List<Pair<String, PolicyCache.Type>> cachedPolicies = new ArrayList();
+        List<Pair<String, PolicyCache.Type>> cachedPolicies = new ArrayList<>();
         for (var entry : policies.entrySet()) {
             String policyName = entry.getKey();
             PolicyCache.Type policyType = entry.getValue().first;

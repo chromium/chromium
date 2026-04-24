@@ -83,6 +83,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -168,10 +169,10 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
-                                    .onResult(
-                                            new WebAuthSecurityChecksResults(
-                                                    AuthenticatorStatus.SUCCESS, false));
+                            Callback<WebAuthSecurityChecksResults> cb = invocation.getArgument(5);
+                            cb.onResult(
+                                    new WebAuthSecurityChecksResults(
+                                            AuthenticatorStatus.SUCCESS, false));
                             return null;
                         })
                 .when(mFrameHost)
@@ -184,10 +185,10 @@ public class Fido2CredentialRequestRobolectricTest {
                         MockitoHelper.anyCallback());
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
-                                    .onResult(
-                                            new WebAuthSecurityChecksResults(
-                                                    AuthenticatorStatus.SUCCESS, false));
+                            Callback<WebAuthSecurityChecksResults> cb = invocation.getArgument(5);
+                            cb.onResult(
+                                    new WebAuthSecurityChecksResults(
+                                            AuthenticatorStatus.SUCCESS, false));
                             return null;
                         })
                 .when(mFrameHost)
@@ -647,10 +648,10 @@ public class Fido2CredentialRequestRobolectricTest {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         // Capture the RP ID validation callback and let the request sit
         // waiting for it.
-        var rpIdValidationCallback = new Callback[1];
+        var rpIdValidationCallback = new AtomicReference<Callback<WebAuthSecurityChecksResults>>();
         Mockito.doAnswer(
                         (invocation) -> {
-                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[5];
+                            rpIdValidationCallback.set(invocation.getArgument(5));
                             return null;
                         })
                 .when(mFrameHost)
@@ -665,7 +666,7 @@ public class Fido2CredentialRequestRobolectricTest {
         handleGetCredentialRequest();
 
         // The request should have requested RP ID validation.
-        assertThat(rpIdValidationCallback[0]).isNotNull();
+        assertThat(rpIdValidationCallback.get()).isNotNull();
         // Aborting the request shouldn't do anything yet because it's waiting
         // for RP ID validation.
         mRequest.cancelGetAssertion();
@@ -673,8 +674,11 @@ public class Fido2CredentialRequestRobolectricTest {
         // When the RP ID validation completes, the overall request should then
         // be canceled. Any RP ID validation error should be ignored in favour
         // of `ABORT_ERROR`.
-        rpIdValidationCallback[0].onResult(
-                new WebAuthSecurityChecksResults(AuthenticatorStatus.NOT_ALLOWED_ERROR, false));
+        rpIdValidationCallback
+                .get()
+                .onResult(
+                        new WebAuthSecurityChecksResults(
+                                AuthenticatorStatus.NOT_ALLOWED_ERROR, false));
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.ABORT_ERROR);
     }
 
@@ -811,10 +815,10 @@ public class Fido2CredentialRequestRobolectricTest {
 
         doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
-                                    .onResult(
-                                            new WebAuthSecurityChecksResults(
-                                                    AuthenticatorStatus.SUCCESS, false));
+                            Callback<WebAuthSecurityChecksResults> cb = invocation.getArgument(5);
+                            cb.onResult(
+                                    new WebAuthSecurityChecksResults(
+                                            AuthenticatorStatus.SUCCESS, false));
                             return null;
                         })
                 .when(subframe)
@@ -859,10 +863,10 @@ public class Fido2CredentialRequestRobolectricTest {
 
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[2])
-                                    .onResult(
-                                            new WebAuthSecurityChecksResults(
-                                                    AuthenticatorStatus.SUCCESS, false));
+                            Callback<WebAuthSecurityChecksResults> cb = invocation.getArgument(2);
+                            cb.onResult(
+                                    new WebAuthSecurityChecksResults(
+                                            AuthenticatorStatus.SUCCESS, false));
                             return null;
                         })
                 .when(mFrameHost)
@@ -1040,7 +1044,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
             List<WebauthnCredentialDetails> credentials;
             if (mCredentials == null) {
-                credentials = new ArrayList();
+                credentials = new ArrayList<>();
             } else {
                 credentials = mCredentials;
                 mCredentials = null;
@@ -1059,7 +1063,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
             List<WebauthnCredentialDetails> credentials;
             if (mCredentials == null) {
-                credentials = new ArrayList();
+                credentials = new ArrayList<>();
             } else {
                 credentials = mCredentials;
                 mCredentials = null;

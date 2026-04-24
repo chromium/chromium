@@ -112,6 +112,8 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
+    @SuppressWarnings(
+            "unchecked") // mock(Callback.class) + Mockito.reset varargs Callback<Integer>[].
     public void testObserver() {
         Callback<Integer> callback = Mockito.mock(Callback.class);
         mComposedDelegate.addSyncObserverAndPostIfNonNull(callback);
@@ -154,7 +156,7 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
 
     @Test
     public void testDelegateLeak() {
-        WeakReference delegate = new WeakReference(mDelegate1);
+        WeakReference<BrowserControlsVisibilityDelegate> delegate = new WeakReference<>(mDelegate1);
 
         Callback<Integer> callback = (value) -> {};
         mComposedDelegate.addSyncObserverAndPostIfNonNull(callback);

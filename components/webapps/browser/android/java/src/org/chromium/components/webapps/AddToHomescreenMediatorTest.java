@@ -66,7 +66,7 @@ public class AddToHomescreenMediatorTest {
         // Assert #setNativeAppInfo assigns the correct properties to the model.
         Assert.assertEquals("Title", mPropertyModel.get(AddToHomescreenProperties.TITLE));
         Assert.assertEquals(
-                new Pair(icon, false), mPropertyModel.get(AddToHomescreenProperties.ICON));
+                new Pair<>(icon, false), mPropertyModel.get(AddToHomescreenProperties.ICON));
         Assert.assertEquals(AppType.NATIVE, mPropertyModel.get(AddToHomescreenProperties.TYPE));
         Assert.assertEquals(
                 3.4f, mPropertyModel.get(AddToHomescreenProperties.NATIVE_APP_RATING), .01);

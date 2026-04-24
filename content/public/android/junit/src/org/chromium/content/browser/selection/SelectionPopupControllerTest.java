@@ -686,7 +686,7 @@ public class SelectionPopupControllerTest {
         SelectionPopupControllerImpl spyController = Mockito.spy(mController);
 
         // test activityInfo exported=false
-        List<ResolveInfo> list1 = new ArrayList();
+        List<ResolveInfo> list1 = new ArrayList<>();
         ResolveInfo resolveInfo1 = createResolveInfoWithActivityInfo("ProcessTextActivity1", false);
         list1.add(resolveInfo1);
         when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list1);
@@ -697,7 +697,7 @@ public class SelectionPopupControllerTest {
         assertEquals(0, menu1.size());
 
         // test activityInfo exported=true
-        List<ResolveInfo> list2 = new ArrayList();
+        List<ResolveInfo> list2 = new ArrayList<>();
         ResolveInfo resolveInfo2 = createResolveInfoWithActivityInfo("ProcessTextActivity2", true);
         list2.add(resolveInfo2);
         when(mPackageManager.queryIntentActivities(any(Intent.class), anyInt())).thenReturn(list2);
@@ -708,7 +708,7 @@ public class SelectionPopupControllerTest {
         assertEquals(1, menu2.size());
 
         // test null activityInfo
-        List<ResolveInfo> list3 = new ArrayList();
+        List<ResolveInfo> list3 = new ArrayList<>();
         ResolveInfo resolveInfo3 = new ResolveInfo();
         resolveInfo3.activityInfo = null;
         list3.add(resolveInfo3);

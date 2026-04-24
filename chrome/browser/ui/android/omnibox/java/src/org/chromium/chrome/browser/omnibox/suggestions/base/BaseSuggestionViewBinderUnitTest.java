@@ -56,7 +56,7 @@ public class BaseSuggestionViewBinderUnitTest {
     private Resources mResources;
     private PropertyModel mModel;
     private BaseSuggestionView<View> mBaseView;
-    private BaseSuggestionViewBinder mBinder;
+    private BaseSuggestionViewBinder<View> mBinder;
     private ImageView mIconView;
 
     @Before
@@ -66,12 +66,12 @@ public class BaseSuggestionViewBinderUnitTest {
         mContext = new ContextThemeWrapper(mBareContext, R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
 
-        mBaseView = spy(new BaseSuggestionView(new ImageView(mContext)));
+        mBaseView = spy(new BaseSuggestionView<>(new ImageView(mContext)));
         mIconView = mBaseView.decorationIcon;
 
         mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         mBinder =
-                new BaseSuggestionViewBinder(
+                new BaseSuggestionViewBinder<>(
                         (m, v, p) -> {
                             assertEquals(mBaseView.contentView, v);
                         });
@@ -373,9 +373,9 @@ public class BaseSuggestionViewBinderUnitTest {
 
         // Create a second MVP setup. Use Bare context that has no theme data.
         var newModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
-        var viewWithNoContext = spy(new BaseSuggestionView(new ImageView(mBareContext)));
+        var viewWithNoContext = spy(new BaseSuggestionView<>(new ImageView(mBareContext)));
         PropertyModelChangeProcessor.create(
-                newModel, viewWithNoContext, new BaseSuggestionViewBinder((m, v, p) -> {}));
+                newModel, viewWithNoContext, new BaseSuggestionViewBinder<>((m, v, p) -> {}));
 
         // Apply the same color scheme to the new model.
         // Observe that we don't crash.

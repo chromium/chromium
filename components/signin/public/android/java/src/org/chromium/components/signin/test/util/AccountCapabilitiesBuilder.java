@@ -55,6 +55,6 @@ public final class AccountCapabilitiesBuilder {
      * @return {@link AccountCapabilities} object with the capabilities set up with the builder.
      */
     public AccountCapabilities build() {
-        return new AccountCapabilities((HashMap<String, Boolean>) mCapabilities.clone());
+        return new AccountCapabilities(new HashMap<>(mCapabilities));
     }
 }

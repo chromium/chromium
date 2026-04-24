@@ -81,7 +81,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(GetCredentialRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
 
         mBridge.get(true, true, new ArrayList<GURL>(), ORIGIN, mCredentialResponseCallback);
 
@@ -91,7 +91,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(GetCredentialRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
         verify(mCredentialResponseCallback)
                 .onResult(
                         argThat(
@@ -113,7 +113,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(GetCredentialRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
 
         mBridge.get(false, true, new ArrayList<GURL>(), ORIGIN, mCredentialResponseCallback);
 
@@ -123,7 +123,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(GetCredentialRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
         verify(mCredentialResponseCallback)
                 .onResult(
                         argThat(
@@ -146,7 +146,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(CreatePasswordRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
 
         mBridge.store(USERNAME, PASSWORD, ORIGIN, mStoreCallback);
 
@@ -156,7 +156,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(CreatePasswordRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
         verify(mStoreCallback).onResult(true);
         histogramWatcher.assertExpected();
     }
@@ -179,7 +179,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(CreatePasswordRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
 
         mBridge.store(USERNAME, PASSWORD, ORIGIN, mStoreCallback);
 
@@ -189,7 +189,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(CreatePasswordRequest.class),
                         any(),
                         any(Executor.class),
-                        any(CredentialManagerCallback.class));
+                        any());
         verify(mStoreCallback).onResult(false);
         histogramWatcher.assertExpected();
     }
@@ -198,11 +198,9 @@ public class ThirdPartyCredentialManagerBridgeTest {
             InvocationOnMock invocation,
             GetCredentialResponse response,
             GetCredentialException exception) {
-        Executor executor =
-                (Executor) invocation.getArgument(3); // Get the Executor for the callback.
+        Executor executor = invocation.getArgument(3); // Get the Executor for the callback.
         CredentialManagerCallback<GetCredentialResponse, GetCredentialException> callback =
-                (CredentialManagerCallback<GetCredentialResponse, GetCredentialException>)
-                        invocation.getArgument(4); // Get the callback argument.
+                invocation.getArgument(4); // Get the callback argument.
         executor.execute(
                 () -> {
                     if (response != null) {
@@ -218,11 +216,9 @@ public class ThirdPartyCredentialManagerBridgeTest {
             InvocationOnMock invocation,
             CreateCredentialResponse response,
             CreateCredentialException exception) {
-        Executor executor =
-                (Executor) invocation.getArgument(3); // Get the Executor for the callback.
+        Executor executor = invocation.getArgument(3); // Get the Executor for the callback.
         CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> callback =
-                (CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException>)
-                        invocation.getArgument(4); // Get the callback argument.
+                invocation.getArgument(4); // Get the callback argument.
         executor.execute(
                 () -> {
                     if (response != null) {

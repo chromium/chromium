@@ -160,7 +160,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                     public void dismissInstrument() {}
                 };
         Mockito.doReturn(app).when(mBrowserPaymentRequest).getSelectedPaymentApp();
-        List<PaymentApp> apps = new ArrayList();
+        List<PaymentApp> apps = new ArrayList<>();
         apps.add(app);
         Mockito.doReturn(apps).when(mBrowserPaymentRequest).getPaymentApps();
 

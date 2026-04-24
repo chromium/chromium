@@ -66,6 +66,8 @@ public class RemoteViewsWithNightModeInflater {
         }
     }
 
+    // LayoutInflater.Filter.onLoadClass takes a raw Class parameter (framework API).
+    @SuppressWarnings("unchecked")
     private static @Nullable View inflateWithEnforcedDarkMode(
             RemoteViews remoteViews, @Nullable ViewGroup parent, boolean isInLocalNightMode) {
         // This is a modified version of RemoteViews#apply. RemoteViews#apply performs two steps:

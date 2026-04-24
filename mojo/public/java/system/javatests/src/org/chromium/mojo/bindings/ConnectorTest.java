@@ -42,7 +42,7 @@ public class ConnectorTest {
     private TestReceiver mReceiver;
 
     static class TestReceiver implements MessageReceiver {
-        public final List<Message> messages = new ArrayList();
+        public final List<Message> messages = new ArrayList<>();
 
         @Override
         public boolean accept(Message message) {

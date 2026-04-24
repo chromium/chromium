@@ -157,7 +157,7 @@ public class SelectActionMenuHelperTest {
     @Feature({"TextInput"})
     public void testGetTextProcessingItems() {
         ContextUtils.initApplicationContextForTests(mContext);
-        List<ResolveInfo> list2 = new ArrayList();
+        List<ResolveInfo> list2 = new ArrayList<>();
         ResolveInfo resolveInfo2 = createResolveInfoWithActivityInfo("ProcessTextActivity2", true);
         list2.add(resolveInfo2);
         PackageManager pm = mock(PackageManager.class);

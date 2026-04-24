@@ -35,7 +35,7 @@ public class CriteriaHelperTest {
             () -> {
                 throw new CriteriaNotSatisfiedException(ERROR_MESSAGE);
             };
-    private static final Callable FALSE_CALLABLE = () -> false;
+    private static final Callable<Boolean> FALSE_CALLABLE = () -> false;
 
     @Test
     @MediumTest

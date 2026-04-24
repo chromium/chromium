@@ -140,7 +140,7 @@ public class AutofillProviderTest {
 
         mAutofillProvider =
                 new AutofillProvider(
-                        new WeakReference(mContext),
+                        new WeakReference<>(mContext),
                         mContainerView,
                         mWebContents,
                         "AutofillProviderTest") {
@@ -193,7 +193,7 @@ public class AutofillProviderTest {
 
     @Test
     public void testHandlesNullContextGracefully() {
-        mAutofillProvider.switchToContext(new ImmutableWeakReference(null));
+        mAutofillProvider.switchToContext(new ImmutableWeakReference<>(null));
 
         assertNotNull(mAutofillProvider.getAutofillManagerWrapper());
     }
@@ -273,7 +273,7 @@ public class AutofillProviderTest {
         assertFalse(formData.mFields.get(1).isAutofilled());
         assertFalse(formData.mFields.get(2).isAutofilled());
 
-        SparseArray fillResult = new SparseArray(2);
+        SparseArray<AutofillValue> fillResult = new SparseArray<>(2);
         fillResult.put(mFocusVirtualId, AutofillValue.forText("text"));
         mAutofillProvider.autofill(fillResult);
 

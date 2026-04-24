@@ -43,7 +43,7 @@ public class ReadAndDispatchMessageTest {
     private TestReceiver mMessageReceiver;
 
     static class TestReceiver implements MessageReceiver {
-        public final List<Message> messages = new ArrayList();
+        public final List<Message> messages = new ArrayList<>();
 
         @Override
         public boolean accept(Message message) {

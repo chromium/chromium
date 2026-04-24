@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 @Config(manifest = Config.NONE)
 public class SelectableItemViewBaseTest {
 
-    private static class SelectableItemViewBaseTestImpl<E> extends SelectableItemViewBase {
+    private static class SelectableItemViewBaseTestImpl<E> extends SelectableItemViewBase<E> {
         private final CallbackHelper mHandleNonSelectionClickHelper;
 
         public SelectableItemViewBaseTestImpl(

@@ -32,7 +32,7 @@ public class AnswerSuggestionViewBinderTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
 
-        mBaseView = spy(new BaseSuggestionView(new LinearLayout(mContext)));
+        mBaseView = spy(new BaseSuggestionView<>(new LinearLayout(mContext)));
 
         mModel = new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mBaseView, AnswerSuggestionViewBinder::bind);

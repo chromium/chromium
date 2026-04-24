@@ -102,7 +102,7 @@ public class ContentViewTest {
     public void testForwardsAutofillDataToDelegate() {
         when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewDelegate);
         when(mViewDelegate.providesAutofillStructure()).thenReturn(true);
-        SparseArray<AutofillValue> values = new SparseArray();
+        SparseArray<AutofillValue> values = new SparseArray<>();
         mContentView.autofill(values);
         verify(mViewDelegate).autofill(values);
     }

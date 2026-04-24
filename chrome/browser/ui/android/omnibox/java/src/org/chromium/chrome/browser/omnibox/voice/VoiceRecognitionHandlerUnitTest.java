@@ -135,7 +135,7 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
-        doReturn(new WeakReference(activity)).when(mWindowAndroid).getActivity();
+        doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
         doReturn(mTab).when(mDataProvider).getTab();
         doReturn(DEFAULT_URL).when(mTab).getUrl();
     }

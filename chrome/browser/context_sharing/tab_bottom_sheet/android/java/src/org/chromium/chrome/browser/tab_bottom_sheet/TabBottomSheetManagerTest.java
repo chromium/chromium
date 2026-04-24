@@ -142,6 +142,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("unchecked") // mock(OneshotSupplier.class) returns raw OneshotSupplier.
     public void testTryToShowBottomSheet_Failed_HideContentCalled() {
         BottomSheetController mockBottomSheetController = mock(BottomSheetController.class);
         OneshotSupplier<LayoutStateProvider> mockLayoutStateProviderSupplier =

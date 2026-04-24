@@ -150,8 +150,8 @@ public class ContactsProviderTest {
                                     boolean icons,
                                     String formattedOrigin,
                                     ContactsFetcher contactsFetcher) -> {
-                                List<ContactsPickerListener.Contact> contacts = new ArrayList();
-                                List<String> contactsNames = new ArrayList();
+                                List<ContactsPickerListener.Contact> contacts = new ArrayList<>();
+                                List<String> contactsNames = new ArrayList<>();
                                 contactsNames.add("test");
                                 contacts.add(
                                         new ContactsPickerListener.Contact(

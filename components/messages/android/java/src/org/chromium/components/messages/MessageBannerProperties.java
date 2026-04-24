@@ -158,7 +158,7 @@ public class MessageBannerProperties {
 
     // Supplier of whether the view is under tap protection.
     static final WritableObjectPropertyKey<Supplier<Boolean>>
-            IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER = new WritableObjectPropertyKey();
+            IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
