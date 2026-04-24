@@ -1472,6 +1472,14 @@ by a child template that "extends" this file.
             android:grantUriPermissions="true">
       </provider>
 
+      <!-- Provider for screenshot content. -->
+      <provider
+            android:name="org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProvider"
+            android:authorities="{{ manifest_package }}.ScreenshotContentProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+      </provider>
+
       <!-- Provider for querying the Autofill third party mode state. -->
       <provider android:name="org.chromium.chrome.browser.autofill.AutofillThirdPartyModeContentProvider"
           android:authorities="{{ manifest_package }}.AutofillThirdPartyModeContentProvider"

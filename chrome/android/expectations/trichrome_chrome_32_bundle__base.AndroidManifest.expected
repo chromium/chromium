@@ -159,6 +159,12 @@
         android:exported="false"
         android:grantUriPermissions="true">
     </provider>  # DIFF-ANCHOR: 6e040436
+    <provider  # DIFF-ANCHOR: ace92cb0
+        android:name="org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProvider"
+        android:authorities="$PACKAGE.ScreenshotContentProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: ace92cb0
     <provider  # DIFF-ANCHOR: 67014fab
         android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
         android:authorities="$PACKAGE.FileProvider"

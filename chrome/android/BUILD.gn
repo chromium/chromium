@@ -292,6 +292,16 @@ if (_is_default_toolchain) {
     srcjar_deps = [ ":chrome_android_java_google_api_keys_srcjar" ]
   }
 
+  android_library("screenshot_provider_java") {
+    sources = [ "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImpl.java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/android:base_module_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_library("chrome_java") {
     deps = [
       ":base_module_java",
@@ -299,6 +309,7 @@ if (_is_default_toolchain) {
       ":chrome_public_apk_template_resources",
       ":google_api_keys_java",
       ":java_overlay_resources",
+      ":screenshot_provider_java",
       ":usage_stats_proto_java",
       ":xr_java",
       "$google_play_services_package:google_play_services_auth_base_java",
@@ -1090,6 +1101,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.permissions",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.price_tracking",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.privacy_sandbox",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.screenshotprovider",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.search_engines",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.searchwidget",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.segmentation_platform",
@@ -2107,6 +2119,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/photo_picker/DecoderService.java",
       "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
       "java/src/org/chromium/chrome/browser/provider/PageContentProvider.java",
+      "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProvider.java",
       "java/src/org/chromium/chrome/browser/services/gcm/ChromeGcmListenerService.java",
       "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundService.java",
       "java/src/org/chromium/chrome/browser/services/gcm/InvalidationGcmUpstreamSender.java",
