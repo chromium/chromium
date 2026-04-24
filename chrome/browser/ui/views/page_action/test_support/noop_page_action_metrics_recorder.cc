@@ -4,25 +4,22 @@
 
 #include "chrome/browser/ui/views/page_action/test_support/noop_page_action_metrics_recorder.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
+
 namespace page_actions {
 
 void NoopPageActionMetricsRecorder::RecordClick(
+    actions::ActionId action_id,
     PageActionTrigger trigger_source) {}
 
-void NoopPageActionMetricsRecorder::Observe(PageActionModelInterface& model) {}
-
-std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-NoopPageActionMetricsRecorderFactory::CreatePerActionMetricsRecorder(
-    tabs::TabInterface& tab_interface,
-    const PageActionProperties& properties,
+void NoopPageActionMetricsRecorder::Observe(
     PageActionModelInterface& model,
-    VisibleEphemeralPageActionsCountCallback
-        visible_ephemeral_page_actions_count_callback) {
-  return std::make_unique<NoopPageActionMetricsRecorder>();
-}
+    const PageActionProperties& properties) {}
 
-std::unique_ptr<PageActionPageMetricsRecorderInterface>
-NoopPageActionMetricsRecorderFactory::CreatePageMetricRecorder(
+std::unique_ptr<PageActionMetricsRecorderInterface>
+NoopPageActionMetricsRecorderFactory::CreateRecorder(
     tabs::TabInterface& tab_interface,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback) {

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_page_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -106,7 +105,7 @@ void PageActionControllerImpl::Initialize(
       base::BindRepeating(&PageActionControllerImpl::DoHideAnchoredMessage,
                           base::Unretained(this)));
 
-  page_metrics_recorder_ = CreatePageMetricsRecorder(
+  metrics_recorder_ = CreateMetricsRecorder(
       tab_interface,
       base::BindRepeating(
           &PageActionControllerImpl::GetVisibleEphemeralPageActionsCount,
@@ -119,19 +118,7 @@ void PageActionControllerImpl::Initialize(
              properties.exempt_from_omnibox_suppression);
     default_priorities_[id] = properties.priority;
 
-    // It's safe to use base::Unretained here since the recorded is owned by
-    // this object.
-    std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-        metrics_recorder = CreatePerActionMetricsRecorder(
-            tab_interface, properties, FindPageActionModel(id),
-            base::BindRepeating(
-                &PageActionControllerImpl::GetVisibleEphemeralPageActionsCount,
-                base::Unretained(this)));
-    metrics_recorders_.emplace(id, std::move(metrics_recorder));
-
-    // `page_metrics_recorder_` will observe all the page action models to have
-    // a global state.
-    page_metrics_recorder_->Observe(FindPageActionModel(id));
+    metrics_recorder_->Observe(FindPageActionModel(id), properties);
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();
@@ -460,40 +447,21 @@ std::unique_ptr<PageActionModelInterface> PageActionControllerImpl::CreateModel(
   if (page_action_model_factory_ != nullptr) {
     return page_action_model_factory_->Create(action_id, is_ephemeral);
   } else {
-    return std::make_unique<PageActionModel>(is_ephemeral);
+    return std::make_unique<PageActionModel>(action_id, is_ephemeral);
   }
 }
 
-std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-PageActionControllerImpl::CreatePerActionMetricsRecorder(
-    tabs::TabInterface& tab_interface,
-    const PageActionProperties& properties,
-    PageActionModelInterface& model,
-    VisibleEphemeralPageActionsCountCallback
-        visible_ephemeral_page_actions_count_callback) {
-  if (page_action_metrics_recorder_factory_ != nullptr) {
-    return page_action_metrics_recorder_factory_
-        ->CreatePerActionMetricsRecorder(
-            tab_interface, properties, model,
-            std::move(visible_ephemeral_page_actions_count_callback));
-  } else {
-    return std::make_unique<PageActionPerActionMetricsRecorder>(
-        tab_interface, properties, model,
-        std::move(visible_ephemeral_page_actions_count_callback));
-  }
-}
-
-std::unique_ptr<PageActionPageMetricsRecorderInterface>
-PageActionControllerImpl::CreatePageMetricsRecorder(
+std::unique_ptr<PageActionMetricsRecorderInterface>
+PageActionControllerImpl::CreateMetricsRecorder(
     tabs::TabInterface& tab_interface,
     VisibleEphemeralPageActionsCountCallback
         visible_ephemeral_page_actions_count_callback) {
   if (page_action_metrics_recorder_factory_ != nullptr) {
-    return page_action_metrics_recorder_factory_->CreatePageMetricRecorder(
+    return page_action_metrics_recorder_factory_->CreateRecorder(
         tab_interface,
         std::move(visible_ephemeral_page_actions_count_callback));
   } else {
-    return std::make_unique<PageActionPageMetricsRecorder>(
+    return std::make_unique<PageActionMetricsRecorder>(
         tab_interface,
         std::move(visible_ephemeral_page_actions_count_callback));
   }
@@ -523,16 +491,12 @@ void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
 void PageActionControllerImpl::RecordClickMetric(
     actions::ActionId action_id,
     PageActionTrigger trigger_source) {
-  auto id_and_recorder = metrics_recorders_.find(action_id);
-  CHECK(id_and_recorder != metrics_recorders_.end());
-  CHECK(id_and_recorder->second.get());
-  id_and_recorder->second->RecordClick(trigger_source);
+  metrics_recorder_->RecordClick(action_id, trigger_source);
 }
 
 int PageActionControllerImpl::GetVisibleEphemeralPageActionsCount() const {
   int visible_ephemeral_page_actions_count = 0;
   for (auto& [id, model] : page_actions_) {
-    CHECK(metrics_recorders_.contains(id));
     if (model->GetVisible() && model->IsEphemeral()) {
       ++visible_ephemeral_page_actions_count;
     }

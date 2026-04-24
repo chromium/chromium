@@ -16,12 +16,16 @@ namespace {
 using ::actions::ActionItem;
 }  // namespace
 
-PageActionModel::PageActionModel(bool is_ephemeral)
-    : is_ephemeral_(is_ephemeral) {}
+PageActionModel::PageActionModel(actions::ActionId action_id, bool is_ephemeral)
+    : action_id_(action_id), is_ephemeral_(is_ephemeral) {}
 
 PageActionModel::~PageActionModel() {
   observer_list_.Notify(
       &PageActionModelObserver::OnPageActionModelWillBeDeleted, *this);
+}
+
+actions::ActionId PageActionModel::GetActionId() const {
+  return action_id_;
 }
 
 void PageActionModel::SetShowRequested(PageActionPassKey, bool requested) {

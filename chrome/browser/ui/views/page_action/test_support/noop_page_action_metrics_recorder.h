@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 
 namespace tabs {
 class TabInterface;
@@ -17,32 +17,22 @@ namespace page_actions {
 
 // A metrics reporter implementation that does nothing.
 class NoopPageActionMetricsRecorder
-    : public PageActionPerActionMetricsRecorderInterface,
-      public PageActionPageMetricsRecorderInterface {
+    : public PageActionMetricsRecorderInterface {
  public:
   NoopPageActionMetricsRecorder() = default;
   ~NoopPageActionMetricsRecorder() override = default;
 
-  // PageActionPerActionMetricsRecorderInterface:
-  void RecordClick(PageActionTrigger trigger_source) final;
-
-  // PageActionPageMetricsRecorderInterface:
-  void Observe(PageActionModelInterface& model) final;
+  // PageActionMetricsRecorderInterface:
+  void RecordClick(actions::ActionId action_id,
+                   PageActionTrigger trigger_source) final;
+  void Observe(PageActionModelInterface& model,
+               const PageActionProperties& properties) final;
 };
 
 class NoopPageActionMetricsRecorderFactory
     : public PageActionMetricsRecorderFactory {
  public:
-  std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-  CreatePerActionMetricsRecorder(
-      tabs::TabInterface& tab_interface,
-      const PageActionProperties& properties,
-      PageActionModelInterface& model,
-      VisibleEphemeralPageActionsCountCallback
-          visible_ephemeral_page_actions_count_callback) override;
-
-  std::unique_ptr<PageActionPageMetricsRecorderInterface>
-  CreatePageMetricRecorder(
+  std::unique_ptr<PageActionMetricsRecorderInterface> CreateRecorder(
       tabs::TabInterface& tab_interface,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback) override;

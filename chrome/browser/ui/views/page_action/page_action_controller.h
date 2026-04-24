@@ -49,7 +49,6 @@ class PageActionMetricsRecorderFactory;
 class PageActionMetricsRecorderInterface;
 class ChipSelector;
 class PageActionController;
-struct PageActionProperties;
 class PageActionPropertiesProviderInterface;
 
 // Indicates the source used to color the page action icon.
@@ -356,9 +355,6 @@ class PageActionControllerImpl : public PageActionController,
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
-  using PageActionMetricsRecordersMap =
-      std::map<actions::ActionId,
-               std::unique_ptr<PageActionPerActionMetricsRecorderInterface>>;
 
   // Called by ScopedPageActionActivity when it's destroyed.
   void DecrementActivityCounter(actions::ActionId action_id) override;
@@ -387,20 +383,11 @@ class PageActionControllerImpl : public PageActionController,
       actions::ActionId action_id,
       bool is_ephemeral);
 
-  // Helper used to create per-action metric recorder.
-  std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-  CreatePerActionMetricsRecorder(
+  // Helper used to create a metric recorder.
+  std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
       tabs::TabInterface& tab_interface,
-      const PageActionProperties& properties,
-      PageActionModelInterface& model,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback);
-
-  // Helper used to create a page-level metric recorder.
-  std::unique_ptr<PageActionPageMetricsRecorderInterface>
-  CreatePageMetricsRecorder(tabs::TabInterface& tab_interface,
-                            VisibleEphemeralPageActionsCountCallback
-                                visible_ephemeral_page_actions_count_callback);
 
   // Issues internally a metric recording for the provided `action_id`.
   void RecordClickMetric(actions::ActionId action_id,
@@ -430,14 +417,9 @@ class PageActionControllerImpl : public PageActionController,
   // Tracks the number of active scopes for each action.
   std::map<actions::ActionId, int> activity_counters_;
 
-  // Metrics recorders associated with ephemeral page actions.
-  // Each recorder handles logging UMA metrics for one specific action id.
-  PageActionMetricsRecordersMap metrics_recorders_;
-
-  // Page-level metric recorder. It's will recorder global metrics that is not
-  // scoped to a single page action.
-  std::unique_ptr<PageActionPageMetricsRecorderInterface>
-      page_metrics_recorder_;
+  // Metrics recorder.
+  // Handles logging UMA metrics for all actions in this tab.
+  std::unique_ptr<PageActionMetricsRecorderInterface> metrics_recorder_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

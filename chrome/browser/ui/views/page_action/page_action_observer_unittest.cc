@@ -141,6 +141,8 @@ class PageActionObserverTest : public ::testing::Test {
         nullptr, &model_factory_, &metrics_factory_);
     controller_->Initialize(tab_, {kTestPageActionId},
                             TestPageActionPropertiesProvider(kTestProperties));
+    ON_CALL(model_factory_.Get(kTestPageActionId), GetActionId())
+        .WillByDefault(Return(kTestPageActionId));
     ON_CALL(model_factory_.Get(kTestPageActionId), GetTooltipText())
         .WillByDefault(ReturnRef(kTestTooltip));
     ON_CALL(model_factory_.Get(kTestPageActionId), GetText())

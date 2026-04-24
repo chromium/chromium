@@ -39,7 +39,6 @@ source_set("page_action") {
     "page_action_metrics_recorder_interface.h",
     "page_action_model.h",
     "page_action_model_observer.h",
-    "page_action_page_metrics_recorder.h",
   ]
 
   public_deps = [
@@ -82,7 +81,6 @@ source_set("impl") {
     "page_action_metrics_recorder.cc",
     "page_action_model.cc",
     "page_action_observer.cc",
-    "page_action_page_metrics_recorder.cc",
     "page_action_properties_provider.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
@@ -173,7 +171,6 @@ source_set("unit_tests") {
     "page_action_metrics_recorder_unittest.cc",
     "page_action_model_unittest.cc",
     "page_action_observer_unittest.cc",
-    "page_action_page_metrics_recorder_unittest.cc",
     "page_action_view_unittest.cc",
   ]
 

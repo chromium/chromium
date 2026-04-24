@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_H_
 
-#include <set>
+#include <map>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "ui/actions/action_id.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -26,93 +27,74 @@ namespace page_actions {
 
 struct PageActionProperties;
 
-// Records visibility metrics for a specific page action, scoped to a single
-// ActionId. This class does not handle all page action metrics, only for the
-// one it is instantiated for.
-class PageActionPerActionMetricsRecorder
-    : public PageActionPerActionMetricsRecorderInterface,
-      public PageActionModelObserver {
+// Records both per-action and page-level metrics for page actions.
+class PageActionMetricsRecorder : public PageActionMetricsRecorderInterface,
+                                  public PageActionModelObserver {
  public:
-  PageActionPerActionMetricsRecorder(
-      tabs::TabInterface& tab_interface,
-      const PageActionProperties& properties,
-      PageActionModelInterface& model,
-      VisibleEphemeralPageActionsCountCallback
-          visible_ephemeral_page_actions_count_callback);
+  PageActionMetricsRecorder(tabs::TabInterface& tab_interface,
+                            VisibleEphemeralPageActionsCountCallback
+                                visible_ephemeral_page_actions_count_callback);
 
-  PageActionPerActionMetricsRecorder(
-      const PageActionPerActionMetricsRecorder&) = delete;
-  PageActionPerActionMetricsRecorder operator=(
-      const PageActionPerActionMetricsRecorder&) = delete;
+  PageActionMetricsRecorder(const PageActionMetricsRecorder&) = delete;
+  PageActionMetricsRecorder operator=(const PageActionMetricsRecorder&) =
+      delete;
 
-  ~PageActionPerActionMetricsRecorder() override;
+  ~PageActionMetricsRecorder() override;
 
-  // PageActionPerActionMetricsRecorderInterface:
-  void RecordClick(PageActionTrigger trigger_source) override;
+  // PageActionMetricsRecorderInterface:
+  void RecordClick(actions::ActionId action_id,
+                   PageActionTrigger trigger_source) override;
+  void Observe(PageActionModelInterface& model,
+               const PageActionProperties& properties) override;
 
-  // PageActionModelObserver
+  // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
   void OnPageActionModelWillBeDeleted(
       const PageActionModelInterface& model) override;
 
  private:
-  // Indicates the sates of the visual representation currently shown to the
-  // user.
   enum class DisplayState { kHidden = 0, kIconOnly = 1, kChip = 2 };
 
-  // Tracks if metrics have been recorded for the current navigation.
-  struct NavigationMetrics {
+  struct PerActionState {
+    PageActionIconType type;
+    std::string histogram_name;
+    DisplayState display_state = DisplayState::kHidden;
     bool icon_shown_recorded = false;
     bool chip_shown_recorded = false;
-    GURL url;
+    int last_seen_navigation_id = 0;
   };
 
-  // Helpers to coordinate the state change.
-  void UpdateDisplayState(const PageActionModelInterface& model);
-
-  // Determines the current display state base on the `model`.
+  void UpdateDisplayState(actions::ActionId action_id,
+                          const PageActionModelInterface& model);
   DisplayState DetermineDisplayState(const PageActionModelInterface& model);
 
-  // Detects a new main‑frame navigation.
-  //
-  // Returns `true` if the URL of the tab’s primary `WebContents` differs
-  // from the URL we saw the last time this method was queried. When a new
-  // navigation is detected the method resets the per‑navigation flags inside
-  // `current_navigation_metrics_` (so subsequent calls during the same page
-  // view return false).
-  //
-  // This helper is called from UpdateDisplayState() right before deciding
-  // whether to emit per‑navigation "shown" metrics, ensuring we count each
-  // page only once regardless of how many visibility updates arrive.
-  bool IsNewNavigation();
+  void CheckForNewNavigation();
+  void ResetPerActionStateForNewNavigation(actions::ActionId action_id);
 
-  // Helpers to record metrics for each state/action.
-  void RecordIconShown();
-  void RecordChipShown();
-  void RecordIconClick();
-  void RecordChipClick();
-  void RecordShownPerNavigation();
+  void RecordPageShownMetrics();
+  void RecordIconShown(actions::ActionId action_id);
+  void RecordChipShown(actions::ActionId action_id);
+  void RecordIconClick(actions::ActionId action_id);
+  void RecordChipClick(actions::ActionId action_id);
+  void RecordShownPerNavigation(actions::ActionId action_id);
 
-  // Tracks per-navigation state.
-  NavigationMetrics current_navigation_metrics_;
-
-  // Tracks the latest visual state (what the user sees right now).
-  DisplayState current_display_state_ = DisplayState::kHidden;
-
-  // Used to get count of visible ephemeral page actions from the
-  // `PageActionController`.
+  const raw_ref<tabs::TabInterface> tab_interface_;
   VisibleEphemeralPageActionsCountCallback
       visible_ephemeral_page_actions_count_callback_;
 
-  // Properties associated with the specific page action being observed.
-  const PageActionIconType page_action_type_;
-  const std::string histogram_name_;
+  GURL last_committed_url_;
+  int current_navigation_id_ = 0;
 
-  // The TabInterface is guaranteed valid for this object’s lifetime.
-  const raw_ref<tabs::TabInterface> tab_interface_;
+  bool has_recorded_page_shown_for_navigation_ = false;
+  bool has_recorded_action_shown_for_navigation_ = false;
+  bool has_recorded_multi_shown_for_navigation_ = false;
+  int last_recorded_count_ = 0;
 
-  base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
-      scoped_observation_{this};
+  std::map<actions::ActionId, PerActionState> per_action_states_;
+
+  base::ScopedMultiSourceObservation<PageActionModelInterface,
+                                     PageActionModelObserver>
+      model_observations_{this};
 };
 
 }  // namespace page_actions

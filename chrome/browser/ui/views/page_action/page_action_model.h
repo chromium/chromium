@@ -41,6 +41,8 @@ class PageActionModelInterface {
   PageActionModelInterface() = default;
   virtual ~PageActionModelInterface() = default;
 
+  virtual actions::ActionId GetActionId() const = 0;
+
   virtual void AddObserver(PageActionModelObserver* observer) = 0;
   virtual void RemoveObserver(PageActionModelObserver* observer) = 0;
 
@@ -121,10 +123,13 @@ class PageActionModelInterface {
 // PageActionModel represents the page action's state, scoped to a single tab.
 class PageActionModel : public PageActionModelInterface {
  public:
-  explicit PageActionModel(bool is_ephemeral = false);
+  explicit PageActionModel(actions::ActionId action_id,
+                           bool is_ephemeral = false);
   PageActionModel(const PageActionModel&) = delete;
   PageActionModel& operator=(const PageActionModel&) = delete;
   ~PageActionModel() override;
+
+  actions::ActionId GetActionId() const override;
 
   void AddObserver(PageActionModelObserver* observer) override;
   void RemoveObserver(PageActionModelObserver* observer) override;
@@ -246,6 +251,7 @@ class PageActionModel : public PageActionModelInterface {
   void NotifyChange(Property property);
 
   // Represents whether this page action will be always visible or not.
+  const actions::ActionId action_id_;
   const bool is_ephemeral_ = false;
 
   // Represents whether the tab this model belongs to is active.

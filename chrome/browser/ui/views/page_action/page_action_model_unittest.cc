@@ -71,6 +71,8 @@ class ReentrantPageActionModelObserver : public PageActionModelObserver {
 
 class PageActionModelTest : public ::testing::Test {
  protected:
+  PageActionModelTest() : model_(0) {}
+
   void SetUp() override { model_.AddObserver(&observer_); }
 
   void TearDown() override { model_.RemoveObserver(&observer_); }
@@ -310,7 +312,7 @@ TEST_F(PageActionModelTest, ActionActive) {
 }
 
 TEST(PageActionModelReentrancyTest, AppliesReentrantUpdateWithoutSecondNotify) {
-  PageActionModel model;
+  PageActionModel model(0);
   ReentrantPageActionModelObserver observer(model);
   model.AddObserver(&observer);
 

@@ -21,6 +21,7 @@ class MockPageActionModel : public PageActionModelInterface {
   MockPageActionModel();
   ~MockPageActionModel() override;
 
+  MOCK_METHOD(actions::ActionId, GetActionId, (), (const, override));
   MOCK_METHOD(bool, GetVisible, (), (const, override));
   MOCK_METHOD(bool, IsChipShowing, (), (const, override));
   MOCK_METHOD(bool, ShouldShowSuggestionChip, (), (const, override));
@@ -150,7 +151,14 @@ class FakePageActionModelFactory : public PageActionModelFactory {
  public:
   std::unique_ptr<PageActionModelInterface> Create(actions::ActionId action_id,
                                                    bool is_ephemeral) override {
-    auto model = std::make_unique<PageActionModelType>();
+    std::unique_ptr<PageActionModelType> model;
+    if constexpr (std::is_constructible_v<PageActionModelType,
+                                          actions::ActionId, bool>) {
+      model = std::make_unique<PageActionModelType>(action_id, is_ephemeral);
+    } else {
+      model = std::make_unique<PageActionModelType>();
+      ON_CALL(*model, GetActionId()).WillByDefault(testing::Return(action_id));
+    }
     model_map_.emplace(action_id, model.get());
     return model;
   }

@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_INTERFACE_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_INTERFACE_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "ui/actions/action_id.h"
 
 namespace tabs {
 class TabInterface;
@@ -17,47 +20,27 @@ namespace page_actions {
 class PageActionModelInterface;
 struct PageActionProperties;
 
-// Metrics may need to know the number of visible ephemeral page actions.
-// This information is not available to the local instance of the metrics
-// recorder, as it does not have visibility into the page action state. However,
-// the `PageActionController`, which owns the metrics recorder instance, can
-// determine that count. Therefore, a callback is used to retrieve the count
-// from the `PageActionController`.
 using VisibleEphemeralPageActionsCountCallback = base::RepeatingCallback<int()>;
 
 // Interface for PageActionMetricsRecorder, used for concrete implementation or
 // a mock for testing.
-class PageActionPerActionMetricsRecorderInterface {
+class PageActionMetricsRecorderInterface {
  public:
-  PageActionPerActionMetricsRecorderInterface() = default;
-  virtual ~PageActionPerActionMetricsRecorderInterface() = default;
+  virtual ~PageActionMetricsRecorderInterface() = default;
 
   // Records a click event for the page action.
-  virtual void RecordClick(PageActionTrigger trigger_source) = 0;
-};
+  virtual void RecordClick(actions::ActionId action_id,
+                           PageActionTrigger trigger_source) = 0;
 
-class PageActionPageMetricsRecorderInterface {
- public:
-  PageActionPageMetricsRecorderInterface() = default;
-  virtual ~PageActionPageMetricsRecorderInterface() = default;
-
-  // Allows the page-level recorder to observe multiple page action model.
-  virtual void Observe(PageActionModelInterface& model) = 0;
+  // Allows the recorder to observe a page action model.
+  virtual void Observe(PageActionModelInterface& model,
+                       const PageActionProperties& properties) = 0;
 };
 
 class PageActionMetricsRecorderFactory {
  public:
   virtual ~PageActionMetricsRecorderFactory() = default;
-  virtual std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
-  CreatePerActionMetricsRecorder(
-      tabs::TabInterface& tab_interface,
-      const PageActionProperties& properties,
-      PageActionModelInterface& model,
-      VisibleEphemeralPageActionsCountCallback
-          visible_ephemeral_page_actions_count_callback) = 0;
-
-  virtual std::unique_ptr<PageActionPageMetricsRecorderInterface>
-  CreatePageMetricRecorder(
+  virtual std::unique_ptr<PageActionMetricsRecorderInterface> CreateRecorder(
       tabs::TabInterface& tab_interface,
       VisibleEphemeralPageActionsCountCallback
           visible_ephemeral_page_actions_count_callback) = 0;
