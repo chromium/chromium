@@ -11,6 +11,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/webrtc/webrtc_features.h"
@@ -225,7 +226,10 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
       encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
                                          /*scalability_mode=*/std::nullopt),
       kSupportedPowerEfficient));
-#if BUILDFLAG(RTC_USE_H264)
+  // On Android, H.264 HW encoder is always available via MediaCodec regardless
+  // of the OpenH264 SW encoder build flag. On other platforms, H.264 HW encoder
+  // requires the OpenH264 SW encoder to be available as a fallback.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_OPENH264)
   EXPECT_TRUE(Equals(
       encoder_factory_.QueryCodecSupport(
           webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
@@ -233,7 +237,9 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
                                           {"profile-level-id", "42001f"}}),
           /*scalability_mode=*/std::nullopt),
       kSupportedPowerEfficient));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // CBP (Constrained Baseline Profile) is supported on platforms where
+  // kPlatformH264CbpEncoding is enabled by default: Linux, ChromeOS, Android.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(Equals(
       encoder_factory_.QueryCodecSupport(
           webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},

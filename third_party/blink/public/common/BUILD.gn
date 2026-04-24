@@ -87,7 +87,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_JXL_DECODER=$enable_jxl_decoder",
-    "RTC_USE_H264=$rtc_use_h264",
     "RTC_USE_H265=$rtc_use_h265",
   ]
 }

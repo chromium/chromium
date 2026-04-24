@@ -16,6 +16,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(
       WebRtcTestBase::kVP9Profile2Specifier, "VP9p2");
 }
 
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_OPENH264)
 
 // TODO(crbug.com/359253692): test fails on some mac bots.
 #if BUILDFLAG(IS_MAC)
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
     MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
+  // Only run test if run-time feature corresponding to OpenH264 is on.
   if (!base::FeatureList::IsEnabled(media::kOpenH264SoftwareEncoder)) {
     LOG(WARNING) << "Run-time feature OpenH264SoftwareEncoder disabled. "
                     "Skipping WebRtcPerfBrowserTest."
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(
       "H264", true /* prefer_hw_video_codec */);
 }
 
-#endif  // BUILDFLAG(RTC_USE_H264)
+#endif  // BUILDFLAG(ENABLE_OPENH264)
 
 IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,

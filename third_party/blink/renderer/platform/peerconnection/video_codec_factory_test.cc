@@ -9,12 +9,12 @@
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_encoder_metrics_provider.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"
@@ -141,7 +141,9 @@ class VideoDecoderFactoryTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-#if BUILDFLAG(RTC_USE_H264)
+// This test exercises the OpenH264/FFmpeg software decoder path, which is only
+// available when both ENABLE_OPENH264 and ENABLE_FFMPEG_VIDEO_DECODERS are set.
+#if BUILDFLAG(ENABLE_OPENH264)
 TEST_F(VideoDecoderFactoryTest, CreateSoftwareDecoderForH264HighProfile) {
   testing::NiceMock<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories{
       nullptr};
@@ -172,6 +174,6 @@ TEST_F(VideoDecoderFactoryTest, CreateSoftwareDecoderForH264HighProfile) {
                                     high_profile_format),
             nullptr);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_OPENH264)
 
 }  // namespace blink
