@@ -5296,13 +5296,19 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
       if (!is_android) {
-        sources += [ "../browser/custom_handlers/chrome_protocol_handler_navigation_throttle_browsertest.cc" ]
+        sources += [
+          "../browser/custom_handlers/chrome_protocol_handler_navigation_throttle_browsertest.cc",
+          "../browser/platform_util_browsertest.cc",
+        ]
       }
       if (is_chromeos) {
         sources += [
           "../browser/ui/views/frame/system_web_app_frame_view_browsertest.cc",
         ]
-        deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
+        deps += [
+          "//chrome/browser/ash/fileapi",
+          "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+        ]
       } else {
         sources += [
           "../browser/ui/views/extensions/extension_post_install_dialog_view_utils_signin_browsertest.cc",
@@ -8277,7 +8283,6 @@ test("unit_tests") {
       "../browser/password_manager/generated_password_leak_detection_pref_unittest.cc",
       "../browser/password_manager/password_change_delegate_impl_unittest.cc",
       "../browser/performance_manager/execution_context_priority/side_panel_loading_voter_unittest.cc",
-      "../browser/platform_util_unittest.cc",
       "../browser/policy/policy_path_parser_unittest.cc",
       "../browser/policy/webhid_device_policy_handler_unittest.cc",
       "../browser/profiles/profile_avatar_icon_util_unittest.cc",

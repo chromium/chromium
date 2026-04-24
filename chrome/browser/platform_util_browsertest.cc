@@ -12,8 +12,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -27,7 +32,8 @@
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "content/public/browser/browser_context.h"
@@ -37,8 +43,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/common/file_system/file_system_types.h"
-#else
-#include "content/public/test/browser_task_environment.h"
 #endif
 
 namespace platform_util {
@@ -75,7 +79,7 @@ class PlatformUtilTestContentBrowserClient : public ChromeContentBrowserClient {
 };
 
 // Base test fixture class to be used on Chrome OS.
-class PlatformUtilTestBase : public BrowserWithTestWindowTest {
+class PlatformUtilTestBase : public InProcessBrowserTest {
  protected:
   void SetUpPlatformFixture(const base::FilePath& test_directory) {
     content_browser_client_ =
@@ -140,12 +144,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
                                /*should_notify_initialized=*/false);
   }
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     content::ContentBrowserClient* content_browser_client =
         content::SetBrowserClientForTesting(old_content_browser_client_);
     old_content_browser_client_ = nullptr;
@@ -153,7 +152,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
                   content_browser_client_.get()),
               content_browser_client)
         << "ContentBrowserClient changed during test.";
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  private:
@@ -167,21 +166,18 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
 #else
 
 // Test fixture used by all desktop platforms other than Chrome OS.
-class PlatformUtilTestBase : public testing::Test {
+class PlatformUtilTestBase : public InProcessBrowserTest {
  protected:
   Profile* GetProfile() { return nullptr; }
   void SetUpPlatformFixture(const base::FilePath&) {}
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 #endif
 
 class PlatformUtilTest : public PlatformUtilTestBase {
  public:
-  void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(PlatformUtilTestBase::SetUp());
+  void SetUpOnMainThread() override {
+    PlatformUtilTestBase::SetUpOnMainThread();
 
     static const char kTestFileData[] = "Cow says moo!";
 
@@ -237,14 +233,14 @@ class PlatformUtilTest : public PlatformUtilTestBase {
 
 }  // namespace
 
-TEST_F(PlatformUtilTest, OpenFile) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilTest, OpenFile) {
   EXPECT_EQ(OPEN_SUCCEEDED, CallOpenItem(existing_file_, OPEN_FILE));
   EXPECT_EQ(OPEN_FAILED_INVALID_TYPE,
             CallOpenItem(existing_folder_, OPEN_FILE));
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND, CallOpenItem(nowhere_, OPEN_FILE));
 }
 
-TEST_F(PlatformUtilTest, OpenFolder) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilTest, OpenFolder) {
   EXPECT_EQ(OPEN_SUCCEEDED, CallOpenItem(existing_folder_, OPEN_FOLDER));
   EXPECT_EQ(OPEN_FAILED_INVALID_TYPE,
             CallOpenItem(existing_file_, OPEN_FOLDER));
@@ -256,8 +252,8 @@ TEST_F(PlatformUtilTest, OpenFolder) {
 // supports it as well, but not on Windows XP.
 class PlatformUtilPosixTest : public PlatformUtilTest {
  public:
-  void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(PlatformUtilTest::SetUp());
+  void SetUpOnMainThread() override {
+    PlatformUtilTest::SetUpOnMainThread();
 
     symlink_to_file_ = directory_.GetPath().AppendASCII("l_file.txt");
     ASSERT_TRUE(base::CreateSymbolicLink(existing_file_, symlink_to_file_));
@@ -278,7 +274,8 @@ class PlatformUtilPosixTest : public PlatformUtilTest {
 // ChromeOS doesn't follow symbolic links in sandboxed filesystems. So all the
 // symbolic link tests should return PATH_NOT_FOUND.
 
-TEST_F(PlatformUtilPosixTest, OpenFileWithPosixSymlinksChromeOS) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilPosixTest,
+                       OpenFileWithPosixSymlinksChromeOS) {
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND,
             CallOpenItem(symlink_to_file_, OPEN_FILE));
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND,
@@ -287,7 +284,8 @@ TEST_F(PlatformUtilPosixTest, OpenFileWithPosixSymlinksChromeOS) {
             CallOpenItem(symlink_to_nowhere_, OPEN_FILE));
 }
 
-TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinksChromeOS) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilPosixTest,
+                       OpenFolderWithPosixSymlinksChromeOS) {
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND,
             CallOpenItem(symlink_to_folder_, OPEN_FOLDER));
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND,
@@ -296,7 +294,8 @@ TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinksChromeOS) {
             CallOpenItem(symlink_to_nowhere_, OPEN_FOLDER));
 }
 
-TEST_F(PlatformUtilTest, OpenFileWithUnhandledFileType) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilTest, OpenFileWithUnhandledFileType) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath unhandled_file =
       directory_.GetPath().AppendASCII("myfile.filetype");
   ASSERT_TRUE(base::WriteFile(unhandled_file, "cat"));
@@ -309,7 +308,7 @@ TEST_F(PlatformUtilTest, OpenFileWithUnhandledFileType) {
 // On all other Posix platforms, the symbolic link tests should work as
 // expected.
 
-TEST_F(PlatformUtilPosixTest, OpenFileWithPosixSymlinks) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilPosixTest, OpenFileWithPosixSymlinks) {
   EXPECT_EQ(OPEN_SUCCEEDED, CallOpenItem(symlink_to_file_, OPEN_FILE));
   EXPECT_EQ(OPEN_FAILED_INVALID_TYPE,
             CallOpenItem(symlink_to_folder_, OPEN_FILE));
@@ -317,7 +316,7 @@ TEST_F(PlatformUtilPosixTest, OpenFileWithPosixSymlinks) {
             CallOpenItem(symlink_to_nowhere_, OPEN_FILE));
 }
 
-TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinks) {
+IN_PROC_BROWSER_TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinks) {
   EXPECT_EQ(OPEN_SUCCEEDED, CallOpenItem(symlink_to_folder_, OPEN_FOLDER));
   EXPECT_EQ(OPEN_FAILED_INVALID_TYPE,
             CallOpenItem(symlink_to_file_, OPEN_FOLDER));
