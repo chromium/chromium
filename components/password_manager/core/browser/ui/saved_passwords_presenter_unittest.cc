@@ -107,16 +107,20 @@ constexpr char kFallbackIconQueryParams[] =
     "TOP_DOMAIN&size=32&url=";
 constexpr char kDefaultAndroidIcon[] =
     "https://www.gstatic.com/images/branding/product/1x/play_apps_32dp.png";
+#endif
 
 GURL CreateFaviconUrl(GURL url) {
+#if BUILDFLAG(IS_ANDROID)
+  return url;
+#else
   GURL::Replacements replacements;
   std::string query = kFallbackIconQueryParams +
                       base::EscapeQueryParamValue(url.spec(),
                                                   /*use_plus=*/false);
   replacements.SetQueryStr(query);
   return GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);
+#endif
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class SavedPasswordsPresenterTest : public testing::Test {
  protected:
@@ -1941,7 +1945,6 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test1.com",
@@ -1949,13 +1952,6 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
                                   .signon_realm = form_1.signon_realm},
                   .username = form_1.username_value,
                   .favicon_url = CreateFaviconUrl(form_1.url)}));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
-              IsEmpty());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
@@ -1967,7 +1963,6 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test0.com",
@@ -1975,13 +1970,6 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
                                   .signon_realm = form_1.signon_realm},
                   .username = form_1.username_value,
                   .favicon_url = CreateFaviconUrl(form_1.url)}));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
-              IsEmpty());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1999,7 +1987,6 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(
       presenter().GetActorLoginPermissions(GetSyncService()),
       UnorderedElementsAre(
@@ -2015,14 +2002,12 @@ TEST_F(SavedPasswordsPresenterTest,
                                           "details?id=com.app.name"),
                               .signon_realm = form_2.signon_realm},
               .username = form_2.username_value,
-              .favicon_url = GURL(kDefaultAndroidIcon)}));
+#if BUILDFLAG(IS_ANDROID)
+              .favicon_url = GURL()
 #else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
-              IsEmpty());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+              .favicon_url = GURL(kDefaultAndroidIcon)
+#endif
+          }));
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -2039,7 +2024,6 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(
                   ActorLoginPermission{
@@ -2054,13 +2038,6 @@ TEST_F(SavedPasswordsPresenterTest,
                                       .signon_realm = form_2.signon_realm},
                       .username = form_2.username_value,
                       .favicon_url = CreateFaviconUrl(form_2.url)}));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
-              IsEmpty());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
@@ -2074,17 +2051,9 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
       form.signon_realm, base::UTF16ToUTF8(form.username_value));
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   form.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(GetAllLoginsSync(&store()),
-              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -2108,16 +2077,10 @@ TEST_F(SavedPasswordsPresenterTest,
   presenter().RevokeActorLoginPermission(form_1.signon_realm, "user_1");
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   form_1.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(form_1.signon_realm,
                                UnorderedElementsAre(form_1, form_2))));
-#else
-  EXPECT_THAT(GetAllLoginsSync(&store()),
-              ElementsAre(Pair(form_1.signon_realm,
-                               UnorderedElementsAre(form_1, form_2))));
-#endif
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -2136,20 +2099,11 @@ TEST_F(SavedPasswordsPresenterTest,
       form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   form_1.actor_login_approved = false;
   form_2.actor_login_approved = false;
   EXPECT_THAT(
       GetAllLoginsSync(&store()),
       ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(
-      GetAllLoginsSync(&store()),
-      ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 TEST_F(SavedPasswordsPresenterTest,
        RevokeActorLoginPermissionHandlesAndroidApps) {
@@ -2165,17 +2119,9 @@ TEST_F(SavedPasswordsPresenterTest,
       form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
   RunUntilIdle();
 
-#if !BUILDFLAG(IS_ANDROID)
   form_1.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(GetAllLoginsSync(&store()),
-              ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 // Prefixes like [m, mobile, www] are considered as "same-site".

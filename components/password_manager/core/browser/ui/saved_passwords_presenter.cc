@@ -21,9 +21,11 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/strong_alias.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -440,6 +442,41 @@ base::flat_set<ActorLoginPermission>
 SavedPasswordsPresenter::GetActorLoginPermissions(
     const syncer::SyncService* sync_service) const {
   std::vector<ActorLoginPermission> permissions;
+#if BUILDFLAG(IS_ANDROID)
+  for (const CredentialUIEntry& credential : GetSavedCredentials()) {
+    std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
+        credential.GetAffiliatedDomains();
+    for (const PasswordForm& form : GetCorrespondingPasswordForms(credential)) {
+      if (form.actor_login_approved) {
+        auto form_domain_info_it = std::ranges::find_if(
+            affiliated_domains.begin(), affiliated_domains.end(),
+            [&form](const CredentialUIEntry::DomainInfo& domain_info) {
+              return form.signon_realm == domain_info.signon_realm;
+            });
+        // This can happen if a user has credentials stored for 2 app versions
+        // with the same app package name. Affiliated domains are unique per
+        // URL, which in the case of such 2 versions of an app, would be
+        // identical.
+        if (form_domain_info_it == affiliated_domains.end()) {
+          continue;
+        }
+
+        // Create fallback URL because currently we cannot use
+        // AffiliatedGroup::GetAllowedIconUrl on Android.
+        GURL favicon_url;
+        for (const CredentialFacet& facet : credential.facets) {
+          if (facet.url.SchemeIs(url::kHttpsScheme)) {
+            favicon_url = facet.url;
+            break;
+          }
+        }
+
+        permissions.emplace_back(*form_domain_info_it, form.username_value,
+                                 favicon_url);
+      }
+    }
+  }
+#else
   std::vector<AffiliatedGroup> groups =
       passwords_grouper_->GetAffiliatedGroupsWithGroupingInfo();
   for (const AffiliatedGroup& group : groups) {
@@ -466,14 +503,21 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
       }
     }
   }
+#endif
   return base::flat_set<ActorLoginPermission>(std::move(permissions));
 }
 
 void SavedPasswordsPresenter::RevokeActorLoginPermission(
     const std::string& signon_realm,
     const std::string& username) {
-  for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
-    for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+  std::vector<CredentialUIEntry> credentials;
+#if BUILDFLAG(IS_ANDROID)
+  credentials = GetSavedCredentials();
+#else
+  credentials = passwords_grouper_->GetAllCredentials();
+#endif
+  for (const CredentialUIEntry& credential : credentials) {
+    for (const PasswordForm& form : GetCorrespondingPasswordForms(credential)) {
       if (form.signon_realm == signon_realm &&
           form.username_value == base::UTF8ToUTF16(username)) {
         PasswordForm updated_form = form;

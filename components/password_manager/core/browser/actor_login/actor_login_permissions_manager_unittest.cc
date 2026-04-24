@@ -121,14 +121,7 @@ TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyPassword) {
       future;
   permissions_manager_->GetAllPermissions(GetSyncService(),
                                           future.GetCallback());
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(future.Get().size(), 2u);
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  EXPECT_THAT(future.Get(), IsEmpty());
-#endif
 }
 
 TEST_F(ActorLoginPermissionsManagerTest, RevokePermission_Success) {
@@ -142,7 +135,6 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission_Success) {
   profile_store_->AddLogin(CreateApprovedForm("https://example.com", u"user1"));
   add_run_loop.Run();
 
-#if !BUILDFLAG(IS_ANDROID)
   FederatedPermission federated_permission;
   federated_permission.rp_embedder_origin =
       url::Origin::Create(GURL("https://example.com/"));
@@ -194,16 +186,6 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission_Success) {
   permissions_manager_->GetAllPermissions(GetSyncService(),
                                           after_revoke_future.GetCallback());
   EXPECT_THAT(after_revoke_future.Get(), IsEmpty());
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
-      future;
-  permissions_manager_->GetAllPermissions(GetSyncService(),
-                                          future.GetCallback());
-  EXPECT_THAT(future.Get(), IsEmpty());
-#endif
 }
 
 TEST_F(ActorLoginPermissionsManagerTest,
@@ -218,7 +200,6 @@ TEST_F(ActorLoginPermissionsManagerTest,
   profile_store_->AddLogin(CreateApprovedForm("https://example.com", u"user1"));
   add_run_loop.Run();
 
-#if !BUILDFLAG(IS_ANDROID)
   FederatedPermission federated_permission;
   federated_permission.rp_embedder_origin =
       url::Origin::Create(GURL("https://example.com/"));
@@ -261,16 +242,6 @@ TEST_F(ActorLoginPermissionsManagerTest,
                                           after_revoke_future.GetCallback());
   // Federated permission is still present and is returned.
   EXPECT_EQ(after_revoke_future.Get().size(), 1u);
-#else
-  // Permissions rely on passwords grouper to get credentials and the grouper is
-  // not available on Android. We still want to be able to build on Android but
-  // the actual support needs to be implemented.
-  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
-      future;
-  permissions_manager_->GetAllPermissions(GetSyncService(),
-                                          future.GetCallback());
-  EXPECT_THAT(future.Get(), IsEmpty());
-#endif
 }
 
 TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyFederated) {
@@ -350,7 +321,6 @@ TEST_F(ActorLoginPermissionsManagerTest,
   base::flat_set<password_manager::ActorLoginPermission> permissions =
       future.Get();
 
-#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(permissions.size(), 4u);
   EXPECT_THAT(base::ToVector(permissions,
                              [](const auto& p) {
@@ -362,19 +332,6 @@ TEST_F(ActorLoginPermissionsManagerTest,
                   std::pair(u"password_user", "https://password.com/"),
                   std::pair(u"user2", "https://example.com/"),
                   std::pair(u"user1", "https://other.com/")));
-#else
-  // Grouper is not supported on Android yet, so password permissions are not
-  // returned.
-  EXPECT_EQ(permissions.size(), 3u);
-  EXPECT_THAT(
-      base::ToVector(permissions,
-                     [](const auto& p) {
-                       return std::pair(p.username, p.domain_info.signon_realm);
-                     }),
-      testing::UnorderedElementsAre(std::pair(u"user1", "https://example.com/"),
-                                    std::pair(u"user2", "https://example.com/"),
-                                    std::pair(u"user1", "https://other.com/")));
-#endif
 }
 
 TEST_F(ActorLoginPermissionsManagerTest,
