@@ -466,10 +466,10 @@
     Search for clipboard image
   </message>
   <message name="IDS_ACC_AUTOCOMPLETE_CLIPBOARD_TEXT" desc="Text for screenreaders describing text from a clipboard.">
-    Search for clipboard text, <ph name="TEXT">$2<ex>Paris, france</ex></ph>
+    Search for clipboard text, <ph name="TEXT">$1<ex>Paris, france</ex></ph>
   </message>
   <message name="IDS_ACC_AUTOCOMPLETE_CLIPBOARD_URL" desc="Text for screenreaders describing a URL from a clipboard.">
-    Search for clipboard URL, <ph name="SHORT_URL">$2<ex>www.chromium.org</ex></ph>
+    Search for clipboard URL, <ph name="SHORT_URL">$1<ex>www.chromium.org</ex></ph>
   </message>
   <message name="IDS_ACC_SEARCH_ICON" desc="Text for screenreaders describing a search icon image.">
     Search icon
