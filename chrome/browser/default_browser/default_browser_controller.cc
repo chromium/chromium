@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
+#include "default_browser_setter.h"
 
 namespace default_browser {
 
@@ -21,6 +22,8 @@ std::string SetterTypeToString(DefaultBrowserSetterType setter_type) {
   switch (setter_type) {
     case DefaultBrowserSetterType::kShellIntegration:
       return "ShellIntegration";
+    case DefaultBrowserSetterType::kVisualGuide:
+      return "VisualGuide";
     default:
       NOTREACHED();
   }

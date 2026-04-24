@@ -8134,8 +8134,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "setter_option": "shell_integration"
+                    },
                     "enable_features": [
-                        "DefaultBrowserVisualGuidedSetter"
+                        "DefaultBrowserSetterSelection"
                     ]
                 }
             ]

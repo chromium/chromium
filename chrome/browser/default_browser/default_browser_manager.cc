@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
 #include "chrome/browser/default_browser/default_browser_notification_observer.h"
+#include "chrome/browser/default_browser/setters/default_browser_visual_guided_setter.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
 #include "chrome/browser/shell_integration.h"
 #include "url/gurl.h"
@@ -189,8 +191,20 @@ DefaultBrowserManager::CreateDefaultDelegate() {
 std::unique_ptr<DefaultBrowserController>
 DefaultBrowserManager::CreateControllerFor(
     DefaultBrowserEntrypointType entrypoint) {
-  return std::make_unique<DefaultBrowserController>(
-      std::make_unique<ShellIntegrationDefaultBrowserSetter>(), entrypoint);
+  std::unique_ptr<DefaultBrowserSetter> setter;
+  switch (GetDefaultBrowserSetterType()) {
+    case DefaultBrowserSetterType::kShellIntegration:
+      setter = std::make_unique<ShellIntegrationDefaultBrowserSetter>();
+      break;
+    case DefaultBrowserSetterType::kVisualGuide:
+      setter = std::make_unique<DefaultBrowserVisualGuidedSetter>();
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return std::make_unique<DefaultBrowserController>(std::move(setter),
+                                                    entrypoint);
 }
 
 Profile& DefaultBrowserManager::GetProfile() {

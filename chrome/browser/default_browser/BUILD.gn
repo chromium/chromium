@@ -29,6 +29,8 @@ source_set("default_browser") {
     "default_browser_notification_observer.cc",
     "default_browser_notification_observer.h",
     "default_browser_setter.h",
+    "setters/default_browser_visual_guided_setter.cc",
+    "setters/default_browser_visual_guided_setter.h",
     "setters/shell_integration_default_browser_setter.cc",
     "setters/shell_integration_default_browser_setter.h",
   ]

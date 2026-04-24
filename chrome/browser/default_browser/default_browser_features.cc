@@ -31,6 +31,14 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   return kDefaultBrowserPromptSurfaceParam.Get();
 }
 
+DefaultBrowserSetterType GetDefaultBrowserSetterType() {
+  if (!base::FeatureList::IsEnabled(kDefaultBrowserSetterSelection)) {
+    return DefaultBrowserSetterType::kShellIntegration;
+  }
+
+  return kDefaultBrowserSetterParam.Get();
+}
+
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -58,7 +66,18 @@ BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
 BASE_FEATURE(kDefaultBrowserChangedOsNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserVisualGuidedSetter,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultBrowserSetterSelection, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr inline auto kDefaultBrowserSetterSelectionOption =
+    std::to_array<base::FeatureParam<DefaultBrowserSetterType>::Option>(
+        {{DefaultBrowserSetterType::kShellIntegration, "shell_integration"},
+         {DefaultBrowserSetterType::kVisualGuide, "visual_guide"}});
+
+BASE_FEATURE_ENUM_PARAM(DefaultBrowserSetterType,
+                        kDefaultBrowserSetterParam,
+                        &kDefaultBrowserSetterSelection,
+                        "setter_option",
+                        DefaultBrowserSetterType::kShellIntegration,
+                        kDefaultBrowserSetterSelectionOption);
 
 }  // namespace default_browser

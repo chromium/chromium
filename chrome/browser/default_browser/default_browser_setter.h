@@ -20,7 +20,12 @@ enum class DefaultBrowserSetterType {
   // directly (Mac and Linux) or by opening the Settings Panel UI and navigating
   // to the application page (Windows).
   kShellIntegration = 0,
-  kMaxValue = kShellIntegration
+
+  // On Mac and Linux, this setter will set the Default Browser directly.
+  // On Windows, this setter open the Settings Panel UI with a visual guided
+  // page to assist the user to set the default browser.
+  kVisualGuide = 1,
+  kMaxValue = kVisualGuide,
 };
 
 class DefaultBrowserSetter {

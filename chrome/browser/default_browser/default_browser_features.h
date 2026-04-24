@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/default_browser/default_browser_setter.h"
 
 namespace default_browser {
 
@@ -31,10 +32,17 @@ bool IsDefaultBrowserPromptSurfacesEnabled();
 // if the `kDefaultBrowserFramework` feature is disabled.
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface();
 
+// Returns the type of setter to use for the Default Browser interaction. It
+// will default to `kShellIntegration` when the feature is disabled.
+DefaultBrowserSetterType GetDefaultBrowserSetterType();
+
 BASE_DECLARE_FEATURE(kDefaultBrowserFramework);
 
 // Enables the default browser prompt surfaces (e.g. invalidation, reprompt).
 BASE_DECLARE_FEATURE(kDefaultBrowserPromptSurfaces);
+
+BASE_DECLARE_FEATURE_PARAM(DefaultBrowserPromptSurface,
+                           kDefaultBrowserPromptSurfaceParam);
 
 // Enables the framework to perform additional checks when detecting default
 // browser.
@@ -45,11 +53,14 @@ BASE_DECLARE_FEATURE(kPerformDefaultBrowserCheckValidations);
 // NOTE: This flag expect that `kDefaultBrowserFramework` is enabled first.
 BASE_DECLARE_FEATURE(kDefaultBrowserChangedOsNotification);
 
-// Enables the visual guided setter for default browser.
-BASE_DECLARE_FEATURE(kDefaultBrowserVisualGuidedSetter);
+// Enables the framework to support multiple setter. When disabled, the setter
+// will default to the the `DefaultBrowserSetterType::kShellIntegration`.
+BASE_DECLARE_FEATURE(kDefaultBrowserSetterSelection);
 
-BASE_DECLARE_FEATURE_PARAM(DefaultBrowserPromptSurface,
-                           kDefaultBrowserPromptSurfaceParam);
+// Switch linked to the flag `kDefaultBrowserSetterSelection` that help to set a
+// given setter (e.g. shell_integration, visual_guide).
+BASE_DECLARE_FEATURE_PARAM(DefaultBrowserSetterType,
+                           kDefaultBrowserSetterParam);
 
 }  // namespace default_browser
 
