@@ -11,6 +11,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class BrowserView;
+
 class ContentsCaptureBorderView : public views::View,
                                   public views::ViewObserver {
   METADATA_HEADER(ContentsCaptureBorderView, views::View)
@@ -25,6 +27,12 @@ class ContentsCaptureBorderView : public views::View,
 
   void SetIsInSplit(bool is_in_split);
 
+  void SetCaptureContentsBorderLocation(std::optional<gfx::Rect> location);
+
+  std::optional<gfx::Rect> capture_location() const {
+    return capture_location_;
+  }
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -37,6 +45,8 @@ class ContentsCaptureBorderView : public views::View,
   void OnViewIsDeleting(views::View* observed_view) override;
 
   bool is_in_split_ = false;
+  std::optional<gfx::Rect> capture_location_;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
   raw_ptr<views::View> mini_toolbar_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       view_bounds_observer_{this};
