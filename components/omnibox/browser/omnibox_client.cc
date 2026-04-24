@@ -11,6 +11,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+bool OmniboxClient::IsChromeOmniboxClient() const {
+  return false;
+}
+
 bool OmniboxClient::CurrentPageExists() const {
   return true;
 }

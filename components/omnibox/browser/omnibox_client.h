@@ -73,6 +73,10 @@ class OmniboxClient {
   virtual std::unique_ptr<AutocompleteProviderClient>
   CreateAutocompleteProviderClient() = 0;
 
+  // Returns if the client is ChromeOmniboxClient. Useful for safe downcasting
+  // without RTTI.
+  virtual bool IsChromeOmniboxClient() const;
+
   // Returns whether there is any associated current page.  For example, during
   // startup or shutdown, the omnibox may exist but have no attached page.
   virtual bool CurrentPageExists() const;

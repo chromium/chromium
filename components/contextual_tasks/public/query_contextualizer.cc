@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -105,6 +106,15 @@ class UploadTracker
         controller_->RemoveObserver(this);
         controller_ = nullptr;
       }
+
+      // Delay destruction of `this` until after the current task (e.g. observer
+      // notification loop) completes, to prevent crashes in production. We do
+      // this by posting a task that captures a reference to `UploadTracker`.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::DoNothingWithBoundArgs(base::WrapRefCounted(this)));
+
+      // Run the callback synchronously so that tests (and synchronous flows)
+      // can verify it immediately.
       std::move(callback_).Run(session_handle_);
       self_ref_.reset();
     }
@@ -311,6 +321,7 @@ void QueryContextualizer::OnContextRetrieved(
           upload_tracker = base::MakeRefCounted<UploadTracker>(
               session_handle->GetController());
         }
+        created_handle->NotifySessionStarted();
       }
     }
 

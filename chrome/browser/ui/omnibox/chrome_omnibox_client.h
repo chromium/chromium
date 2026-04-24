@@ -24,6 +24,10 @@ class GURL;
 class LocationBar;
 class Profile;
 
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 namespace omnibox {
 class OmniboxPopupCloser;
 }  // namespace omnibox
@@ -37,7 +41,10 @@ class ChromeOmniboxClient final : public OmniboxClient {
   ChromeOmniboxClient& operator=(const ChromeOmniboxClient&) = delete;
   ~ChromeOmniboxClient() override;
 
+  LocationBar* GetLocationBar() const { return location_bar_; }
+
   // OmniboxClient.
+  bool IsChromeOmniboxClient() const override;
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   bool CurrentPageExists() const override;
@@ -133,6 +140,11 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
   void OpenUrl(GURL gurl) override;
+  void OpenUrlWithCallback(
+      GURL gurl,
+      WindowOpenDisposition disposition,
+      base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
+          callback);
   void OpenIphLink(GURL gurl) override;
   bool IsHistoryEmbeddingsEnabled() const override;
   bool IsAimPopupEnabled() const override;
@@ -141,6 +153,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void MaybePrewarmForDefaultSearchEngine(PrewarmTrigger trigger) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
   Profile* profile() { return profile_; }
+  Browser* browser() { return browser_; }
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,
