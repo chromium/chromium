@@ -9,7 +9,7 @@ This is a list of all the places where we represent
 
  - [blink::Manifest](../../../../third_party/blink/public/common/manifest/manifest.h)\
    Contains subtypes representing certain fields of the manifest that need to be duplicated in handwritten C++ for assorted reasons.
-   Used to be a full duplicate manifest definition until https://crbug.com/1233362.
+   Used to be a full duplicate manifest definition until https://crbug.com/40780829.
 
  - [WebAppInstallInfo](../web_app_install_info.h)\
    Used for installation and updates.

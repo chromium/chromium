@@ -232,7 +232,7 @@ Then, this field can be accessed in the `before_state_change_action_state_` and 
 
 ### Running the tests on Mac
 
-There is a [history](https://crbug.com/1042757) of browser_tests being disabled on Mac trybots & CQ (but they run on the waterfall). To ensure there are no mac failures for changes to integration tests:
+There is a [history](https://crbug.com/40114977) of browser_tests being disabled on Mac trybots & CQ (but they run on the waterfall). To ensure there are no mac failures for changes to integration tests:
 - Click on the "Choose Trybots" button in Gerrit.
 - Filter for "mac"
 - Choose applicable builders from the "luci.chromium.try" section. Examples (from 2022.04.08):

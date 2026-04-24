@@ -30,8 +30,8 @@ Disabling the browsertest for flakiness resembles disabling any other browsertes
 It can be useful to check the [bugs](https://bugs.chromium.org/p/chromium/issues/list?q=component%3APlatform%3EWebAppProvider%3EIntegrationTesting&can=2) in the component and the test log to see if there is already a bug open for the given problem or test. If specific to the web app system, then it is useful to add new logs to the bug.
 
 Sometimes global problems affect the tests (and all other browser test) and it is nice to make sure this is not the case before disabling. Examples:
-- `processor_entity.cc(263): Check failed: commit_only || data.response_version > metadata_.server_version()`, which is a sync system flake ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1299874&q=component%3APlatform%3EWebAppProvider%3EIntegrationTesting&can=2)).
-- Renderer crashes failing tests w/o stack traces ([bug](https://crbug.com/1329854#c31)).
+- `processor_entity.cc(263): Check failed: commit_only || data.response_version > metadata_.server_version()`, which is a sync system flake ([bug](https://crbug.com/40823860)).
+- Renderer crashes failing tests w/o stack traces ([bug](https://crbug.com/40226964#comment32)).
 
 ### A user action was refactored and our driver is out of date.
 
