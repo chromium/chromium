@@ -74,6 +74,8 @@ class SearchIntegrity : public KeyedService {
   // Callback executed after the TemplateURLService has finished loading.
   void OnTemplateURLServiceLoaded();
 
+  void LogEnterpriseMetrics(const SearchIntegrityReport& report);
+
   SearchIntegrityReport CheckSearchEnginesReport();
 
   // The template URL service, used to access se list.

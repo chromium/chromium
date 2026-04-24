@@ -1124,6 +1124,35 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram
+    name="Search.Integrity.Enterprise.IsDefaultCustomWithMatchingPolicyEngine"
+    enum="Boolean" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the user's default search engine is a custom one that is
+    similar the name of an official, policy-enforced engine but uses a different
+    URL on a managed profile.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.Enterprise.Referral.ParameterFound"
+    enum="SearchReferralParam" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records which referral parameter is found in the URL of a custom search
+    engine that is not on the allowlist on a managed profile. Recorded once per
+    profile at startup if a custom search engine is present on a managed
+    profile.
+  </summary>
+</histogram>
+
 <histogram name="Search.Integrity.HasCustomSearchEngine" enum="Boolean"
     expires_after="2026-10-20">
   <owner>musalmaan@chromium.org</owner>

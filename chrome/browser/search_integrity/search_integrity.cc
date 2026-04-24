@@ -99,9 +99,6 @@ SearchIntegrity::SearchIntegrity(TemplateURLService* template_url_service,
 SearchIntegrity::~SearchIntegrity() = default;
 
 void SearchIntegrity::CheckSearchEngines() {
-  if (enterprise_util::IsBrowserManaged(profile_)) {
-    return;
-  }
   // Asynchronously initialize the search engine allowlist on a background
   // thread to avoid blocking the UI thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -160,17 +157,34 @@ void SearchIntegrity::OnAllowlistInitialized(
 void SearchIntegrity::OnTemplateURLServiceLoaded() {
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
-  base::UmaHistogramBoolean("Search.Integrity.HasCustomSearchEngine",
-                            report.has_custom_option);
-  base::UmaHistogramBoolean("Search.Integrity.IsDefaultSearchEngineCustom",
-                            report.is_default_custom);
+  if (enterprise_util::IsBrowserManaged(profile_)) {
+    LogEnterpriseMetrics(report);
+  } else {
+    base::UmaHistogramBoolean("Search.Integrity.HasCustomSearchEngine",
+                              report.has_custom_option);
+    base::UmaHistogramBoolean("Search.Integrity.IsDefaultSearchEngineCustom",
+                              report.is_default_custom);
+    base::UmaHistogramBoolean(
+        "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine",
+        report.is_default_custom_with_matching_policy_engine);
+
+    if (report.referral_param_found.has_value()) {
+      base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
+                                    report.referral_param_found.value());
+    }
+  }
+}
+
+void SearchIntegrity::LogEnterpriseMetrics(
+    const SearchIntegrityReport& report) {
   base::UmaHistogramBoolean(
-      "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine",
+      "Search.Integrity.Enterprise.IsDefaultCustomWithMatchingPolicyEngine",
       report.is_default_custom_with_matching_policy_engine);
 
   if (report.referral_param_found.has_value()) {
-    base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
-                                  report.referral_param_found.value());
+    base::UmaHistogramEnumeration(
+        "Search.Integrity.Enterprise.Referral.ParameterFound",
+        report.referral_param_found.value());
   }
 }
 
