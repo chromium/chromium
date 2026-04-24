@@ -72,6 +72,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
@@ -133,6 +135,7 @@ public class AutofillOptionsTest {
     @Mock private ModalDialogManager mDialogManager;
     @Mock private AutofillManager mAutofillManager;
     @Mock private EntityDataManager mMockEntityDataManager;
+    @Mock private PersonalDataManager mMockPersonalDataManager;
     @Mock private EntityDataManager.Natives mMockEntityDataManagerJni;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
 
@@ -145,6 +148,7 @@ public class AutofillOptionsTest {
     public void setUp() {
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         EntityDataManagerFactory.setInstanceForTesting(mMockEntityDataManager);
+        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         EntityDataManagerJni.setInstanceForTesting(mMockEntityDataManagerJni);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
@@ -832,6 +836,40 @@ public class AutofillOptionsTest {
         assertNotNull(delegate);
         assertTrue(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
         assertTrue(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiManagedByPolicy_PersonalDataManagerManagedAndDisabled() {
+        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
+        doReturn(true).when(mMockPersonalDataManager).isAutofillProfileManaged();
+        doReturn(false).when(mMockPersonalDataManager).isAutofillProfileEnabled();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
+        assertNotNull(delegate);
+        assertTrue(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertTrue(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiNotManagedByPolicy_PersonalDataManagerManagedButEnabled() {
+        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
+        doReturn(true).when(mMockPersonalDataManager).isAutofillProfileManaged();
+        doReturn(true).when(mMockPersonalDataManager).isAutofillProfileEnabled();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
+        assertNotNull(delegate);
+        assertFalse(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
     }
 
     @Test

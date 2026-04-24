@@ -22,8 +22,11 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import androidx.preference.Preference;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -89,22 +92,14 @@ class AutofillOptionsViewBinder {
                                 @Override
                                 public boolean isPreferenceControlledByPolicy(
                                         Preference preference) {
-                                    EntityDataManager manager =
-                                            EntityDataManagerFactory.getForProfile(
-                                                    view.getProfile());
-                                    if (manager == null) {
-                                        return false;
-                                    }
-                                    return manager.getIsAutofillAiDisabledByEnterprisePolicy();
+                                    return isAutofillAiDisabledByEnterprisePolicy(
+                                            view.getProfile());
                                 }
 
                                 @Override
                                 public boolean isPreferenceClickDisabled(Preference preference) {
-                                    EntityDataManager manager =
-                                            EntityDataManagerFactory.getForProfile(
-                                                    view.getProfile());
-                                    return manager != null
-                                            && manager.getIsAutofillAiDisabledByEnterprisePolicy();
+                                    return isAutofillAiDisabledByEnterprisePolicy(
+                                            view.getProfile());
                                 }
                             });
         } else if (key == AUTOFILL_AI_REAUTH_SETTING_ON) {
@@ -154,6 +149,17 @@ class AutofillOptionsViewBinder {
         } else {
             assert false : "Unhandled property: " + key;
         }
+    }
+
+    private static boolean isAutofillAiDisabledByEnterprisePolicy(Profile profile) {
+        EntityDataManager manager = EntityDataManagerFactory.getForProfile(profile);
+        PersonalDataManager personalDataManager = PersonalDataManagerFactory.getForProfile(profile);
+        boolean addressManagedAndDisabled =
+                personalDataManager.isAutofillProfileManaged()
+                        && !personalDataManager.isAutofillProfileEnabled();
+
+        return (manager != null && manager.getIsAutofillAiDisabledByEnterprisePolicy())
+                || addressManagedAndDisabled;
     }
 
     private AutofillOptionsViewBinder() {}
