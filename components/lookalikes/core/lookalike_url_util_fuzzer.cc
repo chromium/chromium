@@ -6,14 +6,17 @@
 #include "base/i18n/icu_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 
-class ICUInitializer {
- public:
-  ICUInitializer() { base::i18n::InitializeICU(); }
+struct Environment {
+  Environment() {
+    // Initialize ICU safely on the first run, after JNI/Android setup is
+    // complete.
+    base::i18n::InitializeICU();
+  }
 };
 
-static ICUInitializer g_icu_initializer;
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static Environment env;
+
   FuzzedDataProvider data_provider(data, size);
   lookalikes::LookalikeUrlMatchType match_type =
       data_provider.ConsumeEnum<lookalikes::LookalikeUrlMatchType>();
