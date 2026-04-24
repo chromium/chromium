@@ -37,7 +37,6 @@
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -107,14 +106,19 @@ class WTF_EXPORT String {
     return String(buffer.Release());
   }
 
-  template <typename IntegerType>
-  static String Number(IntegerType number) {
-    IntegerToStringConverter<IntegerType> converter(number);
-    return StringImpl::Create(converter.Span());
-  }
-
   static String Boolean(bool value) { return String(value ? "true" : "false"); }
-
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(int value);
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(unsigned value);
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(long value);
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(unsigned long value);
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(long long value);
+  // Serialize an integer value.
+  [[nodiscard]] static String Number(unsigned long long value);
   [[nodiscard]] static String Number(float);
 
   [[nodiscard]] static String Number(double, unsigned precision = 6);

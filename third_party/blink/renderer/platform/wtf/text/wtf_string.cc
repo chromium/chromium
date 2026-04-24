@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
+#include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_internal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -272,6 +273,36 @@ String String::Format(const char* format, ...) {
 
 String String::EncodeForDebugging() const {
   return StringView(*this).EncodeForDebugging();
+}
+
+String String::Number(int value) {
+  IntegerToStringConverter<int> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
+String String::Number(unsigned value) {
+  IntegerToStringConverter<unsigned> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
+String String::Number(long value) {
+  IntegerToStringConverter<long> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
+String String::Number(unsigned long value) {
+  IntegerToStringConverter<unsigned long> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
+String String::Number(long long value) {
+  IntegerToStringConverter<long long> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
+String String::Number(unsigned long long value) {
+  IntegerToStringConverter<unsigned long long> converter(value);
+  return StringImpl::Create(converter.Span());
 }
 
 String String::Number(float number) {
