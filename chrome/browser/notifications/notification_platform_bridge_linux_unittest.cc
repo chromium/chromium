@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
@@ -23,8 +24,10 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/common/notifications/notification_operation.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "dbus/mock_bus.h"
 #include "dbus/object_proxy.h"
@@ -414,17 +417,22 @@ class FakeNotificationProxy : public dbus::ObjectProxy {
 
 }  // namespace
 
-class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
+class NotificationPlatformBridgeLinuxTest : public testing::Test {
  public:
-  NotificationPlatformBridgeLinuxTest() = default;
+  NotificationPlatformBridgeLinuxTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   NotificationPlatformBridgeLinuxTest(
       const NotificationPlatformBridgeLinuxTest&) = delete;
   NotificationPlatformBridgeLinuxTest& operator=(
       const NotificationPlatformBridgeLinuxTest&) = delete;
   ~NotificationPlatformBridgeLinuxTest() override = default;
 
+  Profile* profile() { return profile_; }
+
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    testing::Test::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("Default");
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
     display_service_tester_->SetProcessNotificationOperationDelegate(
@@ -446,7 +454,6 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     fake_dbus_proxy_.reset();
     fake_notification_proxy_ = nullptr;
     mock_bus_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
   }
 
   void HandleOperation(NotificationOperation operation,
@@ -533,6 +540,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(test_params_.expect_init_success, success);
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<FakeDBusProxy> fake_dbus_proxy_;
   scoped_refptr<FakeNotificationProxy> fake_notification_proxy_;
@@ -545,6 +553,8 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::optional<std::u16string> last_reply_;
   TestParams test_params_;
   bool ready_called_ = false;
+  TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(NotificationPlatformBridgeLinuxTest, SetUpAndTearDown) {
