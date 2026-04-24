@@ -134,6 +134,7 @@ cr-tooltip {
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
+  -webkit-line-clamp: 3;
 }
 
 #cardFooter {
