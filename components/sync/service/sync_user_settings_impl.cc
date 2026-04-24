@@ -360,7 +360,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(63 == GetNumDataTypes(),
+  static_assert(64 == GetNumDataTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync, aka"
                 " roaming profiles on Windows.");
@@ -399,6 +399,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     types.Remove(GEMINI_THREAD);
     types.Remove(THEMES_IOS);
     types.Remove(ACCESSIBILITY_ANNOTATION);
+    types.Remove(THEMES_ANDROID);
   }
   return types;
 }

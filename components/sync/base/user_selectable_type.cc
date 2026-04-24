@@ -57,7 +57,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
   // TODO(crbug.com/476335087): In CL #3, map GEMINI_THREAD to an existing
   // selectable type or to a new one. The first option should be trivial, the
   // second requires touching UI code across platforms.
-  static_assert(63 == syncer::GetNumDataTypes(),
+  // TODO(crbug.com/488439751): In CL #3, map THEMES_ANDROID to an existing
+  // selectable type or to a new one. The first option should be trivial, the
+  // second requires touching UI code across platforms.
+  static_assert(64 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "

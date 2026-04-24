@@ -1031,6 +1031,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="Gemini Thread"/>
   <int value="78" label="Themes (iOS)"/>
   <int value="79" label="Accessibility Annotation"/>
+  <int value="80" label="Themes (Android)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

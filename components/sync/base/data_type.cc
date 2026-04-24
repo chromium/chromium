@@ -1076,6 +1076,22 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
         },
         {
+            .type = THEMES_ANDROID,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kThemeAndroidFieldNumber,
+            .debug_string = "Themes (Android)",
+            .histogram_suffix = "THEMES_ANDROID",
+            .stable_lowercase_string = "themes_android",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
             .type = NIGORI,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kNigoriFieldNumber,
@@ -1095,7 +1111,7 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 63,
+static_assert(GetNumDataTypes() == 64,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1311,6 +1327,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case ACCESSIBILITY_ANNOTATION:
       specifics->mutable_accessibility_annotation();
+      break;
+    case THEMES_ANDROID:
+      specifics->mutable_theme_android();
       break;
   }
 }
@@ -1662,6 +1681,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kGeminiThread;
     case ACCESSIBILITY_ANNOTATION:
       return DataTypeForHistograms::kAccessibilityAnnotation;
+    case THEMES_ANDROID:
+      return DataTypeForHistograms::kThemesAndroid;
   }
   NOTREACHED();
 }

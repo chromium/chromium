@@ -61,6 +61,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // existing selectable type or to a new one and remove it from here (unless
     // it's ambiguous).
     data_types.Put(ACCESSIBILITY_ANNOTATION);
+    // TODO(crbug.com/488439751): In CL #3, map THEMES_ANDROID to an existing
+    // selectable type or to a new one and remove it from here (unless it's
+    // ambiguous).
+    data_types.Put(THEMES_ANDROID);
 
     return data_types;
   }

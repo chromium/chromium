@@ -201,7 +201,10 @@ enum DataType {
   // An accessibility annotation.
   ACCESSIBILITY_ANNOTATION,
 
-  LAST_USER_DATA_TYPE = ACCESSIBILITY_ANNOTATION,
+  // A theme object specifically for Android devices.
+  THEMES_ANDROID,
+
+  LAST_USER_DATA_TYPE = THEMES_ANDROID,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -310,7 +313,8 @@ enum class DataTypeForHistograms {
   kGeminiThread = 77,
   kThemesIos = 78,
   kAccessibilityAnnotation = 79,
-  kMaxValue = kAccessibilityAnnotation,
+  kThemesAndroid = 80,
+  kMaxValue = kThemesAndroid,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
