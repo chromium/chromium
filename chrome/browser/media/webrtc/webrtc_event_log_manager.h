@@ -131,7 +131,8 @@ class WebRtcEventLogManager final
                                const std::string& value) override;
   void OnPeerConnectionSessionIdSet(content::GlobalRenderFrameHostId frame_id,
                                     int lid,
-                                    const std::string& session_id) override;
+                                    const std::string& session_id,
+                                    base::OnceClosure callback) override;
   void OnWebRtcEventLogWrite(content::GlobalRenderFrameHostId frame_id,
                              int lid,
                              const std::string& message) override;
@@ -275,12 +276,16 @@ class WebRtcEventLogManager final
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
-  // An overload of OnPeerConnectionSessionIdSet() that replies true if and only
-  // if the operation was successful.
-  void OnPeerConnectionSessionIdSet(content::GlobalRenderFrameHostId frame_id,
-                                    int lid,
-                                    const std::string& session_id,
-                                    base::OnceCallback<void(bool)> reply);
+  // Sets the session id for the peer connection identified with `lid`.
+  // Replies true if and only if the operation was successful.
+  // Note: uses different naming convention to avoid name collision with the
+  // OnPeerConnectionSessionIdSet() version inherited from
+  // PeerConnectionTrackerHostObserver.
+  void OnSessionIdSetForPeerConnection(
+      content::GlobalRenderFrameHostId frame_id,
+      int lid,
+      const std::string& session_id,
+      base::OnceCallback<void(bool)> reply);
 
   // An overload of OnWebRtcEventLogWrite() that replies with a pair of bool.
   // The first bool is associated with local logging and the second bool is
@@ -381,7 +386,7 @@ class WebRtcEventLogManager final
   void OnPeerConnectionRemovedInternal(PeerConnectionKey key,
                                        base::OnceCallback<void(bool)> reply);
 
-  void OnPeerConnectionSessionIdSetInternal(
+  void OnSessionIdSetForPeerConnectionInternal(
       PeerConnectionKey key,
       const std::string& session_id,
       base::OnceCallback<void(bool)> reply);

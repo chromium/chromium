@@ -86,7 +86,8 @@ class CONTENT_EXPORT PeerConnectionTrackerHost
                             const std::string& type,
                             const std::string& value) override;
   void OnPeerConnectionSessionIdSet(int lid,
-                                    const std::string& session_id) override;
+                                    const std::string& session_id,
+                                    base::OnceClosure callback) override;
   void GetUserMedia(int request_id,
                     bool audio,
                     bool video,

@@ -58,7 +58,8 @@ class MockPeerConnectionTrackerHost
   MOCK_METHOD1(AddPeerConnection,
                void(blink::mojom::blink::PeerConnectionInfoPtr));
   MOCK_METHOD1(RemovePeerConnection, void(int));
-  MOCK_METHOD2(OnPeerConnectionSessionIdSet, void(int, const String&));
+  MOCK_METHOD3(OnPeerConnectionSessionIdSet,
+               void(int, const String&, base::OnceClosure));
   MOCK_METHOD5(GetUserMedia,
                void(int, bool, bool, const String&, const String&));
   MOCK_METHOD4(GetUserMediaSuccess,

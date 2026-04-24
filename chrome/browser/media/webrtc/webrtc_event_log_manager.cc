@@ -286,8 +286,10 @@ void WebRtcEventLogManager::OnPeerConnectionUpdated(
 void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
     content::GlobalRenderFrameHostId frame_id,
     int lid,
-    const std::string& session_id) {
-  OnPeerConnectionSessionIdSet(frame_id, lid, session_id, base::NullCallback());
+    const std::string& session_id,
+    base::OnceClosure reply) {
+  OnSessionIdSetForPeerConnection(frame_id, lid, session_id,
+                                  base::IgnoreArgs<bool>(std::move(reply)));
 }
 
 void WebRtcEventLogManager::OnWebRtcEventLogWrite(
@@ -616,7 +618,7 @@ void WebRtcEventLogManager::OnPeerConnectionStopped(
   OnPeerConnectionRemoved(frame_id, lid, std::move(reply));
 }
 
-void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
+void WebRtcEventLogManager::OnSessionIdSetForPeerConnection(
     content::GlobalRenderFrameHostId frame_id,
     int lid,
     const std::string& session_id,
@@ -637,7 +639,7 @@ void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebRtcEventLogManager::OnPeerConnectionSessionIdSetInternal,
+          &WebRtcEventLogManager::OnSessionIdSetForPeerConnectionInternal,
           base::Unretained(this),
           PeerConnectionKey(frame_id.child_id.GetUnsafeValue(), lid,
                             browser_context_id, frame_id.frame_routing_id),
@@ -1039,13 +1041,13 @@ void WebRtcEventLogManager::OnPeerConnectionRemovedInternal(
   MaybeReply(FROM_HERE, std::move(reply), local_result);
 }
 
-void WebRtcEventLogManager::OnPeerConnectionSessionIdSetInternal(
+void WebRtcEventLogManager::OnSessionIdSetForPeerConnectionInternal(
     PeerConnectionKey key,
     const std::string& session_id,
     base::OnceCallback<void(bool)> reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   const bool result =
-      remote_logs_manager_.OnPeerConnectionSessionIdSet(key, session_id);
+      remote_logs_manager_.OnSessionIdSetForPeerConnection(key, session_id);
   MaybeReply(FROM_HERE, std::move(reply), result);
 }
 

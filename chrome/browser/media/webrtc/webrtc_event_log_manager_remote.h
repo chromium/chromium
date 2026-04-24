@@ -87,8 +87,8 @@ class WebRtcRemoteEventLogManager final
   // Called to inform |this| that a peer connection has been associated
   // with |session_id|. After this, it is possible to refer to  that peer
   // connection using StartRemoteLogging() by providing |session_id|.
-  bool OnPeerConnectionSessionIdSet(const PeerConnectionKey& key,
-                                    const std::string& session_id);
+  bool OnSessionIdSetForPeerConnection(const PeerConnectionKey& key,
+                                       const std::string& session_id);
 
   // Attempt to start logging the WebRTC events of an active peer connection.
   // Logging is subject to several restrictions:

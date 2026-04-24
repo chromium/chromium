@@ -5,9 +5,11 @@
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 
 #include <algorithm>
+#include <iterator>
 #include <set>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -138,11 +140,20 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
 
 void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
     int lid,
-    const std::string& session_id) {
+    const std::string& session_id,
+    base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // The observer list does not have a method to query the number of observers.
+  // The correctness of `count` relies on OnPeerConnectionSessionIdSet not
+  // removing or adding any observers.
+  const size_t count =
+      std::distance(GetObserverList().begin(), GetObserverList().end());
+
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(count, std::move(callback));
   for (auto& observer : GetObserverList()) {
-    observer.OnPeerConnectionSessionIdSet(frame_id_, lid, session_id);
+    observer.OnPeerConnectionSessionIdSet(frame_id_, lid, session_id, barrier);
   }
 }
 

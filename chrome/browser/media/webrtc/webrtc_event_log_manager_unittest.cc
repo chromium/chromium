@@ -452,7 +452,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionSessionIdSet(const PeerConnectionKey& key,
                                     const std::string& session_id) {
     bool result;
-    event_log_manager_->OnPeerConnectionSessionIdSet(
+    event_log_manager_->OnSessionIdSetForPeerConnection(
         content::GlobalRenderFrameHostId(key.render_process_id,
                                          key.render_frame_id),
         key.lid, session_id, ReplyClosure(&result));

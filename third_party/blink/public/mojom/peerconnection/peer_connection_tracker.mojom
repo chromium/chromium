@@ -60,94 +60,95 @@ interface PeerConnectionManager {
     GetCurrentState();
 };
 
-// This interface allows forwarding PeerConnection events to WebRTCInternals in
-// the browser process.
+// This interface allows forwarding PeerConnection events to WebRTCInternals
+// and other objects in the browser process.
 interface PeerConnectionTrackerHost {
-  // PeerConnectionTrackerHost forwards these events to WebRTCInternals.
-  // TODO(vm.arjun): Migrate rest of the messages,
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=792801
-
-  // Notifies WebRTCInternals about the addition of the peer connection
-  // whose data is specified in |info|.
+  // Notifies about the addition of the peer connection whose data is specified
+  // in `info`.
   AddPeerConnection(PeerConnectionInfo info);
 
-  // Notifies WebRTCInternals about the removal of the peer connection
-  // identified with local id |lid|.
+  // Notifies about the removal of the peer connection identified with local id
+  // `lid`.
   RemovePeerConnection(int32 lid);
 
-  // This method is called to update PeerConnection.
-  // |lid| is the ID of the peer connection
-  // |type| is the update type. ex: "createOffer"
-  // |value| is the detail of the update.
-  // ex: "options: {offerToReceiveAudio: 0}"
+  // Notifies about an update to the peer connection identified with local id
+  // `lid`.
+  // `type` is the update type.
+  // `value` is the detail of the update.
+  //
+  // Examples:
+  // `type` == "createOffer" && `value` == "options: {offerToReceiveAudio: 0}"
+  // `type` == "connectionstatechange" && `value` == "connected"
   UpdatePeerConnection(int32 lid, string type, string value);
 
-  // This method is called to inform that a peer connection's session
-  // description has been assigned an ID.
-  OnPeerConnectionSessionIdSet(int32 lid, string session_id);
+  // Notifies that the session descriptor of the peer connection identified
+  // with local id `lid` has been assigned an ID.
+  // The callback is invoked once this notification has been processed by
+  // the browser process.
+  OnPeerConnectionSessionIdSet(int32 lid, string session_id) => ();
 
-  // Lets WebRTCInternals know that a getUserMedia() call has been made.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getUserMedia() call has been made.
+  // `request_id` is an id assigned to the getUserMedia call and its
   //   callback/error
-  // |audio| is true if audio stream is requested
-  // |video| is true if video stream is requested
-  // |audio_constraints| is constraints for audio like audio source device id
-  // |video_constraints| is constraints for video like audio source device id
+  // `audio` is true if audio stream is requested
+  // `video` is true if video stream is requested
+  // `audio_constraints` is constraints for audio like audio source device id
+  // `video_constraints` is constraints for video like audio source device id
   // The constraint strings are for display only and should not be parsed
   // by the browser for security reasons.
   GetUserMedia(int32 request_id, bool audio, bool video,
                string audio_constraints, string video_constraints);
 
-  // Lets WebRTCInternals know that a getUserMedia() call has resolved.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getUserMedia() call has resolved.
+  // `request_id` is an id assigned to the getUserMedia call and its
   //   callback/error
-  // |stream_id| is information about the stream such as the stream id.
-  // |audio_track_info| describes the streams audio track (if any).
-  // |video_track_info| describes the streams video track (if any).
+  // `stream_id` is information about the stream such as the stream id.
+  // `audio_track_info` describes the streams audio track (if any).
+  // `video_track_info` describes the streams video track (if any).
   // The stream_id, audio_track_info and video_track_info strings are
   // for display only and should not be parsed by the browser for
   // security reasons.
   GetUserMediaSuccess(int32 request_id, string stream_id,
     string audio_track_info, string video_track_info);
 
-  // Lets WebRTCInternals know that a getUserMedia() call has failed.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getUserMedia() call has failed.
+  // `request_id` is an id assigned to the getUserMedia call and its
   //   callback/error
-  // |error| the (DOM) error.
-  // |error_message| the error message.
+  // `error` the (DOM) error.
+  // `error_message` the error message.
   // The error and error message strings are for display only and should not
   // be parsed by the browser for security reasons.
   GetUserMediaFailure(int32 request_id, string error, string error_message);
 
-  // Lets WebRTCInternals know that a getUserMedia() call has been made.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getDisplayMedia() call has been made.
+  // `request_id` is an id assigned to the getDisplayMedia call and its
   //   callback/error
-  // |audio| is true if audio stream is requested
-  // |video| is true if video stream is requested
-  // |audio_constraints| is constraints for audio like audio source device id
-  // |video_constraints| is constraints for video like audio source device id
+  // `audio` is true if audio stream is requested
+  // `video` is true if video stream is requested
+  // `audio_constraints` is constraints for audio like audio source device id
+  // `video_constraints` is constraints for video like audio source device id
   // The constraint strings are for display only and should not be parsed
   // by the browser for security reasons.
   GetDisplayMedia(int32 request_id, bool audio, bool video,
                string audio_constraints, string video_constraints);
 
-  // Lets WebRTCInternals know that a getDisplayMedia() call has resolved.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getDisplayMedia() call has resolved.
+  // `request_id` is an id assigned to the getDisplayMedia call and its
   //   callback/error
-  // |stream_id| is information about the stream such as the stream id.
-  // |audio_track_info| describes the streams audio track (if any).
-  // |video_track_info| describes the streams video track (if any).
+  // `stream_id` is information about the stream such as the stream id.
+  // `audio_track_info` describes the streams audio track (if any).
+  // `video_track_info` describes the streams video track (if any).
   // The stream_id, audio_track_info and video_track_info strings are
   // for display only and should not be parsed by the browser for
   // security reasons.
   GetDisplayMediaSuccess(int32 request_id, string stream_id,
     string audio_track_info, string video_track_info);
 
-  // Lets WebRTCInternals know that a getDisplayMedia() call has failed.
-  // |request_id| is an id assigned to the getusermedia call and its
+  // Notifies that a getDisplayMedia() call has failed.
+  // `request_id` is an id assigned to the getDisplayMedia call and its
   //   callback/error
-  // |error| the (DOM) error.
-  // |error_message| the error message.
+  // `error` the (DOM) error.
+  // `error_message` the error message.
   // The error and error message strings are for display only and should not
   // be parsed by the browser for security reasons.
   GetDisplayMediaFailure(int32 request_id, string error, string error_message);
@@ -158,8 +159,8 @@ interface PeerConnectionTrackerHost {
   // Logs DataChannel log for the connection id.
   WebRtcDataChannelLogWrite(int32 lid, array<uint8> output);
 
-  // Adds standard PeerConnection stats for webrtc-internals.
-  // |lid| is the renderer local id,
-  // |value| is the list of stats reports.
+  // Notifies the addition of standard PeerConnection stats.
+  // `lid` is the renderer local id.
+  // `value` is the list of stats reports.
   AddStandardStats(int32 lid, mojo_base.mojom.ListValue value);
 };

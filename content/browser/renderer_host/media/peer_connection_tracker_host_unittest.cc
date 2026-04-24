@@ -4,9 +4,11 @@
 
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
@@ -20,11 +22,11 @@ namespace content {
 
 namespace {
 
-class MockPeerConnectionTrackerHostObserver
+class TestPeerConnectionTrackerHostObserver
     : public PeerConnectionTrackerHostObserver {
  public:
-  MockPeerConnectionTrackerHostObserver() = default;
-  ~MockPeerConnectionTrackerHostObserver() override = default;
+  TestPeerConnectionTrackerHostObserver() = default;
+  ~TestPeerConnectionTrackerHostObserver() override = default;
 
   void OnPeerConnectionAdded(GlobalRenderFrameHostId,
                              int,
@@ -44,7 +46,11 @@ class MockPeerConnectionTrackerHostObserver
                                const std::string&) override {}
   void OnPeerConnectionSessionIdSet(GlobalRenderFrameHostId,
                                     int,
-                                    const std::string&) override {}
+                                    const std::string&,
+                                    base::OnceClosure callback) override {
+    on_peer_connection_session_id_set_called_ = true;
+    std::move(callback).Run();
+  }
   void OnWebRtcEventLogWrite(GlobalRenderFrameHostId,
                              int,
                              const std::string&) override {}
@@ -91,6 +97,7 @@ class MockPeerConnectionTrackerHostObserver
                                 const std::string&,
                                 const std::string&) override {}
 
+  bool on_peer_connection_session_id_set_called_ = false;
   GlobalRenderFrameHostId last_removed_frame_id_;
   int last_removed_lid_ = -1;
 };
@@ -124,7 +131,7 @@ class PeerConnectionTrackerHostTest : public RenderViewHostImplTestHarness {
 };
 
 TEST_F(PeerConnectionTrackerHostTest, OnDestructorNotifiesObserver) {
-  MockPeerConnectionTrackerHostObserver observer;
+  TestPeerConnectionTrackerHostObserver observer;
   NavigateAndCommit(GURL("about:blank"));
   RenderFrameHost* rfh = contents_->GetPrimaryMainFrame();
   static_cast<TestRenderFrameHost*>(rfh)->InitializeRenderFrameIfNeeded();
@@ -143,6 +150,27 @@ TEST_F(PeerConnectionTrackerHostTest, OnDestructorNotifiesObserver) {
 
   EXPECT_EQ(observer.last_removed_frame_id_, rfh_id);
   EXPECT_EQ(observer.last_removed_lid_, 123);
+}
+
+TEST_F(PeerConnectionTrackerHostTest,
+       OnPeerConnectionSessionIdSetInvokesObserversAndCallback) {
+  NavigateAndCommit(GURL("about:blank"));
+  RenderFrameHost* rfh = contents_->GetPrimaryMainFrame();
+  static_cast<TestRenderFrameHost*>(rfh)->InitializeRenderFrameIfNeeded();
+  ASSERT_TRUE(rfh);
+
+  PeerConnectionTrackerHost* host =
+      PeerConnectionTrackerHost::GetOrCreateForCurrentDocument(rfh);
+  TestPeerConnectionTrackerHostObserver observer1;
+  TestPeerConnectionTrackerHostObserver observer2;
+  base::test::TestFuture<void> future;
+
+  static_cast<blink::mojom::PeerConnectionTrackerHost*>(host)
+      ->OnPeerConnectionSessionIdSet(123, "session_id", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_TRUE(observer1.on_peer_connection_session_id_set_called_);
+  EXPECT_TRUE(observer2.on_peer_connection_session_id_set_called_);
 }
 
 }  // namespace content

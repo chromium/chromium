@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "base/values.h"
@@ -64,13 +65,18 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       const std::string& value) {}
 
   // This method is called when the session ID of a peer connection is set.
+  // Implementations must not add or remove observers during the execution of
+  // this method.
   // - |render_frame_host_id| identifies the RenderFrameHost.
   // - |lid| identifies a peer connection.
   // - |session_id| is the session ID of the peer connection.
+  // - |callback| is a callback that must be called once the event has been
+  // processed.
   virtual void OnPeerConnectionSessionIdSet(
       GlobalRenderFrameHostId render_frame_host_id,
       int lid,
-      const std::string& session_id) {}
+      const std::string& session_id,
+      base::OnceClosure callback);
 
   // This method is called when a WebRTC event has to be logged.
   // - |render_frame_host_id| identifies the RenderFrameHost.

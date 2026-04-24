@@ -22,4 +22,12 @@ PeerConnectionTrackerHostObserver::PeerConnectionTrackerHostObserver() {
       base::PassKey<PeerConnectionTrackerHostObserver>(), this);
 }
 
+void PeerConnectionTrackerHostObserver::OnPeerConnectionSessionIdSet(
+    GlobalRenderFrameHostId render_frame_host_id,
+    int lid,
+    const std::string& session_id,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace content

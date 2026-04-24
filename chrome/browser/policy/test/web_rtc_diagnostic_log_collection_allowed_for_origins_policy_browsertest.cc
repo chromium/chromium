@@ -127,7 +127,7 @@ class WebRtcDiagnosticLogCollectionAllowedForOriginsPolicyTest
         frame->GetGlobalId(), lid, frame->GetProcess()->GetProcess().Pid(),
         url.spec(), "");
     WebRtcEventLogManager::GetInstance()->OnPeerConnectionSessionIdSet(
-        frame->GetGlobalId(), lid, kSessionId);
+        frame->GetGlobalId(), lid, kSessionId, base::DoNothing());
 
     return frame;
   }

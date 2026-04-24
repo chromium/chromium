@@ -403,7 +403,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
                                    /*rtc_configuration=*/std::string());
 
     if (!session_id.empty()) {
-      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id);
+      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id,
+                                            base::DoNothing());
     }
     return true;
   }

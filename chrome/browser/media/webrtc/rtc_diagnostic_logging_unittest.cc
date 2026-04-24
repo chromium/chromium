@@ -111,8 +111,8 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
 
     event_log_manager_->OnPeerConnectionAdded(
         rfh->GetGlobalId(), kLid, base::GetCurrentProcId(), url.spec(), "");
-    event_log_manager_->OnPeerConnectionSessionIdSet(rfh->GetGlobalId(), kLid,
-                                                     session_id);
+    event_log_manager_->OnSessionIdSetForPeerConnection(
+        rfh->GetGlobalId(), kLid, session_id, base::DoNothing());
   }
 
   void SetAuthorizedOrigins(content::RenderFrameHost* rfh,

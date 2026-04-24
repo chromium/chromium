@@ -393,7 +393,7 @@ bool WebRtcRemoteEventLogManager::OnPeerConnectionRemoved(
   return true;
 }
 
-bool WebRtcRemoteEventLogManager::OnPeerConnectionSessionIdSet(
+bool WebRtcRemoteEventLogManager::OnSessionIdSetForPeerConnection(
     const PeerConnectionKey& key,
     const std::string& session_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
