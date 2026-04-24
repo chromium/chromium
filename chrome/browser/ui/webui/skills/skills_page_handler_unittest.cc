@@ -103,7 +103,7 @@ TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
   skill_proto.set_description("Skill description");
   skill_proto.set_image_url("https://example.com/image.png");
 
-  first_party_skill_data->skills_map.insert({"skill_id", skill_proto});
+  first_party_skill_data->skills_list.push_back(skill_proto);
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, Update1PMap(_))
@@ -139,7 +139,7 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Success) {
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
   FirstPartySkillData first_party_skill_data;
-  first_party_skill_data.skills_map = {{"skill_id", skill_proto}};
+  first_party_skill_data.skills_list = {skill_proto};
   handler_->OnDiscoverySkillsUpdated(&first_party_skill_data);
   EXPECT_TRUE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
@@ -160,7 +160,7 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
   FirstPartySkillData first_party_skill_data;
-  first_party_skill_data.skills_map = {{"skill_id", skill_proto}};
+  first_party_skill_data.skills_list = {skill_proto};
   handler_->OnDiscoverySkillsUpdated(&first_party_skill_data);
   EXPECT_FALSE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());

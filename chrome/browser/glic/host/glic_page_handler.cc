@@ -2455,10 +2455,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           skills::SkillToGlicMojomSkillPreview(skill.get()));
     }
 
-    auto& first_party_skills_map = skills_service_->Get1PSkills();
+    const auto& first_party_skills_list = skills_service_->Get1PSkills();
     std::vector<mojom::SkillPreviewPtr> first_party_skills;
-    for (const auto& it : first_party_skills_map) {
-      first_party_skills.push_back(ToMojomSkillPreview(it.second));
+    for (const auto& skill : first_party_skills_list) {
+      first_party_skills.push_back(ToMojomSkillPreview(skill));
     }
 
     std::sort(first_party_skills.begin(), first_party_skills.end(),

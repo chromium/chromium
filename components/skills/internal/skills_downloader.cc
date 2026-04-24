@@ -140,10 +140,10 @@ void SkillsDownloader::OnUrlDownloadComplete(
   }
 
   auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
-  for (auto& skill : *skills_list->mutable_skills()) {
-    first_party_skill_data->skills_map.insert_or_assign(skill.id(),
-                                                        std::move(skill));
-  }
+  first_party_skill_data->skills_list.insert(
+      first_party_skill_data->skills_list.end(),
+      std::make_move_iterator(skills_list->mutable_skills()->begin()),
+      std::make_move_iterator(skills_list->mutable_skills()->end()));
   for (auto& topic : *skills_list->mutable_topics_list()) {
     first_party_skill_data->topics_list.push_back(std::move(topic));
   }

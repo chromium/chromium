@@ -80,9 +80,9 @@ class SkillsServiceImpl : public SkillsService {
   const Skill* GetSkillById(std::string_view skill_id) const override;
   void RefreshDiscoverySkills() override;
   void FetchDiscoverySkills() override;
-  void Handle1pSkillsMap(
+  void Handle1pSkills(
       std::unique_ptr<FirstPartySkillData> first_party_skill_data) override;
-  const SkillIdToProtoMap& Get1PSkills() const override;
+  const SkillProtoList& Get1PSkills() const override;
   const std::vector<std::string>& Get1PTopics() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;

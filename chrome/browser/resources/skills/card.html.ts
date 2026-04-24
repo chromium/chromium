@@ -24,6 +24,8 @@ export function getHtml(this: SkillCardElement) {
       <div id="icon">${this.skill.icon}</div>
       <div id="name">${this.skill.name}</div>
     </div>
+    ${this.isDiscoverCard_() ? html`<div id="curatedLabel">By Chrome</div>`
+      : html``}
     <!-- Only show the menu button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`` : html`
       <cr-icon-button id="moreButton" iron-icon="cr:more-vert"

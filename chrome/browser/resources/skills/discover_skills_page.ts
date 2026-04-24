@@ -12,6 +12,7 @@ import './error_page.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './discover_skills_page.css.js';
@@ -26,6 +27,8 @@ import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 const kTopPickCategoryString: string = 'Top Pick';
 // The default category name for all skills.
 const kAllCategoriesString: string = 'All';
+// The category name for partner skills.
+const kPartnerCategoryString: string = 'Partner picks';
 
 export interface DiscoverSkillsPageElement {
   $: {
@@ -138,6 +141,9 @@ export class DiscoverSkillsPageElement extends CrLitElement {
         return 'skills:lightbulb';
       case 'Writing':
         return 'skills:write';
+      // TODO(b/503394871): Remove this category for 149.
+      case 'Partner picks':
+        return 'skills:verified';
       default:
         return 'cr:add';
     }
@@ -158,14 +164,14 @@ export class DiscoverSkillsPageElement extends CrLitElement {
       return skills;
     }
 
+    // TODO(b/503394871): Add filter to check against curated_by field.
     return skills.filter(
         skill => skill.name.toLowerCase().includes(term) ||
             skill.description.toLowerCase().includes(term));
   }
 
   protected shouldShowNoSearchResults_(): boolean {
-    return this.topSkills_().length === 0 &&
-        this.getOtherSkills_().length === 0 &&
+    return this.getAllSkills_().length === 0 &&
         this.getOtherCategories_().length === 0 && this.searchTerm_.length > 0;
   }
 
@@ -173,27 +179,42 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return this.filter_(this.skills_.get(kTopPickCategoryString) || []);
   }
 
+  // TODO(b/503394871): Refactor this section to be dynamic and implement a
+  // carousel for 149.
+  protected partnerSkills_(): Skill[] {
+    if (!loadTimeData.getBoolean('isPartnerPicksEnabled')) {
+      return [];
+    }
+    return this.filter_(this.skills_.get(kPartnerCategoryString) || [])
+        .slice(0, 3);
+  }
+
   protected getSelectedSkills_(): Skill[] {
     if (this.selectedCategory_ === kAllCategoriesString) {
-      return this.getOtherSkills_();
+      return this.getAllSkills_();
     }
     return this.filter_(this.skills_.get(this.selectedCategory_) || []);
   }
 
-  // Gets all skills that are not tagged top skills.
-  protected getOtherSkills_(): Skill[] {
-    const allSkills =
-        Array.from(this.skills_.entries())
-            .filter(([category, _]) => category !== kTopPickCategoryString)
-            .flatMap(([_, skills]) => skills);
+  // Gets all skills.
+  protected getAllSkills_(): Skill[] {
+    const allSkills = Array.from(this.skills_.values()).flat();
     return this.filter_(allSkills);
   }
 
   // Gets all categories that are not tagged top skills.
   protected getOtherCategories_(): string[] {
     const filteredOtherCategories =
-        Array.from(this.skills_.keys())
-            .filter(category => category !== kTopPickCategoryString);
+        Array.from(this.skills_.keys()).filter(category => {
+          if (category === kTopPickCategoryString) {
+            return false;
+          }
+          if (category === kPartnerCategoryString &&
+              !loadTimeData.getBoolean('isPartnerPicksEnabled')) {
+            return false;
+          }
+          return true;
+        });
 
     if (filteredOtherCategories.length === 0) {
       return [];
@@ -202,7 +223,7 @@ export class DiscoverSkillsPageElement extends CrLitElement {
     return [kAllCategoriesString, ...filteredOtherCategories].filter(
         category => {
           if (category === kAllCategoriesString) {
-            return this.getOtherSkills_().length > 0;
+            return this.getAllSkills_().length > 0;
           }
           const skills = this.skills_.get(category) ?? [];
           return this.filter_(skills).length > 0;

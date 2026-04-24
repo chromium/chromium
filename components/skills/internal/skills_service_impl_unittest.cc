@@ -56,7 +56,7 @@ class MockSkillsServiceImpl : public SkillsServiceImpl {
   using SkillsServiceImpl::SkillsServiceImpl;
 
   MOCK_METHOD(void,
-              Handle1pSkillsMap,
+              Handle1pSkills,
               (std::unique_ptr<FirstPartySkillData> first_party_skill_data),
               (override));
 };
@@ -288,9 +288,9 @@ TEST_F(SkillsServiceImplTest, GetSkillById_FirstPartySkill) {
   proto_skill.set_description("1P Skill Description");
 
   auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
-  first_party_skill_data->skills_map.insert({"1p_skill_id", proto_skill});
+  first_party_skill_data->skills_list.push_back(proto_skill);
 
-  service().Handle1pSkillsMap(std::move(first_party_skill_data));
+  service().Handle1pSkills(std::move(first_party_skill_data));
 
   const Skill* skill = service().GetSkillById("1p_skill_id");
   ASSERT_NE(nullptr, skill);
@@ -481,10 +481,10 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
       test_url_loader_factory_.GetSafeWeakWrapper());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_service, Handle1pSkillsMap(_))
+  EXPECT_CALL(mock_service, Handle1pSkills(_))
       .WillOnce(
           [&](std::unique_ptr<FirstPartySkillData> first_party_skill_data) {
-            EXPECT_EQ(1u, first_party_skill_data->skills_map.size());
+            EXPECT_EQ(1u, first_party_skill_data->skills_list.size());
             run_loop.Quit();
           });
 
@@ -503,7 +503,7 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
       test_url_loader_factory_.GetSafeWeakWrapper());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_service, Handle1pSkillsMap(testing::IsNull()))
+  EXPECT_CALL(mock_service, Handle1pSkills(testing::IsNull()))
       .WillOnce(
           [&](std::unique_ptr<FirstPartySkillData> first_party_skill_data) {
             EXPECT_FALSE(first_party_skill_data);

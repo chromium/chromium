@@ -16,7 +16,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  padding: 16px var(--page-right-padding) 0 0;
+  padding: 0 var(--page-right-padding) 0 0;
 }
 
 #discoverCategories {
@@ -27,8 +27,9 @@
   margin: 16px 0 0 0;
 }
 
+#partnerSkillsTitle,
 #browseSkillsTitle {
-  padding-top: 16px;
+  padding-top: 14px;
 }
 
 skill-card.skill-with-image {
