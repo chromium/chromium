@@ -10,11 +10,6 @@ static_library("browser") {
     "activity_discovery_service.h",
     "activity_discovery_service_impl.cc",
     "activity_discovery_service_impl.h",
-
-    # TODO(crbug.com/504514117): use the internal hardcoded provider for branded
-    # builds once it is landed and rolled in the chromium repository.
-    "activity_hardcoded_provider.cc",
-    "activity_hardcoded_provider.h",
     "activity_provider.cc",
     "activity_provider.h",
     "capabilities_database.cc",
