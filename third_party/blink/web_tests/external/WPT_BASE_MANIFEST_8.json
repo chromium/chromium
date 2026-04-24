@@ -197674,6 +197674,19 @@
        {}
       ]
      ],
+     "max-width-container-with-scrollable-descendant.html": [
+      "14e5232f06a7b1a575580aa37fa05160fc367419",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/max-width-container-with-scrollable-descendant-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "no-scrollable-overflow-vertical-rl-2.html": [
       "895f9bafc621329b95d1bb2fe086602945991cde",
       [
@@ -220477,6 +220490,19 @@
        ]
       ]
      },
+     "aspect-ratio-percentage-height.html": [
+      "d70c98b9d3ef4d7bada1d04591540588e54bff59",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/aspect-ratio-percentage-height-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "auto-scrollbar-inside-stf-abspos.html": [
       "9479b2eb3f51aed98741beadff4a8407b3ae9f33",
       [
@@ -223232,6 +223258,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "replaced-element-intrinsic-sizing-keywords.html": [
+      "cac7c16e148347669bc09a3dd22ab20ffba6a851",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/replaced-element-intrinsic-sizing-keywords-ref.html",
          "=="
         ]
        ],
@@ -304855,6 +304894,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "backdrop-filter-plus-filter-2.html": [
+      "756552d09edd15524f3d187e693d8dfcd15f7e70",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-plus-filter-2-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            25000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "backdrop-filter-plus-filter.html": [
@@ -401239,6 +401307,10 @@
        ]
       }
      },
+     "max-width-container-with-scrollable-descendant-ref.html": [
+      "e0f5ccf6cedd05bdcc913a546234a8be3386d00f",
+      []
+     ],
      "overflow-alignment-001-ref.html": [
       "5a89c88467eccda859bbec0c09d421afd2a61613",
       []
@@ -401470,6 +401542,10 @@
       ],
       "overflow-clip-margin-computed-expected.txt": [
        "4fc3ebd7e0872c69f96ce981ffea46fd9136793e",
+       []
+      ],
+      "overflow-clip-margin-expected.txt": [
+       "3ab8b8ef26e3466b4ccb253f512b2fc4c4fe101f",
        []
       ],
       "scroll-markers-computed-expected.txt": [
@@ -406851,6 +406927,10 @@
        ]
       }
      },
+     "aspect-ratio-percentage-height-ref.html": [
+      "eca604872cbaa34b6ff78f1fa60fabf9f36ec61a",
+      []
+     ],
      "auto-scrollbar-inside-stf-abspos-ref.html": [
       "076893b2728772662f06b9474bcc1918c860b480",
       []
@@ -407229,6 +407309,10 @@
       "11afa34a654ec071c00971b11a2261ff95397904",
       []
      ],
+     "replaced-element-intrinsic-sizing-keywords-ref.html": [
+      "e576d0c99d06229998ac1a306221ba18d5e7e36c",
+      []
+     ],
      "replaced-max-width-with-height-fit-content-ref.html": [
       "ee34de878359f389e0e28bc43c10904261adf710",
       []
@@ -407354,6 +407438,14 @@
       ],
       "min-content-max-content.css": [
        "60947153b358c1b3db9fec9f95704ac497e17169",
+       []
+      ],
+      "ratio-2-1.svg": [
+       "3927a6791b41b5652152d26ec7245b5a5e7a9944",
+       []
+      ],
+      "ratio-3-1.svg": [
+       "957e4423d6b42578ed05b081ce5e59783657e111",
        []
       ],
       "replaced-min-max-1.png": [
@@ -415755,6 +415847,10 @@
         "00a090bdd02fd84a759b23831928c050c8ebd5e1",
         []
        ],
+       "overflow-clip-margin-expected.txt": [
+        "bf128d1421e7dc792f6056a9a3e641eb58b1d946",
+        []
+       ],
        "overflow-wrap-expected.txt": [
         "f6f17990b9470987e30b3ecba6d80ab2432fe7b5",
         []
@@ -423123,6 +423219,10 @@
      ],
      "backdrop-filter-paint-order-ref.html": [
       "78b135b0f472d5901162c2f58c157c1488cc4629",
+      []
+     ],
+     "backdrop-filter-plus-filter-2-ref.html": [
+      "30858d9e2e5ba545931be04b175fc932b98bea07",
       []
      ],
      "backdrop-filter-plus-filter-ref.html": [
@@ -450865,7 +450965,7 @@
          []
         ],
         "standalone-optgroup-no-shadow-tree-ref.html": [
-         "4532cc2b8d2cb4c3f63cf97c27c856a9bc5542c8",
+         "aca9b0041a4e834df235d87349556a0377d8ea90",
          []
         ],
         "standalone-option-no-shadow-tree-ref.html": [
@@ -559423,6 +559523,13 @@
        {}
       ]
      ],
+     "flex-basis-content-percentage-height.html": [
+      "00bcc8d84494209f9569b12b063012e485a98f57",
+      [
+       null,
+       {}
+      ]
+     ],
      "flex-basis-intrinsics-001.html": [
       "164abd82e5fb6c2dd140347287613888f23b2599",
       [
@@ -570762,7 +570869,7 @@
        ]
       ],
       "overflow-clip-margin.html": [
-       "adf3f001d4b591934ac3c0eb2a28dd07b72ca644",
+       "2a1b988c57249843f66f863ae83f7ffbc43ca5cd",
        [
         null,
         {}
@@ -575411,6 +575518,20 @@
        {}
       ]
      ],
+     "scroll-padding-focus.html": [
+      "9e029ab9e44fa817dd3126c913e1e4be947eda71",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-padding-percentage.html": [
+      "724446fbba2f2f463ba89c14b74c113925cc3b73",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-padding.html": [
       "0c637ed6db24ad9283c9ac28c7f377e28688674d",
       [
@@ -577936,6 +578057,13 @@
      }
     },
     "css-sizing": {
+     "abspos-intrinsic-height-inset-percentage-child.html": [
+      "2ed202b152f2c6cbadcdb3eb3a599c87a49cd4fe",
+      [
+       null,
+       {}
+      ]
+     ],
      "animation": {
       "aspect-ratio-interpolation.html": [
        "3628ff607cc6731fb157c13766fe63238d2d4102",
@@ -578044,6 +578172,13 @@
       ]
      },
      "aspect-ratio": {
+      "abspos-aspect-ratio-border.html": [
+       "624030d290c06cd5131438d07f262726c8f05448",
+       [
+        null,
+        {}
+       ]
+      ],
       "box-sizing-aspect-ratio-positioned.html": [
        "7d389c2196278ea9d02c430e124381e8483c9ec6",
        [
@@ -578687,6 +578822,13 @@
      ],
      "percentage-min-width.html": [
       "11c34eafc32812da1b4da1552afe08c231cd69db",
+      [
+       null,
+       {}
+      ]
+     ],
+     "replaced-element-transferred-size-flex.html": [
+      "dcc39d0b2723b3516d58909833b897685c60c449",
       [
        null,
        {}
@@ -586735,7 +586877,7 @@
         ]
        ],
        "overflow-clip-margin.html": [
-        "d11964136450c3db199988d27a97b962c59bb751",
+        "e5b158cb5c7002f1ae42584ce1e8b421ad60d1f0",
         [
          null,
          {}
@@ -705674,6 +705816,55 @@
         ],
         "style-element-csp-blocked.html": [
          "bbb275173948fa8bf330b26f857a92d2390c6c42",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-both-blocked.html": [
+         "4d59da3d4947a6991a54a062cd13653d6b20f556",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-nonce-allowed.html": [
+         "759911eaedfda219642ca0ea0e8a9e560a6267ff",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-nonce-script-only.html": [
+         "a479287c5ce381e7b213eac5ca4c8ce11037732f",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-nonce-style-only.html": [
+         "ee78c0c50c8917072783f8d17d39a927fafd7707",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-script-src-allowed.html": [
+         "ea25a908afc8c74b356d9c000ff1ff2ad308f3c2",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-script-src-blocked.html": [
+         "439f73122848eae8f0347e31d24aeeb1a05f2907",
+         [
+          null,
+          {}
+         ]
+        ],
+        "style-element-csp-style-src-blocked-script-src-allowed.html": [
+         "ac89c095c18542a5c702fb24aaaac74278709707",
          [
           null,
           {}
