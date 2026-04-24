@@ -17,12 +17,15 @@ export function getHtml(this: SimpleActionMenuElement) {
       tabindex="-1">
     ${this.menuItems.map((item, index) => html`
       <hr class="sp-hr has-header-${this.doesItemHaveHeaderSeparator_(item)}">
-      <span class="has-header-${this.doesItemHaveHeader_(item)} header-style">
+      <span
+          class="has-header-${this.doesItemHaveHeader_(item)} header-style"
+          role="heading">
           ${item.header?.title}
       </span>
       <button
           class="dropdown-item"
           style="${item.style}"
+          aria-label="${item.ariaLabel}"
           @click="${this.onClick_}"
           data-index="${index}">
         <cr-icon

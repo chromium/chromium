@@ -13,6 +13,8 @@ export interface MenuStateItem<T> {
   style?: string;  // An optional string for styling each item.
   header?: MenuHeader;  // Optional header that should go above this item.
   eventName?: string;  // Optional event name for this item if needed per-item.
+  // Needed when the aria label should be different from the title
+  ariaLabel?: string;
 }
 
 interface MenuHeader {

@@ -9829,6 +9829,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL" desc="Dropdown option for turning off line focus.">
         Off
       </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_SMALL_FOCUS_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the small height window line focus option.">
+        Small focus style
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_MEDIUM_FOCUS_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the medium height window line focus option.">
+        Medium focus style
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_LARGE_FOCUS_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the large height window line focus option.">
+        Large focus style
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_UNDERLINE_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the single-line underline line focus option.">
+        Underline style
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_STATIC_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the line focus option of staying in the middle of the panel.">
+        Static movement
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_CURSOR_LINE_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the line focus option of a single line following the cursor.">
+        Follow cursor movement
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for turning off line focus.">
+        Off (no line focus)
+      </message>
       <if expr="is_macosx">
         <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_BODY" desc="Text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
           Open reading mode faster with a shortcut. Press ⌥ + ⌘ + R to toggle reading mode.
