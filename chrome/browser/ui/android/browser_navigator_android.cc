@@ -137,6 +137,8 @@ void GetOrCreateBrowserWindowForDisposition(
           BrowserWindowInterface::Type::TYPE_POPUP, *profile,
           params->user_gesture);
       create_params.web_contents = std::move(params->contents_to_insert);
+      create_params.initial_bounds = params->window_features.bounds;
+      create_params.is_trusted_source = params->trusted_source;
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
