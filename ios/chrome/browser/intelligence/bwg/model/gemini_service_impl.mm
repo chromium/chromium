@@ -164,6 +164,13 @@ void GeminiServiceImpl::CheckGeminiEnterpriseEligibility() {
                          eligibility_weak_ptr_factory_.GetWeakPtr())));
 }
 
+void GeminiServiceImpl::CheckGeminiEnterpriseEligibilityIfNeeded() {
+  if (!is_disabled_by_gemini_policy_.has_value() &&
+      !eligibility_weak_ptr_factory_.HasWeakPtrs()) {
+    CheckGeminiEnterpriseEligibility();
+  }
+}
+
 bool GeminiServiceImpl::CanUseGeminiModelExecution(
     const AccountInfo& account_info) {
   // If the account info was not found, the user is likely not authenticated.

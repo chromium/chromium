@@ -16,3 +16,7 @@ FakeGeminiService::GeminiIneligibilityForProfile() {
 bool FakeGeminiService::IsWorkspacePolicyCheckPending() {
   return workspace_policy_check_pending_;
 }
+
+void FakeGeminiService::CheckGeminiEnterpriseEligibilityIfNeeded() {
+  // Do nothing in the fake service.
+}

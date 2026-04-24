@@ -21,6 +21,7 @@ class FakeGeminiService : public GeminiService {
   std::optional<gemini::IneligibilityReasons> GeminiIneligibilityForProfile()
       override;
   bool IsWorkspacePolicyCheckPending() override;
+  void CheckGeminiEnterpriseEligibilityIfNeeded() override;
 
   // Test helpers:
   void SetIsEligible(bool is_eligible) {
