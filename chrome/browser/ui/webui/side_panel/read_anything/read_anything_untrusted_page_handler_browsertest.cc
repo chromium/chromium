@@ -429,7 +429,10 @@ class ReadAnythingUntrustedPageHandlerTest
 
   void OnSpeechRateChange(double rate) { handler_->OnSpeechRateChange(rate); }
 
-  void OnTabWillDetach() { handler_->OnTabWillDetach(); }
+  void OnTabWillDetach() {
+    handler_->OnTabWillDetach(nullptr,
+                              tabs::TabInterface::DetachReason::kDelete);
+  }
 
   void OnEntryShown(SidePanelEntry* entry) {
     if (IsImmersiveEnabled()) {

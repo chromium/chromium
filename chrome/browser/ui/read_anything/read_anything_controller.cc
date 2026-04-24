@@ -115,9 +115,6 @@ ReadAnythingController::ReadAnythingController(
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
 
-  tab_subscriptions_.push_back(
-      tab_->RegisterWillDetach(base::BindRepeating(
-          &ReadAnythingController::TabWillDetach, weak_factory_.GetWeakPtr())));
 
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
@@ -253,11 +250,6 @@ void ReadAnythingController::RecordEntryHiddenMetrics() {
   entry_shown_timestamp_ = base::TimeTicks();
 }
 
-void ReadAnythingController::TabWillDetach(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
-  observers_.Notify(&Observer::OnTabWillDetach);
-}
 
 // Returns the SidePanelUI for the active tab if the tab is active and has a
 // browser window interface. Returns nullptr otherwise.

@@ -144,6 +144,7 @@ class ReadAnythingUntrustedPageHandler :
     public ReadAnythingLifecycleObserver,
     public PinnedToolbarActionsModel::Observer,
     public translate::TranslateDriver::LanguageDetectionObserver {
+
  public:
   ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
@@ -237,10 +238,12 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingLifecycleObserver:
   void OnDestroyed() override;
-  void OnTabWillDetach() override;
   void Activate(bool active,
                 std::optional<ReadAnythingOpenTrigger> open_trigger) override;
   void OnReadingModePresenterChanged() override;
+
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
 
   // Logs the extension installation state. Intended to get more information
   // on system voice usage.
@@ -438,6 +441,7 @@ class ReadAnythingUntrustedPageHandler :
 
   // Subscription for tab discard events.
   base::CallbackListSubscription tab_discard_subscription_;
+  base::CallbackListSubscription tab_detach_subscription_;
 
   // This manages the life cycle of the pinned toolbar observer. We observe
   // the pinned toolbar to ensure capture user pin changes in the toolbar ui.

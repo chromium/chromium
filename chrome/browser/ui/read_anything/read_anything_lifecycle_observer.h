@@ -10,12 +10,14 @@
 
 #include <optional>
 
+// Class of events tracking the lifecycle of the Reading Mode application.
+// Events that track the browser/tab (e.g. TabWillDetach) do not belong in this
+// class.
 class ReadAnythingLifecycleObserver : public base::CheckedObserver {
  public:
   virtual void Activate(bool active,
                         std::optional<ReadAnythingOpenTrigger> trigger) {}
   virtual void OnDestroyed() = 0;
-  virtual void OnTabWillDetach() {}
   virtual void OnReadingModePresenterChanged() {}
   virtual void OnWillClose(ReadAnythingCloseReason reason) {}
 };

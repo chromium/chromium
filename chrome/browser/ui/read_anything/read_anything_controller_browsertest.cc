@@ -55,7 +55,6 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
               (bool active, std::optional<ReadAnythingOpenTrigger>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
-  MOCK_METHOD(void, OnTabWillDetach, (), (override));
   MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
   MOCK_METHOD(void, OnWillClose, (ReadAnythingCloseReason reason), (override));
 };
@@ -305,7 +304,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Show IRM so that it is still showing when the tab is detached.
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
-  EXPECT_CALL(observer, OnTabWillDetach()).Times(1);
   EXPECT_CALL(observer, OnDestroyed()).Times(0);
 
   // Detach the tab and attach it to a new browser.
@@ -332,7 +330,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Show IRM so that it is still showing when the tab is closed.
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
-  EXPECT_CALL(observer, OnTabWillDetach()).Times(1);
   EXPECT_CALL(observer, OnDestroyed()).WillOnce([&controller, &observer]() {
     // Cleanup
     controller->RemoveObserver(&observer);

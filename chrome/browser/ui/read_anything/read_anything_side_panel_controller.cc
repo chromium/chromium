@@ -320,9 +320,6 @@ void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
 void ReadAnythingSidePanelController::TabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    observers_.Notify(&Observer::OnTabWillDetach);
-  }
 
   if (!tab_->IsActivated()) {
     return;

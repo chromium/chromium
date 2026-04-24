@@ -50,7 +50,6 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
               (bool active, std::optional<ReadAnythingOpenTrigger>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
-  MOCK_METHOD(void, OnTabWillDetach, ());
 };
 
 class ReadAnythingSidePanelControllerTest
@@ -162,14 +161,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
   EXPECT_CALL(read_anything_observer_, Activate(false, empty_trigger()))
       .Times(1);
   OnEntryHidden(entry);
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
-                       TabWillDetach_NotfiyObservers) {
-  AddObserver(&read_anything_observer_);
-
-  EXPECT_CALL(read_anything_observer_, OnTabWillDetach()).Times(1);
-  browser()->GetActiveTabInterface()->Close();
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,

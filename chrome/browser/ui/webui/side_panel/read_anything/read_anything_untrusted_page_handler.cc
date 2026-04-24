@@ -388,6 +388,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   tab_discard_subscription_ = tab_->RegisterWillDiscardContents(
       base::BindRepeating(&ReadAnythingUntrustedPageHandler::OnTabDiscarded,
                           weak_factory_.GetWeakPtr()));
+  tab_detach_subscription_ = tab_->RegisterWillDetach(
+      base::BindRepeating(&ReadAnythingUntrustedPageHandler::OnTabWillDetach,
+                          weak_factory_.GetWeakPtr()));
 
   PrefService* prefs = profile_->GetPrefs();
   base::DictValue voices = base::DictValue();
@@ -1248,7 +1251,9 @@ void ReadAnythingUntrustedPageHandler::OnDestroyed() {
   read_anything_controller_ = nullptr;
 }
 
-void ReadAnythingUntrustedPageHandler::OnTabWillDetach() {
+void ReadAnythingUntrustedPageHandler::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
   OnReadAloudAudioStateChange(false);
 
   // When multiple tabs are open, we receive this call multiple times, so only
