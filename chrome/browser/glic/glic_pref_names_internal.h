@@ -18,6 +18,10 @@ inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 inline constexpr char kGlicUserEnabledActuationOnWeb[] =
     "glic.user_enabled_actuation_on_web";
 
+// Boolean pref that enables or disables experimental triggering.
+inline constexpr char kGlicExperimentalTriggeringEnabled[] =
+    "glic.experimental_triggering_enabled";
+
 }  // namespace glic::prefs
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_INTERNAL_H_

@@ -339,6 +339,11 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Sets whether user enabled actuation on web.
   void SetUserEnabledActuationOnWeb(bool enabled);
 
+  // Returns whether experimental triggering is enabled.
+  bool GetExperimentalTriggeringEnabled() const;
+  // Sets whether experimental triggering is enabled.
+  void SetExperimentalTriggeringEnabled(bool enabled);
+
   // Checks if startup metrics have already been recorded, and if not, records
   // them.
   void MaybeRecordStartupMetrics();
@@ -380,6 +385,10 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   base::CallbackListSubscription RegisterOnUserEnabledActuationOnWebChanged(
       UserEnabledActuationOnWebChangedCallback callback);
 
+  using ExperimentalTriggeringEnabledChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterOnExperimentalTriggeringEnabledChanged(
+      ExperimentalTriggeringEnabledChangedCallback callback);
+
   // This is called anytime ShouldShowSettingsPage() might return a different
   // value.
   using ShowSettingsPageChangedCallback = base::RepeatingClosure;
@@ -393,6 +402,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
  private:
   void OnGlicSettingsPolicyChanged();
   void OnUserEnabledActuationOnWebChanged();
+  void OnExperimentalTriggeringEnabledChanged();
 
   // IdentityManagerObserver:
   void OnPrimaryAccountChanged(
@@ -437,6 +447,10 @@ class GlicEnabling : public signin::IdentityManager::Observer,
       base::RepeatingCallbackList<void()>;
   UserEnabledActuationOnWebChangedCallbackList
       user_enabled_actuation_on_web_changed_callback_list_;
+  using ExperimentalTriggeringEnabledChangedCallbackList =
+      base::RepeatingCallbackList<void()>;
+  ExperimentalTriggeringEnabledChangedCallbackList
+      experimental_triggering_enabled_changed_callback_list_;
   using OnShowSettingsPageChangeCallbackList =
       base::RepeatingCallbackList<void()>;
   OnShowSettingsPageChangeCallbackList

@@ -46,6 +46,13 @@ class GlicHandler : public SettingsPageUIHandler,
   // Updates the web actuation enabled state with the one provided in `args`.
   void HandleSetWebActuationEnabled(const base::ListValue& args);
 
+  // Sends the client whether experimental triggering is enabled.
+  void HandleGetExperimentalTriggeringEnabled(const base::ListValue& args);
+
+  // Updates the experimental triggering enabled state with the one provided in
+  // `args`.
+  void HandleSetExperimentalTriggeringEnabled(const base::ListValue& args);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
@@ -127,6 +134,9 @@ class GlicHandler : public SettingsPageUIHandler,
   // Callback for when the web actuation preference changes.
   void OnWebActuationPrefChanged();
 
+  // Callback for when the experimental triggering preference changes.
+  void OnExperimentalTriggeringPrefChanged();
+
   // Callback for when the ActorKeyedService notifies of a capability change.
   void OnWebActuationCapabilityChanged(bool can_act_on_web);
 
@@ -147,6 +157,7 @@ class GlicHandler : public SettingsPageUIHandler,
   // Used to listen to changes in glic enabling status.
   base::CallbackListSubscription glic_enabling_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
+  base::CallbackListSubscription experimental_triggering_pref_subscription_;
 
   std::unique_ptr<actor_login::ActorLoginPermissionsManager>
       actor_login_permissions_manager_;

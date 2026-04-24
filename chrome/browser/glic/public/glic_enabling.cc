@@ -736,6 +736,10 @@ GlicEnabling::GlicEnabling(Profile* profile,
       prefs::kGlicUserEnabledActuationOnWeb,
       base::BindRepeating(&GlicEnabling::OnUserEnabledActuationOnWebChanged,
                           base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kGlicExperimentalTriggeringEnabled,
+      base::BindRepeating(&GlicEnabling::OnExperimentalTriggeringEnabledChanged,
+                          base::Unretained(this)));
   if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
       base::FeatureList::IsEnabled(features::kGlicTieredRollout)) {
     pref_registrar_.Add(
@@ -798,6 +802,16 @@ void GlicEnabling::SetUserEnabledActuationOnWeb(bool enabled) {
                                    enabled);
 }
 
+bool GlicEnabling::GetExperimentalTriggeringEnabled() const {
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kGlicExperimentalTriggeringEnabled);
+}
+
+void GlicEnabling::SetExperimentalTriggeringEnabled(bool enabled) {
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
+                                   enabled);
+}
+
 void GlicEnabling::MaybeRecordStartupMetrics() {
   if (recorded_startup_metrics_) {
     return;
@@ -826,6 +840,17 @@ GlicEnabling::RegisterOnUserEnabledActuationOnWebChanged(
 
 void GlicEnabling::OnUserEnabledActuationOnWebChanged() {
   user_enabled_actuation_on_web_changed_callback_list_.Notify();
+}
+
+base::CallbackListSubscription
+GlicEnabling::RegisterOnExperimentalTriggeringEnabledChanged(
+    ExperimentalTriggeringEnabledChangedCallback callback) {
+  return experimental_triggering_enabled_changed_callback_list_.Add(
+      std::move(callback));
+}
+
+void GlicEnabling::OnExperimentalTriggeringEnabledChanged() {
+  experimental_triggering_enabled_changed_callback_list_.Notify();
 }
 
 base::CallbackListSubscription GlicEnabling::RegisterOnShowSettingsPageChanged(

@@ -731,6 +731,27 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   EXPECT_TRUE(callback_called);
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest,
+       ExperimentalTriggeringEnabledChangedCallback) {
+  bool callback_called = false;
+  auto subscription =
+      glic::GlicKeyedService::Get(profile())
+          ->enabling()
+          .RegisterOnExperimentalTriggeringEnabledChanged(
+              base::BindLambdaForTesting([&]() { callback_called = true; }));
+
+  glic::GlicKeyedService::Get(profile())
+      ->enabling()
+      .SetExperimentalTriggeringEnabled(false);
+  EXPECT_TRUE(callback_called);
+
+  callback_called = false;
+  glic::GlicKeyedService::Get(profile())
+      ->enabling()
+      .SetExperimentalTriggeringEnabled(true);
+  EXPECT_TRUE(callback_called);
+}
+
 TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
   bool callback_called = false;
   auto subscription = glic::GlicKeyedService::Get(profile())

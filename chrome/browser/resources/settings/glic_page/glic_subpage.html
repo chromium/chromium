@@ -484,8 +484,11 @@
       </div>
       <template is="dom-if" if="[[showGlicExperimentalTriggering_]]">
         <settings-toggle-button id="glicExperimentalTriggeringToggle"
-            pref="{{prefs.glic.experimental_triggering_enabled}}"
-            label="$i18n{glicExperimentalTriggering}">
+            pref="{{experimentalTriggeringEnabledPref_}}"
+            no-set-pref
+            label="$i18n{glicExperimentalTriggering}"
+            on-settings-boolean-control-change=
+                "onExperimentalTriggeringToggleChange_">
         </settings-toggle-button>
       </template>
       <template is="dom-if" if="[[actorLoginFederatedLoginSupportEnabled_]]"

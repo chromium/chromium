@@ -17,6 +17,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   private glicDisallowedByAdmin_: boolean = false;
   private webActuationToggleVisibilityResponse_: boolean = false;
   private webActuationEnabledResponse_: boolean = false;
+  private experimentalTriggeringEnabledResponse_: boolean = true;
   private actorLoginPermissions_: LoginPermission[] = [];
   private revokeActorLoginPermissionResponse_: boolean = true;
 
@@ -36,6 +37,8 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'setGlicSelectionShortcut',
       'getWebActuationEnabled',
       'setWebActuationEnabled',
+      'getExperimentalTriggeringEnabled',
+      'setExperimentalTriggeringEnabled',
     ]);
   }
 
@@ -127,6 +130,20 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   setWebActuationEnabledResponse(enabled: boolean) {
     this.webActuationEnabledResponse_ = enabled;
   }
+
+  getExperimentalTriggeringEnabled() {
+    this.methodCalled('getExperimentalTriggeringEnabled');
+    return Promise.resolve(this.experimentalTriggeringEnabledResponse_);
+  }
+
+  setExperimentalTriggeringEnabled(enabled: boolean) {
+    this.methodCalled('setExperimentalTriggeringEnabled', enabled);
+  }
+
+  setExperimentalTriggeringEnabledResponse(enabled: boolean) {
+    this.experimentalTriggeringEnabledResponse_ = enabled;
+  }
+
   getActorLoginPermissions() {
     this.methodCalled('getActorLoginPermissions');
     return Promise.resolve(this.actorLoginPermissions_);

@@ -250,6 +250,16 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         },
       },
 
+      experimentalTriggeringEnabledPref_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          };
+        },
+      },
+
       isWebActuationDisabledForEnterprise_: {
         type: Boolean,
         value: () => {
@@ -345,6 +355,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private webActuationFeatureEnabled_: boolean;
   declare private webActuationEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  declare private experimentalTriggeringEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   declare private isWebActuationDisabledForEnterprise_: boolean;
   declare private webActuationDisabledForEnterprisePref_:
       chrome.settingsPrivate.PrefObject<boolean>;
@@ -370,6 +382,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'glic-web-actuation-enabled-changed', (enabled: boolean) => {
           this.set('webActuationEnabledPref_.value', enabled);
         });
+    this.addWebUiListener(
+        'glic-experimental-triggering-enabled-changed', (enabled: boolean) => {
+          this.set('experimentalTriggeringEnabledPref_.value', enabled);
+        });
 
     this.browserProxy_.getWebActuationToggleVisibility().then(
         (visible: boolean) => {
@@ -379,6 +395,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.browserProxy_.getWebActuationEnabled().then((enabled: boolean) => {
       this.set('webActuationEnabledPref_.value', enabled);
     });
+
+    this.browserProxy_.getExperimentalTriggeringEnabled().then(
+        (enabled: boolean) => {
+          this.set('experimentalTriggeringEnabledPref_.value', enabled);
+        });
 
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     this.registeredFocusToggleShortcut_ =
@@ -691,6 +712,16 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.set('webActuationEnabledPref_.value', enabled);
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.WebActuation' + (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onExperimentalTriggeringToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    const enabled = target.checked;
+    this.browserProxy_.setExperimentalTriggeringEnabled(enabled);
+    this.set('experimentalTriggeringEnabledPref_.value', enabled);
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.ExperimentalTriggering' +
+        (enabled ? '.Enabled' : '.Disabled'));
   }
 
   private onWebActuationExpand_() {
