@@ -523,7 +523,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
-                       DISABLED_BackgroundUpdatesOnImmersiveModeChange) {
+                       BackgroundUpdatesOnImmersiveModeChange) {
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Immersive mode not supported on this platform.";
+#else
   if (GetParam() != "toolbar-ephemeral-branded") {
     GTEST_SKIP() << "Branded variant button background behavior.";
   }
@@ -554,7 +557,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
         auto* controller = ImmersiveModeController::From(browser());
         controller->SetEnabled(false);
       }),
-      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton));
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
