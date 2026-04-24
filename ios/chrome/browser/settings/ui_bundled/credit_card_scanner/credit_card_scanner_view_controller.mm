@@ -7,6 +7,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanned_image_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_camera_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
 
@@ -32,6 +35,7 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
   // Crop the scanner subviews to the size of the `scannerView` to avoid the
   // preview overlay being visible outside the screen bounds while presenting.
   self.scannerView.clipsToBounds = YES;
+  [self setupEnterManuallyButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -70,6 +74,48 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
 - (void)receiveCreditCardScannerResult:(CMSampleBufferRef)sampleBuffer {
   [_delegate processOutputSampleBuffer:sampleBuffer
                               viewport:_creditCardViewport];
+}
+
+#pragma mark - Private
+
+- (void)setupEnterManuallyButton {
+  UIToolbar* toolbar = nil;
+  for (UIView* subview in self.scannerView.subviews) {
+    if ([subview isKindOfClass:[UIToolbar class]]) {
+      toolbar = (UIToolbar*)subview;
+      break;
+    }
+  }
+
+  if (!toolbar) {
+    return;
+  }
+
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration plainButtonConfiguration];
+  config.title =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_SCAN_CARD_ENTER_MANUALLY);
+  config.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+
+  UIButton* button = [UIButton buttonWithConfiguration:config
+                                         primaryAction:nil];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.scannerView addSubview:button];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.centerXAnchor constraintEqualToAnchor:toolbar.centerXAnchor],
+    [button.centerYAnchor constraintEqualToAnchor:toolbar.centerYAnchor],
+  ]];
+
+  [button addTarget:self
+                action:@selector(didTapEnterManually:)
+      forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)didTapEnterManually:(id)sender {
+  [self dismissForReason:scannerViewController::CLOSE_BUTTON
+          withCompletion:nil];
 }
 
 @end

@@ -8,14 +8,20 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+@class ScannerView;
+
 // Delegate manages the Scanner View.
-@protocol ScannerViewDelegate
+@protocol ScannerViewDelegate <NSObject>
 
 // Called when the close button is pressed.
 - (void)dismissScannerView:(id)sender;
 
 // Called when the torch button is pressed.
 - (void)toggleTorch:(id)sender;
+
+@optional
+// Called when the "Enter manually" button is pressed.
+- (void)enterManuallyForScannerView:(ScannerView*)scannerView;
 
 @end
 

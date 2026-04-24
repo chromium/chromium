@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -26,9 +27,10 @@ constexpr CGSize kViewportSizeIPad = {CreditCardAspectRatio.width * 4.8,
 #pragma mark - ScannerView
 
 - (CGSize)viewportSize {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-             ? kViewportSizeIPad
-             : kViewportSizeIPhone;
+  return self.traitCollection.horizontalSizeClass ==
+                 UIUserInterfaceSizeClassCompact
+             ? kViewportSizeIPhone
+             : kViewportSizeIPad;
 }
 
 - (NSString*)caption {

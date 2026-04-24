@@ -816,6 +816,9 @@
       <message name="IDS_IOS_AUTOFILL_SCAN_CARD_CVC" desc="The placeholder text for credit card security code in the payments card unmask dialog. [iOS only]">
         CVC
       </message>
+      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_ENTER_MANUALLY" desc="Title for the button to skip scanning and enter credit card details manually. [iOS only]">
+        Enter manually
+      </message>
       <message name="IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
         Card Number
       </message>
