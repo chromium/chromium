@@ -175,8 +175,8 @@ class CONTENT_EXPORT PrefetchMatchResolver final
 
   // PrefetchContainer::Observer implementation
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
-                               PreloadingEligibility eligibility) override;
+  void OnGotInitialEligibility(
+      const PrefetchContainer& prefetch_container) override;
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override;

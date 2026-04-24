@@ -269,8 +269,7 @@ class CONTENT_EXPORT PrefetchContainer
     // State: `PrefetchContainerLoadState::kEligible` or
     // `PrefetchContainerLoadState::kFailedIneligible`.
     virtual void OnGotInitialEligibility(
-        const PrefetchContainer& prefetch_container,
-        PreloadingEligibility eligibility) = 0;
+        const PrefetchContainer& prefetch_container) = 0;
 
     // State: `PrefetchContainerLoadState::kDeterminedHead` or
     // `PrefetchContainerLoadState::kFailedDeterminedHead`.
@@ -300,6 +299,19 @@ class CONTENT_EXPORT PrefetchContainer
   // Exposed for `PrefetchMatchResolver`.
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint()
       const override;
+
+  // ----------------------------------------------------------------
+  // Values that can become non-null upon transitioning to
+  // `PrefetchContainerLoadState::kEligible` or
+  // `PrefetchContainerLoadState::kFailedIneligible`, and never change after
+  // that.
+
+  // Returns non-null if and only if after transitioning to
+  // `PrefetchContainerLoadState::kEligible` or
+  // `PrefetchContainerLoadState::kFailedIneligible`.
+  const std::optional<PreloadingEligibility>& GetInitialEligibility() const {
+    return initial_eligibility_;
+  }
 
   // ----------------------------------------------------------------
   // Values that can become non-null upon transitioning to
@@ -824,6 +836,11 @@ class CONTENT_EXPORT PrefetchContainer
 
   // The redirect chain resulting from prefetching |GetURL()|.
   std::vector<std::unique_ptr<PrefetchSingleRedirectHop>> redirect_chain_;
+
+  // The eligibility for the initial request. This is not placed in
+  // `redirect_chain_[0]` to avoid the dependencies from
+  // https://crbug.com/432518638.
+  std::optional<PreloadingEligibility> initial_eligibility_;
 
   // The completion status of prefetch. This is non-null if and only if on
   // `PrefetchContainerLoadState::kCompleted` or

@@ -7384,8 +7384,8 @@ class RecordingPrefetchContainerObserver final
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override {
     AddEvent(Event::kObserverOnWillBeDestroyed);
   }
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
-                               PreloadingEligibility eligibility) override {
+  void OnGotInitialEligibility(
+      const PrefetchContainer& prefetch_container) override {
     AddEvent(Event::kObserverOnGotInitialEligibility);
   }
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {

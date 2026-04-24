@@ -541,11 +541,14 @@ void PrefetchMatchResolver::OnWillBeDestroyed(
 }
 
 void PrefetchMatchResolver::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container,
-    PreloadingEligibility eligibility) {
+    const PrefetchContainer& prefetch_container) {
   CHECK(features::UsePrefetchPrerenderIntegration());
 
-  if (eligibility != PreloadingEligibility::kEligible) {
+  std::optional<PreloadingEligibility> eligibility =
+      prefetch_container.GetInitialEligibility();
+  CHECK(eligibility.has_value());
+
+  if (eligibility.value() != PreloadingEligibility::kEligible) {
     MaybeUnblockForUnmatch(
         prefetch_container,
         PrefetchPotentialCandidateServingResult::kNotServedIneligiblePrefetch);

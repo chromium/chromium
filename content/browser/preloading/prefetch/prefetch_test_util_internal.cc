@@ -61,8 +61,8 @@ class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
  private:
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override {
   }
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
-                               PreloadingEligibility eligibility) override {}
+  void OnGotInitialEligibility(
+      const PrefetchContainer& prefetch_container) override {}
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override {

@@ -32,8 +32,7 @@ void PrefetchContainerObserver::OnWillBeDestroyed(
     const PrefetchContainer& prefetch_container) {}
 
 void PrefetchContainerObserver::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container,
-    PreloadingEligibility eligibility) {}
+    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchContainerObserver::OnDeterminedHead(
     const PrefetchContainer& prefetch_container) {

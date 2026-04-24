@@ -790,6 +790,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   if (redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
     // prefetched.
+
+    CHECK(!initial_eligibility_);
+    initial_eligibility_ = eligibility;
+
     if (is_eligible) {
       SetLoadState(LoadState::kEligible);
       if (!IsDecoy()) {
@@ -823,7 +827,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       }
     }
 
-    NotifyObservers(&Observer::OnGotInitialEligibility, eligibility);
+    NotifyObservers(&Observer::OnGotInitialEligibility);
   } else {
     // This case is for any URLs from redirects.
     if (!is_eligible) {

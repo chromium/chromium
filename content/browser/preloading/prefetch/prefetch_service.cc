@@ -1819,8 +1819,7 @@ void PrefetchService::OnWillBeDestroyed(
     const PrefetchContainer& prefetch_container) {}
 
 void PrefetchService::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container,
-    PreloadingEligibility eligibility) {}
+    const PrefetchContainer& prefetch_container) {}
 
 void PrefetchService::OnDeterminedHead(
     const PrefetchContainer& prefetch_container) {

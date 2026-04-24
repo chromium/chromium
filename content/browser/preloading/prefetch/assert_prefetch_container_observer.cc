@@ -68,11 +68,11 @@ void AssertPrefetchContainerObserver::OnWillBeDestroyed(
 }
 
 void AssertPrefetchContainerObserver::OnGotInitialEligibility(
-    const PrefetchContainer& prefetch_container,
-    PreloadingEligibility eligibility) {
+    const PrefetchContainer& prefetch_container) {
   DUMP_WILL_BE_CHECK_EQ(&prefetch_container, prefetch_container_.get());
   DUMP_WILL_BE_CHECK(!on_will_be_destroyed_called_);
   DUMP_WILL_BE_CHECK(!prefetch_container_->is_in_dtor());
+  DUMP_WILL_BE_CHECK(prefetch_container.GetInitialEligibility().has_value());
   DUMP_WILL_BE_CHECK(prefetch_container_->GetLoadState() ==
                          PrefetchContainerLoadState::kEligible ||
                      prefetch_container_->GetLoadState() ==

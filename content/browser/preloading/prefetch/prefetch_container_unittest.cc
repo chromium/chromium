@@ -1867,8 +1867,8 @@ class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
   }
   // This uses `OnGotInitialEligibility()` as an example of the `Observer` calls
   // in general.
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
-                               PreloadingEligibility eligibility) override {
+  void OnGotInitialEligibility(
+      const PrefetchContainer& prefetch_container) override {
     std::move(callback_).Run();
   }
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}

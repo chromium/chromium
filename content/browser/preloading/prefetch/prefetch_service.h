@@ -366,8 +366,8 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
 
   // PrefetchContainer::Observer overrides:
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
-  void OnGotInitialEligibility(const PrefetchContainer& prefetch_container,
-                               PreloadingEligibility eligibility) override;
+  void OnGotInitialEligibility(
+      const PrefetchContainer& prefetch_container) override;
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container) override;
