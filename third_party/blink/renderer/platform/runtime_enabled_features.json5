@@ -3509,13 +3509,6 @@
       base_feature: "none",
     },
     {
-      // Fixes a bug after find-in-page tries to return focus to
-      // the page. This change shipped in M142, and this flag can
-      // be removed in M144.
-      name: "KeyboardFocusabilityAfterFindInPage",
-      status: "stable",
-    },
-    {
       // Adds `encryptionScheme` field based on
       // https://www.w3.org/TR/media-capabilities/#keysystemtrackconfiguration.
       // See https://crbug.com/498284510 for more details.

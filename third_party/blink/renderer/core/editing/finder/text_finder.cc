@@ -398,10 +398,7 @@ void TextFinder::SetFindEndstateFocusAndSelection() {
       auto* element = DynamicTo<Element>(runner);
       if (!element)
         continue;
-      bool focusable =
-          RuntimeEnabledFeatures::KeyboardFocusabilityAfterFindInPageEnabled()
-              ? element->IsKeyboardFocusableSlow()
-              : element->IsFocusable();
+      bool focusable = element->IsKeyboardFocusableSlow();
       if (focusable) {
         // Found a focusable parent node. Set the active match as the
         // selection and focus to the focusable node.
