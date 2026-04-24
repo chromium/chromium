@@ -4,6 +4,7 @@
 
 #include "base/test/test_trace_processor.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -60,7 +61,7 @@ TestTraceProcessorImpl::PerfettoSQLPackage GetChromeStdlib() {
       include_key.resize(include_key.size() - 4);
     }
     stdlib.emplace_back(kChromeSqlPackageName + "." + include_key,
-                        file_to_sql.sql);
+                        std::string(file_to_sql.sql_view()));
   }
   return stdlib;
 }
