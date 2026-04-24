@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -470,58 +471,10 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
 
     // Create a client to aim message and send it to the page.
     auto create_client_to_aim_request_info =
-        std::make_unique<contextual_search::ContextualSearchContextController::
-                             CreateClientToAimRequestInfo>();
-    create_client_to_aim_request_info->query_text = query;
-    create_client_to_aim_request_info->query_text_source =
-        lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
-    create_client_to_aim_request_info->query_start_time = base::Time::Now();
-    if (overlay_token) {
-      create_client_to_aim_request_info->overlay_token = overlay_token;
-    }
-
-    create_client_to_aim_request_info->active_tool =
-        GetInputState().active_tool;
-    create_client_to_aim_request_info->active_model =
-        GetInputState().active_model;
-
-    if (auto active_tab_context_id = GetActiveTabContextId();
-        active_tab_context_id.has_value()) {
-      lens::ContextTurnMetadata active_tab_context_turn_metadata;
-      active_tab_context_turn_metadata.set_context_id(*active_tab_context_id);
-      active_tab_context_turn_metadata.mutable_tab_metadata()
-          ->set_is_active_tab(true);
-      create_client_to_aim_request_info->context_turn_metadata.push_back(
-          active_tab_context_turn_metadata);
-    }
-
-    base::flat_set<base::UnguessableToken> file_tokens(
-        session_handle->GetUploadedContextTokens());
-    // Injected inputs are removed on query submit, so send delete updates.
-    for (const auto& token : file_tokens) {
-      const contextual_search::FileInfo* file_info =
-          session_handle->GetController()->GetFileInfo(token);
-      if (!file_info) {
-        continue;
-      }
-      auto injected_input_id = file_info->GetInjectedInputId();
-      if (injected_input_id.has_value()) {
-        SendDeleteInjectedInputUpdate(injected_input_id.value());
-      }
-    }
-    if (overlay_token) {
-      file_tokens.insert(*overlay_token);
-      // When an overlay token is present, it implies a recent Lens Overlay
-      // interaction, such as a region search. Setting this flag forces the
-      // inclusion of that interaction's data in the request. This is required
-      // to support immediate postmessage-based follow-up queries after the
-      // initial search URL loads, allowing the user to ask follow-up questions
-      // about the same region without re-selecting it.
-      create_client_to_aim_request_info
-          ->force_include_latest_interaction_request_data = true;
-    }
-    create_client_to_aim_request_info->file_tokens =
-        std::move(file_tokens).extract();
+        contextual_tasks::PrepareClientToAimRequestInfo(
+            query, session_handle, web_ui_interface_,
+            GetInputState().active_tool, GetInputState().active_model,
+            GetActiveTabContextId(), overlay_token);
 
     // Delay submission if context still uploading.
     if (IsAnyContextUploading()) {
@@ -535,12 +488,9 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
       return;
     }
 
-    lens::ClientToAimMessage client_to_page_message =
-        session_handle->CreateClientToAimRequest(
-            std::move(create_client_to_aim_request_info));
-
-    // Otherwise, submit request to server side.
-    web_ui_interface_->PostMessageToWebview(client_to_page_message);
+    contextual_tasks::FinalizeAndSendAimQuery(
+        std::move(create_client_to_aim_request_info), session_handle,
+        web_ui_interface_);
   }
 }
 
@@ -875,7 +825,8 @@ void ContextualTasksComposeboxHandler::DeleteContext(
       deleted_tab_url = file_info->tab_url;
       auto injected_input_id = file_info->GetInjectedInputId();
       if (injected_input_id.has_value()) {
-        SendDeleteInjectedInputUpdate(injected_input_id.value());
+        contextual_tasks::SendInjectedInputRemovedUpdate(
+            web_ui_interface_, injected_input_id.value());
       }
     }
   }
@@ -1044,24 +995,10 @@ void ContextualTasksComposeboxHandler::MaybeSendPendingQuery() {
   if (pending_query_request_info_ && !IsAnyContextUploading()) {
     auto* session_handle = GetContextualSessionHandle();
     if (session_handle) {
-      lens::ClientToAimMessage client_to_page_message =
-          session_handle->CreateClientToAimRequest(
-              std::move(pending_query_request_info_));
-      web_ui_interface_->PostMessageToWebview(client_to_page_message);
+      contextual_tasks::FinalizeAndSendAimQuery(
+          std::move(pending_query_request_info_), session_handle,
+          web_ui_interface_);
     }
     pending_query_request_info_.reset();
   }
-}
-
-
-void ContextualTasksComposeboxHandler::SendDeleteInjectedInputUpdate(
-    const std::string& id) {
-  lens::ClientToAimMessage client_to_aim_message;
-  lens::InjectedInputUpdate* injected_input_update =
-      client_to_aim_message.mutable_injected_input_update();
-  injected_input_update->mutable_payload()->set_id(id);
-  injected_input_update->mutable_payload()->set_update_type(
-      lens::InjectedInputUpdatePayload::UpdateType::
-          InjectedInputUpdatePayload_UpdateType_REMOVED);
-  web_ui_interface_->PostMessageToWebview(client_to_aim_message);
 }

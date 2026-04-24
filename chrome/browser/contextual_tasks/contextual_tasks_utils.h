@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 
+#include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class Profile;
 
@@ -16,6 +19,7 @@ class WebContents;
 
 namespace contextual_search {
 enum class ContextualSearchSource;
+class ContextualSearchSessionHandle;
 }  // namespace contextual_search
 
 namespace contextual_tasks {
@@ -54,6 +58,35 @@ void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
 bool IsValidUrlForSuggestedTab(const GURL& url,
                                Profile* profile,
                                SiteExclusionDetail& site_exclusion_detail);
+
+// Prepares the information needed to create an AIM query request.
+// This utility handles:
+// - Standard proto metadata (query, tools, models).
+// - Deletion of spent injected inputs from the WebUI.
+// - Integration of the Lens Overlay interaction token.
+std::unique_ptr<contextual_search::ContextualSearchContextController::
+                    CreateClientToAimRequestInfo>
+PrepareClientToAimRequestInfo(
+    const std::string& query,
+    contextual_search::ContextualSearchSessionHandle* session_handle,
+    ContextualTasksUIInterface* web_ui_interface,
+    omnibox::ToolMode active_tool,
+    omnibox::ModelMode active_model,
+    std::optional<int64_t> active_tab_context_id,
+    std::optional<base::UnguessableToken> overlay_token);
+
+// Finalizes the AIM query request (consuming tokens) and delivers it to the
+// page.
+void FinalizeAndSendAimQuery(
+    std::unique_ptr<contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> request_info,
+    contextual_search::ContextualSearchSessionHandle* session_handle,
+    ContextualTasksUIInterface* web_ui_interface);
+
+// Sends a message to the WebUI that an injected input has been removed.
+void SendInjectedInputRemovedUpdate(
+    ContextualTasksUIInterface* web_ui_interface,
+    const std::string& id);
 
 }  // namespace contextual_tasks
 

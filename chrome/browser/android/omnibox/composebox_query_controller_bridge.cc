@@ -677,4 +677,31 @@ void ComposeboxQueryControllerBridge::UpdateModelFromUrl(const GURL& url) {
   }
 }
 
+void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
+    JNIEnv* env,
+    const std::string& query) {
+  if (!contextual_tasks_web_ui_interface_) {
+    return;
+  }
+
+  omnibox::ToolMode active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  omnibox::ModelMode active_model = omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
+  if (input_state_model_) {
+    contextual_search::InputState input_state =
+        input_state_model_->GetInputState();
+    active_tool = input_state.active_tool;
+    active_model = input_state.active_model;
+  }
+
+  auto request_info = contextual_tasks::PrepareClientToAimRequestInfo(
+      query, session_handle_.get(), contextual_tasks_web_ui_interface_,
+      active_tool, active_model,
+      /*active_tab_context_id=*/std::nullopt,
+      /*overlay_token=*/std::nullopt);
+
+  contextual_tasks::FinalizeAndSendAimQuery(std::move(request_info),
+                                            session_handle_.get(),
+                                            contextual_tasks_web_ui_interface_);
+}
+
 DEFINE_JNI(ComposeboxQueryControllerBridge)

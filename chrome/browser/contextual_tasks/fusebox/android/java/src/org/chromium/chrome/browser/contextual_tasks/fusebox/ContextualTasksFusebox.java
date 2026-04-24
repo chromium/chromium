@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /** The fusebox (omnibox) component for contextual tasks. */
 @NullMarked
@@ -165,15 +164,11 @@ public class ContextualTasksFusebox {
 
     private boolean onUrlLoad(String url, Callback<String> loadUrlCallback) {
         ComposeboxQueryControllerBridge bridge = mDataProvider.getComposeboxQueryControllerBridge();
-        if (bridge != null) {
-            bridge.getAimUrl(
-                    new GURL(url),
-                    aimUrl -> {
-                        loadUrlCallback.onResult(aimUrl.getSpec());
-                    });
-            mLocationBarCoordinator.setOmniboxEditingText("");
-        } else {
+        if (bridge == null) {
             loadUrlCallback.onResult(url);
+        } else {
+            bridge.submitQueryToAimPage(url);
+            mLocationBarCoordinator.setOmniboxEditingText("");
         }
         return true;
     }

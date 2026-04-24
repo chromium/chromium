@@ -84,6 +84,7 @@ class ComposeboxQueryControllerBridge
   bool IsCreateImagesEligible(JNIEnv* env);
   void SetActiveTool(JNIEnv* env, omnibox::ToolMode tool_mode);
   void SetActiveModel(JNIEnv* env, omnibox::ModelMode model_mode);
+  void SubmitQueryToAimPage(JNIEnv* env, const std::string& query);
 
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
   CreateLensOverlaySuggestInputs() const;

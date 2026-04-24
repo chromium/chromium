@@ -199,6 +199,17 @@ public class ComposeboxQueryControllerBridge {
     }
 
     /**
+     * Submits a query to the AI backend via postmessage to the AI page.
+     *
+     * @param query The query text to submit.
+     */
+    public void submitQueryToAimPage(String query) {
+        if (mNativeInstance != 0) {
+            ComposeboxQueryControllerBridgeJni.get().submitQueryToAimPage(mNativeInstance, query);
+        }
+    }
+
+    /**
      * Returns an observable supplier for the current input state. This object contains the allowed
      * and disabled tools, models, and inputs. Updates are tied to the underlying C++
      * ContextualSearchSessionHandle, and may not be during other types of sessions. Callers should
@@ -282,5 +293,8 @@ public class ComposeboxQueryControllerBridge {
         void setActiveModel(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("omnibox::ModelMode") int modelMode);
+
+        void submitQueryToAimPage(
+                long nativeComposeboxQueryControllerBridge, @JniType("std::string") String query);
     }
 }

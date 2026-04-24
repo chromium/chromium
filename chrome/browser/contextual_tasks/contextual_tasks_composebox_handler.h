@@ -182,9 +182,6 @@ class ContextualTasksComposeboxHandler
   // Helper to send the pending query if all uploads are complete.
   void MaybeSendPendingQuery();
 
-  // Sends an update to AIM that an injected input has been deleted.
-  void SendDeleteInjectedInputUpdate(const std::string& id);
-
   TakeInputStateModelCallback take_input_model_callback_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_interface_;
 

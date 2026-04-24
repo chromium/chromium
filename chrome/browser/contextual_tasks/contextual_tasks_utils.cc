@@ -4,19 +4,23 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace contextual_tasks {
 
@@ -103,6 +107,100 @@ bool IsValidUrlForSuggestedTab(const GURL& url,
   site_exclusion_detail.duration += timer.Elapsed();
 
   return true;
+}
+
+std::unique_ptr<contextual_search::ContextualSearchContextController::
+                    CreateClientToAimRequestInfo>
+PrepareClientToAimRequestInfo(
+    const std::string& query,
+    contextual_search::ContextualSearchSessionHandle* session_handle,
+    ContextualTasksUIInterface* web_ui_interface,
+    omnibox::ToolMode active_tool,
+    omnibox::ModelMode active_model,
+    std::optional<int64_t> active_tab_context_id,
+    std::optional<base::UnguessableToken> overlay_token) {
+  CHECK(web_ui_interface);
+  auto info =
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateClientToAimRequestInfo>();
+  info->query_text = query;
+  info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
+  info->query_start_time = base::Time::Now();
+  if (overlay_token) {
+    info->overlay_token = overlay_token;
+  }
+
+  info->active_tool = active_tool;
+  info->active_model = active_model;
+
+  if (active_tab_context_id.has_value()) {
+    lens::ContextTurnMetadata active_tab_context_turn_metadata;
+    active_tab_context_turn_metadata.set_context_id(*active_tab_context_id);
+    active_tab_context_turn_metadata.mutable_tab_metadata()->set_is_active_tab(
+        true);
+    info->context_turn_metadata.push_back(active_tab_context_turn_metadata);
+  }
+
+  base::flat_set<base::UnguessableToken> file_tokens;
+  if (session_handle) {
+    file_tokens = session_handle->GetUploadedContextTokens();
+  }
+
+  for (const auto& token : file_tokens) {
+    const contextual_search::FileInfo* file_info =
+        session_handle->GetController()->GetFileInfo(token);
+    if (file_info && file_info->GetInjectedInputId().has_value()) {
+      SendInjectedInputRemovedUpdate(web_ui_interface,
+                                     file_info->GetInjectedInputId().value());
+    }
+  }
+
+  if (overlay_token.has_value()) {
+    file_tokens.insert(*overlay_token);
+    // When an overlay token is present, it implies a recent Lens Overlay
+    // interaction, such as a region search. Setting this flag forces the
+    // inclusion of that interaction's data in the request. This is required
+    // to support immediate postmessage-based follow-up queries after the
+    // initial search URL loads, allowing the user to ask follow-up questions
+    // about the same region without re-selecting it.
+    info->force_include_latest_interaction_request_data = true;
+  }
+
+  info->file_tokens = std::move(file_tokens).extract();
+
+  return info;
+}
+
+void FinalizeAndSendAimQuery(
+    std::unique_ptr<contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> request_info,
+    contextual_search::ContextualSearchSessionHandle* session_handle,
+    ContextualTasksUIInterface* web_ui_interface) {
+  if (!session_handle || !web_ui_interface) {
+    return;
+  }
+
+  lens::ClientToAimMessage client_to_page_message =
+      session_handle->CreateClientToAimRequest(std::move(request_info));
+
+  web_ui_interface->PostMessageToWebview(client_to_page_message);
+}
+
+void SendInjectedInputRemovedUpdate(
+    ContextualTasksUIInterface* web_ui_interface,
+    const std::string& id) {
+  CHECK(web_ui_interface);
+
+  lens::ClientToAimMessage client_to_aim_message;
+  lens::InjectedInputUpdate* injected_input_update =
+      client_to_aim_message.mutable_injected_input_update();
+  injected_input_update->mutable_payload()->set_id(id);
+  injected_input_update->mutable_payload()->set_update_type(
+      lens::InjectedInputUpdatePayload::UpdateType::
+          InjectedInputUpdatePayload_UpdateType_REMOVED);
+
+  web_ui_interface->PostMessageToWebview(client_to_aim_message);
 }
 
 }  // namespace contextual_tasks
