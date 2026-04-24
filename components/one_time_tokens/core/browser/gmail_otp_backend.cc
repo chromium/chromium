@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -75,6 +76,9 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
 void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
     const OneTimeTokenBackendNotification& notification,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
+  base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
+                            reply.has_value());
+
   active_fetchers_.erase(notification.encrypted_message_reference);
   coordinator_->InformOfNetworkRequestFinished(notification);
 

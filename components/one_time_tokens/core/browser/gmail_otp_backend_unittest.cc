@@ -9,12 +9,14 @@
 #include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +44,7 @@ class GmailOtpBackendImplTest : public testing::Test {
 
 // Tests a successful retrieval of an OTP from Gmail.
 TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
@@ -78,6 +81,46 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
   EXPECT_EQ(token.type(), OneTimeTokenType::kGmail);
   EXPECT_EQ(token.value(), "123456");
   EXPECT_FALSE(token.on_device_arrival_time().is_null());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.Success", true, 1);
+}
+
+// Tests a failed retrieval of an OTP from Gmail.
+TEST_F(GmailOtpBackendImplTest, SubscribeAndGetTokenFailure) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = backend_.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(
+          EncryptedMessageReference("encrypted_reference_fail")));
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  std::string encoded_reference;
+  base::Base64UrlEncode("encrypted_reference_fail",
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_reference);
+  const GURL url = net::AppendQueryParameter(
+      GURL("https://onetimetoken.pa.googleapis.com/v1/"
+           "onetimetokens:fetchEmail"),
+      "encryptedMessageReference", encoded_reference);
+
+  // Return an HTTP 500 to simulate a network error
+  test_url_loader_factory_.AddResponse(url.spec(), "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+
+  ASSERT_FALSE(result.has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.Success", false, 1);
 }
 
 // Tests no backend calls are issued when there are no subscribers.

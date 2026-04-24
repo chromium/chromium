@@ -5634,6 +5634,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.Success" enum="Boolean"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records whether the attempt to retrieve a Gmail one time token from the
+    backend succeeds. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Sms.APIError"
     enum="SmsOtpRetrievalApiErrorCode" expires_after="2026-10-31">
   <owner>luchenpeng@google.com</owner>
