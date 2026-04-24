@@ -537,8 +537,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
             SK_ColorGREEN);
 }
 
-// Also see BackgroundColorChangeSystemWebAppBrowserTest.BackgroundColorChange
-// below.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
   const GURL app_url = GetSecureAppURL();
   auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
@@ -554,9 +552,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  // Wait for original background color to load.
+  // Wait for original background color to load. LaunchWebAppBrowser() calls
+  // WaitForLoadStop() internally, which may process the initial
+  // OnBackgroundColorChanged notification before we can create a waiter. Using
+  // the expected-color overload handles this: if the color already matches, the
+  // waiter returns immediately.
   {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
+    content::BackgroundColorChangeWaiter waiter(web_contents, SK_ColorWHITE);
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
               SK_ColorWHITE);
@@ -565,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
 
   // Changing background color should update the active tab color.
   {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
+    content::BackgroundColorChangeWaiter waiter(web_contents, SK_ColorCYAN);
     EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
