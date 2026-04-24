@@ -397,9 +397,6 @@ bool MigrateToMultiProcess(const base::CommandLine& command_line) {
     return false;
   }
 
-  // Set multi-process config and start.
-  DaemonController::SetDelegateType(
-      DaemonController::DelegateType::kMultiProcess);
   auto daemon_controller = DaemonController::Create();
   base::RunLoop run_loop;
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
@@ -475,9 +472,6 @@ bool MigrateToSingleProcess(const base::CommandLine& command_line) {
     return false;
   }
 
-  // Set single-process config and start.
-  DaemonController::SetDelegateType(
-      DaemonController::DelegateType::kSingleProcess);
   auto daemon_controller = DaemonController::Create();
   base::RunLoop run_loop;
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
@@ -580,6 +574,7 @@ int MigrateHostMain(int argc, char** argv) {
   }
 
   bool success = false;
+  DaemonController::SetHostType(target_host_type);
   if (target_host_type->is_multi_process()) {
     success = MigrateToMultiProcess(command_line);
   } else {

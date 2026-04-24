@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include <iostream>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -17,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -43,6 +46,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/base/crash/crash_reporting_crashpad.h"
+#include "remoting/host/linux/host_types.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 #include "remoting/host/setup/start_host_as_root.h"
 #endif  // BUILDFLAG(IS_LINUX)
@@ -88,11 +92,8 @@ constexpr char kInvalidPinErrorMessage[] =
     "Please provide a numeric PIN consisting of at least six digits.\n";
 
 #if BUILDFLAG(IS_LINUX)
-// For now, the multi-process host only supports GDM-managed mode, but we may
-// add more modes in the future.
-
-// Use multi-process GDM-managed host.
-constexpr char kGdmManagedSwitchName[] = "gdm-managed";
+// The host type to use.
+constexpr char kHostTypeSwitchName[] = "host-type";
 #endif
 
 // True if the host was started successfully.
@@ -103,24 +104,27 @@ base::SingleThreadTaskExecutor* g_main_thread_task_executor = nullptr;
 // The active RunLoop.
 base::RunLoop* g_active_run_loop = nullptr;
 
-// TODO: crbug.com/475611769 - Add help about --gdm-managed and config migration
-// once GDM-managed host is feature complete.
-
 void PrintDefaultHelpMessage(const char* process_name) {
   // Optional args are shown first as the most common issue is needing to
   // generate the auth-code again and this ordering makes it easy to fix the
   // command line to rerun the tool.
-  UNSAFE_TODO(fprintf(
-      stderr,
+  std::cerr << base::StringPrintf(
       "Please visit https://remotedesktop.google.com/headless for "
       "instructions on running this tool and help generating the command "
       "line arguments.\n"
       "\n"
       "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
-      "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
+      "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]",
       process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
-      kDisplayNameSwitchName, kPinSwitchName,
-      kDisableCrashReportingSwitchName));
+      kDisplayNameSwitchName, kPinSwitchName, kDisableCrashReportingSwitchName);
+
+#if BUILDFLAG(IS_LINUX)
+  std::cerr << base::StringPrintf(" [--%s=<host type>]", kHostTypeSwitchName)
+            << "\n\n";
+  HostType::PrintHostTypeHelp();
+#endif
+
+  std::cerr << "\n";
 }
 
 void PrintCorpUserHelpMessage(const char* process_name) {
@@ -385,10 +389,49 @@ int StartHostMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
+  // This object instance is required by Chrome code (for example,
+  // FilePath, LazyInstance, MessageLoop).
+  base::AtExitManager exit_manager;
+
+  logging::LoggingSettings settings;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+  logging::InitLogging(settings);
+
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "RemotingHostSetup");
+
+  mojo::core::Init();
+
+  base::SingleThreadTaskExecutor main_thread_task_executor;
+  g_main_thread_task_executor = &main_thread_task_executor;
+  base::Thread::Options io_thread_options(base::MessagePumpType::IO, 0);
+  base::Thread io_thread("IO thread");
+  io_thread.StartWithOptions(std::move(io_thread_options));
+
 #if BUILDFLAG(IS_LINUX)
+  const HostType* host_type = nullptr;
+  if (command_line->HasSwitch(kHostTypeSwitchName)) {
+    std::string host_type_name =
+        command_line->GetSwitchValueASCII(kHostTypeSwitchName);
+    host_type = HostType::Find(host_type_name);
+    if (!host_type) {
+      std::cerr << "Invalid host type: " << host_type_name << "\n\n";
+      PrintDefaultHelpMessage(argv[0]);
+      return 1;
+    }
+  }
+
+  DaemonController::SetHostType(host_type);
+  // If the host type is not specified, `host_type` will be nullptr so we use
+  // DaemonController to determine the current host type if it is already
+  // running. The currently running host will be restarted instead of fallback
+  // to the default host type.
+  bool is_multi_process = DaemonController::Create()->is_multi_process();
+
   // If the user is trying to set up a multi-process host unelevated, we just
   // replace the current process with a sudo command to elevate.
-  if (command_line->HasSwitch(kGdmManagedSwitchName) && getuid() != 0) {
+  if (is_multi_process && getuid() != 0) {
     std::vector<const char*> sudo_argv;
     sudo_argv.push_back("sudo");
     // Use '-k' to prevent silently piggybacking off a recent sudo session.
@@ -410,31 +453,12 @@ int StartHostMain(int argc, char** argv) {
   // Note that StartHostAsRoot() is only for the single-process host. For the
   // multi-process host, we just set up everything as root using the common
   // code path.
-  if (getuid() == 0 && !command_line->HasSwitch(kGdmManagedSwitchName)) {
+  if (getuid() == 0 && !is_multi_process) {
     return remoting::StartHostAsRoot();
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
-  // This object instance is required by Chrome code (for example,
-  // FilePath, LazyInstance, MessageLoop).
-  base::AtExitManager exit_manager;
-
-  logging::LoggingSettings settings;
-  settings.logging_dest =
-      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  logging::InitLogging(settings);
-
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-      "RemotingHostSetup");
-
-  mojo::core::Init();
-
 #if BUILDFLAG(IS_LINUX)
-  if (command_line->HasSwitch(kGdmManagedSwitchName)) {
-    DaemonController::SetDelegateType(
-        DaemonController::DelegateType::kMultiProcess);
-  }
-
   if (command_line->HasSwitch("no-start")) {
     // On Linux, registering the host with systemd and starting it is the only
     // reason start_host requires root. The --no-start options skips that final
@@ -493,14 +517,6 @@ int StartHostMain(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_LINUX)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
-
-  // Provide SingleThreadTaskExecutor and threads for the
-  // URLRequestContextGetter.
-  base::SingleThreadTaskExecutor main_thread_task_executor;
-  g_main_thread_task_executor = &main_thread_task_executor;
-  base::Thread::Options io_thread_options(base::MessagePumpType::IO, 0);
-  base::Thread io_thread("IO thread");
-  io_thread.StartWithOptions(std::move(io_thread_options));
 
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
       new remoting::URLRequestContextGetter(io_thread.task_runner()));

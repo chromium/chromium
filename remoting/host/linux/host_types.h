@@ -18,6 +18,9 @@ class HostType {
   static const base::flat_map<std::string_view, const HostType*>&
   GetHostTypes();
 
+  // Returns the default host type.
+  static const HostType& GetDefaultHostType();
+
   // Finds a host type by its name. Returns nullptr if not found.
   static const HostType* Find(std::string_view name);
 
@@ -25,6 +28,9 @@ class HostType {
   static void PrintHostTypeHelp();
 
   virtual ~HostType() = default;
+
+  // The name of the host type.
+  virtual std::string_view name() const = 0;
 
   // Human-readable description of the host type.
   virtual std::string_view description() const = 0;

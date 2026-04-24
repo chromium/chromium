@@ -56,6 +56,7 @@ source_set("common") {
       "daemon_controller_delegate_linux_single_process.h",
       "daemon_controller_linux.cc",
     ]
+    deps += [ "//remoting/host/linux:host_types" ]
   }
 
   if (is_mac) {
@@ -123,13 +124,6 @@ source_set("start_host_main") {
     "start_host_main.cc",
   ]
 
-  if (is_linux) {
-    sources += [
-      "start_host_as_root.cc",
-      "start_host_as_root.h",
-    ]
-  }
-
   deps = [
     ":buildflags",
     ":start_host_common",
@@ -147,6 +141,14 @@ source_set("start_host_main") {
     "//services/network/public/cpp",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  if (is_linux) {
+    sources += [
+      "start_host_as_root.cc",
+      "start_host_as_root.h",
+    ]
+    deps += [ "//remoting/host/linux:host_types" ]
+  }
 
   if (remoting_internal) {
     deps += [ "//remoting/internal/proto" ]

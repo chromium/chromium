@@ -24,6 +24,7 @@ namespace remoting {
 
 class AutoThread;
 class AutoThreadTaskRunner;
+class HostType;
 
 class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
  public:
@@ -158,22 +159,10 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   };
 
 #if BUILDFLAG(IS_LINUX)
-  enum class DelegateType {
-    // Automatically determine the delegate type by checking if the
-    // corresponding service is running. If none is running, the single process
-    // delegate will be used. This is the default.
-    kAuto,
-
-    // Always use DaemonControllerDelegateLinuxSingleProcess.
-    kSingleProcess,
-
-    // Always use DaemonControllerDelegateLinuxMultiProcess.
-    kMultiProcess,
-  };
-
-  // Change the delegate type. The default is kAuto, but you may want to set an
-  // explicit value for SetConfigAndStart().
-  static void SetDelegateType(DelegateType type);
+  // Set the host type. If nullptr is passed (the default), the host type will
+  // be automatically determined by checking which host type is running. If none
+  // is running, HostType::GetDefaultHostType() will be used.
+  static void SetHostType(const HostType* type);
 #endif
 
   static scoped_refptr<DaemonController> Create();

@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "remoting/host/linux/host_types.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux_multi_process.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 
@@ -16,37 +17,36 @@ namespace remoting {
 
 namespace {
 
-static DaemonController::DelegateType g_delegate_type =
-    DaemonController::DelegateType::kAuto;
+const HostType* g_host_type = nullptr;
+
+std::unique_ptr<DaemonController::Delegate> GetDelegateForHostType(
+    const HostType& host_type) {
+  if (host_type.is_multi_process()) {
+    return std::make_unique<DaemonControllerDelegateLinuxMultiProcess>();
+  }
+  return std::make_unique<DaemonControllerDelegateLinuxSingleProcess>();
+}
 
 }  // namespace
 
 // static
-void DaemonController::SetDelegateType(DelegateType type) {
-  g_delegate_type = type;
+void DaemonController::SetHostType(const HostType* type) {
+  g_host_type = type;
 }
 
 // static
 scoped_refptr<DaemonController> DaemonController::Create() {
   std::unique_ptr<DaemonController::Delegate> delegate;
-  switch (g_delegate_type) {
-    case DelegateType::kSingleProcess:
-      delegate = std::make_unique<DaemonControllerDelegateLinuxSingleProcess>();
-      break;
-
-    case DelegateType::kMultiProcess:
-      delegate = std::make_unique<DaemonControllerDelegateLinuxMultiProcess>();
-      break;
-
-    case DelegateType::kAuto:
-      delegate = std::make_unique<DaemonControllerDelegateLinuxMultiProcess>();
-      auto state = delegate->GetState();
-      if (state == DaemonController::STATE_STARTING ||
-          state == DaemonController::STATE_STARTED) {
-        break;
-      }
-      delegate = std::make_unique<DaemonControllerDelegateLinuxSingleProcess>();
-      break;
+  if (g_host_type) {
+    delegate = GetDelegateForHostType(*g_host_type);
+  } else {
+    delegate = std::make_unique<DaemonControllerDelegateLinuxMultiProcess>();
+    auto state = delegate->GetState();
+    if (state == DaemonController::STATE_STARTING ||
+        state == DaemonController::STATE_STARTED) {
+      return base::MakeRefCounted<DaemonController>(std::move(delegate));
+    }
+    delegate = GetDelegateForHostType(HostType::GetDefaultHostType());
   }
 
   return base::MakeRefCounted<DaemonController>(std::move(delegate));
