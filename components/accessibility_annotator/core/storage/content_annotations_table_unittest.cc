@@ -65,31 +65,18 @@ TEST_F(ContentAnnotationsTableTest, InitNullEncryptor) {
 // Tests that table creation immediately fails if the input database is null.
 TEST_F(ContentAnnotationsTableTest, DoNotCreateTablesIfNullDatabase) {
   ContentAnnotationsTable table;
-  EXPECT_FALSE(table.CreateTablesIfNecessary());
+  EXPECT_FALSE(table.MigrateFromCleanStateToVersion1());
 }
 
-// Tests that table creation successfully creates the content annotations table
-// if it was missing.
+// Tests that table creation successfully creates the content annotations table.
 TEST_F(ContentAnnotationsTableTest, Init) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
   EXPECT_TRUE(db_->DoesTableExist("content_annotations"));
-}
-
-// Tests that table creation succeeds if table already exists.
-TEST_F(ContentAnnotationsTableTest,
-       DoNotSignalFailureToCreateTablesIfAllAlreadyExist) {
-  // Create placeholder tables (schema doesn't matter)
-  ASSERT_TRUE(db_->Execute(
-      R"SQL(CREATE TABLE content_annotations (
-              id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL))SQL"));
-  ASSERT_TRUE(db_->DoesTableExist("content_annotations"));
-
-  EXPECT_TRUE(table_.CreateTablesIfNecessary());
 }
 
 // Tests that `data` is successfully added and retrieved.
 TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotation) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
 
   ContentAnnotationsData data = CreateDefaultTestData();
   history::VisitID visit_id(1);
@@ -113,7 +100,7 @@ TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotation) {
 // Tests that DeleteContentAnnotations successfully removes the rows for the given
 // visit IDs.
 TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotations) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
 
   history::VisitID visit_id_1(1);
   history::VisitID visit_id_2(2);
@@ -138,7 +125,7 @@ TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotations) {
 
 // Tests that ClearAllContentAnnotations successfully removes all rows.
 TEST_F(ContentAnnotationsTableTest, GetAndClearAllContentAnnotations) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
 
   history::VisitID visit_id_1(1);
   history::VisitID visit_id_2(2);
@@ -162,7 +149,7 @@ TEST_F(ContentAnnotationsTableTest, GetAndClearAllContentAnnotations) {
 
 // Tests that the table can handle missing tab IDs.
 TEST_F(ContentAnnotationsTableTest, AddAndGetContentAnnotationWithNoTabId) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
 
   ContentAnnotationsData data = CreateDefaultTestData();
   data.tab_id = std::nullopt;
@@ -182,7 +169,7 @@ TEST_F(ContentAnnotationsTableTest, FunctionsFailWithoutInit) {
   history::VisitID visit_id(1);
   ContentAnnotationsData data = CreateDefaultTestData();
 
-  EXPECT_FALSE(uninitialized_table.CreateTablesIfNecessary());
+  EXPECT_FALSE(uninitialized_table.MigrateFromCleanStateToVersion1());
   EXPECT_FALSE(uninitialized_table.AddContentAnnotation(visit_id, data));
   EXPECT_FALSE(uninitialized_table.GetContentAnnotation(visit_id).has_value());
   EXPECT_TRUE(uninitialized_table.GetAllContentAnnotations().empty());
@@ -193,14 +180,14 @@ TEST_F(ContentAnnotationsTableTest, FunctionsFailWithoutInit) {
 // Tests that GetContentAnnotation returns std::nullopt if the row doesn't
 // exist.
 TEST_F(ContentAnnotationsTableTest, GetNonExistentAnnotation) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
   EXPECT_FALSE(table_.GetContentAnnotation(history::VisitID(999)).has_value());
 }
 
 // Tests that GetAllContentAnnotations returns an empty vector if the table is
 // empty.
 TEST_F(ContentAnnotationsTableTest, GetAllAnnotationsEmptyTable) {
-  ASSERT_TRUE(table_.CreateTablesIfNecessary());
+  ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
   // Ensure it's empty.
   ASSERT_TRUE(table_.ClearAllContentAnnotations());
   EXPECT_TRUE(table_.GetAllContentAnnotations().empty());

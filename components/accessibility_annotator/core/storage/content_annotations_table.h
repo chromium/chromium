@@ -62,9 +62,10 @@ class ContentAnnotationsTable {
   // success. Must be called before any other methods.
   bool Init(sql::Database* db, const os_crypt_async::Encryptor* encryptor);
 
-  // Creates the tables if they do not exist. Returns true on success. Must be
-  // called after `Init()`.
-  bool CreateTablesIfNecessary();
+  // Creates the tables required at database version 1. Returns true on success.
+  // Should only be called when creating the database from a clean state. Must
+  // be called after `Init()`.
+  bool MigrateFromCleanStateToVersion1();
 
   // Inserts or replaces `data` in content_annotations table. Returns true on
   // success.

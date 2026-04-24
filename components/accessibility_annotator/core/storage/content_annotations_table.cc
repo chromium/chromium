@@ -17,7 +17,10 @@
 namespace accessibility_annotator {
 
 namespace {
-constexpr char kContentAnnotationsTableCreationSql[] =
+// Table creation should be pegged to a specific version number, enforcing
+// linear migration-only updates.
+
+constexpr char kContentAnnotationsTableVersion1CreationSql[] =
     R"SQL(
   CREATE TABLE content_annotations (
     visit_id INTEGER PRIMARY KEY NOT NULL,
@@ -29,7 +32,6 @@ constexpr char kContentAnnotationsTableCreationSql[] =
     classifier_results TEXT NOT NULL
   )
   )SQL";
-constexpr char kContentAnnotationsTableName[] = "content_annotations";
 
 std::optional<ContentAnnotationsData> ToContentAnnotationsData(
     sql::Statement& statement,
@@ -79,15 +81,13 @@ bool ContentAnnotationsTable::Init(sql::Database* db,
   return true;
 }
 
-bool ContentAnnotationsTable::CreateTablesIfNecessary() {
+bool ContentAnnotationsTable::MigrateFromCleanStateToVersion1() {
   if (!db_) {
     return false;
   }
 
-  if (!db_->DoesTableExist(kContentAnnotationsTableName)) {
-    if (!db_->Execute(kContentAnnotationsTableCreationSql)) {
-      return false;
-    }
+  if (!db_->Execute(kContentAnnotationsTableVersion1CreationSql)) {
+    return false;
   }
   return true;
 }

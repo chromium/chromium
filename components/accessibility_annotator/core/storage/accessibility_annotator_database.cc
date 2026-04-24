@@ -114,10 +114,6 @@ bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path,
     return false;
   }
 
-  if (!CreateTablesIfNecessary()) {
-    return false;
-  }
-
   // Perform any necessary migrations here. The updated user-version will be set
   // in the migration function.
   if (!MigrateOldVersionsAsNeeded(detected_user_version)) {
@@ -182,23 +178,21 @@ bool AccessibilityAnnotatorDatabase::ClearAllContentAnnotations() {
   return content_annotations_table_.ClearAllContentAnnotations();
 }
 
-bool AccessibilityAnnotatorDatabase::CreateTablesIfNecessary() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
-    return false;
-  }
-
-  return content_annotations_table_.CreateTablesIfNecessary();
-}
-
 bool AccessibilityAnnotatorDatabase::MigrateOldVersionsAsNeeded(
     int detected_user_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!db_ || !db_->is_open() || !encryptor_.has_value()) {
+    return false;
+  }
 
   // Perform any necessary migrations from `detected_user_version` to
   // `kCurrentVersionNumber` here.
 
   if (detected_user_version == 0) {
+    if (!content_annotations_table_.MigrateFromCleanStateToVersion1()) {
+      return false;
+    }
     if (!intent_table_.MigrateFromCleanStateToVersion1()) {
       return false;
     }

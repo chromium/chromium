@@ -65,9 +65,6 @@ class AccessibilityAnnotatorDatabase {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Creates the tables if they don't exist. Returns true on success.
-  bool CreateTablesIfNecessary();
-
   // Migrates the database from the detected version to the current version.
   // Returns true on success, false otherwise.
   bool MigrateOldVersionsAsNeeded(int detected_user_version);
