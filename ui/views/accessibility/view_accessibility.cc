@@ -1845,7 +1845,13 @@ ViewAccessibility* ViewAccessibility::GetUnignoredParent() const {
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   CHECK(view_);
   if (ViewAccessibility* active_descendant = GetActiveDescendantView()) {
-    return active_descendant->GetNativeObject();
+    // Only redirect focus for virtual view active descendants. Redirecting
+    // focus for real view descendants (e.g., OmniboxResultView) causes
+    // get_accState to return focused=0, which breaks JAWS character-by-
+    // character navigation in textfields.
+    if (!active_descendant->view()) {
+      return active_descendant->GetNativeObject();
+    }
   }
   return view_->GetNativeViewAccessible();
 }
