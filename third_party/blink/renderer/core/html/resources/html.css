@@ -194,38 +194,6 @@ h1 {
     font-weight: bold
 }
 
-@supports blink-feature(SpecialRulesForNestedH1Elements) {
-  :-webkit-any(article,aside,nav,section) h1 {
-      font-size: 1.5em;
-      margin-block-start: 0.83__qem;
-      margin-block-end: 0.83em;
-  }
-
-  :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
-      font-size: 1.17em;
-      margin-block-start: 1__qem;
-      margin-block-end: 1em;
-  }
-
-  :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
-      font-size: 1.00em;
-      margin-block-start: 1.33__qem;
-      margin-block-end: 1.33em;
-  }
-
-  :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
-      font-size: .83em;
-      margin-block-start: 1.67__qem;
-      margin-block-end: 1.67em;
-  }
-
-  :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) :-webkit-any(article,aside,nav,section) h1 {
-      font-size: .67em;
-      margin-block-start: 2.33__qem;
-      margin-block-end: 2.33em;
-  }
-}
-
 h2 {
     display: block;
     font-size: 1.5em;

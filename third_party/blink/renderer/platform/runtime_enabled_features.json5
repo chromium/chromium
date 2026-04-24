@@ -5487,14 +5487,6 @@
       name: "SpeakerSelection",
       status: "experimental",
     },
-    // This is a flag that re-enables some deprecated/removed "special rules"
-    // that apply to the styles of an <h1> element nested within <article>,
-    // <aside>, <nav>, or <section>. It is disabled by default, and here as a
-    // Finch killswitch only. This was shipped (disabled) in M140, and the flag
-    // can be removed in M142.
-    {
-      name: "SpecialRulesForNestedH1Elements",
-    },
     {
       // Exposes speculation measurement data (preloads, prefetches, prerenders)
       // on performance.speculations.
