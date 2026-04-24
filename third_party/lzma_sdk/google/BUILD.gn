@@ -53,7 +53,5 @@ source_set("seven_zip_c_buf_stream") {
 
   public = [ "seven_zip_c_buf_stream.h" ]
 
-  deps = [
-    "//third_party/lzma_sdk",
-  ]
+  deps = [ "//third_party/lzma_sdk" ]
 }
