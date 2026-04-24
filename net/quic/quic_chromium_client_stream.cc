@@ -572,7 +572,7 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicServerId server_id,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : quic::QuicSpdyStream(pending, session),
+    : quic::QuicSpdyStream(*pending, session),
       net_log_(net_log),
       session_(session),
       server_id_(std::move(server_id)),
