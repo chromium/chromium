@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {$} from 'chrome://resources/js/util.js';
+
 /**
  * Converts a number in bytes to a string in megabytes split by comma into
  * three digit block.
@@ -395,6 +398,33 @@ function onZipDone(success) {
 
 document.addEventListener('DOMContentLoaded', () => {
   chrome.send('pageLoaded');
+
+  addWebUiListener('updateConnectionStatus', updateConnectionStatus);
+  addWebUiListener('updatePathConfigurations', updatePathConfigurations);
+  addWebUiListener('updateBulkPinningVisible', updateBulkPinningVisible);
+  addWebUiListener('updateVerboseLogging', updateVerboseLogging);
+  addWebUiListener('updateMirroring', updateMirroring);
+  addWebUiListener('updateBulkPinning', updateBulkPinning);
+  addWebUiListener('onBulkPinningProgress', onBulkPinningProgress);
+  addWebUiListener('updateStartupArguments', updateStartupArguments);
+  addWebUiListener('updateLocalStorageUsage', updateLocalStorageUsage);
+  addWebUiListener('updateInFlightOperations', updateInFlightOperations);
+  addWebUiListener('updateAboutResource', updateAboutResource);
+  addWebUiListener('updateDeltaUpdateStatus', updateDeltaUpdateStatus);
+  addWebUiListener('updateEventLog', updateEventLog);
+  addWebUiListener('updateServiceLog', updateServiceLog);
+  addWebUiListener('updateOtherServiceLogsUrl', updateOtherServiceLogsUrl);
+  addWebUiListener('onAddSyncPath', onAddSyncPath);
+  addWebUiListener('onRemoveSyncPath', onRemoveSyncPath);
+  addWebUiListener(
+      'updateStartupArgumentsStatus', updateStartupArgumentsStatus);
+  addWebUiListener('updateResetStatus', updateResetStatus);
+  addWebUiListener('setSectionEnabled', setSectionEnabled);
+  addWebUiListener('onZipDone', onZipDone);
+  addWebUiListener('updateCacheContents', updateCacheContents);
+  addWebUiListener('updateGCacheContents', updateGCacheContents);
+  addWebUiListener(
+      'updateDriveRelatedPreferences', updateDriveRelatedPreferences);
 
   updateToc();
 

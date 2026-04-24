@@ -21,6 +21,7 @@ group("resources") {
     "cloud_upload:resources",
     "crostini_installer:resources",
     "desk_api:resources",
+    "drive_internals:resources",
     "edu_coexistence:resources",
     "emoji_picker:resources",
     "enterprise_reporting:resources",

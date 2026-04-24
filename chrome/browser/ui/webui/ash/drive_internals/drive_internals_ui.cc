@@ -43,7 +43,8 @@
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/drive_internals_resources.h"
+#include "chrome/grit/drive_internals_resources_map.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -279,22 +280,22 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         net::FilePathToFileURL(path), {}, {}, {});
   }
 
-  void OnZipDone() { MaybeCallJavascript("onZipDone", base::Value()); }
+  void OnZipDone() { FireWebUIListenerIfAllowed("onZipDone"); }
 
  private:
-  void MaybeCallJavascript(const std::string& function,
-                           base::Value data1,
-                           base::Value data2 = {}) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  template <typename... Values>
+  void FireWebUIListenerIfAllowed(std::string_view event_name,
+                                  const Values&... values) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (IsJavascriptAllowed()) {
-      CallJavascriptFunction(function, std::move(data1), std::move(data2));
+      FireWebUIListener(event_name, values...);
     }
   }
 
   // Hide or show a section of the page.
   void SetSectionEnabled(const std::string& section, bool enable) {
-    MaybeCallJavascript("setSectionEnabled", base::Value(section),
-                        base::Value(enable));
+    FireWebUIListenerIfAllowed("setSectionEnabled", base::Value(section),
+                               base::Value(enable));
   }
 
   // WebUIMessageHandler override.
@@ -444,8 +445,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     connection_status.Set(
         "status", ToString(drive::util::GetDriveConnectionStatus(profile())));
 
-    MaybeCallJavascript("updateConnectionStatus",
-                        base::Value(std::move(connection_status)));
+    FireWebUIListenerIfAllowed("updateConnectionStatus",
+                               base::Value(std::move(connection_status)));
   }
 
   void UpdateAboutResourceSection() {
@@ -485,19 +486,20 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       AppendKeyValue(paths, key, GetPrefs()->GetFilePath(key).AsUTF8Unsafe());
     }
 
-    MaybeCallJavascript("updatePathConfigurations",
-                        base::Value(std::move(paths)));
+    FireWebUIListenerIfAllowed("updatePathConfigurations",
+                               base::Value(std::move(paths)));
   }
 
   void UpdateDriveDebugSection() {
     SetSectionEnabled("drive-debug", true);
     const PrefService* const prefs = GetPrefs();
-    MaybeCallJavascript("updateBulkPinningVisible",
-                        base::Value(prefs->GetBoolean(
-                            drive::prefs::kDriveFsBulkPinningVisible)));
-    MaybeCallJavascript("updateVerboseLogging",
-                        base::Value(prefs->GetBoolean(
-                            drive::prefs::kDriveFsEnableVerboseLogging)));
+    FireWebUIListenerIfAllowed("updateBulkPinningVisible",
+                               base::Value(prefs->GetBoolean(
+                                   drive::prefs::kDriveFsBulkPinningVisible)));
+    FireWebUIListenerIfAllowed(
+        "updateVerboseLogging",
+        base::Value(
+            prefs->GetBoolean(drive::prefs::kDriveFsEnableVerboseLogging)));
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -528,7 +530,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
     bool mirroring_enabled =
         GetPrefs()->GetBoolean(drive::prefs::kDriveFsEnableMirrorSync);
-    MaybeCallJavascript("updateMirroring", base::Value(mirroring_enabled));
+    FireWebUIListenerIfAllowed("updateMirroring",
+                               base::Value(mirroring_enabled));
     SetSectionEnabled("mirror-sync-paths", mirroring_enabled);
     SetSectionEnabled("mirror-path-form", mirroring_enabled);
     if (!mirroring_enabled) {
@@ -552,8 +555,9 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
     for (const FilePath& sync_path : paths) {
-      MaybeCallJavascript("onAddSyncPath", base::Value(sync_path.value()),
-                          base::Value(ToString(drive::FILE_ERROR_OK)));
+      FireWebUIListenerIfAllowed("onAddSyncPath",
+                                 base::Value(sync_path.value()),
+                                 base::Value(ToString(drive::FILE_ERROR_OK)));
     }
   }
 
@@ -580,13 +584,14 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   void OnAddSyncPath(const FilePath& sync_path, drive::FileError status) {
-    MaybeCallJavascript("onAddSyncPath", base::Value(sync_path.value()),
-                        base::Value(ToString(status)));
+    FireWebUIListenerIfAllowed("onAddSyncPath", base::Value(sync_path.value()),
+                               base::Value(ToString(status)));
   }
 
   void OnRemoveSyncPath(const FilePath& sync_path, drive::FileError status) {
-    MaybeCallJavascript("onRemoveSyncPath", base::Value(sync_path.value()),
-                        base::Value(ToString(status)));
+    FireWebUIListenerIfAllowed("onRemoveSyncPath",
+                               base::Value(sync_path.value()),
+                               base::Value(ToString(status)));
   }
 
   void UpdateBulkPinningDeveloperSection() {
@@ -603,7 +608,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
     Observe(service);
 
-    MaybeCallJavascript(
+    FireWebUIListenerIfAllowed(
         "updateBulkPinning",
         base::Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
 
@@ -648,7 +653,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
                  drivefs::pinning::ToString(progress.time_spent_pinning_files))
             .Set("remaining_time",
                  drivefs::pinning::ToString(progress.remaining_time));
-    MaybeCallJavascript("onBulkPinningProgress", base::Value(std::move(dict)));
+    FireWebUIListenerIfAllowed("onBulkPinningProgress",
+                               base::Value(std::move(dict)));
   }
 
   // Called when GetDeveloperMode() is complete.
@@ -672,7 +678,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnGetStartupArguments(const std::string& arguments) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(developer_mode_);
-    MaybeCallJavascript("updateStartupArguments", base::Value(arguments));
+    FireWebUIListenerIfAllowed("updateStartupArguments",
+                               base::Value(arguments));
     SetSectionEnabled("developer-mode-controls", true);
     UpdateBulkPinningDeveloperSection();
   }
@@ -683,8 +690,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     base::DictValue local_storage_summary;
     local_storage_summary.Set("free_space",
                               static_cast<double>(free_space.value_or(-1)));
-    MaybeCallJavascript("updateLocalStorageUsage",
-                        base::Value(std::move(local_storage_summary)));
+    FireWebUIListenerIfAllowed("updateLocalStorageUsage",
+                               base::Value(std::move(local_storage_summary)));
   }
 
   void UpdateDriveRelatedPreferencesSection() {
@@ -706,8 +713,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       AppendKeyValue(preferences, key, base::ToString(prefs->GetBoolean(key)));
     }
 
-    MaybeCallJavascript("updateDriveRelatedPreferences",
-                        base::Value(std::move(preferences)));
+    FireWebUIListenerIfAllowed("updateDriveRelatedPreferences",
+                               base::Value(std::move(preferences)));
   }
 
   void UpdateEventLogSection() {
@@ -737,7 +744,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       last_sent_event_id_ = event.id;
     }
     if (!list.empty()) {
-      MaybeCallJavascript("updateEventLog", base::Value(std::move(list)));
+      FireWebUIListenerIfAllowed("updateEventLog",
+                                 base::Value(std::move(list)));
     }
   }
 
@@ -759,7 +767,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    MaybeCallJavascript(
+    FireWebUIListenerIfAllowed(
         "updateOtherServiceLogsUrl",
         base::Value(net::FilePathToFileURL(log_path.DirName()).spec()));
 
@@ -779,8 +787,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
     if (!response.second.empty()) {
       last_sent_line_number_ += response.second.size();
-      MaybeCallJavascript("updateServiceLog",
-                          base::Value(std::move(response.second)));
+      FireWebUIListenerIfAllowed("updateServiceLog",
+                                 base::Value(std::move(response.second)));
     }
     service_log_file_is_processing_ = false;
   }
@@ -806,9 +814,9 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   void OnGetGCacheContents(
       std::pair<base::ListValue, base::DictValue> response) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    MaybeCallJavascript("updateGCacheContents",
-                        base::Value(std::move(response.first)),
-                        base::Value(std::move(response.second)));
+    FireWebUIListenerIfAllowed("updateGCacheContents",
+                               base::Value(std::move(response.first)),
+                               base::Value(std::move(response.second)));
   }
 
   // Called when the "Verbose Logging" checkbox on the page is changed.
@@ -900,7 +908,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     if (success) {
       RestartDrive(base::ListValue());
     }
-    MaybeCallJavascript("updateStartupArgumentsStatus", base::Value(success));
+    FireWebUIListenerIfAllowed("updateStartupArgumentsStatus",
+                               base::Value(success));
   }
 
   void SetTracingEnabled(bool enabled, const base::ListValue& args) {
@@ -976,7 +985,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   // Called after file system reset for ResetDriveFileSystem is done.
   void ResetFinished(bool success) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    MaybeCallJavascript("updateResetStatus", base::Value(success));
+    FireWebUIListenerIfAllowed("updateResetStatus", base::Value(success));
   }
 
   Profile* profile() { return Profile::FromWebUI(web_ui()); }
@@ -1129,9 +1138,8 @@ DriveInternalsUI::DriveInternalsUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), ash::kChromeUIDriveInternalsHost);
-  source->AddResourcePath("drive_internals.css", IDR_DRIVE_INTERNALS_CSS);
-  source->AddResourcePath("drive_internals.js", IDR_DRIVE_INTERNALS_JS);
-  source->SetDefaultResource(IDR_DRIVE_INTERNALS_HTML);
+  source->AddResourcePaths(kDriveInternalsResources);
+  source->SetDefaultResource(IDR_DRIVE_INTERNALS_DRIVE_INTERNALS_HTML);
 }
 
 }  // namespace ash
