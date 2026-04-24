@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
@@ -118,12 +119,12 @@ enum class PrefetchPotentialCandidateServingResult {
   kNotServedBlockUntilHeadTimeout = 8,
 
   // The candidate is not served because
-  // `PrefetchContainer::Observer::OnDeterminedHead()` is called with
+  // `PrefetchContainerObserver::OnDeterminedHead()` is called with
   // `PrefetchServableState::kShouldBlockUntilHeadReceived`. Basically, we don't
   // expect to enter this path, but there is a buggy corner case.
   kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived = 9,
   // The candidate is not served because
-  // `PrefetchContainer::Observer::OnDeterminedHead()` is called but the
+  // `PrefetchContainerObserver::OnDeterminedHead()` is called but the
   // prefetch has been expired.
   kNotServedOnDeterminedHeadWithServableExpired = 10,
   // The candidate is not served due to ineligible redirect.
@@ -133,7 +134,7 @@ enum class PrefetchPotentialCandidateServingResult {
   // Deprecated
   //
   // The candidate is not served because
-  // `PrefetchContainer::Observer::OnDeterminedHead()` is called with
+  // `PrefetchContainerObserver::OnDeterminedHead()` is called with
   // `PrefetchServableState::kNotServable` except for expired nor failure. We
   // don't expect to enter this path.
   // kNotServedOnDeterminedHeadWithNotServableUnknown = 13,
@@ -160,7 +161,7 @@ CONTENT_EXPORT std::ostream& operator<<(
 // Lifetime of this class is from the call of `FindPrefetch()` to calling
 // `callback_`. This is owned by itself. See the comment on `self_`.
 class CONTENT_EXPORT PrefetchMatchResolver final
-    : public PrefetchContainer::Observer {
+    : public PrefetchContainerObserver {
  public:
   using Callback =
       base::OnceCallback<void(PrefetchServingHandle serving_handle)>;
@@ -173,7 +174,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   PrefetchMatchResolver(const PrefetchMatchResolver&) = delete;
   PrefetchMatchResolver& operator=(const PrefetchMatchResolver&) = delete;
 
-  // PrefetchContainer::Observer implementation
+  // PrefetchContainerObserver implementation
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
   void OnGotInitialEligibility(
       const PrefetchContainer& prefetch_container) override;

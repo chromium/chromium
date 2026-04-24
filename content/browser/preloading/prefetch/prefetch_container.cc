@@ -15,6 +15,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/assert_prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -346,7 +347,7 @@ PrefetchContainer::~PrefetchContainer() {
   // https://chromium-review.googlesource.com/c/chromium/src/+/5657659/comments/0cfb14c0_3050963e
   //
   // TODO(crbug.com/356314759): Do it.
-  NotifyObservers(&Observer::OnWillBeDestroyed);
+  NotifyObservers(&PrefetchContainerObserver::OnWillBeDestroyed);
 
   CancelStreamingURLLoaderIfNotServing();
 
@@ -827,7 +828,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       }
     }
 
-    NotifyObservers(&Observer::OnGotInitialEligibility);
+    NotifyObservers(&PrefetchContainerObserver::OnGotInitialEligibility);
   } else {
     // This case is for any URLs from redirects.
     if (!is_eligible) {
@@ -1109,7 +1110,7 @@ void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
         *GetNonRedirectHead(), GetURL(), rfhi_can_be_null);
   }
 
-  NotifyObservers(&Observer::OnDeterminedHead);
+  NotifyObservers(&PrefetchContainerObserver::OnDeterminedHead);
 }
 
 void PrefetchContainer::StartTimeoutTimerIfNeeded(
@@ -1230,7 +1231,7 @@ void PrefetchContainer::OnPrefetchComplete(
   SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
   OnPrefetchCompleteInternal();
 
-  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed);
+  NotifyObservers(&PrefetchContainerObserver::OnPrefetchCompletedOrFailed);
 
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
     GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
@@ -1561,11 +1562,11 @@ void PrefetchContainer::OnInitialPrefetchFailedIneligible(
   }
 }
 
-void PrefetchContainer::AddObserver(Observer* observer) {
+void PrefetchContainer::AddObserver(PrefetchContainerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void PrefetchContainer::RemoveObserver(Observer* observer) {
+void PrefetchContainer::RemoveObserver(PrefetchContainerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 

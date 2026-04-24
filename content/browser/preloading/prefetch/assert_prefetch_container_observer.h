@@ -6,13 +6,13 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_ASSERT_PREFETCH_CONTAINER_OBSERVER_H_
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_container_observer.h"
 
 namespace content {
 
-// A `PrefetchContainer::Observer` that verifies the observer is called at the
+// A `PrefetchContainerObserver` that verifies the observer is called at the
 // right sequence and with aligned `PrefetchContainerLoadState`.
-class AssertPrefetchContainerObserver final
-    : public PrefetchContainer::Observer {
+class AssertPrefetchContainerObserver final : public PrefetchContainerObserver {
  public:
   // This should be constructed upon `PrefetchContainer` construction.
   explicit AssertPrefetchContainerObserver(
@@ -20,7 +20,7 @@ class AssertPrefetchContainerObserver final
   ~AssertPrefetchContainerObserver() override;
 
  private:
-  // PrefetchContainer::Observer overrides:
+  // PrefetchContainerObserver overrides:
   void OnWillBeDestroyed(const PrefetchContainer& prefetch_container) override;
   void OnGotInitialEligibility(
       const PrefetchContainer& prefetch_container) override;
@@ -36,7 +36,7 @@ class AssertPrefetchContainerObserver final
   base::WeakPtr<PrefetchContainer> prefetch_container_;
 
   // The `PrefetchContainerLoadState` observed at the last
-  // `PrefetchContainer::Observer` callback.
+  // `PrefetchContainerObserver` callback.
   PrefetchContainerLoadState observed_load_state_ =
       PrefetchContainerLoadState::kNotStarted;
 

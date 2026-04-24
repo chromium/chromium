@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 
 namespace content {
 
@@ -26,7 +27,7 @@ AssertPrefetchContainerObserver::~AssertPrefetchContainerObserver() {
 
 void AssertPrefetchContainerObserver::UpdateObservedLoadState() {
   using T = PrefetchContainerLoadState;
-  // Currently `PrefetchContainer::Observer` doesn't have corresponding
+  // Currently `PrefetchContainerObserver` doesn't have corresponding
   // notifications when transitioning to `kStarted` or `kFailedHeldback`.
   // Therefore `observed_load_state_` transitions directly from `kEligible` to
   // e.g. `kDeterminedHead`, skipping `kStarted`.
@@ -55,7 +56,7 @@ void AssertPrefetchContainerObserver::OnWillBeDestroyed(
   on_will_be_destroyed_called_ = true;
 
   if (observed_load_state_ != prefetch_container_->GetLoadState()) {
-    // Transitions allowed without `PrefetchContainer::Observer` notifications,
+    // Transitions allowed without `PrefetchContainerObserver` notifications,
     // to capture missing observer calls.
     using T = PrefetchContainerLoadState;
     static const base::NoDestructor<base::StateTransitions<T>> transitions(

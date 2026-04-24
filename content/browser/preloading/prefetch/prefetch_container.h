@@ -46,6 +46,7 @@ class NetworkContext;
 namespace content {
 
 class AssertPrefetchContainerObserver;
+class PrefetchContainerObserver;
 class PrefetchIsolatedNetworkContext;
 class PrefetchKey;
 class PrefetchMatchResolverAction;
@@ -101,7 +102,7 @@ enum class PrefetchContainerLoadState {
   // --- Phase 2. The eligibility check for the initial request has completed.
   // Non-redirect `PrefetchContainer::OnEligibilityCheckComplete()` and
   // `PreloadingAttempt::SetEligibility()` have been called.
-  // [Observer] `PrefetchContainer::Observer::OnGotInitialEligibility()`.
+  // [Observer] `PrefetchContainerObserver::OnGotInitialEligibility()`.
 
   kEligible,
   // [Final state]
@@ -122,13 +123,13 @@ enum class PrefetchContainerLoadState {
 
   // --- Phase 4. The non-redirect prefetch response is determined.
   // `PrefetchContainer::OnDeterminedHead()` has been called.
-  // [Observer] `PrefetchContainer::Observer::OnDeterminedHead()`.
+  // [Observer] `PrefetchContainerObserver::OnDeterminedHead()`.
   kDeterminedHead,
   kFailedDeterminedHead,
 
   // --- Phase 5. [Final state] The prefetch completed successfully or failed.
   // `PrefetchContainer::OnPrefetchComplete()` has been called.
-  // [Observer] `PrefetchContainer::Observer::OnPrefetchCompletedOrFailed()`.
+  // [Observer] `PrefetchContainerObserver::OnPrefetchCompletedOrFailed()`.
   kCompleted,
   kFailed,
 };
@@ -208,79 +209,6 @@ class CONTENT_EXPORT PrefetchContainer
 
   PrefetchContainer(const PrefetchContainer&) = delete;
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
-
-  // Observer interface to listen to lifecycle events of `PrefetchContainer`.
-  //
-  // ----------------------------------------------------------------
-  // Callback timing: Each callback
-  // - Is called synchronously and immediately AFTER the `PrefetchContainer`
-  //   transitioned to a corresponding state. At the time of the callback, all
-  //   relevant state changes on `PrefetchContainer` should be already done.
-  // - Is called at most once in the lifetime of a `PrefetchContainer`.
-  // - Isn't called during `PrefetchContainer` dtor, except for
-  //   `OnWillBeDestroyed()`.
-  // - Isn't called if the observer is added after reaching the corresponding
-  //   `PrefetchContainerLoadState`, including when added during the `Observer`
-  //   callback to another `Observer`.
-  //
-  // Verified by: `AssertPrefetchContainerObserver` and
-  // `PrefetchContainerTest.ObserverAddedDuringNotification`.
-  //
-  // ----------------------------------------------------------------
-  // Allowed operations during `Observer` calls:
-  // - Accessing/creating `WeakPtr<PrefetchContainer>`. Observers can assume
-  //   `WeakPtr`s are not invalidated yet, even in `OnWillBeDestroyed()`.
-  // - Calling `PrefetchContainer::Add/RemoveObserver()`.
-  //   See the `base::ObserverList` semantics.
-  // - Posting tasks and other simple operations.
-  //
-  // ----------------------------------------------------------------
-  // Disallowed operations during `Observer` calls:
-  // - Don't trigger another `PrefetchContainerLoadState` state transitions,
-  //   because this would complicate the state management due to reentrancy.
-  //   - Don't call `PrefetchService::ResetPrefetchContainer()`.
-  //   - Don't destroy `PrefetchContainer`s.
-  //   - Don't cancel prefetching.
-  //   - Don't start a new prefetch.
-  // - Don't trigger logic that are complicated or not controlled by prefetch
-  //   stack. Namely:
-  //   - Don't unblock navigation.
-  //   - Don't trigger arbitrary external callbacks.
-  //   Because the `Observer` calls can be made during complicated or
-  //   uncontrolled-by-prefetch logic (e.g. navigation commit), we should assume
-  //   calling complicated or uncontrolled-by-prefetch logic from `Observer`s
-  //   can potentially cause reentrancy to prefetch and navigation logic, which
-  //   should be avoided.
-  // Verified by: `PrefetchContainer::during_observer_notification_`.
-  // The remaining known violations are:
-  // - TODO(crbug.com/404416345): `PrefetchMatchResolver` can unblock a
-  //   navigation synchronously.
-  // - TODO(crbug.com/480271813): `PrefetchContainerObserver` notifies callbacks
-  //   that can be set by the content public API.
-  class Observer : public base::CheckedObserver {
-   public:
-    // State: the `PrefetchContainer` is about to be destroyed, called at the
-    // head of dtor.
-    // No other `Observer` calls are made after `OnWillBeDestroyed()`.
-    // TODO(crbug.com/356314759): Call this just before dtor is called.
-    virtual void OnWillBeDestroyed(
-        const PrefetchContainer& prefetch_container) = 0;
-
-    // State: `PrefetchContainerLoadState::kEligible` or
-    // `PrefetchContainerLoadState::kFailedIneligible`.
-    virtual void OnGotInitialEligibility(
-        const PrefetchContainer& prefetch_container) = 0;
-
-    // State: `PrefetchContainerLoadState::kDeterminedHead` or
-    // `PrefetchContainerLoadState::kFailedDeterminedHead`.
-    virtual void OnDeterminedHead(
-        const PrefetchContainer& prefetch_container) = 0;
-
-    // State: `PrefetchContainerLoadState::kCompleted` or
-    // `PrefetchContainerLoadState::kFailed`.
-    virtual void OnPrefetchCompletedOrFailed(
-        const PrefetchContainer& prefetch_container) = 0;
-  };
 
   // ----------------------------------------------------------------
   // Values that never change throughout `PrefetchContainer` lifetime.
@@ -554,8 +482,8 @@ class CONTENT_EXPORT PrefetchContainer
   // `HaveDefaultContextCookiesChanged()`.
   std::unique_ptr<const PrefetchServingHandle> CreateConstServingHandle() const;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(PrefetchContainerObserver* observer);
+  void RemoveObserver(PrefetchContainerObserver* observer);
 
   bool IsExactMatch(const GURL& url) const;
   bool IsNoVarySearchHeaderMatch(const GURL& url) const;
@@ -936,12 +864,12 @@ class CONTENT_EXPORT PrefetchContainer
 
   // True during notifying `observers_`.
   // This is used to `DUMP_WILL_BE_CHECK()` the disallowed operations during
-  // `Observer` callbacks. Theoretically there can still be violating corner
-  // cases, so `DUMP_WILL_BE_CHECK()` is used, to first monitor if there are
-  // actual violations in the wild.
+  // `PrefetchContainerObserver` callbacks. Theoretically there can still be
+  // violating corner cases, so `DUMP_WILL_BE_CHECK()` is used, to first monitor
+  // if there are actual violations in the wild.
   bool during_observer_notification_ = false;
 
-  base::ObserverList<Observer> observers_{
+  base::ObserverList<PrefetchContainerObserver> observers_{
       base::ObserverListPolicy::EXISTING_ONLY};
 
   bool is_likely_ahead_of_prerender_ = false;

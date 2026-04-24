@@ -44,7 +44,7 @@ net::RedirectInfo SyntheticRedirect(const GURL& new_url) {
   return redirect_info;
 }
 
-class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
+class TestPrefetchContainerObserver final : public PrefetchContainerObserver {
  public:
   explicit TestPrefetchContainerObserver(PrefetchContainer& prefetch_container)
       : prefetch_container_(prefetch_container.GetWeakPtr()) {

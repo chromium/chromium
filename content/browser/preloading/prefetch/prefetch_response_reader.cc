@@ -657,7 +657,7 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
   }
 
   // Notify PrefetchContainer of the state change, which can eventually trigger
-  // `PrefetchContainer::Observer` calls. This should be done after every state
+  // `PrefetchContainerObserver` calls. This should be done after every state
   // changes are done, including `load_state_` changes and `AddEventToQueue()`
   // above.
 

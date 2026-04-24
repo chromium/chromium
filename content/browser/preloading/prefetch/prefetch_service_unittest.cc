@@ -6909,7 +6909,7 @@ enum class Event {
 
   // `PrefetchStreamingURLLoader`'s `URLLoaderClient` callbacks.
   // These shouldn't be confused with the corresponding `PrefetchContainer`
-  // calls or `PrefetchContainer::Observer` calls (== `kObserver*` events
+  // calls or `PrefetchContainerObserver` calls (== `kObserver*` events
   // below).
   kPrefetchURLLoaderOnReceiveRedirect,
   kPrefetchURLLoaderOnReceiveRedirectCrossSite,
@@ -6932,7 +6932,7 @@ enum class Event {
   // Can happen anytime.
   kResetPrefetchContainer,
 
-  // `PrefetchContainer::Observer` callbacks are called.
+  // `PrefetchContainerObserver` callbacks are called.
   // These are not included in input event sequences.
   kObserverOnWillBeDestroyed,
   kObserverOnGotInitialEligibility,
@@ -6985,8 +6985,8 @@ std::ostream& operator<<(std::ostream& os, Event event) {
 
 // For a single test run, we observe the `PrefetchContainer` callbacks.
 // As an output event sequence, we record both of the
-// `PrefetchContainer::Observer` callbacks AND the input event sequence, to
-// determine when the `PrefetchContainer::Observer` callbacks are called
+// `PrefetchContainerObserver` callbacks AND the input event sequence, to
+// determine when the `PrefetchContainerObserver` callbacks are called
 // relative to the input events. `ExpectedEvents()` returns the expected output
 // event sequence.
 //
@@ -6998,7 +6998,7 @@ std::vector<Event> CalculateOutputEventSequence(
   std::vector<Event> output_event_sequence;
   // Indicates whether the prefetching `URLLoader` completes or not. This is (at
   // least currently) different from whether
-  // `PrefetchContainer::Observer::OnPrefetchCompletedOrFailed()` is called.
+  // `PrefetchContainerObserver::OnPrefetchCompletedOrFailed()` is called.
   // TODO(https://crbug.com/400761083): Revisit this discrepancy if needed,
   // after some bugs are fixed.
   bool prefetch_completed = false;
@@ -7042,7 +7042,7 @@ std::vector<Event> CalculateOutputEventSequence(
           prefetch_completed = true;
 
           // TODO(https://crbug.com/400761083): Call
-          // `PrefetchContainer::Observer::OnPrefetchCompletedOrFailed`
+          // `PrefetchContainerObserver::OnPrefetchCompletedOrFailed`
           // or another callback on redirect failures, if we want to ensure an
           // observer call is made when reaching at the final state of
           // `PrefetchContainer`.
@@ -7362,7 +7362,7 @@ class PrefetchServiceEventTest
 };
 
 class RecordingPrefetchContainerObserver final
-    : public PrefetchContainer::Observer {
+    : public PrefetchContainerObserver {
  public:
   explicit RecordingPrefetchContainerObserver(
       PrefetchContainer& prefetch_container)
@@ -7417,7 +7417,7 @@ class RecordingPrefetchContainerObserver final
   std::vector<Event> actual_output_event_sequence_;
 };
 
-// Check the actual `PrefetchContainer::Observer` callbacks.
+// Check the actual `PrefetchContainerObserver` callbacks.
 TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());

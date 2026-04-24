@@ -1852,7 +1852,7 @@ TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
       "null");
 }
 
-class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
+class TestPrefetchContainerObserver final : public PrefetchContainerObserver {
  public:
   explicit TestPrefetchContainerObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {

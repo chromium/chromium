@@ -180,11 +180,6 @@ class CONTENT_EXPORT PrefetchResponseReader final
   using ServingUrlLoaderClientId = mojo::RemoteSetElementId;
 
   friend class base::RefCounted<PrefetchResponseReader>;
-  // This is necessary because `PrefetchContainerObserver` emulates a callback
-  // that we will provide in the future.
-  //
-  // TODO(crbug.com/400761083): Remove it.
-  friend class PrefetchContainerObserver;
 
   ~PrefetchResponseReader() override;
 
