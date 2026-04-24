@@ -1,6 +1,6 @@
 [package]
 name = "typewit"
-version = "1.15.1"
+version = "1.15.2"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 rust-version = "1.57.0"
 edition = "2021"
@@ -74,5 +74,13 @@ __test_doc_lints = []
 __ui_tests = ["trybuild"]
 
 [package.metadata.docs.rs]
-features = ["alloc", "rust_stable", "adt_const_marker", "generic_const_exprs", "docsrs"]
+features = [
+    "alloc", 
+    "rust_stable", 
+    "adt_const_marker", 
+    "generic_const_exprs", 
+    "serde", 
+    "serde_json", 
+    "docsrs",
+]
 

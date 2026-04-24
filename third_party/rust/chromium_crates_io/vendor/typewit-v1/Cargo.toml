@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.57.0"
 name = "typewit"
-version = "1.15.1"
+version = "1.15.2"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 build = false
 include = [
@@ -50,6 +50,8 @@ features = [
     "rust_stable",
     "adt_const_marker",
     "generic_const_exprs",
+    "serde",
+    "serde_json",
     "docsrs",
 ]
 

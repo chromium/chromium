@@ -60,7 +60,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "typewit"
   cargo_pkg_description = "type-witness-based abstractions, mostly for emulating polymorphism in const fns"
   cargo_pkg_repository = "https://github.com/rodrimati1992/typewit/"
-  cargo_pkg_version = "1.15.1"
+  cargo_pkg_version = "1.15.2"
 
   allow_unsafe = true
 

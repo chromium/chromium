@@ -1,7 +1,7 @@
 Name: typewit
 URL: https://crates.io/crates/typewit
-Version: 1.15.1
-Revision: fe1a410a511e4b0adc9b487bbbf33fd2e3ed0fb5
+Version: 1.15.2
+Revision: 234645454b33dd6360a3454ed826d5976a44db50
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Zlib
 License File: //third_party/rust/chromium_crates_io/vendor/typewit-v1/LICENSE-ZLIB.md

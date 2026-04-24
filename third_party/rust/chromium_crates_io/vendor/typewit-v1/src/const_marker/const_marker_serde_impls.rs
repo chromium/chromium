@@ -49,9 +49,8 @@ pub(crate) use __declare_const_marker_serde_impls;
 
 //////////////
 
-
 macro_rules! __const_marker_deserialize_seed_impl {
-    (primitive => $seed:ident, $deser:ident, $ty:ty) => {
+    ($(int)? $(primitive)? => $seed:ident, $deser:ident, $ty:ty) => {
         CheckExpected {
             expected: $seed.equals_to,
             found: &<$ty as serde_::Deserialize>::deserialize($deser)?,
