@@ -17,9 +17,9 @@ const TARGET_ORIGIN = 'https://local.test';
 
 // Shared helper functions
 let mockWebView: any;
-function simulateLoadStart() {
+function simulateLoadStart(url: string = TARGET_ORIGIN + '/testPath') {
   const loadStartEvent = new Event('loadstart');
-  Object.assign(loadStartEvent, {isTopLevel: true});
+  Object.assign(loadStartEvent, {isTopLevel: true, url: url});
   mockWebView.dispatchEvent(loadStartEvent);
 }
 
@@ -27,6 +27,22 @@ function simulateLoadCommit(url: string = TARGET_ORIGIN + '/testPath') {
   const loadCommitEvent = new Event('loadcommit');
   Object.assign(loadCommitEvent, {isTopLevel: true, url: url});
   mockWebView.dispatchEvent(loadCommitEvent);
+}
+
+function simulateLoadRedirect(oldUrl: string, newUrl: string) {
+  const loadRedirectEvent = new Event('loadredirect');
+  Object.assign(loadRedirectEvent, {
+    isTopLevel: true,
+    oldUrl: oldUrl,
+    newUrl: newUrl,
+  });
+  mockWebView.dispatchEvent(loadRedirectEvent);
+}
+
+function simulateLoadAbort(url: string = TARGET_ORIGIN + '/testPath') {
+  const loadAbortEvent = new Event('loadabort');
+  Object.assign(loadAbortEvent, {isTopLevel: true, url: url});
+  mockWebView.dispatchEvent(loadAbortEvent);
 }
 
 function simulateMessage(data: any, origin: string) {
@@ -183,10 +199,11 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     }
   });
 
-  test('handles HandshakeResponse', () => {
+  test('handles HandshakeResponse', function() {
     // Initialize and start handshake process
     simulateLoadStart();
     simulateLoadCommit();
+
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([4, 5, 6]);
@@ -237,10 +254,11 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         2, postMessageSpy.calls.length, 'No more messages should be sent');
   });
 
-  test('queues message across loadstart events', () => {
+  test('queues message across loadstart events', function() {
     // Initialize and start handshake process
     simulateLoadStart();
     simulateLoadCommit();
+
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([7, 8, 9]);
@@ -256,6 +274,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'Message should still be queued after second loadstart');
 
     simulateLoadCommit();
+
 
     // Trigger the handshake interval
     mockTimer.tick(HANDSHAKE_INTERVAL_MS);
@@ -303,10 +322,11 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'Handshake should still be complete after non-top level loadstart');
   });
 
-  test('receives message after handshake', () => {
+  test('receives message after handshake', function() {
     // Initial handshake
     simulateLoadStart();
     simulateLoadCommit();
+
     mockTimer.tick(HANDSHAKE_INTERVAL_MS);
     simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
     assertTrue(
@@ -334,9 +354,10 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'No messages should be sent to webview');
   });
 
-  test('handles postMessage error', () => {
+  test('handles postMessage error', function() {
     simulateLoadStart();
     simulateLoadCommit();
+
 
     // Make postMessage throw an error
     mockWebView.contentWindow.postMessage = () => {
@@ -357,9 +378,10 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     }
   });
 
-  test('stops handshake after max attempts', () => {
+  test('stops handshake after max attempts', function() {
     simulateLoadStart();
     simulateLoadCommit();
+
 
     for (let i = 0; i < TEST_MAX_HANDSHAKE_ATTEMPTS; i++) {
       mockTimer.tick(HANDSHAKE_INTERVAL_MS);
@@ -389,4 +411,77 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         postMessageHandler.isHandshakeCompleteForTesting(),
         'Handshake should not be complete');
   });
+
+  test('resets handshake on loadcommit after loadstart', function() {
+    const url = TARGET_ORIGIN + '/matchingPath';
+
+    // Complete initial handshake
+    simulateLoadStart(url);
+    simulateLoadCommit(url);
+
+
+    mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+    assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+
+    // Start a new navigation
+    simulateLoadStart(url);
+
+    // Commit
+    simulateLoadCommit(url);
+
+
+    // Handshake should be reset!
+    assertFalse(postMessageHandler.isHandshakeCompleteForTesting());
+  });
+
+  test('resets handshake on loadredirect', function() {
+    const url = TARGET_ORIGIN + '/matchingPath';
+
+    // Complete initial handshake
+    simulateLoadStart(url);
+    simulateLoadCommit(url);
+
+
+    mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+    assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+
+    // Start a new navigation
+    simulateLoadStart(url);
+
+    // Simulate redirect
+    simulateLoadRedirect(url, url + '_new');
+
+    // Handshake should be reset!
+    assertFalse(postMessageHandler.isHandshakeCompleteForTesting());
+  });
+
+  test(
+      'does not reset handshake on loadcommit after loadabort',
+      function() {
+        const url = TARGET_ORIGIN + '/matchingPath';
+
+        // Complete initial handshake
+        simulateLoadStart(url);
+        simulateLoadCommit(url);
+
+
+        mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+        simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+        assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+
+        // Start a new navigation
+        simulateLoadStart(url);
+
+        // Abort the navigation
+        simulateLoadAbort(url);
+
+        // Commit happens anyway (e.g. old load or something weird)
+        simulateLoadCommit(url);
+
+
+        // Handshake should STILL be complete!
+        assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+      });
 });

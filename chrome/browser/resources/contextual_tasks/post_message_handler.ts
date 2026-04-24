@@ -44,6 +44,7 @@ export class PostMessageHandler {
   private handshakeMessage_: Uint8Array|null = null;
   private onInputPlateBoundsUpdate_:
       ((rect?: Rect, occluders?: Rect[]) => void)|null = null;
+  private lastLoadStartEvent_: chrome.webviewTag.LoadStartEvent|null = null;
 
   constructor(
       webview: WebViewType, browserProxy: BrowserProxy,
@@ -55,7 +56,12 @@ export class PostMessageHandler {
     this.eventTracker_.add(
         this.webview_, 'loadstart', this.onLoadStart_.bind(this));
     this.eventTracker_.add(
+        this.webview_, 'loadredirect', this.onLoadRedirect_.bind(this));
+    this.eventTracker_.add(
         this.webview_, 'loadcommit', this.onLoadCommit_.bind(this));
+    this.eventTracker_.add(
+        this.webview_, 'loadabort', this.onLoadAbort_.bind(this));
+
     this.eventTracker_.add(
         window, 'message', this.onMessageReceived_.bind(this));
 
@@ -109,15 +115,30 @@ export class PostMessageHandler {
   }
 
   private onLoadStart_(event: chrome.webviewTag.LoadStartEvent) {
-    // This event is fired anytime a load starts in the webview, including
-    // subframes and navigations within the same page. Only reset the handshake
-    // if its the top level frame to avoid unnecessary resets.
+    if (!event.isTopLevel) {
+      return;
+    }
+    // Store the start event to be used once its clear if this navigation is
+    // committed or aborted
+    this.lastLoadStartEvent_ = event;
+  }
+
+  private onLoadRedirect_(event: chrome.webviewTag.LoadRedirectEvent) {
     if (!event.isTopLevel) {
       return;
     }
 
-    // Reset the handshake since the src has changed.
-    this.resetHandshake_();
+    const urlObj = URL.parse(event.newUrl);
+    if (urlObj) {
+      // Update target origin immediately on redirect to ensure handshake
+      // messages go to the correct origin for the intermediate hop or final
+      // destination.
+      this.targetOrigin_ = urlObj.origin;
+    } else {
+      console.error('Invalid URL in loadredirect:', event.newUrl);
+    }
+
+    this.maybeHandleNavigation_(event.oldUrl);
   }
 
   // This event is fired when the load has committed in the webview. This is
@@ -129,14 +150,36 @@ export class PostMessageHandler {
       return;
     }
 
-    this.targetOrigin_ = new URL(event.url).origin;
+    const urlObj = URL.parse(event.url);
+    if (urlObj) {
+      // Update target origin to the final committed URL.
+      this.targetOrigin_ = urlObj.origin;
+    } else {
+      console.error('Invalid URL in loadcommit:', event.url);
+    }
 
-    // Must reset the handshake before starting a new one. onLoadCommit_ can be
-    // called multiple times in a row for the same page load, so reattempt the
-    // handshake with each page load, since there is no way to distinguish
-    // which load has the receiving Javascript.
-    this.resetHandshake_();
-    this.startHandshake_();
+    this.maybeHandleNavigation_(event.url);
+  }
+
+  private onLoadAbort_(event: chrome.webviewTag.LoadAbortEvent) {
+    if (!event.isTopLevel) {
+      return;
+    }
+    // The navigation aborted, so reset the last thread frame load start event.
+    this.lastLoadStartEvent_ = null;
+  }
+
+  // Resets and starts the handshake only if the navigation URL matches the
+  // stashed load start event URL. This ensures we only act once per navigation
+  // chain (either on the first redirect or on commit if no redirect) and
+  // handles aborted navigations correctly.
+  private maybeHandleNavigation_(navigationUrl: string) {
+    if (this.lastLoadStartEvent_ &&
+        this.lastLoadStartEvent_.url === navigationUrl) {
+      this.lastLoadStartEvent_ = null;
+      this.resetHandshake_();
+      this.startHandshake_();
+    }
   }
 
   private resetHandshake_() {
