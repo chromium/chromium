@@ -46,7 +46,7 @@ consoles.console_view(
     name = "chromium.linux",
     branch_selector = branches.selector.LINUX_BRANCHES,
     ordering = {
-        None: ["release", "debug"],
+        None: ["release", "debug", "arm64"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
         "cast": ["arm", "arm64", "x64"],
     },
@@ -412,6 +412,69 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "linux-arm64-dbg",
+    description_html = "Linux ARM64 Debug builder.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "arm64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "remoteexec",
+            "linux",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+        ],
+        mixins = [
+            "linux-jammy",
+            "arm64",
+            "gce",  # So as not to take up baremetal arm bots for VM testing.
+            # TODO(crbug.com/493903786): Can remove the increased expirations
+            # if/when the full resources are delivered.
+            "very_limited_capacity_bot",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 24,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.DEBUG,
+        os_type = targets.os_type.LINUX,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "arm64",
+        short_name = "dbg",
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
 )
 
 ci.builder(

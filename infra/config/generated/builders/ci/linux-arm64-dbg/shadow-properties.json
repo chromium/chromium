@@ -8,6 +8,6 @@
     "experiments": [],
     "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
-    "remote_jobs": 250
+    "remote_jobs": 500
   }
 }

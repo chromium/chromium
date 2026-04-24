@@ -1,5 +1,5 @@
 {
-  "linux-arm64-dbg-fyi": {
+  "linux-arm64-dbg": {
     "gtest_tests": [
       {
         "merge": {

@@ -2,18 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/linux-arm64-dbg-fyi/gn-args.json"
+        "infra/config/generated/builders/ci/linux-arm64-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-arm64-dbg-fyi",
+              "builder": "linux-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -38,25 +38,30 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-arm64-dbg-fyi",
+          "builder": "linux-arm64-dbg",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/linux-arm64-dbg-fyi/targets"
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-arm64-dbg",
+          "group": "tryserver.chromium.linux"
+        }
+      ],
+      "retry_failed_shards": true,
+      "targets_spec_directory": "infra/config/generated/builders/ci/linux-arm64-dbg/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder",
-      "remote-link"
+      "builder"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "keep_going": 3,
-    "output_local_strategy": "minimum",
     "profile_mode": "cloud",
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -65,6 +70,12 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.linux",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.linux",
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

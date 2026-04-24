@@ -9675,7 +9675,7 @@
           }
         ]
       },
-      "linux-arm64-dbg-fyi": {
+      "linux-arm64-dbg": {
         "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {

@@ -2,18 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-arm64-dbg-fyi/gn-args.json"
+        "infra/config/generated/builders/try/linux-arm64-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-arm64-dbg-fyi",
+              "builder": "linux-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -38,29 +38,25 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-arm64-dbg-fyi",
+          "builder": "linux-arm64-dbg",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-arm64-dbg-fyi",
-          "group": "tryserver.chromium.linux"
-        }
-      ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/linux-arm64-dbg-fyi/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-arm64-dbg/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "keep_going": 3,
+    "output_local_strategy": "minimum",
     "profile_mode": "cloud",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -69,6 +65,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
 }

@@ -125,11 +125,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-arm64-dbg-fyi",
-    mirrors = ["ci/linux-arm64-dbg-fyi"],
+    name = "linux-arm64-dbg",
+    mirrors = ["ci/linux-arm64-dbg"],
     gn_args = gn_args.config(
         configs = [
-            "ci/linux-arm64-dbg-fyi",
+            "ci/linux-arm64-dbg",
             "debug_try_builder",
         ],
     ),
