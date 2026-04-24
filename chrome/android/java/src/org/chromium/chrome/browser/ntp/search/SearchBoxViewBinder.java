@@ -106,12 +106,6 @@ class SearchBoxViewBinder
                     searchBoxContainer.getPaddingTop(),
                     model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
                     searchBoxContainer.getPaddingBottom());
-        } else if (SearchBoxProperties.SEARCH_BOX_START_PADDING == propertyKey) {
-            searchBoxContainer.setPadding(
-                    model.get(SearchBoxProperties.SEARCH_BOX_START_PADDING),
-                    searchBoxContainer.getPaddingTop(),
-                    searchBoxContainer.getPaddingEnd(),
-                    searchBoxContainer.getPaddingBottom());
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID == propertyKey) {
             searchBoxTextView.setTextAppearance(
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID));

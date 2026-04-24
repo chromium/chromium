@@ -193,10 +193,6 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, endPadding);
     }
 
-    void setStartPadding(int startPadding) {
-        mModel.set(SearchBoxProperties.SEARCH_BOX_START_PADDING, startPadding);
-    }
-
     void setSearchBoxTextAppearance(@StyleRes int resId) {
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);
     }

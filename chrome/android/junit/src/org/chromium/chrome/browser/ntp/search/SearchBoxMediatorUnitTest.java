@@ -156,13 +156,6 @@ public class SearchBoxMediatorUnitTest {
     }
 
     @Test
-    public void testSetStartPadding() {
-        int padding = 20;
-        mMediator.setStartPadding(padding);
-        assertEquals(padding, mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_START_PADDING));
-    }
-
-    @Test
     public void testSetSearchBoxTextAppearance() {
         int resId = R.style.TextAppearance_FakeSearchBoxTextMedium;
         mMediator.setSearchBoxTextAppearance(resId);

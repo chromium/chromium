@@ -28,7 +28,6 @@ interface SearchBoxProperties {
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<OnClickListener> VOICE_SEARCH_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
-
     WritableBooleanPropertyKey LENS_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<OnClickListener> LENS_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -44,7 +43,6 @@ interface SearchBoxProperties {
     WritableIntPropertyKey SEARCH_BOX_HEIGHT = new WritableIntPropertyKey();
     WritableIntPropertyKey SEARCH_BOX_TOP_MARGIN = new WritableIntPropertyKey();
     WritableIntPropertyKey SEARCH_BOX_END_PADDING = new WritableIntPropertyKey();
-    WritableIntPropertyKey SEARCH_BOX_START_PADDING = new WritableIntPropertyKey();
     WritableIntPropertyKey SEARCH_BOX_TEXT_STYLE_RES_ID = new WritableIntPropertyKey();
     WritableBooleanPropertyKey ENABLE_SEARCH_BOX_EDIT_TEXT = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<String> SEARCH_BOX_HINT_TEXT = new WritableObjectPropertyKey<>();
@@ -69,7 +67,6 @@ interface SearchBoxProperties {
                 SEARCH_BOX_HEIGHT,
                 SEARCH_BOX_TOP_MARGIN,
                 SEARCH_BOX_END_PADDING,
-                SEARCH_BOX_START_PADDING,
                 SEARCH_BOX_TEXT_STYLE_RES_ID,
                 ENABLE_SEARCH_BOX_EDIT_TEXT,
                 SEARCH_BOX_HINT_TEXT,

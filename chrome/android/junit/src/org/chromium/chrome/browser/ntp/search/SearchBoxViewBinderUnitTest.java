@@ -64,16 +64,6 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
-    public void testSetSearchBoxStartPadding() {
-        int padding = 20;
-        when(mSearchBoxContainer.getPaddingTop()).thenReturn(10);
-        when(mSearchBoxContainer.getPaddingEnd()).thenReturn(10);
-        when(mSearchBoxContainer.getPaddingBottom()).thenReturn(10);
-        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_START_PADDING, padding);
-        verify(mSearchBoxContainer).setPadding(padding, 10, 10, 10);
-    }
-
-    @Test
     public void testSetSearchBoxTextStyle() {
         int resId = 123;
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID, resId);

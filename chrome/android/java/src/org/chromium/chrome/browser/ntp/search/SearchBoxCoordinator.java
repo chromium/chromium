@@ -42,7 +42,6 @@ public class SearchBoxCoordinator {
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
 
-    /** Constructor. */
     public SearchBoxCoordinator(Context context, ViewGroup parent, boolean isTablet) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
         mView = parent.findViewById(R.id.search_box);
@@ -122,10 +121,6 @@ public class SearchBoxCoordinator {
 
     public void setEndPadding(int endPadding) {
         mMediator.setEndPadding(endPadding);
-    }
-
-    public void setStartPadding(int startPadding) {
-        mMediator.setStartPadding(startPadding);
     }
 
     public void setSearchBoxTextAppearance(@StyleRes int resId) {
