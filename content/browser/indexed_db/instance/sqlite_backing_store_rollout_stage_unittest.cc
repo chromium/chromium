@@ -14,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
@@ -160,6 +161,8 @@ class SqliteBackingStoreRolloutStageTest
   }
 
  protected:
+  using enum DatabaseConnectionOpenResult;
+
   enum class StoreType {
     kNone,
     kLevelDb,
@@ -181,10 +184,8 @@ class SqliteBackingStoreRolloutStageTest
     kLevelDbBackingStoreCorruption,
   };
 
-  enum class StoreInitResult { kOpened, kCreated, kDataLoss, kFailed };
-
   struct Expectation {
-    StoreInitResult result;
+    DatabaseConnectionOpenResult result;
     bool is_sqlite;
     std::string_view histogram_suffix = ".OnDisk";
   };
@@ -194,9 +195,9 @@ class SqliteBackingStoreRolloutStageTest
   static constexpr const std::string_view kExperimentalSuffix = ".Experimental";
 
   // Some common expectations.
-  const Expectation kCreatedWithSqlite{StoreInitResult::kCreated, kIsSqlite};
-  const Expectation kCreatedWithLevelDb{StoreInitResult::kCreated, kIsLevelDb};
-  const Expectation kOpenedLevelDb{StoreInitResult::kOpened, kIsLevelDb};
+  const Expectation kCreatedWithSqlite{kSuccessUpgradeNeeded, kIsSqlite};
+  const Expectation kCreatedWithLevelDb{kSuccessUpgradeNeeded, kIsLevelDb};
+  const Expectation kOpenedLevelDb{kSuccessDirectOpen, kIsLevelDb};
 
   void ValidateExpectationsForStage(
       SqliteRolloutStage stage,
@@ -209,34 +210,22 @@ class SqliteBackingStoreRolloutStageTest
           BindFactoryAndOverrideStage(bucket_info, stage);
       auto [result, is_sqlite, histogram_suffix] = expectations[bucket_type];
       switch (result) {
-        case StoreInitResult::kOpened:
+        case kSuccessDirectOpen:
           OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
-          histograms.ExpectUniqueSample(
-              base::StrCat(
-                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
-              0 /*Status::Type::kOk*/, 1);
           break;
-        case StoreInitResult::kCreated:
+        case kSuccessUpgradeNeeded:
           CreateDatabase(factory_remote, kDatabaseName,
-                         /*transaction_id=*/1);
+                         /*transaction_id=*/1, blink::mojom::IDBDataLoss::None);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
-          histograms.ExpectUniqueSample(
-              base::StrCat(
-                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
-              0 /*Status::Type::kOk*/, 1);
           break;
-        case StoreInitResult::kDataLoss:
+        case kSuccessUpgradeNeededWithDataLoss:
           CreateDatabase(factory_remote, kDatabaseName,
                          /*transaction_id=*/1,
                          blink::mojom::IDBDataLoss::Total);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
-          histograms.ExpectUniqueSample(
-              base::StrCat(
-                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
-              0 /*Status::Type::kOk*/, 1);
           break;
-        case StoreInitResult::kFailed: {
+        case kErrorBackingStoreInitFailed: {
           base::RunLoop run_loop;
           MockMojoFactoryClient client;
           MockMojoDatabaseCallbacks database_callbacks;
@@ -251,17 +240,16 @@ class SqliteBackingStoreRolloutStageTest
               transaction_remote.BindNewEndpointAndPassReceiver(),
               /*transaction_id=*/1, /*priority=*/0);
           run_loop.Run();
-          histograms.ExpectTotalCount(
-              base::StrCat(
-                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
-              1);
-          histograms.ExpectBucketCount(
-              base::StrCat(
-                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
-              0 /*Status::Type::kOk*/, 0);
           break;
         }
+        default:
+          NOTREACHED();
       }
+      std::string histogram_name = base::StrCat(
+          {"IndexedDB.DatabaseConnectionOpenResult", histogram_suffix});
+      histograms.ExpectTotalCount(histogram_name, 2);
+      histograms.ExpectBucketCount(histogram_name, kReceivedRequest, 1);
+      histograms.ExpectBucketCount(histogram_name, result, 1);
     }
   }
 
@@ -314,14 +302,14 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbOnly) {
        {StoreType::kSqlite, kCreatedWithLevelDb},
        {StoreType::kEmptyLevelDbDirectory, kCreatedWithLevelDb},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb}}});
   // SQLite stores should be deleted by the above stage.
   CloseAllBackingStores();
   ValidateExpectationsForStage(
@@ -341,41 +329,41 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbAsControl) {
   ValidateExpectationsForStage(
       SqliteRolloutStage::kUseLevelDbAsControl,
       {{StoreType::kNone,
-        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessUpgradeNeeded, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDb, kOpenedLevelDb},
        {StoreType::kSqlite,
-        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessUpgradeNeeded, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kEmptyLevelDbDirectory,
-        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessUpgradeNeeded, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}}});
+        {kSuccessUpgradeNeededWithDataLoss, kIsLevelDb, kExperimentalSuffix}}});
   // The experimental suffix should persist across opens.
   CloseAllBackingStores();
   ValidateExpectationsForStage(
       SqliteRolloutStage::kUseLevelDbAsControl,
       {{StoreType::kNone,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDb, kOpenedLevelDb},
        {StoreType::kSqlite,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kEmptyLevelDbDirectory,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}}});
+        {kSuccessDirectOpen, kIsLevelDb, kExperimentalSuffix}}});
   // Rolling back to `kUseLevelDbOnly` should open all LevelDB stores normally,
   // with histograms emitted to the default suffix.
   CloseAllBackingStores();
@@ -388,7 +376,7 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseLevelDbAsControl) {
        {StoreType::kLevelDbWithCorruptionInfo, kOpenedLevelDb},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption, kOpenedLevelDb},
        {StoreType::kLevelDbBackingStoreCorruption, kOpenedLevelDb}});
 }
@@ -397,41 +385,40 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseSqliteForNewStores) {
   ValidateExpectationsForStage(
       SqliteRolloutStage::kUseSqliteForNewStores,
       {{StoreType::kNone,
-        {StoreInitResult::kCreated, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessUpgradeNeeded, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDb, kOpenedLevelDb},
        {StoreType::kSqlite,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kEmptyLevelDbDirectory,
-        {StoreInitResult::kCreated, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessUpgradeNeeded, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}}});
+        {kSuccessUpgradeNeededWithDataLoss, kIsSqlite, kExperimentalSuffix}}});
   // SQLite should persist across opens.
   CloseAllBackingStores();
   ValidateExpectationsForStage(
       SqliteRolloutStage::kUseSqliteForNewStores,
-      {{StoreType::kNone,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+      {{StoreType::kNone, {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDb, kOpenedLevelDb},
        {StoreType::kSqlite,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kEmptyLevelDbDirectory,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}}});
+        {kSuccessDirectOpen, kIsSqlite, kExperimentalSuffix}}});
   // Rolling back to `kUseLevelDbOnly` should delete SQLite stores and create
   // fresh LevelDB stores. Stores that stayed on LevelDB should open normally.
   CloseAllBackingStores();
@@ -444,7 +431,7 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseSqliteForNewStores) {
        {StoreType::kLevelDbWithCorruptionInfo, kCreatedWithLevelDb},
        {StoreType::kLevelDbCurrentMissing, kOpenedLevelDb},
        {StoreType::kLevelDbFilesMissing,
-        {StoreInitResult::kFailed, kIsLevelDb}},
+        {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption, kCreatedWithLevelDb},
        {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithLevelDb}});
 }
@@ -454,7 +441,7 @@ TEST_P(SqliteBackingStoreRolloutStageTest, UseSqliteOnly) {
       SqliteRolloutStage::kUseSqliteOnly,
       {{StoreType::kNone, kCreatedWithSqlite},
        {StoreType::kLevelDb, kCreatedWithSqlite},
-       {StoreType::kSqlite, {StoreInitResult::kOpened, kIsSqlite}},
+       {StoreType::kSqlite, {kSuccessDirectOpen, kIsSqlite}},
        {StoreType::kEmptyLevelDbDirectory, kCreatedWithSqlite},
        {StoreType::kLevelDbWithCorruptionInfo, kCreatedWithSqlite},
        {StoreType::kLevelDbCurrentMissing, kCreatedWithSqlite},

@@ -741,16 +741,14 @@ void BucketContext::Open(
     return;
   }
 
-  std::string_view fallback_suffix = DetermineHistogramSuffix(
-      sqlite_rollout_stage_, bucket_locator(), data_path_);
-  Log(DatabaseConnectionOpenResult::kReceivedRequest,
-      backing_store_ ? GetHistogramSuffix() : fallback_suffix);
-
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
       std::move(pending_factory_client));
 
+  // Compute this beforehand as `InitBackingStore` may change files on disk.
+  std::string_view fallback_suffix = DetermineHistogramSuffix(
+      sqlite_rollout_stage_, bucket_locator(), data_path_);
   IndexedDBDataLossInfo data_loss_info;
   if (!backing_store_) {
     Status s;
@@ -760,6 +758,7 @@ void BucketContext::Open(
     LogStatus(s, "IndexedDB.BackingStore.CreateIfMissing",
               s.ok() ? GetHistogramSuffix() : fallback_suffix);
     if (!s.ok()) {
+      Log(DatabaseConnectionOpenResult::kReceivedRequest, fallback_suffix);
       Log(DatabaseConnectionOpenResult::kErrorBackingStoreInitFailed,
           fallback_suffix);
       std::move(factory_client)->Error(error.code(), error.message());
@@ -770,6 +769,7 @@ void BucketContext::Open(
     }
   }
 
+  Log(DatabaseConnectionOpenResult::kReceivedRequest, GetHistogramSuffix());
   auto connection = std::make_unique<PendingConnection>(
       std::move(factory_client),
       std::make_unique<DatabaseCallbacks>(std::move(database_callbacks_remote)),

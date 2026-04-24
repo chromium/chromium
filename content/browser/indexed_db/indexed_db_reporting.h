@@ -94,18 +94,18 @@ enum BackingStoreOpenResult {
 enum class DatabaseConnectionOpenResult {
   // Logged for all ostensibly valid requests before processing begins.
   kReceivedRequest = 0,
-  // The database was opened directly without a version change.
+  // The connection was opened directly without a version change.
   kSuccessDirectOpen = 1,
-  // The database was opened successfully and a version change is needed.
+  // The connection was opened successfully and a version change was needed.
   kSuccessUpgradeNeeded = 2,
-  // A version change is needed, but the database had to be recreated due to
+  // A version change was needed, but the database had to be recreated due to
   // data loss (e.g. corruption).
   kSuccessUpgradeNeededWithDataLoss = 3,
   // The backing store could not be initialized.
   kErrorBackingStoreInitFailed = 4,
   // Creating/opening the database in the backing store failed.
   kErrorDatabaseOpenFailed = 5,
-  // The requested version is lower than the existing version.
+  // The requested version was lower than the existing version.
   kErrorVersionTooLow = 6,
   kMaxValue = kErrorVersionTooLow,
 };
