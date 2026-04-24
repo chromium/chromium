@@ -76,11 +76,11 @@ class CpuHealthTracker
  private:
   friend class CpuHealthTrackerTestHelper;
   friend class CpuHealthTrackerTest;
-  friend class CpuHealthTrackerBrowserTest;
+  friend class CpuHealthTrackerActionabilityTest;
   FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest,
                            RecordCpuAndUpdateHealthStatus);
   FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerTest, HealthyCpuUsageFromProbe);
-  FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(CpuHealthTrackerActionabilityTest,
                            PagesMeetMinimumCpuUsage);
 
   using PageResourceMeasurements =

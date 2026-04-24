@@ -89,7 +89,7 @@ class PerformanceDetectionManager {
  private:
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class PerformanceDetectionManagerTest;
-  friend class CpuHealthTrackerBrowserTest;
+  friend class CpuHealthTrackerActionabilityTest;
 
   PerformanceDetectionManager();
 

@@ -26,10 +26,8 @@
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -40,8 +38,11 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "components/system_cpu/cpu_sample.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -325,17 +326,16 @@ TEST_F(CpuHealthTrackerTest, HealthyCpuUsageFromProbe) {
   EXPECT_EQ(CpuHealthTracker::HealthLevel::kHealthy, GetFutureHealthLevel());
 }
 
-class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
-                                    public CpuHealthTrackerTestHelper {
+class CpuHealthTrackerActionabilityTest
+    : public ChromeRenderViewHostTestHarness,
+      public CpuHealthTrackerTestHelper {
  public:
-  CpuHealthTrackerBrowserTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  ~CpuHealthTrackerBrowserTest() override = default;
+  CpuHealthTrackerActionabilityTest()
+      : ChromeRenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
     pm_harness_.SetUp();
     manager_.reset(new PerformanceDetectionManager());
     SetUpGraphObjects();
@@ -343,52 +343,68 @@ class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
     policies::DiscardEligibilityPolicy* const eligibility_policy =
         policies::DiscardEligibilityPolicy::GetFromGraph(graph);
     CHECK(eligibility_policy);
-    eligibility_policy->SetNoDiscardPatternsForProfile(
-        browser()->profile()->UniqueId(), {});
+    eligibility_policy->SetNoDiscardPatternsForProfile(profile()->UniqueId(),
+                                                       {});
 
     helper_ = std::make_unique<ProfileDiscardOptOutListHelper>();
-    helper_->OnProfileAdded(browser()->profile());
-    AddTab(browser(), GURL("http://a.com"));
+    helper_->OnProfileAdded(profile());
+    AddTab(GURL("http://a.com"), profile(), /*is_hidden=*/false);
   }
 
   void TearDown() override {
-    helper_->OnProfileWillBeRemoved(browser()->profile());
+    helper_->OnProfileWillBeRemoved(profile());
+    web_contents_list_.clear();
     pm_harness_.TearDown();
-    BrowserWithTestWindowTest::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   PerformanceDetectionManager* manager() {
     return PerformanceDetectionManager::GetInstance();
   }
 
-  // Adds a tab at index 0 that is in the background. The current active tab
-  // will be the tab at the highest index.
-  resource_attribution::PageContext AddBackgroundTab(std::string url,
-                                                     Browser* browser) {
-    AddTab(browser, GURL(url));
-    TabStripModel* const tab_strip_model = browser->tab_strip_model();
-    const int num_tabs = tab_strip_model->count();
-    CHECK_GT(num_tabs, 0);
-    // Activate tab at doesn't hide the newly added tab so we manually hide the
-    // tab to make it eligible for discarding
-    tab_strip_model->ActivateTabAt(num_tabs - 1);
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(0);
-    web_contents->WasHidden();
+  content::WebContents* CreateWebContents(Profile* profile) {
+    scoped_refptr<content::SiteInstance> instance =
+        content::SiteInstance::Create(profile);
+    instance->GetOrCreateProcessForTesting()->Init();
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile,
+                                                          std::move(instance));
+    content::WebContents* raw_web_contents = web_contents.get();
+    performance_manager::PerformanceManagerRegistry::GetInstance()->SetPageType(
+        raw_web_contents, performance_manager::PageType::kTab);
+    web_contents_list_.push_back(std::move(web_contents));
+    return raw_web_contents;
+  }
+
+  resource_attribution::PageContext AddTab(GURL url,
+                                           Profile* profile,
+                                           bool is_hidden) {
+    content::WebContents* web_contents = CreateWebContents(profile);
+    content::WebContentsTester::For(web_contents)->NavigateAndCommit(url);
+    if (is_hidden) {
+      web_contents->WasHidden();
+    } else {
+      web_contents->WasShown();
+    }
+
     return resource_attribution::PageContext::FromWebContents(web_contents)
         .value();
   }
 
-  // Have the CpuHealthTracker process a QueryResultMap that contains
-  // 0 CPU for all current tabs to establish a baseline for subsequent CPU
-  // result processing.
+  resource_attribution::PageContext AddBackgroundTab(std::string url,
+                                                     Profile* profile) {
+    return AddTab(GURL(url), profile, /*is_hidden=*/true);
+  }
+
+  // Have the CpuHealthTracker process a QueryResultMap that contains 0 CPU for
+  // all current tabs to establish a baseline for subsequent CPU result
+  // processing.
   void StartFirstCpuInterval() {
-    TabStripModel* const tab_strip = browser()->tab_strip_model();
     task_environment()->FastForwardBy(base::Seconds(60));
     resource_attribution::QueryResultMap result_map;
-    for (int i = 0; i < tab_strip->count(); i++) {
-      content::WebContents* const web_contents = tab_strip->GetWebContentsAt(i);
+    for (const auto& web_contents : web_contents_list_) {
       resource_attribution::PageContext context =
-          resource_attribution::PageContext::FromWebContents(web_contents)
+          resource_attribution::PageContext::FromWebContents(web_contents.get())
               .value();
       result_map[context] = {.cpu_time_result =
                                  CreateFakeCpuResult(base::Seconds(0))};
@@ -422,11 +438,12 @@ class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
   std::unique_ptr<PerformanceDetectionManager> manager_;
   PerformanceManagerTestHarnessHelper pm_harness_;
   std::unique_ptr<ProfileDiscardOptOutListHelper> helper_;
+  std::vector<std::unique_ptr<content::WebContents>> web_contents_list_;
 };
 
-TEST_F(CpuHealthTrackerBrowserTest, HealthStatusUpdates) {
+TEST_F(CpuHealthTrackerActionabilityTest, HealthStatusUpdates) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   StartFirstCpuInterval();
 
   StatusWaiter observer;
@@ -455,7 +472,7 @@ TEST_F(CpuHealthTrackerBrowserTest, HealthStatusUpdates) {
   manager()->RemoveStatusObserver(&observer);
 }
 
-TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
+TEST_F(CpuHealthTrackerActionabilityTest, PagesMeetMinimumCpuUsage) {
   base::flat_map<resource_attribution::PageContext,
                  CpuHealthTracker::CpuPercent>
       page_contexts_cpu;
@@ -464,7 +481,7 @@ TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
   // to be considered as actionable.
   for (int i = 0; i < 3; i++) {
     resource_attribution::PageContext page_context =
-        AddBackgroundTab("http://b.com", browser());
+        AddBackgroundTab("http://b.com", profile());
     page_contexts_cpu.insert(
         {page_context,
          CpuHealthTracker::CpuPercent(
@@ -486,9 +503,9 @@ TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
 
 // The PerformanceDetectionManager should properly notify observers
 // when a tab is actionable.
-TEST_F(CpuHealthTrackerBrowserTest, UpdateActionableTabs) {
+TEST_F(CpuHealthTrackerActionabilityTest, UpdateActionableTabs) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kDegraded);
 
@@ -516,11 +533,11 @@ TEST_F(CpuHealthTrackerBrowserTest, UpdateActionableTabs) {
 
 // When multiple tabs are eligible to improve CPU health, the tab with the
 // higher CPU usage is sent to observers
-TEST_F(CpuHealthTrackerBrowserTest, HigherCPUTabIsActionable) {
+TEST_F(CpuHealthTrackerActionabilityTest, HigherCPUTabIsActionable) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   resource_attribution::PageContext second_page_context =
-      AddBackgroundTab("http://c.com", browser());
+      AddBackgroundTab("http://c.com", profile());
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kDegraded);
 
@@ -550,9 +567,9 @@ TEST_F(CpuHealthTrackerBrowserTest, HigherCPUTabIsActionable) {
 // Verify that the PerformanceDetectionManager notifies observers when the
 // actionable tab list changes from having actionable tabs to no tabs are
 // actionable.
-TEST_F(CpuHealthTrackerBrowserTest, NotifyWhenNoTabsAreActionable) {
+TEST_F(CpuHealthTrackerActionabilityTest, NotifyWhenNoTabsAreActionable) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kUnhealthy);
 
@@ -590,11 +607,11 @@ TEST_F(CpuHealthTrackerBrowserTest, NotifyWhenNoTabsAreActionable) {
   manager()->RemoveActionableTabsObserver(&observer);
 }
 
-TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
+TEST_F(CpuHealthTrackerActionabilityTest, NeedMultipleTabsToBeActionable) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   resource_attribution::PageContext second_page_context =
-      AddBackgroundTab("http://c.com", browser());
+      AddBackgroundTab("http://c.com", profile());
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kUnhealthy);
 
@@ -629,16 +646,16 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
 }
 
 // Tabs on the discard exceptions list should not be actionable
-TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsRespectExceptionsList) {
+TEST_F(CpuHealthTrackerActionabilityTest, ActionableTabsRespectExceptionsList) {
   resource_attribution::PageContext first_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", profile());
   resource_attribution::PageContext second_page_context =
-      AddBackgroundTab("http://c.com", browser());
+      AddBackgroundTab("http://c.com", profile());
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kUnhealthy);
 
   performance_manager::user_tuning::prefs::AddSiteToTabDiscardExceptionsList(
-      browser()->profile()->GetPrefs(), "c.com");
+      profile()->GetPrefs(), "c.com");
 
   task_environment()->FastForwardBy(base::Seconds(60));
   resource_attribution::QueryResultMap result_map;
@@ -666,13 +683,10 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsRespectExceptionsList) {
   manager()->RemoveActionableTabsObserver(&observer);
 }
 
-TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
+TEST_F(CpuHealthTrackerActionabilityTest, ActionableTabsIgnoreIncognitoTabs) {
   Profile* const default_profile = profile();
   Profile* const incognito_profile =
       default_profile->GetPrimaryOTRProfile(true);
-  auto incognito_browser =
-      CreateBrowser(incognito_profile, Browser::TYPE_NORMAL, false);
-  AddTab(incognito_browser.get(), GURL("http://a.com"));
 
   // This is usually called when the profile is created. Fake it here since it
   // doesn't happen in tests.
@@ -681,9 +695,9 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
       ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueId(), {});
 
   resource_attribution::PageContext default_page_context =
-      AddBackgroundTab("http://b.com", browser());
+      AddBackgroundTab("http://b.com", default_profile);
   resource_attribution::PageContext incognito_page_context =
-      AddBackgroundTab("http://c.com", incognito_browser.get());
+      AddBackgroundTab("http://c.com", incognito_profile);
   StartFirstCpuInterval();
   SetHealthLevel(PerformanceDetectionManager::HealthLevel::kUnhealthy);
 
@@ -710,9 +724,6 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
   EXPECT_EQ(actionable_tabs.size(), 1u);
   EXPECT_EQ(actionable_tabs.front(), default_page_context);
   manager()->RemoveActionableTabsObserver(&observer);
-
-  incognito_browser->tab_strip_model()->CloseAllTabs();
-  incognito_browser.reset();
 }
 
 }  // namespace performance_manager::user_tuning
