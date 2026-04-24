@@ -66,6 +66,19 @@ void BackendSessionImplAndroid::Append(
   context_input_pieces_.insert(context_input_pieces_.end(),
                                options->input->pieces.begin(),
                                options->input->pieces.end());
+  if (client) {
+    // Bind the context client and signal completion to prevent the caller's
+    // mojo pipe disconnect handler which invokes OnError from firing.
+    // Temporarily pass 0 for tokens_processed which is used for UMA histograms
+    // and context window bookkeeping, neither of which affects model execution
+    // correctness on Android where each Generate call sends the full input
+    // independently.
+    // TODO(crbug.com/477033510): Report actual token count if Android supports
+    // stateful context window for prompt API in the future.
+    mojo::Remote<on_device_model::mojom::ContextClient> context_client(
+        std::move(client));
+    context_client->OnComplete(/*tokens_processed=*/0);
+  }
   std::move(on_complete).Run();
 }
 

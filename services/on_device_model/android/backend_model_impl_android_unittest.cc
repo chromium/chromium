@@ -6,9 +6,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/android/backend_session_impl_android.h"
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
@@ -24,6 +26,23 @@ using ::testing::ElementsAre;
 constexpr optimization_guide::proto::ModelExecutionFeature kFeature =
     optimization_guide::proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+
+class TestContextClient : public mojom::ContextClient {
+ public:
+  mojo::PendingRemote<mojom::ContextClient> BindRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void OnComplete(uint32_t tokens_processed) override {
+    tokens_processed_ = tokens_processed;
+  }
+
+  uint32_t tokens_processed() const { return tokens_processed_; }
+
+ private:
+  uint32_t tokens_processed_ = std::numeric_limits<uint32_t>::max();
+  mojo::Receiver<mojom::ContextClient> receiver_{this};
+};
 
 class BackendModelImplAndroidTest : public testing::Test {
  public:
@@ -357,6 +376,24 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {
   // The mock counts characters in text,
   // so "test input on different thread" = 30 chars.
   EXPECT_EQ(future.Get(), 30u);
+}
+
+TEST_F(BackendModelImplAndroidTest, AppendBindsContextClient) {
+  java_helper_.SetMockAiCoreFactory();
+
+  std::unique_ptr<BackendSession> session = model_->CreateSession(
+      /*adaptation=*/nullptr,
+      MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
+
+  TestContextClient context_client;
+  std::vector<ml::InputPiece> pieces;
+  pieces.push_back("mock input");
+  session->Append(MakeInput(std::move(pieces)), context_client.BindRemote(),
+                  /*on_complete=*/base::DoNothing());
+  // The context client should receive the OnComplete callback with count 0 for
+  // tokens processed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return context_client.tokens_processed() == 0u; }));
 }
 
 }  // namespace
