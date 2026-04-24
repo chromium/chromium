@@ -145,7 +145,7 @@
           AI ဖြင့် ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် ညွှန်ကြားချက်ကို Google AI ဆာဗာများသို့ ပို့သည်။
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          တီထွင်ဖန်တီးမှုဆိုင်ရာ AI ကို ကနဦးစမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှုကို ကန့်သတ်ထားသည်။</translation>
+          Generative AI ကို ကနဦးစမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှုကို ကန့်သတ်ထားသည်။</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1561927818299383735">နောက်ခံမီးအရောင်</translation>
@@ -741,7 +741,7 @@
           ကိုယ်ပိုင်နောက်ခံ ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများနှင့် ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> တို့နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် ညွှန်ကြားချက်ကို Google ဆာဗာများသို့ ပို့သည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          တီထွင်ဖန်တီးမှုဆိုင်ရာ AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာ စိစစ်ပါ။ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ပိုမိုလေ့လာရန်<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generative AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာ စိစစ်ပါ။ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ပိုမိုလေ့လာရန်<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4253971074682120908">နေရာလွတ်</translation>
 <translation id="4258281355379922695">HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="4266143281602681663">ချည်လုံး</translation>
@@ -833,7 +833,7 @@
 <translation id="4650608062294027130">ညာဘက် shift</translation>
 <translation id="4654549501020883054">နေ့စဉ် ပြောင်းရန်</translation>
 <translation id="4655868084888499342">ပုံကို နောက်ခံအဖြစ် သတ်မှတ်ပြီးပါပြီ</translation>
-<translation id="4660989616054030633">တီထွင်ဖန်တီးမှုဆိုင်ရာ AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာ စိစစ်ပါ</translation>
+<translation id="4660989616054030633">Generative AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာ စိစစ်ပါ</translation>
 <translation id="4661249927038176904">အိပ်မက်ဆန်</translation>
 <translation id="4661392828086261436">ဤအပ်ဒိတ်ကို စက်ထုတ်လုပ်သူက ပံ့ပိုးထားပြီး Google က မစိစစ်ရသေးပါ</translation>
 <translation id="4664651912255946953">သားမွေး</translation>
@@ -1585,7 +1585,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ကို အလိုအလျောက် စတင်ထားသည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်ထားသည်}}</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
-<translation id="8010765388850538088">‘တီထွင်ဖန်တီးမှုဆိုင်ရာ AI’ အကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="8010765388850538088">Generative AI အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="8017679124341497925">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="8027467664787098346">ရွေးထားသောနောက်ခံအကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -1711,7 +1711,7 @@
 <translation id="8538236298648811558">Google AI က ပံ့ပိုးထားသည်</translation>
 <translation id="8550364285433943656">ကီးဘုတ်ကီးများဖြင့် ကစားရန်အတွက် ဂိမ်းလုပ်ဆောင်ချက်များတွင် သတ်မှတ်ချက်များ ထည့်ပါ</translation>
 <translation id="8557447961879934694">WPA2</translation>
-<translation id="8558521694042102707">တီထွင်ဖန်တီးမှုဆိုင်ရာ AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာစိစစ်ပါ။</translation>
+<translation id="8558521694042102707">Generative AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာစိစစ်ပါ။</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> အတွက် ဖာမ်းဝဲဗားရှင်း <ph name="VERSION" /> ထည့်သွင်းမှုကို အပြီးသတ်ရန်အတွက် ပြန်စရန်လိုအပ်သည်။ သင့်ကွန်ပျူတာကို အကြိမ်များစွာ ပြန်လည်စတင်နိုင်သည်။ ဤလုပ်ဆောင်ချက်သည် ပုံမှန်ဖြစ်သည်။</translation>

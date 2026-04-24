@@ -2151,6 +2151,7 @@
 <translation id="4318312030194671742">పెయింట్ ప్రివ్యూ కంపోజిటర్ సర్వీస్</translation>
 <translation id="4318566738941496689">మీ పరికరం పేరు, నెట్‌వర్క్ అడ్రస్‌</translation>
 <translation id="4320119221194966055">పర్సనల్ లోన్‌లు</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి లింక్‌ను అందుకున్నారు}other{<ph name="DEVICE_NAME" /> నుండి # లింక్‌లను అందుకున్నారు}}</translation>
 <translation id="4325600325087822253">ట్రే 17</translation>
 <translation id="4325863107915753736">కథనాన్ని కనుగొనడం విఫలమైంది</translation>
 <translation id="4326324639298822553">మీ గడువు ముగింపు తేదీని చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
@@ -4978,6 +4979,7 @@
 <translation id="8758529215314160755">మీరు <ph name="BEGIN_LINK" />మీ Google ఖాతా<ph name="END_LINK" /> <ph name="ACCOUNT" />‌లో మీ పేరును ఎడిట్ చేయవచ్చు</translation>
 <translation id="8759274551635299824">ఈ కార్డ్ గడువు ముగిసింది</translation>
 <translation id="87601671197631245">ఈ సైట్ ఉపయోగిస్తున్న భద్రతా కాన్ఫిగరేషన్ గడువు ముగిసింది, దీని వలన మీరు మీ సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు లేదా క్రెడిట్ కార్డ్‌లు) ఈ సైట్‌కు పంపించినప్పుడు అది బహిర్గతం అవ్వవచ్చు.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి లింక్‌ను పంపారు}other{<ph name="DEVICE_NAME" /> నుండి # లింక్‌లను పంపారు}}</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
 <translation id="8763986294015493060">ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
 <translation id="8766943070169463815">సురక్షిత పేమెంట్ ఆధారాల ప్రామాణీకరణ షీట్ తెరవబడింది</translation>

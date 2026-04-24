@@ -2152,6 +2152,7 @@
 <translation id="4318312030194671742">পেইণ্ট প্ৰিভিউ কম্প’জিটৰ সেৱা</translation>
 <translation id="4318566738941496689">আপোনাৰ ডিভাইচৰ নাম আৰু নেটৱৰ্ক ঠিকনা</translation>
 <translation id="4320119221194966055">ব্যক্তিগত ঋণ</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ৰ পৰা লিংক লাভ কৰা হৈছে}one{<ph name="DEVICE_NAME" />ৰ পৰা # টা লিংক লাভ কৰা হৈছে}other{<ph name="DEVICE_NAME" />ৰ পৰা # টা লিংক লাভ কৰা হৈছে}}</translation>
 <translation id="4325600325087822253">ট্ৰে’ ১৭</translation>
 <translation id="4325863107915753736">প্ৰৱন্ধ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4326324639298822553">আপোনাৰ ম্যাদ উকলাৰ তাৰিখটো পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
@@ -3183,6 +3184,7 @@
 <translation id="5968400720580217226">AI ম’ড</translation>
 <translation id="5969199813874624822">ছেভ কৰক আৰু মূল্য ট্ৰেক কৰক</translation>
 <translation id="5969933937005244170">আপুনি খোলা থকা প্ৰাসংগিক টেবসমূহ কোনো থ্ৰেডত শ্বেয়াৰ কৰিলেহে সেইসমূহহে ব্যৱহাৰ কৰা হ’ব</translation>
+<translation id="5972020793760134803">টেবলৈ সলনি কৰক</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ষষ্ঠ ৰোল</translation>
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
@@ -4976,6 +4978,7 @@
 <translation id="8758529215314160755">আপুনি আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" /> <ph name="ACCOUNT" />ত আপোনাৰ নামটো সম্পাদনা কৰিব পাৰে</translation>
 <translation id="8759274551635299824">কার্ডখনৰ ম্যাদ উকলিল</translation>
 <translation id="87601671197631245">এই ছাইটটোৱে সুৰক্ষা সম্পৰ্কীয় এটা পুৰণি কনফিগাৰেশ্বন ব্যৱহাৰ কৰে, যিটোৱে আপোনাৰ তথ্য (উদাহৰণস্বৰূপে, পাছৱৰ্ড, বার্তা অথবা ক্ৰেডিট কাৰ্ডসমূহ) এই ছাইটটোলৈ পঠিওৱা হ’লে সেয়া ফাদিল কৰিব পাৰে।</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ৰ পৰা লিংক পঠিওৱা হৈছে}one{<ph name="DEVICE_NAME" />ৰ পৰা # টা লিংক পঠিওৱা হৈছে}other{<ph name="DEVICE_NAME" />ৰ পৰা # টা লিংক পঠিওৱা হৈছে}}</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
 <translation id="8763986294015493060">বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="8766943070169463815">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ বিষয়ক শ্বীটখন খোলা হৈছে</translation>

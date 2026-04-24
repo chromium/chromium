@@ -680,7 +680,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3985215325736559418">Scaricare di nuovo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia link</translation>
 <translation id="3994236846568425219">Attiva il tema scuro quando sul dispositivo è attivo il tema scuro</translation>
-<translation id="399788104667917863">Blocca sulla barra degli strumenti</translation>
+<translation id="399788104667917863">Fissa sulla barra degli strumenti</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4000670338830950598">Personalizza e controlla Google Chrome con un elemento evidenziato</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 password compromessa nel tuo Account Google}other{# password compromesse nel tuo Account Google}}</translation>

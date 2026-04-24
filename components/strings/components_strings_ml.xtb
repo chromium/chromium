@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">പെയ്‌ന്റ് പ്രിവ്യൂ കോമ്പോസിറ്റർ സേവനം</translation>
 <translation id="4318566738941496689">നിങ്ങളുടെ ഉപകരണത്തിൻ്റെ പേരും നെറ്റ്‌വർക്ക് വിലാസവും</translation>
 <translation id="4320119221194966055">വ്യക്തിഗത വായ്‌പകൾ</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് ലിങ്ക് ലഭിച്ചു}other{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് # ലിങ്കുകൾ ലഭിച്ചു}}</translation>
 <translation id="4325600325087822253">ട്രേ 17</translation>
 <translation id="4325863107915753736">ലേഖനം കണ്ടെത്തുന്നത് പരാജയപ്പെട്ടു</translation>
 <translation id="4326324639298822553">കാലാവധി തീരുന്ന തീയതി പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -4980,6 +4981,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> <ph name="ACCOUNT" /> -ൽ നിങ്ങളുടെ പേര് എഡിറ്റ് ചെയ്യാം</translation>
 <translation id="8759274551635299824">ഈ കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="87601671197631245">ഈ സൈറ്റ് കാലഹരണപ്പെട്ട സുരക്ഷാ കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാൽ നിങ്ങളുടെ വിവരങ്ങൾ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ) ഈ സൈറ്റിലേക്ക് അയച്ചാൽ അവ വെളിപ്പെട്ടേക്കാം.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് ലിങ്ക് അയച്ചു}other{<ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് # ലിങ്കുകൾ അയച്ചു}}</translation>
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8763986294015493060">നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="8766943070169463815">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ് തുറന്നു</translation>

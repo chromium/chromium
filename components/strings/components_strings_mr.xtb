@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">पेंट पूर्वावलोकन कंपोझिटर सेवा</translation>
 <translation id="4318566738941496689">तुमच्या डिव्हाइसचे नाव आणि नेटवर्कचा पत्ता</translation>
 <translation id="4320119221194966055">वैयक्तिक कर्जे</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> कडून लिंक मिळाली आहे}other{<ph name="DEVICE_NAME" /> कडून # लिंक मिळाल्या आहेत}}</translation>
 <translation id="4325600325087822253">ट्रे १७</translation>
 <translation id="4325863107915753736">लेख शोधण्यात अयशस्वी</translation>
 <translation id="4326324639298822553">तुमची कालबाह्यता तारीख तपासा आणि पुन्हा प्रयत्न करा</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755">तुम्ही तुमच्या <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> <ph name="ACCOUNT" /> मध्ये तुमचे नाव संपादित करू शकता</translation>
 <translation id="8759274551635299824">या कार्डची मुदत संपली आहे</translation>
 <translation id="87601671197631245">ही साइट एक्सपायर झालेली सुरक्षितता कॉन्फिगरेशन वापरत आहे ज्यामुळे कदाचित तुमची माहिती (उदाहरणार्थ, पासवर्ड, मेसेज किंवा क्रेडिट कार्डे) या साइटला पाठवल्यानंतर ती उघड होऊ शकते.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> वरून लिंक पाठवली आहे}other{<ph name="DEVICE_NAME" /> वरून # लिंक पाठवल्या आहेत}}</translation>
 <translation id="8763927697961133303">USB डिव्हाइस</translation>
 <translation id="8763986294015493060">सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करा</translation>
 <translation id="8766943070169463815">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट उघडी आहे</translation>
