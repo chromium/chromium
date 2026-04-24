@@ -28,8 +28,22 @@ def GetFdCommand():
 
 def RemoveIfStale(pyc_path):
   """Deletes pyc_path if it doesn't have a corresponding .py file."""
-  root, _ = os.path.splitext(pyc_path)
-  py_path = root + '.py'
+  dirname, filename = os.path.split(pyc_path)
+  if os.path.basename(dirname) == '__pycache__':
+    # We have something like 'foo/__pycache__/module.cpython-313.pyc', we want
+    # to check if 'foo/module.py' exists.
+
+    # Remove .pyc
+    root, _ = os.path.splitext(filename)
+    # Remove version indicator like ".cpython-313."
+    root, _ = os.path.splitext(root)
+    py_path = os.path.join(os.path.dirname(dirname), root + '.py')
+  else:
+    # We have something like 'foo/module.pyc', we want to check if
+    # 'foo/module.py' exists.
+
+    root, _ = os.path.splitext(pyc_path)
+    py_path = root + '.py'
   try:
     if not os.path.exists(py_path):
       os.remove(pyc_path)
