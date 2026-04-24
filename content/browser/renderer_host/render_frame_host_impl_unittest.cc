@@ -199,6 +199,27 @@ TEST_F(RenderFrameHostImplTest, InvalidURL) {
   EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
 }
 
+TEST_F(RenderFrameHostImplTest, ExitFullscreenDestruction) {
+  class DestructionDelegate : public WebContentsDelegate {
+   public:
+    explicit DestructionDelegate(base::OnceClosure destruction_closure)
+        : destruction_closure_(std::move(destruction_closure)) {}
+    void ExitFullscreenModeForTab(WebContents* web_contents) override {
+      std::move(destruction_closure_).Run();
+    }
+
+   private:
+    base::OnceClosure destruction_closure_;
+  };
+
+  DestructionDelegate delegate(base::BindOnce(
+      &RenderFrameHostImplTest::DeleteContents, base::Unretained(this)));
+  contents()->SetDelegate(&delegate);
+
+  // This should not crash.
+  main_test_rfh()->ExitFullscreen();
+}
+
 // Ensures that IsolationInfo's SiteForCookies is empty and
 // that it correctly generates a StorageKey with a kCrossSite
 // AncestorChainBit when frames are nested in an A->B->A
