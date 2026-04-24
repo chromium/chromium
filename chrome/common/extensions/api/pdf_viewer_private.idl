@@ -123,11 +123,35 @@ namespace pdfViewerPrivate {
     boolean allowJavascript;
   };
 
+  // Represents SkTypeface.
+  dictionary Typeface {
+    // From SkTypeface::uniqueID()
+    long uniqueId;
+    // Serialized SkTypeface
+    ArrayBuffer serializedTypeface;
+  };
+
+  dictionary GetTextInfoResult {
+    Typeface[] typefaces;
+    // Serialized pdf::mojom::InkTextInfo
+    ArrayBuffer mojoTextInfo;
+  };
+
+  callback GetTextInfoCallback = void(GetTextInfoResult result);
   callback GetStreamInfoCallback = void(StreamInfo streamInfo);
   callback IsAllowedLocalFileAccessCallback = void(boolean result);
   callback VoidCallback = void();
 
   interface Functions {
+    // Calls blink::WebFormControlElement::GetTextInfo() on the `textarea` and
+    // returns the results. Additionally, skip serializing typefaces if their ID
+    // appears in `knownFontIds` in order to avoid the overhead of repeating the
+    // same typeface data.
+    [nocompile] static void getTextInfo(
+        [instanceOf=HTMLTextAreaElement] object textarea,
+        long[] knownFontIds,
+        GetTextInfoCallback callback);
+
     // Returns the StreamInfo for the stream for this context if there is one.
     static void getStreamInfo(
         GetStreamInfoCallback callback);

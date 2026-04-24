@@ -17,6 +17,9 @@ specific_include_rules = {
   "extension_context_menu_browsertest\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
+  "pdf_viewer_private_apitest\.cc": [
+    "+pdf/mojom",
+  ],
   "tls_socket_unittest\.cc": [
     "+services/network/network_context.h",
   ],

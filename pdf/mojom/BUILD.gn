@@ -19,6 +19,10 @@ mojom("mojom") {
 
   enabled_features = []
 
+  if (enable_pdf_ink2) {
+    enabled_features += [ "enable_pdf_ink2" ]
+  }
+
   if (enable_pdf_save_to_drive) {
     enabled_features += [ "enable_pdf_save_to_drive" ]
   }

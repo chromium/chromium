@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 assert(enable_extensions_core)
@@ -106,6 +107,14 @@ source_set("extensions") {
           "api/printing_hooks_delegate.h",
         ]
       }
+    }
+
+    if (enable_pdf_ink2) {
+      sources += [
+        "api/pdf_viewer_private_custom_bindings.cc",
+        "api/pdf_viewer_private_custom_bindings.h",
+      ]
+      deps += [ "//pdf/mojom" ]
     }
   }
 }

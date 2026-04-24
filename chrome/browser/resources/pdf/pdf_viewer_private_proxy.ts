@@ -9,11 +9,19 @@ type SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
 type SaveToDriveProgress = chrome.pdfViewerPrivate.SaveToDriveProgress;
 // </if> enable_pdf_save_to_drive
 
+// <if expr="enable_pdf_ink2">
+type GetTextInfoResult = chrome.pdfViewerPrivate.GetTextInfoResult;
+// </if>
+
 // TODO(crbug.com/40825351): Move the other chrome.pdfViewerPrivate calls across
 // the PDF UI under this proxy.
 // `chrome.pdfViewerPrivate.isAllowedLocalFileAccess` is currently located in
 // `chrome/browser/resources/pdf/navigator.ts`.
 export interface PdfViewerPrivateProxy {
+  // <if expr="enable_pdf_ink2">
+  getTextInfo(textarea: HTMLTextAreaElement, knownFontIds: number[]):
+      Promise<GetTextInfoResult>;
+  // </if>
   // <if expr="enable_pdf_save_to_drive">
   onSaveToDriveProgress:
       ChromeEvent<(url: string, progress: SaveToDriveProgress) => void>;
@@ -25,6 +33,13 @@ export interface PdfViewerPrivateProxy {
 }
 
 export class PdfViewerPrivateProxyImpl implements PdfViewerPrivateProxy {
+  // <if expr="enable_pdf_ink2">
+  getTextInfo(textarea: HTMLTextAreaElement, knownFontIds: number[]):
+      Promise<GetTextInfoResult> {
+    return chrome.pdfViewerPrivate.getTextInfo(textarea, knownFontIds);
+  }
+  // </if>
+
   // <if expr="enable_pdf_save_to_drive">
   onSaveToDriveProgress:
       ChromeEvent<(url: string, progress: SaveToDriveProgress) => void> =

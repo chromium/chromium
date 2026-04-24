@@ -1,5 +1,6 @@
 include_rules = [
   "+media/audio",
+  "+pdf/mojom",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

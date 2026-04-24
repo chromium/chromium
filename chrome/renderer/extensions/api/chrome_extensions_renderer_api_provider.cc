@@ -19,6 +19,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
+#include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "build/chromeos_buildflags.h"
@@ -41,6 +42,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "chrome/renderer/extensions/api/pdf_viewer_private_custom_bindings.h"
+#endif
+
 namespace extensions {
 
 void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
@@ -55,6 +60,12 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "page_capture", std::make_unique<PageCaptureCustomBindings>(
                           context, bindings_system->GetIPCMessageSender()));
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  module_system->RegisterNativeHandler(
+      "pdf_viewer_private",
+      std::make_unique<PdfViewerPrivateCustomBindings>(context));
+#endif
 
   // The following are native handlers that are defined in //extensions, but
   // are only used for APIs defined in Chrome.
@@ -143,6 +154,10 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
       {"tabCapture", IDR_TAB_CAPTURE_CUSTOM_BINDINGS_JS},
       {"tts", IDR_TTS_CUSTOM_BINDINGS_JS},
       {"ttsEngine", IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS},
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+      {"pdfViewerPrivate", IDR_PDF_VIEWER_PRIVATE_CUSTOM_BINDINGS_JS},
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
       {"certificateProvider", IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS},

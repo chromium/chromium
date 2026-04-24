@@ -26,6 +26,17 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     this.onSaveToDriveProgress = new FakeChromeEvent();
   }
 
+
+  // <if expr="enable_pdf_ink2">
+  getTextInfo(_textarea: HTMLTextAreaElement, _knownFontIds: number[]):
+      Promise<chrome.pdfViewerPrivate.GetTextInfoResult> {
+    return Promise.resolve({
+      typefaces: [],
+      mojoTextInfo: new ArrayBuffer(0),
+    });
+  }
+  // </if>
+
   glicSummarize(): void {
     this.methodCalled('glicSummarize');
   }

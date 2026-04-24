@@ -80,6 +80,45 @@ interface PdfListener {
       => (SaveDataBufferHandlerGetResult? result);
 };
 
+[EnableIf=enable_pdf_ink2]
+struct InkGlyphInfo {
+  // The glyph ID within the given typeface.
+  uint16 glyph;
+  // The glyph offset value from Harfbuzz.
+  gfx.mojom.Vector2dF offset;
+  // Cumulative glyph.advance, which originally comes from Harfbuzz.
+  float total_advance;
+};
+
+[EnableIf=enable_pdf_ink2]
+struct InkTypefaceRun {
+  // The ID from SkTypeface::uniqueId().
+  uint32 typeface_id;
+  // The glyphs that make up the run.
+  array<InkGlyphInfo> glyphs;
+  // If true the text is horizontal, if false the text is vertical.
+  bool is_horizontal;
+};
+
+[EnableIf=enable_pdf_ink2]
+struct InkTextRun {
+  // Each run of text with one typeface per run.
+  array<InkTypefaceRun> typeface_runs;
+  // The location of the text run in physical pixels.
+  gfx.mojom.RectF location;
+};
+
+// Represents the result from blink::WebFormControlElement::GetTextInfo()
+[EnableIf=enable_pdf_ink2]
+struct InkTextInfo {
+  // Each run of text returned by Blink. Can contain multiple typefaces.
+  array<InkTextRun> text_runs;
+  // The DSF * browser_zoom * css_zoom_property scale factor.
+  // 1.0 is 100%.
+  // See blink::WebElement::GetEffectiveZoom()
+  float effective_zoom;
+};
+
 // Browser-side interface used by PDF renderers.
 interface PdfHost {
   SetListener(pending_remote<PdfListener> client);
