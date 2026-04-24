@@ -21,6 +21,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,6 +32,9 @@
 #include "extensions/common/extension_urls.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ManagementPrefUpdater = extensions::ExtensionManagementPrefUpdater<
+    sync_preferences::TestingPrefServiceSyncable>;
 
 namespace policy {
 namespace {
@@ -254,8 +258,6 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByPolicy) {
 TEST_F(ExtensionInstallPolicyServiceTest,
        IsExtensionBlockedByExtensionSettings) {
   // Force-install `kExtensionId`.
-  using ManagementPrefUpdater = extensions::ExtensionManagementPrefUpdater<
-      sync_preferences::TestingPrefServiceSyncable>;
   std::string webstore_update_url =
       extension_urls::GetWebstoreUpdateUrl().spec();
   {
@@ -270,6 +272,85 @@ TEST_F(ExtensionInstallPolicyServiceTest,
   ASSERT_EQ(extensions::ManagedInstallationMode::kForced,
             extension_management->GetInstallationMode(kExtensionId,
                                                       webstore_update_url));
+
+  // IsExtensionAllowed() returns true even though the extension is blocked by
+  // the ExtensionSettings policy. "true" here means "EIPS will not block it",
+  // but other things still can (in this case,
+  // StandardManagementPolicyProvider).
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
+                      ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
+                  .value());
+}
+
+TEST_F(ExtensionInstallPolicyServiceTest, ExtensionAllowlisted) {
+  {
+    ManagementPrefUpdater pref(profile()->GetTestingPrefService());
+    pref.SetIndividualExtensionInstallationAllowed(kExtensionId, true);
+  }
+
+  PolicyMap extension_install_policy;
+  extension_install_policy.Set(
+      kExtensionId, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_CLOUD,
+      GetPolicyValueForAction(
+          kExtensionVersion,
+          enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK),
+      nullptr);
+
+  policy_provider_->UpdateExtensionInstallPolicy(extension_install_policy);
+
+  // IsExtensionAllowed() returns true even though the extension is blocked by
+  // the ExtensionInstallPolicy. "true" here means "EIPS will not block it",
+  // but other things still can (in this case, ExtensionSettings policy).
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
+                      ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
+                  .value());
+}
+
+TEST_F(ExtensionInstallPolicyServiceTest, ExtensionForceInstalled) {
+  {
+    ManagementPrefUpdater pref(profile()->GetTestingPrefService());
+    pref.SetIndividualExtensionInstallationAllowed(kExtensionId, true);
+  }
+
+  PolicyMap extension_install_policy;
+  extension_install_policy.Set(
+      kExtensionId, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_CLOUD,
+      GetPolicyValueForAction(
+          kExtensionVersion,
+          enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK),
+      nullptr);
+
+  policy_provider_->UpdateExtensionInstallPolicy(extension_install_policy);
+
+  // IsExtensionAllowed() returns true even though the extension is blocked by
+  // the ExtensionInstallPolicy. "true" here means "EIPS will not block it",
+  // but other things still can (in this case, ExtensionSettings policy).
+  EXPECT_TRUE(service_
+                  ->IsExtensionAllowed(
+                      ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
+                  .value());
+}
+
+TEST_F(ExtensionInstallPolicyServiceTest, ExtensionBlocklisted) {
+  {
+    ManagementPrefUpdater pref(profile()->GetTestingPrefService());
+    pref.SetIndividualExtensionInstallationAllowed(kExtensionId, false);
+  }
+
+  PolicyMap extension_install_policy;
+  extension_install_policy.Set(
+      kExtensionId, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_CLOUD,
+      GetPolicyValueForAction(
+          kExtensionVersion,
+          enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK),
+      nullptr);
+
+  policy_provider_->UpdateExtensionInstallPolicy(extension_install_policy);
 
   // IsExtensionAllowed() returns true even though the extension is blocked by
   // the ExtensionSettings policy. "true" here means "EIPS will not block it",

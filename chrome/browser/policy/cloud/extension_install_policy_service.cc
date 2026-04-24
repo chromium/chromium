@@ -97,10 +97,8 @@ bool HasNonDefaultInstallationMode(Profile* profile,
   auto* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
   CHECK(extension_management);
-  extensions::ManagedInstallationMode installation_mode =
-      extension_management->GetInstallationMode(
-          extension_id, extension_urls::GetWebstoreUpdateUrl().spec());
-  return installation_mode != extensions::ManagedInstallationMode::kAllowed;
+  return extension_management->IsInstallationExplicitlyAllowed(extension_id) ||
+         extension_management->IsInstallationExplicitlyBlocked(extension_id);
 }
 
 bool IsAnyEntryBlocked(const PolicyMap::Entry* entry,
