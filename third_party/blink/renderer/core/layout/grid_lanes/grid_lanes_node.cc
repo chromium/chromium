@@ -55,12 +55,17 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
       baseline_group = grid_lanes_item->BaselineGroup(grid_axis_direction);
     }
 
-    const auto item_properties = GridLanesItemGroupProperties(
-        /*item_span=*/line_resolver.ResolveGridPositionsFromStyle(
-            child.Style(), grid_axis_direction),
-        baseline_group);
+    // Subgridded items use their `resolved_position` which was already adjusted
+    // to parent coordinates by `AdjustSubgriddedItemSpan`.
+    const GridSpan item_span =
+        grid_lanes_item->is_subgridded_to_parent_grid
+            ? grid_lanes_item->Span(grid_axis_direction)
+            : line_resolver.ResolveGridPositionsFromStyle(
+                  grid_lanes_item->node.Style(), grid_axis_direction);
 
-    const auto& item_span = item_properties.Span();
+    const auto item_properties =
+        GridLanesItemGroupProperties(item_span, baseline_group);
+
     // Keep a running sum of unplaced item spans to determine where to
     // place auto placed virtual items per the auto-fit grid-lanes heuristic.
     //
@@ -68,7 +73,11 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
     if (item_span.IsIndefinite()) {
       unplaced_item_span_count += item_span.SpanSize();
     }
+
+    // Subgridded items don't contribute to `start_offset` since their spans
+    // are already in the parent's translated coordinate space.
     if (item_span.IsUntranslatedDefinite()) {
+      CHECK(!grid_lanes_item->is_subgridded_to_parent_grid);
       start_offset =
           std::max<int>(start_offset, -item_span.UntranslatedStartLine());
     }
@@ -93,8 +102,9 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
     if (item_span.IsIndefinite()) {
       max_end_line = std::max(max_end_line, item_span.IndefiniteSpanSize());
     } else {
-      DCHECK(item_span.IsUntranslatedDefinite());
-      item_span.Translate(start_offset);
+      if (item_span.IsUntranslatedDefinite()) {
+        item_span.Translate(start_offset);
+      }
       max_end_line = std::max(max_end_line, item_span.EndLine());
     }
 
