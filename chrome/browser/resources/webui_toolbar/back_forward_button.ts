@@ -39,7 +39,7 @@ export class BackForwardButtonElement extends CrLitElement {
   accessor direction: 'back'|'forward' = 'back';
   accessor state: BackForwardButtonState = {
     enabled: false,
-    visible: true,
+    shouldBeShown: true,
     isContextMenuVisible: false,
   };
   accessor leadingMargin: number = 0;

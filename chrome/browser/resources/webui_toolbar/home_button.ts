@@ -36,7 +36,7 @@ export class HomeButtonElement extends CrLitElement {
   }
 
   accessor state: HomeControlState = {
-    isPinned: false,
+    shouldBeShown: false,
     isContextMenuVisible: false,
   };
 

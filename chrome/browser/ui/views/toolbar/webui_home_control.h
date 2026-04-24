@@ -33,8 +33,9 @@ class WebUIHomeControl {
   // the widget.
   void Init();
 
-  // Returns true if the home button should be visible.
-  bool IsVisible() const;
+  // Returns true if the home button is pinned, and so should be shown if
+  // there's enough room for it on the toolbar.
+  bool IsPinned() const;
 
   // Handles context menu requests from the WebUI.
   void HandleContextMenu(const gfx::Rect& screen_rect,
@@ -53,7 +54,7 @@ class WebUIHomeControl {
                            LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
                            PressAndDragDown);
-  void UpdateVisibility(const toolbar_ui_api::mojom::HomeControlState* state);
+  void UpdateIsPinned(bool is_pinned);
   void UpdateState();
 
   // Displays the bubble confirming the home page was set.
@@ -61,7 +62,7 @@ class WebUIHomeControl {
 
   raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   BooleanPrefMember pin_state_;
-  bool is_visible_ = false;
+  bool is_pinned_ = false;
   bool is_context_menu_visible_ = false;
 
   ui::mojom::MenuSourceType last_source_type_for_testing_ =

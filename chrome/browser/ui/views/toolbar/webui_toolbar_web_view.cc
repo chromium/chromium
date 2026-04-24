@@ -312,9 +312,9 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
                   split_tabs_control_.IsVisible();
   button_count += features::IsWebUIBackForwardButtonEnabled();
   button_count += features::IsWebUIBackForwardButtonEnabled() &&
-                  forward_control_.GetVisible();
+                  forward_control_.IsPinned();
   button_count +=
-      features::IsWebUIHomeButtonEnabled() && home_control_.IsVisible();
+      features::IsWebUIHomeButtonEnabled() && home_control_.IsPinned();
   button_count += features::IsWebUIAvatarButtonEnabled();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
@@ -546,7 +546,7 @@ void WebUIToolbarWebView::SetBackForwardEnabled(int command_id, bool enabled) {
 }
 
 void WebUIToolbarWebView::SetForwardVisible(bool visible) {
-  forward_control_.SetVisible(visible);
+  forward_control_.SetIsPinned(visible);
   PreferredSizeChanged();
 }
 

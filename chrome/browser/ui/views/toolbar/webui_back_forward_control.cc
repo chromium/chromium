@@ -59,21 +59,21 @@ void WebUIBackForwardControl::SetEnabled(bool enabled) {
   webui_toolbar_web_view_->OnBackForwardStateChanged();
 }
 
-void WebUIBackForwardControl::SetVisible(bool visible) {
-  if (visible_ == visible) {
+void WebUIBackForwardControl::SetIsPinned(bool is_pinned) {
+  if (is_pinned_ == is_pinned) {
     return;
   }
-  visible_ = visible;
+  is_pinned_ = is_pinned;
   webui_toolbar_web_view_->OnBackForwardStateChanged();
 }
 
-bool WebUIBackForwardControl::GetVisible() const {
-  return visible_;
+bool WebUIBackForwardControl::IsPinned() const {
+  return is_pinned_;
 }
 
 toolbar_ui_api::mojom::BackForwardButtonStatePtr
 WebUIBackForwardControl::GetButtonState() const {
   return toolbar_ui_api::mojom::BackForwardButtonState::New(
-      /*enabled=*/enabled_, /*visible=*/visible_,
+      /*enabled=*/enabled_, /*should_be_shown=*/is_pinned_,
       /*is_context_menu_visible=*/menu_runner_ && menu_runner_->IsRunning());
 }

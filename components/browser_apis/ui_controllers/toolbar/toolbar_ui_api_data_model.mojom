@@ -54,7 +54,7 @@ enum ContextMenuType {
 
 struct BackForwardButtonState {
   bool enabled;
-  bool visible;
+  bool should_be_shown;
   bool is_context_menu_visible;
 };
 
@@ -122,7 +122,7 @@ struct BackForwardControlState {
 };
 
 struct HomeControlState {
-  bool is_pinned;
+  bool should_be_shown;
   bool is_context_menu_visible;
 };
 

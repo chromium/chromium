@@ -40,8 +40,8 @@ void WebUIHomeControl::Init() {
   UpdateState();
 }
 
-bool WebUIHomeControl::IsVisible() const {
-  return is_visible_;
+bool WebUIHomeControl::IsPinned() const {
+  return is_pinned_;
 }
 
 void WebUIHomeControl::HandleContextMenu(
@@ -88,33 +88,22 @@ void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
   ShowSetHomePageBubble(old_url, old_is_ntp);
 }
 
-void WebUIHomeControl::UpdateVisibility(
-    const toolbar_ui_api::mojom::HomeControlState* state) {
-  bool should_be_visible = state->is_pinned;
-
-  if (should_be_visible != is_visible_) {
-    is_visible_ = should_be_visible;
+void WebUIHomeControl::UpdateIsPinned(bool is_pinned) {
+  if (is_pinned_ != is_pinned) {
+    is_pinned_ = is_pinned;
     webui_toolbar_web_view_->PreferredSizeChanged();
   }
 }
 
 void WebUIHomeControl::UpdateState() {
-  auto state = toolbar_ui_api::mojom::HomeControlState::New();
-  state->is_pinned = webui_toolbar::IsButtonPinned(
+  UpdateIsPinned(webui_toolbar::IsButtonPinned(
       webui_toolbar_web_view_->browser_,
-      toolbar_ui_api::mojom::ToolbarButtonType::kHome);
+      toolbar_ui_api::mojom::ToolbarButtonType::kHome));
+
+  auto state = toolbar_ui_api::mojom::HomeControlState::New();
+  state->should_be_shown = is_pinned_;
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
-
-  bool state_changed = false;
-  if (state->is_pinned != is_visible_ ||
-      state->is_context_menu_visible != is_context_menu_visible_) {
-    state_changed = true;
-  }
-
   is_context_menu_visible_ = state->is_context_menu_visible;
-  UpdateVisibility(state.get());
 
-  if (state_changed) {
-    webui_toolbar_web_view_->OnHomeControlStateChanged(std::move(state));
-  }
+  webui_toolbar_web_view_->OnHomeControlStateChanged(std::move(state));
 }
