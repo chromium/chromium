@@ -993,8 +993,12 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       case cc::mojom::LayerType::kVideo:
         return base::unexpected("Invalid LayerType for UpdateLayer.");
       case cc::mojom::LayerType::kLayer:
+        RETURN_IF_FALSE(!general.layer_extra,
+                        "Unexpected layer_extra for LayerImpl");
+        break;
       case cc::mojom::LayerType::kSolidColor:
-        // TODO(b/503346329) - handle other types of LayerImpl.
+        RETURN_IF_FALSE(!general.layer_extra,
+                        "Unexpected layer_extra for SolidColorLayerImpl");
         break;
     }
   }

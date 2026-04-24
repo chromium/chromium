@@ -1548,6 +1548,52 @@ TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateLayerWithUnexpectedExtraFails) {
+  constexpr int kLayerId = 2;
+  constexpr cc::mojom::LayerType kLayerType = cc::mojom::LayerType::kLayer;
+
+  // Initial update: Create a layer of kLayerType.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), kLayerType, kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Attempt to update the layer with an extra (e.g. MirrorLayerExtra).
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId, kLayerType);
+  SetLayerExtra(layer_props2.get(),
+                CreateDefaultLayerExtra(cc::mojom::LayerType::kMirror));
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Unexpected layer_extra for LayerImpl");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateSolidColorLayerWithUnexpectedExtraFails) {
+  constexpr int kLayerId = 2;
+  constexpr cc::mojom::LayerType kLayerType = cc::mojom::LayerType::kSolidColor;
+
+  // Initial update: Create a layer of kLayerType.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), kLayerType, kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Attempt to update the layer with an extra (e.g. MirrorLayerExtra).
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId, kLayerType);
+  SetLayerExtra(layer_props2.get(),
+                CreateDefaultLayerExtra(cc::mojom::LayerType::kMirror));
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Unexpected layer_extra for SolidColorLayerImpl");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
        UpdateSafeOpaqueBackgroundColor) {
   constexpr int kLayerId = 2;
   const SkColor4f kDefaultColor = SkColors::kTransparent;  // Default from mojom
