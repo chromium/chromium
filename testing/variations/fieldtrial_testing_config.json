@@ -3955,6 +3955,25 @@
             ]
         }
     ],
+    "BaseLockTrySpin": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "spin_count_arm": "2048",
+                        "spin_count_x86": "64"
+                    },
+                    "enable_features": [
+                        "BaseLockTrySpin"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatchNativeEventsInMessagePumpEpoll": [
         {
             "platforms": [
