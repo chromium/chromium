@@ -252,8 +252,7 @@
         android:isolatedProcess="true"
         android:nativeService="true"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
-        android:process=":sandboxed_process1"
-        android:useAppZygote="true">
+        android:process=":sandboxed_process1">
       <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME" android:value="NativeChildProcessService_onCreate"/>
       <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME" android:value="libmonochrome.so"/>
     </service>  # DIFF-ANCHOR: bb0c45b7

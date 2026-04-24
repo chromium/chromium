@@ -69,12 +69,12 @@ found in the LICENSE file.
         {% if javaless_renderers is defined %}
         <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
         {% for i in range(2) %}
-        <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
-             only for the prototype, and once it actually lands in the Android tree, there will be a
-             better mechanism than this. -->
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
             android:process=":sandboxed_process{{ i }}"
             android:isolatedProcess="true"
+             {% if (i == 0) %}
+             android:useAppZygote="true"
+             {% endif %}
           android:exported="false" >
         <meta-data android:name="android.app.lib_name" android:value="{{ library_name }}"/>
             <meta-data android:name="android.app.func_name" android:value="NativeChildProcessService_onCreate"/>

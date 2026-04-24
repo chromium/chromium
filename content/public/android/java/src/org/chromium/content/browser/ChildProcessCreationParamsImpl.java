@@ -123,14 +123,4 @@ public class ChildProcessCreationParamsImpl {
                 ? NATIVE_SANDBOXED_SERVICES_NAME
                 : SANDBOXED_SERVICES_NAME;
     }
-
-    public static @Nullable String getBackupSandboxedServicesName() {
-        // We only have a backup for javaless services, and only temporarily while native services
-        // are stabilizing. We should get rid of this once UMA stats show a low incidence of
-        // Android.ChildProcessConnection.FallbackService.
-        if (getSandboxedServicesName().equals(SANDBOXED_SERVICES_NAME)) {
-            return null;
-        }
-        return SANDBOXED_SERVICES_NAME;
-    }
 }

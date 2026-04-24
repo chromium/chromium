@@ -185,7 +185,6 @@ public abstract class ChildConnectionAllocator {
             Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
-            @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean isSandboxedForHistograms,
@@ -222,19 +221,9 @@ public abstract class ChildConnectionAllocator {
 
         // WebView renderers are always spawned from WebView Zygote.
         boolean forceZygote = !bindAsExternalService;
-        String suffix;
-        if (forceZygote) {
-            fallbackServiceClassName = null;
-            suffix = ZYGOTE_SUFFIX;
-        } else {
-            suffix = disableZygote ? NON_ZYGOTE_SUFFIX : ZYGOTE_SUFFIX;
-            if (fallbackServiceClassName != null) {
-                fallbackServiceClassName += suffix;
-            } else {
-                fallbackServiceClassName =
-                        disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
-            }
-        }
+        String suffix = (forceZygote || !disableZygote) ? ZYGOTE_SUFFIX : NON_ZYGOTE_SUFFIX;
+        String fallbackServiceClassName =
+                (forceZygote || disableZygote) ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
         return new VariableSizeAllocatorImpl(
                 launcherHandler,
                 freeSlotCallback,
