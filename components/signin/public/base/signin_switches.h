@@ -435,6 +435,8 @@ BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 // have the required information in local storage.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(int, kFullscreenSignInPromoUseDateInterval);
 #endif
 
 // When enabled, AccountInfo is required to have a CoreAccountId which is also
