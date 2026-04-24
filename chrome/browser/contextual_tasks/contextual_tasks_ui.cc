@@ -572,7 +572,8 @@ void ContextualTasksUI::CreatePageHandler(
 
   page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      std::move(page_handler), this, ui_service_, contextual_tasks_service_);
+      std::move(page_handler), this, ui_service_, contextual_tasks_service_,
+      GetPanelController());
 
 #if !BUILDFLAG(IS_ANDROID)
   // Determine if the Lens overlay is showing when the page is created.

@@ -175,11 +175,13 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
     contextual_tasks::ContextualTasksUIInterface* web_ui_controller,
     contextual_tasks::ContextualTasksUiService* ui_service,
-    contextual_tasks::ContextualTasksService* contextual_tasks_service)
+    contextual_tasks::ContextualTasksService* contextual_tasks_service,
+    contextual_tasks::ContextualTasksPanelController* panel_controller)
     : receiver_(this, std::move(receiver)),
       web_ui_controller_(web_ui_controller),
       ui_service_(ui_service),
-      contextual_tasks_service_(contextual_tasks_service) {
+      contextual_tasks_service_(contextual_tasks_service),
+      panel_controller_(panel_controller) {
   CHECK(contextual_tasks_service_);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 
@@ -274,7 +276,11 @@ void ContextualTasksPageHandler::IsEmbeddedPageErrorDocument(
 }
 
 void ContextualTasksPageHandler::CloseSidePanel() {
-  web_ui_controller_->CloseSidePanel();
+  if (panel_controller_) {
+    panel_controller_->Close();
+  } else {
+    web_ui_controller_->CloseSidePanel();
+  }
 }
 
 void ContextualTasksPageHandler::ShowThreadHistory() {

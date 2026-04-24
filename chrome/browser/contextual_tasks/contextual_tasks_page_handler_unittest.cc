@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -107,22 +108,10 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
                   ContextualTasksServiceFactory::GetForProfile(profile)));
         }));
 
-    mock_browser_window_ =
-        std::make_unique<NiceMock<MockBrowserWindowInterface>>();
-    ON_CALL(*mock_browser_window_, GetUnownedUserDataHost())
-        .WillByDefault(ReturnRef(unowned_user_data_host_));
-    ON_CALL(*mock_browser_window_, GetProfile())
-        .WillByDefault(Return(profile()));
-
-    // Register MockTabListInterface in the mock browser.
-    mock_tab_list_ = std::make_unique<NiceMock<MockTabListInterface>>();
-    tab_list_registration_ =
-        std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
-            mock_browser_window_->GetUnownedUserDataHost(), *mock_tab_list_);
+    mock_panel_controller_ =
+        std::make_unique<NiceMock<MockContextualTasksPanelController>>();
 
     web_ui_.set_web_contents(web_contents());
-    webui::SetBrowserWindowInterface(web_contents(),
-                                     mock_browser_window_.get());
 
     contextual_tasks_ui_ =
         std::make_unique<NiceMock<TestContextualTasksUI>>(&web_ui_);
@@ -140,18 +129,16 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
 
     page_handler_ = std::make_unique<ContextualTasksPageHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
-        mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+        mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
+        mock_panel_controller_.get());
     page_handler_->set_skip_feedback_ui_for_testing(true);
   }
 
   void TearDown() override {
     page_handler_.reset();
     contextual_tasks_ui_.reset();
-    // Clear the association before mock_browser_window_ is destroyed.
     webui::SetBrowserWindowInterface(web_contents(), nullptr);
-    tab_list_registration_.reset();
-    mock_browser_window_.reset();
-    mock_tab_list_.reset();
+    mock_panel_controller_.reset();
     mock_contextual_tasks_service_ = nullptr;
     mock_contextual_tasks_ui_service_ = nullptr;
     profile_manager_.reset();
@@ -161,10 +148,7 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   content::TestWebUI web_ui_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_;
-  std::unique_ptr<MockTabListInterface> mock_tab_list_;
-  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
-      tab_list_registration_;
+  std::unique_ptr<MockContextualTasksPanelController> mock_panel_controller_;
   std::unique_ptr<NiceMock<TestContextualTasksUI>> contextual_tasks_ui_;
   std::unique_ptr<ContextualTasksPageHandler> page_handler_;
   raw_ptr<MockContextualTasksService> mock_contextual_tasks_service_;
@@ -536,11 +520,7 @@ TEST_F(ContextualTasksPageHandlerTest, IsShownInTab) {
 }
 
 TEST_F(ContextualTasksPageHandlerTest, CloseSidePanel) {
-  // CloseSidePanel calls contextual_tasks_ui_->CloseSidePanel().
-  // CloseSidePanel calls ContextualTasksPanelController::From(browser).
-  // From(browser) calls browser->GetUnownedUserDataHost().
-  EXPECT_CALL(*contextual_tasks_ui_, GetBrowser())
-      .WillRepeatedly(Return(mock_browser_window_.get()));
+  EXPECT_CALL(*mock_panel_controller_, Close()).Times(1);
   page_handler_->CloseSidePanel();
 }
 
@@ -569,7 +549,8 @@ TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
 
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
-      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
+      mock_panel_controller_.get());
   page_handler_->set_skip_feedback_ui_for_testing(true);
   // Set default to false for testing, as the default registered value is true.
   profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
@@ -742,11 +723,21 @@ TEST_F(ContextualTasksPageHandlerTest, OpenMyActivityUi) {
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OpenFeedbackUi) {
+  NiceMock<MockBrowserWindowInterface> local_mock_browser_window;
+  NiceMock<MockTabListInterface> local_mock_tab_list;
+
+  ON_CALL(local_mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host_));
+
+  auto tab_list_registration =
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+          unowned_user_data_host_, local_mock_tab_list);
+
   page_handler_->set_skip_feedback_ui_for_testing(false);
   EXPECT_CALL(*contextual_tasks_ui_, GetBrowser())
-      .WillRepeatedly(Return(mock_browser_window_.get()));
+      .WillRepeatedly(Return(&local_mock_browser_window));
   EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OpenFeedbackUi(mock_browser_window_.get(), _))
+              OpenFeedbackUi(&local_mock_browser_window, _))
       .Times(1);
   page_handler_->OpenFeedbackUi();
 }
@@ -968,7 +959,8 @@ TEST_F(ContextualTasksPageHandlerTest, PrefChangeNotification) {
   // Recreate page_handler_ to pick up the feature flag.
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
-      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
+      mock_panel_controller_.get());
   page_handler_->set_skip_feedback_ui_for_testing(true);
 
   base::RunLoop run_loop;
