@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   visibility = [
@@ -16,6 +17,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureContent.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureImpl.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelTabScopedDevFeatureImpl.java",
   ]
 
   deps = [
@@ -29,6 +31,7 @@ android_library("java") {
     "//chrome/browser/android/content:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_ui/public:java",
@@ -39,16 +42,45 @@ android_library("java") {
     "//components/thin_webview:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   resources_package = "org.chromium.chrome.browser.ui.side_panel_container"
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser/android:*",
+  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelTabScopedDevFeatureImpl.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "android/dev/side_panel_tab_scoped_dev_feature.cc",
+    "android/dev/side_panel_tab_scoped_dev_feature.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+    "//chrome/browser/ui/side_panel/android",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
 }
 
 android_resources("java_resources") {
   sources = [
     "android/java/res/drawable/side_panel_container_bg.xml",
     "android/java/res/layout/side_panel_container.xml",
+    "android/java/res/layout/side_panel_dev_feature.xml",
   ]
 }
 

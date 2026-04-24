@@ -25,6 +25,7 @@ android_library_factory("factory_java") {
     ":java",
     "//base:supplier_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_ui/public:java",
     "//ui/android:ui_java",
   ]

@@ -9,21 +9,33 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /** Factory for creating a {@link SidePanelDevFeature}. */
 @NullMarked
 public final class SidePanelDevFeatureFactory {
+
     private SidePanelDevFeatureFactory() {}
 
     @Nullable
     public static SidePanelDevFeature create(
             MonotonicObservableSupplier<Profile> profileSupplier,
             SidePanelContainerCoordinator sidePanelContainerCoordinator,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Supplier<Tab> tabSupplier) {
         if (!ChromeFeatureList.sEnableAndroidSidePanelDevFeature.isEnabled()) {
             return null;
+        }
+
+        String scope =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE, "scope");
+        if ("tab".equals(scope)) {
+            return new SidePanelTabScopedDevFeatureImpl(tabSupplier);
         }
 
         return new SidePanelDevFeatureImpl(

@@ -41,6 +41,10 @@ source_set("tabs_impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/side_panel/android",
+
+    # TODO(crbug.com/489548570): Remove "side_panel_container/internal:android"
+    # since it's for the tab-scoped dev feature.
+    "//chrome/browser/ui/side_panel_container/internal:android",
     "//components/external_intents/android",
     "//components/favicon/content",
     "//components/lens",

@@ -318,6 +318,11 @@ inline constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
     "max_donation_count",
     100);
 
+inline constexpr base::FeatureParam<std::string>
+    kAndroidSidePanelDevFeatureScopeParam(&kEnableAndroidSidePanelDevFeature,
+                                          "scope",
+                                          "window");
+
 inline constexpr base::FeatureParam<int>
     kAppIntegrationCCTVisitDurationLimitSecParam(
         &kAndroidAppIntegrationMultiDataSource,

@@ -9,6 +9,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
@@ -24,6 +26,8 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel_container/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -65,6 +69,18 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       AndroidSidePanelEnabledFn::IsEnabled()
           ? std::make_unique<SidePanelRegistry>(tab)
           : nullptr;
+
+  if (tab_scoped_side_panel_registry_ &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kEnableAndroidSidePanelDevFeature)) {
+    std::string scope = base::GetFieldTrialParamValueByFeature(
+        chrome::android::kEnableAndroidSidePanelDevFeature, "scope");
+    if (scope == "tab") {
+      tab_scoped_side_panel_dev_feature_ =
+          std::make_unique<SidePanelTabScopedDevFeature>(
+              tab, tab_scoped_side_panel_registry_.get());
+    }
+  }
 
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
     actor_tab_data_ =

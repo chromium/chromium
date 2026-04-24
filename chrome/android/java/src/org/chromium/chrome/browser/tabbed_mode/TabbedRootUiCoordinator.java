@@ -2168,7 +2168,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =
                     SidePanelDevFeatureFactory.create(
-                            mProfileSupplier, mSidePanelContainerCoordinator, mWindowAndroid);
+                            mProfileSupplier,
+                            mSidePanelContainerCoordinator,
+                            mWindowAndroid,
+                            mActivityTabProvider);
         }
 
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
