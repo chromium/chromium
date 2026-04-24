@@ -369,6 +369,11 @@ suite('PasswordDetailsCardTest', function() {
 
     assertTrue(isVisible(card.$.shareButton));
     assertEquals(card.$.shareButton.textContent.trim(), card.i18n('share'));
+    assertEquals(
+        card.i18n(
+            'passwordDetailsCardShareButtonAriaLabel',
+            card.i18n('passwordLabel'), 'vik'),
+        card.$.shareButton.getAttribute('aria-label'));
 
     assertFalse(!!card.shadowRoot!.querySelector('share-password-flow'));
 

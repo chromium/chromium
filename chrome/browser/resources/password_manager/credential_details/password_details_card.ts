@@ -333,6 +333,17 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
             this.getCredentialTypeString_());
   }
 
+  private getAriaLabelForShareButton_(): string {
+    return this.password.username ?
+        this.i18n(
+            'passwordDetailsCardShareButtonAriaLabel',
+            this.getCredentialTypeString_(),
+            htmlEscape(this.password.username)) :
+        this.i18n(
+            'passwordDetailsCardShareButtonNoUsernameAriaLabel',
+            this.getCredentialTypeString_());
+  }
+
   private computeMovePasswordText_(): TrustedHTML {
     return this.i18nAdvanced('moveSinglePassword');
   }
