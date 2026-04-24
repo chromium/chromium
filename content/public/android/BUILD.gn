@@ -171,6 +171,7 @@ android_library("content_full_java") {
     "//build/android:build_java",
     "//cc:cc_java",
     "//cc/mojom:mojom_java",
+    "//components/cached_flags:java",
     "//components/download/public/common:public_java",
     "//components/origin_matcher/android:java",
     "//components/payments/mojom:mojom_java",

@@ -20478,6 +20478,24 @@
             ]
         }
     ],
+    "SandboxedProcessServiceLimitOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "count": "98"
+                    },
+                    "enable_features": [
+                        "SandboxedProcessServiceLimitOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScaleScrollbarAnimationTiming": [
         {
             "platforms": [

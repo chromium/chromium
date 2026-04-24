@@ -27,6 +27,7 @@ import org.chromium.components.cached_flags.CachedFlagsSafeMode;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.JavalessRenderersFeatureList;
 import org.chromium.ui.base.UiAndroidFeatureList;
 
@@ -42,6 +43,7 @@ public class ChromeCachedFlags {
             List.of(
                     ChromeFeatureList.sFlagsCachedFullBrowser,
                     JavalessRenderersFeatureList.sCachedFlags,
+                    ContentFeatureList.sCachedFlags,
                     OmniboxFeatures.getFlagsToCache(),
                     ModalDialogFeatureMap.sCachedFlags,
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
@@ -53,6 +55,7 @@ public class ChromeCachedFlags {
             List.of(
                     ChromeFeatureList.sFlagsCachedFullBrowser,
                     JavalessRenderersFeatureList.sCachedFlags,
+                    ContentFeatureList.sCachedFlags,
                     OmniboxFeatures.getFlagsToCache(),
                     ModalDialogFeatureMap.sCachedFlags,
                     ChromeFeatureList.sFlagsCachedInMinimalBrowser,
@@ -62,6 +65,7 @@ public class ChromeCachedFlags {
             List.of(
                     ChromeFeatureList.sParamsCached,
                     JavalessRenderersFeatureList.sParamsCached,
+                    ContentFeatureList.sParamsCached,
                     OmniboxFeatures.getFeatureParamsToCache(),
                     PermissionsAndroidFeatureList.getFeatureParamsToCache(),
                     UiAndroidFeatureList.sParamsCached);
@@ -77,6 +81,7 @@ public class ChromeCachedFlags {
             List.of(
                     ChromeFeatureList.sParamsCached,
                     JavalessRenderersFeatureList.sParamsCached,
+                    ContentFeatureList.sParamsCached,
                     OmniboxFeatures.getFeatureParamsToCache(),
                     PermissionsAndroidFeatureList.getFeatureParamsToCache(),
                     UiAndroidFeatureList.sParamsCached);

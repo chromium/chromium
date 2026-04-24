@@ -67,6 +67,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kReduceGpuPriorityOnBackground,
     &features::kRemoveCachedProcessFromBindingManager,
     &features::kContinueGestureOnLosingFocus,
+    &features::kSandboxedProcessServiceLimitOnAndroid,
     &features::kScrollAfterOSKViewportShrinkFix,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,

@@ -7,6 +7,7 @@ package org.chromium.content.browser;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -688,6 +689,21 @@ public final class ChildProcessLauncherHelperImpl {
                                 /* fallbackToNextSlot= */ false,
                                 sandboxed);
             } else if (ChildProcessConnection.supportVariableConnections()) {
+                final int maxIsolatedServices;
+
+                // Safesetid is only guaranteed to be enabled for 6.18 kernel on Android 17 and
+                // therefore the process limit can only be increased for devices with a new enough
+                // kernel that are also running Android 17.
+                if (isKernelVersionAtLeast6_18()
+                        && Build.VERSION.SDK_INT >= 37
+                        && ContentFeatureList.sSandboxedProcessServiceLimitOnAndroid.isEnabled()) {
+                    maxIsolatedServices =
+                            ContentFeatureList.sSandboxedProcessServiceLimitOnAndroidCount
+                                    .getValue();
+                } else {
+                    maxIsolatedServices = ChildConnectionAllocator.MAX_VARIABLE_ALLOCATED;
+                }
+
                 connectionAllocator =
                         ChildConnectionAllocator.createVariableSize(
                                 context,
@@ -698,7 +714,8 @@ public final class ChildProcessLauncherHelperImpl {
                                 ChildProcessCreationParamsImpl.getBackupSandboxedServicesName(),
                                 bindToCaller,
                                 bindAsExternalService,
-                                sandboxed);
+                                sandboxed,
+                                maxIsolatedServices);
             } else {
                 connectionAllocator =
                         ChildConnectionAllocator.create(
@@ -1131,6 +1148,24 @@ public final class ChildProcessLauncherHelperImpl {
 
                     responseHandler.post(callback.bind(map));
                 });
+    }
+
+    private static boolean isKernelVersionAtLeast6_18() {
+        String osVersion = System.getProperty("os.version");
+        if (osVersion == null) return false;
+
+        String[] pieces = osVersion.split("\\.");
+        if (pieces.length >= 2) {
+            try {
+                int major = Integer.parseInt(pieces[0]);
+                int minor = Integer.parseInt(pieces[1]);
+                if (major > 6) return true;
+                if (major == 6 && minor >= 18) return true;
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+        }
+        return false;
     }
 
     // Testing only related methods.
