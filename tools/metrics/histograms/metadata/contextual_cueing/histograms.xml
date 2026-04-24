@@ -44,6 +44,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_helper.cc:OptType) -->
 
+<histogram name="ContextualCueing.GlicAutoOpen.Result"
+    enum="GlicAutoOpenResult" expires_after="2026-09-13">
+  <owner>sanaakbani@google.com</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Recorded when the glic side panel is triggered to auto-open. Records the
+    outcome (success, or specific failure reasons).
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions"
     enum="Boolean" expires_after="2026-07-12">

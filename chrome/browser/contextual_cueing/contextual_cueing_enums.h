@@ -59,6 +59,17 @@ enum class NudgeDecision {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 
+// LINT.IfChange(GlicAutoOpenResult)
+enum class GlicAutoOpenResult {
+  kSuccess = 0,
+  kPreventedFromSplitView = 1,
+  kPreventedFromVerticalTabs = 2,
+  kPreventedFromExistingSidePanelOpen = 3,
+  kFailedUnknown = 4,
+  kMaxValue = kFailedUnknown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:GlicAutoOpenResult)
+
 // LINT.IfChange(NudgeInteraction)
 enum class NudgeInteraction {
   kUnknown = 0,
