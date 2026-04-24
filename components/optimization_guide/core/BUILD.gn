@@ -809,6 +809,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
       "model_execution/manifest_broker/manifest_asset_manager_unittest.cc",
+      "model_execution/manifest_broker/manifest_broker_service_crash_unittest.cc",
       "model_execution/manifest_broker/manifest_broker_state_unittest.cc",
       "model_execution/manifest_broker/manifest_unittest.cc",
       "model_execution/model_broker_client_unittest.cc",
