@@ -544,11 +544,7 @@ pub(crate) mod tests {
         let simple_frames = decode(&file, usize::MAX, true, false, None)?.1;
         let frames = decode(&file, usize::MAX, false, false, None)?.1;
         assert_eq!(frames.len(), simple_frames.len());
-        for (fc, (f, sf)) in frames
-            .into_iter()
-            .zip(simple_frames.into_iter())
-            .enumerate()
-        {
+        for (fc, (f, sf)) in frames.into_iter().zip(simple_frames).enumerate() {
             compare_frames(path, fc, &f, &sf)?;
         }
         Ok(())
@@ -565,11 +561,7 @@ pub(crate) mod tests {
 
         // Compare one_shot_frames and frames
         assert_eq!(one_shot_frames.len(), frames.len());
-        for (fc, (f, sf)) in frames
-            .into_iter()
-            .zip(one_shot_frames.into_iter())
-            .enumerate()
-        {
+        for (fc, (f, sf)) in frames.into_iter().zip(one_shot_frames).enumerate() {
             compare_frames(path, fc, &f, &sf)?;
         }
 
@@ -1995,6 +1987,33 @@ pub(crate) mod tests {
             && let Some(profile) = decoder.output_color_profile()
         {
             let _ = profile.try_as_icc();
+        }
+    }
+
+    /// Regression test for Chromium ClusterFuzz issue 502853162.
+    ///
+    /// Scan-only decoding may consume all external input in one `process()`
+    /// call while still having buffered frame data to finalize internally.
+    /// A subsequent empty-input `process()` call must not panic.
+    #[test]
+    fn test_scan_frames_only_empty_followup_no_panic_502853162() {
+        #[rustfmt::skip]
+        let data: &[u8] = &[
+            0xff, 0x0a, 0x31, 0xbd, 0xa2, 0xd0, 0x2a, 0x18,
+            0x07, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x0f, 0xa0, 0x26, 0x00, 0xff,
+        ];
+
+        let opts = JxlDecoderOptions {
+            scan_frames_only: true,
+            pixel_limit: Some(1024 * 1024 * 1024),
+            ..Default::default()
+        };
+        let mut decoder = JxlDecoderInner::new(opts);
+
+        let mut input = data;
+        while decoder.has_more_frames() {
+            let _ = decoder.process(&mut input, None).unwrap();
         }
     }
 

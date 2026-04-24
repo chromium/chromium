@@ -484,6 +484,9 @@ impl CodestreamParser {
                             self.decoder_state = Some(decoder_state);
                         } else {
                             self.has_more_frames = false;
+                            // Return immediately so we don't re-enter the outer loop and hit the
+                            // API-misuse assertion below inside the same call.
+                            return Ok(());
                         }
                         self.skip_sections = false;
                     }

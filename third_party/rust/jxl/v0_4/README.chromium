@@ -1,7 +1,7 @@
 Name: jxl
 URL: https://crates.io/crates/jxl
-Version: 0.4.2
-Revision: 7cf3a662ea0f487c3b47ad871aab3575d1a3146a
+Version: 0.4.3
+Revision: 2c2636a14bd4c9be259b42805578724cfff821f3
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: BSD-3-Clause
 License File: //third_party/rust/chromium_crates_io/vendor/jxl-v0_4/LICENSE

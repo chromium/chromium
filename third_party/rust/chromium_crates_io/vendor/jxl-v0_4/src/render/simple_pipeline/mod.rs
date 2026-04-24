@@ -87,7 +87,7 @@ impl SimpleRenderPipeline {
                     );
                     let repl_iter = (0..self.shared.num_channels())
                         .filter(|c| stage.uses_channel(*c))
-                        .zip(output_buf.into_iter());
+                        .zip(output_buf);
                     for (c, chan) in repl_iter {
                         output_buffers[c] = chan;
                     }

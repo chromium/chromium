@@ -512,11 +512,36 @@ impl RenderPipelineInOutStage for ConvertF32ToU16Stage {
 /// Stage that converts f32 values to f16 (half-precision float) values.
 pub struct ConvertF32ToF16Stage {
     channel: usize,
+    clamp_range: Option<(f32, f32)>,
 }
 
 impl ConvertF32ToF16Stage {
     pub fn new(channel: usize) -> ConvertF32ToF16Stage {
-        ConvertF32ToF16Stage { channel }
+        ConvertF32ToF16Stage {
+            channel,
+            clamp_range: None,
+        }
+    }
+
+    pub fn new_with_clamp_range(
+        channel: usize,
+        clamp_range: Option<(f32, f32)>,
+    ) -> ConvertF32ToF16Stage {
+        ConvertF32ToF16Stage {
+            channel,
+            clamp_range,
+        }
+    }
+
+    pub fn new_with_unit_clamp(channel: usize, clamp_unit_range: bool) -> ConvertF32ToF16Stage {
+        ConvertF32ToF16Stage {
+            channel,
+            clamp_range: if clamp_unit_range {
+                Some((0.0, 1.0))
+            } else {
+                None
+            },
+        }
     }
 }
 
@@ -545,8 +570,15 @@ impl RenderPipelineInOutStage for ConvertF32ToF16Stage {
         _state: Option<&mut dyn std::any::Any>,
     ) {
         let input = &input_rows[0];
-        for i in 0..xsize {
-            output_rows[0][0][i] = crate::util::f16::from_f32(input[0][i]);
+        if let Some((min_value, max_value)) = self.clamp_range {
+            for i in 0..xsize {
+                output_rows[0][0][i] =
+                    crate::util::f16::from_f32(input[0][i].clamp(min_value, max_value));
+            }
+        } else {
+            for i in 0..xsize {
+                output_rows[0][0][i] = crate::util::f16::from_f32(input[0][i]);
+            }
         }
     }
 }
@@ -579,6 +611,15 @@ mod test {
     #[test]
     fn f32_to_f16_consistency() -> Result<()> {
         crate::render::test::test_stage_consistency(|| ConvertF32ToF16Stage::new(0), (500, 500), 1)
+    }
+
+    #[test]
+    fn f32_to_f16_consistency_with_unit_clamp() -> Result<()> {
+        crate::render::test::test_stage_consistency(
+            || ConvertF32ToF16Stage::new_with_unit_clamp(0, true),
+            (500, 500),
+            1,
+        )
     }
 
     /// Test ConvertModularToF32Stage consistency with different bit depths.

@@ -790,7 +790,7 @@ pub fn meta_apply_local_transforms<'a, 'b>(
         for (new_pos, (ch_info, buf)) in buf_new_position
             .iter()
             .cloned()
-            .zip(channels.iter_mut().zip(buf_tmp.into_iter()))
+            .zip(channels.iter_mut().zip(buf_tmp))
         {
             assert!(matches!(
                 buffer_storage[new_pos],
@@ -946,7 +946,7 @@ impl TransformStep {
                         wp_header,
                     );
                 }
-                for (pos, buf) in buf_out.iter().zip(out_bufs.into_iter()) {
+                for (pos, buf) in buf_out.iter().zip(out_bufs) {
                     buffers[*pos] = buf;
                 }
             }

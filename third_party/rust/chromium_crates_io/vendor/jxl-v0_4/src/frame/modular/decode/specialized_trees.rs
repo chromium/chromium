@@ -348,9 +348,13 @@ impl ModularChannelDecoder for SingleGradientOnly {
         br: &mut BitReader,
         histograms: &Histograms,
     ) -> i32 {
-        let pred = Predictor::Gradient.predict_one(prediction_data, 0);
+        let pred = clamped_gradient(
+            prediction_data.left as i64,
+            prediction_data.top as i64,
+            prediction_data.topleft as i64,
+        );
         let dec = reader.read_signed_clustered_inline(histograms, br, self.clustered_ctx);
-        make_pixel(dec, 1, pred)
+        dec.wrapping_add(pred as i32)
     }
 }
 
