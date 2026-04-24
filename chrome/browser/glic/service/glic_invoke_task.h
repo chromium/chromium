@@ -27,6 +27,9 @@ class GlicInvokeTask {
  public:
   virtual ~GlicInvokeTask() = default;
   virtual void Start(base::OnceClosure done_callback) = 0;
+  // Called when the sequence of tasks completes (successfully or not).
+  // This is where tasks should do cleanup.
+  virtual void OnSequenceCompleted(bool success) {}
 };
 
 // Executes tasks sequentially in the order they were added.
@@ -40,6 +43,9 @@ class SequentialTaskGroup : public GlicInvokeTask {
   ~SequentialTaskGroup() override;
 
   void Start(base::OnceClosure done_callback) override;
+
+  // Notifies all tasks in the group that the sequence has completed.
+  void NotifySequenceCompleted(bool success);
 
  private:
   void RunNextTask();

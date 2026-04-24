@@ -220,6 +220,9 @@ void GlicInvokeHandler::OnTabClosed(tabs::TabInterface* tab) {
 void GlicInvokeHandler::OnSuccess() {
   timeout_timer_.Stop();
   instance_->host().NotifyIsInvoking(false);
+  if (main_task_) {
+    main_task_->NotifySequenceCompleted(/*success=*/true);
+  }
 
   if (options_.on_success) {
     std::move(options_.on_success).Run();
@@ -232,6 +235,9 @@ void GlicInvokeHandler::OnSuccess() {
 void GlicInvokeHandler::OnError(GlicInvokeError error) {
   timeout_timer_.Stop();
   instance_->host().NotifyIsInvoking(false);
+  if (main_task_) {
+    main_task_->NotifySequenceCompleted(/*success=*/false);
+  }
 
   if (options_.on_error) {
     std::move(options_.on_error).Run(error);

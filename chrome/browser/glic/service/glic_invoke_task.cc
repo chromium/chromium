@@ -27,6 +27,12 @@ void SequentialTaskGroup::Start(base::OnceClosure done_callback) {
   RunNextTask();
 }
 
+void SequentialTaskGroup::NotifySequenceCompleted(bool success) {
+  for (auto& task : tasks_) {
+    task->OnSequenceCompleted(success);
+  }
+}
+
 void SequentialTaskGroup::RunNextTask() {
   if (current_task_index_ >= tasks_.size()) {
     std::move(done_callback_).Run();
