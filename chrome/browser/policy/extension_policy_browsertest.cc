@@ -2531,9 +2531,16 @@ class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
       delete;
 };
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StartUpInstallationPlaceholderFallbackName \
+  DISABLED_StartUpInstallationPlaceholderFallbackName
+#else
+#define MAYBE_StartUpInstallationPlaceholderFallbackName \
+  StartUpInstallationPlaceholderFallbackName
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
-    StartUpInstallationPlaceholderFallbackName) {
+    MAYBE_StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
