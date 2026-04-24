@@ -20,6 +20,8 @@ import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import androidx.core.graphics.Insets;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -353,7 +355,7 @@ public class ReloadButtonMediatorTest {
 
     @Test
     public void testSetBackgroundInsets() {
-        final var insets = androidx.core.graphics.Insets.of(1, 2, 3, 4);
+        final var insets = Insets.of(1, 2, 3, 4);
         mMediator.setBackgroundInsets(insets);
         assertEquals(
                 "Padding should be equal to insets.",

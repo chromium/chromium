@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -273,7 +274,7 @@ public class AddressBarSettingsFragmentUnitTest {
 
     @Test
     @SmallTest
-    @Config(sdk = android.os.Build.VERSION_CODES.R)
+    @Config(sdk = Build.VERSION_CODES.R)
     public void testFoldable() {
         ShadowPackageManager shadowPackageManager =
                 Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());

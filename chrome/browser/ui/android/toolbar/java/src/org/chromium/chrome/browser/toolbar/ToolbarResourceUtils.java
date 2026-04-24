@@ -19,15 +19,15 @@ public class ToolbarResourceUtils {
         boolean incognito = brandedThemeColor == BrandedColorScheme.INCOGNITO;
 
         if (incognito && isWebApp) {
-            return org.chromium.chrome.browser.toolbar.R.drawable.small_icon_background_baseline;
+            return R.drawable.small_icon_background_baseline;
         }
         if (incognito /* && !isWebApp */) {
-            return org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background_baseline;
+            return R.drawable.default_icon_background_baseline;
         }
         if (isWebApp /* && !incognito */) {
-            return org.chromium.chrome.browser.toolbar.R.drawable.small_icon_background;
+            return R.drawable.small_icon_background;
         }
         /* !incognito && !isWebApp */
-        return org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background;
+        return R.drawable.default_icon_background;
     }
 }

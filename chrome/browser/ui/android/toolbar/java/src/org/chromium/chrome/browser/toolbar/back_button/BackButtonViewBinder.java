@@ -13,6 +13,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * A class that binds changed {@link PropertyKey} in the {@link PropertyModel} to actual Android
  * view.
@@ -44,7 +46,7 @@ class BackButtonViewBinder {
             button.setPadding(padding.left, padding.top, padding.right, padding.bottom);
         } else if (key == BackButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(BackButtonProperties.LONG_CLICK_LISTENER);
-            final java.util.function.BooleanSupplier callback =
+            final BooleanSupplier callback =
                     () -> {
                         if (listener == null) {
                             return false;

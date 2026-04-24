@@ -64,6 +64,7 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.MockitoHelper;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /** Unit tests for OptionalButtonView. */
@@ -1122,10 +1123,10 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Verify that the collapse task was scheduled with the custom delay.
-        mShadowLooper.idleFor(customDelay - 1, java.util.concurrent.TimeUnit.MILLISECONDS);
+        mShadowLooper.idleFor(customDelay - 1, TimeUnit.MILLISECONDS);
         verify(transitionStartedCallback, never()).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
 
-        mShadowLooper.idleFor(1, java.util.concurrent.TimeUnit.MILLISECONDS);
+        mShadowLooper.idleFor(1, TimeUnit.MILLISECONDS);
 
         mOptionalButtonView.onTransitionStart(null);
         verify(transitionStartedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);

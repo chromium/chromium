@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -37,7 +38,7 @@ public class HomeButtonCoordinatorTest {
 
     @Mock private Context mContext;
     @Mock private HomeButton mHomeButton;
-    @Mock private android.content.res.Resources mResources;
+    @Mock private Resources mResources;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private ColorStateList mColorStateList;

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -914,7 +915,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Get the toggle listener for the menu item.
         PropertyModel model = mActionModels.get(0).model;
-        android.widget.CompoundButton.OnCheckedChangeListener listener =
+        CompoundButton.OnCheckedChangeListener listener =
                 model.get(ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_ON_CLICK);
 
         // Simulate a toggle change.
@@ -1249,9 +1250,8 @@ public class ExtensionsMenuMediatorTest {
                 .set(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED, true);
 
         // Verify toggle click listener.
-        ArgumentCaptor<android.widget.CompoundButton.OnCheckedChangeListener> listenerCaptor =
-                ArgumentCaptor.forClass(
-                        android.widget.CompoundButton.OnCheckedChangeListener.class);
+        ArgumentCaptor<CompoundButton.OnCheckedChangeListener> listenerCaptor =
+                ArgumentCaptor.forClass(CompoundButton.OnCheckedChangeListener.class);
         verify(mSitePermissionsPropertyModel)
                 .set(
                         eq(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER),
@@ -1270,7 +1270,7 @@ public class ExtensionsMenuMediatorTest {
     public void testSitePermissionsPage_OnSiteAccessSelected() {
         String extensionName = "Extension A";
         Bitmap extensionIcon = ICON_RED;
-        List<ExtensionsMenuTypes.MenuEntryState> entries = new java.util.ArrayList<>();
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
         entries.add(
                 ExtensionTestUtils.createMenuEntryWithHostPermissions(
                         "id_a", extensionName, extensionIcon, /* isPinned= */ false));

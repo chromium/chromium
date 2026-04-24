@@ -29,6 +29,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -46,13 +47,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestMessageListener;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -646,10 +647,8 @@ public class ExtensionsToolbarTest {
                                 withId(R.id.extensions_menu_button), VIEW_GONE | VIEW_NULL));
 
         // Open the extensions menu via the app menu.
-        ViewUtils.onViewWaiting(withId(org.chromium.chrome.R.id.menu_button_wrapper))
-                .perform(click());
-        ViewUtils.onViewWaiting(withId(org.chromium.chrome.R.id.extensions_menu_menu_id))
-                .perform(click());
+        ViewUtils.onViewWaiting(withId(R.id.menu_button_wrapper)).perform(click());
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_menu_id)).perform(click());
 
         // Pin the menu icon using the toggle.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button_pinning_toggle))
@@ -695,7 +694,7 @@ public class ExtensionsToolbarTest {
         // Verify the button text changes to "Allowed" and it becomes disabled.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    android.widget.TextView btn =
+                    TextView btn =
                             mActivityTestRule
                                     .getActivity()
                                     .findViewById(R.id.extensions_request_access_button);

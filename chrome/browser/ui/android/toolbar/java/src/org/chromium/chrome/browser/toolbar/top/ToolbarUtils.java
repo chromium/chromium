@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.lang.annotation.Retention;
@@ -22,8 +23,8 @@ public class ToolbarUtils {
     /** Returns the id for the appropriate toolbar icon ripple drawable. */
     public static int getToolbarIconRippleId(boolean isIncognito) {
         return isIncognito
-                ? org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background_baseline
-                : org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background;
+                ? R.drawable.default_icon_background_baseline
+                : R.drawable.default_icon_background;
     }
 
     public static boolean isToolbarTabletResizeRefactorEnabled() {

@@ -17,6 +17,7 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -248,7 +249,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
     /**
      * @param insets The insets to apply to the background.
      */
-    public void setBackgroundInsets(androidx.core.graphics.Insets insets) {
+    public void setBackgroundInsets(Insets insets) {
         if (mMediator == null) return;
         mMediator.setBackgroundInsets(insets);
     }

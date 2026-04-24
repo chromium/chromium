@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -191,15 +192,13 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             int optionalSection = mMenuBridge.getOptionalSection();
             mMainPageModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
 
-            if (optionalSection
-                    == org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes
-                            .OptionalSectionType.HOST_ACCESS_REQUESTS) {
+            if (optionalSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
                 mMainPageModel.set(
                         ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
                         mMenuBridge.getHostAccessRequests());
             } else {
                 mMainPageModel.set(
-                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new java.util.ArrayList<>());
+                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new ArrayList<>());
             }
 
             updateMenuEntries();

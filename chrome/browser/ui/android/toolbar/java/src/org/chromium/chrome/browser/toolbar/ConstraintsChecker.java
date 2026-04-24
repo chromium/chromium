@@ -48,8 +48,7 @@ public class ConstraintsChecker implements Callback<@Nullable Integer> {
      */
     public boolean areControlsLocked() {
         Integer constraints = mConstraintsSupplier.get();
-        return constraints == null
-                || constraints.intValue() == org.chromium.cc.input.BrowserControlsState.SHOWN;
+        return constraints == null || constraints.intValue() == BrowserControlsState.SHOWN;
     }
 
     /**

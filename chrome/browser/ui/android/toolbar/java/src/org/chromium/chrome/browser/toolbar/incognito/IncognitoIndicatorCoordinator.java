@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.toolbar.incognito;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
@@ -35,6 +37,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 @NullMarked
@@ -154,14 +157,14 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
             // intrinsic size immediately.
             // Use the parent's measure specs to mimic the actual measurement that will happen
             // in ToolbarTablet.onMeasure.
-            android.view.ViewGroup.LayoutParams lp = mIncognitoIndicator.getLayoutParams();
+            ViewGroup.LayoutParams lp = mIncognitoIndicator.getLayoutParams();
             int childWidthSpec =
-                    android.view.ViewGroup.getChildMeasureSpec(
+                    ViewGroup.getChildMeasureSpec(
                             widthMeasureSpec,
                             mParentToolbar.getPaddingLeft() + mParentToolbar.getPaddingRight(),
                             lp.width);
             int childHeightSpec =
-                    android.view.ViewGroup.getChildMeasureSpec(
+                    ViewGroup.getChildMeasureSpec(
                             heightMeasureSpec,
                             mParentToolbar.getPaddingTop() + mParentToolbar.getPaddingBottom(),
                             lp.height);
@@ -182,8 +185,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     }
 
     @Override
-    public int updateVisibilityWithAnimation(
-            int availableWidth, java.util.Collection<android.animation.Animator> animators) {
+    public int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators) {
         return updateVisibility(availableWidth);
     }
 

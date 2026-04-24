@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
@@ -347,10 +348,7 @@ public class ExtensionActionListMediatorTest {
         assertEquals(2, mModels.size());
 
         Context context = ApplicationProvider.getApplicationContext();
-        int itemWidth =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.toolbar.R.dimen.toolbar_button_width);
+        int itemWidth = context.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         // Test ample width.
         mMediator.fitActionsWithinWidth(itemWidth * 5);
@@ -409,8 +407,7 @@ public class ExtensionActionListMediatorTest {
         int buttonWidth =
                 ApplicationProvider.getApplicationContext()
                         .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.toolbar.R.dimen.toolbar_button_width);
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         // Constrain width so only 1 action fits (we have 2 pinned actions).
         mMediator.fitActionsWithinWidth(buttonWidth);
@@ -457,8 +454,7 @@ public class ExtensionActionListMediatorTest {
         int buttonWidth =
                 ApplicationProvider.getApplicationContext()
                         .getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.toolbar.R.dimen.toolbar_button_width);
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         // Initially, no width is reserved because nothing is popped out.
         int reservedWidth = mMediator.setCanShowPoppedOutAction(1000);

@@ -29,6 +29,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -129,7 +130,7 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
 
         if (mMessage != null) {
             if (mMessageWebContents == webContents
-                    && java.util.Arrays.equals(mMessageExtensionIds, params.getExtensionIds())) {
+                    && Arrays.equals(mMessageExtensionIds, params.getExtensionIds())) {
                 return;
             }
             dismissMessage(mMessageWebContents != null ? mMessageWebContents : webContents);

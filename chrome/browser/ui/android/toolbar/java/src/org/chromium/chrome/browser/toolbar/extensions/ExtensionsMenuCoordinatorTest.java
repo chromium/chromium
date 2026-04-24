@@ -33,13 +33,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
@@ -60,6 +63,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,8 +115,7 @@ public class ExtensionsMenuCoordinatorTest {
         activity.setContentView(mExtensionsMenuButton);
 
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
-        java.lang.ref.WeakReference<Activity> mockActivityRef =
-                new java.lang.ref.WeakReference<>(mContext);
+        WeakReference<Activity> mockActivityRef = new WeakReference<>(mContext);
         when(mWindowAndroid.getActivity()).thenReturn(mockActivityRef);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -226,7 +229,7 @@ public class ExtensionsMenuCoordinatorTest {
         verify(mTabCreator)
                 .createNewTab(
                         mLoadUrlParamsCaptor.capture(),
-                        Mockito.eq(org.chromium.chrome.browser.tab.TabLaunchType.FROM_CHROME_UI),
+                        Mockito.eq(TabLaunchType.FROM_CHROME_UI),
                         Mockito.isNull());
         assertEquals(UrlConstants.CHROME_EXTENSIONS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
@@ -253,7 +256,7 @@ public class ExtensionsMenuCoordinatorTest {
         verify(mTabCreator)
                 .createNewTab(
                         mLoadUrlParamsCaptor.capture(),
-                        Mockito.eq(org.chromium.chrome.browser.tab.TabLaunchType.FROM_CHROME_UI),
+                        Mockito.eq(TabLaunchType.FROM_CHROME_UI),
                         Mockito.isNull());
         assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
@@ -320,8 +323,7 @@ public class ExtensionsMenuCoordinatorTest {
         when(mTracker.isInitialized()).thenReturn(true);
         doAnswer(
                         invocation -> {
-                            org.chromium.base.Callback<Boolean> callback =
-                                    invocation.getArgument(0);
+                            Callback<Boolean> callback = invocation.getArgument(0);
                             callback.onResult(true);
                             return null;
                         })
@@ -333,18 +335,16 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Activity is already mocked in setUp().
         View anchorView = new View(mContext);
-        anchorView.setId(org.chromium.chrome.browser.toolbar.R.id.menu_button_wrapper);
+        anchorView.setId(R.id.menu_button_wrapper);
         mContext.setContentView(anchorView);
 
         // Unpin the extensions menu button.
         mExtensionsMenuCoordinator
                 .getContentView()
-                .findViewById(
-                        org.chromium.chrome.browser.ui.extensions.R.id
-                                .extensions_menu_pin_menu_icon_button)
+                .findViewById(R.id.extensions_menu_pin_menu_icon_button)
                 .performClick();
 
-        org.robolectric.shadows.ShadowLooper.idleMainLooper();
+        ShadowLooper.idleMainLooper();
 
         // Verify the IPH tracker was notified with the correct feature.
         verify(mTracker)

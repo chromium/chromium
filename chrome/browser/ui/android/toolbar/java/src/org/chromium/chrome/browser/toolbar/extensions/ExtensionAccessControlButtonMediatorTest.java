@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -38,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
+import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
@@ -92,9 +94,7 @@ public class ExtensionAccessControlButtonMediatorTest {
 
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
 
-        when(mContext.getString(
-                        org.chromium.chrome.browser.ui.extensions.R.string
-                                .extensions_request_access_button_dismissed_text))
+        when(mContext.getString(R.string.extensions_request_access_button_dismissed_text))
                 .thenReturn("Allowed");
 
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
@@ -236,17 +236,12 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(paramsWithRequests);
         when(mContext.getString(
-                        org.chromium.chrome.browser.ui.extensions.R.string
-                                .extensions_request_access_message_title_single_extension,
+                        R.string.extensions_request_access_message_title_single_extension,
                         "ExtensionName"))
                 .thenReturn("Allow extension \"ExtensionName\"?");
-        when(mContext.getString(
-                        org.chromium.chrome.browser.ui.extensions.R.string
-                                .extensions_request_access_button))
+        when(mContext.getString(R.string.extensions_request_access_button))
                 .thenReturn("Allow $1 extensions?");
-        when(mContext.getString(
-                        org.chromium.chrome.browser.ui.extensions.R.string
-                                .extensions_menu_requests_access_section_allow_button_text))
+        when(mContext.getString(R.string.extensions_menu_requests_access_section_allow_button_text))
                 .thenReturn("Allow");
 
         ExtensionAction action = mock(ExtensionAction.class);
@@ -281,8 +276,7 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any())).thenReturn(multiParams);
 
         // Dismiss first message so a new one can be enqueued
-        org.chromium.base.Callback<Integer> dismissAction =
-                messageModel.get(MessageBannerProperties.ON_DISMISSED);
+        Callback<Integer> dismissAction = messageModel.get(MessageBannerProperties.ON_DISMISSED);
         dismissAction.onResult(DismissReason.UNKNOWN);
 
         // Advance time to allow the "Allowed" text to clear.
