@@ -195,7 +195,7 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
+                            .hasProfileDataForTesting(primarySupervisedAccount.getId());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -222,7 +222,7 @@ public class AccountManagementFragmentTest {
                     return mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .hasProfileDataForTesting(primarySupervisedAccount.getEmail());
+                            .hasProfileDataForTesting(primarySupervisedAccount.getId());
                 });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
