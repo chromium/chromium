@@ -459,6 +459,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaInvalidStatusChanged() {
+        performTest(
+                "aria-invalid-status-changed.html",
+                "aria-invalid-status-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaLevelChanged() {
         performTest("aria-level-changed.html", "aria-level-changed-expected-android.txt");
     }

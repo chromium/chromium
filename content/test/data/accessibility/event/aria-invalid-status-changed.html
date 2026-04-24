@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input type="text"
+       id="input"
+       aria-errormessage="error"
+       aria-label="Input field">
+<div id="error">Error: value should be 12</div>
+
+<script>
+  function go() {
+    var input = document.getElementById('input');
+    input.setAttribute('aria-invalid', 'true');
+  }
+</script>
+</body>
+</html>

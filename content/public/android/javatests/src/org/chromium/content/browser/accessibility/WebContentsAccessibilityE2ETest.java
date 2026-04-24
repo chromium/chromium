@@ -430,6 +430,60 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
         Assert.assertEquals("Tree dump does not match expected value", expectedDump, treeDump);
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API Level 34
+    public void testAriaInvalid() throws Throwable {
+        // Create an HTML document where there is an input element and an element containing the
+        // text for the input's aria-errormessage.
+        String html =
+                """
+                <html><body>
+                <input type="text" id="input" aria-errormessage="err" aria-label="Name">
+                <div id="err">Invalid Name</div>
+                </body></html>
+                """;
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+
+        // Wait for the page to load by waiting for the initial TWCC.
+        boolean initialEventReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new WaitForEventParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                        .setClassName("android.webkit.WebView")
+                                        .build());
+        Assert.assertTrue(
+                "Service did not receive initial TYPE_WINDOW_CONTENT_CHANGED event",
+                initialEventReceived);
+
+        // Set aria-invalid="true" on the input element.
+        mActivityTestRule.executeJSAndGetResult(
+                "document.getElementById('input').setAttribute('aria-invalid', 'true');");
+
+        // Wait for TWCC event with ContentChangeType CONTENT_INVALID to be fired as a result of the
+        // invalid status changing.
+        boolean eventReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new WaitForEventParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                        .setContentChangeTypes(
+                                                AccessibilityEvent
+                                                        .CONTENT_CHANGE_TYPE_CONTENT_INVALID)
+                                        .build());
+        Assert.assertTrue("Service did not receive CONTENT_INVALID event", eventReceived);
+
+        // Dump the accessibility tree.
+        String treeDump = getAccessibilityHelperService().dumpWebContentsAccessibilityTree();
+
+        // Verify that the input element's AccessibilityNodeInfo has contentInvalid set to true.
+        Assert.assertTrue(
+                "Tree dump should contain 'contentInvalid'", treeDump.contains("contentInvalid"));
+    }
+
     private static class WaitForEventParamsBuilder {
         private static final long DEFAULT_TIMEOUT_MS = 5000;
 
@@ -446,6 +500,11 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
         public WaitForEventParamsBuilder setClassName(String className) {
             mClassName = className;
+            return this;
+        }
+
+        public WaitForEventParamsBuilder setContentChangeTypes(int contentChangeTypes) {
+            mContentChangeTypes = contentChangeTypes;
             return this;
         }
 

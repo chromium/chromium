@@ -2535,6 +2535,10 @@ data/accessibility/event/aria-hidden-single-descendant-visibility-hidden-expecte
 data/accessibility/event/aria-hidden-single-descendant-visibility-hidden-expected-win.txt
 data/accessibility/event/aria-hidden-single-descendant-visibility-hidden.html
 data/accessibility/event/aria-hidden-single-descendant.html
+data/accessibility/event/aria-invalid-status-changed-expected-android.txt
+data/accessibility/event/aria-invalid-status-changed-expected-auralinux.txt
+data/accessibility/event/aria-invalid-status-changed-expected-mac.txt
+data/accessibility/event/aria-invalid-status-changed.html
 data/accessibility/event/aria-level-changed-expected-android.txt
 data/accessibility/event/aria-level-changed-expected-uia-win.txt
 data/accessibility/event/aria-level-changed.html

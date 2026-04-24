@@ -13,6 +13,14 @@ namespace features {
 
 // Please keep features in alphabetical order.
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, fires CONTENT_CHANGE_TYPE_CONTENT_INVALID events to Android
+// when aria-invalid is true.
+// TODO(crbug.com/500812737): Remove killswitch after stability period.
+BASE_FEATURE(kAccessibilityAriaInvalidAndErrorMessage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, Android events will include more metadata about the incoming
 // events.
 BASE_FEATURE(kAccessibilityExpandEventMetadata,
