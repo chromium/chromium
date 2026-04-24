@@ -68,8 +68,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     private float getNextZoomLevel(float currentZoomLevel, boolean increase) {
         int index = 0;
 
-        // Find the first index where the zoom level is greater than or equal to current and move
-        // to the next one if it exists.
+        // Find the first index where the zoom level is greater than current
         while (index < mZoomLevels.size() && mZoomLevels.get(index) <= currentZoomLevel) {
             index++;
         }
@@ -78,8 +77,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             // Return the next highest, or stay at the max if we're at the end
             return mZoomLevels.get(index);
         } else {
-            //  If the current zoom level is in the list, decrease by 1. Otherwise, decrease by 2.
-            int targetIndex = mZoomLevels.indexOf(currentZoomLevel) >= 0 ? index - 2 : index - 1;
+            //  If the current zoom level is in the list, decrease by 2. Otherwise, decrease by 1.
+            int targetIndex = mZoomLevels.contains(currentZoomLevel) ? index - 2 : index - 1;
             if (targetIndex < 0) return mZoomLevels.get(0);
             return mZoomLevels.get(targetIndex);
         }
