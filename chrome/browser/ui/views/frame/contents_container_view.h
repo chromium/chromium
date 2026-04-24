@@ -104,10 +104,6 @@ class ContentsContainerView : public views::View,
     return &web_contents_modal_dialog_host_;
   }
 
-  // Called by IndigoToolbar when it has created a toolbar view which might need
-  // to be shown, or when no toolbar is appropriate anymore.
-  void SetIndigoToolbarView(std::unique_ptr<views::View> view);
-
   // Sets the contents resizing strategy.
   void SetContentsResizingStrategy(
       const DevToolsContentsResizingStrategy& strategy);
@@ -214,10 +210,6 @@ class ContentsContainerView : public views::View,
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
 
   raw_ptr<ContentsContainerOutline> container_outline_ = nullptr;
-
-  // Toolbar for chrome/browser/indigo/, which determines where in the content
-  // area it wants to float.
-  raw_ptr<views::View> indigo_toolbar_view_ = nullptr;
 
   raw_ptr<ContentsCaptureBorderView> capture_contents_border_view_ = nullptr;
 

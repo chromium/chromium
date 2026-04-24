@@ -13,7 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
@@ -31,6 +30,17 @@ class MockIndigoToolbarDelegate : public IndigoToolbar::Delegate {
   MOCK_METHOD(void, OnDeleteOriginalPhoto, (IndigoToolbar*), (override));
 };
 
+views::Widget* FindToolbarWidget(views::Widget* anchor_widget) {
+  views::Widget::Widgets widgets =
+      views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView());
+  for (views::Widget* widget : widgets) {
+    if (widget->GetName() == "IndigoToolbar") {
+      return widget;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 class IndigoToolbarTest : public views::ViewsTestBase {
@@ -39,90 +49,82 @@ class IndigoToolbarTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
 
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params =
+    anchor_widget_ = std::make_unique<views::Widget>();
+    views::Widget::InitParams anchor_params =
         CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
-    widget_->Init(std::move(params));
-    widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
-    auto* layout = widget_->GetContentsView()->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
-    widget_->Show();
+    anchor_widget_->Init(std::move(anchor_params));
+    anchor_widget_->SetBounds(gfx::Rect(100, 100, 800, 600));
+    anchor_widget_->Show();
   }
 
   void TearDown() override {
-    widget_.reset();
+    anchor_widget_.reset();
     views::ViewsTestBase::TearDown();
   }
 
-  views::Widget* widget() { return widget_.get(); }
+  views::Widget* anchor_widget() { return anchor_widget_.get(); }
 
-  views::View* GetToolbarView() {
-    return widget()->GetContentsView()->GetViewByElementId(
-        IndigoToolbar::kToolbarElementId);
+  views::View* GetViewFromToolbar(views::Widget* toolbar_widget,
+                                  ui::ElementIdentifier id) {
+    return toolbar_widget->GetContentsView()->GetViewByElementId(id);
   }
 
-  views::Button* GetButtonFromToolbar(views::View* toolbar_view,
+  views::Button* GetButtonFromToolbar(views::Widget* toolbar_widget,
                                       ui::ElementIdentifier id) {
-    return views::Button::AsButton(toolbar_view->GetViewByElementId(id));
+    return views::Button::AsButton(GetViewFromToolbar(toolbar_widget, id));
   }
 
  private:
   std::unique_ptr<views::LayoutProvider> layout_provider_;
-  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> anchor_widget_;
 };
 
 TEST_F(IndigoToolbarTest, CloseAndReopen) {
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
-  toolbar->Show(widget()->GetContentsView());
-  EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(1);
+  toolbar->Show(anchor_widget()->GetNativeView());
+  EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(2);
 
-  views::View* toolbar_view = GetToolbarView();
-  ASSERT_NE(toolbar_view, nullptr);
+  views::Widget* toolbar_widget = FindToolbarWidget(anchor_widget());
+  ASSERT_NE(toolbar_widget, nullptr);
 
-  // The close button removes the toolbar view from its parent.
-  auto* close_button =
-      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kCloseButtonElementId);
+  // The close button dismisses the toolbar widget.
+  auto* close_button = GetButtonFromToolbar(
+      toolbar_widget, IndigoToolbar::kCloseButtonElementId);
   ASSERT_NE(close_button, nullptr);
   views::test::ButtonTestApi(close_button).NotifyDefaultMouseClick();
-  EXPECT_EQ(GetToolbarView(), nullptr);
+  EXPECT_EQ(FindToolbarWidget(anchor_widget()), nullptr);
 
   // Show again
-  toolbar->Show(widget()->GetContentsView());
-  views::View* toolbar_view_after_close = GetToolbarView();
-  ASSERT_NE(toolbar_view_after_close, nullptr);
-  EXPECT_TRUE(toolbar_view_after_close->GetVisible());
+  toolbar->Show(anchor_widget()->GetNativeView());
+  toolbar_widget = FindToolbarWidget(anchor_widget());
+  EXPECT_NE(toolbar_widget, nullptr);
 }
 
 TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   MockIndigoToolbarDelegate delegate;
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
-  toolbar->Show(widget()->GetContentsView());
-  EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(0);
+  toolbar->Show(anchor_widget()->GetNativeView());
+  EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(1);
 
-  views::View* toolbar_view = GetToolbarView();
-  ASSERT_NE(toolbar_view, nullptr);
+  views::Widget* toolbar_widget = FindToolbarWidget(anchor_widget());
+  ASSERT_NE(toolbar_widget, nullptr);
 
-  auto* expand_button =
-      GetButtonFromToolbar(toolbar_view, IndigoToolbar::kExpandButtonElementId);
+  auto* expand_button = GetButtonFromToolbar(
+      toolbar_widget, IndigoToolbar::kExpandButtonElementId);
   ASSERT_NE(expand_button, nullptr);
 
   auto* regenerate_button = GetButtonFromToolbar(
-      toolbar_view, IndigoToolbar::kRegenerateButtonElementId);
+      toolbar_widget, IndigoToolbar::kRegenerateButtonElementId);
   ASSERT_NE(regenerate_button, nullptr);
 
   auto* replace_photo_button = GetButtonFromToolbar(
-      toolbar_view, IndigoToolbar::kReplacePhotoButtonElementId);
+      toolbar_widget, IndigoToolbar::kReplacePhotoButtonElementId);
   ASSERT_NE(replace_photo_button, nullptr);
 
   auto* delete_photo_button = GetButtonFromToolbar(
-      toolbar_view, IndigoToolbar::kDeletePhotoButtonElementId);
+      toolbar_widget, IndigoToolbar::kDeletePhotoButtonElementId);
   ASSERT_NE(delete_photo_button, nullptr);
 
   // Buttons are initially not drawn.
@@ -131,9 +133,11 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   EXPECT_FALSE(delete_photo_button->IsDrawn());
 
   // Expand the toolbar.
-  gfx::Point initial_origin = toolbar_view->bounds().origin();
+  gfx::Point initial_origin =
+      toolbar_widget->GetWindowBoundsInScreen().origin();
   views::test::ButtonTestApi(expand_button).NotifyDefaultMouseClick();
-  gfx::Point expanded_origin = toolbar_view->bounds().origin();
+  gfx::Point expanded_origin =
+      toolbar_widget->GetWindowBoundsInScreen().origin();
   EXPECT_EQ(initial_origin, expanded_origin);
 
   // Buttons are drawn.
