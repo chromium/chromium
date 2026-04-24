@@ -955,4 +955,52 @@ TEST_F(AutocompleteHistoryManagerTest, EntriesCleanup_Success) {
             prefs_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy));
 }
 
+// Tests that `IsFieldNameMeaningfulForAutocomplete` correctly filters out
+// field names that are not meaningful for autocomplete.
+TEST_F(AutocompleteHistoryManagerTest, IsFieldNameMeaningfulForAutocomplete) {
+  auto IsMeaningful =
+      &AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete;
+
+  // Meaningful names.
+  EXPECT_TRUE(IsMeaningful(u"first_name"));
+  EXPECT_TRUE(IsMeaningful(u"address_line_1"));
+  EXPECT_TRUE(IsMeaningful(u"city"));
+  EXPECT_TRUE(IsMeaningful(u"search"));
+  EXPECT_TRUE(IsMeaningful(u"payment_info"));
+
+  // Names that are not meaningful.
+  EXPECT_FALSE(IsMeaningful(u"field1"));
+  EXPECT_FALSE(IsMeaningful(u"field-2"));
+  EXPECT_FALSE(IsMeaningful(u"field_3"));
+  EXPECT_FALSE(IsMeaningful(u"input4"));
+  EXPECT_FALSE(IsMeaningful(u"input-5"));
+  EXPECT_FALSE(IsMeaningful(u"input_6"));
+  EXPECT_FALSE(IsMeaningful(u"mat-input7"));
+  EXPECT_FALSE(IsMeaningful(u"mat-input-8"));
+  EXPECT_FALSE(IsMeaningful(u"mat-input_9"));
+  EXPECT_FALSE(IsMeaningful(u"title"));
+  EXPECT_FALSE(IsMeaningful(u"tan"));
+  EXPECT_FALSE(IsMeaningful(u"mfa_text_box"));
+  EXPECT_FALSE(IsMeaningful(u"pw"));
+  EXPECT_FALSE(IsMeaningful(u"pin"));
+  EXPECT_FALSE(IsMeaningful(u"otp"));
+  EXPECT_FALSE(IsMeaningful(u"otp_value"));
+  EXPECT_FALSE(IsMeaningful(u"inline.otp.value"));
+  EXPECT_FALSE(IsMeaningful(u"value_otp"));
+  EXPECT_FALSE(IsMeaningful(u"cc_cvc"));
+  EXPECT_FALSE(IsMeaningful(u"cvn_number"));
+  EXPECT_FALSE(IsMeaningful(u"cvv"));
+  EXPECT_FALSE(IsMeaningful(u"captcha_input"));
+  EXPECT_FALSE(IsMeaningful(u"password"));
+  EXPECT_FALSE(IsMeaningful(u"pass2"));
+  EXPECT_FALSE(IsMeaningful(u"my_pass2_value"));
+  EXPECT_FALSE(IsMeaningful(u"passcode123"));
+  EXPECT_FALSE(IsMeaningful(u"pwd"));
+  EXPECT_FALSE(IsMeaningful(u"my_pwd_value"));
+  EXPECT_FALSE(IsMeaningful(u"senha"));
+  EXPECT_FALSE(IsMeaningful(u"my_senha_value"));
+  EXPECT_FALSE(IsMeaningful(u"pincode"));
+  EXPECT_FALSE(IsMeaningful(u"my_pincode_value"));
+}
+
 }  // namespace autofill

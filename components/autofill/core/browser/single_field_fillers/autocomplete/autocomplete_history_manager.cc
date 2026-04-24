@@ -162,8 +162,13 @@ void AutocompleteHistoryManager::Init(
 bool AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
     const std::u16string& name) {
   static constexpr char16_t kRegex[] =
-      u"^(((field|input|mat-input)(_|-)?\\d+)|title|otp|tan|mfa_text_box)$|"
-      u"(cvc|cvn|cvv|captcha)";
+      // Full matches.
+      u"^(?:(?:field|input|mat-input)[-_]?\\d+|title|tan|mfa_text_box|pw|pin)$"
+      // Prefix and suffix matches.
+      u"|^otp|otp$"
+      // Infix matches.
+      u"|\\botp\\b"
+      u"|cvc|cvn|cvv|captcha|passw|pass2|passcode|pwd|senha|pincode";
   return !MatchesRegex<kRegex>(name);
 }
 
