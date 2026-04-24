@@ -69,22 +69,8 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   isEnabled(): boolean {
-    return (
-        chrome.readingMode.isLineFocusEnabled &&
-        this.getCurrentLineFocusType() !== LineFocusType.NONE);
-  }
-
-  private toggle_(container: HTMLElement, height: number) {
-    if (!chrome.readingMode.isLineFocusEnabled) {
-      return;
-    }
-
-    const lastStyle = this.model_.getLastEnabledLineFocusStyle();
-    const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
-    this.setStyleAndMovement_(
-        newStyle, this.getCurrentLineFocusMovement(), container, height);
-    this.logger_.logLineFocusToggled(this.isEnabled());
-    this.listeners_.forEach(l => l.onLineFocusToggled());
+    return chrome.readingMode.isLineFocusEnabled &&
+        this.model_.isSessionActive();
   }
 
   onKeyDown(e: KeyboardEvent, container: HTMLElement, height: number): boolean {
@@ -97,10 +83,9 @@ export class LineFocusController implements MoveModeDelegate {
       return true;
     }
 
-    if (this.isEnabled() && isVerticalArrow(e.key) &&
-        !this.speechController_.isSpeechActive()) {
-      this.snapToNextLine_(isForwardArrow(e.key));
-      return true;
+    if (isVerticalArrow(e.key) && !this.speechController_.isSpeechActive()) {
+      return this.model_.getCurrentMoveMode().snapToNextLine(
+          isForwardArrow(e.key));
     }
 
     return false;
@@ -218,80 +203,17 @@ export class LineFocusController implements MoveModeDelegate {
     return key ? Number(key) : null;
   }
 
-  private snapToNextLine_(isForward: boolean) {
-    if (!this.isEnabled()) {
+  private toggle_(container: HTMLElement, height: number) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
 
-    const lines = this.model_.getTextBounds();
-    if (!lines.length) {
-      return;
-    }
-
-    // If this is the first time snapping after mouse movement, move to the
-    // closest line to the current Y.
-    const currentIndex = this.model_.getCurrentLineIndex();
-    if (currentIndex === null) {
-      this.model_.getCurrentMoveMode().initializeSnapIndex(isForward);
-      const linesToLog = this.getCurrentLineFocusLines_();
-      for (let i = 0; i < linesToLog; i++) {
-        chrome.readingMode.incrementLineFocusKeyboardLines();
-      }
-      return;
-    }
-
-    this.updateSnapIndex_(lines, currentIndex, isForward);
-  }
-
-  private updateSnapIndex_(
-      lines: DOMRect[], currentIndex: number, isForward: boolean) {
-    const direction = isForward ? 1 : -1;
-    const nextIndex = currentIndex + direction;
-    const bottomIndex =
-        nextIndex + ((this.getCurrentLineFocusLines_() - 1) / 2);
-
-    if (nextIndex < 0 || bottomIndex >= lines.length) {
-      return;
-    }
-
-    const clampedIndex =
-        this.model_.getCurrentStyleMode().clampLineIndex(nextIndex);
-    this.model_.setCurrentLineIndex(clampedIndex);
-
-    // Calculate visibility bounds to see if we need to scroll.
-    const {topRect, bottomRect} =
-        this.model_.getCurrentStyleMode().getFocusWindowBounds(
-            lines, nextIndex);
-
-    const isOutOfView = bottomRect.bottom > this.model_.getMaxY() ||
-        topRect.top < this.model_.getMinY();
-
-    if (isOutOfView) {
-      // Scroll the container to keep line focus in view if it would go out of
-      // view.
-      chrome.readingMode.incrementLineFocusKeyboardLines();
-      // TODO(crbug.com/447427066): Consider whether to instead scroll one
-      // line at a time. If so, uncomment the code below and remove the center
-      // logic below.
-      // const scrollDiff = lines[nextIndex]! - lines[clampedIndex]!;
-
-      // Center it vertically.
-      this.model_.getCurrentMoveMode().recenterCurrentTextLine(
-          /*instant=*/ false);
-    } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
-      chrome.readingMode.incrementLineFocusKeyboardLines();
-      this.model_.getCurrentMoveMode().moveToRect(lines[nextIndex]!);
-    }
-
-    // If the user has navigated back to the top of the panel, but there's
-    // still a little bit left to scroll, scroll to the top.
-    if (this.model_.getCurrentLineIndex() === currentIndex) {
-      this.listeners_.forEach(l => l.onNeedScrollToTop());
-    }
-  }
-
-  private getCurrentLineFocusLines_(): number {
-    return this.getCurrentLineFocusStyle().lines;
+    const lastStyle = this.model_.getLastEnabledLineFocusStyle();
+    const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
+    this.setStyleAndMovement_(
+        newStyle, this.getCurrentLineFocusMovement(), container, height);
+    this.logger_.logLineFocusToggled(this.isEnabled());
+    this.listeners_.forEach(l => l.onLineFocusToggled());
   }
 
   // MoveModeDelegate methods.
@@ -302,6 +224,10 @@ export class LineFocusController implements MoveModeDelegate {
   notifyScroll(scrollDiff: number, instant?: boolean): void {
     this.listeners_.forEach(
         l => l.onNeedScrollForLineFocus(scrollDiff, instant));
+  }
+
+  notifyScrollToTop(): void {
+    this.listeners_.forEach(l => l.onNeedScrollToTop());
   }
 
   notifyScrollBuffer(needsBuffer: boolean): void {

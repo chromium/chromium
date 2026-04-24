@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, NodeStore, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {MoveModeDelegate} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LineFocusMoveMode, MoveModeDelegate} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -19,6 +19,8 @@ suite('LineFocusMoveMode', () => {
   let notifiedMove: boolean;
   let scrollDiffReceived: number;
   let bufferValReceived: boolean|undefined;
+  let speechLines: number;
+  let keyboardLines: number;
 
   const defaultHeight = 1000;
 
@@ -29,6 +31,28 @@ suite('LineFocusMoveMode', () => {
     container.style.whiteSpace = 'pre-line';
     document.body.appendChild(container);
     return container;
+  }
+
+  function mockLinesCounters() {
+    speechLines = 0;
+    keyboardLines = 0;
+    chrome.readingMode.incrementLineFocusSpeechLines = () => speechLines++;
+    chrome.readingMode.incrementLineFocusKeyboardLines = () => keyboardLines++;
+  }
+
+  function snapForward(mode: LineFocusMoveMode): void {
+    mode.snapToNextLine(/*isForward=*/ true);
+  }
+
+  function snapBackward(mode: LineFocusMoveMode): void {
+    mode.snapToNextLine(/*isForward=*/ false);
+  }
+
+  function setDefaultTextBounds(): void {
+    const rect1 = new DOMRect(0, 10, 100, 20);
+    const rect2 = new DOMRect(0, 30, 100, 20);
+    const rect3 = new DOMRect(0, 50, 100, 20);
+    model.setTextBounds([rect1, rect2, rect3]);
   }
 
   setup(() => {
@@ -54,6 +78,7 @@ suite('LineFocusMoveMode', () => {
       notifyScroll(diff) {
         scrollDiffReceived = diff;
       },
+      notifyScrollToTop() {},
       notifyScrollBuffer(buffer) {
         bufferValReceived = buffer;
       },
@@ -158,9 +183,8 @@ suite('LineFocusMoveMode', () => {
 
     test('onWordBoundary only counts new lines', () => {
       const container = createShortContainer();
+      mockLinesCounters();
       NodeStore.getInstance().setDomNode(container, 1);
-      let speechLines = 0;
-      chrome.readingMode.incrementLineFocusSpeechLines = () => speechLines++;
       const segments1 = [{
         node: ReadAloudNode.create(container)!,
         start: 0,
@@ -290,21 +314,90 @@ suite('LineFocusMoveMode', () => {
       const center = model.getMaxY() / 2;
       assertEquals(center, model.getFocalPoint());
     });
+
+    test('snapToNextLine scrolls by line', () => {
+      mockLinesCounters();
+      setDefaultTextBounds();
+      model.setMaxY(defaultHeight);
+      let oldTop = model.getTop();
+      let oldScrollDiff = scrollDiffReceived;
+
+      // Snap to the first line.
+      snapForward(mode);
+      let newTop = model.getTop();
+      let newScrollDiff = scrollDiffReceived;
+      assertEquals(0, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertLT(oldScrollDiff, newScrollDiff);
+      assertEquals(1, keyboardLines);
+
+      // Snap to the second line.
+      snapForward(mode);
+      newTop = model.getTop();
+      newScrollDiff = scrollDiffReceived;
+      assertEquals(1, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertLT(oldScrollDiff, newScrollDiff);
+      assertEquals(2, keyboardLines);
+
+      // Snap to the last line.
+      oldTop = newTop;
+      oldScrollDiff = newScrollDiff;
+      snapForward(mode);
+      newTop = model.getTop();
+      newScrollDiff = scrollDiffReceived;
+      assertEquals(2, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertLT(oldScrollDiff, newScrollDiff);
+      assertEquals(3, keyboardLines);
+
+      // Snap back to the second line.
+      oldTop = newTop;
+      oldScrollDiff = newScrollDiff;
+      snapBackward(mode);
+      newTop = model.getTop();
+      newScrollDiff = scrollDiffReceived;
+      assertEquals(1, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertGT(oldScrollDiff, newScrollDiff);
+      assertEquals(4, keyboardLines);
+
+      // Snap back to the first line.
+      oldTop = newTop;
+      oldScrollDiff = newScrollDiff;
+      snapBackward(mode);
+      newTop = model.getTop();
+      newScrollDiff = scrollDiffReceived;
+      assertEquals(0, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertGT(oldScrollDiff, newScrollDiff);
+      assertEquals(5, keyboardLines);
+      assertEquals(0, speechLines);
+    });
+
+    test('snapToNextLine returns true with text bounds', () => {
+      mockLinesCounters();
+      model.setMaxY(defaultHeight);
+
+      assertFalse(mode.snapToNextLine(true));
+      assertFalse(mode.snapToNextLine(false));
+
+      setDefaultTextBounds();
+      assertTrue(mode.snapToNextLine(true));
+      assertTrue(mode.snapToNextLine(false));
+    });
   });
 
   suite('cursor mode', () => {
     let mode: LineFocusCursorMoveMode;
 
     function createWindowMode(): LineFocusCursorMoveMode {
-      const rect1 = new DOMRect(0, 10, 100, 20);
-      const rect2 = new DOMRect(0, 30, 100, 20);
-      const rect3 = new DOMRect(0, 50, 100, 20);
-      model.setTextBounds([rect1, rect2, rect3]);
       return new LineFocusCursorMoveMode(model, windowMode, delegate);
     }
 
     setup(() => {
       mode = new LineFocusCursorMoveMode(model, styleMode, delegate);
+      setDefaultTextBounds();
     });
 
     test('getMovement returns CURSOR', () => {
@@ -410,8 +503,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onWordBoundary only counts new lines', () => {
       const container = createShortContainer();
-      let speechLines = 0;
-      chrome.readingMode.incrementLineFocusSpeechLines = () => speechLines++;
+      mockLinesCounters();
       NodeStore.getInstance().setDomNode(container, 1);
       const segments1 = [{
         node: ReadAloudNode.create(container)!,
@@ -593,7 +685,7 @@ suite('LineFocusMoveMode', () => {
 
     test('onTextLocationsChange scrolls to re-center line focus', () => {
       const container = createShortContainer();
-      mode.onTextLocationsChange(container, defaultHeight);
+      mode.onTextLocationsChange(container, 10);
       assertNotEquals(0, scrollDiffReceived);
     });
 
@@ -644,6 +736,201 @@ suite('LineFocusMoveMode', () => {
       assertLT(0, model.getWindowHeight());
       assertLT(focalPoint, model.getTop() + model.getWindowHeight());
       assertTrue(notifiedMove);
+    });
+
+    test('snapToNextLine moves by line', () => {
+      mockLinesCounters();
+      model.setMaxY(defaultHeight);
+      let oldTop = model.getTop();
+
+      // Snap to the first line.
+      snapForward(mode);
+      let newTop = model.getTop();
+      assertEquals(0, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(1, keyboardLines);
+
+      // Snap to the second line.
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(1, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(2, keyboardLines);
+
+      // Snap to the last line.
+      oldTop = newTop;
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(2, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(3, keyboardLines);
+
+      // There's only 3 text lines so moving forward should not change position.
+      oldTop = newTop;
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(2, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertEquals(3, keyboardLines);
+
+      // Snap back to the second line.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(1, model.getCurrentLineIndex());
+      assertGT(oldTop, newTop);
+      assertEquals(4, keyboardLines);
+
+      // Snap back to the first line.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(0, model.getCurrentLineIndex());
+      assertGT(oldTop, newTop);
+      assertEquals(5, keyboardLines);
+
+      // Moving back again should not change position.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(oldTop, newTop);
+      assertEquals(0, model.getCurrentLineIndex());
+      assertEquals(5, keyboardLines);
+      assertEquals(0, speechLines);
+    });
+
+    test('snapToNextLine scrolls down to line if out of view', () => {
+      mockLinesCounters();
+      let oldTop = model.getTop();
+
+      // Snap to the first line.
+      snapForward(mode);
+      let newTop = model.getTop();
+      // Continue moving to the next line until scrolling occurs.
+      while (oldTop < newTop) {
+        assertEquals(0, scrollDiffReceived);
+        oldTop = newTop;
+        snapForward(mode);
+        newTop = model.getTop();
+      }
+
+      assertLT(0, scrollDiffReceived);
+      assertLT(0, keyboardLines);
+      assertEquals(0, speechLines);
+    });
+
+    test('snapToNextLine scrolls up to line if out of view', () => {
+      mockLinesCounters();
+      model.setMinY(defaultHeight);
+      model.setMaxY(defaultHeight);
+      model.setCurrentLineIndex(2);
+      let oldTop = model.getTop();
+
+      // Snap to the first line.
+      snapBackward(mode);
+      let newTop = model.getTop();
+      // Continue moving to the previous line until scrolling occurs.
+      while (oldTop > newTop) {
+        assertEquals(0, scrollDiffReceived);
+        oldTop = newTop;
+        snapBackward(mode);
+        newTop = model.getTop();
+      }
+
+      assertGT(0, scrollDiffReceived);
+      assertLT(0, keyboardLines);
+      assertEquals(0, speechLines);
+    });
+
+    test('snapToNextLine after user scroll uses current position', () => {
+      mockLinesCounters();
+
+      snapForward(mode);
+      mode.onScrollEnd(defaultHeight);
+      snapForward(mode);
+
+      assertEquals(2, keyboardLines);
+    });
+
+    test('snapToNextLine with window moves by line', () => {
+      mode = createWindowMode();
+      mockLinesCounters();
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      const rect4 = new DOMRect(0, 70, 100, 20);
+      const rect5 = new DOMRect(0, 90, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3, rect4, rect5]);
+      model.setMaxY(defaultHeight);
+      let oldTop = model.getTop();
+
+      // Snap to the second line.
+      snapForward(mode);
+      let newTop = model.getTop();
+      assertEquals(1, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(3, keyboardLines);
+
+      // Snap to the third line.
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(2, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(4, keyboardLines);
+
+      // Snap to the fourth line.
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(3, model.getCurrentLineIndex());
+      assertLT(oldTop, newTop);
+      assertEquals(5, keyboardLines);
+
+      // Moving forward should not change position.
+      oldTop = newTop;
+      snapForward(mode);
+      newTop = model.getTop();
+      assertEquals(3, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertEquals(5, keyboardLines);
+
+      // Snap back to the third line.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(2, model.getCurrentLineIndex());
+      assertGT(oldTop, newTop);
+      assertEquals(6, keyboardLines);
+
+      // Snap back to the second line.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(1, model.getCurrentLineIndex());
+      assertGT(oldTop, newTop);
+      assertEquals(7, keyboardLines);
+
+      // Moving back again should not change position since the window is 3
+      // lines long and it is already surrounding the second line.
+      oldTop = newTop;
+      snapBackward(mode);
+      newTop = model.getTop();
+      assertEquals(1, model.getCurrentLineIndex());
+      assertEquals(oldTop, newTop);
+      assertEquals(7, keyboardLines);
+      assertEquals(0, speechLines);
+    });
+
+    test('snapToNextLine returns true with text bounds', () => {
+      mockLinesCounters();
+      model.setTextBounds([]);
+      model.setMaxY(defaultHeight);
+
+      assertFalse(mode.snapToNextLine(true));
+      assertFalse(mode.snapToNextLine(false));
+
+      setDefaultTextBounds();
+      assertTrue(mode.snapToNextLine(true));
+      assertTrue(mode.snapToNextLine(false));
     });
   });
 
@@ -740,6 +1027,30 @@ suite('LineFocusMoveMode', () => {
       assertEquals(0, model.getMaxY());
       assertEquals(0, model.getMinY());
       assertEquals(0, model.getTextBounds().length);
+    });
+
+    test('onScrollEnd does nothing', () => {
+      mode.onScrollEnd(101);
+      assertFalse(notifiedMove);
+    });
+
+    test('onTextLocationsChange does nothing', () => {
+      const container = createShortContainer();
+
+      mode.onTextLocationsChange(container, defaultHeight);
+
+      assertFalse(!!bufferValReceived);
+      assertFalse(notifiedMove);
+      assertEquals(0, scrollDiffReceived);
+      assertEquals(0, model.getMaxY());
+      assertEquals(0, model.getMinY());
+      assertEquals(0, model.getTextBounds().length);
+    });
+
+    test('snapToNextLine does nothing', () => {
+      assertFalse(mode.snapToNextLine(true));
+      assertFalse(mode.snapToNextLine(false));
+      assertEquals(null, model.getCurrentLineIndex());
     });
   });
 });

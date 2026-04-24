@@ -25,6 +25,9 @@ export interface MoveModeDelegate {
   // Notifies that the view needs to scroll.
   notifyScroll(scrollDiff: number, instant?: boolean): void;
 
+  // Notifies that the view should scroll to the top of the content.
+  notifyScrollToTop(): void;
+
   // Notifies that the content panel needs a scroll buffer to allow for
   // centering focus.
   notifyScrollBuffer(needsBuffer: boolean): void;
@@ -58,6 +61,29 @@ export abstract class LineFocusMoveMode {
   // Called when a scroll event finishes in the content panel.
   abstract onScrollEnd(newScrollTop: number): void;
 
+  // Snaps the focus to the next or previous text line.
+  snapToNextLine(isForward: boolean): boolean {
+    const lines = this.model_.getTextBounds();
+    if (!lines.length) {
+      return false;
+    }
+
+    // If this is the first time snapping after mouse movement, move to the
+    // closest line to the current Y.
+    const currentIndex = this.model_.getCurrentLineIndex();
+    if (currentIndex === null) {
+      this.initializeSnapIndex(isForward);
+      const linesToLog = this.styleMode_.getStyle().lines;
+      for (let i = 0; i < linesToLog; i++) {
+        chrome.readingMode.incrementLineFocusKeyboardLines();
+      }
+    } else {
+      this.updateSnapIndex_(currentIndex, isForward);
+    }
+
+    return true;
+  }
+
   // Updates focus when speech reaches a new word boundary.
   onWordBoundary(segments: Segment[]): void {
     const rects = getRectsForSegments(segments);
@@ -70,16 +96,7 @@ export abstract class LineFocusMoveMode {
       chrome.readingMode.incrementLineFocusSpeechLines();
     }
     this.moveToRect(rect);
-
-    // If line focus would go off screen, scroll the text to the center.
-    const bottom = this.model_.getTop() + this.model_.getWindowHeight();
-    if (bottom > this.model_.getMaxY()) {
-      this.scroll(bottom - (this.getCenterY()));
-    } else if (this.model_.getTop() < this.model_.getMinY()) {
-      this.scroll(
-          this.model_.getMinY() + this.model_.getFocalPoint() -
-          (this.getCenterY()));
-    }
+    this.recenterCurrentTextLineIfOffScreen(/*instant=*/ false);
   }
 
   // Returns whether this move mode needs padding to reach all text.
@@ -87,7 +104,7 @@ export abstract class LineFocusMoveMode {
 
   // Updates the focal point Y position or scrolls the view to the given
   // rect, depending on the movement strategy.
-  abstract moveToRect(rect: DOMRect): void;
+  protected abstract moveToRect(rect: DOMRect): void;
 
   protected setFocalPoint(focalPointY: number, quietly: boolean = false): void {
     this.model_.setFocalPoint(focalPointY);
@@ -104,17 +121,21 @@ export abstract class LineFocusMoveMode {
     return this.styleMode_.clampLineIndex(rawIndex);
   }
 
-  recenterCurrentTextLine(instant: boolean): void {
+  protected recenterCurrentTextLineIfOffScreen(instant: boolean): boolean {
     const bounds = this.model_.getTextBounds();
     if (bounds.length === 0) {
-      return;
+      return false;
     }
+
     const currentIndex = this.model_.getCurrentLineIndex() ??
         this.getSafeIndex(/*isForward=*/ true);
-    this.model_.setCurrentLineIndex(currentIndex);
-    const desiredCenter = this.styleMode_.getDesiredCenter(currentIndex);
-    const scrollDiff = desiredCenter - this.getCenterY();
-    this.scroll(scrollDiff, instant);
+    const scrollDiff = this.styleMode_.getOffScreenDiff(currentIndex);
+    if (Math.abs(scrollDiff) > SCROLL_THRESHOLD) {
+      this.scroll(scrollDiff, instant);
+      return true;
+    }
+
+    return false;
   }
 
   protected scroll(scrollDiff: number, instant?: boolean): void {
@@ -140,7 +161,7 @@ export abstract class LineFocusMoveMode {
     this.model_.setInitiatedScroll(false);
   }
 
-  initializeSnapIndex(isForward: boolean) {
+  protected initializeSnapIndex(isForward: boolean) {
     const lines = this.model_.getTextBounds();
     const safeIndex = this.getSafeIndex(isForward);
     this.model_.setCurrentLineIndex(safeIndex);
@@ -173,6 +194,37 @@ export abstract class LineFocusMoveMode {
 
   protected getCenterY(): number {
     return (this.model_.getMaxY()) / 2;
+  }
+
+  protected notifyScrollToTop(): void {
+    this.delegate_.notifyScrollToTop();
+  }
+
+  private updateSnapIndex_(currentIndex: number, isForward: boolean) {
+    const lines = this.model_.getTextBounds();
+    assert(lines.length > 0);
+    const direction = isForward ? 1 : -1;
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 ||
+        this.styleMode_.getBottomIndex(nextIndex) >= lines.length) {
+      return;
+    }
+
+    const clampedIndex = this.styleMode_.clampLineIndex(nextIndex);
+    this.model_.setCurrentLineIndex(clampedIndex);
+
+    if (this.recenterCurrentTextLineIfOffScreen(/*instant=*/ false)) {
+      chrome.readingMode.incrementLineFocusKeyboardLines();
+    } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
+      chrome.readingMode.incrementLineFocusKeyboardLines();
+      this.moveToRect(lines[clampedIndex]!);
+    }
+
+    // If the user has navigated back to the top of the panel, but there's
+    // still a little bit left to scroll, scroll to the top.
+    if (this.model_.getCurrentLineIndex() === currentIndex) {
+      this.notifyScrollToTop();
+    }
   }
 }
 
@@ -211,7 +263,7 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
     }
   }
 
-  moveToRect(rect: DOMRect): void {
+  protected moveToRect(rect: DOMRect): void {
     const focalPoint = this.styleMode_.getFocalPointForRect(rect);
     const scrollDiff = focalPoint - this.model_.getFocalPoint();
     this.scroll(scrollDiff);
@@ -264,15 +316,17 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
 
     this.updatePositions(container, height);
     this.updateScrollBuffer();
-    this.recenterCurrentTextLine(/*instant=*/ true);
+    this.recenterCurrentTextLineIfOffScreen(/*instant=*/ true);
 
     if (currentIndex !== null) {
       const newFocalPoint = this.styleMode_.getDesiredCenter(currentIndex);
       this.setFocalPoint(newFocalPoint);
+    } else if (this.model_.getMinY() > this.model_.getFocalPoint()) {
+      this.initializeSnapIndex(/*isForward=*/ true);
     }
   }
 
-  moveToRect(rect: DOMRect): void {
+  protected moveToRect(rect: DOMRect): void {
     const focalPoint = this.styleMode_.getFocalPointForRect(rect);
     this.setFocalPoint(focalPoint);
   }
@@ -306,9 +360,11 @@ export class LineFocusNoneMoveMode extends LineFocusMoveMode {
   onMouseMoveInToolbar(_y: number): void {}
   onScrollEnd(_newScrollTop: number): void {}
   onTextLocationsChange(_container: HTMLElement, _height: number): void {}
-  moveToRect(_rect: DOMRect): void {}
   override onWordBoundary(_segments: Segment[]): void {}
-
+  override snapToNextLine(_isForward: boolean): boolean {
+    return false;
+  }
+  protected moveToRect(_rect: DOMRect): void {}
   protected needsScrollBuffer(): boolean {
     return false;
   }

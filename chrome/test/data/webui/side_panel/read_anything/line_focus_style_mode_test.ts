@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {LineFocusLineStyleMode, LineFocusModel, LineFocusNoneStyleMode, LineFocusStyle, LineFocusWindowStyleMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('LineFocusStyleMode', () => {
   let model: LineFocusModel;
@@ -45,15 +45,36 @@ suite('LineFocusStyleMode', () => {
       assertEquals(5, mode.clampLineIndex(5));
     });
 
-    test('getFocusWindowBounds returns same rect for top and bottom', () => {
+    test('getOffScreenDiff returns diff if line is below screen', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);
       const rect2 = new DOMRect(0, 30, 100, 20);
-      const lines = [rect1, rect2];
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMaxY(60);
 
-      const bounds = mode.getFocusWindowBounds(lines, 1);
+      assertLT(0, mode.getOffScreenDiff(2));
+    });
 
-      assertEquals(rect2, bounds.topRect);
-      assertEquals(rect2, bounds.bottomRect);
+    test('getOffScreenDiff returns diff if line is above screen', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMinY(20);
+      model.setMaxY(100);
+
+      assertGT(0, mode.getOffScreenDiff(0));
+    });
+
+    test('getOffScreenDiff returns 0 if line is on screen', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMinY(0);
+      model.setMaxY(100);
+
+      assertEquals(0, mode.getOffScreenDiff(1));
     });
 
     test('getDesiredCenter returns bottomRect.bottom', () => {
@@ -191,28 +212,36 @@ suite('LineFocusStyleMode', () => {
       assertEquals(2, smallMode.clampLineIndex(2));
     });
 
-    test('getFocusWindowBounds returns span of lines', () => {
+    test('getOffScreenDiff returns diff if bottom line is offscreen', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);
       const rect2 = new DOMRect(0, 30, 100, 20);
       const rect3 = new DOMRect(0, 50, 100, 20);
-      const lines = [rect1, rect2, rect3];
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMaxY(60);
 
-      const bounds = largeMode.getFocusWindowBounds(lines, 1);
-
-      assertEquals(rect1, bounds.topRect);
-      assertEquals(rect3, bounds.bottomRect);
+      assertLT(0, largeMode.getOffScreenDiff(2));
     });
 
-    test('getFocusWindowBounds small window returns same line', () => {
+    test('getOffScreenDiff returns diff if top line is offscreen', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);
       const rect2 = new DOMRect(0, 30, 100, 20);
       const rect3 = new DOMRect(0, 50, 100, 20);
-      const lines = [rect1, rect2, rect3];
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMinY(20);
+      model.setMaxY(100);
 
-      const bounds = smallMode.getFocusWindowBounds(lines, 1);
+      assertGT(0, largeMode.getOffScreenDiff(0));
+    });
 
-      assertEquals(rect2, bounds.topRect);
-      assertEquals(rect2, bounds.bottomRect);
+    test('getOffScreenDiff returns 0 if window is fully on screen', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3]);
+      model.setMinY(0);
+      model.setMaxY(100);
+
+      assertEquals(0, largeMode.getOffScreenDiff(1));
     });
 
     test('getDesiredCenter returns center of window', () => {
@@ -286,10 +315,9 @@ suite('LineFocusStyleMode', () => {
       assertEquals(0, mode.clampLineIndex(5));
     });
 
-    test('getFocusWindowBounds returns empty rects', () => {
-      const bounds = mode.getFocusWindowBounds([], 0);
-      assertEquals(0, bounds.topRect.top);
-      assertEquals(0, bounds.bottomRect.bottom);
+    test('getOffScreenDiff returns 0', () => {
+      assertEquals(0, mode.getOffScreenDiff(0));
+      assertEquals(0, mode.getOffScreenDiff(5));
     });
 
     test('getDesiredCenter returns 0', () => {

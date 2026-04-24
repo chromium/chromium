@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {LineFocusController, LineFocusMovement, LineFocusStyle, LineFocusType, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -19,7 +19,6 @@ suite('LineFocusController', () => {
   let lineFocusController: LineFocusController;
   let lineFocusListener: LineFocusListener;
   let lineFocusMoved: boolean;
-  let scrollDiffReceived: number;
   let defaultContainer: HTMLElement;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
@@ -81,17 +80,12 @@ suite('LineFocusController', () => {
     SpeechController.setInstance(speechController);
     lineFocusController = new LineFocusController();
     lineFocusMoved = false;
-    scrollDiffReceived = 0;
     lineFocusToggled = false;
     lineFocusListener = {
       onLineFocusMove() {
         lineFocusMoved = true;
       },
-
-      onNeedScrollForLineFocus(scrollDiff: number) {
-        scrollDiffReceived = scrollDiff;
-      },
-
+      onNeedScrollForLineFocus() {},
       onNeedScrollToTop() {},
       onLineFocusToggled() {
         lineFocusToggled = true;
@@ -557,248 +551,7 @@ suite('LineFocusController', () => {
     assertTrue(lineFocusMoved);
   });
 
-  test('snapToNextLine with cursor line moves by line', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = document.createElement('p');
-    container.innerText =
-        'Like a siege rocked by a sky bird\nin a distant wood\nwho can say';
-    container.style.whiteSpace = 'pre-line';
-    document.body.appendChild(container);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, defaultHeight);
-    let oldTop = lineFocusController.getTop();
-
-    // Snap to the first line.
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-    let newTop = lineFocusController.getTop();
-    assertLT(oldTop, newTop);
-    assertEquals(1, keyboardLines);
-
-    // Snap to the last line.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertLT(oldTop, newTop);
-    assertEquals(2, keyboardLines);
-
-    // The container only has three lines, so moving forward should not change
-    // position.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertEquals(oldTop, newTop);
-    assertEquals(2, keyboardLines);
-
-    // Snap back to the second line.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertGT(oldTop, newTop);
-    assertEquals(3, keyboardLines);
-
-    // Snap back to the first line.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertGT(oldTop, newTop);
-    assertEquals(4, keyboardLines);
-
-    // Moving back again should not change position.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertEquals(oldTop, newTop);
-    assertEquals(4, keyboardLines);
-    assertEquals(0, speechLines);
-  });
-
-  test('snapToNextLine with static line scrolls by line', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createLongContainer();
-    container.style.fontSize = '60px';
-    lineFocusController.onStyleChange(LineFocusStyle.UNDERLINE, container, 50);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.STATIC, container, 100);
-    let oldTop = lineFocusController.getTop();
-    let oldScrollDiff = scrollDiffReceived;
-
-    // Snap to the first line.
-    lineFocusController.onKeyDown(downKey(), container, 100);
-    let newTop = lineFocusController.getTop();
-    let newScrollDiff = scrollDiffReceived;
-    assertEquals(oldTop, newTop);
-    assertLT(oldScrollDiff, newScrollDiff);
-    assertEquals(1, keyboardLines);
-
-    // Snap to the last line.
-    oldTop = newTop;
-    oldScrollDiff = newScrollDiff;
-    lineFocusController.onKeyDown(downKey(), container, 100);
-    newTop = lineFocusController.getTop();
-    newScrollDiff = scrollDiffReceived;
-    assertEquals(oldTop, newTop);
-    assertLT(oldScrollDiff, newScrollDiff);
-    assertEquals(2, keyboardLines);
-
-    // Snap back to the first line.
-    oldTop = newTop;
-    oldScrollDiff = newScrollDiff;
-    lineFocusController.onKeyDown(upKey(), container, 100);
-    newTop = lineFocusController.getTop();
-    newScrollDiff = scrollDiffReceived;
-    assertEquals(oldTop, newTop);
-    assertGT(oldScrollDiff, newScrollDiff);
-    assertEquals(3, keyboardLines);
-    assertEquals(0, speechLines);
-  });
-
-  test('snapToNextLine scrolls down to line if out of view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const height = 100;
-    const scroller = document.createElement('div');
-    scroller.style.height = `${height}px`;
-    scroller.style.overflow = 'auto';
-    const container = document.createElement('p');
-    container.innerText =
-        'Like a siege rocked by a sky bird\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n';
-    scroller.appendChild(container);
-    document.body.appendChild(scroller);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, height);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, height);
-    let oldTop = lineFocusController.getTop();
-
-    // Snap to the first line.
-    lineFocusController.onKeyDown(downKey(), container, height);
-    let newTop = lineFocusController.getTop();
-    // Continue moving to the next line until scrolling occurs.
-    while (oldTop < newTop) {
-      assertEquals(0, scrollDiffReceived);
-      oldTop = newTop;
-      lineFocusController.onKeyDown(downKey(), container, height);
-      newTop = lineFocusController.getTop();
-    }
-
-    assertLT(0, scrollDiffReceived);
-    assertLT(0, keyboardLines);
-    assertEquals(0, speechLines);
-  });
-
-  test('snapToNextLine after user scroll uses current position', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const height = 100;
-    const scroller = document.createElement('div');
-    scroller.style.height = `${height}px`;
-    scroller.style.overflow = 'auto';
-    const container = document.createElement('p');
-    container.innerText =
-        'Like a siege rocked by a sky bird\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n';
-    scroller.appendChild(container);
-    document.body.appendChild(scroller);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, height);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, height);
-
-    lineFocusController.onKeyDown(downKey(), container, height);
-    lineFocusController.onScrollEnd(height);
-    lineFocusController.onKeyDown(downKey(), container, height);
-
-    // The window is 3 lines high. If the line index was kept then the second
-    // snapToNextLine call would move by one line, and this would be 4. But
-    // after the scroll, the current line index has to be recalculated and so
-    // all 3 of the new highlighted lines are counted.
-    assertEquals(6, keyboardLines);
-  });
-
-  test('snapToNextLine scrolls up to line if out of view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const height = 100;
-    const scroller = document.createElement('div');
-    scroller.style.height = `${height}px`;
-    scroller.style.overflow = 'auto';
-    const container = document.createElement('p');
-    container.innerText =
-        'Like a siege rocked by a sky bird\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n' +
-        'in a distant wood\nin a distant wood\nin a distant wood\n';
-    scroller.appendChild(container);
-    document.body.appendChild(scroller);
-    scroller.scrollTop = 10000;
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, container, height);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, height);
-    let oldTop = lineFocusController.getTop();
-
-    // Snap to the first line.
-    lineFocusController.onKeyDown(upKey(), container, height);
-    let newTop = lineFocusController.getTop();
-    // Continue moving to the previous line until scrolling occurs.
-    while (oldTop > newTop) {
-      assertEquals(0, scrollDiffReceived);
-      oldTop = newTop;
-      lineFocusController.onKeyDown(upKey(), container, height);
-      newTop = lineFocusController.getTop();
-    }
-
-    assertGT(0, scrollDiffReceived);
-    assertLT(0, keyboardLines);
-    assertEquals(0, speechLines);
-  });
-
-  test('snapToNextLine with window moves by line', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = document.createElement('p');
-    container.innerText = 'Who can say if I\'ve been changed for the better\n' +
-        'But Because I knew you I have been changed for good\n' +
-        'And just to clear the air I ask forgiveness\n' +
-        'for the things I\'ve done you blame before';
-    document.body.appendChild(container);
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, container, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-    let oldTop = lineFocusController.getTop();
-
-    // Snap to the second line.
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-    let newTop = lineFocusController.getTop();
-    assertLT(oldTop, newTop);
-    assertEquals(1, keyboardLines);
-
-    // Moving forward should not change position.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(downKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertEquals(oldTop, newTop);
-    assertEquals(1, keyboardLines);
-
-    // Snap back to the second line.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertGT(oldTop, newTop);
-    assertEquals(2, keyboardLines);
-
-    // Moving back again should not change position since the window is 3 lines
-    // long and we are already surrounding the second line.
-    oldTop = newTop;
-    lineFocusController.onKeyDown(upKey(), container, defaultHeight);
-    newTop = lineFocusController.getTop();
-    assertEquals(oldTop, newTop);
-    assertEquals(2, keyboardLines);
-    assertEquals(0, speechLines);
-  });
-
-  test('snapToNextLine does nothing when speech active', () => {
+  test('onKeyDown arrows does nothing when speech active', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     readAloudModel.setCurrentTextSegments(
@@ -817,4 +570,40 @@ suite('LineFocusController', () => {
 
     assertFalse(lineFocusMoved);
   });
+
+  test('onKeyDown arrows consumes event with line focus enabled', () => {
+    const container = createLongContainer();
+    lineFocusController.onStyleChange(
+        LineFocusStyle.UNDERLINE, container, defaultHeight);
+    lineFocusController.onMovementChange(
+        LineFocusMovement.CURSOR, container, defaultHeight);
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusMoved = false;
+
+    assertTrue(
+        lineFocusController.onKeyDown(downKey(), container, defaultHeight));
+    assertTrue(
+        lineFocusController.onKeyDown(upKey(), container, defaultHeight));
+
+    assertTrue(lineFocusMoved);
+  });
+
+  test(
+      'onKeyDown arrows does not consume event with line focus disabled',
+      () => {
+        const container = createLongContainer();
+        lineFocusController.onStyleChange(
+            LineFocusStyle.OFF, container, defaultHeight);
+        lineFocusController.onMovementChange(
+            LineFocusMovement.CURSOR, container, defaultHeight);
+        chrome.readingMode.isLineFocusEnabled = true;
+        lineFocusMoved = false;
+
+        assertFalse(
+            lineFocusController.onKeyDown(downKey(), container, defaultHeight));
+        assertFalse(
+            lineFocusController.onKeyDown(upKey(), container, defaultHeight));
+
+        assertFalse(lineFocusMoved);
+      });
 });

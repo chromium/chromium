@@ -17,7 +17,7 @@ export {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS} from './content/
 export {LineFocusController} from './content/line_focus_controller.js';
 export type {LineFocusListener} from './content/line_focus_controller.js';
 export {LineFocusModel} from './content/line_focus_model.js';
-export {LineFocusCursorMoveMode, LineFocusNoneMoveMode, LineFocusStaticMoveMode} from './content/line_focus_move_mode.js';
+export {LineFocusCursorMoveMode, LineFocusMoveMode, LineFocusNoneMoveMode, LineFocusStaticMoveMode} from './content/line_focus_move_mode.js';
 export type {MoveModeDelegate} from './content/line_focus_move_mode.js';
 export {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusStyleMode, LineFocusWindowStyleMode, WINDOW_DIFF_THRESHOLD} from './content/line_focus_style_mode.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './content/node_store.js';
