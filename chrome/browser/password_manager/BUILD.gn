@@ -18,6 +18,7 @@ source_set("password_manager") {
   ]
 
   public_deps = [
+    "//chrome/browser/actor",
     "//chrome/browser/password_manager/factories",
 
     # deps for public headers
@@ -118,7 +119,6 @@ source_set("password_manager") {
       "web_app_profile_switcher.h",
     ]
     public_deps += [
-      "//chrome/browser/actor",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/web_applications",
       "//components/webapps/common",
@@ -146,6 +146,7 @@ source_set("impl") {
   ]
 
   deps = [
+    "//chrome/browser/actor",
     "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
     "//chrome/browser/device_reauth",
@@ -191,6 +192,7 @@ source_set("impl") {
     "//components/signin/public/identity_manager",
     "//components/site_engagement/content",
     "//components/site_isolation",
+    "//components/tabs:public",
     "//components/variations/service",
     "//components/version_info",
     "//extensions/buildflags",
@@ -243,7 +245,6 @@ source_set("impl") {
       "web_app_profile_switcher.cc",
     ]
     deps += [
-      "//chrome/browser/actor",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:impl",

@@ -211,10 +211,8 @@ PasswordManagerClient::GetUndoPasswordChangeController() {
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool PasswordManagerClient::IsActorTaskActive() {
   return false;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

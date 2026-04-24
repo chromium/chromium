@@ -578,9 +578,7 @@ class PasswordManagerClient {
 
   virtual UndoPasswordChangeController* GetUndoPasswordChangeController();
 
-#if !BUILDFLAG(IS_ANDROID)
   virtual bool IsActorTaskActive();
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

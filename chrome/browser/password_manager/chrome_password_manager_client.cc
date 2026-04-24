@@ -23,6 +23,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -109,6 +110,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -167,7 +169,6 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #else  // BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -177,7 +178,6 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "components/password_manager/core/browser/password_counter.h"
 #include "components/policy/core/common/features.h"
-#include "components/tabs/public/tab_interface.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -1804,7 +1804,6 @@ ChromePasswordManagerClient::GetUndoPasswordChangeController() {
   return &undo_password_change_controller_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool ChromePasswordManagerClient::IsActorTaskActive() {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(GetProfile());
@@ -1816,7 +1815,6 @@ bool ChromePasswordManagerClient::IsActorTaskActive() {
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromePasswordManagerClient::ChromePasswordManagerClient(
     content::WebContents* web_contents)
