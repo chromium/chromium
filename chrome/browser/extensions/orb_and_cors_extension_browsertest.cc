@@ -3064,6 +3064,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     content::TestNavigationObserver navigation_observer(extension_web_contents,
                                                         1);
     navigation_observer.Wait();
+    EXPECT_EQ(extension_web_contents->GetLastCommittedURL(),
+              extension_resource);
   }
 
   // 4. Monitor resource loads in the extension page.
@@ -3071,12 +3073,22 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // 5. In the extension page do a no-cors fetch (via `img` tag) of a resource
   // for which the extension has gained access via ActiveTab permission.
+  //
+  // TODO(https://crbug.com/502415811): Remove `console.log` after debugging
+  // and fixing the issue.
   const char kScript[] = R"(
       var img = document.createElement('img');
       img.src = $1;
+      console.log("Adding img.src = " + img.src);
       new Promise(resolve => {
-        img.onload = () => resolve('LOADED');
-        img.onerror = e => resolve('ERROR: ' + e);
+        img.onload = () => {
+          console.log('Test img.onload');
+          resolve('LOADED');
+        }
+        img.onerror = e => {
+          console.log('Test img.onerror');
+          resolve('ERROR: ' + e);
+        }
       });
   )";
   GURL active_tab_origin_url =
