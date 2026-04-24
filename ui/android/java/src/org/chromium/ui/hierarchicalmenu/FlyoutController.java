@@ -222,8 +222,10 @@ public class FlyoutController<T> implements Destroyable {
      */
     public void onItemHovered(
             ListItem item, View view, int levelOfHoveredItem, List<ListItem> highlightPath) {
-        // Since we received a new `HOVER` event, we cancel the previous timer.
-        cancelFlyoutDelay(view);
+        if (mPendingFlyoutParentView != null) {
+            // Since we received a new `HOVER` event, we cancel the previous timer.
+            cancelFlyoutDelay(mPendingFlyoutParentView);
+        }
 
         // We wait for a set period of time before we go on with the UI changes to ensure user
         // intent.
