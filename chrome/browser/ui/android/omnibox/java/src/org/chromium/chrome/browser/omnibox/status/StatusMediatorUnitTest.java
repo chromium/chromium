@@ -46,6 +46,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -77,6 +78,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link StatusMediator}. */
@@ -118,6 +120,8 @@ public final class StatusMediatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableNonNullObservableSupplier<Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+            ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {
@@ -147,7 +151,8 @@ public final class StatusMediatorUnitTest {
                         mWindowAndroid,
                         mPageInfoAction,
                         mFuseboxStateSupplier,
-                        mTogglePopupCallback);
+                        mTogglePopupCallback,
+                        mExactMatchUrlSupplier);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
 
         StatusIconResource logo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
@@ -278,7 +283,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
 
-        mMediator.updateLocationBarIconForDefaultMatchCategory(false);
+        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         assertEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
@@ -290,7 +295,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
 
-        mMediator.updateLocationBarIconForDefaultMatchCategory(true);
+        mExactMatchUrlSupplier.set(null);
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
@@ -302,8 +307,8 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
 
-        mMediator.updateLocationBarIconForDefaultMatchCategory(false);
-        mMediator.updateLocationBarIconForDefaultMatchCategory(true);
+        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mExactMatchUrlSupplier.set(null);
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());

@@ -44,9 +44,11 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.ui.KeyboardUtils;
@@ -270,6 +272,8 @@ class LocationBarMediator
     private final ButtonToolbarWidthConsumer mLensButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mZoomButtonToolbarWidthConsumer;
     private final @Nullable OmniboxChipManager mOmniboxChipManager;
+    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+            ObservableSuppliers.createNullable();
 
     /*package */ LocationBarMediator(
             Context context,
@@ -425,6 +429,14 @@ class LocationBarMediator
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(null);
         }
         AppBannerManager.removeObserver(this);
+    }
+
+    /**
+     * Returns a supplier that provides the URL of the default match if it is a non-search
+     * navigation suggestion, or null otherwise.
+     */
+    public NullableObservableSupplier<GURL> getExactMatchUrlSupplier() {
+        return mExactMatchUrlSupplier;
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
@@ -733,6 +745,21 @@ class LocationBarMediator
         mLocationBarLayout.onSuggestionsListScrollOffsetChanged(scrollOffset);
     }
 
+    private @Nullable GURL getExactMatchUrl(@Nullable AutocompleteMatch defaultMatch) {
+        if (mCurrentInput == null) return null;
+
+        // Other modes cannot exact match.
+        if (!mCurrentInput.isConventionalRequestType()) return null;
+
+        // Zero suggest is always considered Search.
+        if (TextUtils.isEmpty(mCurrentInput.getUserText())) return null;
+
+        // Search suggestions again are search, not an exact matches.
+        if (defaultMatch == null || defaultMatch.isSearchSuggestion()) return null;
+
+        return defaultMatch.getUrl();
+    }
+
     /* package */ void onSuggestionsChanged(
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
@@ -745,16 +772,7 @@ class LocationBarMediator
             mScrimHandler.setVisibility(
                     mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
-
-        mStatusCoordinator.onDefaultMatchClassified(
-                (mCurrentInput != null && !mCurrentInput.isConventionalRequestType())
-                        ||
-                        // Zero suggest is always considered Search.
-                        TextUtils.isEmpty(userText)
-                        ||
-                        // Otherwise, use the default match type (if possible), or assume Search (if
-                        // not).
-                        (defaultMatch != null ? defaultMatch.isSearchSuggestion() : true));
+        mExactMatchUrlSupplier.set(getExactMatchUrl(defaultMatch));
 
         if (mUrlCoordinator.shouldAutocomplete()) {
             String siteSearchLabel = null;

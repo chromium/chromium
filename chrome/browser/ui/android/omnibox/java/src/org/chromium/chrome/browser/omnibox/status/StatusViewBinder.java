@@ -69,6 +69,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                                     model.get(StatusProperties.USE_WIDE_STATUS_ICON)
                                             ? R.dimen.status_view_width_wide
                                             : R.dimen.status_view_width_narrow));
+        } else if (StatusProperties.STATUS_ICON_CORNER_RADIUS.equals(propertyKey)) {
+            view.setCornerRadiusRes(model.get(StatusProperties.STATUS_ICON_CORNER_RADIUS));
         } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
             view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {

@@ -61,7 +61,8 @@ public class StatusProperties {
         }
 
         /** Constructor for a custom bitmap. */
-        public StatusIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
+        public StatusIconResource(
+                @Nullable String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
             mIconIdentifier = iconIdentifier;
             mBitmap = bitmap;
             mTint = tint;
@@ -291,6 +292,9 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<StatusIconResource> STATUS_ICON_RESOURCE =
             new WritableObjectPropertyKey<>();
 
+    /** The corner radius of the status icon. */
+    static final WritableIntPropertyKey STATUS_ICON_CORNER_RADIUS = new WritableIntPropertyKey();
+
     /** The StatusView tooltip text resource. */
     static final WritableIntPropertyKey STATUS_VIEW_TOOLTIP_TEXT = new WritableIntPropertyKey();
 
@@ -338,6 +342,7 @@ public class StatusProperties {
                 STATUS_ACCESSIBILITY_TOAST_RES,
                 STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 STATUS_ICON_ALPHA,
+                STATUS_ICON_CORNER_RADIUS,
                 STATUS_ICON_DESCRIPTION_RES,
                 STATUS_ICON_RESOURCE,
                 STATUS_VIEW_TOOLTIP_TEXT,

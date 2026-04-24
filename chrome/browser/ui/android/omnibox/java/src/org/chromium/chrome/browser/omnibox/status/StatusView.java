@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.TooltipCompat;
@@ -96,6 +97,8 @@ public class StatusView extends LinearLayout {
     private @Nullable Integer mIconAnimationDurationForTests;
     private final SettableMonotonicObservableSupplier<Boolean> mIsVisibleSupplier =
             ObservableSuppliers.createMonotonic(null);
+    private final RoundedCornerOutlineProvider mIconCornerRadiusProvider =
+            new RoundedCornerOutlineProvider(/* radius= */ 0);
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
@@ -141,14 +144,7 @@ public class StatusView extends LinearLayout {
         mStatusIconSize =
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
-
-        // Configure icon rounding.
-        mIconView.setOutlineProvider(
-                new RoundedCornerOutlineProvider(
-                        getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.omnibox_search_engine_logo_composed_size)
-                                / 2));
+        setCornerRadiusRes(R.dimen.omnibox_search_engine_logo_composed_half_size);
         mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
@@ -440,6 +436,11 @@ public class StatusView extends LinearLayout {
                                         AccessibilityNodeInfo.ACTION_CLICK, onTapDescription));
                     }
                 });
+    }
+
+    /** Specify the corner radius of the icon outline provider. */
+    void setCornerRadiusRes(@DimenRes int radiusRes) {
+        mIconCornerRadiusProvider.setRadius(getResources().getDimensionPixelSize(radiusRes));
     }
 
     /** Toggle use of animations. */

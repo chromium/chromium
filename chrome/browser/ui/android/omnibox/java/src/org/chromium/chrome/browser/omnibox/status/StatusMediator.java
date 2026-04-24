@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoActi
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +53,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -60,6 +63,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /** Contains the controller logic of the Status component. */
 @NullMarked
@@ -84,10 +88,13 @@ public class StatusMediator
     private final PageInfoAction mPageInfoAction;
     private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final OnClickListener mFuseboxOnPlusButtonClicked;
+    private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
+    private final OmniboxImageSupplier mImageSupplier;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             this::onSiteSearchDataChanged;
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
             this::onFuseboxStateChanged;
+    private final Callback<@Nullable GURL> mOnExactMatchUrlChanged = this::onExactMatchUrlChanged;
 
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
@@ -104,7 +111,6 @@ public class StatusMediator
     private @ColorRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
-    private boolean mUrlBarTextIsSearch = true;
     private boolean mIsStoreIconShowing;
     private float mUrlFocusPercent;
     private @Nullable CookieControlsBridge mCookieControlsBridge;
@@ -119,6 +125,9 @@ public class StatusMediator
     private Drawable mVerboseStatusBackground;
     private Drawable mVerboseStatusBackgroundIncognito;
     private boolean mShowStatusIconForSecureOrigins;
+    private @Nullable GURL mExactMatchFetchedUrl;
+    private @Nullable Bitmap mExactMatchFavicon;
+    private boolean mShowExactMatchGlobe;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -130,8 +139,10 @@ public class StatusMediator
      * @param profileSupplier Supplies the current {@link Profile}.
      * @param pageInfoIphController Manages when an IPH bubble for PageInfo is shown.
      * @param windowAndroid The current {@link WindowAndroid}.
+     * @param pageInfoAction Callback to display the page info UI surface.
      * @param fuseboxStateSupplier Notifies about the state of the fusebox.
      * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
+     * @param exactMatchUrlSupplier Holds the url of an exact match, null otherwise.
      */
     public StatusMediator(
             PropertyModel model,
@@ -145,7 +156,8 @@ public class StatusMediator
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
             NonNullObservableSupplier<Integer> fuseboxStateSupplier,
-            Runnable onPlusButtonClicked) {
+            Runnable onPlusButtonClicked,
+            NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         initBackgroundDrawables(context);
         mModel = model;
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
@@ -171,6 +183,10 @@ public class StatusMediator
         mFuseboxOnPlusButtonClicked = v -> onPlusButtonClicked.run();
         mFuseboxStateSupplier.addSyncObserver(mOnFuseboxStateChanged);
 
+        mImageSupplier = new OmniboxImageSupplier(context);
+        mExactMatchUrlSupplier = exactMatchUrlSupplier;
+        mExactMatchUrlSupplier.addSyncObserver(mOnExactMatchUrlChanged);
+
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
                         context,
@@ -189,6 +205,7 @@ public class StatusMediator
                     }
                     mSearchEngineUtils = SearchEngineUtils.getForProfile(p);
                     mSearchEngineUtils.addIconObserver(this);
+                    mImageSupplier.setProfile(p);
                 });
 
         updateColorTheme();
@@ -215,9 +232,9 @@ public class StatusMediator
             mCookieControlsBridge.destroy();
             mCookieControlsBridge = null;
         }
-        if (mFuseboxStateSupplier != null) {
-            mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
-        }
+        mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
+        mExactMatchUrlSupplier.removeObserver(mOnExactMatchUrlChanged);
+        mImageSupplier.destroy();
     }
 
     /** Toggle animations of icon changes. */
@@ -322,9 +339,16 @@ public class StatusMediator
         updateStatusViewVisibility();
         updateStatusViewMinWidth();
 
-        // Set the default match to be a search on an unfocus event to avoid the globe sticking
-        // around for subsequent focus events.
-        if (!mUrlHasFocus) updateLocationBarIconForDefaultMatchCategory(true);
+        // When not focused, it is important to have a smaller corner radius to ensure the circular
+        // look is maintained. when focused, there is more space, and we can expand to allow
+        // matching with the suggestions for favicon rounding. This doesn't actually affect most
+        // things that show.
+        @DimenRes
+        int cornerRes =
+                mUrlHasFocus && OmniboxFeatures.sExactMatchFavicons.isEnabled()
+                        ? R.dimen.omnibox_small_icon_rounding_radius
+                        : R.dimen.omnibox_search_engine_logo_composed_half_size;
+        mModel.set(StatusProperties.STATUS_ICON_CORNER_RADIUS, cornerRes);
     }
 
     private void updateStatusViewMinWidth() {
@@ -499,14 +523,23 @@ public class StatusMediator
         mIsStoreIconShowing = false;
         mIsSecurityViewShown = false;
 
-        @DrawableRes int iconRes = 0;
-        @ColorRes int tintRes = 0;
-        @StringRes int toastRes = 0;
+        @DrawableRes int iconRes = Resources.ID_NULL;
+        @ColorRes int tintRes = Resources.ID_NULL;
+        @StringRes int toastRes = Resources.ID_NULL;
         @StringRes int descRes = Resources.ID_NULL;
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
         OnClickListener clickListener = null;
+        Bitmap bitmap = null;
 
-        if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT) {
+        boolean exactMatch = OmniboxFeatures.sExactMatchFavicons.isEnabled();
+        if (exactMatch && mShowExactMatchGlobe) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            iconRes = R.drawable.ic_globe_24dp;
+            tintRes = mNavigationIconTintRes;
+        } else if (exactMatch && mExactMatchFavicon != null) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            bitmap = mExactMatchFavicon;
+        } else if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             tintRes = mNavigationIconTintRes;
             iconRes = R.drawable.ic_add_round_20dp_with_inset;
@@ -536,14 +569,14 @@ public class StatusMediator
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             if (mShowStatusIconWhenUrlFocused) {
                 iconRes =
-                        mUrlBarTextIsSearch
+                        isUrlBarTextSearch()
                                 ? R.drawable.ic_suggestion_magnifier
                                 : R.drawable.ic_globe_24dp;
                 tintRes = mNavigationIconTintRes;
             }
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return;
-        } else if (mSecurityIconRes != 0) {
+        } else if (mSecurityIconRes != Resources.ID_NULL) {
             if (mPageSecurityLevel == ConnectionSecurityLevel.SECURE
                     && (isPageInfoMovedToAppMenu() || !mShowStatusIconForSecureOrigins)) {
                 mIsSecurityViewShown = false;
@@ -556,9 +589,13 @@ public class StatusMediator
             }
         }
 
-        // If the icon is missing, fallback to the info icon.
-        StatusIconResource statusIcon =
-                iconRes == 0 ? null : new StatusIconResource(iconRes, tintRes);
+        StatusIconResource statusIcon = null;
+        if (bitmap != null) {
+            statusIcon = new StatusIconResource(/* iconIdentifier= */ null, bitmap, tintRes);
+        } else if (iconRes != Resources.ID_NULL) {
+            statusIcon = new StatusIconResource(iconRes, tintRes);
+        }
+
         if (statusIcon != null) {
             statusIcon.setTransitionType(transitionType);
         }
@@ -625,7 +662,7 @@ public class StatusMediator
         }
 
         // If the current url text is a valid url, then swap the dse icon for a globe.
-        if (!mUrlBarTextIsSearch) {
+        if (!isUrlBarTextSearch()) {
             return new StatusIconResource(
                     R.drawable.ic_globe_24dp,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
@@ -672,15 +709,43 @@ public class StatusMediator
         return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
     }
 
-    /**
-     * Informs StatusMediator that the default match may have changed categories, updating the
-     * status icon if it has.
-     */
-    /* package */ void updateLocationBarIconForDefaultMatchCategory(boolean defaultMatchIsSearch) {
-        if (defaultMatchIsSearch != mUrlBarTextIsSearch) {
-            mUrlBarTextIsSearch = defaultMatchIsSearch;
-            updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    private void onExactMatchUrlChanged(@Nullable GURL url) {
+        if (!OmniboxFeatures.sExactMatchFavicons.isEnabled()) {
+            if ((mExactMatchFetchedUrl == null) != (url == null)) {
+                mExactMatchFetchedUrl = url;
+                updateLocationBarIcon(IconTransitionType.CROSSFADE);
+            }
+            return;
         }
+
+        mExactMatchFetchedUrl = url;
+        if (url == null) {
+            mExactMatchFavicon = null;
+            mShowExactMatchGlobe = false;
+            updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        } else {
+            mImageSupplier.fetchFavicon(url, bitmap -> onFaviconFetched(url, bitmap));
+        }
+    }
+
+    private void onFaviconFetched(GURL url, @Nullable Bitmap favicon) {
+        // If we're not the most recent fetch request, give up.
+        if (!url.equals(mExactMatchFetchedUrl)) return;
+
+        boolean useGlobe = favicon == null;
+
+        // When the url changes, but still the same domain, such as adding a longer path or changing
+        // the scheme, we'll get a different url and different bitmap, but they're identical. Even
+        // though this checks pixel by pixel, it avoids the weirdness of cross-fading what should be
+        // a no-op.
+        if ((mShowExactMatchGlobe && useGlobe)
+                || (mExactMatchFavicon != null && mExactMatchFavicon.sameAs(favicon))) {
+            return;
+        }
+
+        mExactMatchFavicon = favicon;
+        mShowExactMatchGlobe = useGlobe;
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     // CookieControlsObserver interface.
@@ -943,6 +1008,10 @@ public class StatusMediator
     private boolean isContextualTasksFusebox() {
         return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
                 == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+    }
+
+    private boolean isUrlBarTextSearch() {
+        return mExactMatchUrlSupplier.get() == null;
     }
 
     private static boolean isPageInfoMovedToAppMenu() {

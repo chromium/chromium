@@ -40,6 +40,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -80,6 +81,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      *     visibility of the browser controls (i.e. toolbar).
      * @param fuseboxStateSupplier Used to decide if an plus button for fusebox should be shown.
      * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
+     * @param exactMatchUrlSupplier The URL if there is an exact match.
      */
     public StatusCoordinator(
             boolean isTablet,
@@ -92,7 +94,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
             @Nullable BrowserStateBrowserControlsVisibilityDelegate
                     browserControlsVisibilityDelegate,
             NonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
-            Runnable onPlusButtonClicked) {
+            Runnable onPlusButtonClicked,
+            NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -124,7 +127,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                         windowAndroid,
                         pageInfoAction,
                         fuseboxStateSupplier,
-                        onPlusButtonClicked);
+                        onPlusButtonClicked,
+                        exactMatchUrlSupplier);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(
@@ -323,16 +327,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     public int getMeasuredWidth() {
         // TODO(crbug.com/40707964): try to hide this method
         return mStatusView.getMeasuredWidth();
-    }
-
-    /**
-     * Notifies StatusCoordinator that the default match for the currently entered autocomplete text
-     * has been classified, indicating whether the default match is a search.
-     *
-     * @param defaultMatchIsSearch Whether the default match is a search.
-     */
-    public void onDefaultMatchClassified(boolean defaultMatchIsSearch) {
-        mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
     }
 
     /**

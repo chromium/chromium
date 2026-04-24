@@ -403,7 +403,8 @@ public class LocationBarCoordinator
                         pageInfoAction,
                         browserControlsVisibilityDelegate,
                         fuseboxStateSupplier,
-                        mFuseboxCoordinator::plusButtonClicked);
+                        mFuseboxCoordinator::plusButtonClicked,
+                        mLocationBarMediator.getExactMatchUrlSupplier());
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
