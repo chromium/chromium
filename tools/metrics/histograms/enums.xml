@@ -13367,6 +13367,7 @@ from previous Chrome versions.
   <int value="-251167216" label="ArcUpdateO4CListViaA2C2:disabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
+  <int value="-250631040" label="ReadAnythingReadabilitySelectText:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
   <int value="-250357169" label="MediaAppImageMantisReimagine:enabled"/>
   <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
@@ -19293,6 +19294,7 @@ from previous Chrome versions.
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>
   <int value="1715173626" label="SyncWebauthnCredentials:disabled"/>
+  <int value="1715216421" label="ReadAnythingReadabilitySelectText:enabled"/>
   <int value="1715338237" label="ContextualSearchSecondTap:disabled"/>
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>

@@ -6327,6 +6327,11 @@ inline constexpr char kReadAnythingDocsLoadMoreButtonDescription[] =
     "Adds a button to the end of the Reading Mode UI. When clicked, "
     "the main page scrolls to show the next page's content.";
 
+inline constexpr char kReadAnythingReadabilitySelectTextName[] =
+    "Reading Mode Select Text with Readability";
+inline constexpr char kReadAnythingReadabilitySelectTextDescription[] =
+    "Enables the select text feature for readability distillation";
+
 inline constexpr char kReadAnythingWithReadabilityName[] =
     "Reading Mode Experimental Webpage Distilation";
 inline constexpr char kReadAnythingWithReadabilityDescription[] =
