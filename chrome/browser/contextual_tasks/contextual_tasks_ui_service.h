@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -56,6 +57,7 @@ class LensMediaLinkHandler;
 namespace contextual_tasks {
 inline constexpr char kTaskQueryParam[] = "chrome_task_id";
 
+class ContextualTasksCookieSynchronizer;
 class ContextualTasksService;
 class ContextualTasksUIInterface;
 
@@ -78,13 +80,17 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<ContextualTasksUiServiceDelegate> delegate,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       signin::IdentityManager* identity_manager,
-      AimEligibilityService* aim_eligibility_service);
+      AimEligibilityService* aim_eligibility_service,
+      std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
   ~ContextualTasksUiService() override;
 
   // KeyedService:
   void Shutdown() override;
+
+  // Triggers the cookie synchronization to the isolated partition.
+  virtual void EnsureCookiesSynced();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -279,9 +285,8 @@ class ContextualTasksUiService : public KeyedService {
 
   // Fetches an access token for the primary account.
   using GetAccessTokenCallback = base::OnceCallback<void(const std::string&)>;
-  virtual void GetAccessToken(
-      GetAccessTokenCallback callback,
-      base::WeakPtr<content::WebContents> web_contents);
+  virtual void GetAccessToken(GetAccessTokenCallback callback,
+                              base::WeakPtr<content::WebContents> web_contents);
 
   // Gets the entry point override for a given task.
   omnibox::ChromeAimEntryPoint GetInitialEntryPointForTask(
@@ -335,6 +340,9 @@ class ContextualTasksUiService : public KeyedService {
 
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);
+
+  // Called when AIM eligibility changes.
+  void OnAimEligibilityChanged();
 
   // Focus an existing tab based on the provided URL if it exists. The URLs are
   // compared without text selection directives as they don't change the page
@@ -404,6 +412,13 @@ class ContextualTasksUiService : public KeyedService {
 
   // A timer used to refresh the OAuth token before it expires.
   base::OneShotTimer token_refresh_timer_;
+
+  // The cookie synchronizer for the isolated partition.
+  std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer_;
+
+  // Subscription for AimEligibilityService changes to trigger cookie sync.
+  base::CallbackListSubscription aim_eligibility_subscription_;
+  bool is_cobrowse_eligible_ = false;
 
   // Map a task's ID to the URL that was used to create it, if it exists. This
   // is primarily used in init flows where the contextual tasks UI is

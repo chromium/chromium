@@ -26,6 +26,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -191,16 +192,37 @@ ContextualTasksUiService::ContextualTasksUiService(
     std::unique_ptr<ContextualTasksUiServiceDelegate> delegate,
     ContextualTasksService* contextual_tasks_service,
     signin::IdentityManager* identity_manager,
-    AimEligibilityService* aim_eligibility_service)
+    AimEligibilityService* aim_eligibility_service,
+    std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer)
     : profile_(profile),
       delegate_(std::move(delegate)),
       contextual_tasks_service_(contextual_tasks_service),
       identity_manager_(identity_manager),
       aim_eligibility_service_(aim_eligibility_service),
       request_access_token_backoff_(
-          &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {}
+          &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy),
+      cookie_synchronizer_(std::move(cookie_synchronizer)) {
+  if (contextual_tasks::ShouldEnableCookiePrefetch() &&
+      aim_eligibility_service_) {
+    is_cobrowse_eligible_ = aim_eligibility_service_->IsCobrowseEligible();
+    aim_eligibility_subscription_ =
+        aim_eligibility_service_->RegisterEligibilityChangedCallback(
+            base::BindRepeating(
+                &ContextualTasksUiService::OnAimEligibilityChanged,
+                base::Unretained(this)));
+    if (is_cobrowse_eligible_) {
+      EnsureCookiesSynced();
+    }
+  }
+}
 
 ContextualTasksUiService::~ContextualTasksUiService() = default;
+
+void ContextualTasksUiService::EnsureCookiesSynced() {
+  if (cookie_synchronizer_) {
+    cookie_synchronizer_->CopyCookiesToWebviewStoragePartition();
+  }
+}
 
 void ContextualTasksUiService::Shutdown() {
   for (auto& observer : observers_) {
@@ -402,6 +424,15 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
            "RunPendingAccessTokenCallbacks running callback";
     std::move(callback_pair.first).Run(token);
   }
+}
+
+void ContextualTasksUiService::OnAimEligibilityChanged() {
+  bool is_cobrowse_eligible = aim_eligibility_service_->IsCobrowseEligible();
+  // Trigger cookie sync only on a transition from false to true.
+  if (is_cobrowse_eligible && !is_cobrowse_eligible_) {
+    EnsureCookiesSynced();
+  }
+  is_cobrowse_eligible_ = is_cobrowse_eligible;
 }
 
 tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(

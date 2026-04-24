@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -117,7 +118,8 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                                  /*delegate=*/nullptr,
                                  contextual_tasks_service,
                                  /*identity_manager=*/nullptr,
-                                 /*aim_eligibility_service=*/nullptr) {}
+                                 /*aim_eligibility_service=*/nullptr,
+                                 /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,

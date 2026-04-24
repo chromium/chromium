@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+
 namespace contextual_tasks {
 
 MockContextualTasksUiService::MockContextualTasksUiService()
@@ -11,7 +13,8 @@ MockContextualTasksUiService::MockContextualTasksUiService()
                                /*delegate=*/nullptr,
                                /*contextual_tasks_service=*/nullptr,
                                /*identity_manager=*/nullptr,
-                               /*aim_eligibility_service=*/nullptr) {}
+                               /*aim_eligibility_service=*/nullptr,
+                               /*cookie_synchronizer=*/nullptr) {}
 
 MockContextualTasksUiService::MockContextualTasksUiService(
     Profile* profile,
@@ -30,7 +33,8 @@ MockContextualTasksUiService::MockContextualTasksUiService(
                                nullptr,
                                service,
                                identity_manager,
-                               aim_eligibility_service) {}
+                               aim_eligibility_service,
+                               /*cookie_synchronizer=*/nullptr) {}
 
 MockContextualTasksUiService::~MockContextualTasksUiService() = default;
 

@@ -247,10 +247,6 @@ class ContextualTasksUI
   // Shows an OAuth error dialog.
   void ShowOauthErrorDialog();
 
-  void SetCookieSynchronizerForTesting(
-      std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
-          cookie_synchronizer);
-
  private:
   // An observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
@@ -308,8 +304,6 @@ class ContextualTasksUI
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
-  std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
-      cookie_synchronizer_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;

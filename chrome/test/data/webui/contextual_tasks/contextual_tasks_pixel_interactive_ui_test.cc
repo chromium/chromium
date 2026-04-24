@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,7 +29,8 @@ class FakeContextualTasksUiService
             /*delegate=*/nullptr,
             /*contextual_tasks_service=*/nullptr,
             /*identity_manager=*/nullptr,
-            /*aim_eligibility_service=*/nullptr) {}
+            /*aim_eligibility_service=*/nullptr,
+            /*cookie_synchronizer=*/nullptr) {}
   GURL GetDefaultAiPageUrl() override { return GURL(url::kAboutBlankURL); }
 
   static std::unique_ptr<KeyedService> BuildFakeService(

@@ -44,7 +44,10 @@ ContextualTasksCookieSynchronizer::ContextualTasksCookieSynchronizer(
     signin::IdentityManager* identity_manager)
     : context_(context), identity_manager_(identity_manager) {
   CHECK(context_);
-  observation_.Observe(identity_manager);
+  // `identity_manager` can be nullptr in tests.
+  if (identity_manager_) {
+    observation_.Observe(identity_manager_);
+  }
 }
 
 ContextualTasksCookieSynchronizer::~ContextualTasksCookieSynchronizer() =

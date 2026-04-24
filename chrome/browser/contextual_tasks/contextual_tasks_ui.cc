@@ -256,12 +256,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  if (contextual_tasks::ShouldEnableCookieSync()) {
-    cookie_synchronizer_ =
-        std::make_unique<contextual_tasks::ContextualTasksCookieSynchronizer>(
-            web_ui->GetWebContents()->GetBrowserContext(),
-            IdentityManagerFactory::GetForProfile(profile));
-  }
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
           web_ui->GetWebContents(),
@@ -858,12 +852,6 @@ void ContextualTasksUI::ShowOauthErrorDialog() {
   }
 }
 
-void ContextualTasksUI::SetCookieSynchronizerForTesting(
-    std::unique_ptr<contextual_tasks::ContextualTasksCookieSynchronizer>
-        cookie_synchronizer) {
-  cookie_synchronizer_ = std::move(cookie_synchronizer);
-}
-
 void ContextualTasksUI::OnInnerWebContentsCreated(
     content::WebContents* inner_contents) {
   // This is assumed to only be called once per WebUI lifetime. Can be called
@@ -877,13 +865,10 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
       inner_contents, ui_service_, contextual_tasks_service_, this);
   embedded_web_contents_ = inner_contents->GetWeakPtr();
 
-  // If the cookie sync is enabled, trigger the cookie sync now that the
-  // embedded page is created. This is a fire and forget call, assuming the
-  // cookie sync will succeed eventually, and relying on OAuth tokens until
-  // then.
-  if (cookie_synchronizer_) {
-    cookie_synchronizer_->CopyCookiesToWebviewStoragePartition();
-  }
+  // Trigger the cookie sync now that the embedded page is created. This is a
+  // fire and forget call, assuming the cookie sync will succeed eventually, and
+  // relying on OAuth tokens until then.
+  ui_service_->EnsureCookiesSynced();
 }
 
 void ContextualTasksUI::OnContextRetrievedForActiveTab(

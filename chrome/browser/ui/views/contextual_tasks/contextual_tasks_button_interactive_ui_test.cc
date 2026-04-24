@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
@@ -93,7 +94,8 @@ class TestingContextualTasksUiService
                                  /*delegate=*/nullptr,
                                  contextual_tasks_service,
                                  identity_manager,
-                                 aim_eligibility_service) {}
+                                 aim_eligibility_service,
+                                 /*cookie_synchronizer=*/nullptr) {}
   ~TestingContextualTasksUiService() override = default;
 
   bool CookieJarContainsPrimaryAccount() override {

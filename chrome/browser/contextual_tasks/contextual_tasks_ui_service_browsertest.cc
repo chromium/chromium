@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -156,11 +157,13 @@ class TestContextualTasksUiService : public ContextualTasksUiService {
       Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       AimEligibilityService* aim_eligibility_service)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 contextual_tasks_service,
-                                 /*identity_manager=*/nullptr,
-                                 aim_eligibility_service) {}
+      : ContextualTasksUiService(
+            profile,
+            /*delegate=*/nullptr,
+            contextual_tasks_service,
+            /*identity_manager=*/nullptr,
+            aim_eligibility_service,
+            std::unique_ptr<ContextualTasksCookieSynchronizer>()) {}
   ~TestContextualTasksUiService() override = default;
 
   MOCK_METHOD(std::unique_ptr<lens::LensMediaLinkHandler>,

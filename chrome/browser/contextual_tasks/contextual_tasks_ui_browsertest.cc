@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -177,7 +179,8 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
   }
 
   // This callback installs the fake factories for IdentityTestEnvironment.
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     contextual_tasks::ContextualTasksServiceFactory::GetInstance()
@@ -314,6 +317,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   side_panel_controller->OnSidePanelStateChanged();
   run_loop.Run();
 }
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
   // Setup LensController
   auto override =
@@ -355,16 +359,49 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
   handler_remote.FlushForTesting();
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+class ContextualTasksUICookieSyncBrowserTest
+    : public ContextualTasksUIBrowserTest {
+ public:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    ContextualTasksUIBrowserTest::OnWillCreateBrowserContextServices(context);
+    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context,
+            base::BindRepeating(
+                &ContextualTasksUICookieSyncBrowserTest::CreateMockUiService,
+                base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    ContextualTasksUIBrowserTest::TearDownOnMainThread();
+    mock_synchronizer_ = nullptr;
+  }
+
+  std::unique_ptr<KeyedService> CreateMockUiService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    auto delegate = std::make_unique<
+        contextual_tasks::ContextualTasksUiServiceDelegateDesktop>(profile);
+    auto mock = std::make_unique<
+        testing::NiceMock<MockContextualTasksCookieSynchronizer>>(
+        profile, IdentityManagerFactory::GetForProfile(profile));
+    mock_synchronizer_ = mock.get();
+    return std::make_unique<contextual_tasks::ContextualTasksUiService>(
+        profile, std::move(delegate),
+        contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile),
+        IdentityManagerFactory::GetForProfile(profile),
+        AimEligibilityServiceFactory::GetForProfile(profile), std::move(mock));
+  }
+
+ protected:
+  raw_ptr<MockContextualTasksCookieSynchronizer> mock_synchronizer_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUICookieSyncBrowserTest,
                        OnInnerWebContentsCreated_TriggersCookieSync) {
-  auto mock_synchronizer = std::make_unique<
-      testing::StrictMock<MockContextualTasksCookieSynchronizer>>(
-      browser()->profile(), identity_test_env_->identity_manager());
-
-  EXPECT_CALL(*mock_synchronizer, CopyCookiesToWebviewStoragePartition())
+  EXPECT_CALL(*mock_synchronizer_, CopyCookiesToWebviewStoragePartition())
       .Times(1);
-
-  controller_->SetCookieSynchronizerForTesting(std::move(mock_synchronizer));
 
   // Create inner contents to trigger the observer.
   std::unique_ptr<content::WebContents> inner_contents =
