@@ -33,10 +33,12 @@ from repeating_log import RepeatingLog
 CAST_BTN_XPATH = "//button[text()='Launch app']"
 CAST_URL = (f"http://{common.LOCAL_HOST_IP}:{common.SERVER_PORT}/"
             "cast_starter.html?flavor=stable")
+# This is set by the fleet team as the IP for all receiver devices.
+RECEIVER_IP = "172.16.0.3:5555"
 
 CHROME_OPTIONS = [
-    # Redirects logging output to stderr to better catch automation issues.
-    "--enable-logging=stderr",
+    # Redirects logging output to file.
+    "--enable-logging",
     # Allows casting to devices with public IPs, which is necessary for our
     # current lab setup.
     "--media-router-cast-allow-all-ips",
@@ -52,7 +54,33 @@ CHROME_OPTIONS = [
     "--no-default-browser-check",
     # Launches Chrome in fullscreen mode to prevent scrollbar clipping.
     "--start-fullscreen",
+    # Enables WebRTC event logging extensions.
+    "--enable-webrtc-event-logging-extensions",
 ]
+
+PERFETTO_CONFIG = """
+buffers: {
+    size_kb: 65536
+    fill_policy: DISCARD
+}
+data_sources: {
+    config {
+        name: "linux.ftrace"
+        ftrace_config {
+            ftrace_events: "sched/sched_switch"
+            ftrace_events: "sched/sched_wakeup"
+            ftrace_events: "power/cpu_frequency"
+            ftrace_events: "power/cpu_idle"
+        }
+    }
+}
+data_sources: {
+    config {
+        name: "android.track_event"
+    }
+}
+duration_ms: 40000
+"""
 
 
 def connect_to_remote_driver(chrome_options, binary_location):
@@ -98,6 +126,11 @@ def setup_test_environment(args, chrome_version):
     for option in CHROME_OPTIONS:
         chrome_options.add_argument(option)
 
+    # Dynamically set the --log-file path.
+    log_file_path = ('/tmp/chrome_debug.log' if args.sender_os == 'mac'
+                     else f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug.log')
+    chrome_options.add_argument(f'--log-file={log_file_path}')
+
     binary_path = None
     if args.sender_os == 'mac':
         binary_path = (f'{remote_app_path}/Contents/MacOS/Google Chrome for '
@@ -113,6 +146,7 @@ def setup_test_environment(args, chrome_version):
 
     chrome_options.binary_location = binary_path
     driver = connect_to_remote_driver(chrome_options, binary_path)
+
     enable_tab_mirroring(driver)
 
     return driver, tunnel_proc, actual_version
@@ -233,7 +267,18 @@ def run_performance_test(video_file: str, driver: webdriver, args):
                f'{common.SERVER_PORT}/video.html?file={video_file}')
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 
+    # TODO - b/506206539: Refactor injected logging code into functions.
+    # Best-effort reset of tracing state in case a previous run leaked it.
+    try:
+        reset_resp = driver.execute_cdp_cmd('Tracing.end', {})
+        reset_stream = reset_resp.get('stream')
+        if reset_stream:
+            driver.execute_cdp_cmd('IO.close', {'handle': reset_stream})
+    except Exception: # pylint: disable=broad-exception-caught
+        pass
+
     casting = False
+    rec_proc_local = None
     try:
         # pylint: disable=consider-using-with
         rec_proc_local = subprocess.Popen(
@@ -254,6 +299,50 @@ def run_performance_test(video_file: str, driver: webdriver, args):
             if "Stream mapping:" in line:
                 logging.info("Started recording.")
                 break
+
+        logging.info("Starting Sender Perfetto trace via CDP...")
+        # Attempt to start sender trace with retries to handle state collision.
+        for attempt in range(3):
+            try:
+                driver.execute_cdp_cmd('Tracing.start', {
+                    'categories': 'cast,media,webrtc,gpu,blink',
+                    'transferMode': 'ReturnAsStream'
+                })
+                break
+            except Exception as e:
+                if "Tracing has already been started" in str(e) and attempt < 2:
+                    logging.warning(
+                        "Tracing collision detected. Attempting reset and "
+                        "retry...")
+                    try:
+                        reset_resp = driver.execute_cdp_cmd('Tracing.end', {})
+                        reset_stream = reset_resp.get('stream')
+                        if reset_stream:
+                            driver.execute_cdp_cmd('IO.close',
+                                                   {'handle': reset_stream})
+                    except Exception: # pylint: disable=broad-exception-caught
+                        pass
+                    # Wait significantly longer for the browser state to clear.
+                    time.sleep(10)
+                else:
+                    raise
+
+        logging.info("Starting Receiver Perfetto trace via ADB...")
+        try:
+            # pylint: disable=consider-using-with
+            receiver_trace_path = f'/data/local/tmp/{video_file}.perfetto-trace'
+            # Pre-clean the remote trace path to ensure fresh data.
+            subprocess.run(['adb', 'shell', 'rm', '-f', receiver_trace_path],
+                           check=False,
+                           timeout=5)
+            subprocess.Popen([
+                'adb', 'shell', 'perfetto',
+                '-c', '/data/local/tmp/receiver_perfetto_config.pbtx',
+                '--txt', '-o', receiver_trace_path,
+                '-t', '40s'
+            ])
+        except Exception as e:
+            logging.error("Failed to start receiver trace: %s", e)
 
         casting = start_tab_mirroring(driver, args)
 
@@ -302,6 +391,29 @@ def run_performance_test(video_file: str, driver: webdriver, args):
                      "and quit)...")
         time.sleep(30)
 
+        # Stop the Sender CDP Trace immediately after the test duration.
+        try:
+            logging.info("Stopping Sender Trace...")
+            tracing_end_resp = driver.execute_cdp_cmd('Tracing.end', {})
+            stream_id = tracing_end_resp.get('stream')
+            if stream_id:
+                sender_trace_path = os.path.join(
+                    common.TRACES_DIR,
+                    f"{video_file}_sender.perfetto-trace")
+                try:
+                    with open(sender_trace_path, 'w', encoding='utf-8') as f:
+                        while True:
+                            read_resp = driver.execute_cdp_cmd(
+                                'IO.read', {'handle': stream_id})
+                            f.write(read_resp.get('data', ''))
+                            if read_resp.get('eof'):
+                                break
+                finally:
+                    driver.execute_cdp_cmd('IO.close', {'handle': stream_id})
+                    logging.info("Sender trace closed.")
+        except Exception as e:
+            logging.error("Failed to collect sender trace: %s", e)
+
         rec_proc_local.communicate()
         logging.info("recording finished.")
 
@@ -323,18 +435,71 @@ def run_performance_test(video_file: str, driver: webdriver, args):
 
         logging.warning('Video analysis result of %s: %s', video_file, results)
     finally:
+        if driver and casting and args.receiver:
+            logging.info('Attempting to stop casting to "%s"...',
+                         args.receiver)
+            try:
+                driver.execute_cdp_cmd("Cast.stopCasting",
+                                       {"sinkName": args.receiver})
+                logging.info("'Cast.stopCasting' command sent.")
+                casting = False
+            except Exception as e:
+                logging.error("Error stopping cast: %s", e)
+
         if driver:
-            if casting and args.receiver:
-                logging.info('Attempting to stop casting to "%s"...',
-                             args.receiver)
-                try:
-                    driver.execute_cdp_cmd("Cast.stopCasting",
-                                           {"sinkName": args.receiver})
-                    logging.info("'Cast.stopCasting' command sent.")
-                    casting = False
-                except Exception as e:
-                    raise RuntimeError(f"Error stopping cast: "
-                                       f"{e}") from e
+            # Collect the Receiver Trace
+            try:
+                logging.info("Collecting Receiver Trace...")
+                receiver_trace_local_path = os.path.join(
+                    common.TRACES_DIR,
+                    f"{video_file}_receiver.perfetto-trace")
+                receiver_trace_remote_path = (
+                    f'/data/local/tmp/{video_file}.perfetto-trace')
+                subprocess.run([
+                    'adb', 'pull', receiver_trace_remote_path,
+                    receiver_trace_local_path
+                ],
+                               check=False,
+                               timeout=30)
+            except Exception as e:
+                logging.error("Failed to collect receiver trace: %s", e)
+
+            # Collect Receiver Logcat
+            try:
+                logging.info("Collecting Receiver Logcat...")
+                logcat_path = os.path.join(
+                    common.TRACES_DIR, f"{video_file}_receiver_logcat.txt")
+                with open(logcat_path, 'w', encoding='utf-8') as f:
+                    subprocess.run(['adb', 'logcat', '-d'],
+                                   stdout=f,
+                                   check=False,
+                                   timeout=30)
+                subprocess.run(['adb', 'logcat', '-c'],
+                               check=False,
+                               timeout=30)
+            except Exception as e:
+                logging.error("Failed to collect receiver logcat: %s", e)
+
+            # Collect the Sender Chrome Log
+            try:
+                logging.info("Collecting Sender Chrome Log...")
+                if args.sender_os == 'mac':
+                    log_file_path = '/tmp/chrome_debug.log'
+                else:
+                    # Use standard Windows path with forward slashes for scp.
+                    log_file_path = f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug.log'
+                sender_log_local_path = os.path.join(
+                    common.TRACES_DIR, f"{video_file}_chrome_debug.log")
+                key_path = os.path.expanduser('~/.ssh/id_ed25519')
+                subprocess.run([
+                    'scp', '-i', key_path, '-o', 'StrictHostKeyChecking=no',
+                    f'{args.username}@{args.sender}:{log_file_path}',
+                    sender_log_local_path
+                ],
+                               check=False,
+                               timeout=30)
+            except Exception as e:
+                logging.error("Failed to collect sender log: %s", e)
     return rec_proc_local
 
 def main():
@@ -370,10 +535,37 @@ def main():
     if os.path.exists(common.RECORDINGS_DIR):
         shutil.rmtree(common.RECORDINGS_DIR)
     os.makedirs(common.RECORDINGS_DIR)
+    if os.path.exists(common.TRACES_DIR):
+        shutil.rmtree(common.TRACES_DIR)
+    os.makedirs(common.TRACES_DIR)
 
     driver = None
     tunnel_proc = None
     actual_version = None
+
+    # One-time push of the perfetto config.
+    try:
+        local_config_path = '/tmp/receiver_perfetto_config.pbtx'
+        with open(local_config_path, 'w', encoding='utf-8') as f:
+            f.write(PERFETTO_CONFIG)
+        subprocess.run(['adb', 'connect', RECEIVER_IP],
+                       check=False,
+                       timeout=15)
+        subprocess.run([
+            'adb', 'push', local_config_path,
+            '/data/local/tmp/receiver_perfetto_config.pbtx'
+        ],
+                       check=False,
+                       timeout=10)
+        subprocess.run([
+            'adb', 'shell', 'chmod', '666',
+            '/data/local/tmp/receiver_perfetto_config.pbtx'
+        ],
+                       check=False,
+                       timeout=10)
+    except Exception as e:
+        logging.error("Failed to setup ADB receiver: %s. "
+                      "Receiver traces will not be collected.", e)
 
     try:
         driver, tunnel_proc, actual_version = setup_test_environment(args, cv)

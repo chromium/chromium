@@ -42,6 +42,8 @@ SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
 RECORDINGS_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
                               'recordings')
+TRACES_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
+                          'traces')
 LOCAL_HOST_IP = '127.0.0.1'
 REMOTE_URL = f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}'
 
@@ -163,7 +165,7 @@ def send_ssh_command(hostname, username, command, blocking=False):
         process = subprocess.run(ssh_command,
                                  capture_output=True,
                                  text=True,
-                                 timeout=60,
+                                 timeout=120,
                                  check=False)
     else:
         process = subprocess.Popen(  # pylint: disable=consider-using-with
@@ -491,8 +493,9 @@ def start_ssh_tunnel(args):
         # Optimization for tunnel throughput. Disable compression as video
         # data is already compressed.
         '-o', 'Compression=no',
-        '-o', 'ServerAliveInterval=30',
-        '-o', 'ServerAliveCountMax=3',
+        '-o', 'ServerAliveInterval=10',
+        '-o', 'ServerAliveCountMax=10',
+        '-o', 'TCPKeepAlive=yes',
         '-o', 'ExitOnForwardFailure=yes',
         '-L',
         f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
