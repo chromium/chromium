@@ -131,6 +131,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Regular" summary="The regular tab model selector."/>
 </variants>
 
+<variants name="TabStripAnimation">
+  <variant name="Collapse" summary="Expand to Collapsed animation"/>
+  <variant name="CollapseOnHover"
+      summary="Expand to Collapse on hover animation"/>
+  <variant name="Expand" summary="Collapse to Expand animation"/>
+  <variant name="ExpandOnHover"
+      summary="Collapse to Expand on hover animation"/>
+</variants>
+
 <variants name="TabStripMode">
   <variant name="HorizontalTabStrip"/>
   <variant name="VerticalTabStrip"/>
@@ -4092,6 +4101,17 @@ chromium-metrics-reviews@google.com.
     it would be difficult to define a start time. Entering the tabstrip is an
     approximation which will vary between users, but should still be useful for
     A/B comparison.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Vertical.{TabStripAnimation}.AnimationFPS" units="ms"
+    expires_after="2026-10-04">
+  <owner>estalin@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the frames per second for the tab strip animation. This is recorded
+    after each tab strip animation is completed when the tab strip expands or
+    collapses.
   </summary>
 </histogram>
 
