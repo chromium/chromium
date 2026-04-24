@@ -143,13 +143,6 @@ typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
 
 @end
 
-// Utilities ///////////////////////////////////////////////////////////////////
-
-BOOL isKeyDownForKeyCode(unsigned short keyCode) {
-  return CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,
-                               keyCode);
-}
-
 // Private Interface ///////////////////////////////////////////////////////////
 
 @interface ConfirmQuitPanelController (Private) <CAAnimationDelegate>
@@ -164,6 +157,16 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
 @end
 
 ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
+
+static BOOL __strong (^g_isKeyDownForKeyCodeMock)(unsigned short) = nil;
+
+BOOL isKeyDownForKeyCode(unsigned short keyCode) {
+  if (g_isKeyDownForKeyCodeMock) {
+    return g_isKeyDownForKeyCodeMock(keyCode);
+  }
+  return CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,
+                               keyCode);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -180,6 +183,14 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
     g_confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
   }
   return g_confirmQuitPanelController;
+}
+
++ (BOOL (^)(unsigned short))isKeyDownForKeyCodeMock {
+  return [g_isKeyDownForKeyCodeMock copy];
+}
+
++ (void)setIsKeyDownForKeyCodeMock:(BOOL (^)(unsigned short))mock {
+  g_isKeyDownForKeyCodeMock = [mock copy];
 }
 
 - (instancetype)init {
@@ -336,13 +347,6 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
       animationDuration:confirm_quit::kWindowFadeDuration.InSecondsF()];
   [animation startAnimation];
   _didHideWindows = NO;
-}
-
-- (void)simulateQuitForTesting {
-  _didHideWindows = YES;
-  for (NSWindow* window in NSApp.windows) {
-    window.alphaValue = 0.0;
-  }
 }
 
 - (void)animateFadeOut {

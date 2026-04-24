@@ -20,6 +20,11 @@
 // Returns a string representation fit for display.
 @property(class, readonly) NSString* keyCommandString;
 
+// For testing, a block that can be set to mock the return value of
+// `isKeyDownForKeyCode`. Used to simulate the pressing/holding of the quit
+// accelerator.
+@property(class, copy) BOOL (^isKeyDownForKeyCodeMock)(unsigned short);
+
 // Displays the "Hold to Quit" HUD and runs a nested event loop to determine
 // whether the application should terminate. This implements both the
 // "Hold to Quit" and "Double-tap to Quit" behaviors. Returns YES if the quit
@@ -40,10 +45,6 @@
 // Called when the quit was aborted *after* confirmations (for example, due to
 // pending downloads or `beforeunload`).
 - (void)cancel;
-
-// Hides windows and set state as if we had run `runModalLoop` and received
-// a key up from the user.
-- (void)simulateQuitForTesting;
 
 @end
 
