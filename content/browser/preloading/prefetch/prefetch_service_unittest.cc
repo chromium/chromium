@@ -553,7 +553,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     net::RequestPriority expected_priority = net::RequestPriority::IDLE;
     std::optional<std::string> sec_purpose_header_value = std::nullopt;
     net::HttpRequestHeaders additional_headers;
-    bool is_pre_prefetch = false;
   };
 
   void VerifyCommonRequestState(const GURL& url) {
@@ -1102,40 +1101,34 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     EXPECT_EQ(request->request.credentials_mode,
               network::mojom::CredentialsMode::kInclude);
 
-    // TODO(crbug.com/452389538): Remove this once `PrePrefetchContainer` uses
-    // the common utility to handle this properly.
-    if (!options.is_pre_prefetch) {
-      EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
+    EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
 
-      EXPECT_THAT(request->request.headers.GetHeader(blink::kPurposeHeaderName),
-                  testing::Optional(
-                      std::string(blink::kSecPurposePrefetchHeaderValue)));
-      std::string sec_purpose_header_value;
-      if (options.sec_purpose_header_value) {
-        sec_purpose_header_value = options.sec_purpose_header_value.value();
-      } else {
-        sec_purpose_header_value =
-            options.use_prefetch_proxy
-                ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
-                : blink::kSecPurposePrefetchHeaderValue;
-      }
-
-      EXPECT_THAT(
-          request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
-          testing::Optional(sec_purpose_header_value));
-
-      EXPECT_THAT(request->request.headers.GetHeader("Accept"),
-                  testing::Optional(FrameAcceptHeaderValue(
-                      /*allow_sxg_responses=*/true, browser_context())));
-
-      EXPECT_THAT(
-          request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
-          testing::Optional(std::string("1")));
-
-      ASSERT_TRUE(request->request.trusted_params.has_value());
-
-      VerifyIsolationInfo(request->request.trusted_params->isolation_info);
+    EXPECT_THAT(
+        request->request.headers.GetHeader(blink::kPurposeHeaderName),
+        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
+    std::string sec_purpose_header_value;
+    if (options.sec_purpose_header_value) {
+      sec_purpose_header_value = options.sec_purpose_header_value.value();
+    } else {
+      sec_purpose_header_value =
+          options.use_prefetch_proxy
+              ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
+              : blink::kSecPurposePrefetchHeaderValue;
     }
+
+    EXPECT_THAT(
+        request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
+        testing::Optional(sec_purpose_header_value));
+
+    EXPECT_THAT(request->request.headers.GetHeader("Accept"),
+                testing::Optional(FrameAcceptHeaderValue(
+                    /*allow_sxg_responses=*/true, browser_context())));
+
+    EXPECT_THAT(request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
+                testing::Optional(std::string("1")));
+
+    ASSERT_TRUE(request->request.trusted_params.has_value());
+    VerifyIsolationInfo(request->request.trusted_params->isolation_info);
 
     EXPECT_EQ(request->request.priority, options.expected_priority);
 
@@ -1817,10 +1810,11 @@ TEST_P(PrefetchServicePrePrefetchTest, SuccessCase_Embedder_PrePrefetch) {
                    /*use_prefetch_proxy=*/false);
   auto handle = MakePrefetchFromPrePrefetch(GURL("https://example.com"));
 
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = false,
-                            .expected_priority = net::RequestPriority::HIGHEST,
-                            .is_pre_prefetch = true});
+  VerifyCommonRequestState(
+      GURL("https://example.com"),
+      VerifyCommonRequestStateOptions{
+          .use_prefetch_proxy = false,
+          .expected_priority = net::RequestPriority::HIGHEST});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -3419,10 +3413,11 @@ TEST_P(PrefetchServicePrePrefetchTest,
                    /*use_prefetch_proxy=*/false);
   auto handle = MakePrefetchFromPrePrefetch(GURL("https://example.com/?a=1"));
 
-  VerifyCommonRequestState(GURL("https://example.com/?a=1"),
-                           {.use_prefetch_proxy = false,
-                            .expected_priority = net::RequestPriority::HIGHEST,
-                            .is_pre_prefetch = true});
+  VerifyCommonRequestState(
+      GURL("https://example.com/?a=1"),
+      VerifyCommonRequestStateOptions{
+          .use_prefetch_proxy = false,
+          .expected_priority = net::RequestPriority::HIGHEST});
   MakeResponseAndWait(
       net::HTTP_OK, net::OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/false,
