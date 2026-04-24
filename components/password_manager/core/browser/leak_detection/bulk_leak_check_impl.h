@@ -15,9 +15,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 
 namespace network {
 class SharedURLLoaderFactory;

@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 #include "url/gurl.h"
 
 namespace autofill {

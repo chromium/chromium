@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_MOCK_LEAK_DETECTION_DELEGATE_H_
 
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_delegate_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

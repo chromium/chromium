@@ -11,7 +11,7 @@
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 
 namespace password_manager {
 

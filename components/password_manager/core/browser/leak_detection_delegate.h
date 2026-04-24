@@ -12,7 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 
