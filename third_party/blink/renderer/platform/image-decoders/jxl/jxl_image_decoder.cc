@@ -190,13 +190,12 @@ void JXLImageDecoder::ScanFrames() {
     CHECK_LE(scanner_input_offset_, data_size);
 
     if (result.status == JxlRsStatus::NeedMoreInput) {
+      // If more data is available in the buffer, continue feeding.
+      if (result.bytes_consumed > 0 && scanner_input_offset_ < data_size) {
+        continue;
+      }
       if (all_input) {
         SetFailed();
-        return;
-      }
-      // If more data is available in the buffer, continue feeding.
-      if (result.bytes_consumed > 0 && decoder_input_offset_ < data_size) {
-        continue;
       }
       return;
     }
@@ -290,13 +289,12 @@ void JXLImageDecoder::Decode(wtf_size_t index) {
 }
 
 void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
-  if (Failed()) {
-    return;
-  }
-
   // Ensure that the frame scanner has fully caught up with the file received so
   // far.
   ScanFrames();
+  if (Failed()) {
+    return;
+  }
 
   // If we have basic image information, it has already been processed by the
   // frame scanner. Thus, we don't need to do anything else here.
@@ -440,13 +438,16 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
     CHECK_LE(decoder_input_offset_, data_size);
 
     if (result.status == JxlRsStatus::NeedMoreInput) {
-      if (all_input) {
-        SetFailed();
-        return;
-      }
       // If more data is available in the buffer, continue feeding.
       if (result.bytes_consumed > 0 && decoder_input_offset_ < data_size) {
         continue;
+      }
+      // We've exhausted all available data or made no progress.
+      if (all_input) {
+        // All network data received and fed, but decoder still wants more.
+        // This is a truncated or corrupt file.
+        SetFailed();
+        return;
       }
       // If we got here, the frame scanner has found basic info.
       // Hence, we should have enough data to reach the end of basic info
