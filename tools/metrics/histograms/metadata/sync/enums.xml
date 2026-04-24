@@ -824,6 +824,7 @@ chromium-metrics-reviews@google.com.
   <int value="200010" label="VoiceSearchLocale"/>
   <int value="200011" label="IOSBwgConsent"/>
   <int value="200012" label="IOSGeminiLiveConsent"/>
+  <int value="200013" label="IOSGeminiLiveIntroPlayed"/>
 <!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
 
 </enum>

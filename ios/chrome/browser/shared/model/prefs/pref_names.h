@@ -783,6 +783,10 @@ inline constexpr char kIOSBWGPageContentSetting[] =
 inline constexpr char kIOSBWGPromoImpressionCount[] =
     "ios.bwg.promo_impressions";
 
+// A boolean specifying whether the Gemini Live intro sequence has been played.
+inline constexpr char kIOSGeminiLiveIntroPlayed[] =
+    "ios.gemini.live_intro_played";
+
 // A boolean specifying whether the Gemini camera permission setting is enabled.
 inline constexpr char kIOSGeminiCameraSetting[] = "ios.gemini.camera.setting";
 

@@ -46,6 +46,10 @@ bool DidUserSeeGeminiPromo(PrefService* prefs) {
   return prefs->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
 }
 
+bool DidGeminiLiveIntroPlay(PrefService* prefs) {
+  return prefs->GetBoolean(::prefs::kIOSGeminiLiveIntroPlayed);
+}
+
 void UpdateUserConsentPrefs(bool value, PrefService* prefs) {
   prefs->SetBoolean(::prefs::kIOSBwgConsent, value);
 }

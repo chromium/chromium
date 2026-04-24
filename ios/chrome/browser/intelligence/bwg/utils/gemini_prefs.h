@@ -22,6 +22,7 @@ void ResetGeminiConsent(PrefService* prefs);
 FREState CurrentFREState(PrefService* prefs);
 bool DidUserConsentToGemini(PrefService* prefs);
 bool DidUserSeeGeminiPromo(PrefService* prefs);
+bool DidGeminiLiveIntroPlay(PrefService* prefs);
 void UpdateUserConsentPrefs(bool consent, PrefService* prefs);
 }  // namespace gemini
 

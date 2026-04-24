@@ -186,6 +186,8 @@ bool GeminiServiceImpl::CanUseGeminiModelExecution(
 
 void GeminiServiceImpl::ClearConsentPref() {
   pref_service_->ClearPref(prefs::kIOSBwgConsent);
+  pref_service_->ClearPref(prefs::kIOSGeminiLiveConsent);
+  pref_service_->ClearPref(prefs::kIOSGeminiLiveIntroPlayed);
 }
 
 void GeminiServiceImpl::LogFREState() {
