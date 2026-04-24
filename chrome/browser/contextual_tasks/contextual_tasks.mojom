@@ -284,6 +284,10 @@ interface Page {
   // Called by the browser process (C++) to notify the UI when the pin state
   // changes.
   OnSidePanelPinStateChanged(bool is_pinned);
+
+  // Called by the browser process (C++) to notify the UI whether the expand
+  // button should be enabled.
+  SetExpandButtonEnabled(bool enabled);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

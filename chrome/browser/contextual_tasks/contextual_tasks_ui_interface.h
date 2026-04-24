@@ -93,6 +93,9 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Moves the UI associated with this WebUI to a new tab.
   virtual void MoveTaskUiToNewTab() = 0;
 
+  // Notifies the UI that the expand button enabled state should be updated.
+  virtual void UpdateExpandButtonEnabled(bool enabled) = 0;
+
   virtual GURL GetWebUiUrl() = 0;
 
   // Mojo & Session.

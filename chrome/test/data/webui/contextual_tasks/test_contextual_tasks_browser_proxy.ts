@@ -41,6 +41,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'setShowReopenTabs',
       'onSidePanelPinStateChanged',
       'setInNlm',
+      'setExpandButtonEnabled',
     ]);
   }
 
@@ -159,6 +160,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   onSidePanelPinStateChanged(isPinned: boolean) {
     this.methodCalled('onSidePanelPinStateChanged', isPinned);
+  }
+
+  setExpandButtonEnabled(enabled: boolean) {
+    this.methodCalled('setExpandButtonEnabled', enabled);
   }
 }
 

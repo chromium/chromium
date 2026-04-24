@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
@@ -359,7 +361,9 @@ class ContextualTasksEphemeralButtonInteractiveTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksEntryPoint", GetParam()},
-           {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}}},
+           {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+         {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+         {tabs::kVerticalTabs, {}}},
         {});
     InteractiveBrowserTest::SetUp();
   }
@@ -527,6 +531,52 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
       EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
       EnsureNotPresent(
           ContextualTasksCloseTabButton::kContextualTasksCloseTabButton));
+}
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
+                       CloseButtonHiddenInVerticalTabs) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
+      SimulateOpeningContextualTaskSidePanel(), SimulateNavigateToAiPage(),
+      // Ensure close button is visible in horizontal mode.
+      EnsurePresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
+      // Switch to vertical tabs.
+      Do([&]() {
+        auto* controller =
+            tabs::VerticalTabStripStateController::From(browser());
+        CHECK(controller);
+        controller->SetVerticalTabsEnabled(true);
+      }),
+      // Verify close button is hidden.
+      EnsureNotPresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton));
+}
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
+                       CloseButtonHiddenInImmersiveMode) {
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Immersive mode not supported on this platform.";
+#else
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
+      SimulateOpeningContextualTaskSidePanel(), SimulateNavigateToAiPage(),
+      // Ensure close button is visible in non-immersive mode.
+      EnsurePresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
+      // Switch to immersive mode.
+      Do([&]() {
+        auto* controller = ImmersiveModeController::From(browser());
+        controller->SetEnabled(true);
+      }),
+      // Verify close button is hidden.
+      EnsureNotPresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,

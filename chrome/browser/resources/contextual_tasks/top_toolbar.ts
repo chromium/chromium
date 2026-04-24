@@ -108,6 +108,9 @@ export class TopToolbarElement extends CrLitElement {
           (isPinned: boolean) => {
             this.isPinned = isPinned;
           }),
+      callbackRouter.setExpandButtonEnabled.addListener((enabled: boolean) => {
+        this.isExpandButtonEnabled = enabled;
+      }),
     ];
   }
 

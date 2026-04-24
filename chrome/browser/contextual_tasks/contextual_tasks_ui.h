@@ -324,6 +324,8 @@ class ContextualTasksUI
 
   contextual_tasks::ContextualTasksPanelController* GetPanelController();
 
+  void UpdateExpandButtonEnabled(bool enabled) override;
+
   std::unique_ptr<contextual_tasks::ContextualTasksAutoSuggestionManager>
       auto_suggestion_manager_;
 
@@ -410,8 +412,6 @@ class ContextualTasksUI
                           contextual_tasks::ContextualTasksService::Observer>
       contextual_tasks_service_observation_{this};
 
-  base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
-
 #if !BUILDFLAG(IS_ANDROID)
   void UpdateZoom();
 
@@ -420,6 +420,8 @@ class ContextualTasksUI
 #endif
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 };
 
 class ContextualTasksUIConfig : public content::WebUIConfig {

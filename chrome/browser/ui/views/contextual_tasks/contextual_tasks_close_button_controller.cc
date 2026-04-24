@@ -6,12 +6,17 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(ContextualTasksCloseButtonController);
@@ -39,6 +44,21 @@ ContextualTasksCloseButtonController::ContextualTasksCloseButtonController(
               &ContextualTasksCloseButtonController::OnEligibilityChange,
               weak_ptr_factory_.GetWeakPtr()));
   panel_controller_observation_.Observe(panel_controller);
+
+  auto* vertical_tab_controller =
+      tabs::VerticalTabStripStateController::From(browser_window_interface_);
+  if (vertical_tab_controller) {
+    vertical_tab_subscription_ = vertical_tab_controller->RegisterOnModeChanged(
+        base::BindRepeating(&ContextualTasksCloseButtonController::
+                                OnVerticalTabStripModeChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  auto* immersive_controller =
+      ImmersiveModeController::From(browser_window_interface_);
+  if (immersive_controller) {
+    immersive_mode_observation_.Observe(immersive_controller);
+  }
 }
 
 ContextualTasksCloseButtonController::~ContextualTasksCloseButtonController() =
@@ -64,6 +84,44 @@ void ContextualTasksCloseButtonController::ExpandToFullTabStateChanged() {
   MaybeNotifyVisibilityShouldChange();
 }
 
+bool ContextualTasksCloseButtonController::IsVerticalTabOrIsImmersiveMode()
+    const {
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs)) {
+    return false;
+  }
+
+  bool is_vertical_tabs = false;
+  auto* vertical_tab_controller =
+      tabs::VerticalTabStripStateController::From(browser_window_interface_);
+  if (vertical_tab_controller &&
+      vertical_tab_controller->ShouldDisplayVerticalTabs()) {
+    is_vertical_tabs = true;
+  }
+
+  bool is_immersive_mode = false;
+  auto* immersive_controller =
+      ImmersiveModeController::From(browser_window_interface_);
+  if (immersive_controller && immersive_controller->IsEnabled()) {
+    is_immersive_mode = true;
+  }
+
+  return is_vertical_tabs || is_immersive_mode;
+}
+
+void ContextualTasksCloseButtonController::OnVerticalTabStripModeChanged(
+    tabs::VerticalTabStripStateController* controller) {
+  MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksCloseButtonController::OnImmersiveFullscreenEntered() {
+  MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksCloseButtonController::OnImmersiveFullscreenExited() {
+  MaybeNotifyVisibilityShouldChange();
+}
+
 void ContextualTasksCloseButtonController::OnEligibilityChange(
     bool is_eligible) {
   MaybeNotifyVisibilityShouldChange();
@@ -83,12 +141,30 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
       controller && controller->CanExpandToFullTab();
 
   /** The close tab button is only visible when:
+   *  - Browser is not in vertical tab mode.
+   *  - Browser is not in immersive mode.
    *  - Entry point is eligible.
    *  - Side panel is open.
    *  - Side panel can expand to full tab.
    **/
   should_update_visibility_callbacks_.Notify(
-      is_eligible && is_contextual_tasks_panel_open && can_expand_to_full_tab);
+      !IsVerticalTabOrIsImmersiveMode() && is_eligible &&
+      is_contextual_tasks_panel_open && can_expand_to_full_tab);
+
+  if (controller) {
+    content::WebContents* contents = controller->GetActiveWebContents();
+    if (contents) {
+      auto* ui = contextual_tasks::GetWebUiInterface(contents);
+      if (ui) {
+        bool enabled =
+            IsVerticalTabOrIsImmersiveMode() ||
+            (contextual_tasks::GetExpandButtonOption() ==
+             contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
+
+        ui->UpdateExpandButtonEnabled(enabled);
+      }
+    }
+  }
 }
 
 base::CallbackListSubscription
