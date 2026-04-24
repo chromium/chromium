@@ -14,10 +14,14 @@ export function getTextNodeOffsets(
   }
 
   const treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);
+  let lastTextNode: Node|null = null;
+  let lastOffset = 0;
 
   while (treeWalker.nextNode()) {
     const textNode = treeWalker.currentNode;
     const length = textNode.textContent!.length;
+    lastTextNode = textNode;
+    lastOffset = offset;
 
     // Check if the target start index falls within this node's range
     // Range is [offset, offset + length)
@@ -26,6 +30,12 @@ export function getTextNodeOffsets(
     }
 
     offset += length;
+  }
+
+  // If the target start index is exactly at the end of the last text node,
+  // return the last text node to keep the selection inside text.
+  if (start === offset && lastTextNode) {
+    return {node: lastTextNode, offset: lastOffset};
   }
 
   return {node: rootNode, offset};

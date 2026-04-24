@@ -78,6 +78,22 @@ suite('DomQueries', () => {
       });
 
   test(
+      'getTextNodeOffsets returns correct node at end of text node boundary',
+      () => {
+        const root = document.createElement('div');
+        const child = document.createTextNode('End of the line');
+        root.appendChild(child);
+        document.body.appendChild(root);
+
+        // Offset exactly at the end of the text node
+        const start = child.textContent.length;
+        const result = getTextNodeOffsets(root, start);
+
+        assertEquals(child, result.node);
+        assertEquals(0, result.offset);
+      });
+
+  test(
       'getTextNodeOffsets returns root node and end for out of bounds start',
       () => {
         const root = document.createElement('div');
