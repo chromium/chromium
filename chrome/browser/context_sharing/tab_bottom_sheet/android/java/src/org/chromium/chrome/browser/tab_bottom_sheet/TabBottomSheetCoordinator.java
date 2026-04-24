@@ -15,6 +15,7 @@ import android.view.Window;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,6 +43,7 @@ public class TabBottomSheetCoordinator {
     // Can be modified later to be set dynamically based on device
     private static final float FULL_HEIGHT_RATIO = 0.7f;
     private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
+    private static final String TAG = "TabBottomSheet";
 
     // Interface used by the manager to monitor events related to the state of the
     // bottom sheet.
@@ -57,6 +59,7 @@ public class TabBottomSheetCoordinator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(Configuration configuration) {
+                    Log.i(TAG, "onConfigurationChanged: isShowing = " + mIsShowingTabBottomSheet);
                     if (mIsShowingTabBottomSheet) {
                         mExpectingLayoutChange = true;
                     }
@@ -355,6 +358,14 @@ public class TabBottomSheetCoordinator {
 
             @Override
             public void onContainerSizeChanged(int containerWidth, int containerHeight) {
+                Log.i(
+                        TAG,
+                        "onContainerSizeChanged: width = "
+                                + containerWidth
+                                + ", height = "
+                                + containerHeight
+                                + ", expectingLayoutChange = "
+                                + mExpectingLayoutChange);
                 if (mSheetContent == null || !mIsShowingTabBottomSheet) {
                     return;
                 }
@@ -457,6 +468,14 @@ public class TabBottomSheetCoordinator {
 
         @Px int decorHeight = window.getDecorView().getHeight();
         @Px int visibleHeight = Math.min(decorHeight, visibleViewportRect.height());
+        Log.i(
+                TAG,
+                "getVisibleViewportHeight: decorHeight = "
+                        + decorHeight
+                        + ", visibleViewportRect.height() = "
+                        + visibleViewportRect.height()
+                        + ", resolved = "
+                        + visibleHeight);
         return visibleHeight;
     }
 
