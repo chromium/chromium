@@ -98,6 +98,14 @@ enum class ComposeboxMenuSectionIdentifier {
                                               kSymbolActionPointSize)
                type:ComposeboxMenuItemType::kCanvas];
 
+  // TODO(crbug.com/506070697): Integrate with server side strings.
+  ComposeboxMenuItem* regularModelItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
+              image:DefaultSymbolWithPointSize(kBoltSymbol,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kModelRegular];
+
   ComposeboxMenuItem* autoItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
@@ -120,7 +128,7 @@ enum class ComposeboxMenuSectionIdentifier {
   ComposeboxMenuSection* modelsSection = [[ComposeboxMenuSection alloc]
       initWithTitle:l10n_util::GetNSStringF(
                         IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3")
-              items:@[ autoItem, thinkingItem ]];
+              items:@[ regularModelItem, autoItem, thinkingItem ]];
 
   _sections = @[ attachmentsSection, toolsSection, modelsSection ];
 }
@@ -244,6 +252,8 @@ enum class ComposeboxMenuSectionIdentifier {
     case ComposeboxMenuItemType::kDeepSearch:
       break;
     case ComposeboxMenuItemType::kCanvas:
+      break;
+    case ComposeboxMenuItemType::kModelRegular:
       break;
     case ComposeboxMenuItemType::kModelAuto:
       break;

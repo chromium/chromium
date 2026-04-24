@@ -13,6 +13,7 @@ enum class ComposeboxMenuItemType {
   kCreateImage,
   kDeepSearch,
   kCanvas,
+  kModelRegular,
   kModelAuto,
   kModelThinking,
   kAttachmentTabs,
