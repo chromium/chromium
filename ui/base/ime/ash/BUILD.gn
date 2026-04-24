@@ -76,7 +76,6 @@ component("ash") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/icu",
     "//ui/base",
-    "//ui/base",
     "//ui/chromeos/strings",
     "//ui/events:dom_keycode_converter",
     "//ui/ozone:ozone_base",

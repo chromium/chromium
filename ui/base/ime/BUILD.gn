@@ -93,7 +93,6 @@ component("ime") {
     "//third_party/icu",
     "//ui/base/ime/mojom",
     "//ui/events",
-    "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/gfx",
     "//ui/gfx/geometry",
