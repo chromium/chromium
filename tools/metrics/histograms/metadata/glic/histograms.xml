@@ -2650,6 +2650,7 @@ chromium-metrics-reviews@google.com.
     the user opened the context menu on a {GlicContextType}.
   </summary>
   <token key="GlicContextType">
+    <variant name="Link" summary="link with no selection"/>
     <variant name="Page" summary="page with no selection"/>
     <variant name="TextSelection" summary="text selection"/>
     <variant name="TextSelectionWithLink"
