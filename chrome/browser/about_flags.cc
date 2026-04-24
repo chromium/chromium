@@ -9500,6 +9500,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kToolbarGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarGlowUp)},
 
+    {"rounded-icons", flag_descriptions::kRoundedIconsName,
+     flag_descriptions::kRoundedIconsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kRoundedIcons)},
+
     {"tab-group-color-refresh", flag_descriptions::kTabGroupColorRefreshName,
      flag_descriptions::kTabGroupColorRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupColorRefresh)},

@@ -30,12 +30,12 @@ BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 
 BASE_DECLARE_FEATURE(kEnableExtensionsMenuTeardownFix);
 
-BASE_DECLARE_FEATURE(kTabStripDeclutter);
-
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
+// All feature flags associated with Glow Up
+BASE_DECLARE_FEATURE(kTabStripDeclutter);
 BASE_DECLARE_FEATURE(kToolbarGlowUp);
-
+BASE_DECLARE_FEATURE(kRoundedIcons);
 BASE_DECLARE_FEATURE(kMenuSimplification);
 BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 

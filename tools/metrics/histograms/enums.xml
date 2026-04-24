@@ -10968,6 +10968,7 @@ from previous Chrome versions.
   <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
   <int value="-1047684585" label="OmniboxUrlSuggestionsOnFocus:enabled"/>
+  <int value="-1046952117" label="RoundedIcons:disabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>
   <int value="-1046627610" label="password-import:enabled"/>
   <int value="-1046335898"
@@ -14807,6 +14808,7 @@ from previous Chrome versions.
   <int value="236412875" label="PreinstalledWebAppWindowExperiment:disabled"/>
   <int value="236498704" label="ArcFixupWindowFeature:disabled"/>
   <int value="236637420" label="TabGroupSyncDisableNetworkLayer:disabled"/>
+  <int value="236742701" label="RoundedIcons:enabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>
   <int value="237088339" label="CrOSLateBootAudioA2DPAdvancedCodecs:disabled"/>
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>

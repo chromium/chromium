@@ -4419,6 +4419,9 @@ inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
 inline constexpr char kToolbarGlowUpDescription[] =
     "Enables the Toolbar Glow Up feature.";
 
+inline constexpr char kRoundedIconsName[] = "Rounded Icons";
+inline constexpr char kRoundedIconsDescription[] = "Enables rounded icons.";
+
 inline constexpr char kToolbarPhoneAnimationRefactorName[] =
     "Toolbar Phone Animation Refactor";
 inline constexpr char kToolbarPhoneAnimationRefactorDescription[] =
