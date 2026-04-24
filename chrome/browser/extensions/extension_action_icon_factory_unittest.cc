@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -43,10 +44,12 @@
 #include "components/user_manager/user_manager_impl.h"
 #endif
 
-using extensions::mojom::ManifestLocation;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
+
+using ::extensions::mojom::ManifestLocation;
 
 bool ImageRepsAreEqual(const gfx::ImageSkiaRep& image_rep1,
                        const gfx::ImageSkiaRep& image_rep2) {
@@ -91,7 +94,7 @@ class ExtensionActionIconFactoryTest
     : public testing::Test,
       public ExtensionActionIconFactory::Observer {
  public:
-  ExtensionActionIconFactoryTest() : quit_in_icon_updated_(false) {}
+  ExtensionActionIconFactoryTest() = default;
 
   ExtensionActionIconFactoryTest(const ExtensionActionIconFactoryTest&) =
       delete;
@@ -171,7 +174,7 @@ class ExtensionActionIconFactoryTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  bool quit_in_icon_updated_;
+  bool quit_in_icon_updated_ = false;
   std::unique_ptr<TestingProfile> profile_;
   base::RunLoop loop_;
 
@@ -192,7 +195,7 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
   // manifest and does not call |SetIcon| by default.
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
-  ASSERT_TRUE(extension.get() != nullptr);
+  ASSERT_TRUE(extension);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
   ASSERT_FALSE(action->default_icon());
@@ -250,7 +253,7 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
   // icon resource).
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
-  ASSERT_TRUE(extension.get() != nullptr);
+  ASSERT_TRUE(extension);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
   ASSERT_FALSE(action->default_icon());
@@ -287,7 +290,7 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   // icon resource).
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
-  ASSERT_TRUE(extension.get() != nullptr);
+  ASSERT_TRUE(extension);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
   ASSERT_FALSE(action->default_icon());
