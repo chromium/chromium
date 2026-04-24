@@ -13,13 +13,20 @@ import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as Searchb
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordToolModeSelection, recordUserAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordToolModeSelection, recordUserAction} from './common.js';
 import type {ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {WindowProxy} from './window_proxy.js';
+
+export enum VoiceSearchAction {
+  ACTIVATE = 0,
+  QUERY_SUBMITTED = 1,
+}
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -32,6 +39,15 @@ export const ComposeboxEmbedderMixin =
         static get properties() {
           return {
             addedTabsIds: {type: Object},
+            animationState: {
+              reflect: true,
+              type: String,
+            },
+            disableVoiceSearchAnimation: {type: Boolean},
+            searchboxLayoutMode: {
+              type: String,
+              reflect: true,
+            },
             isDraggingFile: {
               reflect: true,
               type: Boolean,
@@ -104,6 +120,9 @@ export const ComposeboxEmbedderMixin =
           };
         }
 
+        accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+        accessor disableVoiceSearchAnimation: boolean = false;
+        accessor searchboxLayoutMode: string = '';
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor isDraggingFile: boolean = false;
         accessor enableImageContextualSuggestions: boolean =
@@ -1100,6 +1119,71 @@ export const ComposeboxEmbedderMixin =
               await this.getSearchboxHandler().getTabPreview(e.detail.tabId);
           e.detail.onPreviewFetched(previewDataUrl || '');
         }
+
+        voiceSearchEndCleanup() {
+          this.inVoiceSearchMode = false;
+          this.animationState = GlowAnimationState.NONE;
+          this.transcript = '';
+        }
+
+        onVoiceSearchFinalResult(e: CustomEvent<string>) {
+          e.stopPropagation();
+          this.voiceSearchEndCleanup();
+          // For contextual tasks composebox voice metrics.
+          // TODO(crbug.com/466412331): Don't only fire this for composebox,
+          // this should be recorded for all.
+          this.fire('composebox-voice-search-transcription-success');
+          // TODO(crbug.com/466412331): Remove, only recorded for the NTP.
+          this.fire(
+              'voice-search-action',
+              {value: VoiceSearchAction.QUERY_SUBMITTED});
+          this.input = e.detail;
+          const metricName = `ContextualSearch.UserAction.SubmitVoiceQuery.${
+              this.composeboxSource}`;
+          recordUserAction(metricName);
+          recordBoolean(metricName, true);
+          this.getSearchboxHandler().submitQuery(
+              e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
+              /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+          this.submitCleanup();
+        }
+
+        onVoiceSearchCancel(e: CustomEvent<boolean>) {
+          // If closing was the user canceling voice search:
+          if (e.detail) {
+            // For contextual tasks composebox voice metrics.
+            this.fire('composebox-voice-search-user-canceled');
+          }
+          this.voiceSearchEndCleanup();
+          this.receivedSpeech = false;
+        }
+
+        onVoiceSearchError(e: CustomEvent<boolean>) {
+          // For contextual tasks composebox voice metrics:
+          if (e.detail) {
+            // An error that canceled voice search.
+            this.fire('composebox-voice-search-error-and-canceled');
+          } else {
+            // An error that did not cancel voice search.
+            this.fire('composebox-voice-search-error');
+          }
+        }
+
+        shouldShowVoiceSearch(): boolean {
+          return this.showVoiceSearch &&
+              WindowProxy.getInstance().hasWebkitSpeechRecognition();
+        }
+
+        shouldShowVoiceSearchAnimation(): boolean {
+          return !this.disableVoiceSearchAnimation &&
+              this.shouldShowVoiceSearch();
+        }
+
+        shouldShowVoiceSearchAtBottom(): boolean {
+          return (this.searchboxLayoutMode === 'TallBottomContext' ||
+                  !this.searchboxLayoutMode) &&
+              this.shouldShowVoiceSearch();
+        }
       }
 
       return ComposeboxEmbedderMixin;
@@ -1108,6 +1192,9 @@ export const ComposeboxEmbedderMixin =
 export interface ComposeboxEmbedderMixinInterface extends
     I18nMixinLitInterface {
   addedTabsIds: Map<number, UnguessableToken>;
+  animationState: GlowAnimationState;
+  disableVoiceSearchAnimation: boolean;
+  searchboxLayoutMode: string;
   isDraggingFile: boolean;
   enableImageContextualSuggestions: boolean;
   smartComposeEnabled: boolean;
@@ -1175,6 +1262,13 @@ export interface ComposeboxEmbedderMixinInterface extends
 
   // Common event handlers
   onFileContextAdded(file: ComposeboxFile): void;
+  voiceSearchEndCleanup(): void;
+  onVoiceSearchFinalResult(e: CustomEvent<string>): void;
+  onVoiceSearchCancel(e: CustomEvent<boolean>): void;
+  onVoiceSearchError(e: CustomEvent<boolean>): void;
+  shouldShowVoiceSearch(): boolean;
+  shouldShowVoiceSearchAnimation(): boolean;
+  shouldShowVoiceSearchAtBottom(): boolean;
   onTranscriptUpdate(e: CustomEvent<string>): void;
   onSpeechReceived(): void;
   onDismissErrorScrim(): void;

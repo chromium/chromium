@@ -49,7 +49,7 @@ export function getHtml(this: ComposeboxElement) {
         ?show-context-menu-description="${this.showContextMenuDescription}">
     </cr-composebox-contextual-entrypoint-button>
   ` : '')}
-  ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch_() ? html`
+  ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch() ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon"
         part="voice-icon" iron-icon="cr:mic"
         @click="${this.onVoiceSearchButtonClick_}"
