@@ -56,6 +56,9 @@ struct SameSizeAsVectorWithInlineCapacity<T, 0> {
   void* buffer_pointer;
   wtf_size_t capacity;
   wtf_size_t size;
+#if DCHECK_IS_ON()
+  int64_t modifications;
+#endif
 };
 
 template <typename T, wtf_size_t inlineCapacity>

@@ -853,6 +853,43 @@ static_assert(VectorTraits<UnknownType*>::kCanCopyWithMemcpy,
 static_assert(!IsTraceable<Vector<int>>::value,
               "Vector<int> must not be traceable.");
 
+#if DCHECK_IS_ON()
+TEST(VectorTest, MutationDuringIteration) {
+  Vector<int> vector = {1, 2, 3};
+  auto it = vector.begin();
+  EXPECT_EQ(*it, 1);
+  vector.push_back(4);
+  EXPECT_DEATH([[maybe_unused]] int val = *it,
+               "Vector modified while being iterated.");
+}
+
+TEST(VectorTest, NoMutationDuringIteration) {
+  Vector<int> vector = {1, 2, 3};
+  auto it = vector.begin();
+  EXPECT_EQ(*it, 1);
+  it = std::next(it);
+  EXPECT_EQ(*it, 2);
+}
+
+TEST(VectorTest, NestedIteration) {
+  Vector<int> vector = {1, 2, 3};
+  for ([[maybe_unused]] int& i : vector) {
+    for ([[maybe_unused]] int& j : vector) {
+      // This should be fine.
+    }
+  }
+}
+
+TEST(VectorTest, EraseDuringIteration) {
+  Vector<int> vector = {1, 2, 3};
+  auto it = vector.begin();
+  EXPECT_EQ(*it, 1);
+  vector.EraseAt(1);
+  EXPECT_DEATH([[maybe_unused]] int val = *it,
+               "Vector modified while being iterated.");
+}
+#endif
+
 }  // anonymous namespace
 
 }  // namespace blink
