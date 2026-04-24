@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 
 /** Incognito tab switcher pane station. */
@@ -32,8 +33,7 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
         recyclerViewElement =
                 declareView(
                         paneHostElement.descendant(
-                                RecyclerView.class,
-                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)),
+                                RecyclerView.class, withId(R.id.tab_list_recycler_view)),
                         unscopedOption());
     }
 

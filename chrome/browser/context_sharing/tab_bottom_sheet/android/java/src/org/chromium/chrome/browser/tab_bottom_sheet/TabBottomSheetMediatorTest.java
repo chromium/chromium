@@ -31,6 +31,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetMediator}. */
@@ -158,8 +160,7 @@ public class TabBottomSheetMediatorTest {
     @Test
     @SmallTest
     public void testIsSheetHeightSufficient_Sufficient() {
-        float density =
-                org.chromium.ui.display.DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
+        float density = DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
         int sufficientPx = (int) Math.ceil(240 * density);
         Assert.assertTrue(mMediator.isSheetHeightSufficient(sufficientPx));
     }
@@ -167,8 +168,7 @@ public class TabBottomSheetMediatorTest {
     @Test
     @SmallTest
     public void testIsSheetHeightSufficient_Insufficient() {
-        float density =
-                org.chromium.ui.display.DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
+        float density = DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
         int insufficientPx = (int) (239 * density);
         Assert.assertFalse(mMediator.isSheetHeightSufficient(insufficientPx));
     }
@@ -232,10 +232,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.setPeekHeight(10); // Small peek height
 
         int minTouchTargetPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.components.browser_ui.widget.R.dimen
-                                        .min_touch_target_size);
+                mContext.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
         // Gesture zone should be minTouchTargetPx (since 10 < minTouchTargetPx)
 
         // Touch inside gesture zone

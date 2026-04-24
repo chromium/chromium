@@ -65,7 +65,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentType.ATTACHMENT_PDF,
                 (parent) -> {
                     return parent.getContext()
-                            .getSystemService(android.view.LayoutInflater.class)
+                            .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 FuseboxAttachmentViewBinder::bind);
@@ -73,7 +73,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                 FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
                 (parent) -> {
                     return parent.getContext()
-                            .getSystemService(android.view.LayoutInflater.class)
+                            .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 FuseboxAttachmentViewBinder::bind);

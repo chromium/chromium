@@ -118,8 +118,7 @@ public class CustomTabActivityIncognitoTest {
     public void setUp() throws TimeoutException {
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        org.chromium.chrome.browser.translate.TranslateBridgeJni.setInstanceForTesting(
-                mTranslateBridgeJniMock);
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
         TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
 
         FirstRunStatus.setFirstRunFlowComplete(true);

@@ -7,6 +7,7 @@ package org.chromium.chrome.test;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -119,7 +120,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         prepareUrlIntent(intent, "about:blank");
         intent.putExtra(
-                android.provider.Browser.EXTRA_APPLICATION_ID,
+                Browser.EXTRA_APPLICATION_ID,
                 ApplicationProvider.getApplicationContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
         startMainActivityFromIntent(intent, "about:blank");

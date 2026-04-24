@@ -181,8 +181,7 @@ public class HistoryPaneTest {
         history.expectNoEntry("Two");
 
         // Expand the cluster.
-        org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistoryEntryFacility clusterHead =
-                history.expectEntry(domain);
+        HistoryPaneStation.HistoryEntryFacility clusterHead = history.expectEntry(domain);
         onView(clusterHead.removeButtonElement.getViewSpec().getViewMatcher()).perform(click());
 
         // After expansion, the items should be visible alongside the cluster head.

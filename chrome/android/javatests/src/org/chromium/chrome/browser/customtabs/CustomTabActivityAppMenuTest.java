@@ -140,8 +140,7 @@ public class CustomTabActivityAppMenuTest {
     public void setUp() throws Exception {
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        org.chromium.chrome.browser.translate.TranslateBridgeJni.setInstanceForTesting(
-                mTranslateBridgeJniMock);
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
         TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));

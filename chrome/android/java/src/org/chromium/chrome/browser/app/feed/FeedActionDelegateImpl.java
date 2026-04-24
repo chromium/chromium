@@ -46,6 +46,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetError;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -146,7 +147,7 @@ public class FeedActionDelegateImpl
                         SuggestionsConfig.getReferrerUrl(),
                         // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
                         // tiles to set consider_for_ntp_most_visited.
-                        org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
+                        ReferrerPolicy.ALWAYS));
 
         Tab tab =
                 inGroup

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -422,7 +423,7 @@ public class GlicToolbarButtonControllerTest {
         AnchoredPopupWindow.setShowHookForTesting(showHook);
 
         // Click should show menu.
-        android.view.View view = new android.view.View(mContext);
+        View view = new View(mContext);
         mController.onClick(view);
 
         // Verify popup was shown.

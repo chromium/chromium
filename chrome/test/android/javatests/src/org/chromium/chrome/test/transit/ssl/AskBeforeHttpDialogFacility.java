@@ -8,10 +8,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.widget.TextView;
 
+import org.hamcrest.Matchers;
+
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.ui.ModalDialogFacility;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** The Ask-before-HTTP (HTTPS-First Mode) fallback dialog. */
 public class AskBeforeHttpDialogFacility extends ModalDialogFacility {
@@ -31,8 +34,7 @@ public class AskBeforeHttpDialogFacility extends ModalDialogFacility {
                         dialogElement.descendant(
                                 TextView.class,
                                 withText(
-                                        org.hamcrest.Matchers.containsString(
-                                                "Learn more about this warning"))));
+                                        Matchers.containsString("Learn more about this warning"))));
 
         // The "Continue to site" button is the negative button.
         declareNegativeButton("Continue to site");
@@ -44,7 +46,7 @@ public class AskBeforeHttpDialogFacility extends ModalDialogFacility {
     /** Click the "Learn more" link. */
     public WebPageStation clickLearnMore(BasePageStation<?> currentStation) {
         return descriptionElement
-                .performViewActionTo(org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan(0))
+                .performViewActionTo(ViewUtils.clickOnClickableSpan(0))
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .initOpeningNewTab()

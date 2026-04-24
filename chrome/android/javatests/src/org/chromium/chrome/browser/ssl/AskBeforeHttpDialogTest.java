@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -200,7 +201,7 @@ public class AskBeforeHttpDialogTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         // Wait for the dialog to be shown again on the original tab.
-        org.chromium.base.test.util.CriteriaHelper.pollUiThread(
+        CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
         ModalDialogTestUtils.checkCurrentPresenter(
                 mActivityTestRule.getActivity().getModalDialogManager(),
@@ -263,7 +264,7 @@ public class AskBeforeHttpDialogTest {
         ThreadUtils.runOnUiThreadBlocking(() -> finalPage.getTab().goForward());
 
         // Wait for the dialog to be shown again.
-        org.chromium.base.test.util.CriteriaHelper.pollUiThread(
+        CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
         ModalDialogTestUtils.checkCurrentPresenter(
                 mActivityTestRule.getActivity().getModalDialogManager(),
