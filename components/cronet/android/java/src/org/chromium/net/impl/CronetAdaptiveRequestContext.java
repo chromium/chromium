@@ -63,12 +63,13 @@ class CronetAdaptiveRequestContext {
     @VisibleForTesting
     public static final String FAST_IDEMPOTENT_PATHS_FLAG_NAME = "Cronet_fast_idempotent_paths";
 
-    // Name of the flag that controls whether a toast messages can appear when adaptive network
-    // selection is used.
-    // Only android developers should enable this flag, it is not intended to be used in production.
+    // The persistent property that controls whether a toast messages can appear when adaptive
+    // network selection is used.
+    // Set with: adb shell setprop persist.cronet.adaptive_dev true
+    // Clear with: adb shell setprop persist.cronet.adaptive_dev '""'
     @VisibleForTesting
-    public static final String ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME =
-            "Cronet_adaptive_network_dev_toast";
+    public static final String ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME =
+            "persist.cronet.adaptive_dev";
 
     /**
      * The time we wait until we start the backup stream. This value is 3x the initial retransmit
@@ -101,7 +102,7 @@ class CronetAdaptiveRequestContext {
     private final long mReadyFailoverMs;
     private final boolean mEnableAdaptiveNetwork;
     private final boolean mEnableAdaptiveNetworkForAll;
-    @Nullable private final Handler mToastHandler;
+    @Nullable private Handler mToastHandler;
 
     /** Information about a fallback network for a given host. */
     private static class FallbackInfo {
@@ -136,6 +137,8 @@ class CronetAdaptiveRequestContext {
     private final Set<CronetAdaptiveNetworkBidirectionalStream> mActiveStreams =
             Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 
+    @VisibleForTesting static boolean sToastShown;
+
     private final AtomicReference<ScheduledExecutorService> mExecutor = new AtomicReference<>(null);
     private ConnectivityManagerWrapper mConnectivityManagerWrapper;
 
@@ -145,70 +148,75 @@ class CronetAdaptiveRequestContext {
 
     @VisibleForTesting
     CronetAdaptiveRequestContext(Context context, CronetLogger logger, Clock clock) {
-        mContext = context.getApplicationContext();
-        mLogger = logger;
-        mClock = clock;
-        mConnectivityManagerWrapper = new ConnectivityManagerWrapper(context);
-        Map<String, ResolvedFlags.Value> flags =
-                HttpFlagsForImpl.getHttpFlags(
-                                context, NativeCronetEngineBuilderImpl.getCronetSource())
-                        .flags();
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetAdaptiveRequestContext#constructor")) {
+            mContext = context.getApplicationContext();
+            mLogger = logger;
+            mClock = clock;
+            mConnectivityManagerWrapper = new ConnectivityManagerWrapper(context);
+            Map<String, ResolvedFlags.Value> flags =
+                    HttpFlagsForImpl.getHttpFlags(
+                                    context, NativeCronetEngineBuilderImpl.getCronetSource())
+                            .flags();
 
-        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME)) {
-            mAdaptiveNetworkHosts =
-                    flags.get(ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME)
-                            .getStringValue()
-                            .trim()
-                            .split(",");
-        } else {
-            mAdaptiveNetworkHosts = new String[0];
-        }
+            if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME)) {
+                mAdaptiveNetworkHosts =
+                        flags.get(ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME)
+                                .getStringValue()
+                                .trim()
+                                .split(",");
+            } else {
+                mAdaptiveNetworkHosts = new String[0];
+            }
 
-        mAdaptiveNetworkPaths = new HashSet<>();
-        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME)) {
-            for (String path :
-                    flags.get(ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME)
-                            .getStringValue()
-                            .trim()
-                            .split(",")) {
-                if (!path.isEmpty()) {
-                    mAdaptiveNetworkPaths.add(path);
+            mAdaptiveNetworkPaths = new HashSet<>();
+            if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME)) {
+                for (String path :
+                        flags.get(ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME)
+                                .getStringValue()
+                                .trim()
+                                .split(",")) {
+                    if (!path.isEmpty()) {
+                        mAdaptiveNetworkPaths.add(path);
+                    }
                 }
             }
-        }
 
-        if (flags.containsKey(READY_FAILOVER_MS_FLAG_NAME)) {
-            mReadyFailoverMs = flags.get(READY_FAILOVER_MS_FLAG_NAME).getIntValue();
-        } else {
-            mReadyFailoverMs = DEFAULT_READY_FAILOVER_MS;
-        }
+            if (flags.containsKey(READY_FAILOVER_MS_FLAG_NAME)) {
+                mReadyFailoverMs = flags.get(READY_FAILOVER_MS_FLAG_NAME).getIntValue();
+            } else {
+                mReadyFailoverMs = DEFAULT_READY_FAILOVER_MS;
+            }
 
-        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_NAME)) {
-            mEnableAdaptiveNetwork = flags.get(ENABLE_ADAPTIVE_NETWORK_NAME).getBoolValue();
-        } else {
-            mEnableAdaptiveNetwork = false;
-        }
+            if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_NAME)) {
+                mEnableAdaptiveNetwork = flags.get(ENABLE_ADAPTIVE_NETWORK_NAME).getBoolValue();
+            } else {
+                mEnableAdaptiveNetwork = false;
+            }
 
-        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME)) {
-            mEnableAdaptiveNetworkForAll =
-                    flags.get(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME).getBoolValue();
-        } else {
-            mEnableAdaptiveNetworkForAll = false;
-        }
+            if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME)) {
+                mEnableAdaptiveNetworkForAll =
+                        flags.get(ENABLE_ADAPTIVE_NETWORK_FOR_ALL_NAME).getBoolValue();
+            } else {
+                mEnableAdaptiveNetworkForAll = false;
+            }
 
-        if (flags.containsKey(ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME)
-                && flags.get(ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME).getBoolValue()) {
-            mToastHandler = new Handler(Looper.getMainLooper());
-        } else {
-            mToastHandler = null;
-        }
+            if (!AndroidOsSystemProperties.get(ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME, "")
+                    .isEmpty()) {
+                mToastHandler = new Handler(Looper.getMainLooper());
+                maybeShowInitialDevToast();
+            }
 
-        mFastIdempotentPaths = new HashSet<>();
-        if (flags.containsKey(FAST_IDEMPOTENT_PATHS_FLAG_NAME)) {
-            for (String path :
-                    flags.get(FAST_IDEMPOTENT_PATHS_FLAG_NAME).getStringValue().trim().split(",")) {
-                if (!path.isEmpty()) {
-                    mFastIdempotentPaths.add(path);
+            mFastIdempotentPaths = new HashSet<>();
+            if (flags.containsKey(FAST_IDEMPOTENT_PATHS_FLAG_NAME)) {
+                for (String path :
+                        flags.get(FAST_IDEMPOTENT_PATHS_FLAG_NAME)
+                                .getStringValue()
+                                .trim()
+                                .split(",")) {
+                    if (!path.isEmpty()) {
+                        mFastIdempotentPaths.add(path);
+                    }
                 }
             }
         }
@@ -294,10 +302,16 @@ class CronetAdaptiveRequestContext {
         URI parsedUri = URI.create(url);
         String host = parsedUri.getHost();
 
-        maybeShowDevToast(
-                host,
-                parsedUri.getPath(),
-                /* isDefault= */ networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        if (mToastHandler != null) {
+            showDevToast(
+                    "CRONET: Fallback used "
+                            + host
+                            + parsedUri.getPath()
+                            + " def: "
+                            + ((networkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE)
+                                    ? "Y"
+                                    : "N"));
+        }
 
         tellOtherStreamsAboutFallback(parsedUri, networkHandle);
 
@@ -324,20 +338,25 @@ class CronetAdaptiveRequestContext {
     }
 
     @VisibleForTesting
-    void maybeShowDevToast(String host, String path, boolean isDefault) {
-        if (mToastHandler != null) {
-            mToastHandler.post(
-                    () ->
-                            Toast.makeText(
-                                            mContext,
-                                            "CRONET DEV: Fallback network used "
-                                                    + host
-                                                    + path
-                                                    + " is default: "
-                                                    + isDefault,
-                                            Toast.LENGTH_LONG)
-                                    .show());
+    void maybeShowInitialDevToast() {
+        if (!sToastShown) {
+            showDevToast(
+                    "CRONET["
+                            + mContext.getPackageName()
+                            + "]: CANS enabled: "
+                            + (mEnableAdaptiveNetwork ? "Y" : "N")
+                            + ", for all: "
+                            + (mEnableAdaptiveNetworkForAll ? "Y" : "N"));
+            sToastShown = true;
         }
+    }
+
+    @VisibleForTesting
+    void showDevToast(String message) {
+        requireNonNull(mToastHandler);
+        requireNonNull(message);
+
+        mToastHandler.post(() -> Toast.makeText(mContext, message, Toast.LENGTH_LONG).show());
     }
 
     /**
