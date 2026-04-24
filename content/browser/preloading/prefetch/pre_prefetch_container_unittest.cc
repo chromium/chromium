@@ -167,4 +167,66 @@ TEST_F(PrePrefetchContainerTest,
             std::optional<std::string>("Value2"));
 }
 
+// Tests that the `PrePrefetchUpdateHeadersCallback`s passed to
+// `PrePrefetchContainer::CreateAndStart(ForTesting)` are correctly executed
+// on the non-UI thread and their modifications to `ResourceRequest` headers
+// are applied.
+TEST_F(PrePrefetchContainerTest,
+       StartPrePrefetchWithNonUIThreadUpdateHeadersCallbacks) {
+  const GURL prefetch_url("https://example.com/prefetch");
+
+  auto callback =
+      base::BindLambdaForTesting([](const network::ResourceRequest& request) {
+        EXPECT_TRUE(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+        PrefetchUpdateHeadersParams params;
+        params.modified_headers.SetHeader("X-Test-Header", "Value1");
+        params.modified_cors_exempt_headers.SetHeader(
+            "X-Test-Cors-Exempt-Header", "Value2");
+        return params;
+      });
+
+  auto url_loader_factory_remote = GetURLLoaderFactoryRemote();
+
+  base::test::TestFuture<std::unique_ptr<PrePrefetchContainer>> future;
+  base::test::TestFuture<network::ResourceRequest> request_future;
+
+  test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        request_future.SetValue(request);
+      }));
+
+  task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](PrePrefetchContainerTest* test_fixture, const GURL& url,
+             mojo::PendingRemote<network::mojom::URLLoaderFactory> factory,
+             PrePrefetchUpdateHeadersCallback callback) {
+            auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
+            PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
+
+            std::vector<PrePrefetchUpdateHeadersCallback> callbacks;
+            callbacks.push_back(std::move(callback));
+
+            return PrePrefetchContainer::CreateAndStartForTesting(
+                std::move(prefetch_request), std::move(factory),
+                ui_thread_pre_calculated_headers, std::move(callbacks));
+          },
+          base::Unretained(this), prefetch_url,
+          std::move(url_loader_factory_remote), std::move(callback)),
+      future.GetCallback());
+
+  // Wait until the request is received and the container is created.
+  std::unique_ptr<PrePrefetchContainer> container = future.Take();
+  ASSERT_TRUE(container);
+
+  network::ResourceRequest request = request_future.Take();
+  ASSERT_EQ(request.url, prefetch_url);
+
+  // Check that the intercepted request has the expected header params.
+  EXPECT_EQ(request.headers.GetHeader("X-Test-Header"),
+            std::optional<std::string>("Value1"));
+  EXPECT_EQ(request.cors_exempt_headers.GetHeader("X-Test-Cors-Exempt-Header"),
+            std::optional<std::string>("Value2"));
+}
+
 }  // namespace content
