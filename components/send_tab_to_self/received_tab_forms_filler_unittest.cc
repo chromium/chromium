@@ -44,24 +44,22 @@ PageContext::FormField MakeFormField(
     std::u16string name_attribute,
     std::string form_control_type,
     std::u16string value,
-    std::optional<ReceivedTabFormsFiller::Signature> sig = std::nullopt) {
+    std::optional<PageContext::FormFieldAutofillSignature> sig = std::nullopt) {
   PageContext::FormField field;
   field.id_attribute = std::move(id_attribute);
   field.name_attribute = std::move(name_attribute);
   field.form_control_type = std::move(form_control_type);
   field.value = std::move(value);
   if (sig) {
-    field.form_signature = sig->form_signature;
-    field.field_signature = sig->field_signature;
+    field.autofill_signature = *sig;
   }
   return field;
 }
 
-ReceivedTabFormsFiller::Signature GetSignature(const FormData& form_data,
-                                               size_t field_index) {
+PageContext::FormFieldAutofillSignature GetSignature(const FormData& form_data,
+                                                     size_t field_index) {
   autofill::FormStructure form(form_data);
-  return {form.form_signature().value(),
-          form.field(field_index)->GetFieldSignature().value()};
+  return {form.form_signature(), form.field(field_index)->GetFieldSignature()};
 }
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
@@ -223,7 +221,8 @@ TEST_F(ReceivedTabFormsFillerTest,
                    .name_attribute = u"name_123",
                    .origin = kOrigin}},
        .url = "https://example.com"});
-  const ReceivedTabFormsFiller::Signature sig = GetSignature(form_sender, 0);
+  const PageContext::FormFieldAutofillSignature sig =
+      GetSignature(form_sender, 0);
 
   PageContext::FormFieldInfo form_field_info;
 

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/common/signatures.h"
+
 namespace shared_highlighting {
 class TextFragment;
 }  // namespace shared_highlighting
@@ -69,6 +71,14 @@ struct ScrollPosition {
 };
 
 struct PageContext {
+  // Represents a combination of form and field signatures for identification.
+  struct FormFieldAutofillSignature {
+    autofill::FormSignature form_signature;
+    autofill::FieldSignature field_signature;
+
+    auto operator<=>(const FormFieldAutofillSignature& other) const = default;
+  };
+
   // Represents a single form field and its value.
   struct FormField {
     FormField();
@@ -82,8 +92,7 @@ struct PageContext {
     std::u16string name_attribute;
     std::string form_control_type;
     std::u16string value;
-    uint64_t form_signature = 0;
-    uint32_t field_signature = 0;
+    FormFieldAutofillSignature autofill_signature;
 
     bool operator==(const FormField& other) const;
   };

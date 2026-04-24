@@ -33,16 +33,6 @@ namespace send_tab_to_self {
 // timeout.
 class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
  public:
-  // TODO(crbug.com/485145029): Adopt `autofill::FormSignature` and
-  // `autofill::FieldSignature` for type safety, and consider moving this to
-  // `PageContext` as `PageContext::FormFieldSignature`.
-  struct Signature {
-    uint64_t form_signature = 0;
-    uint64_t field_signature = 0;
-
-    bool operator==(const Signature& other) const = default;
-    auto operator<=>(const Signature& other) const = default;
-  };
   static void Start(
       autofill::AutofillClient& client,
       const url::Origin& origin,
@@ -93,7 +83,7 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
   const PageContext::FormField* FindPendingFieldMatching(
       const autofill::FormStructure& form,
       const autofill::AutofillField& field,
-      const base::flat_set<uint64_t>& form_unique_signatures);
+      const base::flat_set<autofill::FieldSignature>& form_unique_signatures);
 
   // Tries to find a match based on strict ID, Name, and Type equality.
   const PageContext::FormField* FindPendingFieldByIdNameAndType(
@@ -103,12 +93,13 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
   // Ensures the signature is unique in both the receiver form and pending
   // fields.
   const PageContext::FormField* FindPendingFieldBySignature(
-      const Signature& sig,
-      const base::flat_set<uint64_t>& form_unique_signatures);
+      const PageContext::FormFieldAutofillSignature& sig,
+      const base::flat_set<autofill::FieldSignature>& form_unique_signatures);
 
   const url::Origin origin_;
   // Signatures that appeared exactly once in the incoming tab's fields.
-  const base::flat_set<Signature> received_unique_signatures_;
+  const base::flat_set<PageContext::FormFieldAutofillSignature>
+      received_unique_signatures_;
 
   base::flat_set<PageContext::FormField, FieldUniquenessKeyComparator>
       pending_fields_;

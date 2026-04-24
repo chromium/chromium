@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,13 +46,28 @@ using ::testing::Test;
 // TODO(crbug.com/485145029): Consider introducing
 // components/send_tab_to_self/test_matchers.h since matchers are duplicated
 // across files.
-MATCHER_P6(MatchesFormField,
+
+MATCHER_P2(MatchesAutofillSignature, form_signature, field_signature, "") {
+  return testing::ExplainMatchResult(
+             testing::Field(
+                 "form_signature",
+                 &PageContext::FormFieldAutofillSignature::form_signature,
+                 form_signature),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Field(
+                 "field_signature",
+                 &PageContext::FormFieldAutofillSignature::field_signature,
+                 field_signature),
+             arg, result_listener);
+}
+
+MATCHER_P5(MatchesFormField,
            id_attribute,
            name_attribute,
            form_control_type,
            value,
-           form_signature,
-           field_signature,
+           autofill_signature,
            "") {
   return testing::ExplainMatchResult(
              testing::Field("id_attribute",
@@ -72,14 +88,9 @@ MATCHER_P6(MatchesFormField,
              testing::Field("value", &PageContext::FormField::value, value),
              arg, result_listener) &&
          testing::ExplainMatchResult(
-             testing::Field("form_signature",
-                            &PageContext::FormField::form_signature,
-                            form_signature),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("field_signature",
-                            &PageContext::FormField::field_signature,
-                            field_signature),
+             testing::Field("autofill_signature",
+                            &PageContext::FormField::autofill_signature,
+                            autofill_signature),
              arg, result_listener);
 }
 
@@ -131,8 +142,8 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, u"value1", _, _),
-                          MatchesFormField(u"id2", _, _, u"value2", _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, u"value1", _),
+                          MatchesFormField(u"id2", _, _, u"value2", _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
@@ -156,7 +167,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterEmptyFields) {
@@ -254,7 +265,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest,
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {
@@ -275,20 +286,24 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {
   // Hardcoded values are used to detect changes in Autofill's signature
   // calculation algorithms, to know if the protocol potentially needs to be
   // updated.
-  const uint64_t expected_form_signature = 3892079296185715679ULL;
-  const uint32_t expected_field_sig1 = 1318412689;
-  const uint32_t expected_field_sig2 = 1318412689;
+  const autofill::FormSignature expected_form_signature(3892079296185715679ULL);
+  const autofill::FieldSignature expected_field_sig1(1318412689);
+  const autofill::FieldSignature expected_field_sig2(1318412689);
 
   autofill::test_api(autofill_manager())
       .AddSeenFormStructure(std::move(form_structure));
 
-  EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
-                                           url::Origin::Create(kUrl))
-                  .fields,
-              ElementsAre(MatchesFormField(_, _, _, _, expected_form_signature,
-                                           expected_field_sig1),
-                          MatchesFormField(_, _, _, _, expected_form_signature,
-                                           expected_field_sig2)));
+  EXPECT_THAT(
+      ExtractOutgoingTabFormFields(autofill_manager(),
+                                   url::Origin::Create(kUrl))
+          .fields,
+      ElementsAre(
+          MatchesFormField(_, _, _, _,
+                           MatchesAutofillSignature(expected_form_signature,
+                                                    expected_field_sig1)),
+          MatchesFormField(_, _, _, _,
+                           MatchesAutofillSignature(expected_form_signature,
+                                                    expected_field_sig2))));
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/proto_conversions.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 
@@ -18,8 +19,9 @@ sync_pb::FormField FormFieldToProto(const PageContext::FormField& field) {
   pb_field.set_name_attribute(base::UTF16ToUTF8(field.name_attribute));
   pb_field.set_form_control_type(field.form_control_type);
   pb_field.set_value(base::UTF16ToUTF8(field.value));
-  pb_field.set_form_signature(field.form_signature);
-  pb_field.set_field_signature(field.field_signature);
+  pb_field.set_form_signature(field.autofill_signature.form_signature.value());
+  pb_field.set_field_signature(
+      field.autofill_signature.field_signature.value());
 
   return pb_field;
 }
@@ -30,8 +32,10 @@ PageContext::FormField FormFieldFromProto(const sync_pb::FormField& pb_field) {
   field.name_attribute = base::UTF8ToUTF16(pb_field.name_attribute());
   field.form_control_type = pb_field.form_control_type();
   field.value = base::UTF8ToUTF16(pb_field.value());
-  field.form_signature = pb_field.form_signature();
-  field.field_signature = pb_field.field_signature();
+  field.autofill_signature.form_signature =
+      autofill::FormSignature(pb_field.form_signature());
+  field.autofill_signature.field_signature =
+      autofill::FieldSignature(pb_field.field_signature());
 
   return field;
 }
