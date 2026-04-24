@@ -57,7 +57,7 @@ class MockSkillsServiceImpl : public SkillsServiceImpl {
 
   MOCK_METHOD(void,
               Handle1pSkillsMap,
-              (std::unique_ptr<SkillsMap> skills_map),
+              (std::unique_ptr<SkillIdToProtoMap> skills_map),
               (override));
 };
 
@@ -287,7 +287,7 @@ TEST_F(SkillsServiceImplTest, GetSkillById_FirstPartySkill) {
   proto_skill.set_prompt("1P Skill Prompt");
   proto_skill.set_description("1P Skill Description");
 
-  auto skills_map = std::make_unique<SkillsService::SkillsMap>();
+  auto skills_map = std::make_unique<SkillIdToProtoMap>();
   skills_map->insert({"1p_skill_id", proto_skill});
 
   service().Handle1pSkillsMap(std::move(skills_map));
@@ -482,7 +482,7 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Success) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service, Handle1pSkillsMap(_))
-      .WillOnce([&](std::unique_ptr<SkillsService::SkillsMap> skills_map) {
+      .WillOnce([&](std::unique_ptr<SkillIdToProtoMap> skills_map) {
         EXPECT_EQ(1u, skills_map->size());
         run_loop.Quit();
       });
@@ -503,7 +503,7 @@ TEST_F(SkillsServiceImplTest, FetchDiscoverySkills_Failure) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_service, Handle1pSkillsMap(testing::IsNull()))
-      .WillOnce([&](std::unique_ptr<SkillsService::SkillsMap> skills_map) {
+      .WillOnce([&](std::unique_ptr<SkillIdToProtoMap> skills_map) {
         EXPECT_FALSE(skills_map);
         run_loop.Quit();
       });

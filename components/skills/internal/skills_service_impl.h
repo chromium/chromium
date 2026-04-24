@@ -16,6 +16,7 @@
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/skills/public/skills_types.h"
 #include "components/sync/model/data_type_store.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -79,8 +80,9 @@ class SkillsServiceImpl : public SkillsService {
   const Skill* GetSkillById(std::string_view skill_id) const override;
   void RefreshDiscoverySkills() override;
   void FetchDiscoverySkills() override;
-  void Handle1pSkillsMap(std::unique_ptr<SkillsMap> skills_map) override;
-  const SkillsMap& Get1PSkills() const override;
+  void Handle1pSkillsMap(
+      std::unique_ptr<SkillIdToProtoMap> skills_map) override;
+  const SkillIdToProtoMap& Get1PSkills() const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -129,10 +131,10 @@ class SkillsServiceImpl : public SkillsService {
   std::vector<std::unique_ptr<Skill>> skills_;
 
   // The map of loaded 1p discovery skill protos.
-  SkillsMap first_party_skills_map_;
+  SkillIdToProtoMap first_party_skills_map_;
 
   // The map of loaded 1p discovery skill objects.
-  SkillObjectsMap first_party_skill_objects_map_;
+  SkillIdToSkillMap first_party_skill_objects_map_;
 
   // The list of observers to be notified on changes.
   base::ObserverList<Observer,

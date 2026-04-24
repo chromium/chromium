@@ -45,6 +45,7 @@ source_set("downloader") {
     "//base",
     "//components/skills/proto",
     "//components/skills/public:metrics",
+    "//components/skills/public:types",
     "//net",
     "//services/network/public/cpp",
   ]

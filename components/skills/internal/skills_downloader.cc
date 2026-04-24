@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -138,7 +139,7 @@ void SkillsDownloader::OnUrlDownloadComplete(
     last_modified_header_ = last_modified_value;
   }
 
-  auto skills_map = std::make_unique<SkillsMap>();
+  auto skills_map = std::make_unique<SkillIdToProtoMap>();
   for (auto& skill : *skills_list->mutable_skills()) {
     skills_map->insert_or_assign(skill.id(), std::move(skill));
   }

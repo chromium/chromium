@@ -22,6 +22,7 @@
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -91,7 +92,7 @@ class SkillsPageHandlerTest : public testing::Test {
 };
 
 TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
-  auto skills_map = std::make_unique<SkillsDownloader::SkillsMap>();
+  auto skills_map = std::make_unique<SkillIdToProtoMap>();
 
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
@@ -137,7 +138,7 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Success) {
   // Manually trigger map update with valid map
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
-  SkillsDownloader::SkillsMap skills_map = {{"skill_id", skill_proto}};
+  SkillIdToProtoMap skills_map = {{"skill_id", skill_proto}};
   handler_->OnDiscoverySkillsUpdated(&skills_map);
   EXPECT_TRUE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
@@ -157,7 +158,7 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
   // Manually trigger map update with valid map
   skills::proto::Skill skill_proto;
   skill_proto.set_id("skill_id");
-  SkillsDownloader::SkillsMap skills_map = {{"skill_id", skill_proto}};
+  SkillIdToProtoMap skills_map = {{"skill_id", skill_proto}};
   handler_->OnDiscoverySkillsUpdated(&skills_map);
   EXPECT_FALSE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());

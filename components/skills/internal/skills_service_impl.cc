@@ -184,7 +184,7 @@ const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
   return skills_;
 }
 
-const SkillsService::SkillsMap& SkillsServiceImpl::Get1PSkills() const {
+const SkillIdToProtoMap& SkillsServiceImpl::Get1PSkills() const {
   return first_party_skills_map_;
 }
 
@@ -275,9 +275,9 @@ void SkillsServiceImpl::FetchDiscoverySkills() {
 }
 
 void SkillsServiceImpl::Handle1pSkillsMap(
-    std::unique_ptr<SkillsMap> skills_map) {
+    std::unique_ptr<SkillIdToProtoMap> skills_map) {
   last_discovery_skills_fetch_time_ = base::Time::Now();
-  SkillsMap* notification_ptr = nullptr;
+  SkillIdToProtoMap* notification_ptr = nullptr;
   // If skills_map is null, this means we don't have an updated value so we
   // shouldn't modify the stored 1p map.
   if (skills_map) {

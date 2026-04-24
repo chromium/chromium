@@ -110,6 +110,7 @@
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
+#include "components/skills/public/skills_types.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
@@ -2102,7 +2103,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnDiscoverySkillsUpdated(
-      const skills::SkillsService::SkillsMap* skills_map) override {
+      const skills::SkillIdToProtoMap* skills_map) override {
     // If skills_map is null, this means we don't have an updated value so we
     // shouldn't modify the stored 1p map.
     if (skills_map == nullptr) {
