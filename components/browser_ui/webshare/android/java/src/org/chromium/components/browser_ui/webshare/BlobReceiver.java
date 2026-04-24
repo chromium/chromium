@@ -40,6 +40,7 @@ public class BlobReceiver implements BlobReaderClient {
     private long mReceivedContentSize;
     private DataPipe.@Nullable ConsumerHandle mConsumerHandle;
     private @Nullable Callback<Integer> mCallback;
+    private @Nullable Blob mBlob;
 
     /**
      * Constructs a BlobReceiver.
@@ -60,6 +61,9 @@ public class BlobReceiver implements BlobReaderClient {
      * @param callback the callback to call when reading is complete.
      */
     public void start(Blob blob, Callback<Integer> callback) {
+        assert mBlob == null;
+        assert mConsumerHandle == null;
+        mBlob = blob;
         mCallback = callback;
         DataPipe.CreateOptions options = new DataPipe.CreateOptions();
         options.setElementNumBytes(1);
@@ -169,9 +173,7 @@ public class BlobReceiver implements BlobReaderClient {
             reportError(MojoResult.CANCELLED, "Failed to close stream.");
             return;
         }
-        assumeNonNull(mCallback);
-        mCallback.onResult(MojoResult.OK);
-        mCallback = null;
+        invokeCallbackAndCloseMojoEndpoints(MojoResult.OK);
     }
 
     private void reportError(int result, String message) {
@@ -180,9 +182,23 @@ public class BlobReceiver implements BlobReaderClient {
         }
         Log.w(TAG, message);
         StreamUtil.closeQuietly(mOutputStream);
+        invokeCallbackAndCloseMojoEndpoints(result);
+    }
 
+    private void invokeCallbackAndCloseMojoEndpoints(int result) {
+        if (mBlob != null) {
+            mBlob.close();
+            mBlob = null;
+        }
         assumeNonNull(mCallback);
         mCallback.onResult(result);
         mCallback = null;
+        // Close the consumer handle after the callbacks are called to
+        // prevent the `Watcher` callback being triggered with
+        // `MojoResult.CANCELLED`, causing a reentrancy.
+        if (mConsumerHandle != null) {
+            mConsumerHandle.close();
+            mConsumerHandle = null;
+        }
     }
 }
