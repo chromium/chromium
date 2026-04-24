@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 17 AVD on google_apis_ps16k on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator/linux-amd64"
+  version: "Gyae4HaK-r99kjSDCG4VV0ak2-FLPsCFmfVFhZcHH_MC"  # 36.5.10 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-37.0/google_apis_ps16k/x86_64"
+  version: "whwvcGrcu4DBEJ00DFWTeQfXzo4Zz4UnqWG_ELE39Y8C"  # r4, CP21.260330.005
+}
+system_image_name: "system-images;android-37.0;google_apis_ps16k;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-37.0/google_apis_ps16k/x86_64"
+  version: "qgmYwaNChpXDWaCaVNlihDRFmbwaCQDNQYpE39WO2UsC"
+}
+avd_name: "android_37_google_apis_ps16k_x64"
+
+avd_launch_settings {
+  gpu_mode: "lavapipe"
+}
