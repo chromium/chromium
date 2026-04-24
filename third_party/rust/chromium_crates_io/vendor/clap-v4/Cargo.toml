@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "clap"
-version = "4.6.0"
+version = "4.6.1"
 build = false
 include = [
     "build.rs",
@@ -510,7 +510,7 @@ version = "=4.6.0"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.6.0"
+version = "=4.6.1"
 optional = true
 
 [dev-dependencies.automod]
@@ -533,14 +533,14 @@ version = "1.0.27"
 version = "1.3.0"
 
 [dev-dependencies.snapbox]
-version = "1.1.0"
+version = "1.2.0"
 features = ["term-svg"]
 
 [dev-dependencies.trybuild]
 version = "1.0.116"
 
 [dev-dependencies.trycmd]
-version = "1.1.1"
+version = "1.2.0"
 features = [
     "color-auto",
     "diff",
