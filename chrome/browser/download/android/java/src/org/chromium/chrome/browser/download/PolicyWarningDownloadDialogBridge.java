@@ -44,7 +44,7 @@ public class PolicyWarningDownloadDialogBridge {
             @JniType("std::string") String guid,
             @JniType("std::u16string") String fileName) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
+        if (!(activity instanceof ModalDialogManagerHolder)) {
             onCancel(guid, windowAndroid);
             return;
         }
