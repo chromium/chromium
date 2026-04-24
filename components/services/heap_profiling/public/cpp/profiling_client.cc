@@ -60,8 +60,9 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
 
 void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
                                      StartProfilingCallback callback) {
-  if (started_profiling_)
+  if (started_profiling_) {
     return;
+  }
   started_profiling_ = true;
 
 #if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
@@ -79,6 +80,17 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
         // && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
   StartProfilingInternal(std::move(params), std::move(callback));
+}
+
+void ProfilingClient::StopProfiling(StopProfilingCallback callback) {
+  if (!started_profiling_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  base::SamplingHeapProfiler::Get()->Stop();
+  started_profiling_ = false;
+  std::move(callback).Run();
 }
 
 namespace {
@@ -132,8 +144,9 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
 void AllocatorHooksHaveBeenInitialized() {
   base::AutoLock lock(GetOnInitAllocatorShimLock());
   g_initialized_ = true;
-  if (!GetOnInitAllocatorShimCallback())
+  if (!GetOnInitAllocatorShimCallback()) {
     return;
+  }
   GetOnInitAllocatorShimTaskRunner()->PostTask(
       FROM_HERE, std::move(GetOnInitAllocatorShimCallback()));
 }
@@ -159,8 +172,9 @@ bool SetOnInitAllocatorShimCallbackForTesting(
     base::OnceClosure callback,
     scoped_refptr<base::TaskRunner> task_runner) {
   base::AutoLock lock(GetOnInitAllocatorShimLock());
-  if (g_initialized_)
+  if (g_initialized_) {
     return true;
+  }
   GetOnInitAllocatorShimCallback() = std::move(callback);
   GetOnInitAllocatorShimTaskRunner() = task_runner;
   return false;
@@ -211,10 +225,12 @@ void ProfilingClient::RetrieveHeapProfile(
     profile->samples.push_back(std::move(mojo_sample));
   }
   profile->strings.reserve(strings.size() + thread_names.size());
-  for (const char* string : strings)
+  for (const char* string : strings) {
     profile->strings.emplace(reinterpret_cast<uintptr_t>(string), string);
-  for (const char* string : thread_names)
+  }
+  for (const char* string : thread_names) {
     profile->strings.emplace(reinterpret_cast<uintptr_t>(string), string);
+  }
 
   std::move(callback).Run(std::move(profile));
 }

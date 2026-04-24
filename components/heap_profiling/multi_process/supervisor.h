@@ -9,6 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -71,6 +73,11 @@ class Supervisor {
              uint32_t sampling_rate,
              base::OnceClosure callback);
 
+  // Stops profiling in all connected clients and tears down the supervisor
+  // process-wide state. |callback| is invoked on the UI thread with a boolean
+  // indicating whether profiling was successfully stopped.
+  void Stop(base::OnceCallback<void(bool)> callback);
+
   Mode GetMode();
 
   // Starts profiling the process with the given `pid`. Invokes
@@ -128,24 +135,41 @@ class Supervisor {
       mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
           remote_helper);
 
-  // Initialization stage 3: Start the ClientConnectManager on the UI thread.
-  // Invokes `closure` on the UI thread when done if it's not null.
-  void StartClientConnectionOnUIhread(
+  // Initialization stage 3: Save controller pointer and start the
+  // ClientConnectionManager.
+  void ControllerStartedOnUIThread(
       Mode mode,
       base::OnceClosure closure,
       base::WeakPtr<Controller> controller_weak_ptr);
 
+  // Starts the ClientConnectionManager. Can be called multiple times.
+  void StartClientConnectionOnUIThread(Mode mode, base::OnceClosure closure);
+
   void GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback);
+
+  void StopOnIOThread(base::OnceCallback<void(bool)> callback);
 
   // Bound to the IO thread.
   std::unique_ptr<Controller> controller_;
 
+  THREAD_CHECKER(ui_thread_checker_);
+
   // Bound to the UI thread.
-  std::unique_ptr<ClientConnectionManager> client_connection_manager_;
+  std::unique_ptr<ClientConnectionManager> client_connection_manager_
+      GUARDED_BY_CONTEXT(ui_thread_checker_);
+  base::WeakPtr<Controller> controller_weak_ptr_
+      GUARDED_BY_CONTEXT(ui_thread_checker_);
 
   ClientConnectionManagerConstructor constructor_ = nullptr;
 
-  bool started_ = false;
+  bool started_ GUARDED_BY_CONTEXT(ui_thread_checker_) = false;
+  enum class InitializationState {
+    kNotInitialized,
+    kInitializing,
+    kInitialized
+  };
+  InitializationState initialization_state_ GUARDED_BY_CONTEXT(
+      ui_thread_checker_) = InitializationState::kNotInitialized;
 };
 
 }  // namespace heap_profiling

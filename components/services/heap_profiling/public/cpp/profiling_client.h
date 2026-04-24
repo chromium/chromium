@@ -22,6 +22,7 @@ class ProfilingClient : public mojom::ProfilingClient {
   // mojom::ProfilingClient overrides:
   void StartProfiling(mojom::ProfilingParamsPtr params,
                       StartProfilingCallback callback) override;
+  void StopProfiling(StopProfilingCallback callback) override;
   void RetrieveHeapProfile(RetrieveHeapProfileCallback callback) override;
 
   void BindToInterface(mojo::PendingReceiver<mojom::ProfilingClient> receiver);

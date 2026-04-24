@@ -50,8 +50,9 @@ class ProfilingServiceImpl
                           mojom::ProfilingParamsPtr params,
                           mojom::ProfilingService::AddProfilingClientCallback
                               started_profiling_closure) override {
-    if (params->sampling_rate == 0)
+    if (params->sampling_rate == 0) {
       params->sampling_rate = 1;
+    }
     connection_manager_.OnNewConnection(pid, std::move(client), process_type,
                                         std::move(params),
                                         std::move(started_profiling_closure));
@@ -59,6 +60,11 @@ class ProfilingServiceImpl
 
   void GetProfiledPids(GetProfiledPidsCallback callback) override {
     std::move(callback).Run(connection_manager_.GetConnectionPids());
+  }
+
+  void StopProfilingAllClients(
+      StopProfilingAllClientsCallback callback) override {
+    connection_manager_.StopProfilingAllClients(std::move(callback));
   }
 
   // memory_instrumentation::mojom::HeapProfiler implementation:

@@ -32,4 +32,7 @@ interface ProfilingService {
 
   // Returns the pids of all profiled processes.
   GetProfiledPids() => (array<mojo_base.mojom.ProcessId> pids);
+
+  // Stops profiling all connected clients.
+  StopProfilingAllClients() => (bool success);
 };

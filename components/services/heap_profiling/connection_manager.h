@@ -68,6 +68,8 @@ class ConnectionManager {
                        mojom::ProfilingService::AddProfilingClientCallback
                            started_profiling_closure);
 
+  void StopProfilingAllClients(base::OnceCallback<void(bool)> callback);
+
   // Returns pids of clients that have started profiling.
   std::vector<base::ProcessId> GetConnectionPids();
 
@@ -101,6 +103,9 @@ class ConnectionManager {
   // know when initialization is complete.
   void OnProfilingStarted(base::ProcessId pid);
 
+  // Indicates that a client has stopped profiling.
+  void OnProfilingStopped(base::ProcessId pid);
+
   // Reports the ProcessTypes of the processes being profiled.
   void ReportMetrics();
 
@@ -113,6 +118,11 @@ class ConnectionManager {
 
   // Every 24-hours, reports the types of profiled processes.
   base::RepeatingTimer metrics_timer_;
+
+  // Used while StopProfilingAllClients() is waiting for async responses.
+  base::OnceCallback<void(bool)> stop_profiling_callback_;
+  size_t stop_profiling_waiting_responses_ = 0;
+  bool stop_profiling_success_ = true;
 
   // Must be the last.
   base::WeakPtrFactory<ConnectionManager> weak_factory_{this};

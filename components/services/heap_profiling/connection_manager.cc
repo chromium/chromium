@@ -68,6 +68,7 @@ struct ConnectionManager::Connection {
   mojom::StackMode stack_mode;
 
   bool started_profiling = false;
+  bool waiting_for_stop_response = false;
 
   // When sampling is enabled, allocations are recorded with probability (size /
   // sampling_rate) when size < sampling_rate. When size >= sampling_rate, the
@@ -127,13 +128,57 @@ void ConnectionManager::OnNewConnection(
   connections_[pid] = std::move(connection);
 }
 
+void ConnectionManager::StopProfilingAllClients(
+    base::OnceCallback<void(bool)> callback) {
+  std::vector<base::OnceClosure> stop_calls;
+  {
+    base::AutoLock lock(connections_lock_);
+
+    if (stop_profiling_callback_) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    if (connections_.empty()) {
+      std::move(callback).Run(true);
+      return;
+    }
+
+    stop_profiling_callback_ = std::move(callback);
+    stop_profiling_waiting_responses_ = connections_.size();
+    stop_profiling_success_ = true;
+
+    stop_calls.reserve(connections_.size());
+    for (const auto& it : connections_) {
+      base::ProcessId pid = it.first;
+      auto* client = &it.second->client;
+      it.second->waiting_for_stop_response = true;
+      stop_calls.push_back(base::BindOnce(
+          [](mojo::Remote<mojom::ProfilingClient>* client,
+             base::WeakPtr<ConnectionManager> manager, base::ProcessId pid) {
+            if (!manager) {
+              return;
+            }
+            (*client)->StopProfiling(base::BindOnce(
+                &ConnectionManager::OnProfilingStopped, manager, pid));
+          },
+          base::Unretained(client), weak_factory_.GetWeakPtr(), pid));
+    }
+  }
+
+  for (auto& stop_call : stop_calls) {
+    std::move(stop_call).Run();
+  }
+}
+
 std::vector<base::ProcessId> ConnectionManager::GetConnectionPids() {
   base::AutoLock lock(connections_lock_);
   std::vector<base::ProcessId> results;
   results.reserve(connections_.size());
   for (const auto& pair : connections_) {
-    if (pair.second->started_profiling)
+    if (pair.second->started_profiling) {
       results.push_back(pair.first);
+    }
   }
   return results;
 }
@@ -144,8 +189,9 @@ ConnectionManager::GetConnectionPidsThatNeedVmRegions() {
   std::vector<base::ProcessId> results;
   results.reserve(connections_.size());
   for (const auto& pair : connections_) {
-    if (pair.second->HeapDumpNeedsVmRegions())
+    if (pair.second->HeapDumpNeedsVmRegions()) {
       results.push_back(pair.first);
+    }
   }
   return results;
 }
@@ -157,6 +203,16 @@ void ConnectionManager::OnConnectionComplete(base::ProcessId pid) {
   if (!found->second->started_profiling_callback.is_null()) {
     std::move(found->second->started_profiling_callback).Run(/*success=*/false);
   }
+
+  // If a client disconnects while we are waiting for it to stop profiling,
+  // we must decrement the waiting counter to avoid hanging indefinitely.
+  if (found->second->waiting_for_stop_response) {
+    stop_profiling_success_ = false;
+    if (--stop_profiling_waiting_responses_ == 0) {
+      std::move(stop_profiling_callback_).Run(stop_profiling_success_);
+    }
+  }
+
   connections_.erase(found);
 }
 
@@ -169,6 +225,26 @@ void ConnectionManager::OnProfilingStarted(base::ProcessId pid) {
   if (found != connections_.end()) {
     found->second->started_profiling = true;
     std::move(found->second->started_profiling_callback).Run(/*success=*/true);
+  }
+}
+
+void ConnectionManager::OnProfilingStopped(base::ProcessId pid) {
+  base::AutoLock lock(connections_lock_);
+
+  if (!stop_profiling_callback_) {
+    return;
+  }
+
+  auto found = connections_.find(pid);
+  if (found != connections_.end()) {
+    found->second->started_profiling = false;
+    found->second->waiting_for_stop_response = false;
+  } else {
+    stop_profiling_success_ = false;
+  }
+
+  if (--stop_profiling_waiting_responses_ == 0) {
+    std::move(stop_profiling_callback_).Run(stop_profiling_success_);
   }
 }
 
@@ -224,8 +300,9 @@ bool ConnectionManager::ConvertProfileToExportParams(
     int context_id = 0;
     if (sample->context_id) {
       auto it = profile->strings.find(sample->context_id);
-      if (it == profile->strings.end())
+      if (it == profile->strings.end()) {
         return false;
+      }
       const std::string& context = it->second;
       // Escape the strings early, to simplify exporting a heap dump.
       std::string escaped_context;
@@ -239,8 +316,9 @@ bool ConnectionManager::ConvertProfileToExportParams(
 
     size_t alloc_size = sample->total;
     float alloc_count = 1;
-    if (sample->size != 0)
+    if (sample->size != 0) {
       alloc_count = float(sample->total) / float(sample->size);
+    }
 
     std::vector<Address> stack(sample->stack.begin(), sample->stack.end());
     AllocationMetrics& metrics =
@@ -288,8 +366,9 @@ void ConnectionManager::HeapProfileRetrieved(
     params.next_id = next_id_;
 
     auto it = tracking->vm_regions.find(pid);
-    if (it != tracking->vm_regions.end())
+    if (it != tracking->vm_regions.end()) {
       params.maps = std::move(it->second);
+    }
 
     memory_instrumentation::mojom::HeapProfileResultPtr result =
         memory_instrumentation::mojom::HeapProfileResult::New();
@@ -300,8 +379,9 @@ void ConnectionManager::HeapProfileRetrieved(
   }
 
   // When all responses complete, issue done callback.
-  if (--tracking->waiting_responses == 0)
+  if (--tracking->waiting_responses == 0) {
     std::move(tracking->callback).Run(std::move(tracking->results));
+  }
 }
 
 }  // namespace heap_profiling

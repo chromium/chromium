@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -53,6 +54,7 @@ Supervisor::~Supervisor() {
 }
 
 bool Supervisor::HasStarted() {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   return started_;
 }
 
@@ -71,12 +73,20 @@ void Supervisor::Start(Mode mode,
                        mojom::StackMode stack_mode,
                        uint32_t sampling_rate,
                        base::OnceClosure closure) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(!started_);
+  if (initialization_state_ == InitializationState::kInitialized) {
+    StartClientConnectionOnUIThread(mode, std::move(closure));
+    return;
+  }
+
+  CHECK(initialization_state_ == InitializationState::kNotInitialized);
+  initialization_state_ = InitializationState::kInitializing;
+
   // Unretained is safe because `this` is a leaked global singleton.
   auto ui_thread_callback = base::BindPostTask(
       content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&Supervisor::StartClientConnectionOnUIhread,
+      base::BindOnce(&Supervisor::ControllerStartedOnUIThread,
                      base::Unretained(this), mode, std::move(closure)));
   auto io_thread_callback = base::BindPostTask(
       content::GetIOThreadTaskRunner({}),
@@ -89,6 +99,46 @@ void Supervisor::Start(Mode mode,
                  base::BindOnce(
                      &Supervisor::RegisterProfilerOnMemoryInfraThread,
                      base::Unretained(this), std::move(io_thread_callback)));
+}
+
+void Supervisor::Stop(base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+
+  if (initialization_state_ == InitializationState::kInitializing) {
+    auto retry_stop_on_ui = base::BindPostTask(
+        content::GetUIThreadTaskRunner({}),
+        base::BindOnce(&Supervisor::Stop, base::Unretained(this),
+                       std::move(callback)));
+
+    auto hop_to_io = base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                        std::move(retry_stop_on_ui));
+
+    // Post to MemoryInfra thread to queue behind the initial Start task.
+    base::trace_event::MemoryDumpManager::GetInstance()
+        ->GetDumpThreadTaskRunner()
+        ->PostTask(FROM_HERE, std::move(hop_to_io));
+    return;
+  }
+
+  if (!started_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  started_ = false;
+
+  // Stop observing/connecting new processes immediately while shutdown is in
+  // flight.
+  client_connection_manager_.reset();
+
+  auto on_stopped_on_ui = base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                                             std::move(callback));
+
+  // Unretained is safe because `this` aka Supervisor is leaked singleton
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Supervisor::StopOnIOThread, base::Unretained(this),
+                     std::move(on_stopped_on_ui)));
 }
 
 void Supervisor::RegisterProfilerOnMemoryInfraThread(
@@ -106,6 +156,7 @@ void Supervisor::RegisterProfilerOnMemoryInfraThread(
 }
 
 Mode Supervisor::GetMode() {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(HasStarted());
   return client_connection_manager_->GetMode();
 }
@@ -114,14 +165,14 @@ void Supervisor::StartManualProfiling(
     base::ProcessId pid,
     mojom::ProfilingService::AddProfilingClientCallback
         started_profiling_closure) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(HasStarted());
   client_connection_manager_->StartProfilingProcess(
       pid, std::move(started_profiling_closure));
 }
 
 void Supervisor::GetProfiledPids(GetProfiledPidsCallback callback) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(HasStarted());
 
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -130,7 +181,7 @@ void Supervisor::GetProfiledPids(GetProfiledPidsCallback callback) {
 }
 
 uint32_t Supervisor::GetSamplingRate() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(HasStarted());
 
   return controller_->sampling_rate();
@@ -138,7 +189,7 @@ uint32_t Supervisor::GetSamplingRate() {
 
 void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
                                           bool anonymize) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(HasStarted());
 
   if (content::TracingController::GetInstance()->IsTracing()) {
@@ -210,24 +261,34 @@ void Supervisor::LaunchServiceOnIOThread(
   std::move(continue_on_ui_thread).Run(controller_->GetWeakPtr());
 }
 
-void Supervisor::StartClientConnectionOnUIhread(
+void Supervisor::ControllerStartedOnUIThread(
     Mode mode,
     base::OnceClosure closure,
     base::WeakPtr<Controller> controller_weak_ptr) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  CHECK(initialization_state_ == InitializationState::kInitializing);
+  initialization_state_ = InitializationState::kInitialized;
+  controller_weak_ptr_ = controller_weak_ptr;
+  StartClientConnectionOnUIThread(mode, std::move(closure));
+}
+
+void Supervisor::StartClientConnectionOnUIThread(Mode mode,
+                                                 base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   DCHECK(!started_);
   started_ = true;
 
   if (constructor_) {
-    client_connection_manager_ = (*constructor_)(controller_weak_ptr, mode);
+    client_connection_manager_ = (*constructor_)(controller_weak_ptr_, mode);
   } else {
     client_connection_manager_ =
-        std::make_unique<ClientConnectionManager>(controller_weak_ptr, mode);
+        std::make_unique<ClientConnectionManager>(controller_weak_ptr_, mode);
   }
 
   client_connection_manager_->Start();
-  if (closure)
+  if (closure) {
     std::move(closure).Run();
+  }
 }
 
 void Supervisor::GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback) {
@@ -242,5 +303,17 @@ void Supervisor::GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback) {
       std::move(callback));
   controller_->GetProfiledPids(std::move(post_result_to_ui_thread));
 }
+
+void Supervisor::StopOnIOThread(base::OnceCallback<void(bool)> callback) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+
+  if (!controller_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  controller_->StopProfilingAllClients(std::move(callback));
+}
+
 
 }  // namespace heap_profiling

@@ -43,6 +43,12 @@ void Controller::GetProfiledPids(GetProfiledPidsCallback callback) {
   heap_profiling_service_->GetProfiledPids(std::move(callback));
 }
 
+void Controller::StopProfilingAllClients(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  heap_profiling_service_->StopProfilingAllClients(std::move(callback));
+}
+
 base::WeakPtr<Controller> Controller::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
