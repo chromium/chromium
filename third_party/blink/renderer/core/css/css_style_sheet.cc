@@ -327,7 +327,9 @@ void CSSStyleSheet::ReattachChildRuleCSSOMWrappers() {
 
 void CSSStyleSheet::DetachCSSOMWrappers() {
   for (Member<CSSRule>& wrapper : child_rule_cssom_wrappers_) {
-    wrapper->SetParentStyleSheet(nullptr);
+    if (wrapper) {
+      wrapper->SetParentStyleSheet(nullptr);
+    }
   }
 }
 

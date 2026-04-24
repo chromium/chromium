@@ -149,4 +149,20 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
       blue->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(CSSStyleSheetTest, DetachCSSOMWrappersWithNullEntries) {
+  auto* sheet = CSSStyleSheet::Create(
+      GetDocument(), CSSStyleSheetInit::Create(), ASSERT_NO_EXCEPTION);
+  sheet->replaceSync(".a { color: red; } .b { color: green; }",
+                     ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(sheet->length(), 2u);
+
+  sheet->item(0);
+  // child_rule_cssom_wrappers_[0] is non-nullptr
+  // child_rule_cssom_wrappers_[1] is nullptr
+
+  // Call DetachCSSOMWrappers via replaceSync.
+  sheet->replaceSync(".c { color: blue; }", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(sheet->length(), 1u);
+}
+
 }  // namespace blink
