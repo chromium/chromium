@@ -190,7 +190,6 @@ class WaitForActuationTask : public GlicInvokeTask {
  public:
   WaitForActuationTask(GlicInstanceImpl* instance,
                        base::TimeDelta start_timeout,
-                       base::TimeDelta complete_timeout,
                        base::OnceCallback<void(GlicInvokeError)> error_callback,
                        base::OnceClosure on_actuation_started);
   ~WaitForActuationTask() override;
@@ -204,7 +203,6 @@ class WaitForActuationTask : public GlicInvokeTask {
 
   raw_ptr<GlicInstanceImpl> instance_;
   base::TimeDelta start_timeout_;
-  base::TimeDelta complete_timeout_;
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
   base::OnceClosure done_callback_;
   base::OnceClosure on_actuation_started_;
@@ -214,7 +212,6 @@ class WaitForActuationTask : public GlicInvokeTask {
   bool task_started_ = false;
   bool did_start_ = false;
   bool did_finish_ = false;
-  bool complete_timeout_started_ = false;
   base::CallbackListSubscription subscription_;
 };
 

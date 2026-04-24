@@ -224,12 +224,10 @@ void SendToClientTask::OnAck() {
 WaitForActuationTask::WaitForActuationTask(
     GlicInstanceImpl* instance,
     base::TimeDelta start_timeout,
-    base::TimeDelta complete_timeout,
     base::OnceCallback<void(GlicInvokeError)> error_callback,
     base::OnceClosure on_actuation_started)
     : instance_(instance),
       start_timeout_(start_timeout),
-      complete_timeout_(complete_timeout),
       error_callback_(std::move(error_callback)),
       on_actuation_started_(std::move(on_actuation_started)) {
   GlicActorTaskManager* task_manager = instance_->GetActorTaskManager();
@@ -280,19 +278,16 @@ void WaitForActuationTask::Update() {
     return;
   }
 
-  // Not done yet, set a timeout.
-  if (!timer_.IsRunning() || (did_start_ && !complete_timeout_started_)) {
-    timer_.Stop();
-    if (!did_start_) {
+  // Not done yet.
+  if (!did_start_) {
+    if (!timer_.IsRunning()) {
       timer_.Start(FROM_HERE, start_timeout_,
                    base::BindOnce(&WaitForActuationTask::OnTimeout,
                                   base::Unretained(this)));
-    } else {
-      timer_.Start(FROM_HERE, complete_timeout_,
-                   base::BindOnce(&WaitForActuationTask::OnTimeout,
-                                  base::Unretained(this)));
-      complete_timeout_started_ = true;
     }
+  } else {
+    // Actuation started, stop the initial timeout timer if it was running.
+    timer_.Stop();
   }
 }
 

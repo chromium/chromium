@@ -190,7 +190,6 @@ void GlicInvokeHandler::Invoke() {
 
     tasks.push_back(std::make_unique<WaitForActuationTask>(
         &*instance_, options_.timeout.value_or(kDefaultTimeout),
-        options_.actuation_timeout.value_or(base::Minutes(10)),
         base::BindOnce(&GlicInvokeHandler::OnError,
                        weak_ptr_factory_.GetWeakPtr()),
         std::move(on_actuation_started)));
