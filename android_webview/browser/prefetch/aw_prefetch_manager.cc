@@ -39,6 +39,33 @@ using content::BrowserThread;
 
 namespace android_webview {
 
+namespace {
+
+void NotifyStartFailedDuplicate(
+    std::unique_ptr<content::PrefetchRequestStatusListener>
+        request_status_listener) {
+  if (!request_status_listener) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ::features::kPrefetchRequestStatusListenerAsync)) {
+    // We always post this task to the UI thread even if this is called from
+    // non-UI thread (i.e. off-the-main-thread preprefetch), because:
+    // - Chromium taskrunner might be unavailable on the non-UI Java thread.
+    // - The caller `AwPrefetchRequestStatusListener` doesn't care on which
+    //   thread it is called.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&content::PrefetchRequestStatusListener::
+                                      OnPrefetchStartFailedDuplicate,
+                                  std::move(request_status_listener)));
+  } else {
+    request_status_listener->OnPrefetchStartFailedDuplicate();
+  }
+}
+
+}  // namespace
+
 BASE_FEATURE(kWebViewPrefetchDisableBlockUntilHeadTimeout,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -361,18 +388,14 @@ int AwPrefetchManager::StartRequest(
     key = aw_prefetch_manager_data_.ReservePrefetchHandleWrapper(
         pf_url, expected_no_vary_search);
     if (key == NO_PREFETCH_KEY) {
-      if (request_status_listener) {
-        request_status_listener->OnPrefetchStartFailedDuplicate();
-      }
+      NotifyStartFailedDuplicate(std::move(request_status_listener));
       return NO_PREFETCH_KEY;
     }
   } else {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (browser_context_->IsPrefetchDuplicate(pf_url,
                                               expected_no_vary_search)) {
-      if (request_status_listener) {
-        request_status_listener->OnPrefetchStartFailedDuplicate();
-      }
+      NotifyStartFailedDuplicate(std::move(request_status_listener));
       return NO_PREFETCH_KEY;
     }
 

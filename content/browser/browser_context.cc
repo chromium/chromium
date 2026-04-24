@@ -220,7 +220,16 @@ BrowserContext::StartBrowserPrefetchRequest(
       BrowserContextImpl::From(this)->GetPrefetchService();
   if (!prefetch_service) {
     if (request_status_listener) {
-      request_status_listener->OnPrefetchStartFailedGeneric();
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchRequestStatusListenerAsync)) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &PrefetchRequestStatusListener::OnPrefetchStartFailedGeneric,
+                std::move(request_status_listener)));
+      } else {
+        request_status_listener->OnPrefetchStartFailedGeneric();
+      }
     }
     return nullptr;
   }
