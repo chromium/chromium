@@ -56,6 +56,7 @@ public class SideUiCoordinatorImplTest {
     private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
             ObservableSuppliers.createNonNull(0);
 
+    private FrameLayout mSideUiParent;
     private ViewGroup mStartAnchorContainer;
     private ViewGroup mEndAnchorContainer;
     private View mSideUiContainerView;
@@ -66,8 +67,17 @@ public class SideUiCoordinatorImplTest {
     public void setUp() {
         Context context = Robolectric.buildActivity(Activity.class).setup().get();
 
-        FrameLayout sideUiParent = new FrameLayout(context);
-        sideUiParent.layout(0, 0, SIDE_UI_PARENT_SIZE.getWidth(), SIDE_UI_PARENT_SIZE.getHeight());
+        // Set up side UI's parent View.
+        // Note that we simulate a measure pass and a layout pass, like what Android framework does.
+        mSideUiParent = new FrameLayout(context);
+        mSideUiParent.measure(
+                View.MeasureSpec.makeMeasureSpec(
+                        SIDE_UI_PARENT_SIZE.getWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        SIDE_UI_PARENT_SIZE.getHeight(), View.MeasureSpec.EXACTLY));
+        mSideUiParent.layout(0, 0, SIDE_UI_PARENT_SIZE.getWidth(), SIDE_UI_PARENT_SIZE.getHeight());
+
+        // Set up anchor containers.
         mStartAnchorContainer =
                 (ViewGroup)
                         LayoutInflater.from(context)
@@ -76,8 +86,8 @@ public class SideUiCoordinatorImplTest {
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
-        sideUiParent.addView(mStartAnchorContainer);
-        sideUiParent.addView(mEndAnchorContainer);
+        mSideUiParent.addView(mStartAnchorContainer);
+        mSideUiParent.addView(mEndAnchorContainer);
 
         mSideUiContainerView = new View(context);
         mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
@@ -85,6 +95,7 @@ public class SideUiCoordinatorImplTest {
         doReturn(mStartAnchorContainer).when(mStartAnchorContainerStub).inflate();
         doReturn(mEndAnchorContainer).when(mEndAnchorContainerStub).inflate();
 
+        // Initialize the SideUiCoordinator under test.
         mCoordinator =
                 new SideUiCoordinatorImpl(
                         mStartAnchorContainerStub, mEndAnchorContainerStub, mTopMarginSupplier);
@@ -246,7 +257,7 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testGetCurrentSideUiSpecs_WithParentHeightAndTopMargin() {
+    public void testGetCurrentSideUiSpecs_AfterTopMarginChange() {
         int sideUiTopMargin = 100;
         mTopMarginSupplier.set(sideUiTopMargin);
 
@@ -260,6 +271,33 @@ public class SideUiCoordinatorImplTest {
                 "Unexpected measured height.",
                 SIDE_UI_PARENT_SIZE.getHeight() - sideUiTopMargin,
                 mEndAnchorContainer.getMeasuredHeight());
+    }
+
+    @Test
+    public void testGetCurrentSideUiSpecs_AfterParentResize() {
+        // Simulate the measure pass for when side UI's parent is resized.
+        int newParentHeight = mSideUiParent.getHeight() - 100;
+        mSideUiParent.measure(
+                View.MeasureSpec.makeMeasureSpec(
+                        mSideUiParent.getWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(newParentHeight, View.MeasureSpec.EXACTLY));
+
+        // Call getCurrentSideUiSpecs() before the layout pass.
+        mCoordinator.getCurrentSideUiSpecs();
+
+        // The anchor containers should use newParentHeight (the new measured height).
+        assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
+        assertEquals(newParentHeight, mEndAnchorContainer.getMeasuredHeight());
+
+        // Now simulate the layout pass.
+        mSideUiParent.layout(0, 0, SIDE_UI_PARENT_SIZE.getWidth(), newParentHeight);
+
+        // Call getCurrentSideUiSpecs() again.
+        mCoordinator.getCurrentSideUiSpecs();
+
+        // The anchor containers' measured height should remain unchanged.
+        assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
+        assertEquals(newParentHeight, mEndAnchorContainer.getMeasuredHeight());
     }
 
     private int getSideUiContainerViewWidth() {

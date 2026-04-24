@@ -129,7 +129,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         assert sideUiParent == mEndAnchorContainer.getParent()
                 : "Anchor containers should have the same parent.";
 
-        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getHeight() : 0;
+        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getMeasuredHeight() : 0;
         int sideUiHeight = sideUiParentHeight - mSideUiTopMargin;
         int sideUiHeightSpec =
                 sideUiHeight > 0
