@@ -31,7 +31,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
-import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -180,30 +179,11 @@ public class ProfileDataCache implements IdentityManager.Observer {
     }
 
     /**
-     * @return The {@link DisplayableProfileData} containing the profile data corresponding to the
-     *     given account or a {@link DisplayableProfileData} with a placeholder image and null full
-     *     and given name.
-     * @deprecated Use {@link #getById} instead.
-     *     <p>TODO(crbug.com/494147426) Remove this method when all usages are migrated to {@link
-     *     #getById}.
-     */
-    @Deprecated
-    public DisplayableProfileData getProfileDataOrDefault(@Nullable String accountEmail) {
-        DisplayableProfileData profileData =
-                accountEmail != null ? mAccountsCache.getByEmail(accountEmail) : null;
-        if (profileData == null) {
-            return createDefaultProfileData(assumeNonNull(accountEmail));
-        }
-        return profileData;
-    }
-
-    /**
      * Returns cached {@link DisplayableProfileData} for the given account ID.
      *
      * <p>Method is synchronous and does not trigger any account info fetches. First it checks if
-     * the {@link DisplayableProfileData} is in the cache, then it falls back to the {@link
-     * AccountManagerFacade} to find an email value and create a limited {@link
-     * DisplayableProfileData} object. Throws an exception if the account is not found.
+     * the {@link DisplayableProfileData} is in the cache, then it updates the cache if the account
+     * is missing. Throws an {@link IllegalArgumentException} if the account still cannot be found.
      *
      * @param accountId The account ID for which to get the profile data.
      * @throws IllegalArgumentException if the account is not found.
@@ -220,15 +200,6 @@ public class ProfileDataCache implements IdentityManager.Observer {
         }
 
         throw new IllegalArgumentException("Account not found");
-    }
-
-    private DisplayableProfileData createDefaultProfileData(String accountEmail) {
-        return new DisplayableProfileData(
-                accountEmail,
-                mPlaceholderImage,
-                null,
-                null,
-                AccountEmailDisplayHook.canHaveEmailAddressDisplayed(accountEmail));
     }
 
     /**
@@ -331,17 +302,6 @@ public class ProfileDataCache implements IdentityManager.Observer {
     /** Checks if the cache contains profile data for the given account ID. */
     public boolean hasProfileDataForTesting(CoreAccountId accountId) {
         return mAccountsCache.getByAccountId(accountId) != null;
-    }
-
-    /**
-     * @return Whether the cache contains non-default profile data for the given account.
-     * @deprecated Use {@link #hasProfileDataForTesting(CoreAccountId)} instead.
-     *     <p>TODO(crbug.com/494147426) Remove this method when all usages are migrated to {@link
-     *     #hasProfileDataForTesting(CoreAccountId)}.
-     */
-    @Deprecated
-    public boolean hasProfileDataForTesting(String accountEmail) {
-        return mAccountsCache.getByEmail(accountEmail) != null;
     }
 
     private void updateCache() {
@@ -612,17 +572,6 @@ public class ProfileDataCache implements IdentityManager.Observer {
                 accounts.put(accountId, profileData);
                 mAccounts.fulfill(accounts);
             }
-        }
-
-        private @Nullable DisplayableProfileData getByEmail(String email) {
-            if (mAccounts.isFulfilled()) {
-                for (var account : mAccounts.getResult().values()) {
-                    if (account.getAccountEmail().equals(email)) {
-                        return account;
-                    }
-                }
-            }
-            return null;
         }
 
         private @Nullable DisplayableProfileData getByAccountId(CoreAccountId accountId) {
