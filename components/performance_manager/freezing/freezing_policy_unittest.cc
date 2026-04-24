@@ -16,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -60,9 +62,9 @@ class MockFreezingPolicy : public FreezingPolicy {
       : FreezingPolicy(std::move(discarder), std::move(opt_out_checker)) {}
   ~MockFreezingPolicy() override = default;
 
-  base::TimeTicks GenerateRandomPeriodicUnfreezePhase() const override {
+  base::LiveTicks GenerateRandomPeriodicUnfreezePhase() const override {
     //  Make the periodic unfreeze phase non-random for tests.
-    return base::TimeTicks();
+    return base::LiveTicks();
   }
 
   MOCK_METHOD(void,
@@ -103,6 +105,10 @@ class LenientMockDiscarder : public freezing::Discarder {
               (override));
 };
 using MockDiscarder = ::testing::StrictMock<LenientMockDiscarder>;
+
+const base::TimeDelta kTimeBetweenUnfreezePeriods =
+    features::kInfiniteTabsFreezing_UnfreezeInterval.Get() -
+    features::kInfiniteTabsFreezing_UnfreezeDuration.Get();
 
 }  // namespace
 
@@ -2015,9 +2021,9 @@ class FreezingPolicyInfiniteTabsTest
 
   // Advances the clock to a time aligned on `interval`.
   void AdvanceToAlignedTime(base::TimeDelta interval) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-    const base::TimeTicks next_aligned_time =
-        now.SnappedToNextTick(base::TimeTicks(), interval);
+    const base::LiveTicks now = base::LiveTicks::Now();
+    const base::LiveTicks next_aligned_time =
+        now.SnappedToNextTick(base::LiveTicks(), interval);
     AdvanceClock(next_aligned_time - now);
   }
 
@@ -2199,7 +2205,7 @@ TEST_F(FreezingPolicyInfiniteTabsTest, UniversalCannotFreezeReason) {
 // unfrozen.
 TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   // Advance to the beginning of the next periodic unfreeze period.
-  AdvanceToAlignedTime(base::Minutes(1));
+  AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
 
   // Create a new page. This should remove
   // `CannotFreezeReason::kMostRecentlyUsed` from `pages_[0]`. However, it's not
@@ -2217,8 +2223,7 @@ TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   // Advance to the beginning of the next periodic unfreeze period. `pages_[0]`
   // should be unfrozen.
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() -
-               features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  AdvanceClock(kTimeBetweenUnfreezePeriods);
   VerifyFreezerExpectations();
 
   // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
@@ -2233,8 +2238,7 @@ TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   VerifyFreezerExpectations();
 
   // At the next periodic unfreeze period, `pages_[0]` remains unfrozen.
-  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() -
-               features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  AdvanceClock(kTimeBetweenUnfreezePeriods);
 
   // When the periodic unfreeze period ends, `pages_[0]` is not re-frozen.
   AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
@@ -2242,6 +2246,87 @@ TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   // When the `CannotFreezeReason` is removed, `pages_[0]` is frozen.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   pages_[0]->SetUsesWebRTCForTesting(false);
+  VerifyFreezerExpectations();
+}
+
+// Verify that under "Infinite Tabs Freezing", the periodic unfreeze timer is
+// stopped when the system is suspended, and restarted when it's resumed.
+TEST_F(FreezingPolicyInfiniteTabsTest, SystemSuspended) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+
+  // Advance to the beginning of the next periodic unfreeze period.
+  AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
+
+  // Create a new page. This should remove
+  // `CannotFreezeReason::kMostRecentlyUsed` from `pages_[0]`. However, it's not
+  // frozen yet since it's still in its periodic unfreeze period.
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
+  // frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+
+  power_monitor_source.Suspend();
+
+  // Advance to the beginning of the next periodic unfreeze period. `pages_[0]`
+  // would normally be unfrozen, but it stays frozen because the system is
+  // suspended.
+  task_env().SuspendedFastForwardBy(kTimeBetweenUnfreezePeriods);
+  VerifyFreezerExpectations();
+
+  ASSERT_GT(kTimeBetweenUnfreezePeriods, TestTimeouts::action_timeout());
+  task_env().SuspendedFastForwardBy(TestTimeouts::action_timeout());
+
+  // The page should not be unfrozen on resume since the periodic unfreeze timer
+  // didn't advance during suspend.
+  power_monitor_source.Resume();
+  VerifyFreezerExpectations();
+
+  // Advance to the beginning of the next periodic unfreeze period, not counting
+  // time that was spent in suspend. `pages_[0]` stays frozen.
+  AdvanceClock(kTimeBetweenUnfreezePeriods - TestTimeouts::action_timeout());
+  VerifyFreezerExpectations();
+
+  // Advance to the REAL beginning of the next periodic unfreeze period. Now
+  // `pages_[0]` should be unfrozen.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  AdvanceClock(TestTimeouts::action_timeout());
+  VerifyFreezerExpectations();
+
+  power_monitor_source.Suspend();
+
+  // Advance to the end of the periodic unfreeze period. `pages_[0]` should NOT
+  // be frozen because the periodic unfreeze timer didn't advance during
+  // suspend.
+  task_env().SuspendedFastForwardBy(
+      features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+
+  ASSERT_GT(features::kInfiniteTabsFreezing_UnfreezeDuration.Get(),
+            TestTimeouts::tiny_timeout());
+  task_env().SuspendedFastForwardBy(TestTimeouts::tiny_timeout());
+
+  // The page should not be frozen on resume since the periodic unfreeze timer
+  // didn't advance during suspend.
+  power_monitor_source.Resume();
+  VerifyFreezerExpectations();
+
+  // Advance to the end of the periodic unfreeze period, not counting time that
+  // was spent in suspend. `pages_[0]` stays unfrozen. (This ensures that
+  // there's enough time spend unfrozen to do necessary cleanup, regardless of
+  // suspend.)
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get() -
+               TestTimeouts::tiny_timeout());
+  VerifyFreezerExpectations();
+
+  // Advance to the REAL end of the periodic unfreeze period. Now `pages_[0]`
+  // should be frozen.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  AdvanceClock(TestTimeouts::tiny_timeout());
   VerifyFreezerExpectations();
 }
 
