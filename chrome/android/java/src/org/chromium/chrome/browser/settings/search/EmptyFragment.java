@@ -17,16 +17,18 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.window.layout.WindowMetricsCalculator;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Empty Fragment used to clear the settings screen and display guiding information. */
 @NullMarked
-public class EmptyFragment extends Fragment {
+public class EmptyFragment extends Fragment implements EmbeddableSettingsPage {
     private static final String KEY_IMAGE_SRC = "ImageSrc";
 
     private int mImageSrc;
@@ -87,6 +89,18 @@ public class EmptyFragment extends Fragment {
         }
         guideMsg.setText(context.getString(guideMsgId));
         linkHelpCenter.setVisibility(linkVisibility);
+    }
+
+    @Override
+    public MonotonicObservableSupplier<String> getPageTitle() {
+        // Page Title Supplier is shared among search-related fragments so that
+        // they will display a single entry in the title breadcrumb.
+        return SearchResultsPreferenceFragment.getSharedPageTitle(getActivity());
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 
     @Override

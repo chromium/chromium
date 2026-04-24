@@ -453,8 +453,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     @Override
     public void onStart() {
         super.onStart();
-
-        if (mSearch == null && mSearchItem != null) {
+        if (mSearch != null && mSearchItem != null) {
             SearchUtils.clearSearch(mSearchItem, getActivity());
             mSearch = null;
         }
@@ -497,6 +496,9 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             clearBrowsingDataLink.setSummary(spannableString);
             clearBrowsingDataLink.setOnPreferenceClickListener(
                     pref -> {
+                        if (mSearchItem != null) {
+                            SearchUtils.clearSearch(mSearchItem, getActivity());
+                        }
                         getSiteSettingsDelegate().launchClearBrowsingDataDialog(getActivity());
                         return true;
                     });

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings.search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -130,8 +131,12 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
 
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {
+        return getSharedPageTitle(assumeNonNull(getContext()));
+    }
+
+    public static MonotonicObservableSupplier<String> getSharedPageTitle(Context context) {
         if (sTitleSupplier == null) {
-            var title = assumeNonNull(getContext()).getString(R.string.search_in_settings_results);
+            var title = context.getString(R.string.search_in_settings_results);
             sTitleSupplier = ObservableSuppliers.createMonotonic();
             sTitleSupplier.set(title);
         }
