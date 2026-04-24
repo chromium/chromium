@@ -21575,6 +21575,22 @@
             ]
         }
     ],
+    "ShowSearchEngineChoiceScreenAfterWiping": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WipeChoicePrefsOnMissingDefaultSearchEngine"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShowSuggestionsOnAutofocus": [
         {
             "platforms": [
