@@ -39,8 +39,7 @@ class DesktopUIStorySet(story.StorySet):
       new_tab_page_story.NewTabPageStoryLoading,
   ]
 
-  def __init__(self, exhaustive=False):
-    del exhaustive
+  def __init__(self):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
                          cloud_storage_bucket=story.PARTNER_BUCKET)
