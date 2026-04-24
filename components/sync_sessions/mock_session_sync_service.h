@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_MOCK_SESSION_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SESSIONS_MOCK_SESSION_SYNC_SERVICE_H_
 
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -27,6 +30,12 @@ class MockSessionSyncService : public SessionSyncService {
               (),
               (const, override));
   MOCK_METHOD(OpenTabsUIDelegate*, GetOpenTabsUIDelegate, (), (override));
+  MOCK_METHOD(void,
+              AddTabScreenshot,
+              (SessionID tab_id,
+               std::string&& screenshot_data,
+               const GURL& url),
+              (override));
   MOCK_METHOD(base::CallbackListSubscription,
               SubscribeToForeignSessionsChanged,
               (const base::RepeatingClosure& cb),

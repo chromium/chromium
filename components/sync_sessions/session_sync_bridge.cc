@@ -27,6 +27,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync_sessions/features.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
@@ -133,6 +134,44 @@ OpenTabsUIDelegate* SessionSyncBridge::GetOpenTabsUIDelegate() {
 bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
   return sessions_client_ &&
          sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync();
+}
+
+void SessionSyncBridge::AddTabScreenshot(SessionID tab_id,
+                                         std::string screenshot_data,
+                                         const GURL& url) {
+  CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
+  if (!syncing_) {
+    return;
+  }
+
+  const int tab_node_id = store_->tracker()->LookupTabNodeFromTabId(
+      store_->local_session_info().session_tag, tab_id);
+  if (tab_node_id == TabNodePool::kInvalidTabNodeID) {
+    return;
+  }
+
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      CreateSessionStoreWriteBatch();
+
+  const base::Time now = base::Time::Now();
+
+  sync_pb::SessionSpecifics specifics;
+  specifics.set_session_tag(store_->local_session_info().session_tag);
+  specifics.set_tab_node_id(tab_node_id);
+  specifics.mutable_tab_screenshot()->set_screenshot_data(
+      std::move(screenshot_data));
+  specifics.mutable_tab_screenshot()->set_url(url.spec());
+  specifics.mutable_tab_screenshot()->set_timestamp_unix_epoch_millis(
+      now.InMillisecondsSinceUnixEpoch());
+
+  const std::string storage_key = batch->PutAndUpdateTracker(specifics, now);
+
+  change_processor()->Put(
+      storage_key,
+      MoveToEntityData(store_->local_session_info().client_name, &specifics),
+      batch->GetMetadataChangeList());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
 }
 
 std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(

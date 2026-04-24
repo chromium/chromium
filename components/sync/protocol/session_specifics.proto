@@ -105,5 +105,11 @@ message SessionTab {
 message SessionTabScreenshot {
   // The jpeg-compressed screenshot data.
   optional bytes screenshot_data = 1;
-  // TODO(crbug.com/488242420): Add URL and timestamp.
+  // The URL of the page captured in the screenshot. This is meant to verify
+  // that the screenshot (still) matches the tab's current URL. Such
+  // verification is necessary since a tab and its screenshot are not always
+  // updated at the same time, and so it's possible that a screenshot is stale.
+  optional string url = 2;
+  // The time when the screenshot was taken.
+  optional int64 timestamp_unix_epoch_millis = 3;
 }

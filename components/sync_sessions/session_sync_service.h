@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_H_
 
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -13,6 +15,9 @@ namespace syncer {
 class GlobalIdMapper;
 class DataTypeControllerDelegate;
 }  // namespace syncer
+
+class GURL;
+class SessionID;
 
 namespace sync_sessions {
 
@@ -36,6 +41,10 @@ class SessionSyncService : public KeyedService {
   // Return the active OpenTabsUIDelegate. If UserSelectableType::kTabs is not
   // enabled or not currently syncing, returns nullptr.
   virtual OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
+
+  virtual void AddTabScreenshot(SessionID tab_id,
+                                std::string&& screenshot_data,
+                                const GURL& url) = 0;
 
   // Allows client code to be notified when foreign sessions change.
   [[nodiscard]] virtual base::CallbackListSubscription

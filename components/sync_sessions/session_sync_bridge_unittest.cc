@@ -2010,7 +2010,7 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
             tab_data->specifics.session().tab().browser_type());
 }
 
-TEST_F(SessionSyncBridgeTest, ShouldProcessScreenshots) {
+TEST_F(SessionSyncBridgeTest, ShouldProcessForeignTabScreenshot) {
   base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
 
   const std::string kForeignSessionTag = "foreignsessiontag";
@@ -2043,6 +2043,81 @@ TEST_F(SessionSyncBridgeTest, ShouldProcessScreenshots) {
                                kForeignTabId, kForeignTabNodeId, _))),
                    Pair(_, EntityDataHasSpecifics(MatchesTabScreenshot(
                                kForeignSessionTag, kForeignTabNodeId)))}));
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldAddTabScreenshot) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+  const int kTabNodeId = 0;
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, "https://foo.com/", kTabId);
+
+  InitializeBridge();
+  StartSyncing();
+
+  const std::string kScreenshotData = "test screenshot data";
+  const GURL kUrl("https://foo.com/");
+
+  std::string screenshot_storage_key =
+      SessionStore::GetTabScreenshotStorageKey(kLocalCacheGuid, kTabNodeId);
+
+  EXPECT_CALL(
+      mock_processor(),
+      Put(screenshot_storage_key,
+          EntityDataHasSpecifics(MatchesTabScreenshot(
+              kLocalCacheGuid, kTabNodeId, kScreenshotData, kUrl.spec())),
+          _));
+
+  bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kTabId),
+                             kScreenshotData, kUrl);
+
+  // Note: GetAllData() is based on the in-memory representation, so it does not
+  // return the actual screenshot *data*, only a placeholder entity.
+  EXPECT_THAT(
+      GetAllData(),
+      testing::IsSupersetOf({Pair(screenshot_storage_key,
+                                  EntityDataHasSpecifics(MatchesTabScreenshot(
+                                      kLocalCacheGuid, kTabNodeId)))}));
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldIgnoreAddTabScreenshotBeforeSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, "https://foo.com/", kTabId);
+
+  InitializeBridge();
+  // Do NOT call StartSyncing().
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kTabId), "data",
+                             GURL("https://foo.com/"));
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldIgnoreAddTabScreenshotForUnknownTab) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+  const int kUnknownTabId = 1000003;
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, "https://foo.com/", kTabId);
+
+  InitializeBridge();
+  StartSyncing();
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+
+  bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kUnknownTabId),
+                             "data", GURL("https://foo.com/"));
 }
 
 }  // namespace

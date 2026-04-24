@@ -1443,6 +1443,8 @@ VISIT_PROTO_FIELDS(const sync_pb::SessionTab& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionTabScreenshot& proto) {
   VISIT_BYTES(screenshot_data);
+  VISIT(url);
+  VISIT(timestamp_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionWindow& proto) {

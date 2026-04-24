@@ -139,6 +139,10 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
     return &open_tabs_delegate_;
   }
 
+  void AddTabScreenshot(SessionID tab_id,
+                        std::string&& screenshot_data,
+                        const GURL& url) override {}
+
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
       const base::RepeatingClosure& cb) override {
     return base::CallbackListSubscription();

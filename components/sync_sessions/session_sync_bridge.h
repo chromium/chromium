@@ -53,6 +53,10 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
 
   bool IsLocalDataOutOfSyncForTest() const;
 
+  void AddTabScreenshot(SessionID tab_id,
+                        std::string screenshot_data,
+                        const GURL& url);
+
   // DataTypeSyncBridge implementation.
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
