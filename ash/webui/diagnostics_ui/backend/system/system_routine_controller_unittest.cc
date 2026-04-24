@@ -702,7 +702,11 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
 }
 
 TEST_F(SystemRoutineControllerTest, AvailableRoutines_FeatureDisabled) {
-  // Same healthd set, but GSC feature flag is disabled (default).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  // Same healthd set, but GSC feature flag is disabled.
   SetAvailableRoutines(
       {healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
        healthd::DiagnosticRoutineEnum::kMemory,
@@ -1317,10 +1321,13 @@ TEST_F(SystemRoutineControllerTest, GoogleServicesConnectivity_ErrorHandling) {
 
 TEST_F(SystemRoutineControllerTest,
        GoogleServicesConnectivity_DisabledFlagReturnsUnableToRun) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
   base::HistogramTester histogram_tester;
 
-  // Feature flag is OFF (default). The feature gate should prevent
-  // the delegate call and emit metrics via OnDirectNetworkRoutineResult.
+  // Feature flag is OFF. The feature gate should prevent the delegate
+  // call and emit metrics via OnDirectNetworkRoutineResult.
   FakeRoutineRunner runner;
   system_routine_controller_->RunRoutine(
       mojom::RoutineType::kGoogleServicesConnectivity,
@@ -1397,13 +1404,17 @@ TEST_F(SystemRoutineControllerTest,
 // (feature-disabled completes the routine synchronously).
 TEST_F(SystemRoutineControllerTest,
        GoogleServicesConnectivity_LogStartedBeforeCompleted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath log_path = temp_dir.GetPath().AppendASCII("routine_log");
   DiagnosticsLogController::Get()->SetRoutineLogForTesting(
       std::make_unique<RoutineLog>(log_path));
 
-  // Feature flag is OFF (default). The feature-disabled path in
+  // Feature flag is OFF. The feature-disabled path in
   // ExecuteNetworkRoutineDirect completes the routine synchronously,
   // which exposes the logging-order bug.
   FakeRoutineRunner runner;
