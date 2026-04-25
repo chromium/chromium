@@ -71,6 +71,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
+#include "pdf/buildflags.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -79,6 +80,11 @@
 #include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_util.h"
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using sessions::SessionTabHelper;
 
@@ -486,6 +492,59 @@ bool ContextualTasksUiService::MaybeHandleVideoCitation(
   return false;
 }
 
+bool ContextualTasksUiService::MaybeHandlePdfCitation(
+    const GURL& url,
+    tabs::TabInterface* tab,
+    const base::Uuid& task_id) {
+#if BUILDFLAG(ENABLE_PDF)
+  if (!GetIsContextualTasksPdfCitationsEnabled()) {
+    return false;
+  }
+
+  if (!tab) {
+    return false;
+  }
+
+  content::WebContents* web_contents = tab->GetContents();
+  std::optional<ContextualTask> task =
+      contextual_tasks_service_->GetContextualTaskForTab(
+          SessionTabHelper::IdForTab(web_contents));
+
+  if (!task || task->GetTaskId() != task_id) {
+    return false;
+  }
+
+  const GURL& page_url = web_contents->GetLastCommittedURL();
+  // The citation URL must match the current page URL (ignoring the fragment).
+  if (page_url.GetScheme() != url.GetScheme() ||
+      page_url.GetHost() != url.GetHost() ||
+      page_url.GetPath() != url.GetPath() ||
+      page_url.GetQuery() != url.GetQuery()) {
+    return false;
+  }
+
+  // The citation URL must have a fragment. The fragment is not parsed here
+  // because the PDF viewer supports various open parameters (page, zoom, view,
+  // etc.).
+  if (url.GetRef().empty()) {
+    return false;
+  }
+
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (!pdf_helper) {
+    return false;
+  }
+
+  // Dispatch an event to the PDF viewer to update the viewport.
+  pdf_extension_util::DispatchShouldUpdateViewportEvent(
+      web_contents->GetPrimaryMainFrame(), url);
+  return true;
+#else
+  return false;
+#endif
+}
+
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
     base::Uuid task_id,
@@ -511,14 +570,15 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   base::RecordAction(
       base::UserMetricsAction(ai_response_link_clicked_metric_name.c_str()));
 
-  // If the thread link click corresponds to a video citation, it should be
-  // handled before an unneeded web contents is created below.
+  // If the thread link click corresponds to a citation, it should be handled
+  // before an unneeded web contents is created below.
   if (!tab) {
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-    if (MaybeHandleVideoCitation(url, active_tab, task_id)) {
+    if (MaybeHandleVideoCitation(url, active_tab, task_id) ||
+        MaybeHandlePdfCitation(url, active_tab, task_id)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
-             "video citation handled on active tab";
+             "citation handled on active tab";
       if (auto* controller =
               ContextualTasksPanelController::From(browser.get())) {
         controller->OnAiInteraction();

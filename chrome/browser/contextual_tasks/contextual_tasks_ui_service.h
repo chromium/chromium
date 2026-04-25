@@ -324,6 +324,13 @@ class ContextualTasksUiService : public KeyedService {
       content::WebContents* web_contents);
 #endif
 
+  // Handles PDF citation links by scrolling to page if applicable.
+  // Returns true if handled.
+  // Virtual to allow overriding in tests.
+  virtual bool MaybeHandlePdfCitation(const GURL& url,
+                                      tabs::TabInterface* tab,
+                                      const base::Uuid& task_id);
+
  private:
   void StartAccessTokenFetch();
 
