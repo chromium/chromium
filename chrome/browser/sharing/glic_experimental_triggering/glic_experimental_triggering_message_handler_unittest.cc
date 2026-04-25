@@ -223,4 +223,189 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
   run_loop.Run();
 }
 
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       RelaysUpdatesWithSequenceNumbers) {
+  components_sharing_message::SharingMessage message;
+
+  // Set the server channel configuration on the root SharingMessage
+  message.mutable_server_channel_configuration()->set_configuration(
+      "test_config");
+
+  auto* trigger_message = message.mutable_glic_experimental_triggering();
+  // Set the sequence number coming from the server request
+  trigger_message->mutable_task_metadata()->set_sender_sequence_number(42);
+
+  base::MockOnceCallback<void(
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>
+      done_callback;
+
+  tabs::MockTabInterface mock_tab;
+  handler_->SetActiveTab(&mock_tab);
+
+  // Expect InvokeWithAutoSubmit to be called
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(1);
+
+  // Expect GetExperimentalTriggeringUpdates to be called
+  mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+      updates_handler_remote;
+  EXPECT_CALL(mock_instance_coordinator_,
+              GetExperimentalTriggeringUpdates(_, _))
+      .WillOnce(
+          [&updates_handler_remote](
+              mojo::PendingRemote<
+                  glic::mojom::ExperimentalTriggeringUpdatesHandler> remote,
+              base::OnceCallback<void(bool)> callback) {
+            updates_handler_remote = std::move(remote);
+            std::move(callback).Run(true);
+          });
+
+  EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  handler_->OnMessage(std::move(message), done_callback.Get());
+
+  // Now simulate updates from the remote
+  ASSERT_TRUE(updates_handler_remote.is_valid());
+  mojo::Remote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+      updates_handler(std::move(updates_handler_remote));
+  base::RunLoop run_loop;
+
+  // We expect two outgoing messages to verify the sequence increments
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _, _))
+      .WillOnce([](const components_sharing_message::ServerChannelConfiguration&
+                       server_channel,
+                   base::TimeDelta timeout,
+                   components_sharing_message::SharingMessage message,
+                   SharingMessageSender::DelegateType delegate_type,
+                   SharingMessageSender::ResponseCallback callback) {
+        EXPECT_TRUE(message.has_glic_experimental_triggering());
+        const auto& trigger_msg = message.glic_experimental_triggering();
+
+        EXPECT_TRUE(trigger_msg.has_task_metadata());
+        // The first update should have sender_sequence_number 0
+        EXPECT_EQ(trigger_msg.task_metadata().sender_sequence_number(), 0);
+        // It should echo the last seen sequence number from the incoming
+        // request
+        EXPECT_EQ(trigger_msg.task_metadata().last_seen_sequence_number(), 42);
+
+        return base::OnceClosure();
+      })
+      .WillOnce(
+          [quit_closure = run_loop.QuitClosure()](
+              const components_sharing_message::ServerChannelConfiguration&
+                  server_channel,
+              base::TimeDelta timeout,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::DelegateType delegate_type,
+              SharingMessageSender::ResponseCallback callback) {
+            EXPECT_TRUE(message.has_glic_experimental_triggering());
+            const auto& trigger_msg = message.glic_experimental_triggering();
+
+            EXPECT_TRUE(trigger_msg.has_task_metadata());
+            // The second update should increment sender_sequence_number to 1
+            EXPECT_EQ(trigger_msg.task_metadata().sender_sequence_number(), 1);
+            EXPECT_EQ(trigger_msg.task_metadata().last_seen_sequence_number(),
+                      42);
+
+            quit_closure.Run();
+            return base::OnceClosure();
+          });
+
+  // Trigger the first update
+  auto update1 = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update1->type = glic::mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update1->data = "test_update_1";
+  updates_handler->OnUpdate(std::move(update1),
+                            glic::mojom::SubscriberObservationType::kUpdate);
+
+  // Trigger the second update
+  auto update2 = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update2->type = glic::mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update2->data = "test_update_2";
+  updates_handler->OnUpdate(std::move(update2),
+                            glic::mojom::SubscriberObservationType::kUpdate);
+
+  // Wait for Mojo tasks to run
+  run_loop.Run();
+}
+
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       RespectsLastSeenSequenceNumber) {
+  components_sharing_message::SharingMessage message;
+  message.mutable_server_channel_configuration()->set_configuration(
+      "test_config");
+
+  // Explicitly set the incoming sequence number.
+  auto* trigger_message = message.mutable_glic_experimental_triggering();
+  trigger_message->mutable_task_metadata()->set_sender_sequence_number(42);
+
+  base::MockOnceCallback<void(
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>
+      done_callback;
+
+  tabs::MockTabInterface mock_tab;
+  handler_->SetActiveTab(&mock_tab);
+
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(1);
+
+  mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+      updates_handler_remote;
+  EXPECT_CALL(mock_instance_coordinator_,
+              GetExperimentalTriggeringUpdates(_, _))
+      .WillOnce(
+          [&updates_handler_remote](
+              mojo::PendingRemote<
+                  glic::mojom::ExperimentalTriggeringUpdatesHandler> remote,
+              base::OnceCallback<void(bool)> callback) {
+            updates_handler_remote = std::move(remote);
+            std::move(callback).Run(true);
+          });
+
+  EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  handler_->OnMessage(std::move(message), done_callback.Get());
+
+  // Simulate updates from remote.
+  ASSERT_TRUE(updates_handler_remote.is_valid());
+  mojo::Remote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+      updates_handler(std::move(updates_handler_remote));
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _, _))
+      .WillOnce(
+          [quit_closure = run_loop.QuitClosure()](
+              const components_sharing_message::ServerChannelConfiguration&
+                  server_channel,
+              base::TimeDelta timeout,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::DelegateType delegate_type,
+              SharingMessageSender::ResponseCallback callback) {
+            EXPECT_TRUE(message.has_glic_experimental_triggering());
+            const auto& trigger_msg = message.glic_experimental_triggering();
+
+            EXPECT_TRUE(trigger_msg.has_task_metadata());
+
+            EXPECT_TRUE(
+                trigger_msg.task_metadata().has_last_seen_sequence_number());
+            EXPECT_EQ(trigger_msg.task_metadata().last_seen_sequence_number(),
+                      42);
+
+            EXPECT_EQ(trigger_msg.task_metadata().sender_sequence_number(), 0);
+
+            quit_closure.Run();
+            return base::OnceClosure();
+          });
+
+  // Trigger the update to execute the listener logic
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type = glic::mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update->data = "test_update";
+  updates_handler->OnUpdate(std::move(update),
+                            glic::mojom::SubscriberObservationType::kUpdate);
+
+  run_loop.Run();
+}
+
 }  // namespace

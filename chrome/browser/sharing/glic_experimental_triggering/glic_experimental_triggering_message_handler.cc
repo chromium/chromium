@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -58,16 +59,25 @@ class UpdatesListener
  public:
   UpdatesListener(
       SharingMessageSender* message_sender,
-      components_sharing_message::ServerChannelConfiguration server_channel)
+      components_sharing_message::ServerChannelConfiguration server_channel,
+      std::optional<int64_t> last_seen_sequence_number)
       : message_sender_(message_sender),
-        server_channel_(std::move(server_channel)) {}
+        server_channel_(std::move(server_channel)),
+        last_seen_sequence_number_(last_seen_sequence_number) {}
 
   void OnUpdate(glic::mojom::ExperimentalTriggeringUpdatePtr update,
                 glic::mojom::SubscriberObservationType observation) override {
     components_sharing_message::SharingMessage message;
-    auto* glic_response =
-        message.mutable_glic_experimental_triggering()->mutable_response();
+    auto* glic_experimental_triggering =
+        message.mutable_glic_experimental_triggering();
+    auto* glic_response = glic_experimental_triggering->mutable_response();
     auto* task_update = glic_response->mutable_task_update();
+
+    auto* task_metadata = glic_experimental_triggering->mutable_task_metadata();
+    task_metadata->set_sender_sequence_number(++sequence_number_);
+    if (last_seen_sequence_number_.has_value()) {
+      task_metadata->set_last_seen_sequence_number(*last_seen_sequence_number_);
+    }
 
     switch (observation) {
       case glic::mojom::SubscriberObservationType::kComplete:
@@ -152,6 +162,8 @@ class UpdatesListener
  private:
   raw_ptr<SharingMessageSender> message_sender_;
   const components_sharing_message::ServerChannelConfiguration server_channel_;
+  std::optional<int64_t> last_seen_sequence_number_;
+  int64_t sequence_number_ = -1;
 };
 
 }  // namespace
@@ -215,10 +227,18 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     glic_service->instance_coordinator().GetExperimentalTriggeringUpdates(
         std::move(remote), base::DoNothing());
 
+    std::optional<int64_t> last_seen_sequence_number;
+    if (request.has_task_metadata() &&
+        request.task_metadata().has_sender_sequence_number()) {
+      last_seen_sequence_number =
+          request.task_metadata().sender_sequence_number();
+    }
+
     listeners_.Add(
         std::make_unique<UpdatesListener>(
             message_sender_,
-            std::move(*message.mutable_server_channel_configuration())),
+            std::move(*message.mutable_server_channel_configuration()),
+            last_seen_sequence_number),
         std::move(listener_receiver));
   }
 
