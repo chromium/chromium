@@ -524,6 +524,102 @@ class SelectAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class CustomizableSelectAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(
+        AnyAriaAttributeNameValuePair(),
+        AttributeNameValuePairDomain(
+            html_names::kSizeAttr,
+            AnyValueForHtmlAttribute(html_names::kSizeAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kMultipleAttr,
+            AnyValueForHtmlAttribute(html_names::kMultipleAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kDisabledAttr,
+            AnyValueForHtmlAttribute(html_names::kDisabledAttr)),
+        AttributeNameValuePairDomain(
+            html_names::kSelectedAttr,
+            AnyValueForHtmlAttribute(html_names::kSelectedAttr)),
+        AttributeNameValuePairDomain(html_names::kValueAttr,
+                                     fuzztest::PrintableAsciiString()),
+        AttributeNameValuePairDomain(html_names::kLabelAttr,
+                                     fuzztest::PrintableAsciiString()));
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return AnyCssDeclaration();
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  static constexpr int kNumNodes = 11;
+  int GetMaxDomNodes() override { return kNumNodes; }
+  int GetMaxAttributesPerNode() override { return 4; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  fuzztest::Domain<std::string> AnyStylesheet() override {
+    return fuzztest::OneOf(
+        fuzztest::Just(std::string(
+            "select, ::picker(select) { appearance: base-select; }")),
+        fuzztest::Just(
+            std::string("select, ::picker(select) { appearance: base-select; } "
+                        "option::checkmark { content: '\\2713'; } "
+                        "select::picker-icon { content: '\\25BC'; }")));
+  }
+  bool AllowReparenting() override { return false; }
+  std::optional<PredefinedNodesConfig> GetPredefinedNodes() override {
+    auto tag = [](html_names::HTMLTag t) {
+      return html_names::TagToQualifiedName(t);
+    };
+    auto nodes = std::vector<NodeSpecification>{
+        // <select> (parent: root) index 0.
+        {.tag = tag(html_names::HTMLTag::kSelect),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // <button> (parent: select) index 1.
+        {.tag = tag(html_names::HTMLTag::kButton),
+         .initial_state = {.parent_index = 0}},
+        // <selectedcontent> (parent: button) index 2.
+        {.tag = tag(html_names::HTMLTag::kSelectedcontent),
+         .initial_state = {.parent_index = 1}},
+        // <div> (parent: select) index 3 — rich picker content.
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: select) index 4.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: select) index 5.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 0}},
+        // <optgroup> (parent: select) index 6.
+        {.tag = tag(html_names::HTMLTag::kOptgroup),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: optgroup) index 7.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 6}},
+        // <datalist> (parent: select) index 8.
+        {.tag = tag(html_names::HTMLTag::kDatalist),
+         .initial_state = {.parent_index = 0}},
+        // <option> (parent: datalist) index 9.
+        {.tag = tag(html_names::HTMLTag::kOption),
+         .initial_state = {.parent_index = 8}},
+        // <label> (parent: root) index 10.
+        {.tag = tag(html_names::HTMLTag::kLabel),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+    };
+    auto states_domain =
+        fuzztest::VectorOf(AnyNodeState(this, kNumNodes,
+                                        AnyAttributeNameValuePair(),
+                                        AnyStyles()))
+            .WithSize(kNumNodes);
+    return PredefinedNodesConfig{std::move(nodes), states_domain,
+                                 states_domain};
+  }
+};
+
 class DialogAndAria : public DomScenarioDomainSpecification {
  public:
   fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
@@ -628,6 +724,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void AnimationAndAria(const DomScenario& input) { RunTest(input); }
   void ReadingFlowAndOrder(const DomScenario& input) { RunTest(input); }
   void SelectAndAria(const DomScenario& input) { RunTest(input); }
+  void CustomizableSelectAndAria(const DomScenario& input) { RunTest(input); }
   void DialogAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
@@ -681,6 +778,9 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, ReadingFlowAndOrder)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, SelectAndAria)
     .WithDomains(BuildDomScenarios<SelectAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, CustomizableSelectAndAria)
+    .WithDomains(BuildDomScenarios<CustomizableSelectAndAria>());
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, DialogAndAria)
     .WithDomains(BuildDomScenarios<DialogAndAria>());
