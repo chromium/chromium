@@ -373,6 +373,15 @@ void TabContainerImpl::OnGroupVisualsChanged(
   if (active_index.has_value()) {
     GetTabAtModelIndex(active_index.value())->SchedulePaint();
   }
+
+  if (old_visuals && old_visuals->title() != new_visuals->title()) {
+    for (int i = 0; i < GetTabCount(); ++i) {
+      Tab* tab = GetTabAtModelIndex(i);
+      if (tab && tab->group() == group) {
+        tab->UpdateAccessibleName();
+      }
+    }
+  }
 }
 
 void TabContainerImpl::ToggleTabGroup(
