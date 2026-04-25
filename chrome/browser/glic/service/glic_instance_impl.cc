@@ -1243,6 +1243,18 @@ void GlicInstanceImpl::BindTabWithoutShowing(tabs::TabInterface* tab,
   BindTab(tab, GlicPinTrigger::kUnknown, pin_on_bind);
 }
 
+void GlicInstanceImpl::MaybeInitializeHiddenClient(
+    mojom::InvocationSource invocation_source,
+    mojom::FreOverride fre_override) {
+  if (!host_.webui_contents()) {
+    host_.SetDelegate(&empty_embedder_delegate_);
+    host_.CreateContents(/*initially_hidden=*/false);
+  }
+
+  NotifyPanelWillOpen(invocation_source, std::nullopt, /*auto_send=*/false,
+                      fre_override);
+}
+
 void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
   MaybeDeactivateEmbedder(key);
 }

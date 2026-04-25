@@ -128,6 +128,10 @@ class GlicInstanceImpl : public GlicInstance,
   void Hibernate();
   void CloseInstanceAndShutdown();
   void BindTabWithoutShowing(tabs::TabInterface* tab, bool pin_on_bind);
+  // Initializes the instance for a hidden client. No-op if the instance already
+  // has webui contents.
+  void MaybeInitializeHiddenClient(mojom::InvocationSource invocation_source,
+                                   mojom::FreOverride fre_override);
 
   // GlicInstance implementation.
   bool IsShowing() const override;
