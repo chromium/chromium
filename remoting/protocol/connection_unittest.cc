@@ -65,12 +65,15 @@ class MockConnectionToHostEventCallback
   MockConnectionToHostEventCallback() = default;
   ~MockConnectionToHostEventCallback() override = default;
 
-  MOCK_METHOD2(OnConnectionState,
-               void(ConnectionToHost::State state, ErrorCode error));
-  MOCK_METHOD1(OnConnectionReady, void(bool ready));
-  MOCK_METHOD2(OnRouteChanged,
-               void(const std::string& channel_name,
-                    const TransportRoute& route));
+  MOCK_METHOD(void,
+              OnConnectionState,
+              (ConnectionToHost::State state, ErrorCode error),
+              (override));
+  MOCK_METHOD(void, OnConnectionReady, (bool ready), (override));
+  MOCK_METHOD(void,
+              OnRouteChanged,
+              (const std::string& channel_name, const TransportRoute& route),
+              (override));
 };
 
 class TestScreenCapturer : public DesktopCapturer {

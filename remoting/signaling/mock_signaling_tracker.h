@@ -16,9 +16,12 @@ class MockSignalingTracker : public SignalingTracker {
   MockSignalingTracker();
   ~MockSignalingTracker() override;
 
-  MOCK_METHOD0(OnChannelActive, void());
-  MOCK_CONST_METHOD0(IsChannelActive, bool());
-  MOCK_CONST_METHOD0(GetLastReportedChannelActiveDuration, base::TimeDelta());
+  MOCK_METHOD(void, OnChannelActive, ());
+  MOCK_METHOD(bool, IsChannelActive, (), (const));
+  MOCK_METHOD(base::TimeDelta,
+              GetLastReportedChannelActiveDuration,
+              (),
+              (const));
 };
 
 }  // namespace remoting

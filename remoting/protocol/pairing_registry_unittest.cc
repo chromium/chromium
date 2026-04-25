@@ -35,9 +35,9 @@ class MockPairingRegistryCallbacks {
 
   virtual ~MockPairingRegistryCallbacks() = default;
 
-  MOCK_METHOD1(DoneCallback, void(bool));
-  MOCK_METHOD1(GetAllPairingsCallback, void(base::ListValue));
-  MOCK_METHOD1(GetPairingCallback, void(PairingRegistry::Pairing));
+  MOCK_METHOD(void, DoneCallback, (bool));
+  MOCK_METHOD(void, GetAllPairingsCallback, (base::ListValue));
+  MOCK_METHOD(void, GetPairingCallback, (PairingRegistry::Pairing));
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include

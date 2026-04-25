@@ -34,8 +34,8 @@ class ConfigFileWatcherDelegate : public ConfigFileWatcher::Delegate {
 
   ~ConfigFileWatcherDelegate() override = default;
 
-  MOCK_METHOD1(OnConfigUpdated, void(const std::string&));
-  MOCK_METHOD0(OnConfigWatcherError, void());
+  MOCK_METHOD(void, OnConfigUpdated, (const std::string&), (override));
+  MOCK_METHOD(void, OnConfigWatcherError, (), (override));
 };
 
 }  // namespace

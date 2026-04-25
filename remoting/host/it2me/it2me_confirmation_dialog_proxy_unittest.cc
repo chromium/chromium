@@ -38,7 +38,7 @@ class StubIt2MeConfirmationDialog : public It2MeConfirmationDialog {
     std::move(callback_).Run(result);
   }
 
-  MOCK_METHOD0(OnShow, void());
+  MOCK_METHOD(void, OnShow, ());
 
   // It2MeConfirmationDialog implementation.
   void Show(const std::string& remote_user_email,
@@ -62,7 +62,7 @@ class ResultCallbackTarget {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {}
 
-  MOCK_METHOD1(OnDialogResult, void(It2MeConfirmationDialog::Result));
+  MOCK_METHOD(void, OnDialogResult, (It2MeConfirmationDialog::Result));
 
   It2MeConfirmationDialog::ResultCallback MakeCallback() {
     return base::BindOnce(&ResultCallbackTarget::HandleDialogResult,

@@ -42,8 +42,10 @@ class ClientClipboard : public protocol::ClipboardStub {
   ClientClipboard(const ClientClipboard&) = delete;
   ClientClipboard& operator=(const ClientClipboard&) = delete;
 
-  MOCK_METHOD1(InjectClipboardEvent,
-               void(const protocol::ClipboardEvent& event));
+  MOCK_METHOD(void,
+              InjectClipboardEvent,
+              (const protocol::ClipboardEvent& event),
+              (override));
 };
 
 ClientClipboard::ClientClipboard() = default;

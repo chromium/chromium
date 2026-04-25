@@ -97,27 +97,38 @@ decltype(auto) DoValidateSendHeartbeatAndRespondOk() {
 
 class MockDelegate : public HeartbeatSender::Delegate {
  public:
-  MOCK_METHOD0(OnFirstHeartbeatSuccessful, void());
-  MOCK_METHOD1(OnUpdateHostOwner, void(const std::string& host_owner));
-  MOCK_METHOD1(OnUpdateRequireSessionAuthorization, void(bool require));
-  MOCK_METHOD0(OnHostNotFound, void());
-  MOCK_METHOD0(OnAuthFailed, void());
+  MOCK_METHOD(void, OnFirstHeartbeatSuccessful, (), (override));
+  MOCK_METHOD(void,
+              OnUpdateHostOwner,
+              (const std::string& host_owner),
+              (override));
+  MOCK_METHOD(void,
+              OnUpdateRequireSessionAuthorization,
+              (bool require),
+              (override));
+  MOCK_METHOD(void, OnHostNotFound, (), (override));
+  MOCK_METHOD(void, OnAuthFailed, (), (override));
 };
 
 class MockHeartbeatServiceClient : public HeartbeatServiceClient {
  public:
-  MOCK_METHOD4(SendFullHeartbeat,
-               void(bool is_initial_heartbeat,
-                    std::optional<std::string> signaling_id,
-                    std::optional<std::string> offline_reason,
-                    HeartbeatResponseCallback callback));
-  MOCK_METHOD1(SendLiteHeartbeat, void(HeartbeatResponseCallback callback));
-  MOCK_METHOD0(CancelPendingRequests, void());
+  MOCK_METHOD(void,
+              SendFullHeartbeat,
+              (bool is_initial_heartbeat,
+               std::optional<std::string> signaling_id,
+               std::optional<std::string> offline_reason,
+               HeartbeatResponseCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SendLiteHeartbeat,
+              (HeartbeatResponseCallback callback),
+              (override));
+  MOCK_METHOD(void, CancelPendingRequests, (), (override));
 };
 
 class MockObserver : public HeartbeatSender::Observer {
  public:
-  MOCK_METHOD0(OnHeartbeatSent, void());
+  MOCK_METHOD(void, OnHeartbeatSent, (), (override));
 };
 
 }  // namespace

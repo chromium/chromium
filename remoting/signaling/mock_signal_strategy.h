@@ -21,15 +21,15 @@ class MockSignalStrategy : public SignalStrategy {
   explicit MockSignalStrategy(const SignalingAddress& address);
   ~MockSignalStrategy() override;
 
-  MOCK_METHOD0(Connect, void());
-  MOCK_METHOD0(Disconnect, void());
-  MOCK_CONST_METHOD0(GetState, State());
-  MOCK_CONST_METHOD0(GetError, Error());
-  MOCK_METHOD1(AddListener, void(Listener* listener));
-  MOCK_METHOD1(RemoveListener, void(Listener* listener));
-  MOCK_METHOD0(GetNextId, std::string());
-  MOCK_METHOD1(SendMessage, bool(JingleMessage&& message));
-  MOCK_METHOD1(SendReply, bool(JingleMessageReply&& message));
+  MOCK_METHOD(void, Connect, (), (override));
+  MOCK_METHOD(void, Disconnect, (), (override));
+  MOCK_METHOD(State, GetState, (), (const, override));
+  MOCK_METHOD(Error, GetError, (), (const, override));
+  MOCK_METHOD(void, AddListener, (Listener * listener), (override));
+  MOCK_METHOD(void, RemoveListener, (Listener * listener), (override));
+  MOCK_METHOD(std::string, GetNextId, (), (override));
+  MOCK_METHOD(bool, SendMessage, (JingleMessage && message), (override));
+  MOCK_METHOD(bool, SendReply, (JingleMessageReply && message), (override));
 
   const SignalingAddress& GetLocalAddress() const override;
 
@@ -42,20 +42,22 @@ class MockFtlSignalStrategy : public FtlSignalStrategy {
   explicit MockFtlSignalStrategy(const SignalingAddress& address);
   ~MockFtlSignalStrategy() override;
 
-  MOCK_METHOD0(Connect, void());
-  MOCK_METHOD0(Disconnect, void());
-  MOCK_CONST_METHOD0(GetState, State());
-  MOCK_CONST_METHOD0(GetError, Error());
-  MOCK_METHOD1(AddListener, void(Listener* listener));
-  MOCK_METHOD1(RemoveListener, void(Listener* listener));
-  MOCK_METHOD0(GetNextId, std::string());
-  MOCK_METHOD1(SendMessage, bool(JingleMessage&& message));
-  MOCK_METHOD1(SendReply, bool(JingleMessageReply&& message));
-  MOCK_METHOD2(SendFtlMessage,
-               bool(const SignalingAddress& destination_address,
-                    ftl::ChromotingMessage&& message));
-  MOCK_METHOD1(AddFtlListener, void(FtlListener* listener));
-  MOCK_METHOD1(RemoveFtlListener, void(FtlListener* listener));
+  MOCK_METHOD(void, Connect, (), (override));
+  MOCK_METHOD(void, Disconnect, (), (override));
+  MOCK_METHOD(State, GetState, (), (const, override));
+  MOCK_METHOD(Error, GetError, (), (const, override));
+  MOCK_METHOD(void, AddListener, (Listener * listener), (override));
+  MOCK_METHOD(void, RemoveListener, (Listener * listener), (override));
+  MOCK_METHOD(std::string, GetNextId, (), (override));
+  MOCK_METHOD(bool, SendMessage, (JingleMessage && message), (override));
+  MOCK_METHOD(bool, SendReply, (JingleMessageReply && message), (override));
+  MOCK_METHOD(bool,
+              SendFtlMessage,
+              (const SignalingAddress& destination_address,
+               ftl::ChromotingMessage&& message),
+              (override));
+  MOCK_METHOD(void, AddFtlListener, (FtlListener * listener), (override));
+  MOCK_METHOD(void, RemoveFtlListener, (FtlListener * listener), (override));
 
   const SignalingAddress& GetLocalAddress() const override;
 

@@ -41,7 +41,7 @@ class AuthenticatorTestBase : public testing::Test {
    public:
     MockChannelDoneCallback();
     ~MockChannelDoneCallback();
-    MOCK_METHOD1(OnDone, void(int error));
+    MOCK_METHOD(void, OnDone, (int error));
   };
 
   static void ContinueAuthExchangeWith(Authenticator* sender,

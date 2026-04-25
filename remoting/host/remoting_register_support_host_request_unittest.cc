@@ -135,10 +135,12 @@ class RemotingRegisterSupportHostTest : public testing::Test {
   class MockRegisterSupportHostClient final
       : public RemotingRegisterSupportHostRequest::RegisterSupportHostClient {
    public:
-    MOCK_METHOD2(RegisterSupportHost,
-                 void(std::unique_ptr<apis::v1::RegisterSupportHostRequest>,
-                      RegisterSupportHostResponseCallback));
-    MOCK_METHOD0(CancelPendingRequests, void());
+    MOCK_METHOD(void,
+                RegisterSupportHost,
+                (std::unique_ptr<apis::v1::RegisterSupportHostRequest>,
+                 RegisterSupportHostResponseCallback),
+                (override));
+    MOCK_METHOD(void, CancelPendingRequests, (), (override));
   };
 
   void RegisterHost(

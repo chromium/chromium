@@ -81,10 +81,10 @@ class MockSessionManagerListener {
 
 class MockSessionEventHandler : public Session::EventHandler {
  public:
-  MOCK_METHOD1(OnSessionStateChange, void(Session::State));
-  MOCK_METHOD2(OnSessionRouteChange,
-               void(const std::string& channel_name,
-                    const TransportRoute& route));
+  MOCK_METHOD(void, OnSessionStateChange, (Session::State), (override));
+  MOCK_METHOD(void,
+              OnSessionRouteChange,
+              (const std::string& channel_name, const TransportRoute& route));
 };
 
 class FakeTransport : public Transport {

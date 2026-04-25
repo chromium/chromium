@@ -39,7 +39,7 @@ const char kTestSharedSecretBad[] = "0000-0000-0001";
 
 class MockChannelDoneCallback {
  public:
-  MOCK_METHOD2(OnDone, void(int error, P2PStreamSocket* socket));
+  MOCK_METHOD(void, OnDone, (int error, P2PStreamSocket* socket));
 };
 
 ACTION_P2(QuitThreadOnCounter, quit_closure, counter) {

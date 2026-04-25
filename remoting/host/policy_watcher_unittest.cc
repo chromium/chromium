@@ -58,12 +58,12 @@ class MockPolicyCallback {
   MockPolicyCallback& operator=(const MockPolicyCallback&) = delete;
 
   // TODO(lukasza): gmock cannot mock a method taking std::unique_ptr<T>...
-  MOCK_METHOD1(OnPolicyUpdatePtr, void(const base::DictValue* policies));
+  MOCK_METHOD(void, OnPolicyUpdatePtr, (const base::DictValue* policies));
   void OnPolicyUpdate(base::DictValue policies) {
     OnPolicyUpdatePtr(&policies);
   }
 
-  MOCK_METHOD0(OnPolicyError, void());
+  MOCK_METHOD(void, OnPolicyError, ());
 };
 
 class PolicyWatcherTest : public testing::Test {
@@ -236,7 +236,7 @@ class PolicyWatcherTest : public testing::Test {
     return policy_watcher_default_values_;
   }
 
-  MOCK_METHOD0(PostPolicyWatcherShutdown, void());
+  MOCK_METHOD(void, PostPolicyWatcherShutdown, ());
 
   static const char* kHostDomain;
   static const char* kClientDomain;

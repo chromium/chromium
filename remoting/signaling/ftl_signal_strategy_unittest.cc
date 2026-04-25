@@ -241,7 +241,7 @@ class FakeRegistrationManager : public RegistrationManager {
     return is_signed_in_ ? kFakeFtlAuthToken : "";
   }
 
-  MOCK_METHOD1(SignInGaia, void(DoneCallback));
+  MOCK_METHOD(void, SignInGaia, (DoneCallback), (override));
 
   void ExpectSignInGaiaSucceeds() {
     EXPECT_CALL(*this, SignInGaia(_)).WillOnce([&](DoneCallback callback) {

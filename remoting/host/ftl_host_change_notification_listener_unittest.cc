@@ -58,7 +58,7 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
             "fake_registration_id")) {}
   class MockListener : public FtlHostChangeNotificationListener::Listener {
    public:
-    MOCK_METHOD0(OnHostDeleted, void());
+    MOCK_METHOD(void, OnHostDeleted, (), (override));
   };
 
   void SetUp() override {

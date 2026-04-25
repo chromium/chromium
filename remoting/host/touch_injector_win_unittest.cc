@@ -85,9 +85,14 @@ class TouchInjectorWinDelegateMock : public TouchInjectorWinDelegate {
       : TouchInjectorWinDelegate(nullptr, nullptr, nullptr) {}
   ~TouchInjectorWinDelegateMock() override {}
 
-  MOCK_METHOD2(InitializeTouchInjection, BOOL(UINT32 max_count, DWORD dw_mode));
-  MOCK_METHOD2(InjectTouchInput,
-               DWORD(UINT32 count, const POINTER_TOUCH_INFO* contacts));
+  MOCK_METHOD(BOOL,
+              InitializeTouchInjection,
+              (UINT32 max_count, DWORD dw_mode),
+              (override));
+  MOCK_METHOD(DWORD,
+              InjectTouchInput,
+              (UINT32 count, const POINTER_TOUCH_INFO* contacts),
+              (override));
 };
 
 class TouchInjectorWinTest : public testing::Test {

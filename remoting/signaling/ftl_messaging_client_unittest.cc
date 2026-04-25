@@ -92,11 +92,11 @@ class MockRegistrationManager : public RegistrationManager {
   MockRegistrationManager() = default;
   ~MockRegistrationManager() override = default;
 
-  MOCK_METHOD1(SignInGaia, void(DoneCallback));
-  MOCK_METHOD0(SignOut, void());
-  MOCK_CONST_METHOD0(IsSignedIn, bool());
-  MOCK_CONST_METHOD0(GetRegistrationId, std::string());
-  MOCK_CONST_METHOD0(GetFtlAuthToken, std::string());
+  MOCK_METHOD(void, SignInGaia, (DoneCallback), (override));
+  MOCK_METHOD(void, SignOut, (), (override));
+  MOCK_METHOD(bool, IsSignedIn, (), (const, override));
+  MOCK_METHOD(std::string, GetRegistrationId, (), (const, override));
+  MOCK_METHOD(std::string, GetFtlAuthToken, (), (const, override));
 };
 
 MATCHER_P(SignalingMessageMatches, expected_stanza_text, "") {

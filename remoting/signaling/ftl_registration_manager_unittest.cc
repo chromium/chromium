@@ -67,10 +67,11 @@ class FtlRegistrationManagerTest : public testing::Test {
   class MockRegistrationClient
       : public FtlRegistrationManager::RegistrationClient {
    public:
-    MOCK_METHOD2(SignInGaia,
-                 void(const ftl::SignInGaiaRequest&,
-                      SignInGaiaResponseCallback));
-    MOCK_METHOD0(CancelPendingRequests, void());
+    MOCK_METHOD(void,
+                SignInGaia,
+                (const ftl::SignInGaiaRequest&, SignInGaiaResponseCallback),
+                (override));
+    MOCK_METHOD(void, CancelPendingRequests, (), (override));
   };
 
   const net::BackoffEntry& GetBackoff() const {

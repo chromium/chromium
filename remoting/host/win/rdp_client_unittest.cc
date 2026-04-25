@@ -50,8 +50,8 @@ class MockRdpClientEventHandler : public RdpClient::EventHandler {
 
   ~MockRdpClientEventHandler() override {}
 
-  MOCK_METHOD0(OnRdpConnected, void());
-  MOCK_METHOD0(OnRdpClosed, void());
+  MOCK_METHOD(void, OnRdpConnected, (), (override));
+  MOCK_METHOD(void, OnRdpClosed, (), (override));
 };
 
 // a14498c6-7f3b-4e42-9605-6c4a20d53c87

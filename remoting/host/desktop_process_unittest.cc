@@ -96,7 +96,7 @@ class MockNetworkListener : public IPC::Listener {
   MOCK_METHOD(void, OnChannelConnected, (std::int32_t), (override));
   MOCK_METHOD(void, OnChannelError, (), (override));
 
-  MOCK_METHOD0(OnDesktopEnvironmentCreated, void());
+  MOCK_METHOD(void, OnDesktopEnvironmentCreated, ());
 };
 
 void MockDaemonListener::OnAssociatedInterfaceRequest(
