@@ -9,12 +9,13 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/notification_ui_manager_impl.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -25,7 +26,7 @@
 
 namespace message_center {
 
-class NotificationUIManagerTest : public BrowserWithTestWindowTest {
+class NotificationUIManagerTest : public testing::Test {
  public:
   NotificationUIManagerTest() = default;
 
@@ -33,20 +34,31 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     MessageCenter::Initialize();
 
-    BrowserWithTestWindowTest::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("test-profile");
+
+    notification_manager_ = std::make_unique<NotificationUIManagerImpl>();
+
     message_center_ = MessageCenter::Get();
-    notification_manager()->ResetUiControllerForTest();
+    notification_manager_->ResetUiControllerForTest();
   }
 
   void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
+    notification_manager_.reset();
+    profile_ = nullptr;
+    profile_manager_.reset();
+    message_center_ = nullptr;
     MessageCenter::Shutdown();
+    task_environment_.RunUntilIdle();
   }
 
   NotificationUIManagerImpl* notification_manager() {
-    return (NotificationUIManagerImpl*)
-        g_browser_process->notification_ui_manager();
+    return notification_manager_.get();
   }
+
+  TestingProfile* profile() { return profile_.get(); }
 
   MessageCenter* message_center() { return message_center_; }
 
@@ -61,6 +73,10 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<NotificationUIManagerImpl> notification_manager_;
   raw_ptr<MessageCenter, DanglingUntriaged> message_center_;
 };
 
