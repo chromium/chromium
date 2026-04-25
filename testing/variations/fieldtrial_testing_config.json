@@ -9620,6 +9620,27 @@
             ]
         }
     ],
+    "EnableDeepScanVerdictCacheSize": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "verdict_cache_max_size": "200"
+                    },
+                    "enable_features": [
+                        "EnableDeepScanVerdictCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableDevToolsJsErrorReporting": [
         {
             "platforms": [
