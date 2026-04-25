@@ -54,6 +54,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

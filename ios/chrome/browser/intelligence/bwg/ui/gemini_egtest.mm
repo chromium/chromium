@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -24,37 +25,37 @@ namespace {
 
 // Matcher for the primary button in the promo view.
 id<GREYMatcher> PromoPrimaryButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_BWG_PROMO_PRIMARY_BUTTON)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityID(kButtonStackPrimaryActionAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
 // Matcher for the secondary button in the promo view.
 id<GREYMatcher> PromoSecondaryButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_BWG_PROMO_SECONDARY_BUTTON)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityID(kButtonStackSecondaryActionAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
 // Matcher for the primary button in the consent view.
 id<GREYMatcher> ConsentPrimaryButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityID(kButtonStackPrimaryActionAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
 // Matcher for the secondary button in the consent view.
 id<GREYMatcher> ConsentSecondaryButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityID(kButtonStackSecondaryActionAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
 // Matcher for the Gemini button.
 id<GREYMatcher> GeminiButton() {
-  return grey_allOf(grey_accessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_AI_HUB_GEMINI_LABEL)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return grey_allOf(
+      grey_accessibilityID(kAIHubAskGeminiButtonAccessibilityIdentifier),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
 }  // namespace
