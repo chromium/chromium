@@ -755,7 +755,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   current_clip_ = input_clip;
   current_effect_ = &effect;
 
-  if (effect.HasReferenceFilter()) {
+  if (effect.HasReferenceFilter() && effect.Filter()) {
     // For empty chunks, or chunks with empty bounds, with a filter applied
     // that produces output even when there's no input this will expand the
     // bounds to match.

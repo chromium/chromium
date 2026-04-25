@@ -438,6 +438,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     auto* properties = object.FirstFragment().PaintProperties();
     ensure_chunk |= properties && properties->Filter() &&
                     properties->Filter()->HasReferenceFilter();
+    ensure_chunk |= properties && properties->Effect() &&
+                    properties->Effect()->HasReferenceFilter();
 
     if (ensure_chunk) {
       controller.EnsureChunk();

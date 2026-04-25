@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -81,6 +82,15 @@ class PLATFORM_EXPORT RasterInvalidator
               mapper.MapVisualRect(chunk_it->drawable_bounds))),
           chunk_to_layer_clip(mapper.ClipRect()),
           chunk_to_layer_transform(mapper.Transform()) {
+      if (chunk_it->properties.Effect().Unalias().BackdropFilter()) {
+        gfx::RectF backdrop_rect =
+            gfx::SkRectToRectF(chunk_it->properties.Effect()
+                                   .Unalias()
+                                   .BackdropFilterBounds()
+                                   .getBounds());
+        bounds_in_layer.Union(invalidator.ClipByLayerBounds(
+            mapper.MapVisualRect(gfx::ToEnclosingRect(backdrop_rect))));
+      }
     }
 
     PaintChunkInfo(const PaintChunkInfo& old_chunk_info,

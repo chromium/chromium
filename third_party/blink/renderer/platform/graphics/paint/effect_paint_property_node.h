@@ -262,8 +262,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   }
 
   bool HasReferenceFilter() const {
-    return state_.filter_info &&
-           state_.filter_info->operations.HasReferenceFilter();
+    return (state_.filter_info &&
+            state_.filter_info->operations.HasReferenceFilter()) ||
+           (state_.backdrop_filter_info &&
+            state_.backdrop_filter_info->operations.HasReferenceFilter());
   }
   bool HasFilterThatMovesPixels() const {
     return state_.filter_info &&
