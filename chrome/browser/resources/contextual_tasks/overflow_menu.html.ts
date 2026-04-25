@@ -19,7 +19,7 @@ export function getHtml(this: OverflowMenuElement) {
       <div class="dropdown-divider"></div>
       <button class="dropdown-item" @click="${this.onMyActivityClick_}">
 <if expr="_google_chrome">
-        <div class="cr-icon google-g-icon"></div>
+        <cr-icon icon="contextual_tasks:g_logo"></cr-icon>
 </if>
 <if expr="not _google_chrome">
         <cr-icon icon="cr:history"></cr-icon>
