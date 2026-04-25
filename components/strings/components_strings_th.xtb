@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">บริการจัดวางตัวอย่างภาพวาด</translation>
 <translation id="4318566738941496689">ชื่ออุปกรณ์และที่อยู่เครือข่ายของคุณ</translation>
 <translation id="4320119221194966055">สินเชื่อส่วนบุคคล</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{ลิงก์ที่ได้รับจาก <ph name="DEVICE_NAME" />}other{# ลิงก์ที่ได้รับจาก <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">ถาด 17</translation>
 <translation id="4325863107915753736">การค้นหาบทความล้มเหลว</translation>
 <translation id="4326324639298822553">ตรวจสอบวันหมดอายุแล้วลองอีกครั้ง</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755">คุณแก้ไขชื่อได้ใน<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
 <translation id="87601671197631245">เว็บไซต์นี้ใช้การกำหนดค่าความปลอดภัยที่ล้าสมัย ซึ่งอาจเปิดเผยข้อมูลของคุณ (เช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) เมื่อมีการส่งไปยังเว็บไซต์นี้</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{ลิงก์ที่ส่งจาก <ph name="DEVICE_NAME" />}other{# ลิงก์ที่ส่งจาก <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
 <translation id="8763986294015493060">ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมดที่เปิดอยู่</translation>
 <translation id="8766943070169463815">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัยเปิดขึ้น</translation>

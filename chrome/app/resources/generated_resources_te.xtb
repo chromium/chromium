@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌లకు అనుమతి లేదు.</translation>
 <translation id="156793199942386351">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
 <translation id="1567993339577891801">JavaScript కన్సోల్</translation>
+<translation id="157005186601751931">యాప్‌లో ట్యాబ్‌ను తెరవండి</translation>
 <translation id="1570604804919108255">నోటిఫికేషన్‌లను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' బుక్‌మార్క్ ఫోల్డర్ క్రియేట్ చేయబడింది.</translation>
 <translation id="1571041387761170095">బలహీనమైన లేదా వేరే చోట వాడిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
@@ -6118,6 +6119,7 @@
 <translation id="5204967432542742771">పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="5205484256512407285">బదిలీ చేయడానికి మొబైల్ డేటాను ఎప్పుడూ ఉపయోగించవద్దు</translation>
 <translation id="520568280985468584">నెట్‌వర్క్ విజయవంతంగా జోడించబడింది. యాక్టివ్ కావడానికి మీ సెల్యులర్ నెట్‌వర్క్‌కు కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="5207395053540207113">Drive కంటెంట్‌ను యాక్సెస్ చేయడానికి Searchను అనుమతించాలా?</translation>
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
 <translation id="520840839826327499">మీరు అర్హత ఉన్న ChromeOS డివైజ్‌ను ఉపయోగిస్తున్నట్లు <ph name="SERVICE_NAME" /> చెక్ చేయాలనుకుంటోంది.</translation>
 <translation id="5208926629108082192">పరికరం మొబైల్ నెట్‌వర్క్ సమాచారం</translation>
@@ -9025,6 +9027,7 @@
 <translation id="727595954130325265">ఇప్పుడే షాపింగ్ చేయండి</translation>
 <translation id="7277275452721470458">AI మోడ్ యాక్టివిటీ</translation>
 <translation id="727952162645687754">డౌన్‌లోడ్ చేయడంలో ఎర్ర‌ర్‌</translation>
+<translation id="7280265656690268844">JavaScript ఆప్టిమైజేషన్ ఆఫ్‌లో ఉంది</translation>
 <translation id="7280649757394340890">వచనం-నుండి-ప్రసంగం వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="7280683802406059877">కీబోర్డ్ షార్ట్‌కట్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="7280877790564589615">అనుమతి రిక్వెస్ట్ చేయబడింది</translation>
@@ -11358,6 +11361,7 @@
 <translation id="8866424952450451412">దీని ద్వారా అందించబడే మీ అనుకూల వర్క్‌ఫ్లోలను మేనేజ్ చేయండి</translation>
 <translation id="8867102760244540173">ట్యాబ్‌లలో సెర్చ్ చేయండి...</translation>
 <translation id="8867228703146808825">బిల్డ్ వివరాలను క్లిప్‌బోర్డ్‌కు కాపీ చేయి</translation>
+<translation id="8867568208303837180">పంపుతోంది...</translation>
 <translation id="8868333925931032127">డెమో మోడ్‌ను ప్రారంభిస్తోంది</translation>
 <translation id="8868626022555786497">ఉపయోగంలో ఉంది</translation>
 <translation id="8868838761037459823">సెల్యులార్ వివరాలు</translation>

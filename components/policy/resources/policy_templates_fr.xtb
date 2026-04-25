@@ -1143,6 +1143,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 
       Si cette règle n'est pas définie, les utilisateurs peuvent manipuler toute la liste des langues préférées.</translation>
 <translation id="1803646570632580723">Liste des applications épinglées à afficher dans le lanceur d'applications</translation>
+<translation id="1807539058116290184">Désactiver le zoom par pincement en mode Kiosque</translation>
 <translation id="1808715480127969042">Bloquer les cookies sur ces sites</translation>
 <translation id="1810261428246410396">Autoriser le partage de connexion instantané</translation>
 <translation id="1813638828646876133">Activer l'envoi automatique du code PIN sur l'écran de connexion et de verrouillage</translation>
@@ -3306,6 +3307,18 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
+<translation id="3197981761853858791">Cette règle est obsolète, car la configuration de l'invite <ph name="PRIVACY_SANDBOX_NAME" /> n'est plus acceptée.
+
+Règle permettant de contrôler si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> est présentée à vos utilisateurs.
+L'invite est un flux qui bloque vos utilisateurs pour les informer des paramètres <ph name="PRIVACY_SANDBOX_NAME" />. Pour en savoir plus sur l'abandon des cookies tiers par Chrome, consultez <ph name="PRIVACY_SANDBOX_URL" />.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'affiche pas l'invite <ph name="PRIVACY_SANDBOX_NAME" />.
+Si elle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> détermine si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être affichée ou non, et l'affiche si possible.
+
+Si l'une des règles suivantes est configurée, cette règle doit être désactivée :
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Ne pas afficher l'écran de détection de présence humaine lors de la connexion</translation>
 <translation id="3205825995289802549">Agrandir la première fenêtre du navigateur à la première exécution</translation>
 <translation id="320607884987562184">Si cette règle est définie sur "1", les sites Web peuvent exécuter JavaScript. Si cette règle est définie sur "2", les sites ne sont pas autorisés à exécuter ce langage.
@@ -4066,6 +4079,12 @@ Cette règle relative aux appareils est équivalente à la règle relative aux u
       Si vous désactivez ce paramètre, la saisie automatique n'est pas accessible aux utilisateurs.
 
       Si vous l'activez ou ne configurez aucune valeur, les utilisateurs contrôlent la saisie automatique. Ils peuvent alors l'activer ou la désactiver et configurer des profils de saisie automatique comme ils le souhaitent.</translation>
+<translation id="3730809439296971274">Règle permettant de décider si le paramètre des annonces suggérées par les sites de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre des annonces suggérées par les sites <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Protected Audience.</translation>
 <translation id="3733014427925403568">Jour de la semaine pour l'intervalle.</translation>
 <translation id="3736879847913515635">Autoriser l'ajout de personnes dans le gestionnaire d'utilisateurs</translation>
 <translation id="3744984310825999317">Autoriser <ph name="PEPPER_NAME" /> à utiliser un nouveau décodeur pour le décodage vidéo avec accélération matérielle.</translation>
@@ -5092,6 +5111,7 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4463675333222095358">Activer la conversion d'unités pour Réponses rapides</translation>
 <translation id="4464365009416584564">Désactiver <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquer les cookies tiers</translation>
+<translation id="4468220154891570994">Activer le zoom par pincement en mode Kiosque</translation>
 <translation id="4472740647327683596">Largeur de la page en micromètres.</translation>
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
 <translation id="4474266799109921560">Si cette règle est définie sur "2", les origines d'applis Web isolées ne peuvent pas utiliser l'API WebPrinting.
@@ -6221,6 +6241,12 @@ Cette règle est proposée pour une durée limitée afin de laisser le temps de 
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
 <translation id="5130213897914754028">Empêcher les sites d'utiliser SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Toujours proposer une traduction</translation>
+<translation id="513314432051760916">Règle permettant de décider si le paramètre de mesure des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, vos utilisateurs pourront activer ou désactiver le paramètre de mesure des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Attribution Reporting.</translation>
 <translation id="5138579693170759139">Cette règle permet aux administrateurs de contrôler comment Google traite les données et les cookies envoyés à la recherche via <ph name="PRODUCT_OS_NAME" />.
 Lorsque cette règle est activée, l'utilisateur peut utiliser le champ de recherche du Lanceur d'applications de <ph name="PRODUCT_OS_NAME" /> et le champ d'adresse du navigateur <ph name="PRODUCT_NAME" /> dans <ph name="PRODUCT_OS_NAME" />. Les cookies et les données ne pourront être utilisés qu'à des fins essentielles.
 Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies et les données peuvent être utilisés à des fins non essentielles.</translation>
@@ -9356,6 +9382,9 @@ Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
 Si cette règle n'est pas configurée, la loupe est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="7109384070286741861">Désactiver CECPQ2</translation>
+<translation id="711246451611873603">Si cette règle est activée ou qu'elle n'est pas configurée, le zoom par pincement est autorisé dans une session Kiosque.
+
+Si cette règle est désactivée, le zoom par pincement n'est pas autorisé dans une session Kiosque.</translation>
 <translation id="7113439794629928551">Afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
 <translation id="7113803652772945829">Si cette règle est définie sur "True", les utilisateurs peuvent utiliser un gestionnaire de mots de passe tiers.
 Celui-ci gèrera l'enregistrement et la saisie de toutes les données liées aux mots de passe, aux paiements et à la saisie automatique.
@@ -10592,6 +10621,12 @@ Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuille
 <translation id="7891884447851425349">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé lors d'une recherche par défaut. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Règle permettant de décider si le paramètre des thèmes des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
+
+Si cette règle est désactivée, il sera désactivé pour vos utilisateurs.
+Si elle est activée ou qu'elle n'est pas configurée, les utilisateurs pourront activer ou désactiver le paramètre des thèmes des annonces <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.
+
+Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />, en raison de l'abandon de l'API Topics.</translation>
 <translation id="7893719068404928632">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans les <ph name="CHROME_DEVTOOLS_NAME" /> en raison de l'échec des vérifications "<ph name="LOCAL_NETWORK_ACCESS" />".
 
 Si cette règle est désactivée ou n'est pas configurée, les requêtes "<ph name="LOCAL_NETWORK_ACCESS" />" utiliseront le traitement par défaut.

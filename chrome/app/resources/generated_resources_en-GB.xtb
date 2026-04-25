@@ -834,6 +834,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1567579616025300478">This site isn't allowed to save data on your device.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="157005186601751931">Open tab in app</translation>
 <translation id="1570604804919108255">Unmute notifications</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' bookmark folder created.</translation>
 <translation id="1571041387761170095">No weak or reused passwords</translation>
@@ -6121,6 +6122,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5205484256512407285">Never use mobile data to transfer</translation>
 <translation id="520568280985468584">Network has been added successfully. It may take several minutes for your mobile network to become active.</translation>
+<translation id="5207395053540207113">Allow Search to access Drive content?</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> wants to check if you are using an eligible Chrome OS device.</translation>
 <translation id="5208926629108082192">Device mobile network info</translation>
@@ -9029,6 +9031,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="727595954130325265">Shop now</translation>
 <translation id="7277275452721470458">AI Mode activity</translation>
 <translation id="727952162645687754">Download error</translation>
+<translation id="7280265656690268844">JavaScript optimisation is off</translation>
 <translation id="7280649757394340890">Text-to-speech voice settings</translation>
 <translation id="7280683802406059877">Customise keyboard shortcut</translation>
 <translation id="7280877790564589615">Permission requested</translation>
@@ -11365,6 +11368,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8866424952450451412">Manage your custom workflows powered by</translation>
 <translation id="8867102760244540173">Search tabs…</translation>
 <translation id="8867228703146808825">Copy build details to clipboard</translation>
+<translation id="8867568208303837180">Sending...</translation>
 <translation id="8868333925931032127">Starting demo mode</translation>
 <translation id="8868626022555786497">In use</translation>
 <translation id="8868838761037459823">Mobile details</translation>

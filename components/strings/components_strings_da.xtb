@@ -2156,6 +2156,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4318312030194671742">Tjeneste til forhåndsvisning af visuelt indhold</translation>
 <translation id="4318566738941496689">Din enheds navn og netværksadresse</translation>
 <translation id="4320119221194966055">Privatlån</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Du har modtaget et link fra <ph name="DEVICE_NAME" />}one{Du har modtaget # link fra <ph name="DEVICE_NAME" />}other{Du har modtaget # links fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bakke 17</translation>
 <translation id="4325863107915753736">Artiklen blev ikke fundet.</translation>
 <translation id="4326324639298822553">Kontrollér, om udløbsdatoen er korrekt, og prøv igen.</translation>
@@ -4984,6 +4985,7 @@ Yderligere oplysninger:
 <translation id="8758529215314160755">Du kan redigere dit navn på din <ph name="BEGIN_LINK" />Google-konto <ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Kortet er udløbet</translation>
 <translation id="87601671197631245">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder, meddelelser eller kreditkort), når de sendes til dette website.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Linket er sendt fra <ph name="DEVICE_NAME" />}one{# link er sendt fra <ph name="DEVICE_NAME" />}other{# links er sendt fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-enhed</translation>
 <translation id="8763986294015493060">Luk alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="8766943070169463815">Arket til godkendelse af loginoplysninger til sikker betaling er åbnet</translation>

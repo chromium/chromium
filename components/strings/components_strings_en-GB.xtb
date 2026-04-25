@@ -2156,6 +2156,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4318312030194671742">Paint preview compositor service</translation>
 <translation id="4318566738941496689">Your device name and network address</translation>
 <translation id="4320119221194966055">Personal loans</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link received from <ph name="DEVICE_NAME" />}other{# links received from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Tray 17</translation>
 <translation id="4325863107915753736">Failed to find article</translation>
 <translation id="4326324639298822553">Check your expiry date and try again</translation>
@@ -4983,6 +4984,7 @@ Additional details:
 <translation id="8758529215314160755">You can edit your name in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">This card has expired</translation>
 <translation id="87601671197631245">This site uses an outdated security configuration, which may expose your information (for example, passwords, messages or credit cards) when it is sent to this site.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link sent from <ph name="DEVICE_NAME" />}other{# links sent from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Close all incognito windows that are currently open</translation>
 <translation id="8766943070169463815">Secure payment credential authentication sheet is opened</translation>

@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">আপনার ডিভাইসে এই সাইটকে ডেটা সেভ করার অনুমতি দেওয়া হয়নি।</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-কে আগে থেকেই '<ph name="ACTION" />' অ্যাকশনের জন্য অ্যাসাইন করা হয়েছে। <ph name="RESPONSE" />-এর জন্য যেকোনও কী প্রেস করুন।</translation>
 <translation id="1567993339577891801">JavaScript কনসোল</translation>
+<translation id="157005186601751931">অ্যাপে ট্যাব খুলুন</translation>
 <translation id="1570604804919108255">বিজ্ঞপ্তি আনমিউট করুন</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' নামে বুকমার্ক ফোল্ডার তৈরি করা হয়েছে।</translation>
 <translation id="1571041387761170095">দুর্বল বা একই পাসওয়ার্ড আবার ব্যবহার করা যাবে না</translation>
@@ -6122,6 +6123,7 @@
 <translation id="5204967432542742771">পাসওয়ার্ড প্রবেশ করান</translation>
 <translation id="5205484256512407285">ফাইল ট্রান্সফার করতে, কখনও মোবাইল ডেটা ব্যবহার করা হয় না</translation>
 <translation id="520568280985468584">নেটওয়ার্ক যোগ করা হয়েছে। আপনার সেলুলার নেটওয়ার্ক অ্যাক্টিভ হতে কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="5207395053540207113">Search-কে Drive কন্টেন্ট অ্যাক্সেস করতে দেবেন?</translation>
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
 <translation id="520840839826327499">আপনি একটি উপযুক্ত ChromeOS ডিভাইস ব্যবহার করছেন কিনা তা <ph name="SERVICE_NAME" /> দেখতে চায়।</translation>
 <translation id="5208926629108082192">ডিভাইস মোবাইল নেটওয়ার্ক তথ্য</translation>
@@ -9033,6 +9035,7 @@
 <translation id="727595954130325265">এখনই কিনুন</translation>
 <translation id="7277275452721470458">AI মোড অ্যাক্টিভিটি</translation>
 <translation id="727952162645687754">ডাউনলোড ক্রটি</translation>
+<translation id="7280265656690268844">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করা আছে</translation>
 <translation id="7280649757394340890">পাঠ্য থেকে ভাষ্যের ভয়েস সেটিংস</translation>
 <translation id="7280683802406059877">কীবোর্ড শর্টকাট কাস্টমাইজ করুন</translation>
 <translation id="7280877790564589615">অনুমতির জন্য অনুরোধ করা হয়েছে</translation>
@@ -11370,6 +11373,7 @@
 <translation id="8866424952450451412">এর দ্বারা পরিচালিত আপনার কাস্টম ওয়ার্কফ্লো ম্যানেজ করুন,</translation>
 <translation id="8867102760244540173">ট্যাব সার্চ করুন...</translation>
 <translation id="8867228703146808825">বিল্ডের বিবরণ ক্লিপবোর্ডে কপি করুন</translation>
+<translation id="8867568208303837180">পাঠানো হচ্ছে…</translation>
 <translation id="8868333925931032127">ডেমো মোড শুরু করা হচ্ছে</translation>
 <translation id="8868626022555786497">ব্যবহৃত হচ্ছে</translation>
 <translation id="8868838761037459823">মোবাইল নেটওয়ার্কের বিবরণ</translation>

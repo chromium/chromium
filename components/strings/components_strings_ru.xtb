@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">Сервис для компоновки интерактивных миниатюр</translation>
 <translation id="4318566738941496689">Название вашего устройства и сетевой адрес</translation>
 <translation id="4320119221194966055">Потребительские кредиты</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{С устройства "<ph name="DEVICE_NAME" />" получена ссылка}one{С устройства "<ph name="DEVICE_NAME" />" получена # ссылка}few{С устройства "<ph name="DEVICE_NAME" />" получено # ссылки}many{С устройства "<ph name="DEVICE_NAME" />" получено # ссылок}other{С устройства "<ph name="DEVICE_NAME" />" получено # ссылки}}</translation>
 <translation id="4325600325087822253">Лоток 17</translation>
 <translation id="4325863107915753736">Не удалось найти статью</translation>
 <translation id="4326324639298822553">Проверьте срок действия и повторите попытку</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755">Вы можете изменить имя <ph name="BEGIN_LINK" />в аккаунте Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Срок действия карты истек.</translation>
 <translation id="87601671197631245">Настройки безопасности этого сайта устарели. Злоумышленники могут получить доступ к вашим данным (например, паролям, сообщениям и номерам банковских карт) при их отправке на этот сайт.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{С устройства "<ph name="DEVICE_NAME" />" отправлена ссылка}one{С устройства "<ph name="DEVICE_NAME" />" отправлена # ссылка}few{С устройства "<ph name="DEVICE_NAME" />" отправлено # ссылки}many{С устройства "<ph name="DEVICE_NAME" />" отправлено # ссылок}other{С устройства "<ph name="DEVICE_NAME" />" отправлено # ссылки}}</translation>
 <translation id="8763927697961133303">USB-устройство</translation>
 <translation id="8763986294015493060">Закрыть все окна, открытые в режиме инкогнито</translation>
 <translation id="8766943070169463815">Открыт экран проверки учетных данных для защищенных платежей</translation>

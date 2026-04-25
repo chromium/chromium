@@ -1192,6 +1192,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
+<translation id="1807539058116290184">Inhabilitar el gesto de pellizcar para hacer zoom en el modo kiosco</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
 <translation id="1813638828646876133">Habilitar el envío automático de PIN en la pantalla de bloqueo y de acceso</translation>
@@ -3444,6 +3445,18 @@ Hay varias políticas que enumeran los orígenes que afectan las solicitudes a l
           Si no se establece, se utilizará un período predeterminado.
 
           El valor de la política debe especificarse en milisegundos.</translation>
+<translation id="3197981761853858791">Esta política dejó de estar disponible porque ya no se admite la configuración de la instrucción <ph name="PRIVACY_SANDBOX_NAME" />.
+
+Una política para controlar si los usuarios ven el mensaje de <ph name="PRIVACY_SANDBOX_NAME" />.
+El mensaje es un flujo que bloquea a los usuarios y les informa sobre la configuración de <ph name="PRIVACY_SANDBOX_NAME" />. Consulta <ph name="PRIVACY_SANDBOX_URL" /> para obtener más información sobre el esfuerzo de Chrome para dar de baja las cookies de terceros.
+
+Si inhabilitas esta política, <ph name="PRODUCT_NAME" /> no mostrará el mensaje de <ph name="PRIVACY_SANDBOX_NAME" />.
+Si habilitas esta política o no la estableces, <ph name="PRODUCT_NAME" /> determinará si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> y, si es posible, lo mostrará.
+
+Si estableces alguna de las siguientes políticas, deberás establecerla como inhabilitada:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">No mostrar la pantalla del sensor de presencia humana durante el acceso</translation>
 <translation id="3205825995289802549">Maximizar la primera ventana del navegador en la primera ejecución</translation>
 <translation id="320607884987562184">Si estableces la política en 1, los sitios web podrán ejecutar JavaScript. Si la estableces en 2, se rechazará JavaScript.
@@ -4227,6 +4240,12 @@ Esta política de dispositivo es equivalente a la política del usuario <ph name
       Si se inhabilita esta configuración, los usuarios no podrán acceder a Autocompletar.
 
       Si se habilita o no se establece ningún valor, los usuarios podrán controlar Autocompletar. De esta manera, podrán configurar los perfiles de la función y activarla o desactivarla cuando lo deseen.</translation>
+<translation id="3730809439296971274">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> para anuncios sugeridos por sitios para los usuarios.
+
+Si la inhabilitas, se desactivará la configuración de anuncios sugeridos por sitios para los usuarios.
+Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> para anuncios sugeridos por sitios en sus dispositivos.
+
+Esta política dejará de estar disponible a partir de la versión 144 de <ph name="PRODUCT_NAME" /> con la baja de la API de Protected Audience.</translation>
 <translation id="3733014427925403568">El día de la semana para el intervalo.</translation>
 <translation id="3736879847913515635">Habilitar la opción para agregar una persona en el Administrador de usuarios</translation>
 <translation id="3744984310825999317">Permitir que <ph name="PEPPER_NAME" /> use un decodificador nuevo para la decodificación de video acelerada por hardware</translation>
@@ -5274,6 +5293,7 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="4463675333222095358">Habilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="4464365009416584564">Inhabilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
+<translation id="4468220154891570994">Permitir el gesto de pellizcar para hacer zoom en el modo kiosco</translation>
 <translation id="4472740647327683596">Ancho de la página (en micrómetros).</translation>
 <translation id="4474167089968829729">Habilitar el guardado de contraseñas en el administrador de contraseñas</translation>
 <translation id="4474266799109921560">Si estableces la política en 2, se impedirá automáticamente que los orígenes de apps web aisladas usen la API de WebPrinting.
@@ -6450,6 +6470,12 @@ Esta política es una prórroga temporal para permitir que el contenido web migr
 <translation id="5124368997194894978">Habilitar el inicio mediante CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios utilicen la política SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Ofrecer siempre la traducción</translation>
+<translation id="513314432051760916">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios para los usuarios.
+
+Si la inhabilitas, se desactivará la configuración de medición de anuncios para los usuarios.
+Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de medición de anuncios en sus dispositivos.
+
+Esta política dejará de estar disponible a partir de la versión 144 de <ph name="PRODUCT_NAME" /> con la baja de la API de Attribution Reporting.</translation>
 <translation id="5138579693170759139">Esta política permite que los administradores controlen la manera en que Google procesa las cookies y los datos que se envían a la Búsqueda a través de <ph name="PRODUCT_OS_NAME" />.
 Si habilitas la política, el usuario podrá utilizar el cuadro de búsqueda del Selector de <ph name="PRODUCT_OS_NAME" /> y el cuadro de direcciones del navegador <ph name="PRODUCT_NAME" /> en <ph name="PRODUCT_OS_NAME" />. Las cookies y los datos solo se pueden usar para fines esenciales.
 Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar para fines no esenciales.</translation>
@@ -9754,6 +9780,9 @@ Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
 Si no la estableces, inicialmente la lupa estará inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
+<translation id="711246451611873603">Si habilitas la política o no la estableces, se permitirá el gesto de pellizcar para hacer zoom en una sesión de kiosco.
+
+Si inhabilitas la política, no se permitirá el gesto de pellizcar para hacer zoom en una sesión de kiosco.</translation>
 <translation id="7113439794629928551">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="7113803652772945829">Si estableces la política como verdadera, los usuarios podrán usar un administrador de contraseñas de terceros.
 Este administrador de contraseñas se encargará de guardar y completar todas las contraseñas, así como los datos de
@@ -11049,6 +11078,12 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
 <translation id="7891884447851425349">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado en una búsqueda predeterminada. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Una política para controlar si se puede inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios para los usuarios.
+
+Si la inhabilitas, se desactivará la configuración de temas de anuncios para los usuarios.
+Si habilitas esta política o no la estableces, los usuarios podrán activar o desactivar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos.
+
+Esta política dejó de estar disponible a partir de la versión 144 de <ph name="PRODUCT_NAME" /> con la baja de la API de Topics.</translation>
 <translation id="7893719068404928632">Si habilitas esta política, cada vez que se deba mostrar
 una advertencia en <ph name="CHROME_DEVTOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />, se
 bloqueará la solicitud principal.

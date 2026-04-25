@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">इस साइट को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' को पहले ही '<ph name="ACTION" />' कार्रवाई के लिए असाइन किया जा चुका है. <ph name="RESPONSE" /> के लिए कोई भी बटन दबाएं.</translation>
 <translation id="1567993339577891801">JavaScript पैनल</translation>
+<translation id="157005186601751931">ऐप्लिकेशन में टैब खोलें</translation>
 <translation id="1570604804919108255">सूचनाएं अनम्यूट करें</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' बुकमार्क फ़ोल्डर बनाया गया.</translation>
 <translation id="1571041387761170095">कोई कमज़ोर या ऐसा पासवर्ड नहीं है जिसका इस्तेमाल एक से ज़्यादा खातों के लिए किया गया है</translation>
@@ -6120,6 +6121,7 @@
 <translation id="5204967432542742771">पासवर्ड डालें</translation>
 <translation id="5205484256512407285">ट्रांसफ़र करने के लिए, मोबाइल डेटा का इस्तेमाल कभी न करें</translation>
 <translation id="520568280985468584">मोबाइल नेटवर्क जोड़ दिया गया है. इसे चालू होने में कुछ मिनट लग सकते हैं.</translation>
+<translation id="5207395053540207113">क्या Search को Drive का कॉन्टेंट ऐक्सेस करने की अनुमति देनी है?</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> यह देखना चाहता है कि क्या उपयोगकर्ता मंज़ूरी दिए गए किसी ChromeOS डिवाइस का इस्तेमाल कर रहे हैं.</translation>
 <translation id="5208926629108082192">डिवाइस के मोबाइल नेटवर्क की जानकारी</translation>
@@ -9029,6 +9031,7 @@
 <translation id="727595954130325265">अभी खरीदें</translation>
 <translation id="7277275452721470458">एआई मोड से जुड़ी गतिविधि</translation>
 <translation id="727952162645687754">डाउनलोड गड़बड़ी</translation>
+<translation id="7280265656690268844">JavaScript ऑप्टिमाइज़ेशन की सुविधा बंद है</translation>
 <translation id="7280649757394340890">लिखाई को बोली में बदलने की आवाज़ की सेटिंग</translation>
 <translation id="7280683802406059877">कीबोर्ड शॉर्टकट को पसंद के मुताबिक बनाएं</translation>
 <translation id="7280877790564589615">अनुमति का अनुरोध किया गया</translation>
@@ -11365,6 +11368,7 @@
 <translation id="8866424952450451412">अपने कस्टम वर्कफ़्लो मैनेज करें, जो इसकी मदद से बनाए गए हैं:</translation>
 <translation id="8867102760244540173">टैब खोजें...</translation>
 <translation id="8867228703146808825">बिल्ड की जानकारी को क्लिपबोर्ड पर कॉपी करें</translation>
+<translation id="8867568208303837180">भेजा जा रहा है...</translation>
 <translation id="8868333925931032127">डेमो मोड चालू किया जा रहा है</translation>
 <translation id="8868626022555786497">उपयोग में है</translation>
 <translation id="8868838761037459823">सेल्युलर नेटवर्क की जानकारी</translation>

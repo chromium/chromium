@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">เว็บไซต์นี้ไม่ได้รับอนุญาตให้บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="156793199942386351">กำหนด "<ph name="CURRENTKEY" />" ให้กับการดำเนินการ "<ph name="ACTION" />" แล้ว กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="1567993339577891801">คอนโซล JavaScript</translation>
+<translation id="157005186601751931">เปิดแท็บในแอป</translation>
 <translation id="1570604804919108255">เปิดเสียงการแจ้งเตือน</translation>
 <translation id="1570990174567554976">สร้างโฟลเดอร์บุ๊กมาร์ก "<ph name="BOOKMARK_TITLE" />" แล้ว</translation>
 <translation id="1571041387761170095">ไม่มีรหัสผ่านที่ไม่รัดกุมหรือรหัสผ่านที่ใช้ซ้ำ</translation>
@@ -6105,6 +6106,7 @@
 <translation id="5204967432542742771">ป้อนรหัสผ่าน</translation>
 <translation id="5205484256512407285">ไม่ใช้อินเทอร์เน็ตมือถือในการโอน</translation>
 <translation id="520568280985468584">เพิ่มเครือข่ายเรียบร้อยแล้ว เครือข่ายมือถืออาจใช้เวลาหลายนาทีจึงจะเริ่มทำงาน</translation>
+<translation id="5207395053540207113">อนุญาตให้ Search เข้าถึงเนื้อหาในไดรฟ์ไหม</translation>
 <translation id="5207949376430453814">ไฮไลต์เครื่องหมาย Caret ของข้อความ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ต้องการตรวจสอบว่าคุณกำลังใช้อุปกรณ์ Chrome OS ที่มีสิทธิ์อยู่หรือไม่</translation>
 <translation id="5208926629108082192">ข้อมูลเครือข่ายมือถือของอุปกรณ์</translation>
@@ -9009,6 +9011,7 @@
 <translation id="727595954130325265">ซื้อเลย</translation>
 <translation id="7277275452721470458">กิจกรรมในโหมด AI</translation>
 <translation id="727952162645687754">ข้อผิดพลาดในการดาวน์โหลด</translation>
+<translation id="7280265656690268844">การเพิ่มประสิทธิภาพ JavaScript ปิดอยู่</translation>
 <translation id="7280649757394340890">การตั้งค่าเสียงของการอ่านออกเสียงข้อความ</translation>
 <translation id="7280683802406059877">ปรับแต่งแป้นพิมพ์ลัด</translation>
 <translation id="7280877790564589615">ขอสิทธิ์แล้ว</translation>
@@ -11344,6 +11347,7 @@
 <translation id="8866424952450451412">จัดการเวิร์กโฟลว์ที่กำหนดเองซึ่งขับเคลื่อนโดย</translation>
 <translation id="8867102760244540173">ค้นหาแท็บ...</translation>
 <translation id="8867228703146808825">คัดลอกรายละเอียดเวอร์ชันไปยังคลิปบอร์ด</translation>
+<translation id="8867568208303837180">กำลังส่ง...</translation>
 <translation id="8868333925931032127">เริ่มโหมดสาธิต</translation>
 <translation id="8868626022555786497">ใช้งานอยู่</translation>
 <translation id="8868838761037459823">รายละเอียดเครือข่ายมือถือ</translation>

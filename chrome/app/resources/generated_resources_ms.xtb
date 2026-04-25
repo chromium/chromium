@@ -834,6 +834,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1567579616025300478">Laman ini tidak membenarkan data disimpan pada peranti anda.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' telah pun diuntukkan untuk tindakan '<ph name="ACTION" />'. Tekan sebarang kekunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="157005186601751931">Buka tab pada apl</translation>
 <translation id="1570604804919108255">Nyahredam Pemberitahuan</translation>
 <translation id="1570990174567554976">Folder penanda halaman '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="1571041387761170095">Tiada kata laluan lemah atau digunakan semula</translation>
@@ -6121,6 +6122,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5204967432542742771">Masukkan kata laluan</translation>
 <translation id="5205484256512407285">Jangan sekali-kali menggunakan data mudah alih untuk memindahkan fail</translation>
 <translation id="520568280985468584">Rangkaian telah berjaya ditambah. Rangkaian selular anda mungkin mengambil masa beberapa minit untuk menjadi aktif.</translation>
+<translation id="5207395053540207113">Benarkan Search mengakses kandungan Drive?</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> mahu menyemak sama ada anda menggunakan peranti Chrome OS yang layak.</translation>
 <translation id="5208926629108082192">Maklumat rangkaian mudah alih peranti</translation>
@@ -9029,6 +9031,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="727595954130325265">Beli Sekarang</translation>
 <translation id="7277275452721470458">Aktiviti AI Mode</translation>
 <translation id="727952162645687754">Ralat muat turun</translation>
+<translation id="7280265656690268844">Pengoptimuman JavaScript dimatikan</translation>
 <translation id="7280649757394340890">Tetapan suara Teks ke Pertuturan</translation>
 <translation id="7280683802406059877">Sesuaikan pintasan papan kekunci</translation>
 <translation id="7280877790564589615">Kebenaran diminta</translation>
@@ -11366,6 +11369,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8866424952450451412">Urus aliran kerja tersuai anda yang dikuasakan oleh</translation>
 <translation id="8867102760244540173">Cari tab...</translation>
 <translation id="8867228703146808825">Salin butiran binaan kepada papan keratan</translation>
+<translation id="8867568208303837180">Menghantar...</translation>
 <translation id="8868333925931032127">Memulakan Mod Tunjuk Cara</translation>
 <translation id="8868626022555786497">Sedang digunakan</translation>
 <translation id="8868838761037459823">Butiran selular</translation>

@@ -831,6 +831,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1567579616025300478">Dette nettstedet har ikke lov til å lagre data på enheten din.</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsoll</translation>
+<translation id="157005186601751931">Åpne fanen i appen</translation>
 <translation id="1570604804919108255">Slutt å ignorere varsler</translation>
 <translation id="1570990174567554976">Bokmerkemappen «<ph name="BOOKMARK_TITLE" />» er opprettet.</translation>
 <translation id="1571041387761170095">Ingen svake eller gjenbrukte passord</translation>
@@ -6112,6 +6113,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5204967432542742771">Skriv inn passordet</translation>
 <translation id="5205484256512407285">Bruk aldri mobildata til å overføre</translation>
 <translation id="520568280985468584">Nettverket ble lagt til. Det kan ta flere minutter før mobilnettverket blir aktivt.</translation>
+<translation id="5207395053540207113">Vil du gi Søk tilgang til Disk-innhold?</translation>
 <translation id="5207949376430453814">Fremhev tekstinnsettingspunktet</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ønsker å bekrefte at du bruker en kvalifisert ChromeOS-enhet.</translation>
 <translation id="5208926629108082192">Informasjon om enhetens mobilnettverk</translation>
@@ -9018,6 +9020,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="727595954130325265">Kjøp nå</translation>
 <translation id="7277275452721470458">Aktivitet i AI-modus</translation>
 <translation id="727952162645687754">Nedlastingsfeil</translation>
+<translation id="7280265656690268844">JavaScript-optimalisering er av</translation>
 <translation id="7280649757394340890">Stemmeinnstillinger for tekst til tale</translation>
 <translation id="7280683802406059877">Tilpass hurtigtasten</translation>
 <translation id="7280877790564589615">Tillatelse forespurt</translation>
@@ -11354,6 +11357,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8866424952450451412">Administrer de egendefinerte arbeidsflytene som er basert på</translation>
 <translation id="8867102760244540173">Søk i faner…</translation>
 <translation id="8867228703146808825">Kopiér detaljer om delversjonen til utklippstavlen</translation>
+<translation id="8867568208303837180">Sender …</translation>
 <translation id="8868333925931032127">Starter demomodus</translation>
 <translation id="8868626022555786497">I bruk</translation>
 <translation id="8868838761037459823">Mobilnettdetaljer</translation>

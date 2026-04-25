@@ -1192,6 +1192,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 
       Jika kebijakan tidak disetel, pengguna akan dapat memanipulasi seluruh daftar bahasa pilihan.</translation>
 <translation id="1803646570632580723">Daftar aplikasi tersemat untuk ditampilkan pada peluncur</translation>
+<translation id="1807539058116290184">Nonaktifkan fitur cubit untuk zoom dalam mode kios</translation>
 <translation id="1808715480127969042">Blokir cookie di situs ini</translation>
 <translation id="1810261428246410396">Izinkan Tethering Instan untuk digunakan.</translation>
 <translation id="1813638828646876133">Aktifkan pengiriman otomatis PIN di layar kunci dan layar login</translation>
@@ -3451,6 +3452,18 @@ Ada beberapa kebijakan yang mencantumkan origin yang memengaruhi permintaan ke p
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="3197981761853858791">Kebijakan ini tidak digunakan lagi karena konfigurasi prompt <ph name="PRIVACY_SANDBOX_NAME" /> tidak lagi didukung.
+
+Kebijakan untuk mengontrol apakah pengguna Anda akan melihat prompt <ph name="PRIVACY_SANDBOX_NAME" />.
+Prompt ini merupakan alur pemblokiran pengguna yang menginformasikan setelan <ph name="PRIVACY_SANDBOX_NAME" /> kepada pengguna Anda. Lihat <ph name="PRIVACY_SANDBOX_URL" /> untuk mengetahui detail tentang upaya Chrome dalam menghentikan penggunaan cookie pihak ketiga.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menampilkan prompt <ph name="PRIVACY_SANDBOX_NAME" />.
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menentukan apakah prompt <ph name="PRIVACY_SANDBOX_NAME" /> dapat ditampilkan atau tidak, lalu menampilkannya jika memungkinkan.
+
+Kebijakan ini harus disetel ke Nonaktif jika salah satu kebijakan berikut disetel:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Jangan tampilkan layar deteksi kehadiran manusia selama login</translation>
 <translation id="3205825995289802549">Maksimalkan jendela browser pertama di percobaan pertama</translation>
 <translation id="320607884987562184">Jika kebijakan disetel ke 1, situs akan dapat menjalankan JavaScript. Jika kebijakan disetel ke 2, situs tidak akan dapat menjalankan JavaScript.
@@ -4236,6 +4249,12 @@ Kebijakan perangkat ini setara dengan kebijakan pengguna, <ph name="PREFER_SLOW_
       Jika setelan ini dinonaktifkan, Isi Otomatis tidak akan dapat diakses oleh pengguna.
 
       Jika setelan ini diaktifkan atau tidak disetel nilainya, Isi Otomatis akan dapat dikontrol oleh pengguna. Penyetelan ini akan memungkinkan pengguna untuk mengonfigurasi profil Isi Otomatis dan untuk mengaktifkan atau menonaktifkan Isi Otomatis sesuai keinginan.</translation>
+<translation id="3730809439296971274">Kebijakan untuk mengontrol apakah setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Iklan yang disarankan situs akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Protected Audience API.</translation>
 <translation id="3733014427925403568">Hari dalam seminggu sebagai interval.</translation>
 <translation id="3736879847913515635">Mengaktifkan penambahan orang di pengelola pengguna</translation>
 <translation id="3744984310825999317">Izinkan <ph name="PEPPER_NAME" /> menggunakan dekoder baru untuk decoding video dengan akselerasi hardware.</translation>
@@ -5283,6 +5302,7 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4463675333222095358">Aktifkan Konversi Unit Jawaban Instan</translation>
 <translation id="4464365009416584564">Nonaktifkan <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blokir cookie pihak ketiga</translation>
+<translation id="4468220154891570994">Izinkan fitur cubit untuk zoom dalam mode Kios</translation>
 <translation id="4472740647327683596">Lebar halaman dalam mikrometer.</translation>
 <translation id="4474167089968829729">Aktifkan penyimpanan sandi di pengelola sandi</translation>
 <translation id="4474266799109921560">Jika kebijakan ini disetel ke nilai 2, origin Aplikasi Web Terisolasi akan otomatis diblokir agar tidak menggunakan WebPrinting API.
@@ -6463,6 +6483,12 @@ Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk me
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5130935469849337738">Selalu tawarkan terjemahan</translation>
+<translation id="513314432051760916">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Pengukuran iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Attribution Reporting API.</translation>
 <translation id="5138579693170759139">Kebijakan ini memungkinkan admin mengontrol cara Google memproses cookie dan data yang dikirim ke Penelusuran melalui <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini disetel ke aktif, pengguna akan dapat menggunakan kotak penelusuran Peluncur <ph name="PRODUCT_OS_NAME" />, dan kotak alamat Browser <ph name="PRODUCT_NAME" /> di <ph name="PRODUCT_OS_NAME" />, cookie dan data hanya dapat digunakan untuk tujuan penting.
 Jika kebijakan tidak disetel atau disetel ke nonaktif, cookie dan data dapat digunakan untuk tujuan yang tidak penting.</translation>
@@ -9764,6 +9790,9 @@ Jika Anda menyetel kebijakan ini, pengguna tidak dapat mengubah atau menggantiny
 
 Jika kebijakan ini tidak disetel, pembesar layar akan dinonaktifkan pada awalnya di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="7109384070286741861">Nonaktifkan CECPQ2</translation>
+<translation id="711246451611873603">Jika kebijakan ini disetel ke Aktif atau tidak disetel, fitur cubit untuk zoom akan diizinkan dalam sesi Kios.
+
+Jika kebijakan disetel ke Nonaktif, fitur cubit untuk zoom tidak akan diizinkan dalam sesi Kios.</translation>
 <translation id="7113439794629928551">Tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
 <translation id="7113803652772945829">Jika kebijakan disetel ke benar (true), pengguna akan dapat menggunakan pengelola sandi pihak ketiga.
 Pengelola sandi tersebut akan menangani penyimpanan dan pengisian semua data sandi, pembayaran,
@@ -11060,6 +11089,12 @@ Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yan
 <translation id="7891884447851425349">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan saat penelusuran default. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Kebijakan untuk mengontrol apakah setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
+
+Jika Anda menyetel kebijakan ini ke Nonaktif, setelan Topik iklan akan dinonaktifkan untuk pengguna Anda.
+Jika Anda menyetel kebijakan ini ke Aktif atau tidak menyetelnya, pengguna Anda akan dapat mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.
+
+Kebijakan ini tidak digunakan lagi mulai <ph name="PRODUCT_NAME" /> versi 144 seiring dengan penghentian penggunaan Topics API.</translation>
 <translation id="7893719068404928632">Jika kebijakan ini disetel ke Aktif, permintaan utama akan diblokir setiap kali peringatan yang seharusnya
 ditampilkan di <ph name="CHROME_DEVTOOLS_NAME" /> muncul karena
 pemeriksaan <ph name="LOCAL_NETWORK_ACCESS" /> gagal.

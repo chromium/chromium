@@ -1144,6 +1144,7 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
+<translation id="1807539058116290184">Knijpen om te zoomen uitzetten in de kioskmodus</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
 <translation id="1813638828646876133">Automatisch versturen van pincode op het vergrendel- en inlogscherm aanzetten</translation>
@@ -3303,6 +3304,18 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
           Als dit beleid niet is ingesteld, wordt er een standaard tijdsduur gebruikt.
 
           De beleidswaarde moet worden gespecificeerd in milliseconden.</translation>
+<translation id="3197981761853858791">Dit beleid is beëindigd omdat de configuratie van de <ph name="PRIVACY_SANDBOX_NAME" />-prompt niet meer wordt ondersteund.
+
+Beleid om te bepalen of je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-prompt te zien krijgen.
+De prompt is een proces met gebruikersblokkering dat je gebruikers informeert over de <ph name="PRIVACY_SANDBOX_NAME" />-instellingen. Bekijk <ph name="PRIVACY_SANDBOX_URL" /> voor meer informatie over de aanpak van Chrome om cookies van derden te beëindigen.
+
+Als je dit beleid niet toepast, laat <ph name="PRODUCT_NAME" /> de <ph name="PRIVACY_SANDBOX_NAME" />-prompt niet zien.
+Als je dit beleid toepast of niet instelt, bepaalt <ph name="PRODUCT_NAME" /> of de <ph name="PRIVACY_SANDBOX_NAME" />-prompt kan worden getoond of niet, en laat deze daarna zien (indien mogelijk).
+
+Als een van de volgende beleidsregels is ingesteld, moet je dit beleid uitzetten:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Het scherm van de sensor voor menselijke aanwezigheid niet tonen tijdens het inloggen</translation>
 <translation id="3205825995289802549">Het eerste browservenster maximaliseren bij eerste uitvoering</translation>
 <translation id="320607884987562184">Als je het beleid instelt op 1, mogen websites JavaScript uitvoeren. Als je het beleid instelt op 2, wordt JavaScript geblokkeerd.
@@ -4063,6 +4076,12 @@ Hiermee wordt de functie Automatisch invullen van <ph name="PRODUCT_NAME" /> gea
 Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch invullen niet gebruiken.
 
 Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch invullen zelf beheren. Zo kunnen ze profielen voor Automatisch invullen instellen en de functie naar wens aan- of uitzetten.</translation>
+<translation id="3730809439296971274">Beleid waarmee je kunt bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet voor je gebruikers.
+
+Als je dit beleid niet toepast, wordt de instelling voor door sites voorstelde advertenties uitgezet voor je gebruikers.
+Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties op hun apparaat aan- of uitzetten.
+
+Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Protected Audience API.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
 <translation id="3744984310825999317">Toestaan dat <ph name="PEPPER_NAME" /> een nieuwe decoder gebruikt voor videodecodering met hardwareversnelling.</translation>
@@ -5086,6 +5105,7 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 <translation id="4463675333222095358">Eenheidsconversie van Snelle antwoorden aanzetten</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> uitzetten</translation>
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
+<translation id="4468220154891570994">Knijpen om te zoomen toestaan in de kioskmodus</translation>
 <translation id="4472740647327683596">Breedte van de pagina in micrometers</translation>
 <translation id="4474167089968829729">Opslag van wachtwoorden in Wachtwoordmanager aanzetten</translation>
 <translation id="4474266799109921560">Als je het beleid instelt op 2, wordt automatisch voorkomen dat geïsoleerde web-app-oorsprongen de WebPrinting API gebruiken.
@@ -6191,6 +6211,12 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
 <translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5130935469849337738">Altijd een vertaling aanbieden</translation>
+<translation id="513314432051760916">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
+
+Als je dit beleid niet toepast, wordt de instelling voor advertentiemeting uitgezet voor je gebruikers.
+Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting aan- of uitzetten op hun apparaat.
+
+Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Attribution Reporting API.</translation>
 <translation id="5138579693170759139">Met dit beleid kunnen beheerders bepalen hoe Google cookies en gegevens verwerkt die via <ph name="PRODUCT_OS_NAME" /> naar Zoeken worden gestuurd.
 Als je het beleid toepast, kunnen gebruikers het zoekvak van de <ph name="PRODUCT_OS_NAME" />-launcher en het adresvak van de <ph name="PRODUCT_NAME" />-browser in <ph name="PRODUCT_OS_NAME" /> gebruiken. De cookies en gegevens mogen alleen worden gebruikt voor essentiële doeleinden.
 Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens worden gebruikt voor niet-essentiële doeleinden.</translation>
@@ -9311,6 +9337,9 @@ Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
 
 Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk moment aanzetten.</translation>
 <translation id="7109384070286741861">CECPQ2 uitzetten</translation>
+<translation id="711246451611873603">Als je het beleid toepast of niet instelt, is knijpen om te zoomen toegestaan in een kiosksessie.
+
+Als je het beleid niet toepast, is knijpen om te zoomen niet toegestaan in een Kiosk-sessie.</translation>
 <translation id="7113439794629928551">Mediabediening tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
 <translation id="7113803652772945829">Als je het beleid instelt op Waar, kunnen gebruikers een wachtwoordmanager van derden gebruiken.
 Die wachtwoordmanager zorgt voor het opslaan en invullen van alle wachtwoorden, betaalmethoden en gegevens voor automatisch invullen.
@@ -10547,6 +10576,12 @@ Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerd
 <translation id="7891884447851425349">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die tijdens een standaard zoekopdracht wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 
       Je kunt de zoek-URL van Google opgeven als: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen kan worden uitgezet voor je gebruikers.
+
+Als je dit beleid niet toepast, wordt de instelling voor advertentieonderwerpen uitgezet voor je gebruikers.
+Als je dit beleid toepast of niet instelt, kunnen je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen aan- of uitzetten op hun apparaat.
+
+Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beëindiging van de Topics API.</translation>
 <translation id="7893719068404928632">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in <ph name="CHROME_DEVTOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCESS" />-controles mislukken.
 
 Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.

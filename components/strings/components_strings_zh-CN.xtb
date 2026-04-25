@@ -2152,6 +2152,7 @@
 <translation id="4318312030194671742">绘图预览合成器服务</translation>
 <translation id="4318566738941496689">您的设备名称和网络地址</translation>
 <translation id="4320119221194966055">个人贷款</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{收到来自<ph name="DEVICE_NAME" />的链接}other{收到来自<ph name="DEVICE_NAME" />的 # 个链接}}</translation>
 <translation id="4325600325087822253">纸匣 17</translation>
 <translation id="4325863107915753736">找不到文章</translation>
 <translation id="4326324639298822553">请检查您的信用卡到期日期，然后重试</translation>
@@ -4979,6 +4980,7 @@
 <translation id="8758529215314160755">您可以在 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" /> (<ph name="ACCOUNT" />) 中修改姓名</translation>
 <translation id="8759274551635299824">此信用卡已失效</translation>
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{收到<ph name="DEVICE_NAME" />发送的链接}other{收到<ph name="DEVICE_NAME" />发送的 # 个链接}}</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
 <translation id="8766943070169463815">安全付款凭证身份验证表单已打开</translation>

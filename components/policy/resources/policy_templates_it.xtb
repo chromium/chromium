@@ -1182,6 +1182,7 @@ Questa policy non ha effetto se l'opzione per mantenere i dati di navigazione es
 
       Se la policy non viene configurata, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
 <translation id="1803646570632580723">Lista di app fissate da visualizzare in Avvio applicazioni</translation>
+<translation id="1807539058116290184">Disattiva il pinch per regolare lo zoom in modalità kiosk</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
 <translation id="1813638828646876133">Attiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>
@@ -1807,7 +1808,7 @@ L'indirizzo IPv4 reca il prefisso 0010; l'indirizzo IPv6 reca il prefisso 0020. 
 
 Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questa policy o la policy <ph name="DOH_TEMPLATES_POLICY_NAME" /> e il campo non può essere lasciato vuoto.
 
-Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di fare l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
 
 Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" />.
 
@@ -2020,7 +2021,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se questa policy viene impostata su False, <ph name="PRODUCT_NAME" /> disattiva queste protezioni di sicurezza per le connessioni autenticate con certificati CA installati a livello locale. Queste protezioni sono sempre attive per le connessioni autenticate con certificati CA considerati pubblicamente attendibili.
 
-      Il valore predefinito di questa policy è stato modificato in <ph name="PRODUCT_NAME" /> 81 da False a True. Il codice di errore previsto per il problema di connessione dei proxy interessati è ERR_TLS13_DOWNGRADE_DETECTED. Gli amministratori a cui occorre più tempo per eseguire l'upgrade dei proxy interessati potrebbero usare questa policy per disattivare temporaneamente questa funzionalità di sicurezza. Questa policy è stata rimossa nella versione 86.
+      Il valore predefinito di questa policy è stato modificato in <ph name="PRODUCT_NAME" /> 81 da False a True. Il codice di errore previsto per il problema di connessione dei proxy interessati è ERR_TLS13_DOWNGRADE_DETECTED. Gli amministratori a cui occorre più tempo per fare l'upgrade dei proxy interessati potrebbero usare questa policy per disattivare temporaneamente questa funzionalità di sicurezza. Questa policy è stata rimossa nella versione 86.
       </translation>
 <translation id="2336822410658374491">Disattiva l'accesso al menu contestuale del provider di ricerca predefinito</translation>
 <translation id="233726003666026610">Impostazioni per i gruppi suggeriti</translation>
@@ -3372,6 +3373,18 @@ Esistono più policy che elencano le origini che influiscono sulle richieste al 
           Se questa policy non viene impostata, viene usato un periodo di tempo predefinito.
 
           Il valore della policy deve essere specificato in millisecondi.</translation>
+<translation id="3197981761853858791">Questa policy è deprecata perché la configurazione del messaggio di <ph name="PRIVACY_SANDBOX_NAME" /> non è più supportata.
+
+Una policy per stabilire se i tuoi utenti vedono o meno il messaggio di <ph name="PRIVACY_SANDBOX_NAME" />.
+Il messaggio è un flusso di blocco degli utenti, che informa i tuoi utenti delle impostazioni di <ph name="PRIVACY_SANDBOX_NAME" />. Visita la pagina <ph name="PRIVACY_SANDBOX_URL" /> per avere informazioni dettagliate sull'impegno di Chrome per ritirare i cookie di terze parti.
+
+Se imposti questa policy su Disattivata, <ph name="PRODUCT_NAME" /> non mostrerà il messaggio di <ph name="PRIVACY_SANDBOX_NAME" />.
+Se la imposti su Attivata o se non la configuri, <ph name="PRODUCT_NAME" /> stabilisce se è possibile o meno mostrare il messaggio di <ph name="PRIVACY_SANDBOX_NAME" /> e, se è possibile, lo mostra.
+
+Se è configurata una delle seguenti policy, è necessario impostarla su Disattivata:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Non visualizzare la schermata del sensore della presenza di persone durante l'accesso</translation>
 <translation id="3205825995289802549">Ingrandisci la prima finestra del browser alla prima esecuzione</translation>
 <translation id="320607884987562184">Se la policy viene impostata su 1, i siti web possono eseguire JavaScript. Se la policy viene impostata su 2, JavaScript viene negato.
@@ -4137,6 +4150,12 @@ Questa policy per i dispositivi è equivalente alla policy per gli utenti <ph na
       Se disattivi questa impostazione, gli utenti non potranno accedere alla funzionalità di compilazione automatica.
 
       Se la attivi o se non la configuri, la funzionalità di compilazione automatica potrà essere gestita dagli utenti, che potranno quindi configurare i profili di compilazione automatica e attivare o disattivare a propria scelta questa funzionalità.</translation>
+<translation id="3730809439296971274">Una policy per stabilire se l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dal sito può essere disattivata per i tuoi utenti.
+
+Se imposti questa policy su Disattivata, l'impostazione relativa agli annunci suggeriti dal sito verrà disattivata per i tuoi utenti.
+Se la imposti su Attivata o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dal sito.
+
+Questa policy è deprecata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Protected Audience.</translation>
 <translation id="3733014427925403568">Giorno della settimana dell'intervallo.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
 <translation id="3744984310825999317">Consenti a <ph name="PEPPER_NAME" /> di usare un nuovo decodificatore per la decodifica video con accelerazione hardware.</translation>
@@ -4884,7 +4903,7 @@ Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina ht
 Se questa policy non viene impostata, per tutti i siti viene usato il valore predefinito globale, configurato dalla policy <ph name="DEFAULT_IDLE_DETECTION_SETTING_POLICY_NAME" /> (Impostazione predefinita rilevamento inattività), se impostato, o altrimenti dalla configurazione personale dell'utente.</translation>
 <translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4251370222792468420">Chrome tenta di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
+<translation id="4251370222792468420">Chrome tenta di fare l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
 Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
 
 Questa policy è stata utilizzata per disattivare l'upgrade automatico dei contenuti misti su iOS. La policy è deprecata e non è supportata.</translation>
@@ -5173,6 +5192,7 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="4463675333222095358">Attiva conversione unità di Risposte rapide</translation>
 <translation id="4464365009416584564">Disattiva <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
+<translation id="4468220154891570994">Consenti il pinch per regolare lo zoom in modalità kiosk</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
 <translation id="4474266799109921560">Se la policy viene impostata su 2, alle origini delle app web isolate verrà automaticamente impedito di utilizzare l'API WebPrinting.
@@ -6314,6 +6334,12 @@ Questa policy è una sospensione temporanea per consentire la migrazione dei con
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
 <translation id="5130213897914754028">Impedisci ai siti di utilizzare la policy SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Offri sempre la traduzione</translation>
+<translation id="513314432051760916">Una policy per stabilire se l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci può essere disattivata per i tuoi utenti.
+
+Se la imposti su Disattivata, l'impostazione relativa alla misurazione degli annunci verrà disattivata per i tuoi utenti.
+Se imposti questa policy su Attivata o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci.
+
+Questa policy è deprecata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Attribution Reporting.</translation>
 <translation id="5138579693170759139">Questa policy consente agli amministratori di stabilire il modo in cui Google tratta i dati e i cookie inviati alla Ricerca tramite <ph name="PRODUCT_OS_NAME" />.
 Se la policy viene attivata, l'utente potrà usare la casella di ricerca di Avvio app di <ph name="PRODUCT_OS_NAME" /> e la casella degli indirizzi del browser <ph name="PRODUCT_NAME" /> in <ph name="PRODUCT_OS_NAME" />. I dati e i cookie potranno essere usati soltanto per finalità essenziali.
 Se la policy non viene configurata o se viene disattivata, i dati e i cookie potrebbero essere usati per finalità non essenziali.</translation>
@@ -8424,7 +8450,7 @@ Se la policy viene impostata su Disattivata o se non viene configurata, la ricer
 <translation id="6431446111529802555">Europa.</translation>
 <translation id="6433697627431665375">Impedisci l'inclusione dei dati di <ph name="PRODUCT_NAME" /> nei backup</translation>
 <translation id="6436052172226685535">Comportamento predefinito di LBS</translation>
-<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di eseguire l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questa policy per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di fare l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questa policy per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
 
 La policy <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separata può essere utilizzata per escludere determinati nomi host o pattern dei nomi host dall'upgrade a HTTPS da parte di questa funzionalità.
 
@@ -9514,6 +9540,9 @@ Se configuri questa policy, gli utenti non potranno modificarla o ignorarla.
 
 Se questa policy non viene impostata, inizialmente la lente d'ingrandimento è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="7109384070286741861">CECPQ2 viene disattivato</translation>
+<translation id="711246451611873603">Se la policy viene impostata su Attivata o se non viene configurata, il pinch per regolare lo zoom è consentito in una sessione kiosk.
+
+Se la policy viene impostata su Disattivata, il pinch per regolare lo zoom non è consentito in una sessione kiosk.</translation>
 <translation id="7113439794629928551">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="7113803652772945829">Se la policy viene impostata su true, gli utenti possono utilizzare un gestore delle password di terze parti.
 Questo gestore delle password si occuperà di salvare e inserire tutte le password, i dati di pagamento e
@@ -10770,6 +10799,12 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7891884447851425349">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Una policy per stabilire se l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci può essere disattivata per i tuoi utenti.
+
+Se imposti questa policy su Disattivata, l'impostazione relativa agli argomenti degli annunci verrà disattivata per i tuoi utenti.
+Se la imposti su Attivata o se non la configuri, i tuoi utenti potranno attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.
+
+Questa policy è deprecata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Topics.</translation>
 <translation id="7893719068404928632">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato
 un avviso in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCESS" />
 non riusciti, la richiesta principale verrà bloccata.
@@ -12545,7 +12580,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_SECURE" />, questa policy deve essere impostata e non può essere vuota. Soltanto su <ph name="PRODUCT_OS_NAME" /> è necessario impostare questa policy o la policy <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />, altrimenti la risoluzione DNS non andrà a buon fine.
 
-      Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+      Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di fare l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
 
       Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
 

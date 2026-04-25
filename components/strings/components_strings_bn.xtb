@@ -2157,6 +2157,7 @@
 <translation id="4318312030194671742">পেইন্ট প্রিভিউ কম্পোজিটর সার্ভিস</translation>
 <translation id="4318566738941496689">আপনার ডিভাইসের নাম এবং নেটওয়ার্ক ঠিকানা</translation>
 <translation id="4320119221194966055">ব্যক্তিগত লোন</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে লিঙ্ক পাওয়া গেছে}one{<ph name="DEVICE_NAME" /> থেকে #টি লিঙ্ক পাওয়া গেছে}other{<ph name="DEVICE_NAME" /> থেকে #টি লিঙ্ক পাওয়া গেছে}}</translation>
 <translation id="4325600325087822253">ট্রে ১৭</translation>
 <translation id="4325863107915753736">নিবন্ধ খুঁজে পেতে ব্যর্থ হয়েছে</translation>
 <translation id="4326324639298822553">আপনার মেয়াদ শেষের তারিখ পরীক্ষা করে আবার চেষ্টা করুন</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্ট <ph name="END_LINK" /> <ph name="ACCOUNT" />থেকে নিজের নাম এডিট করতে পারবেন।</translation>
 <translation id="8759274551635299824">এই কার্ডটির মেয়াদ শেষ হয়েছে</translation>
 <translation id="87601671197631245">এই সাইটটি পুরনো সিকিউরিটি কনফিগারেশন ব্যবহার করে তাই আপনার তথ্য (যেমন, পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ডের নম্বর) এই সাইটে পাঠানোর সময় এইসব তথ্যের নিরাপত্তা বিঘ্নিত হতে পারে।</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে লিঙ্ক পাঠানো হয়েছে}one{<ph name="DEVICE_NAME" /> থেকে #টি লিঙ্ক পাঠানো হয়েছে}other{<ph name="DEVICE_NAME" /> থেকে #টি লিঙ্ক পাঠানো হয়েছে}}</translation>
 <translation id="8763927697961133303">USB ডিভাইস</translation>
 <translation id="8763986294015493060">বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করুন</translation>
 <translation id="8766943070169463815">নিরাপদে পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট খোলা হয়েছে</translation>

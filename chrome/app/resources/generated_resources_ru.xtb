@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">Этому сайту запрещено сохранять данные на вашем устройстве</translation>
 <translation id="156793199942386351">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
+<translation id="157005186601751931">Открыть вкладку в приложении</translation>
 <translation id="1570604804919108255">Включить звук уведомлений</translation>
 <translation id="1570990174567554976">Папка с закладками "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="1571041387761170095">Нет простых или повторяющихся паролей</translation>
@@ -6109,6 +6110,7 @@
 <translation id="5204967432542742771">Введите пароль</translation>
 <translation id="5205484256512407285">Не использовать для передачи данных мобильный Интернет</translation>
 <translation id="520568280985468584">Сеть добавлена. Она станет активна в течение нескольких минут.</translation>
+<translation id="5207395053540207113">Разрешить Поиску использовать файлы на Диске?</translation>
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> запрашивает информацию об устройстве Chrome OS.</translation>
 <translation id="5208926629108082192">Информация о мобильной сети устройства</translation>
@@ -9023,6 +9025,7 @@
 <translation id="727595954130325265">Купить</translation>
 <translation id="7277275452721470458">Действия в режиме ИИ</translation>
 <translation id="727952162645687754">Не удалось скачать</translation>
+<translation id="7280265656690268844">Оптимизация JavaScript отключена</translation>
 <translation id="7280649757394340890">Настройки синтеза речи</translation>
 <translation id="7280683802406059877">Настройка быстрых клавиш</translation>
 <translation id="7280877790564589615">Требуется разрешение</translation>
@@ -11361,6 +11364,7 @@
 <translation id="8866424952450451412">Управляйте рабочими процессами, созданными с помощью</translation>
 <translation id="8867102760244540173">Поиск по вкладкам…</translation>
 <translation id="8867228703146808825">Скопировать данные о сборке в буфер обмена</translation>
+<translation id="8867568208303837180">Отправка...</translation>
 <translation id="8868333925931032127">Запуск демонстрационного режима</translation>
 <translation id="8868626022555786497">Занято</translation>
 <translation id="8868838761037459823">Сведения о мобильной сети</translation>

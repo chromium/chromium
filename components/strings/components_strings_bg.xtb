@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Услуга за създаване на визуализации на изобразяването</translation>
 <translation id="4318566738941496689">Името и мрежовия адрес на устройството ви</translation>
 <translation id="4320119221194966055">Потребителски заеми</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{От <ph name="DEVICE_NAME" /> е получена връзка}other{От <ph name="DEVICE_NAME" /> са получени # връзки}}</translation>
 <translation id="4325600325087822253">Тава 17</translation>
 <translation id="4325863107915753736">Намирането на статията не бе успешно</translation>
 <translation id="4326324639298822553">Проверете датата на валидност и опитайте отново</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755">Можете да редактирате името си <ph name="BEGIN_LINK" />в профила си в Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Тази карта е изтекла</translation>
 <translation id="87601671197631245">Този сайт използва остаряла конфигурация за сигурност, която може да разкрие информацията ви (например пароли, съобщения или кредитни карти) при изпращането ѝ до него.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{От <ph name="DEVICE_NAME" /> е изпратена връзка}other{От <ph name="DEVICE_NAME" /> са изпратени # връзки}}</translation>
 <translation id="8763927697961133303">USB устройство</translation>
 <translation id="8763986294015493060">Затваряне на всички отворени прозорци в режим „инкогнито“</translation>
 <translation id="8766943070169463815">Листът за удостоверяване на идентификационни данни за сигурни плащания е отворен</translation>

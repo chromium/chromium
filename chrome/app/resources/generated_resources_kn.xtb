@@ -230,7 +230,7 @@
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1150490752229770117">ಈ <ph name="DEVICE_TYPE" /> ಗಾಗಿ, ಇದು ಕೊನೆಯ ಸ್ವಯಂಚಾಲಿತ ಸಾಫ್ಟ್‌ವೇರ್ ಹಾಗೂ ಸುರಕ್ಷತಾ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ. ನಂತರದ ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ಹೊಸ ಮಾಡೆಲ್‌ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">ಸನ್‌ಗ್ಲಾಸ್‌ಗಳು</translation>
-<translation id="1151917987301063366">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
+<translation id="1151917987301063366">ಸೆನ್ಸರ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು <ph name="HOST" /> ಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1152346050262092795">ನಿಮ್ಮ ಖಾತೆಯನ್ನು ದೃಢೀಕರಿಸಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೊಮ್ಮೆ ನಮೂದಿಸಿ.</translation>
 <translation id="1153636665119721804">Google ಸುಧಾರಿತ ರಕ್ಷಣೆ ಪ್ರೋಗ್ರಾಂ</translation>
 <translation id="1153802775114315167">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಬಳಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -836,6 +836,7 @@
 <translation id="1567579616025300478">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೇಟಾ ಸೇವ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಯಿಲ್ಲ.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ಅನ್ನು ಈಗಾಗಲೇ '<ph name="ACTION" />' ಕ್ರಿಯೆಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1567993339577891801">JavaScript ಕನ್ಸೋಲ್</translation>
+<translation id="157005186601751931">ಆ್ಯಪ್‌ನಲ್ಲಿ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="1570604804919108255">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್ ರಚಿಸಲಾಗಿದೆ.</translation>
 <translation id="1571041387761170095">ದುರ್ಬಲ ಅಥವಾ ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ</translation>
@@ -6113,6 +6114,7 @@
 <translation id="5204967432542742771">ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="5205484256512407285">ವರ್ಗಾವಣೆ ಮಾಡಲು ಎಂದಿಗೂ ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಬೇಡಿ</translation>
 <translation id="520568280985468584">ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ. ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಸಕ್ರಿಯವಾಗಲು ಕೆಲವು ನಿಮಿಷಗಳು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
+<translation id="5207395053540207113">Drive ಕಂಟೆಂಟ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು Search ಗೆ ಅನುಮತಿಸಬೇಕೇ?</translation>
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="520840839826327499">ನೀವು ಅರ್ಹವಾದ ChromeOS ಸಾಧನವನ್ನು ಬಳಸುತ್ತಿರುವಿರಾ ಎಂಬುದನ್ನು <ph name="SERVICE_NAME" /> ಪರಿಶೀಲಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="5208926629108082192">ಸಾಧನದ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ</translation>
@@ -9024,6 +9026,7 @@
 <translation id="727595954130325265">ಈಗಲೇ ಶಾಪ್ ಮಾಡಿ</translation>
 <translation id="7277275452721470458">AI ಮೋಡ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="727952162645687754">ಡೌನ್‌ಲೋಡ್ ದೋಷ</translation>
+<translation id="7280265656690268844">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="7280649757394340890">ಪಠ್ಯದಿಂದ ಧ್ವನಿಯ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7280683802406059877">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="7280877790564589615">ಅನುಮತಿ ವಿನಂತಿಸಲಾಗಿದೆ</translation>
@@ -11357,6 +11360,7 @@
 <translation id="8866424952450451412">ನಿಮ್ಮ ಕಸ್ಟಮ್ ವರ್ಕ್‌ಫ್ಲೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8867102760244540173">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ...</translation>
 <translation id="8867228703146808825">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
+<translation id="8867568208303837180">ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8868333925931032127">ಡೆಮೋ ಮೋಡ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8868626022555786497">ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="8868838761037459823">ಸೆಲ್ಯುಲರ್ ವಿವರಗಳು</translation>

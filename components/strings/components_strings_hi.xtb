@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">पेंट की झलक दिखाने वाली सेवा</translation>
 <translation id="4318566738941496689">आपके डिवाइस का नाम और नेटवर्क का पता</translation>
 <translation id="4320119221194966055">निजी क़र्ज़</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से लिंक मिला है}one{<ph name="DEVICE_NAME" /> से # लिंक मिला है}other{<ph name="DEVICE_NAME" /> से # लिंक मिले हैं}}</translation>
 <translation id="4325600325087822253">ट्रे 17</translation>
 <translation id="4325863107915753736">लेख ढूंढ़ने में विफल</translation>
 <translation id="4326324639298822553">अपने क्रेडिट कार्ड की समय सीमा खत्म होने की तारीख जांचें और फिर से कोशिश करें</translation>
@@ -4984,6 +4985,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> <ph name="ACCOUNT" /> पर जाकर, अपना नाम बदला जा सकता है</translation>
 <translation id="8759274551635299824">इस कार्ड की अवधि खत्म हो चुकी है</translation>
 <translation id="87601671197631245">यह साइट एक पुराने सुरक्षा कॉन्फ़िगरेशन का इस्तेमाल करती है. इस वजह से, साइट पर भेजी जाने वाली आपकी जानकारी (उदाहरण के लिए, पासवर्ड, मैसेज या क्रेडिट कार्ड) को कोई और देख सकता है.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से लिंक भेजा गया}one{<ph name="DEVICE_NAME" /> से # लिंक भेजा गया}other{<ph name="DEVICE_NAME" /> से # लिंक भेजे गए}}</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
 <translation id="8763986294015493060">सभी खुली हुई गुप्त विंडो बंद करें</translation>
 <translation id="8766943070169463815">सुरक्षित तरीके से पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट खुली है</translation>

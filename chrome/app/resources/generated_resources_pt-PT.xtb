@@ -833,6 +833,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1567579616025300478">Este site não tem autorização para guardar dados no seu dispositivo.</translation>
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já está atribuída à ação "<ph name="ACTION" />". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
+<translation id="157005186601751931">Abrir separador na app</translation>
 <translation id="1570604804919108255">Reativar o som das notificações</translation>
 <translation id="1570990174567554976">Foi criada a pasta de marcadores "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Não existem palavras-passe fracas ou reutilizadas</translation>
@@ -6109,6 +6110,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
 <translation id="5205484256512407285">Nunca utilizar dados móveis para transferir</translation>
 <translation id="520568280985468584">A rede foi adicionada com êxito. Pode demorar vários minutos para que a rede móvel fique ativa.</translation>
+<translation id="5207395053540207113">Permitir que a Pesquisa aceda ao conteúdo do Drive?</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="520840839826327499">O <ph name="SERVICE_NAME" /> quer verificar se está a usar um dispositivo com ChromeOS elegível.</translation>
 <translation id="5208926629108082192">Informações da rede móvel do dispositivo</translation>
@@ -9018,6 +9020,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="727595954130325265">Comprar agora</translation>
 <translation id="7277275452721470458">Atividade do Modo IA</translation>
 <translation id="727952162645687754">Erro de transferência</translation>
+<translation id="7280265656690268844">A otimização do JavaScript está desativada</translation>
 <translation id="7280649757394340890">Definições de voz para a conversão de texto em voz</translation>
 <translation id="7280683802406059877">Personalizar atalho de teclado</translation>
 <translation id="7280877790564589615">Autorização solicitada</translation>
@@ -11354,6 +11357,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8866424952450451412">Faça a gestão dos seus fluxos de trabalho personalizados com tecnologia do</translation>
 <translation id="8867102760244540173">Pesquisar separadores…</translation>
 <translation id="8867228703146808825">Copiar detalhes da compilação para a área de transferência</translation>
+<translation id="8867568208303837180">A enviar...</translation>
 <translation id="8868333925931032127">A iniciar o modo de demonstração…</translation>
 <translation id="8868626022555786497">Em utilização</translation>
 <translation id="8868838761037459823">Detalhes da rede móvel</translation>

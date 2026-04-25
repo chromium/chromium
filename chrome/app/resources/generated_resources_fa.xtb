@@ -3073,7 +3073,7 @@
 <translation id="3074499504015191586">ترجمه کل صفحه</translation>
 <translation id="3075144191779656260">حسگر اثر انگشت را در سمت چپ <ph name="DEVICE_TYPE" /> لمس کنید. داده‌های اثر انگشتتان به‌صورت ایمن ذخیره می‌شود و هرگز از <ph name="DEVICE_TYPE" /> شما خارج نمی‌شود.</translation>
 <translation id="3075740753681485522">خاموش • این افزونه حاوی بدافزار است</translation>
-<translation id="3075874217500066906">‏برای شروع فرآیند Powerwash، به یک راه‌اندازی مجدد نیاز دارید. پس از راه‌اندازی مجدد، از شما خواسته می‌شود تأیید کنید که می‌خواهید ادامه دهید.</translation>
+<translation id="3075874217500066906">‏برای شروع فرایند Powerwash، به یک راه‌اندازی مجدد نیاز دارید. پس‌از راه‌اندازی مجدد، از شما خواسته می‌شود تأیید کنید که می‌خواهید ادامه دهید.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ذخیره فقط در این دستگاه</translation>
 <translation id="3076977359333237641">داده‌های ورود به سیستمتان حذف شد</translation>
@@ -3089,7 +3089,7 @@
 <translation id="3083899879156272923">حرکت صفحه درحالی‌که موشواره در مرکز صفحه ثابت می‌ماند</translation>
 <translation id="3084121729444215602">سرپرست شما <ph name="EXTENSION_NAME" /> را سنجاق کرده است</translation>
 <translation id="3084548735795614657">رهاکردن جهت نصب</translation>
-<translation id="3084771660770137092">‏ممکن است حافظه Chrome تمام شده باشد یا فرآیند مربوط به صفحهٔ وب به دلایل دیگری متوقف شده باشد. برای ادامه، صفحه را مجدداً بار کنید یا به یک صفحه دیگر بروید.</translation>
+<translation id="3084771660770137092">‏ممکن است حافظه Chrome تمام شده باشد یا فرایند مربوط به صفحهٔ وب به دلایل دیگری متوقف شده باشد. برای ادامه، صفحه را مجدداً بار کنید یا به یک صفحه دیگر بروید.</translation>
 <translation id="3085412380278336437">سایت می‌تواند از دوربینتان استفاده کند</translation>
 <translation id="3088052000289932193">‏سایت درحال استفاده از MIDI است</translation>
 <translation id="3088325635286126843">&amp;تغییر‌نام...</translation>
@@ -10829,7 +10829,7 @@
 <translation id="8508532351844333131">‏‫<ph name="WEBSITE_ORIGIN" /> می‌خواهد اطلاعات را در دستگاه Android شما ذخیره کند</translation>
 <translation id="8509177919508253835">بازنشانی کلیدهای امنیتی و ایجاد پین</translation>
 <translation id="8509646642152301857">بارگیری واژه‌نامه بررسی املا انجام نشد.</translation>
-<translation id="8512476990829870887">پایان دادن به فرآیند</translation>
+<translation id="8512476990829870887">پایان دادن به فرایند</translation>
 <translation id="851263357009351303">همیشه اجازه داشتن <ph name="HOST" /> برای نشان دادن تصاویر</translation>
 <translation id="8513108775083588393">چرخش خودکار</translation>
 <translation id="8513357934662532537">‏برای وارد کردن گذرواژه‌های <ph name="USER_EMAIL" /> به <ph name="BRAND" />، فایل CSV موردنظر را انتخاب کنید.</translation>
@@ -11365,6 +11365,7 @@
 <translation id="8866424952450451412">گردش کارهای سفارشی خود را با بهره‌گیری از این مورد مدیریت کنید</translation>
 <translation id="8867102760244540173">جستجوی زبانه‌ها…</translation>
 <translation id="8867228703146808825">جزئیات ساخت را در بریده‌دان کپی کنید</translation>
+<translation id="8867568208303837180">در حال ارسال...</translation>
 <translation id="8868333925931032127">درحال شروع کردن «حالت نمایشی»</translation>
 <translation id="8868626022555786497">درحال استفاده</translation>
 <translation id="8868838761037459823">جزئیات شبکه تلفن همراه</translation>

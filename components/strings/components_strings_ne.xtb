@@ -2154,6 +2154,7 @@
 <translation id="4318312030194671742">पेन्टसम्बन्धी पूर्वावलोकनको कम्पोजिटर सेवा</translation>
 <translation id="4318566738941496689">तपाईंको डिभाइसको नाम र नेटवर्कको ठेगाना</translation>
 <translation id="4320119221194966055">व्यक्तिगत ऋणहरू</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट लिंक प्राप्त भएको छ}other{<ph name="DEVICE_NAME" /> बाट # वटा लिंक प्राप्त भएका छन्}}</translation>
 <translation id="4325600325087822253">ट्रे १७</translation>
 <translation id="4325863107915753736">लेख खोज्न असफल भयो।</translation>
 <translation id="4326324639298822553">आफ्नो म्याद सकिने मितिको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
@@ -4980,6 +4981,7 @@
 <translation id="8758529215314160755">तपाईं <ph name="BEGIN_LINK" />आफ्नो Google खाता<ph name="END_LINK" /> <ph name="ACCOUNT" /> मा गई आफ्नो नाम बदल्न सक्नुहुन्छ</translation>
 <translation id="8759274551635299824">यो कार्डको म्याद सकिएको छ</translation>
 <translation id="87601671197631245">यो साइटले एउटा अद्यावधिक नभएको सुरक्षा कन्फिगुरेसनको प्रयोग गर्छ जसले यस साइटमा तपाईंको जानकारी (उदाहरणका लागि, पासवर्ड, सन्देश वा क्रेडिट कार्ड) पठाइँदा देखाउन सक्छ।</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट लिंक पठाइएको छ}other{<ph name="DEVICE_NAME" /> बाट # वटा लिंक पठाइएका छन्}}</translation>
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="8763986294015493060">हाल खोलिएका सबै इन्कोग्निटो विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="8766943070169463815">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना खुला छ</translation>

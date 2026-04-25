@@ -1234,7 +1234,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="629730747756840877">Tài khoản</translation>
 <translation id="6301526076346731664">Mở Công cụ cho nhà phát triển</translation>
 <translation id="630308129961693966">Chọn vị trí thanh địa chỉ</translation>
-<translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6305257382500066042">Dùng thử ngay bây giờ</translation>
 <translation id="6307241780749477694">Xác minh danh tính của bạn để dùng tất cả mật khẩu trên thiết bị này</translation>
 <translation id="6309082029962045994"><ph name="TAB_TITLE" />, Thẻ đang phát âm thanh, được ghim và được chọn cùng với nhiều thẻ khác</translation>
@@ -1370,7 +1369,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="679956319013005046">Để thiết lập dịch vụ tự động điền mà bạn ưu tiên, trước tiên, hãy thêm dịch vụ đó trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">Cửa sổ này sẽ đóng</translation>
 <translation id="6803791793483522764">Xem xét thông báo</translation>
-<translation id="6809470175540814047">Mở trong cửa sổ Ẩn danh</translation>
+<translation id="6809470175540814047">Mở trong cửa sổ ẩn danh</translation>
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Hình ảnh, 1 hình ảnh trong danh sách}other{Hình ảnh, # hình ảnh trong danh sách}}</translation>
 <translation id="6813446258015311409">Đã mở trang Đăng nhập vào Chrome.</translation>

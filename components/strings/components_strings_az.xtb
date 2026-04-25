@@ -2152,6 +2152,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4318312030194671742">Boyama Önbaxış Düzücü Xidməti</translation>
 <translation id="4318566738941496689">Cihaz adı və şəbəkə ünvanı</translation>
 <translation id="4320119221194966055">Şəxsi Kreditlər</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından keçid alındı}other{<ph name="DEVICE_NAME" /> cihazından # keçid alındı}}</translation>
 <translation id="4325600325087822253">Qab 17</translation>
 <translation id="4325863107915753736">Məqalə tapılmadı</translation>
 <translation id="4326324639298822553">Bitmə tarixini yoxlayın və yenidən cəhd edin</translation>
@@ -4978,6 +4979,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8758529215314160755">Adınızı <ph name="BEGIN_LINK" />Google hesabınızda<ph name="END_LINK" /> (<ph name="ACCOUNT" />) redaktə edə bilərsiniz</translation>
 <translation id="8759274551635299824">Bu kartın vaxtı bitib</translation>
 <translation id="87601671197631245">Bu sayt vaxtı keçmiş təhlükəsizlik konfiqurasiyasından istifadə edir və bu da sayta göndərilən məlumatınızın (məsələn, parollar, mesajlar və ya kredit kartları) paylaşılmasına səbəb ola bilər.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından keçid göndərildi}other{<ph name="DEVICE_NAME" /> cihazından # keçid göndərildi}}</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8763986294015493060">Hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>

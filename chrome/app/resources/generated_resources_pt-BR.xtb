@@ -835,6 +835,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1567579616025300478">O site não tem permissão para salvar dados no seu dispositivo.</translation>
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já foi atribuída à ação "<ph name="ACTION" />". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
+<translation id="157005186601751931">Abrir guia no app</translation>
 <translation id="1570604804919108255">Ativar som das notificações</translation>
 <translation id="1570990174567554976">A pasta de favoritos "<ph name="BOOKMARK_TITLE" />" foi criada.</translation>
 <translation id="1571041387761170095">Nenhuma senha fraca ou reutilizada</translation>
@@ -6122,6 +6123,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5204967432542742771">Insira a senha</translation>
 <translation id="5205484256512407285">Nunca usar dados móveis em transferências</translation>
 <translation id="520568280985468584">A rede foi adicionada. Pode demorar vários minutos para que sua rede celular fique ativa.</translation>
+<translation id="5207395053540207113">Permitir que a pesquisa acesse o conteúdo do Drive?</translation>
 <translation id="5207949376430453814">Destacar cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quer verificar se você está usando um dispositivo ChromeOS qualificado.</translation>
 <translation id="5208926629108082192">Informações da rede móvel do dispositivo</translation>
@@ -9033,6 +9035,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="727595954130325265">Comprar agora</translation>
 <translation id="7277275452721470458">Atividade no Modo IA</translation>
 <translation id="727952162645687754">Erro no download</translation>
+<translation id="7280265656690268844">A otimização do JavaScript está desativada</translation>
 <translation id="7280649757394340890">Configurações da conversão de texto em voz</translation>
 <translation id="7280683802406059877">Personalizar atalho do teclado</translation>
 <translation id="7280877790564589615">Permissão solicitada</translation>
@@ -11370,6 +11373,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8866424952450451412">Gerencie fluxos de trabalho personalizados com a tecnologia</translation>
 <translation id="8867102760244540173">Pesquisar guias…</translation>
 <translation id="8867228703146808825">Copiar detalhes de versão para a área de transferência</translation>
+<translation id="8867568208303837180">Enviando...</translation>
 <translation id="8868333925931032127">Iniciando modo de demonstração</translation>
 <translation id="8868626022555786497">Em uso</translation>
 <translation id="8868838761037459823">Detalhes da rede celular</translation>

@@ -832,6 +832,7 @@
 <translation id="1567579616025300478">এই ছাইটটোক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ অনুমতি দিয়া নহয়।</translation>
 <translation id="156793199942386351">‘<ph name="ACTION" />’ কাৰ্যটোৰ বাবে ‘<ph name="CURRENTKEY" />’ ইতিমধ্যে আবণ্টন কৰা হৈছে। <ph name="RESPONSE" />লৈ যিকোনো এটা কী টিপক।</translation>
 <translation id="1567993339577891801">JavaScriptৰ কনছ’ল</translation>
+<translation id="157005186601751931">এপত টেব খোলক</translation>
 <translation id="1570604804919108255">জাননী আনমিউট কৰক</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />'ৰ বুকমাৰ্ক ফ’ল্ডাৰ সৃষ্টি কৰা হ’ল।</translation>
 <translation id="1571041387761170095">কোনো দুৰ্বল পাছৱৰ্ড অথবা পুনৰ্ব্যৱহৃত পাছৱৰ্ড নাই</translation>
@@ -6118,6 +6119,7 @@
 <translation id="5204967432542742771">পাছৱৰ্ড দিয়ক</translation>
 <translation id="5205484256512407285">স্থানান্তৰ কৰিবলৈ কেতিয়াও ম’বাইল ডেটা ব্যৱহাৰ নকৰিব</translation>
 <translation id="520568280985468584">নেটৱৰ্ক সফলভাৱে যোগ দিয়া হ’ল। আপোনাৰ চেলুলাৰ নেটৱৰ্ক সক্ৰিয় হ’বলৈ কেইবামিনিটো লাগিব পাৰে।</translation>
+<translation id="5207395053540207113">Searchক Driveৰ সমল এক্সেছ কৰিবলৈ অনুমতি দিবনে?</translation>
 <translation id="5207949376430453814">পাঠৰ কেৰেট হাইলাইট কৰক</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />এ আপুনি যোগ্য ChromeOS ডিভাইচ ব্যৱহাৰ কৰি আছেনে সেয়া পৰীক্ষা কৰিবলৈ বিচাৰে।</translation>
 <translation id="5208926629108082192">ডিভাইচৰ ম’বাইল নেটৱৰ্কৰ তথ্য</translation>
@@ -9027,6 +9029,7 @@
 <translation id="727595954130325265">এতিয়াই কিনক</translation>
 <translation id="7277275452721470458">AI ম’ডৰ কাৰ্যকলাপ</translation>
 <translation id="727952162645687754">ডাউনল’ড সম্পৰ্কীয় আসোঁৱাহ</translation>
+<translation id="7280265656690268844">JavaScript অপ্টিমাইজেশ্বন অফ আছে</translation>
 <translation id="7280649757394340890">পাঠৰ পৰা কথন-ৰ কণ্ঠস্বৰৰ ছেটিংসমূহ</translation>
 <translation id="7280683802406059877">কীব’ৰ্ডৰ শ্বৰ্টকাট কাষ্টমাইজ কৰক</translation>
 <translation id="7280877790564589615">অনুমতি বিচাৰি অনুৰোধ কৰা হৈছে</translation>
@@ -11364,6 +11367,7 @@
 <translation id="8866424952450451412">ইয়াৰ দ্বাৰা পৰিচালিত আপোনাৰ কাষ্টম ৱৰ্কফ্ল’ পৰিচালনা কৰক</translation>
 <translation id="8867102760244540173">সন্ধানৰ টেব...</translation>
 <translation id="8867228703146808825">বিল্ডৰ সবিশেষ ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰক</translation>
+<translation id="8867568208303837180">পঠিয়াই থকা হৈছে...</translation>
 <translation id="8868333925931032127">ডেম’ ম’ড আৰম্ভ কৰি থকা হৈছে</translation>
 <translation id="8868626022555786497">ব্যৱহাৰ হৈ আছে</translation>
 <translation id="8868838761037459823">চেলুলাৰৰ সবিশেষ</translation>

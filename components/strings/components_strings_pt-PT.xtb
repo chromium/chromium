@@ -2156,6 +2156,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4318312030194671742">Serviço do compositor de Pré-visualizações de pintura</translation>
 <translation id="4318566738941496689">O nome do dispositivo e o endereço de rede.</translation>
 <translation id="4320119221194966055">Empréstimos pessoais</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link recebido do <ph name="DEVICE_NAME" />}other{# links recebidos do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Tabuleiro 17</translation>
 <translation id="4325863107915753736">Falha ao encontrar o artigo</translation>
 <translation id="4326324639298822553">Verifique a data de validade e tente novamente</translation>
@@ -4983,6 +4984,7 @@ Detalhes adicionais:
 <translation id="8758529215314160755">Pode editar o seu nome na sua <ph name="BEGIN_LINK" />Conta Google <ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="87601671197631245">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe, mensagens ou cartões de crédito) quando são enviadas para este site.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link enviado do <ph name="DEVICE_NAME" />}other{# links enviados do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Feche todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="8766943070169463815">A página de autenticação das credenciais de pagamento seguro está aberta</translation>

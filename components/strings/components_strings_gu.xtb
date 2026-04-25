@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">પેઇન્ટ પ્રીવ્યૂ કમ્પોઝિટર સેવા</translation>
 <translation id="4318566738941496689">તમારા ડિવાઇસનું નામ અને નેટવર્ક ઍડ્રેસ</translation>
 <translation id="4320119221194966055">વ્યક્તિગત લોન</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> તરફથી લિંક પ્રાપ્ત થઈ}one{<ph name="DEVICE_NAME" /> તરફથી # લિંક પ્રાપ્ત થઈ}other{<ph name="DEVICE_NAME" /> તરફથી # લિંક પ્રાપ્ત થઈ}}</translation>
 <translation id="4325600325087822253">ટ્રે 17</translation>
 <translation id="4325863107915753736">લેખ શોધવામાં નિષ્ફળ થયાં</translation>
 <translation id="4326324639298822553">તમારી સમાપ્તિ તારીખ તપાસો અને ફરી પ્રયાસ કરો</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755">તમે તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" /> <ph name="ACCOUNT" />માં જઈને તમારા નામમાં ફેરફાર કરી શકો છો</translation>
 <translation id="8759274551635299824">આ કાર્ડની સમયસીમા સમાપ્ત થઈ ગઈ છે</translation>
 <translation id="87601671197631245">આ સાઇટ હજી પણ જૂના સુરક્ષા કન્ફિગ્યુરેશનનો ઉપયોગ કરે છે, જેને લીધે તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, મેસેજ અથવા ક્રેડિટ કાર્ડ) જ્યારે આ સાઇટને મોકલવામાં આવે, ત્યારે તે જોખમમાં આવી શકે છે.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> તરફથી લિંક મોકલવામાં આવી}one{<ph name="DEVICE_NAME" /> તરફથી # લિંક મોકલવામાં આવી}other{<ph name="DEVICE_NAME" /> તરફથી # લિંક મોકલવામાં આવી}}</translation>
 <translation id="8763927697961133303">USB ઉપકરણ</translation>
 <translation id="8763986294015493060">હાલમાં ખુલ્લી બધી છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="8766943070169463815">સુરક્ષિત ચુકવણી માટે લૉગ ઇન વિગતના પ્રમાણીકરણની શીટ ખુલ્લી છે</translation>

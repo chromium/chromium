@@ -1147,6 +1147,7 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die gesamte Liste bevorzugter Sprachen beliebig anpassen.</translation>
 <translation id="1803646570632580723">Liste der im Launcher angezeigten Apps ansehen</translation>
+<translation id="1807539058116290184">„Zum Zoomen auseinander- und zusammenziehen“ im Kioskmodus nicht zulassen</translation>
 <translation id="1808715480127969042">Cookies auf diesen Websites blockieren</translation>
 <translation id="1810261428246410396">Verwendung von Instant Tethering erlauben.</translation>
 <translation id="1813638828646876133">Automatische PIN-Eingabe auf dem Sperr- und Anmeldebildschirm aktivieren</translation>
@@ -3303,6 +3304,18 @@ Es gibt mehrere Richtlinien, in denen Ursprünge aufgeführt sind, die sich auf 
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden.</translation>
+<translation id="3197981761853858791">Diese Richtlinie wurde eingestellt, da die Konfiguration der <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung nicht mehr unterstützt wird.
+
+Durch diese Richtlinie wird festgelegt, ob Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung sehen.
+Die Aufforderung blockiert Nutzer und informiert sie über die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellungen. Unter <ph name="PRIVACY_SANDBOX_URL" /> findest du Informationen dazu, wie Drittanbieter-Cookies durch Chrome eingestellt werden.
+
+Wenn die Richtlinie deaktiviert ist, zeigt <ph name="PRODUCT_NAME" /> die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung nicht an.
+Wenn sie aktiviert oder nicht konfiguriert ist, prüft <ph name="PRODUCT_NAME" />, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann, und zeigt sie wenn möglich an.
+
+Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deaktiviert sein:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Bildschirm für den Sensor zur Erkennung der Anwesenheit von Personen bei der Anmeldung nicht anzeigen</translation>
 <translation id="3205825995289802549">Erstes Browserfenster bei der ersten Ausführung maximieren</translation>
 <translation id="320607884987562184">Wenn die Richtlinie auf „1“ gesetzt ist, können Websites JavaScript ausführen. Wenn sie auf „2“ gesetzt ist, wird die Ausführung von JavaScript verweigert.
@@ -4068,6 +4081,12 @@ Aktiviert die Autofill-Funktion von <ph name="PRODUCT_NAME" /> und ermöglicht e
 Wenn du diese Einstellung deaktivierst, können Nutzer die Autofill-Funktion nicht verwenden.
 
 Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst entscheiden, ob er „Autofill“ nutzen möchte. Er kann dann entsprechende Profile konfigurieren und die Funktion nach eigenem Ermessen aktivieren und deaktivieren.</translation>
+<translation id="3730809439296971274">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.
+
+Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung der Protected Audience API eingestellt.</translation>
 <translation id="3733014427925403568">Wochentag des Intervalls.</translation>
 <translation id="3736879847913515635">"Person hinzufügen" im Nutzermanager aktivieren</translation>
 <translation id="3744984310825999317">Zulassen, dass <ph name="PEPPER_NAME" /> einen neuen Decoder für die hardwarebeschleunigte Videodecodierung verwendet.</translation>
@@ -5091,6 +5110,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="4463675333222095358">Einheitenumrechnung über „Schnellinfo“ aktivieren</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> deaktivieren</translation>
 <translation id="4467952432486360968">Drittanbieter-Cookies blockieren</translation>
+<translation id="4468220154891570994">„Zum Zoomen auseinander- und zusammenziehen“ im Kioskmodus zulassen</translation>
 <translation id="4472740647327683596">Seitenbreite in Mikrometern.</translation>
 <translation id="4474167089968829729">Aktiviert das Speichern von Passwörtern im Passwortmanager</translation>
 <translation id="4474266799109921560">Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der WebPrinting API für Ursprünge der isolierten Web-App automatisch blockiert.
@@ -6219,6 +6239,12 @@ Diese Richtlinie ist eine vorübergehende Lösung, damit genug Zeit ist, Webinha
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
 <translation id="5130213897914754028">Websites die Nutzung von „SharedArrayBuffers“ nicht erlauben</translation>
 <translation id="5130935469849337738">Übersetzung immer anbieten</translation>
+<translation id="513314432051760916">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Erfolgsmessung bei Anzeigen für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für die Erfolgsmessung bei Anzeigen für Nutzer deaktiviert.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Erfolgsmessung bei Anzeigen auf ihrem Gerät aktivieren oder deaktivieren.
+
+Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung der Attribution Reporting API eingestellt.</translation>
 <translation id="5138579693170759139">Mit dieser Richtlinie können Administratoren festlegen, wie Google Cookies und Daten verarbeitet, die über <ph name="PRODUCT_OS_NAME" /> an die Google Suche gesendet werden.
 Wenn die Richtlinie aktiviert ist, können Nutzer das Suchfeld des <ph name="PRODUCT_OS_NAME" />-Launchers und die Adressleiste des <ph name="PRODUCT_NAME" />-Browsers unter <ph name="PRODUCT_OS_NAME" /> verwenden. Die Cookies und Daten dürfen nur zu notwendigen Zwecken verwendet werden.
 Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies und Daten zu nicht notwendigen Zwecken verwendet werden.</translation>
@@ -9342,6 +9368,9 @@ Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrie
 
 Ist die Richtlinie nicht konfiguriert, ist die Lupe auf dem Anmeldebildschirm anfangs deaktiviert, kann aber jederzeit vom Nutzer aktiviert werden.</translation>
 <translation id="7109384070286741861">CECPQ2 deaktivieren</translation>
+<translation id="711246451611873603">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Geste „Zum Zoomen auseinander- und zusammenziehen“ in einer Kiosksitzung zulässig.
+
+Wenn die Richtlinie deaktiviert ist, ist die Geste „Zum Zoomen auseinander- und zusammenziehen“ in einer Kiosksitzung nicht zulässig.</translation>
 <translation id="7113439794629928551">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
 <translation id="7113803652772945829">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer einen Passwortmanager eines Drittanbieters verwenden.
 Dieser Passwortmanager übernimmt das Speichern und Ausfüllen aller Passwort-, Zahlungs- und Autofill-Daten.
@@ -10575,6 +10604,12 @@ Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern finde
 <translation id="7891884447851425349">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />" die URL der Standardsuchmaschine an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Du kannst die Such-URL von Google so angeben: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Werbethemen für Nutzer deaktiviert werden kann.
+
+Wenn die Richtlinie deaktiviert ist, wird die Einstellung für Werbethemen für Nutzer deaktiviert.
+Wenn sie aktiviert oder nicht konfiguriert ist, können Nutzer die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Werbethemen auf ihrem Gerät aktivieren oder deaktivieren.
+
+Mit der Einstellung der Topics API wird diese Richtlinie ab Version 144 von <ph name="PRODUCT_NAME" /> nicht mehr unterstützt.</translation>
 <translation id="7893719068404928632">Wenn diese Richtlinie aktiviert ist, wird jedes Mal, wenn in den <ph name="CHROME_DEVTOOLS_NAME" /> eine Warnung aufgrund fehlgeschlagener „<ph name="LOCAL_NETWORK_ACCESS" />“-Prüfungen angezeigt werden soll, stattdessen die Hauptanfrage blockiert.
 
 Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden Anfragen vom Typ „<ph name="LOCAL_NETWORK_ACCESS" />“ gemäß dem standardmäßigen Verarbeitungsprozess für diesen Anfragetyp verarbeitet.

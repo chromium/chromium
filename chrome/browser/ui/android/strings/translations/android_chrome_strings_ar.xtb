@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1007349221964075684">يتيح استخدام قفل الشاشة للاطّلاع على نوافذ التصفّح المتخفي المفتوحة</translation>
+<translation id="1007349221964075684">استخدام قفل الشاشة لتفقّد نوافذ التصفّح المتخفي المفتوحة</translation>
 <translation id="1010283278930414892">ما مِن كلمات مرور محفوظة على هذا الجهاز</translation>
 <translation id="1011749477052068769">النقل إلى هنا</translation>
 <translation id="1014083013111769343">تم فتح الإعدادات المفضّلة لـ "وضع القراءة" بطول الشاشة</translation>
@@ -1235,7 +1235,6 @@
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6301526076346731664">فتح "أدوات المطوّرين"</translation>
 <translation id="630308129961693966">اختيار موضع شريط العناوين</translation>
-<translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
 <translation id="6305257382500066042">تجربة الميزة الآن</translation>
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور على هذا الجهاز</translation>
 <translation id="6309082029962045994">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تشغِّل صوتًا وتم اختيارها مع علامات تبويب أخرى</translation>

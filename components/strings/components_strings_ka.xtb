@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">თქვენი მოწყობილობის სახელი და ქსელის მისამართი</translation>
 <translation id="4320119221194966055">საცალო სესხები</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{ბმული მიღებულია <ph name="DEVICE_NAME" />-დან}other{# ბმული მიღებულია <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="4325600325087822253">ლანგარი 17</translation>
 <translation id="4325863107915753736">სტატია ვერ მოიძებნა</translation>
 <translation id="4326324639298822553">შეამოწმეთ ვადის გასვლის თარიღი და ხელახლა ცადეთ</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755">თქვენი სახელის რედაქტირება შეგიძლიათ თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">ეს ბარათი ვადაგასულია</translation>
 <translation id="87601671197631245">ეს საიტი იყენებს უსაფრთხოების მოძველებულ კონფიგურაციას, რომელმაც შეიძლება გაამჟღავნოს მისთვის გაგზავნილი თქვენი ინფორმაცია (მაგალითად, პაროლები, შეტყობინებები ან საკრედიტო ბარათების მონაცემები).</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{ბმული გაიგზავნა <ph name="DEVICE_NAME" />-დან}other{# ბმული გაიგზავნა <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="8763927697961133303">USB მოწყობილობა</translation>
 <translation id="8763986294015493060">ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დახურვა</translation>
 <translation id="8766943070169463815">გაიხსნა უსაფრთხო გადახდის ავტორიზაციის ფურცელი</translation>

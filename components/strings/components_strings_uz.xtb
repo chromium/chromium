@@ -2151,6 +2151,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4318312030194671742">Paint Preview bastalash xizmati</translation>
 <translation id="4318566738941496689">Qurilma nomi va tarmoq manzili</translation>
 <translation id="4320119221194966055">Isteʼmol krediti</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan havola qabul qilindi}other{<ph name="DEVICE_NAME" /> qurilmasidan # ta havola qabul qilindi}}</translation>
 <translation id="4325600325087822253">Tarnov 17</translation>
 <translation id="4325863107915753736">Maqola topilmadi</translation>
 <translation id="4326324639298822553">Kartangiz muddatini tekshiring va qaytadan urinib ko‘ring.</translation>
@@ -4976,6 +4977,7 @@ Batafsil axborot:
 <translation id="8758529215314160755">Ismingizni <ph name="BEGIN_LINK" />Google hisobingiz<ph name="END_LINK" /> (<ph name="ACCOUNT" />) orqali tahrirlashingiz mumkin</translation>
 <translation id="8759274551635299824">Kredit kartaning amal qilish muddati tugagan</translation>
 <translation id="87601671197631245">Bu sayt eskirgan xavfsizlik sozlamasidan foydalanadi. maʼlumotlaringiz (masalan, parollar, xabarlar va kredit kartalari) shu saytga yuborilganda ular xavf ostida qolishi mumkin.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Havola <ph name="DEVICE_NAME" /> qurilmasidan yuborildi}other{<ph name="DEVICE_NAME" /> qurilmasidan # ta havola yuborildi}}</translation>
 <translation id="8763927697961133303">USB qurilma</translation>
 <translation id="8763986294015493060">Hozir ochilgan barcha Inkognito varaqlarni yopish</translation>
 <translation id="8766943070169463815">Xavfsiz toʻlovlar uchun hisob maʼlumotlarini tekshirish ekrani ochiq</translation>

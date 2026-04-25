@@ -2156,6 +2156,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4318312030194671742">Serbisyo ng Paint Preview Compositor</translation>
 <translation id="4318566738941496689">Ang pangalan ng iyong device at address ng network</translation>
 <translation id="4320119221194966055">Mga Personal na Loan</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Natanggap ang link mula sa <ph name="DEVICE_NAME" />}one{Natanggap ang # link mula sa <ph name="DEVICE_NAME" />}other{Natanggap ang # na link mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Tray 17</translation>
 <translation id="4325863107915753736">Hindi nahanap ang artikulo</translation>
 <translation id="4326324639298822553">Tingnan ang iyong petsa ng pag-expire at subukan ulit</translation>
@@ -4983,6 +4984,7 @@ Mga karagdagang detalye:
 <translation id="8758529215314160755">Puwede mong i-edit ang iyong pangalan sa <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> mong <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Nag-expire na ang card na ito</translation>
 <translation id="87601671197631245">Gumagamit ang site na ito ng lumang configuration sa seguridad, na posibleng maglantad ng iyong impormasyon (halimbawa, mga password, mensahe, o credit card) kapag ipinadala ito sa site na ito.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Naipadala ang link mula sa <ph name="DEVICE_NAME" />}one{Naipadala ang # link mula sa <ph name="DEVICE_NAME" />}other{Naipadala ang # na link mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Isara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>
 <translation id="8766943070169463815">Binuksan ang sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>

@@ -830,6 +830,7 @@
 <translation id="1567579616025300478">നിങ്ങളുടെ ഉപകരണത്തിൽ ഡാറ്റ സംരക്ഷിക്കാൻ ഈ സൈറ്റിന് അനുവാദമില്ല.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' മുമ്പേ '<ph name="ACTION" />' എന്ന പ്രവർത്തനത്തിന് അസൈൻ ചെയ്‌തിട്ടുണ്ട്. <ph name="RESPONSE" /> ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
 <translation id="1567993339577891801">JavaScript കണ്‍‌സോള്‍‌</translation>
+<translation id="157005186601751931">ആപ്പിൽ ടാബ് തുറക്കുക</translation>
 <translation id="1570604804919108255">അറിയിപ്പുകൾ അൺമ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' ബുക്ക്‌മാർക്ക് ഫോൾഡർ സൃഷ്ടിച്ചു.</translation>
 <translation id="1571041387761170095">ദുർബലമായതോ ആവർത്തിച്ച് ഉപയോഗിക്കുന്നതോ ആയ പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -6103,6 +6104,7 @@
 <translation id="5204967432542742771">പാസ്‌വേഡ് നല്‍കുക</translation>
 <translation id="5205484256512407285">കൈമാറാൻ ഒരിക്കലും മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കരുത്</translation>
 <translation id="520568280985468584">നെറ്റ്‌വർക്ക് ചേർത്തു. നിങ്ങളുടെ സെല്ലുലാർ നെറ്റ്‌വർക്ക് സജീവമാകാൻ കുറച്ച് മനിറ്റ് എടുത്തേക്കാം.</translation>
+<translation id="5207395053540207113">Drive ഉള്ളടക്കം ആക്‌സസ് ചെയ്യാൻ Search-നെ അനുവദിക്കണോ?</translation>
 <translation id="5207949376430453814">ടെക്‌സ്‌റ്റ് കാരറ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> എന്നതിന്, നിങ്ങൾ യോഗ്യമായ ChromeOS ഉപകരണമാണോ ഉപയോഗിക്കുന്നതെന്ന് പരിശോധിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="5208926629108082192">ഉപകരണത്തിന്റെ മൊബൈൽ നെറ്റ്‌വർക്ക് വിവരങ്ങൾ</translation>
@@ -9011,6 +9013,7 @@
 <translation id="727595954130325265">ഇപ്പോൾ ഷോപ്പ് ചെയ്യൂ</translation>
 <translation id="7277275452721470458">AI മോഡ് ആക്റ്റിവിറ്റി</translation>
 <translation id="727952162645687754">ഡൗൺലോഡ് പിശക്</translation>
+<translation id="7280265656690268844">JavaScript ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്</translation>
 <translation id="7280649757394340890">ടെക്സ്റ്റ് ടു സ്പീച്ച് ശബ്‌ദ ക്രമീകരണം</translation>
 <translation id="7280683802406059877">കീബോർഡ് കുറുക്കുവഴികൾ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7280877790564589615">അനുമതി അഭ്യർത്ഥിച്ചു</translation>
@@ -11345,6 +11348,7 @@
 <translation id="8866424952450451412">ഇനിപ്പറയുന്നത് ലഭ്യമാക്കുന്ന, നിങ്ങളുടെ ഇഷ്ടാനുസൃത വർക്ക്ഫ്ലോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="8867102760244540173">ടാബുകൾ തിരയുക...</translation>
 <translation id="8867228703146808825">ബിൽഡ് വിശദാംശങ്ങൾ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
+<translation id="8867568208303837180">അയയ്‌ക്കുന്നു...</translation>
 <translation id="8868333925931032127">ഡെമോ മോഡ് ആരംഭിക്കുന്നു</translation>
 <translation id="8868626022555786497">ഉപയോഗത്തിലാണ്</translation>
 <translation id="8868838761037459823">സെല്ലുലാര്‍‌ വിശദാംശങ്ങള്‍</translation>

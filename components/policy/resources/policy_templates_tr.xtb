@@ -1171,6 +1171,7 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 
       Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
+<translation id="1807539058116290184">Kiosk modunda iki parmakla yakınlaştırma hareketini devre dışı bırak</translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Hızlı Tethering'in kullanılmasına izin ver.</translation>
 <translation id="1813638828646876133">Kilit ve giriş ekranlarında otomatik PIN gönderme özelliğini etkinleştir</translation>
@@ -3387,6 +3388,18 @@ Yerel cihaza ve yerel ağ uç noktalarına yönelik istekleri etkileyen, içinde
           Bu politika ayarlanmadan bırakılırsa varsayılan süre kullanılır.
 
           Politika değeri milisaniye olarak belirtilmelidir.</translation>
+<translation id="3197981761853858791"><ph name="PRIVACY_SANDBOX_NAME" /> istem yapılandırması artık desteklenmediği için bu politikanın desteği sonlandırılmıştır.
+
+Kullanıcılarınızın <ph name="PRIVACY_SANDBOX_NAME" /> istemini görüp görmeyeceğini kontrol eden bir politika.
+İstem, kullanıcılarınızı <ph name="PRIVACY_SANDBOX_NAME" /> ayarları konusunda bilgilendiren bir kullanıcı engelleme akışıdır. Chrome'un, üçüncü taraf çerezlerinin desteğini sonlandırma çalışmaları hakkında ayrıntılı bilgi için <ph name="PRIVACY_SANDBOX_URL" /> adresini ziyaret edin.
+
+Bu politikayı Devre Dışı değerine ayarlarsanız <ph name="PRODUCT_NAME" />, <ph name="PRIVACY_SANDBOX_NAME" /> istemini göstermez.
+Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız <ph name="PRODUCT_NAME" />, <ph name="PRIVACY_SANDBOX_NAME" /> isteminin gösterilip gösterilemeyeceğine karar verip uygun olan durumlarda gösterir.
+
+Aşağıdaki politikalardan biri ayarlandıysa bu politikanın Devre Dışı değerine ayarlanması gerekir:
+<ph name="PRIVACY_SANDBOX_AD_TOPICS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME" />
+<ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME" /></translation>
 <translation id="3198385910521788907">Oturum açma sırasında insan varlığı sensörü ekranını gösterme</translation>
 <translation id="3205825995289802549">İlk çalıştırmada ilk tarayıcı penceresini ekranı kaplayacak şekilde büyüt</translation>
 <translation id="320607884987562184">Politikayı Doğru değerine ayarlamak web sitelerinin JavaScript çalıştırmasına izin verir. Politikayı Yanlış değerine ayarlamak web sitelerinin JavaScript çalıştırmasını engeller.
@@ -4170,6 +4183,12 @@ Bu cihaz politikası, mevcut <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" /
       Bu ayarı devre dışı bırakırsanız kullanıcılar Otomatik Doldurma özelliğine erişemezler.
 
       Bu ayarı etkinleştirirseniz veya bir değer ayarlamazsanız, Otomatik Doldurma kullanıcının denetimi altında kalır. Böylece kullanıcılara, Otomatik Doldurma profillerini yapılandırma ve kendi istedikleri şekilde Otomatik Doldurma özelliğini açıp kapama olanağı verilir.</translation>
+<translation id="3730809439296971274"><ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
+
+Bu politikayı Devre Dışı değerine ayarlarsanız site tarafından önerilen reklam ayarı kullanıcılarınız için devre dışı bırakılır.
+Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarını etkinleştirebilir veya devre dışı bırakabilir.
+
+Protected Audience API desteğinin sonlandırılmasıyla birlikte bu politikanın desteği de <ph name="PRODUCT_NAME" /> 144 sürümü itibarıyla sonlandırılmıştır.</translation>
 <translation id="3733014427925403568">Haftanın hangi gününde ara verileceği.</translation>
 <translation id="3736879847913515635">Kullanıcı yöneticisinde kişi eklemeyi etkinleştir</translation>
 <translation id="3744984310825999317"><ph name="PEPPER_NAME" /> eklentisinin, donanım hızlandırmalı video kod çözme işlemi için yeni bir kod çözücü kullanmasına izin ver.</translation>
@@ -5207,6 +5226,7 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="4463675333222095358">Bil Bakalım Birim Dönüşümünü Etkinleştir</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> işlevini devre dışı bırak</translation>
 <translation id="4467952432486360968">Üçüncü taraf çerezlerini engelle</translation>
+<translation id="4468220154891570994">Kiosk modunda iki parmakla yakınlaştırma hareketine izin ver</translation>
 <translation id="4472740647327683596">Mikrometre cinsinden sayfanın genişliği</translation>
 <translation id="4474167089968829729">Şifrelerin, şifre yöneticisine kaydedilmesini etkinleştir</translation>
 <translation id="4474266799109921560">Politika 2 değerine ayarlanırsa yalıtılmış web uygulaması kaynaklarının WebPrinting API'yi kullanması otomatik olarak engellenir.
@@ -6331,6 +6351,12 @@ Bu politika, web içeriğinin yeni davranışa geçirilmesi için zaman tanıyan
 <translation id="5124368997194894978">AC'de (alternatif akım) başlat özeliğini etkinleştir</translation>
 <translation id="5130213897914754028">Sitelerin SharedArrayBuffers kullanmasını engelle</translation>
 <translation id="5130935469849337738">Her zaman çeviri öner</translation>
+<translation id="513314432051760916"><ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
+
+Bu politikayı Devre Dışı değerine ayarlarsanız reklam ölçümü ayarı kullanıcılarınız için devre dışı bırakılır.
+Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam ölçümü ayarını etkinleştirebilir veya devre dışı bırakabilir.
+
+Attribution Reporting API'nin desteğinin sonlandırılmasıyla birlikte bu politikanın desteği de <ph name="PRODUCT_NAME" /> 144 sürümü itibarıyla sonlandırılmıştır.</translation>
 <translation id="5138579693170759139">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> aracılığıyla Arama'ya gönderilen çerezlerin ve verilerin Google tarafından nasıl işleneceğini kontrol edebilir.
 Politika etkinleştirildiğinde kullanıcı <ph name="PRODUCT_OS_NAME" /> Başlatıcı arama kutusunu ve <ph name="PRODUCT_OS_NAME" /> içindeki <ph name="PRODUCT_NAME" /> tarayıcı adres kutusunu kullanabilir. Çerezler ve veriler yalnızca gerekli amaçlar için kullanılabilir.
 Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezler ve veriler, gerekli olmayan amaçlar için kullanılabilir.</translation>
@@ -9533,6 +9559,9 @@ Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılam
 
 Bu politika ayarlanmadan bırakılırsa giriş ekranında ekran büyüteci başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilirler.</translation>
 <translation id="7109384070286741861">CECPQ2'yi devre dışı bırak</translation>
+<translation id="711246451611873603">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa Kiosk oturumunda iki parmakla yakınlaştırma hareketine izin verilir.
+
+Politika, Devre Dışı değerine ayarlanırsa Kiosk oturumunda iki parmakla yakınlaştırma hareketine izin verilmez.</translation>
 <translation id="7113439794629928551">Diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini göster</translation>
 <translation id="7113803652772945829">Politika, Doğru değerine ayarlanırsa kullanıcılar üçüncü taraf şifre yöneticisi kullanabilir.
 Tüm şifre, ödeme ve otomatik doldurma verilerini ilgili şifre yöneticisi kaydedip
@@ -10799,6 +10828,12 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> politikasının ayarlanması, varsayılan arama sırasında kullanılan arama motorunu belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir.
 
       Google'ın arama URL'sini şu şekilde belirtebilirsiniz: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7892399002226884003"><ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarının kullanıcılarınız için devre dışı bırakılıp bırakılamayacağını kontrol eden bir politika.
+
+Bu politikayı Devre Dışı değerine ayarlarsanız reklam konuları ayarı kullanıcılarınız için devre dışı bırakılır.
+Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanıcılarınız, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını etkinleştirebilir veya devre dışı bırakabilir.
+
+Topics API'nin desteğinin sonlandırılmasıyla birlikte bu politikanın desteği de <ph name="PRODUCT_NAME" /> 144 sürümü itibarıyla sonlandırılmıştır.</translation>
 <translation id="7893719068404928632">Bu politika, Etkin değerine ayarlanırsa <ph name="LOCAL_NETWORK_ACCESS" />
 kontrollerinin başarısız olması nedeniyle <ph name="CHROME_DEVTOOLS_NAME" /> içinde bir uyarı gösterilmesi gerektiğinde bunun yerine
 ana istek engellenir.

@@ -3388,7 +3388,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3319863571062685443">Il tuo indirizzo è stato salvato</translation>
 <translation id="3320271870899888245">Impossibile collegarsi a OneDrive. Riprova.</translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
-<translation id="3320851950558287493">Esegue l'upgrade delle connessioni a HTTPS quando possibile e ti avvisa prima di effettuare connessioni non sicure</translation>
+<translation id="3320851950558287493">Fa l'upgrade delle connessioni a HTTPS quando possibile e ti avvisa prima di effettuare connessioni non sicure</translation>
 <translation id="3320957378743864387">Nessuna autorizzazione a offrire assistenza per la scrittura</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3321494112580110651">Non vedi la stampante?</translation>
@@ -5272,7 +5272,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4624054169152573743">Tema a colori</translation>
 <translation id="4625078469366263107">Attiva app</translation>
 <translation id="4625905218692741757">Colore predefinito grigio</translation>
-<translation id="4627107755957573804">Consenti a siti e app di eseguire l'upgrade degli account esistenti per utilizzare le passkey</translation>
+<translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
 <translation id="4627442949885028695">Continua da un altro dispositivo</translation>
 <translation id="4628762811416793313">La configurazione del container Linux non è stata completata. Riprova.</translation>
 <translation id="4629521233550547305">Apri il profilo <ph name="PROFILE_NAME" /></translation>
@@ -8024,7 +8024,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6580203076670148210">Velocità di scansione</translation>
 <translation id="6580676117087365538">Per ottenere questa estensione su tutti i tuoi computer, verifica la tua identità</translation>
 <translation id="6581356304040102696">Impossibile importare le password. Le dimensioni file devono essere minori di 1 MB.</translation>
-<translation id="6582080224869403177">Ripristina il tuo dispositivo <ph name="DEVICE_TYPE" /> per eseguire l'upgrade della sicurezza.</translation>
+<translation id="6582080224869403177">Ripristina il tuo dispositivo <ph name="DEVICE_TYPE" /> per fare l'upgrade della sicurezza.</translation>
 <translation id="6582274660680936615">Stai navigando come Ospite</translation>
 <translation id="6583328141350416497">Continua il download</translation>
 <translation id="6584878029876017575">Firma definitiva Microsoft</translation>
@@ -11347,6 +11347,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8866424952450451412">Gestisci i tuoi workflow personalizzati basati su</translation>
 <translation id="8867102760244540173">Cerca tra le schede…</translation>
 <translation id="8867228703146808825">Copia dettagli build negli appunti</translation>
+<translation id="8867568208303837180">Invio in corso...</translation>
 <translation id="8868333925931032127">Avvio della modalità demo</translation>
 <translation id="8868626022555786497">In uso</translation>
 <translation id="8868838761037459823">Dettagli rete mobile</translation>

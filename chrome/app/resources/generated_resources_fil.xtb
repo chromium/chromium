@@ -835,6 +835,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1567579616025300478">Hindi pinapayagan ang site na ito na mag-save ng data sa iyong device.</translation>
 <translation id="156793199942386351">Nakatalaga na ang '<ph name="CURRENTKEY" />' sa pagkilos na '<ph name="ACTION" />.' Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console ng JavaScript</translation>
+<translation id="157005186601751931">Buksan ang tab sa app</translation>
 <translation id="1570604804919108255">I-unmute ang Mga Notification</translation>
 <translation id="1570990174567554976">Nagawa ang folder ng bookmark na '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
@@ -6122,6 +6123,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5204967432542742771">Ipasok ang password</translation>
 <translation id="5205484256512407285">Huwag gumamit ng mobile data para maglipat</translation>
 <translation id="520568280985468584">Naidagdag na ang network. Posibleng abutin nang ilang minuto para maging aktibo ang iyong celluar network.</translation>
+<translation id="5207395053540207113">Payagan ang Search na i-access ang content ng Drive?</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="520840839826327499">Gustong suriin ng <ph name="SERVICE_NAME" /> kung gumagamit ka ng kwalipikadong ChromeOS device.</translation>
 <translation id="5208926629108082192">Impormasyon ng mobile network ng device</translation>
@@ -9032,6 +9034,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="727595954130325265">Mamili Na</translation>
 <translation id="7277275452721470458">Aktibidad sa AI Mode</translation>
 <translation id="727952162645687754">Error sa pag-download</translation>
+<translation id="7280265656690268844">Naka-off ang pag-optimize ng JavaScript</translation>
 <translation id="7280649757394340890">Mga setting ng boses ng Text-to-Speech</translation>
 <translation id="7280683802406059877">I-customize ang keyboard shortcut</translation>
 <translation id="7280877790564589615">Nahiling ang pahintulot</translation>
@@ -11370,6 +11373,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8866424952450451412">Pamahalaan ang iyong mga custom na workflow na pinapagana ng</translation>
 <translation id="8867102760244540173">Maghanap sa mga tab...</translation>
 <translation id="8867228703146808825">Kopyahin ang mga detalye ng build sa clipboard</translation>
+<translation id="8867568208303837180">Ipinapadala...</translation>
 <translation id="8868333925931032127">Sinisimulan ang Demo Mode</translation>
 <translation id="8868626022555786497">Ginagamit</translation>
 <translation id="8868838761037459823">Mga detalye ng cellular network</translation>

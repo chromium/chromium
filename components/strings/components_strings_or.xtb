@@ -2153,6 +2153,7 @@
 <translation id="4318312030194671742">ପେଣ୍ଟ୍ ପ୍ରିଭ୍ୟୁ କମ୍ପୋଜିଟର୍ ସେବା</translation>
 <translation id="4318566738941496689">ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ନାମ ଏବଂ ନେଟ୍‍ୱାର୍କର ଠିକଣା</translation>
 <translation id="4320119221194966055">ବ୍ୟକ୍ତିଗତ ଋଣ</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ ଲିଙ୍କ ମିଳିଛି}other{<ph name="DEVICE_NAME" />ରୁ # ଲିଙ୍କ ମିଳିଛି}}</translation>
 <translation id="4325600325087822253">ଟ୍ରେ 17</translation>
 <translation id="4325863107915753736">ଅନୁଛେଦ ଖୋଜିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="4326324639298822553">ଆପଣଙ୍କ ମିଆଦ ସମାପ୍ତିର ତାରିଖ ଦେଖନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -3184,6 +3185,7 @@
 <translation id="5968400720580217226">AI ମୋଡ</translation>
 <translation id="5969199813874624822">ସେଭ କରି ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5969933937005244170">ଯଦି ଆପଣ ଏକ ଥ୍ରେଡରେ ପ୍ରାସଙ୍ଗିକ ଖୋଲା ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତି, ତେବେ କେବଳ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯିବ</translation>
+<translation id="5972020793760134803">ଟାବକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">ଷଷ୍ଠ ରୋଲ୍</translation>
 <translation id="5975083100439434680">ଜୁମ୍ କମାନ୍ତୁ</translation>
@@ -4977,6 +4979,7 @@
 <translation id="8758529215314160755">ଆପଣ ଆପଣଙ୍କର <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" /> <ph name="ACCOUNT" />ରେ ଆପଣଙ୍କ ନାମକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="8759274551635299824">ଏହି କାର୍ଡର ସମୟ ସୀମା ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="87601671197631245">ଏହି ସାଇଟ୍ ଏକ ପୁରୁଣା ସୁରକ୍ଷା କନଫିଗରେସନ୍ ବ୍ୟବହାର କରେ, ଯାହା ଆପଣଙ୍କର ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସୱାର୍ଡ, ମେସେଜ କିମ୍ବା କ୍ରେଡିଟ୍ କାର୍ଡଗୁଡ଼ିକ), ଏହି ସାଇଟକୁ ପଠାଇବା ସମୟରେ ପ୍ରକାଶ କରିଦେଇପାରେ।</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ ଲିଙ୍କ ପଠାଯାଇଛି}other{<ph name="DEVICE_NAME" />ରୁ # ଲିଙ୍କ ପଠାଯାଇଛି}}</translation>
 <translation id="8763927697961133303">USB ଡିଭାଇସ୍</translation>
 <translation id="8763986294015493060">ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8766943070169463815">ସୁରକ୍ଷିତ ଭାବରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ କ୍ରେଡେନସିଆଲ୍ ପ୍ରମାଣୀକରଣ ସିଟ୍ ଖୋଲାଯାଇଛି</translation>

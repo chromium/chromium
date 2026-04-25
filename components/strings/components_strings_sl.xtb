@@ -2156,6 +2156,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4318312030194671742">Storitev sestavljalnika predogleda barv</translation>
 <translation id="4318566738941496689">Ime naprave in omrežni naslov</translation>
 <translation id="4320119221194966055">Osebna posojila</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Povezava je bila prejeta iz naprave <ph name="DEVICE_NAME" />}one{# povezava je bila prejeta iz naprave <ph name="DEVICE_NAME" />}two{# povezavi sta bili prejeti iz naprave <ph name="DEVICE_NAME" />f}few{# povezave so bile prejete iz naprave <ph name="DEVICE_NAME" />}other{# povezav je bilo prejetih iz naprave <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Pladenj 17</translation>
 <translation id="4325863107915753736">Članka ni bilo mogoče najti</translation>
 <translation id="4326324639298822553">Preverite datum poteka veljavnosti in poskusite znova.</translation>
@@ -4983,6 +4984,7 @@ Dodatne podrobnosti:
 <translation id="8758529215314160755">Ime lahko uredite <ph name="BEGIN_LINK" />v računu Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ta kartica je potekla</translation>
 <translation id="87601671197631245">To spletno mesto uporablja zastarelo varnostno konfiguracijo, zaradi česar so lahko vaši podatki ob pošiljanju temu spletnemu mestu izpostavljeni (npr. gesla, sporočila ali številke kreditnih kartic).</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Povezava je bila poslana iz naprave <ph name="DEVICE_NAME" />}one{# povezava je bila poslana iz naprave <ph name="DEVICE_NAME" />}two{# povezavi sta bili poslani iz naprave <ph name="DEVICE_NAME" />}few{# povezave so bile poslane iz naprave <ph name="DEVICE_NAME" />}other{# povezav je bilo poslanih iz naprave <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Naprava USB</translation>
 <translation id="8763986294015493060">Zapiranje vseh trenutno odprtih anonimnih oken.</translation>
 <translation id="8766943070169463815">Preglednica za preverjanje pristnosti poverilnice za varno plačilo je odprta</translation>

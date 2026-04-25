@@ -2156,6 +2156,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4318312030194671742">Sammanställningstjänst för förhandsgranskning av första innehållsrenderingen</translation>
 <translation id="4318566738941496689">Enhetens namn och nätverksadress</translation>
 <translation id="4320119221194966055">Privatlån</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{En länk togs emot från <ph name="DEVICE_NAME" />}other{# länkar togs emot från <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Fack 17</translation>
 <translation id="4325863107915753736">Det gick inte att hitta artikeln</translation>
 <translation id="4326324639298822553">Kontrollera utgångsdatum och försök igen</translation>
@@ -4984,6 +4985,7 @@ Mer information:
 <translation id="8758529215314160755">Du kan redigera ditt namn i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Kortets giltighetstid har löpt ut</translation>
 <translation id="87601671197631245">Den här webbplatsens säkerhetskonfiguration är inaktuell. Det kan leda till att dina uppgifter (t.ex. lösenord, meddelanden eller kreditkort) exponeras när de skickas till den här webbplatsen.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Länk skickades från <ph name="DEVICE_NAME" />}other{# länkar skickades från <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8763986294015493060">Stäng alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="8766943070169463815">Ett arbetsblad för autentisering av användaruppgifter för säker betalning har öppnats</translation>
