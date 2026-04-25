@@ -122,9 +122,6 @@ BASE_DECLARE_FEATURE(kNumWebZpsMostVisitedUrls);
 BASE_DECLARE_FEATURE(kNumSrpZpsRecentSearches);
 BASE_DECLARE_FEATURE(kNumSrpZpsRelatedSearches);
 
-// Caret animation for omnibox
-BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
-
 // Enterprise search aggregators features.
 BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
 BASE_DECLARE_FEATURE(kUseAgentspace25Logo);
