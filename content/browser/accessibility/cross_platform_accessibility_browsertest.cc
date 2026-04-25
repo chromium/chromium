@@ -1114,6 +1114,63 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       ContenteditableBRFrameChildDoesNotCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string image_url =
+      embedded_test_server()->GetURL("/blank.jpg").spec();
+  const std::string html = R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+      <br id="br" contenteditable="plaintext-only"></br>
+      <div id="status"></div>
+      </body>
+      </html>)HTML";
+  GURL html_data_url("data:text/html," +
+                     base::EscapeExternalHandlerValue(html));
+
+  ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
+  const std::string script = JsReplace(
+      R"JS(
+        new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            document.getElementById('br').appendChild(
+                document.createElement('frame'));
+            requestAnimationFrame(() => {
+              document.getElementById('status').textContent = 'Done';
+              resolve();
+            });
+          };
+          img.onerror = reject;
+          img.src = $1;
+        });
+      )JS",
+      image_url);
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), script));
+  // The DOM mutation has run, but the crash occurs during a subsequent
+  // accessibility serialization update. The kEndOfTest sentinel is only sent
+  // after Blink serializes pending AX updates and the document is clean.
+  AccessibilityNotificationWaiter ax_waiter(shell()->web_contents(),
+                                            ax::mojom::Event::kEndOfTest);
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ui::BrowserAccessibilityManager* manager =
+      web_contents->GetPrimaryMainFrame()
+          ->GetOrCreateBrowserAccessibilityManager();
+  ASSERT_NE(manager, nullptr);
+  manager->SignalEndOfTest();
+  ASSERT_TRUE(ax_waiter.WaitForNotificationWithTimeout(base::Seconds(3)));
+
+  ui::BrowserAccessibility* line_break =
+      FindFirstNodeWithRole(ax::mojom::Role::kLineBreak);
+  ASSERT_NE(line_break, nullptr);
+  EXPECT_EQ(0u, line_break->PlatformChildCount());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && \
     !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,

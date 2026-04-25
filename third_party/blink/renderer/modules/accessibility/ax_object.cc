@@ -6844,11 +6844,6 @@ void AXObject::ChildrenChangedWithCleanLayout() {
     }
   }
 
-  // TODO(accessibility) Move this up.
-  if (!CanHaveChildren()) {
-    return;
-  }
-
   DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
                         << this;
 
