@@ -24,7 +24,8 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer
             android:id="@+id/web_ui_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/tab_bottom_sheet_web_ui_top_margin"/>
 
         <!-- Fusebox Container -->
         <FrameLayout
