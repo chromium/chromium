@@ -106,11 +106,39 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
            main_direction_ == other.main_direction_;
   }
 
+  // Per-side outward extension (in logical space) caused by negative gap
+  // decoration insets pushing decorations past the content box edges.
+  struct GapDecorationInkOutsets {
+    LayoutUnit inline_start;
+    LayoutUnit inline_end;
+    LayoutUnit block_start;
+    LayoutUnit block_end;
+
+    LayoutUnit InlineOutsetThickness() const {
+      return inline_start + inline_end;
+    }
+    LayoutUnit BlockOutsetThickness() const { return block_start + block_end; }
+  };
+
   // Computes the physical bounding rect for gap decorations ink overflow.
-  PhysicalRect ComputeInkOverflowForGaps(WritingDirectionMode writing_direction,
-                                         const PhysicalSize& container_size,
-                                         LayoutUnit inline_thickness,
-                                         LayoutUnit block_thickness) const;
+  // `inline_thickness` / `block_thickness` account for the rule width.
+  // `outsets` accounts for negative insets that push decorations past the
+  // content box edges.
+  PhysicalRect ComputeInkOverflowForGaps(
+      WritingDirectionMode writing_direction,
+      const PhysicalSize& container_size,
+      LayoutUnit inline_thickness,
+      LayoutUnit block_thickness,
+      const GapDecorationInkOutsets& outsets) const;
+
+  // Returns the gap size perpendicular to a rule running in `direction`
+  // (the "crossing" gap for that rule). Used as the percentage basis for
+  // junction gap-decoration insets.
+  //
+  // For flex containers, per-line cross gap sizes can differ due to content
+  // distribution; this returns the maximum across all lines as a conservative
+  // bound (for ink overflow computation).
+  LayoutUnit GetCrossingGapSize(GridTrackSizingDirection direction) const;
 
   ContainerType GetContainerType() const { return container_type_; }
 

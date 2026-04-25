@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -142,6 +143,40 @@ int MaxGapDecorationsWidth(const GapDataList<int>& width_value) {
   }
 
   return max_width;
+}
+
+// Returns the maximum outward extension that a negative inset can produce
+// beyond the content box edge for a given side (start or end). Compares the
+// cap inset with the junction inset, and returns the larger of the two as
+// a positive outset. `overlap-join` insets are excluded since their
+// extension is bounded by thickness inflation.
+LayoutUnit MaxGapDecorationInsetOutset(const Length& cap_inset,
+                                       const Length& junction_inset,
+                                       LayoutUnit cross_gap_width) {
+  LayoutUnit max_outset;
+
+  if (!cap_inset.IsOverlapJoin()) {
+    // Cap insets are almost always only at the container's exterior edge,
+    // where there is no crossing decoration. Caps can also be interior
+    // "dangling" endpoints produced by rule visibility (see
+    // https://github.com/w3c/csswg-drafts/issues/13697); for those, the real
+    // percentage basis would be the cross gap width, so a negative percentage
+    // cap inset less than -100% would extend further than we compute here.
+    // We don't have per-intersection context at this layer to distinguish
+    // exterior from interior caps, so we conservatively resolve against 0 and
+    // accept a potential under-approximation of ink overflow in that narrow
+    // edge case.
+    LayoutUnit cap_resolved = ValueForLength(cap_inset, LayoutUnit());
+    max_outset = std::max(max_outset, -cap_resolved);
+  }
+
+  if (!junction_inset.IsOverlapJoin()) {
+    LayoutUnit junction_resolved =
+        ValueForLength(junction_inset, cross_gap_width);
+    max_outset = std::max(max_outset, -junction_resolved);
+  }
+
+  return max_outset;
 }
 
 }  // namespace
@@ -1139,9 +1174,32 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
         LayoutUnit(MaxGapDecorationsWidth(style.ColumnRuleWidth()));
     LayoutUnit block_thickness =
         LayoutUnit(MaxGapDecorationsWidth(style.RowRuleWidth()));
+
+    GapGeometry::GapDecorationInkOutsets outsets;
+
+    // Column rule insets extend the block axis.
+    const LayoutUnit col_crossing_gap_size =
+        gap_geometry->GetCrossingGapSize(kForColumns);
+    outsets.block_start = MaxGapDecorationInsetOutset(
+        style.ColumnRuleInsetCapStart(), style.ColumnRuleInsetJunctionStart(),
+        col_crossing_gap_size);
+    outsets.block_end = MaxGapDecorationInsetOutset(
+        style.ColumnRuleInsetCapEnd(), style.ColumnRuleInsetJunctionEnd(),
+        col_crossing_gap_size);
+
+    // Row rule insets extend the inline axis.
+    const LayoutUnit row_crossing_gap_size =
+        gap_geometry->GetCrossingGapSize(kForRows);
+    outsets.inline_start = MaxGapDecorationInsetOutset(
+        style.RowRuleInsetCapStart(), style.RowRuleInsetJunctionStart(),
+        row_crossing_gap_size);
+    outsets.inline_end = MaxGapDecorationInsetOutset(
+        style.RowRuleInsetCapEnd(), style.RowRuleInsetJunctionEnd(),
+        row_crossing_gap_size);
+
     PhysicalRect rect = gap_geometry->ComputeInkOverflowForGaps(
         Style().GetWritingDirection(), Size(), inline_thickness,
-        block_thickness);
+        block_thickness, outsets);
     ink_overflow.Unite(rect);
   }
 

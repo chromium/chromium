@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -15,7 +17,8 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
     WritingDirectionMode writing_direction,
     const PhysicalSize& container_size,
     LayoutUnit inline_thickness,
-    LayoutUnit block_thickness) const {
+    LayoutUnit block_thickness,
+    const GapDecorationInkOutsets& outsets) const {
   // One of the two gap lists must be non-empty. If both are empty,
   // it means there are no gaps in the container, hence we wouldn't have a
   // gap geometry.
@@ -26,17 +29,34 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   LayoutUnit block_start = content_block_start_;
   LayoutUnit block_size = content_block_end_ - content_block_start_;
 
-  // Inflate the bounds to account for the gap decorations thickness.
-  inline_start -= inline_thickness / 2;
-  inline_size += inline_thickness;
-  block_start -= block_thickness / 2;
-  block_size += block_thickness;
+  // Inflate the bounds to account for the gap decorations thickness and any
+  // negative insets that push decorations past the content box edges.
+  inline_start -= inline_thickness / 2 + outsets.inline_start;
+  inline_size += inline_thickness + outsets.InlineOutsetThickness();
+  block_start -= block_thickness / 2 + outsets.block_start;
+  block_size += block_thickness + outsets.BlockOutsetThickness();
 
   LogicalRect logical_rect(inline_start, block_start, inline_size, block_size);
   WritingModeConverter converter(writing_direction, container_size);
   PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
 
   return physical_rect;
+}
+
+LayoutUnit GapGeometry::GetCrossingGapSize(
+    GridTrackSizingDirection direction) const {
+  // Column rules cross row gaps; row rules cross column gaps.
+  const LayoutUnit base_size =
+      direction == kForColumns ? block_gap_size_ : inline_gap_size_;
+
+  if (container_type_ != ContainerType::kFlex || !IsMainDirection(direction) ||
+      !flex_cross_gap_sizes_ || flex_cross_gap_sizes_->empty()) {
+    return base_size;
+  }
+
+  // For flex containers, per-line cross gap sizes can differ due to content
+  // distribution. Use the max across all lines for a conservative bound.
+  return std::max(base_size, *std::ranges::max_element(*flex_cross_gap_sizes_));
 }
 
 String GapGeometry::ToString(bool verbose) const {
