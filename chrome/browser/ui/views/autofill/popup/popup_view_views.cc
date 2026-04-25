@@ -1193,10 +1193,6 @@ void PopupViewViews::CreateSuggestionViews() {
                                     kIPHAutofillCreditCardBenefitFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardBenefitElementId);
-          } else if (feature == &feature_engagement::
-                                    kIPHPlusAddressCreateSuggestionFeature) {
-            row_view->SetProperty(views::kElementIdentifierKey,
-                                  kPlusAddressCreateSuggestionElementId);
           } else if (feature ==
                      &feature_engagement::
                          kIPHAutofillBnplAffirmOrZipSuggestionFeature) {

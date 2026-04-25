@@ -533,17 +533,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after autofill popup appears featuring an "
                        "externally-saved card.")));
 
-  // kIPHCreatePlusAddressSuggestionFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHPlusAddressCreateSuggestionFeature,
-          kPlusAddressCreateSuggestionElementId,
-          IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH,
-          IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(128, "vidhanj@google.com",
-                       "Triggered after create plus address popup appears.")));
 
   // kIPHPlusAddressFirstSaveFeature:
   registry.RegisterFeature(std::move(

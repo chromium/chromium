@@ -675,7 +675,7 @@ should be able to be added at any place in this file.
   <variant name="_PerformanceNewBadge"
       summary="For new badge next to Performance feature."/>
   <variant name="_PlusAddressCreateSuggestion"
-      summary="For creating plus addresses."/>
+      summary="For creating plus addresses. (obsolete)"/>
   <variant name="_PlusAddressFirstSaveFeature"
       summary="For accessing settings after saving the first plus address."/>
   <variant name="_PowerBookmarksSidePanel"
