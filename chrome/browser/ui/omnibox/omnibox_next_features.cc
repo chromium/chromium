@@ -75,6 +75,9 @@ const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam{
 // following that of the OmniboxEditModel.
 BASE_FEATURE(kWebUIOmniboxPopupSelectionControl, DISABLED);
 
+// If enabled, enables energy effect in the omnibox.
+BASE_FEATURE(kEnergyEffectInOmnibox, ENABLED);
+
 // Decodes a proto object from its serialized Base64 string representation.
 // Returns true if decoding and parsing succeed, false otherwise.
 bool ParseProtoFromBase64String(const std::string& input,
