@@ -1033,7 +1033,11 @@ void HTMLSelectElement::SelectOptionFromPopoverPickerOrListbox(
     SetNeedsValidityCheck();
     DispatchInputEvent();
     DispatchChangeEvent();
-    // TODO call UpdateAllSelectedcontents()
+    if (!IsMultiple()) {
+      UpdateAllSelectedcontentsSingle(option->Selected() ? option : nullptr);
+    } else if (RuntimeEnabledFeatures::SelectedcontentMultipleEnabled()) {
+      UpdateAllSelectedcontentsMultiple();
+    }
     select_type_->UpdateTextStyleAndContent();
   } else {
     SelectOptionByPopup(option);

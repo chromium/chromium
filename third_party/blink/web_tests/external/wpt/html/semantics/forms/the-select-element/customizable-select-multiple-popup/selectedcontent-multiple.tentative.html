@@ -3,6 +3,9 @@
 <link rel=help href="https://issues.chromium.org/issues/357649033">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 
 <style>
 select, ::picker(select) {
@@ -10,7 +13,22 @@ select, ::picker(select) {
 }
 </style>
 
-<select multiple size=1>
+<select multiple size=1 id=s1>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option class=one value=one selected>
+    <span class=one>span</span> one
+  </option>
+  <option class=two value=two selected>
+    <span class=two>span</span> two
+  </option>
+  <option class=three value=three>
+    <span class=three>span</span> three
+  </option>
+</select>
+
+<select multiple size=1 id=s2>
   <button>
     <selectedcontent></selectedcontent>
   </button>
@@ -34,12 +52,20 @@ function expectedHtml(options) {
   return output;
 }
 
+function click(element) {
+  return (new test_driver.Actions()
+    .pointerMove(0, 0, {origin: element})
+    .pointerDown()
+    .pointerUp())
+    .send();
+}
+
 test(() => {
-  const select = document.querySelector('select');
-  const optionOne = document.querySelector('option.one');
-  const optionTwo = document.querySelector('option.two');
-  const optionThree = document.querySelector('option.three');
-  const selectedcontent = document.querySelector('selectedcontent');
+  const select = document.getElementById('s1');
+  const optionOne = select.querySelector('option.one');
+  const optionTwo = select.querySelector('option.two');
+  const optionThree = select.querySelector('option.three');
+  const selectedcontent = select.querySelector('selectedcontent');
 
   assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne, optionTwo]),
     'The innerHTML of <selectedcontent> should initially match the innerHTML of the initially selected options.');
@@ -63,4 +89,19 @@ test(() => {
   assert_equals(selectedcontent.innerHTML, expectedHtml([optionThree, optionFour]),
     'The selectedcontent should update after removing a selected option.');
 }, '<selectedcontent> should support <select multiple>.');
+
+promise_test(async () => {
+  const select = document.getElementById('s2');
+  const selectedcontent = select.querySelector('selectedcontent');
+  const optionOne = select.querySelector('option.one');
+  const optionTwo = select.querySelector('option.two');
+
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionOne, optionTwo]),
+    'The innerHTML of <selectedcontent> should initially match the innerHTML of the initially selected options.');
+
+  await click(select);
+  await click(optionOne);
+  assert_equals(selectedcontent.innerHTML, expectedHtml([optionTwo]),
+    'The innerHTML of <selectedcontent> should update after clicking an option.');
+}, '<selectedcontent> should update in response to user interaction.');
 </script>
