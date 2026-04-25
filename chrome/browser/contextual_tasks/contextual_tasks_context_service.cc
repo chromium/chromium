@@ -199,6 +199,35 @@ void PopulateTabContext(
   }
 }
 
+void PopulateTabSelectionModeInLog(
+    mojom::TabSelectionMode mode,
+    optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
+  if (!quality_log) {
+    return;
+  }
+  switch (mode) {
+    case mojom::TabSelectionMode::kStaticSignalsOnly:
+      quality_log->set_tab_selection_mode(
+          optimization_guide::proto::TabSelectionMode::
+              TAB_SELECTION_MODE_STATIC_SIGNALS);
+      break;
+    case mojom::TabSelectionMode::kMultiSignalScoring:
+      quality_log->set_tab_selection_mode(
+          optimization_guide::proto::TabSelectionMode::
+              TAB_SELECTION_MODE_STATIC_AND_ENGAGEMENT_SIGNALS);
+      break;
+    case mojom::TabSelectionMode::kStaticSignalsMlModel:
+      quality_log->set_tab_selection_mode(
+          optimization_guide::proto::TabSelectionMode::
+              TAB_SELECTION_MODE_STATIC_ML_MODEL);
+      break;
+    // Do not set any value as server side logs proto misses this mode.
+    case mojom::TabSelectionMode::kEmbeddingsMatch:
+    default:
+      break;
+  }
+}
+
 double GetTabScoreSync(const TabSelectionOptions& options,
                        const TabSignals& tab_signals) {
   switch (options.tab_selection_mode) {
@@ -687,6 +716,7 @@ void ContextualTasksContextService::SelectRelevantTabs(
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         on_tab_selection_complete,
     optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
+  PopulateTabSelectionModeInLog(options.tab_selection_mode, quality_log);
   QueryState query_state = CreateQueryState(query, query_embedding);
   PopulateQueryContext(query_state, quality_log);
 
