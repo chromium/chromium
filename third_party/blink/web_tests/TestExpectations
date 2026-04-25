@@ -2727,7 +2727,6 @@ crbug.com/499074021 external/wpt/paint-timing/fcp-only/fcp-broken-image.html [ F
 # UUID in `*-expected.txt`
 crbug.com/499074020 external/wpt/fetch/metadata/text.https.html [ Failure ]
 
-crbug.com/501220285 external/wpt/domparsing/innerhtml-li-autoclosing.html [ Crash Failure ]
 crbug.com/501198804 external/wpt/visual-viewport/viewport-scale-clamped.html [ Failure ]
 
 crbug.com/501209160 external/wpt/webrtc/RTCDtlsTransport-state.html [ Failure Timeout ]

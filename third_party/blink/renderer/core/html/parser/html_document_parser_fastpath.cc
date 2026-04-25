@@ -618,6 +618,15 @@ class HTMLFastPathParser {
 
     struct Li : ContainerTag<HTMLLIElement, PermittedParents::kFlowContent> {
       static constexpr auto tagname = base::span_from_cstring("li");
+      static Element* ParseChild(HTMLFastPathParser& self) {
+        bool was_inside_of_tag_li = self.inside_of_tag_li_;
+        self.inside_of_tag_li_ = true;
+        Element* res =
+            ContainerTag<HTMLLIElement,
+                         PermittedParents::kFlowContent>::ParseChild(self);
+        self.inside_of_tag_li_ = was_inside_of_tag_li;
+        return res;
+      }
     };
 
     struct Label
