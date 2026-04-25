@@ -12,14 +12,6 @@ config("federated_compute_include") {
   ]
 }
 
-# FCP migrates from their own aliases to absl. Some declarations are deprecated
-# but still in use. See monitoring.h.
-#
-# Remove this when the migration is complete.
-config("no_deprecated_declarations") {
-  cflags = [ "-Wno-deprecated-declarations" ]
-}
-
 source_set("base") {
   public = [
     "src/fcp/base/base_name.h",
@@ -36,10 +28,7 @@ source_set("base") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [
-    ":federated_compute_include",
-    ":no_deprecated_declarations",
-  ]
+  public_configs = [ ":federated_compute_include" ]
 
   deps = [
     "//third_party/abseil-cpp:absl",
@@ -87,8 +76,6 @@ source_set("confidential_compute") {
 
   public_configs = [ ":federated_compute_include" ]
 
-  configs += [ ":no_deprecated_declarations" ]
-
   public_deps = [
     ":confidential_compute_proto",
     "//third_party/oak:oak_proto",
@@ -109,8 +96,6 @@ source_set("confidential_compute_crypto_test_util") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":federated_compute_include" ]
-
-  configs += [ ":no_deprecated_declarations" ]
 
   deps = [
     ":base",

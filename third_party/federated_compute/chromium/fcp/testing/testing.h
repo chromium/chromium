@@ -23,8 +23,8 @@
 #include <type_traits>
 
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
-#include "fcp/base/monitoring.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -46,17 +46,17 @@ namespace fcp {
  * Polymorphic matchers for Status or StatusOr on status code.
  */
 template <typename T>
-bool IsCode(StatusOr<T> const& x, StatusCode code) {
+bool IsCode(absl::StatusOr<T> const& x, absl::StatusCode code) {
   return x.status().code() == code;
 }
-inline bool IsCode(Status const& x, StatusCode code) {
+inline bool IsCode(absl::Status const& x, absl::StatusCode code) {
   return x.code() == code;
 }
 
 template <typename T>
 class StatusMatcherImpl : public ::testing::MatcherInterface<T> {
  public:
-  explicit StatusMatcherImpl(StatusCode code) : code_(code) {}
+  explicit StatusMatcherImpl(absl::StatusCode code) : code_(code) {}
   void DescribeTo(::std::ostream* os) const override {
     *os << "is " << absl::StatusCodeToString(code_);
   }
@@ -69,12 +69,12 @@ class StatusMatcherImpl : public ::testing::MatcherInterface<T> {
   }
 
  private:
-  StatusCode code_;
+  absl::StatusCode code_;
 };
 
 class StatusMatcher {
  public:
-  explicit StatusMatcher(StatusCode code) : code_(code) {}
+  explicit StatusMatcher(absl::StatusCode code) : code_(code) {}
 
   template <typename T>
   operator testing::Matcher<T>() const {  // NOLINT
@@ -82,10 +82,10 @@ class StatusMatcher {
   }
 
  private:
-  StatusCode code_;
+  absl::StatusCode code_;
 };
 
-StatusMatcher IsCode(StatusCode code);
+StatusMatcher IsCode(absl::StatusCode code);
 StatusMatcher IsOk();
 
 }  // namespace fcp

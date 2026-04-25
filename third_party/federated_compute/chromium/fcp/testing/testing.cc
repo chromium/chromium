@@ -16,11 +16,16 @@
 
 #include "fcp/testing/testing.h"
 
-#include "fcp/base/monitoring.h"
+#include "absl/status/status.h"
 
 namespace fcp {
 
-StatusMatcher IsCode(StatusCode code) { return StatusMatcher(code); }
-StatusMatcher IsOk() { return IsCode(OK); }
+StatusMatcher IsCode(absl::StatusCode code) {
+  return StatusMatcher(code);
+}
+
+StatusMatcher IsOk() {
+  return IsCode(absl::StatusCode::kOk);
+}
 
 }  // namespace fcp
