@@ -212,7 +212,9 @@ HRESULT LaunchCmd(const base::CommandLine& command_line,
 
   base::LaunchOptions options = {};
   options.feedback_cursor_off = true;
-  base::GetTempDir(&options.current_directory);
+  if (!base::GetSecureTempDirectory(&options.current_directory)) {
+    return HRESULTFromLastError();
+  }
   base::Process proc = base::LaunchProcess(command_line, options);
   if (!proc.IsValid())
     return HRESULTFromLastError();
