@@ -395,7 +395,6 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
         eligibility_changed_future.GetRepeatingCallback());
 
     // Test country and locale detection.
-    EXPECT_TRUE(service->IsCountry(country));
     EXPECT_TRUE(service->IsLanguage(locale.substr(0, 2)));
 
     // Test IsServerEligibilityEnabled().

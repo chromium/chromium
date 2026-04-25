@@ -102,24 +102,17 @@ bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
 }
 
 bool IsAimM3Enabled(Profile* profile) {
-  // Set whether to use the AIM eligibility service based on the feature flag.
-  bool should_use_aim_eligibility_service = base::FeatureList::IsEnabled(
-      lens::features::kLensSearchAimM3UseAimEligibility);
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible()) {
+    return false;
+  }
 
-  // Since the AIM Eligibility Service is already launched in the US, force it
-  // to be used there for M3 US users.
   if (base::FeatureList::IsEnabled(lens::features::kLensSearchAimM3EnUs) &&
       IsEnUs()) {
-    should_use_aim_eligibility_service = true;
+    return true;
   }
 
-  if (should_use_aim_eligibility_service) {
-    return AimEligibilityService::GenericKillSwitchFeatureCheck(
-        AimEligibilityServiceFactory::GetForProfile(profile),
-        lens::features::kLensSearchAimM3, lens::features::kLensSearchAimM3EnUs);
-  }
-  // If not using the AIM eligibility service, then just check the M3 feature
-  // flag.
   return base::FeatureList::IsEnabled(lens::features::kLensSearchAimM3);
 }
 

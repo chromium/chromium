@@ -261,11 +261,7 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
   }
 
   // Otherwise, check the generic entrypoint feature default value.
-  return base::FeatureList::IsEnabled(feature) ||
-         (feature_en_us &&
-          base::FeatureList::IsEnabled(feature_en_us.value()) &&
-          aim_eligibility_service->IsLanguage("en") &&
-          aim_eligibility_service->IsCountry("us"));
+  return base::FeatureList::IsEnabled(feature);
 }
 
 // static
@@ -393,12 +389,6 @@ std::string AimEligibilityService::GetLocale() const {
          "not underscores: "
       << locale;
   return locale;
-}
-
-bool AimEligibilityService::IsCountry(const std::string& country) const {
-  // Country codes are in lowercase ISO 3166-1 alpha-2 format; e.g., us, br, in.
-  // See components/variations/service/variations_service.h
-  return GetCountryCode() == country;
 }
 
 bool AimEligibilityService::IsLanguage(const std::string& language) const {
