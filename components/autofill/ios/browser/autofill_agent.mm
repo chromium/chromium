@@ -757,20 +757,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
   return fieldID == _lastQueriedFieldID;
 }
 
-- (void)showPlusAddressEmailOverrideNotification:
-    (base::OnceClosure)emailOverrideUndoCallback {
-  CHECK(_delegate);
-  [_delegate
-      showSnackbarWithMessage:
-          l10n_util::GetNSString(
-              IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS)
-                   buttonText:
-                       l10n_util::GetNSString(
-                           IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_IOS)
-                messageAction:base::CallbackToBlock(
-                                  std::move(emailOverrideUndoCallback))
-             completionAction:nil];
-}
 
 #pragma mark - CRWWebStateObserver
 

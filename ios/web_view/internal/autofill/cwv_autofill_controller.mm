@@ -582,10 +582,6 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   return [_autofillAgent isLastQueriedField:fieldId];
 }
 
-- (void)showPlusAddressEmailOverrideNotification:
-    (base::OnceClosure)emailOverrideUndoCallback {
-  NOTIMPLEMENTED();
-}
 
 - (void)
     showSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard

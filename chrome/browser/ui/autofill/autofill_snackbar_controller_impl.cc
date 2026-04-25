@@ -16,7 +16,6 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -116,9 +115,6 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
           base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
               ? IDS_AUTOFILL_SAVE_SERVER_IBAN_TO_WALLET_SUCCESS_SNACKBAR_MESSAGE_TEXT
               : IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT);
-    case AutofillSnackbarType::kPlusAddressEmailOverride:
-      return l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_ANDROID);
     case AutofillSnackbarType::kCardInfoRetrieval:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SNACKBAR_MESSAGE_TEXT);
@@ -155,9 +151,6 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT);
-    case AutofillSnackbarType::kPlusAddressEmailOverride:
-      return l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_ANDROID);
     case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
@@ -197,8 +190,6 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "VirtualCardEnrollSuccess";
     case AutofillSnackbarType::kSaveServerIbanSuccess:
       return "SaveServerIbanSuccess";
-    case AutofillSnackbarType::kPlusAddressEmailOverride:
-      return "PlusAddressEmailOverride";
     case AutofillSnackbarType::kCardInfoRetrieval:
       return "CardInfoRetrievalEnrolled";
     case AutofillSnackbarType::kBnpl:

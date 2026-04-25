@@ -27,21 +27,17 @@ enum class AutofillSnackbarType {
   // Used when an IBAN has been successfully saved to the server.
   kSaveServerIbanSuccess = 5,
 
-  // Used when a plus address created for the domain was filled instead of the
-  // email value saved in the autofill profile.
-  kPlusAddressEmailOverride = 6,
-
   // Used when masked server card enrolled in card info retrieval is retrieved.
-  kCardInfoRetrieval = 7,
+  kCardInfoRetrieval = 6,
 
   // Used when a BNPL virtual card is retrieved.
-  kBnpl = 8,
+  kBnpl = 7,
 
   // Used when an entity migration to Google Wallet fails.
-  kAutofillAiSaveToWalletFailure = 9,
+  kAutofillAiSaveToWalletFailure = 8,
 
   // Used when the server request to fetch entity data failed.
-  kAutofillAiFetchFromWalletFailure = 10,
+  kAutofillAiFetchFromWalletFailure = 9,
 };
 
 }  // namespace autofill

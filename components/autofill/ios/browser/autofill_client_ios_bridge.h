@@ -28,10 +28,6 @@ struct Suggestion;
 // Checks whether the qurrent query is the most recent one.
 - (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldId;
 
-// Shows a snackbar that offers a user to undo filling a plus address as part of
-// address form filling.
-- (void)showPlusAddressEmailOverrideNotification:
-    (base::OnceClosure)emailOverrideUndoCallback;
 
 @end
 
