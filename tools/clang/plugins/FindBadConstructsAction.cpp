@@ -92,7 +92,7 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
     } else if (arg == "check-std-ranges-pipe-operator") {
-      options_.check_std_ranges_pipe_operator = true;
+      // TODO(crbug.com/505306734): Remove this option entirely.
     } else if (arg == "relax-ctor-checks-for-aggregates") {
       options_.relax_ctor_checks_for_aggregates = true;
     } else {

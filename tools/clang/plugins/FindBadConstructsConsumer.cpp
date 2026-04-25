@@ -299,7 +299,7 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
     layout_visitor_->VisitLayoutObjectMethods(context);
   }
 
-  if (options_.check_std_ranges_pipe_operator) {
+  {
     llvm::TimeTraceScope TimeScope(
         "CheckStdRangesPipeOperator in FindBadConstructsConsumer::Traverse");
     StdRangesPipeOperatorVisitor visitor(*this);

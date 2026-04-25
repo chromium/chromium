@@ -19,7 +19,6 @@ struct Options {
   bool check_ptrs_to_non_string_literals = false;
   bool check_span_fields = false;
   bool enable_match_profiling = false;
-  bool check_std_ranges_pipe_operator = false;
   bool relax_ctor_checks_for_aggregates = false;
   std::string exclude_fields_file;
 };
