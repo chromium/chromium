@@ -1445,9 +1445,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   LayoutUnit sum_line_cross_size;
 
   flex_lines->reserve(result.flex_lines.size());
-  for (auto& line : result.flex_lines) {
+  for (const auto& line : result.flex_lines) {
     // Flex the items.
-    auto line_items = items.take_first(line.count);
+    const auto line_items = items.take_first(line.count);
     LineFlexer(line_items, main_axis_inner_size,
                line.sum_hypothetical_main_size, gap_between_items_)
         .Run();
@@ -2811,9 +2811,23 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
   // the flex basis is not definite.
   ConstructAndAppendFlexItems(Phase::kRowIntrinsicSize);
 
+  // We only need to run the line-breaker if we have "flex-wrap:balance".
+  base::span<FlexItem> items = base::span(flex_items_);
+  const FlexLineBreakerResult result =
+      balance_min_line_count_
+          ? BreakFlexItemsIntoLines(items, LayoutUnit::Max(),
+                                    gap_between_items_, is_multi_line_,
+                                    balance_min_line_count_)
+          : FlexLineBreakerResult(
+                {InitialFlexLine(flex_items_.size(), LayoutUnit())},
+                LayoutUnit());
+
   LayoutUnit largest_outer_min_content_contribution;
-  {
-    for (const FlexItem& item : flex_items_) {
+  for (const auto& line : result.flex_lines) {
+    const auto line_items = items.take_first(line.count);
+
+    MinMaxSizes line_sizes;
+    for (const FlexItem& item : line_items) {
       const BlockNode& child = item.block_node;
 
       const ConstraintSpace space =
@@ -2823,7 +2837,6 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
       depends_on_block_constraints |=
           min_max_content_contributions.depends_on_block_constraints;
 
-      MinMaxSizes item_final_contribution;
       const LayoutUnit flex_base_size_border_box =
           item.base_content_size + item.main_axis_border_padding;
       const LayoutUnit hypothetical_main_size_border_box =
@@ -2833,6 +2846,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
           is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
                               : item.initial_margins.VerticalSum();
 
+      MinMaxSizes item_final_contribution;
       if (is_multi_line_) {
         largest_outer_min_content_contribution = std::max(
             largest_outer_min_content_contribution,
@@ -2877,23 +2891,19 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
         item_final_contribution.max_size = max_contribution;
       }
 
-      container_sizes += item_final_contribution;
-      container_sizes += main_axis_margins;
+      line_sizes += item_final_contribution;
+      line_sizes += main_axis_margins;
     }
+
+    line_sizes +=
+        line.count ? (line.count - 1u) * gap_between_items_ : LayoutUnit();
+
+    container_sizes.Encompass(line_sizes);
   }
 
-  if (!flex_items_.empty()) {
-    const LayoutUnit gap_inline_size =
-        (flex_items_.size() - 1) * gap_between_items_;
-    if (is_multi_line_) {
-      container_sizes.min_size = largest_outer_min_content_contribution;
-      container_sizes.max_size += gap_inline_size;
-    } else {
-      DCHECK_EQ(largest_outer_min_content_contribution, LayoutUnit())
-          << "largest_outer_min_content_contribution is not filled in for "
-             "singleline containers.";
-      container_sizes += gap_inline_size;
-    }
+  // For a wrapping flexbox, assume each item is on its own line.
+  if (is_multi_line_) {
+    container_sizes.min_size = largest_outer_min_content_contribution;
   }
 
   // Handle potential weirdness caused by items' negative margins.
