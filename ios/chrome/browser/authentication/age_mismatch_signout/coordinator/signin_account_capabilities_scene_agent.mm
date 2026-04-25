@@ -44,15 +44,12 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager_observer_bridge.h"
-#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 @interface SigninAccountCapabilitiesSceneAgent () <
     AgeMismatchSignoutCoordinatorDelegate,
     ExternalPrivacyContextUIProvider,
     IdentityManagerObserverBridgeDelegate,
     ProfileStateObserver,
-    SystemIdentityManagerObserving,
     UIBlockerManagerObserver>
 @end
 
@@ -60,16 +57,10 @@
   // SceneUIProvider that provides the scene UI objects.
   __weak id<SceneUIProvider> _sceneUIProvider;
 
-  // The set of Gaia IDs for which the external privacy context has been built.
-  absl::flat_hash_set<GaiaId, GaiaId::Hash> _handledIdentities;
-
-  // UI blocker used when building external privacy contexts. This needs to be
-  // reseted in -[SceneStateObserver sceneStateDidDisableUI:] if it still
+  // UI blocker used on signout or during the Age Mismatch prompt. This needs to
+  // be reseted in -[SceneStateObserver sceneStateDidDisableUI:] if it still
   // exists.
   std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
-
-  std::unique_ptr<SystemIdentityManagerObserverBridge>
-      _systemIdentityManagerObserver;
 
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
@@ -82,19 +73,12 @@
 
   // Tracks if the Age Mismatch prompt has been shown at least once.
   BOOL _hasShownAgeMismatchPrompt;
-
-  // Tracks if External Privacy Contexts are currently being built
-  // asynchronously.
-  BOOL _areExternalPrivacyContextsBeingBuilt;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
   self = [super init];
   if (self) {
     _sceneUIProvider = sceneUIProvider;
-    _systemIdentityManagerObserver =
-        std::make_unique<SystemIdentityManagerObserverBridge>(
-            GetApplicationContext()->GetSystemIdentityManager(), self);
     GetApplicationContext()
         ->GetSystemIdentityManager()
         ->RegisterExternalPrivacyContextProvider(self);
@@ -128,7 +112,6 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [self notifyProviderReadyIfUIAvailable];
-  [self fetchCapabilitiesForUnhandledIdentities];
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
@@ -138,7 +121,6 @@
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
-  _systemIdentityManagerObserver.reset();
   _identityManagerObserver.reset();
   _ageMismatchSignoutCoordinator.delegate = nil;
   [_ageMismatchSignoutCoordinator stop];
@@ -148,7 +130,6 @@
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
   [self notifyProviderReadyIfUIAvailable];
-  [self fetchCapabilitiesForUnhandledIdentities];
 }
 
 #pragma mark - ProfileStateObserver
@@ -167,13 +148,6 @@
                                                                 self);
   }
   [self notifyProviderReadyIfUIAvailable];
-  [self fetchCapabilitiesForUnhandledIdentities];
-}
-
-#pragma mark - SystemIdentityManagerObserving
-
-- (void)onIdentityListChanged {
-  [self fetchCapabilitiesForUnhandledIdentities];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -189,10 +163,6 @@
   }
 
   if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
-    // Capabilities are only available after the External Privacy Contexts have
-    // been built.
-    CHECK(_handledIdentities.contains(GaiaId(info.gaia)),
-          base::NotFatalUntil::M155);
     [self handleAgeMismatchSignout];
   }
 }
@@ -201,7 +171,6 @@
 
 - (void)currentUIBlockerRemoved {
   [self notifyProviderReadyIfUIAvailable];
-  [self fetchCapabilitiesForUnhandledIdentities];
 }
 
 #pragma mark - AgeMismatchSignoutCoordinatorDelegate
@@ -285,96 +254,6 @@
   _ageMismatchSignoutCoordinator = nil;
 }
 
-// Fetches capabilities for unhandled identities after building the External
-// Privacy Context, which communicates device signals to the capabilities
-// service.
-// TODO(crbug.com/484261211): Migrate these functionalities to the
-// SystemIdentityManager.
-- (void)fetchCapabilitiesForUnhandledIdentities {
-  if (![self isUIAvailableToShowIOSPrompt]) {
-    return;
-  }
-
-  NSArray<id<SystemIdentity>>* identities = [self unhandledIdentities];
-  if (!identities.count) {
-    return;
-  }
-
-  _areExternalPrivacyContextsBeingBuilt = YES;
-
-  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
-      self.sceneState, UIBlockerExtent::kApplication);
-
-  __weak __typeof(self) weakSelf = self;
-
-  // Closure to be executed after all External Privacy Contexts have been built.
-  base::OnceClosure finalClosure = base::BindOnce(
-      [](__weak __typeof(self) weak_self) {
-        [weak_self onAllExternalPrivacyContextsBuilt];
-      },
-      weakSelf);
-
-  [self buildExternalPrivacyContextForIdentities:identities
-                                           index:0
-                                    finalClosure:std::move(finalClosure)];
-}
-
-// Builds External Privacy Context for the given list of identities
-// sequentially. This is done recursively by iterating over the list using the
-// `index` argument, ensuring only one EPC is built at a time.
-- (void)buildExternalPrivacyContextForIdentities:
-            (NSArray<id<SystemIdentity>>*)identities
-                                           index:(NSUInteger)index
-                                    finalClosure:
-                                        (base::OnceClosure)finalClosure {
-  if (index >= identities.count) {
-    std::move(finalClosure).Run();
-    return;
-  }
-
-  id<SystemIdentity> identity = identities[index];
-  _handledIdentities.insert(identity.gaiaId);
-
-  __weak __typeof(self) weakSelf = self;
-  SystemIdentityManager::BuildExternalPrivacyContextCallback callback =
-      base::BindOnce(
-          [](id weakSelf, NSArray<id<SystemIdentity>>* identities,
-             NSUInteger index, base::OnceClosure fc, NSError* error) {
-            // TODO(crbug.com/481654850): Add metrics.
-            [weakSelf buildExternalPrivacyContextForIdentities:identities
-                                                         index:index + 1
-                                                  finalClosure:std::move(fc)];
-          },
-          weakSelf, identities, index, std::move(finalClosure));
-
-  // Build the External Privacy Context for the given identity.
-  GetApplicationContext()
-      ->GetSystemIdentityManager()
-      ->BuildExternalPrivacyContext(identity,
-                                    [_sceneUIProvider activeViewController],
-                                    std::move(callback));
-}
-
-// Called after all External Privacy Contexts have been built.
-- (void)onAllExternalPrivacyContextsBuilt {
-  CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
-  _applicationUIBlocker.reset();
-  _areExternalPrivacyContextsBeingBuilt = NO;
-
-  // Read capability value and signout if needed.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(
-          self.sceneState.profileState.profile);
-  if (identityManager &&
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    AccountInfo info = identityManager->FindExtendedAccountInfoByAccountId(
-        identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-    if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
-      [self handleAgeMismatchSignout];
-    }
-  }
-}
-
 // Signs out the user and shows the age mismatch signout UI.
 - (void)handleAgeMismatchSignout {
   AuthenticationService* authenticationService =
@@ -406,45 +285,8 @@
   }
 }
 
-// Returns a list of identities that haven't been handled yet.
-// It also removes any identities from the handled set that
-// are no longer present or were fetched more than a day ago.
-- (NSArray<id<SystemIdentity>>*)unhandledIdentities {
-  NSArray<id<SystemIdentity>>* allIdentities =
-      signin::GetIdentitiesOnDevice(self.sceneState.profileState.profile);
-
-  std::set<GaiaId> currentGaiaIDs;
-  for (id<SystemIdentity> identity in allIdentities) {
-    currentGaiaIDs.insert(identity.gaiaId);
-  }
-
-  // Remove any stale identities from _handledIdentities.
-  std::vector<GaiaId> keys_to_remove;
-  for (const auto& key : _handledIdentities) {
-    if (!currentGaiaIDs.contains(key)) {
-      keys_to_remove.push_back(key);
-    }
-  }
-
-  for (const GaiaId& key : keys_to_remove) {
-    _handledIdentities.erase(key);
-  }
-
-  // Return the list of identities that haven't been handled yet.
-  NSMutableArray<id<SystemIdentity>>* unhandledIdentities =
-      [[NSMutableArray alloc] init];
-  for (id<SystemIdentity> identity in allIdentities) {
-    if (!_handledIdentities.contains(identity.gaiaId)) {
-      [unhandledIdentities addObject:identity];
-    }
-  }
-
-  return unhandledIdentities;
-}
-
-// Whether the UI is available to show an iOS prompt.
-// This is used before building External Privacy Contexts, which could
-// trigger an iOS consent prompt.
+// Whether the UI is available to show an iOS prompt, which could be displayed
+// when External Privacy Contexts are being built.
 - (BOOL)isUIAvailableToShowIOSPrompt {
   if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;

@@ -176,120 +176,6 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
 }
 
-// Tests that the agent fetches capabilities for all identities on activation.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnActivation) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
-  AddIdentity(identity1);
-  AddIdentity(identity2);
-
-  __block int build_context_calls = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        build_context_calls++;
-        std::move(callback).Run(nil);
-      }));
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls, 2);
-}
-
-// Tests that the agent fetches capabilities for new identities when the list
-// changes.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest,
-       TestFetchOnIdentityListChanged) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  AddIdentity(identity1);
-
-  __block int build_context_calls_identity1 = 0;
-  __block int build_context_calls_identity2 = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        if (identity.gaiaId == identity1.gaiaId) {
-          build_context_calls_identity1++;
-        } else {
-          build_context_calls_identity2++;
-        }
-        std::move(callback).Run(nil);
-      }));
-
-  // Initial fetch.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls_identity1, 1);
-  EXPECT_EQ(build_context_calls_identity2, 0);
-
-  // Add a second identity.
-  FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
-
-  AddIdentity(identity2);
-  fake_system_identity_manager_->FireSystemIdentityReloaded();
-
-  // Identity 1 should NOT be refetched. Identity 2 should be fetched.
-  EXPECT_EQ(build_context_calls_identity1, 1);  // Remains 1
-  EXPECT_EQ(build_context_calls_identity2, 1);
-}
-
-// Tests that removing an identity clears it from the handled set.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  AddIdentity(identity1);
-
-  __block int build_context_calls = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        build_context_calls++;
-        std::move(callback).Run(nil);
-      }));
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls, 1);
-
-  // Forget identity.
-  RemoveIdentity(identity1);
-  fake_system_identity_manager_->FireSystemIdentityReloaded();
-
-  // Add it back. It should be refetched.
-  AddIdentity(identity1);
-  fake_system_identity_manager_->FireSystemIdentityReloaded();
-
-  EXPECT_EQ(build_context_calls, 2);
-}
-
-// Tests that the agent fetches capabilities when a UI blocker is removed.
-TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {
-  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  AddIdentity(identity1);
-
-  __block int build_context_calls = 0;
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        build_context_calls++;
-        std::move(callback).Run(nil);
-      }));
-
-  // Set a UI blocker before becoming active.
-  id<UIBlockerTarget> blocker_target =
-      OCMProtocolMock(@protocol(UIBlockerTarget));
-  [profile_state_ incrementBlockingUICounterForTarget:blocker_target];
-
-  // Activation should not trigger fetch because UI is blocked.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_EQ(build_context_calls, 0);
-
-  // Remove UI blocker.
-  [profile_state_ decrementBlockingUICounterForTarget:blocker_target];
-
-  // The fetch should now be triggered.
-  EXPECT_EQ(build_context_calls, 1);
-}
 
 // Tests that the agent signs out the account if the `CanSignInToChrome`
 // capability is explicitly set to false.
@@ -301,14 +187,6 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
   AddIdentity(identity);
   SetPrimaryIdentity(identity);
 
-  // Trigger the External Privacy Context build so that the scene agent marks
-  // this identity as handled.
-  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
-      base::BindRepeating(^(
-          id<SystemIdentity> cur_identity, UIViewController* view_controller,
-          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
-        std::move(callback).Run(nil);
-      }));
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   signin::IdentityManager* identity_manager =

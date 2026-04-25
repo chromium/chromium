@@ -282,21 +282,21 @@ class SystemIdentityManager {
   virtual void BuildExternalPrivacyContext(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      BuildExternalPrivacyContextCallback callback) = 0;
+      BuildExternalPrivacyContextCallback callback) {}
 
   // Registers the provider for building external privacy context.
   virtual void RegisterExternalPrivacyContextProvider(
-      id<ExternalPrivacyContextUIProvider> provider);
+      id<ExternalPrivacyContextUIProvider> provider) = 0;
 
   // Unregisters the provider for building external privacy context.
   virtual void UnregisterExternalPrivacyContextProvider(
-      id<ExternalPrivacyContextUIProvider> provider);
+      id<ExternalPrivacyContextUIProvider> provider) = 0;
 
   // Called when a provider is ready for capabilities fetching.
   // The `provider` must have been previously registered via
   // `RegisterExternalPrivacyContextProvider`.
   virtual void ExternalPrivacyContextProviderReady(
-      id<ExternalPrivacyContextUIProvider> provider);
+      id<ExternalPrivacyContextUIProvider> provider) = 0;
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation

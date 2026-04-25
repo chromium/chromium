@@ -36,21 +36,6 @@ SystemIdentityManager::~SystemIdentityManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void SystemIdentityManager::RegisterExternalPrivacyContextProvider(
-    id<ExternalPrivacyContextUIProvider> provider) {
-  // TODO(crbug.com/500251715): Remove.
-}
-
-void SystemIdentityManager::UnregisterExternalPrivacyContextProvider(
-    id<ExternalPrivacyContextUIProvider> provider) {
-  // TODO(crbug.com/500251715): Remove.
-}
-
-void SystemIdentityManager::ExternalPrivacyContextProviderReady(
-    id<ExternalPrivacyContextUIProvider> provider) {
-  // TODO(crbug.com/500251715): Remove.
-}
-
 void SystemIdentityManager::AddObserver(
     SystemIdentityManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
