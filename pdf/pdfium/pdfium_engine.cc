@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -78,6 +79,7 @@
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_attachment.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdf_ext.h"
 #include "third_party/pdfium/public/fpdf_fwlevent.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
@@ -107,6 +109,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_metrics_handler.h"
+#include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/pdfium/pdfium_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_writer.h"
@@ -5077,6 +5080,47 @@ FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
   auto it = font_map_.find(font_id);
   CHECK(it != font_map_.end());
   return it->second.get();
+}
+
+void PDFiumEngine::DrawText(int page_index,
+                            base::span<const InkTextInfo> text_info,
+                            float css_font_size,
+                            double pdf_zoom,
+                            const gfx::RectF& textbox) {
+  CHECK(PageIndexInBounds(page_index));
+  FPDF_PAGE page = GetPage(page_index)->GetPage();
+  const gfx::Transform transform = GetCanonicalToPdfTransformForPage(page);
+  const float pdf_font_size = CSSFontSizeToPdfFontSize(css_font_size);
+
+  for (const InkTextInfo& item : text_info) {
+    FPDF_FONT font = GetAddedFont(item.font_id);
+    CHECK(font);
+
+    // TODO(crbug.com/502083480): This baseline alignment isn't exactly right.
+    // Blink actually uses the primary font ascent for alignment. Also Blink
+    // uses a special platform-specific rounded number.
+    float ascent;
+    CHECK(FPDFFont_GetAscent(font, css_font_size, &ascent));
+
+    gfx::RectF run_rect = item.location;
+    run_rect.Scale(1.0 / pdf_zoom);
+    run_rect.set_height(ascent);
+    run_rect = transform.MapRect(run_rect + textbox.OffsetFromOrigin());
+
+    ScopedFPDFPageObject text_object(
+        FPDFPageObj_CreateTextObj(doc(), font, pdf_font_size));
+    CHECK(text_object);
+    CHECK(FPDFText_SetCharcodes(text_object.get(), item.glyphs.data(),
+                                item.glyphs.size()));
+    FS_MATRIX matrix{1, 0, 0, 1, run_rect.x(), run_rect.y()};
+    CHECK(FPDFPageObj_TransformF(text_object.get(), &matrix));
+    CHECK(FPDFPage_InsertObject(page, text_object.release()));
+  }
+
+  CHECK(FPDFPage_GenerateContent(page));
+  // TODO(crbug.com/504689665): Avoid crashing if the page has other edits.
+  GetPage(page_index)->ReloadTextPage();
+  client_->Invalidate(GetPageScreenRect(page_index));
 }
 
 gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,

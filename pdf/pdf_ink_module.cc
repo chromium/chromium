@@ -29,6 +29,7 @@
 #include "pdf/draw_utils/page_boundary_intersect.h"
 #include "pdf/input_utils.h"
 #include "pdf/message_util.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
@@ -37,6 +38,7 @@
 #include "pdf/pdf_ink_cursor.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module_client.h"
+#include "pdf/pdf_ink_text.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -1548,6 +1550,30 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
         *item_as_dict.FindBlob("serializedTypeface");
     client_->AddFont(unique_id, serialized_typeface);
   }
+
+  const std::vector<uint8_t>& text_info_blob = *data.FindBlob("mojoTextInfo");
+  pdf::mojom::InkTextInfoPtr text_info_mojo;
+  CHECK(pdf::mojom::InkTextInfo::Deserialize(text_info_blob, &text_info_mojo));
+
+  std::vector<InkTextInfo> ink_info = InkTextInfo::SplitTypefaceRuns(
+      text_info_mojo->text_runs, text_info_mojo->effective_zoom);
+
+  int page_index = data.FindInt("pageIndex").value();
+
+  const base::DictValue& text_attributes = *data.FindDict("textAttributes");
+  float font_size = text_attributes.FindDouble("size").value();
+  // Note: `pdf_zoom` is similar to GetZoom() but GetZoom() is multiplied by
+  // device scale factor while this value isn't. Additionally `pdf_zoom` comes
+  // from the frontend at the exact same time as the annotation commit happens
+  // to avoid any potential sync race issues between the frontend and backend.
+  double pdf_zoom = data.FindDouble("pdfZoom").value();
+  const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
+  gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
+                     text_box_rect.FindDouble("locationY").value(),
+                     text_box_rect.FindDouble("width").value(),
+                     text_box_rect.FindDouble("height").value());
+
+  client_->DrawText(page_index, ink_info, font_size, pdf_zoom, textbox);
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

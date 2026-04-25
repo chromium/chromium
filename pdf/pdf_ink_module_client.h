@@ -14,6 +14,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/pdf_ink_text.h"
 #include "pdf/pdf_rect.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
@@ -63,6 +64,15 @@ class PdfInkModuleClient {
 
   // Notifies the client to clear the current text selection.
   virtual void ClearSelection() {}
+
+  // Notifies the client to draw `text_info` with `css_font_size` into the page
+  // at `page_index`. `textbox` specifies the rectangle of the text box in
+  // CSS screen coordinates.
+  virtual void DrawText(int page_index,
+                        base::span<const InkTextInfo> text_info,
+                        float css_font_size,
+                        double pdf_zoom,
+                        const gfx::RectF& textbox) {}
 
   // Asks the client to discard the stroke identified by `id` on the page at
   // `page_index`.

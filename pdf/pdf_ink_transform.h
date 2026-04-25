@@ -144,6 +144,9 @@ gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,
                                           PageRotation page_rotation,
                                           const gfx::Vector2dF& translate);
 
+// Translates CSS font sizes to PDF font sizes.
+float CSSFontSizeToPdfFontSize(float css_font_size);
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_PDF_INK_TRANSFORM_H_

@@ -321,6 +321,15 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->engine_->DiscardStroke(page_index, id);
   }
 
+  void DrawText(int page_index,
+                base::span<const InkTextInfo> text_info,
+                float css_font_size,
+                double pdf_zoom,
+                const gfx::RectF& textbox) override {
+    plugin_->engine_->DrawText(page_index, text_info, css_font_size, pdf_zoom,
+                               textbox);
+  }
+
   void ExtendSelectionByPoint(const gfx::PointF& point) override {
     plugin_->engine_->ExtendSelectionByPoint(point);
   }

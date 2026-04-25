@@ -68,6 +68,7 @@
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_metrics_handler.h"
+#include "pdf/pdf_ink_text.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "ui/gfx/geometry/transform.h"
 #endif
@@ -404,6 +405,13 @@ class PDFiumEngine : public DocumentLoader::Client,
   void AddFont(FontId font_id, base::span<const uint8_t> serialized_typeface);
   // Returns a font that was previously loaded with AddFont().
   FPDF_FONT GetAddedFont(FontId font_id);
+
+  // See method of the same name in PdfInkModuleClient.
+  void DrawText(int page_index,
+                base::span<const InkTextInfo> text_info,
+                float css_font_size,
+                double pdf_zoom,
+                const gfx::RectF& textbox);
 
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);

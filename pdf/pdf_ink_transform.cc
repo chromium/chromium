@@ -193,4 +193,8 @@ gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,
   NOTREACHED();
 }
 
+float CSSFontSizeToPdfFontSize(float css_font_size) {
+  return css_font_size * kUnitConversionFactorPixelsToPoints;
+}
+
 }  // namespace chrome_pdf
