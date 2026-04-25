@@ -110,6 +110,9 @@ export class SuggestRequestElement extends CrLitElement {
   }
 
   protected getPageClassificationLabel_(): string {
+    if (!this.pgcl_) {
+      return 'No Page Classification';
+    }
     return PageClassification[parseInt(this.pgcl_)]!;
   }
 
