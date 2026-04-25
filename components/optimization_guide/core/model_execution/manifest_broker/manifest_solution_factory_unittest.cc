@@ -113,6 +113,22 @@ TEST_F(ManifestSolutionFactoryTest, SupportsArbitraryUseCases) {
   ASSERT_TRUE(session);
 }
 
+// Trying to use a feature that's missing from the manifest should fail,
+// not wait for a download to complete.
+TEST_F(ManifestSolutionFactoryTest, SessionFailsForMissingFeature) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddUnsafeSolution("custom_use_case", "model_A")
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  EXPECT_FALSE(session_future.Take());
+}
+
 // TODO(crbug.com/504749700): Ensure equivalent scenarios from these
 // OnDeviceModelServiceControllerTest tests are covered here:
 // BaseModelExecutionSuccess

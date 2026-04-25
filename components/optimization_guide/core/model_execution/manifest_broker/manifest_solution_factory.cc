@@ -307,10 +307,18 @@ void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
 
 void ManifestSolutionFactory::UpdateSolutions() {
   TRACE_EVENT("optimization_guide", "ManifestSolutionFactory::UpdateSolutions");
-  for (const auto& [use_case_name, _] :
-       manifest_.GetDeviceCategoryConfig().use_cases()) {
+  const auto& use_cases = manifest_.GetDeviceCategoryConfig().use_cases();
+  for (const auto& [use_case_name, _] : use_cases) {
     broker_impl_->GetSolutionProvider(use_case_name)
         .Update(CreateSolutionForUseCase(use_case_name));
+  }
+  for (auto feature : OnDeviceFeatureSet::All()) {
+    std::string use_case_name = ToUseCaseName(feature);
+    if (!use_cases.contains(use_case_name)) {
+      broker_impl_->GetSolutionProvider(use_case_name)
+          .Update(base::unexpected(
+              OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled));
+    }
   }
 }
 
@@ -420,7 +428,7 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
   if (!required_assets) {
     // Use case not found in manifest.
     return base::unexpected(
-        OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
+        OnDeviceModelEligibilityReason::kFeatureExecutionNotEnabled);
   }
   // Check that all assets are available.
   bool has_unavailable_asset = false;

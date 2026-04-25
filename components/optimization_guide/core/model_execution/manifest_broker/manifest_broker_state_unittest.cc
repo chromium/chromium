@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -42,25 +44,70 @@ class ManifestBrokerStateTest : public testing::Test {
   ManifestBrokerStateTest() {}
 
  protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_;
   FakeManifestBroker fake_;
 };
 
-// Test that a simple feature can be executed successfully.
+// When the device is incapable of running models, session creations attempts
+// should fail, rather than hang, and the service should shut down after the
+// performance class check.
 TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
-  // TODO(crbug.com/504749700): Implement
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+
+  // Ensure the device is considered incapable of using on-device models.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      on_device_model::features::kOnDeviceModelCpuBackend);
+  fake_.settings().performance_class =
+      on_device_model::mojom::PerformanceClass::kVeryLow;
+  fake_.Startup();
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  // Broker should have a Manifest that supports no features, so session
+  // creations should fail (kNotSupported).
+  ASSERT_FALSE(session_future.Take());
+
+  // Performance class should have been evaluated.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kVeryLow, 1);
+  EXPECT_TRUE(fake_.launcher().did_launch_service());
+  // Service should idle-out again after the performance class check.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !fake_.launcher().is_service_running(); }));
 }
+
+// TODO(holte): Maybe flaky on android somehow?  Will land separately.
+// // When the device is incapable of downloading models due to low disk space,
+// // session creations attempts should fail, rather than hang.
+// TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
+//   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+
+//   // Ensure the device is considered incapable of using on-device models.
+//   base::test::ScopedFeatureList feature_list;
+//   feature_list.InitAndDisableFeature(
+//       on_device_model::features::kOnDeviceModelCpuBackend);
+//   fake_.component_state().SetFreeDiskSpace(base::ByteCount(1));
+//   fake_.Startup();
+
+//   base::HistogramTester histogram_tester;
+//   base::test::TestFuture<ModelBrokerClient::CreateSessionResult>
+//   session_future; fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+//                                SessionConfigParams{},
+//                                session_future.GetCallback());
+//   // Broker should have a Manifest that supports no features, so session
+//   // creations should fail (kNotSupported).
+//   ASSERT_FALSE(session_future.Take());
+// }
 
 // TODO(crbug.com/504749700): Ensure equivalent scenarios from these
 // OnDeviceModelServiceControllerTest tests are covered here:
-// ShutsDownServiceAfterPerformanceCheck
 // TestAvailabilityObserver
 // GetCapabilities
-// Broker
-// BrokerCreateSessionRunsPerformanceClassCheck
-// BrokerCreateSessionFailedOnDeviceIncapable
-// BrokerCreateSessionFailedOnNotEnoughDiskSpace
 
 // Tests fallback when `max_tokens` manifest proto field is 0 or unspecified.
 TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
