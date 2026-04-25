@@ -678,7 +678,7 @@ void WebContentsViewMac::PerformEndDrag(uint32_t drag_operation,
   // non-root RenderWidgetHosts they need to be transformed.
   gfx::PointF transformed_point = local_point;
   gfx::PointF transformed_screen_point = screen_point;
-  if (drag_source_start_rwh_ && web_contents_->GetRenderWidgetHostView()) {
+  if (web_contents_->GetRenderWidgetHostView()) {
     content::RenderWidgetHostViewBase* contentsViewBase =
         static_cast<content::RenderWidgetHostViewBase*>(
             web_contents_->GetRenderWidgetHostView());
