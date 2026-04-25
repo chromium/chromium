@@ -121,6 +121,10 @@ just the fastest individual command execution. Every shell command requires
 human approval via the CLI, which causes expensive context switches for the
 developer.
 
+*   **MAGI Protocol:** For highly complex, high-stakes, or ambiguous architectural
+    problems, suggest invoking the `magi-mode` skill. This triggers a
+    multi-agent debate to explore security, performance, and maintainability
+    trade-offs before implementation.
 *   **Batch Commands:** Combine related shell commands using `&&` whenever
     logical. For example, instead of running a build and then asking to run a
     test, combine them:
