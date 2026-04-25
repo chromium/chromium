@@ -68,6 +68,7 @@ class TestWebTransportCreator final
       const KURL&,
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>,
       const Vector<String>& application_protocols,
+      network::mojom::blink::WebTransportCongestionControl congestion_control,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>)
       override;
 

@@ -375,6 +375,7 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
       mojom::ClientSecurityStatePtr client_security_state) {
     network_context_->CreateWebTransport(
         url, origin, key, std::move(fingerprints), application_protocols,
+        mojom::WebTransportCongestionControl::kDefault,
         std::move(handshake_client), std::move(url_loader_network_observer),
         std::move(client_security_state));
   }

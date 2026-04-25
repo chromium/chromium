@@ -93,6 +93,7 @@ void TestWebTransportCreator::Connect(
     const KURL&,
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>,
     const Vector<String>&,
+    network::mojom::blink::WebTransportCongestionControl,
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         pending_handshake_client) {
   mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>

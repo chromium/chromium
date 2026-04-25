@@ -10,6 +10,14 @@ import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
+// A hint for what kind of congestion control algorithm the application prefers.
+// https://w3c.github.io/webtransport/#enumdef-webtransportcongestioncontrol
+enum WebTransportCongestionControl {
+  kDefault,
+  kThroughput,
+  kLowLatency,
+};
+
 // Represents a WebTransport error.
 // See also: net/quic/quic_transport_client.h
 struct WebTransportError {

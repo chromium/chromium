@@ -156,6 +156,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   const url::Origin origin_;
   const NetworkAnonymizationKey anonymization_key_;
   const std::vector<std::string> application_protocols_;
+  const WebTransportParameters::CongestionControlHint congestion_control_hint_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.
   const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
 

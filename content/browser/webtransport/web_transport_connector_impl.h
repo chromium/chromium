@@ -44,6 +44,7 @@ class WebTransportConnectorImpl final
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
       const std::vector<std::string>& application_protocols,
+      network::mojom::WebTransportCongestionControl congestion_control,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -53,6 +54,7 @@ class WebTransportConnectorImpl final
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
       const std::vector<std::string>& application_protocols,
+      network::mojom::WebTransportCongestionControl congestion_control,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -62,6 +64,7 @@ class WebTransportConnectorImpl final
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
       const std::vector<std::string>& application_protocols,
+      network::mojom::WebTransportCongestionControl congestion_control,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,

@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
       const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
           fingerprints,
       const std::vector<std::string>& application_protocols,
+      mojom::WebTransportCongestionControl congestion_control,
       NetworkContext* context,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>

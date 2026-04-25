@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -79,6 +80,21 @@ namespace {
 // The incoming max age to to be used when datagrams.incomingMaxAge is set to
 // null.
 constexpr base::TimeDelta kDefaultIncomingMaxAge = base::Seconds(60);
+
+// Converts the Blink congestion control enum to its Mojo equivalent for
+// renderer-to-browser IPC.
+network::mojom::blink::WebTransportCongestionControl
+BlinkCongestionControlToMojo(const V8WebTransportCongestionControl& cc) {
+  switch (cc.AsEnum()) {
+    case V8WebTransportCongestionControl::Enum::kDefault:
+      return network::mojom::blink::WebTransportCongestionControl::kDefault;
+    case V8WebTransportCongestionControl::Enum::kThroughput:
+      return network::mojom::blink::WebTransportCongestionControl::kThroughput;
+    case V8WebTransportCongestionControl::Enum::kLowLatency:
+      return network::mojom::blink::WebTransportCongestionControl::kLowLatency;
+  }
+  NOTREACHED();
+}
 
 // Creates a mojo DataPipe with the options we use for our stream data pipes. On
 // success, returns true. On failure, throws an exception and returns false.
@@ -1474,6 +1490,13 @@ void WebTransport::Init(const String& url_for_diagnostics,
     }
   }
 
+  if (RuntimeEnabledFeatures::WebTransportCongestionControlEnabled(
+          execution_context) &&
+      options.hasCongestionControl()) {
+    congestion_control_ =
+        V8WebTransportCongestionControl(options.congestionControl());
+  }
+
   if (auto* scheduler = execution_context->GetScheduler()) {
     // Two features are registered here:
     // - `kWebTransport`: a non-sticky feature that will disable aggressive
@@ -1511,6 +1534,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
     connector_->Connect(
         url_, std::move(fingerprints),
         options.hasProtocols() ? options.protocols() : Vector<String>(),
+        BlinkCongestionControlToMojo(congestion_control_),
         handshake_client_receiver_.BindNewPipeAndPassRemote(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 
@@ -1842,6 +1866,20 @@ WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
 
 const String& WebTransport::protocol() {
   return selected_application_protocol_;
+}
+
+V8WebTransportCongestionControl WebTransport::congestionControl() const {
+  // TODO(crbug.com/501268547): Per the W3C spec, this attribute should reflect
+  // whether the UA *satisfied* the application's congestion control preference.
+  // Currently, we always return the value that was set in the constructor
+  // options. This is correct when the per-connection hint is honored (the
+  // normal case), but if the global kWebTransportCongestionControl
+  // base::Feature overrides the hint in the network layer, this attribute would
+  // incorrectly report the original preference instead of what was actually
+  // applied. To fix this properly, the effective congestion control value
+  // should be plumbed back from the network service via
+  // OnConnectionEstablished.
+  return congestion_control_;
 }
 
 WebTransportSendGroup* WebTransport::createSendGroup(

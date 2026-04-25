@@ -1496,6 +1496,7 @@ interface NetworkContext {
       NetworkAnonymizationKey network_anonymization_key,
       array<WebTransportCertificateFingerprint> fingerprints,
       array<string> application_protocols,
+      WebTransportCongestionControl congestion_control,
       pending_remote<WebTransportHandshakeClient> handshake_client,
       pending_remote<URLLoaderNetworkServiceObserver>?
           url_loader_network_observer,

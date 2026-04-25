@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
@@ -89,17 +90,20 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
             fingerprints,
         Vector<String> application_protocols,
+        network::mojom::blink::WebTransportCongestionControl congestion_control,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
           fingerprints(std::move(fingerprints)),
           application_protocols(std::move(application_protocols)),
+          congestion_control(congestion_control),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
     Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
         fingerprints;
     Vector<String> application_protocols;
+    network::mojom::blink::WebTransportCongestionControl congestion_control;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -109,11 +113,12 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
       const Vector<String>& application_protocols,
+      network::mojom::blink::WebTransportCongestionControl congestion_control,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
-    connect_args_.push_back(ConnectArgs(url, std::move(fingerprints),
-                                        application_protocols,
-                                        std::move(handshake_client)));
+    connect_args_.push_back(
+        ConnectArgs(url, std::move(fingerprints), application_protocols,
+                    congestion_control, std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }
@@ -2901,6 +2906,75 @@ TEST_F(WebTransportTest,
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
             exception_state.Code());
+}
+
+TEST_F(WebTransportTest, CongestionControlThroughput) {
+  ScopedWebTransportCongestionControlForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setCongestionControl(V8WebTransportCongestionControl(
+      V8WebTransportCongestionControl::Enum::kThroughput));
+
+  auto* web_transport = WebTransport::Create(scope.GetScriptState(),
+                                             String("https://example.com/"),
+                                             options, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+
+  // Verify the Mojo IPC carries the correct enum value.
+  EXPECT_EQ(args[0].congestion_control,
+            network::mojom::blink::WebTransportCongestionControl::kThroughput);
+
+  // Verify the getter returns what was set.
+  EXPECT_EQ(web_transport->congestionControl().AsEnum(),
+            V8WebTransportCongestionControl::Enum::kThroughput);
+}
+
+TEST_F(WebTransportTest, CongestionControlDefaultSendsKDefault) {
+  ScopedWebTransportCongestionControlForTest scoped_feature(true);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  // No congestionControl option set — should send kDefault over Mojo.
+  // Create is called for its side-effect (triggering the Mojo Connect).
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  EXPECT_EQ(args[0].congestion_control,
+            network::mojom::blink::WebTransportCongestionControl::kDefault);
+}
+
+TEST_F(WebTransportTest, CongestionControlFlagOff) {
+  ScopedWebTransportCongestionControlForTest scoped_feature(false);
+  V8TestingScope scope;
+  AddBinder(scope);
+
+  auto* options = MakeGarbageCollected<WebTransportOptions>();
+  options->setCongestionControl(V8WebTransportCongestionControl(
+      V8WebTransportCongestionControl::Enum::kLowLatency));
+
+  auto* web_transport = WebTransport::Create(scope.GetScriptState(),
+                                             String("https://example.com/"),
+                                             options, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+
+  // When the flag is off, the getter should return "default" regardless
+  // of what was set in the constructor options.
+  EXPECT_EQ(web_transport->congestionControl().AsEnum(),
+            V8WebTransportCongestionControl::Enum::kDefault);
+
+  // The Mojo IPC should also send kDefault when the flag is off.
+  auto args = connector_.TakeConnectArgs();
+  ASSERT_EQ(1u, args.size());
+  EXPECT_EQ(args[0].congestion_control,
+            network::mojom::blink::WebTransportCongestionControl::kDefault);
 }
 
 }  // namespace

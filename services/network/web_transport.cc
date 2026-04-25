@@ -36,10 +36,28 @@ namespace {
 net::WebTransportParameters CreateParameters(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints,
-    std::vector<std::string> application_protocols) {
+    std::vector<std::string> application_protocols,
+    mojom::WebTransportCongestionControl congestion_control) {
   net::WebTransportParameters params;
   params.enable_web_transport_http3 = true;
   params.application_protocols = std::move(application_protocols);
+
+  switch (congestion_control) {
+    case mojom::WebTransportCongestionControl::kDefault:
+      params.congestion_control_hint =
+          net::WebTransportParameters::CongestionControlHint::kDefault;
+      break;
+    case mojom::WebTransportCongestionControl::kThroughput:
+      params.congestion_control_hint =
+          net::WebTransportParameters::CongestionControlHint::kThroughput;
+      break;
+    case mojom::WebTransportCongestionControl::kLowLatency:
+      params.congestion_control_hint =
+          net::WebTransportParameters::CongestionControlHint::kLowLatency;
+      break;
+    default:
+      NOTREACHED();
+  }
 
   for (const auto& fingerprint : fingerprints) {
     params.server_certificate_fingerprints.push_back(
@@ -411,6 +429,7 @@ WebTransport::WebTransport(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints,
     const std::vector<std::string>& application_protocols,
+    mojom::WebTransportCongestionControl congestion_control,
     NetworkContext* context,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -422,7 +441,9 @@ WebTransport::WebTransport(
           this,
           key,
           context->url_request_context(),
-          CreateParameters(fingerprints, std::move(application_protocols)))),
+          CreateParameters(fingerprints,
+                           std::move(application_protocols),
+                           congestion_control))),
       url_(url),
       origin_(origin),
       context_(context),

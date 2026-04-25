@@ -12654,6 +12654,7 @@ interface WebSocketStream
 interface WebTransport
     attribute @@toStringTag
     getter closed
+    getter congestionControl
     getter datagrams
     getter incomingBidirectionalStreams
     getter incomingUnidirectionalStreams

@@ -38,6 +38,9 @@
   [RaisesException, RuntimeEnabled=WebTransportSendGroup]
   WebTransportSendGroup createSendGroup();
 
-   [RuntimeEnabled=WebTransportApplicationProtocol]
+  [RuntimeEnabled=WebTransportApplicationProtocol]
   readonly attribute DOMString protocol;
+
+  [RuntimeEnabled=WebTransportCongestionControl]
+  readonly attribute WebTransportCongestionControl congestionControl;
 };

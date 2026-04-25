@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_connection_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_datagram_stats.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -96,6 +97,7 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
   const String& protocol();
   WebTransportSendGroup* createSendGroup(ExceptionState&);
+  V8WebTransportCongestionControl congestionControl() const;
 
   void SetNextSendGroupIdForTesting(uint32_t id) { next_send_group_id_ = id; }
 
@@ -247,6 +249,9 @@ class MODULES_EXPORT WebTransport final
   const KURL url_;
 
   String selected_application_protocol_ = "";
+
+  V8WebTransportCongestionControl congestion_control_{
+      V8WebTransportCongestionControl::Enum::kDefault};
 
   // Map from stream_id to IncomingStream.
   // Intentionally keeps streams reachable by GC as long as they are open.

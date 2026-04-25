@@ -1950,6 +1950,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_transfer_characteristics.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_congestion_control.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_source.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_power_preference.cc",

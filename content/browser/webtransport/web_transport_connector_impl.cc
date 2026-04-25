@@ -179,6 +179,7 @@ void WebTransportConnectorImpl::Connect(
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
     const std::vector<std::string>& application_protocols,
+    network::mojom::WebTransportCongestionControl congestion_control,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -189,10 +190,10 @@ void WebTransportConnectorImpl::Connect(
   }
 
   if (throttle_context_) {
-    auto result = throttle_context_->PerformThrottle(
-        base::BindOnce(&WebTransportConnectorImpl::OnThrottleDone,
-                       weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
-                       application_protocols, std::move(handshake_client)));
+    auto result = throttle_context_->PerformThrottle(base::BindOnce(
+        &WebTransportConnectorImpl::OnThrottleDone, weak_factory_.GetWeakPtr(),
+        url, std::move(fingerprints), application_protocols, congestion_control,
+        std::move(handshake_client)));
     if (result ==
         WebTransportThrottleContext::ThrottleResult::kTooManyPendingSessions) {
       if (frame_) {
@@ -208,7 +209,7 @@ void WebTransportConnectorImpl::Connect(
     }
   } else {
     OnThrottleDone(url, std::move(fingerprints), application_protocols,
-                   std::move(handshake_client),
+                   congestion_control, std::move(handshake_client),
                    /*tracker=*/nullptr);
   }
 }
@@ -218,6 +219,7 @@ void WebTransportConnectorImpl::OnThrottleDone(
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
     const std::vector<std::string>& application_protocols,
+    network::mojom::WebTransportCongestionControl congestion_control,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     std::unique_ptr<WebTransportThrottleContext::Tracker> tracker) {
@@ -268,7 +270,8 @@ void WebTransportConnectorImpl::OnThrottleDone(
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
           weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
-          application_protocols, std::move(url_loader_network_observer),
+          application_protocols, congestion_control,
+          std::move(url_loader_network_observer),
           client_security_state_.Clone()));
 }
 
@@ -277,6 +280,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
     const std::vector<std::string>& application_protocols,
+    network::mojom::WebTransportCongestionControl congestion_control,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     network::mojom::ClientSecurityStatePtr client_security_state,
@@ -302,7 +306,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
 
   process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
       url, origin_, network_anonymization_key_, std::move(fingerprints),
-      application_protocols, std::move(handshake_client),
+      application_protocols, congestion_control, std::move(handshake_client),
       std::move(url_loader_network_observer), std::move(client_security_state));
 }
 

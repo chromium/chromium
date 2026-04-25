@@ -2097,6 +2097,7 @@ void NetworkContext::CreateWebTransport(
     const net::NetworkAnonymizationKey& key,
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
     const std::vector<std::string>& application_protocols,
+    mojom::WebTransportCongestionControl congestion_control,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -2111,8 +2112,8 @@ void NetworkContext::CreateWebTransport(
     return;
   }
   web_transports_.insert(std::make_unique<WebTransport>(
-      url, origin, key, fingerprints, application_protocols, this,
-      std::move(pending_handshake_client),
+      url, origin, key, fingerprints, application_protocols, congestion_control,
+      this, std::move(pending_handshake_client),
       std::move(url_loader_network_observer),
       std::move(client_security_state)));
 }
