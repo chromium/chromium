@@ -579,7 +579,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1380028686461971526">Collegamento automatico alla rete</translation>
 <translation id="1381567580865186407">Il testo dettato in <ph name="LANGUAGE" /> viene inviato a Google per essere elaborato</translation>
 <translation id="1382174183118245544">Numeri carte di credito</translation>
-<translation id="1383065744946263511">Blocca sulla barra degli strumenti</translation>
+<translation id="1383065744946263511">Fissa sulla barra degli strumenti</translation>
 <translation id="1383381142702995121">Gestisci questa estensione</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383861834909034572">Apri al termine</translation>
@@ -1936,7 +1936,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2296218178174497398">Rilevamento dispositivi</translation>
 <translation id="2297705863329999812">Cerca stampanti</translation>
 <translation id="2297822946037605517">Condividi questa pagina</translation>
-<translation id="229871422646860597">Sblocca dalla barra degli strumenti</translation>
+<translation id="229871422646860597">Stacca dalla barra degli strumenti</translation>
 <translation id="2298749511072894576">Ora puoi riprendere direttamente le chat con Gemini qui. Stacca questo elemento in qualsiasi momento.</translation>
 <translation id="2299685119225839832">Puoi ricevere un riepilogo di ciò che le persone dicono nelle loro recensioni</translation>
 <translation id="2299734369537008228">Cursore: da <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
@@ -3462,7 +3462,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3319863571062685443">Il tuo indirizzo è stato salvato</translation>
 <translation id="3320271870899888245">Impossibile collegarsi a OneDrive. Riprova.</translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
-<translation id="3320851950558287493">Esegue l'upgrade delle connessioni a HTTPS quando possibile e ti avvisa prima di effettuare connessioni non sicure</translation>
+<translation id="3320851950558287493">Fa l'upgrade delle connessioni a HTTPS quando possibile e ti avvisa prima di effettuare connessioni non sicure</translation>
 <translation id="3320957378743864387">Nessuna autorizzazione a offrire assistenza per la scrittura</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3321494112580110651">Non vedi la stampante?</translation>
@@ -4121,7 +4121,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3756578970075173856">Imposta il PIN</translation>
 <translation id="3756806135608816820">I siti possono chiedere di cercare dispositivi Bluetooth</translation>
-<translation id="3757567010566591880">Sblocca dalla barra degli strumenti</translation>
+<translation id="3757567010566591880">Stacca dalla barra degli strumenti</translation>
 <translation id="3757645900890881944">Strumenti di ricerca</translation>
 <translation id="3757733214359997190">Nessun sito trovato</translation>
 <translation id="3757825964096339958">Seleziona gruppo</translation>
@@ -4522,7 +4522,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3994878504415702912">&amp;Carattere</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="3995963973192100066">Riproduci l'animazione</translation>
-<translation id="399788104667917863">Blocca sulla barra degli strumenti</translation>
+<translation id="399788104667917863">Fissa sulla barra degli strumenti</translation>
 <translation id="3998780825367526465">Mostra immagini di anteprima della scheda</translation>
 <translation id="3998976413398910035">Gestisci stampanti</translation>
 <translation id="4000360130639414007">Non potrai utilizzare le app per Android o il Google Play Store</translation>
@@ -5407,7 +5407,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4624054169152573743">Tema a colori</translation>
 <translation id="4625078469366263107">Attiva app</translation>
 <translation id="4625905218692741757">Colore predefinito grigio</translation>
-<translation id="4627107755957573804">Consenti a siti e app di eseguire l'upgrade degli account esistenti per utilizzare le passkey</translation>
+<translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
 <translation id="4627442949885028695">Continua da un altro dispositivo</translation>
 <translation id="4628762811416793313">La configurazione del container Linux non è stata completata. Riprova.</translation>
 <translation id="4629521233550547305">Apri il profilo <ph name="PROFILE_NAME" /></translation>
@@ -6915,7 +6915,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5678821117681811450">Invio a <ph name="WEB_DRIVE" /> in corso…</translation>
 <translation id="5678888125599911373">Puoi riaprire le schede che hai chiuso di recente su tutti i dispositivi su cui utilizzi Chrome</translation>
 <translation id="5678955352098267522">Lettura dei dati su <ph name="WEBSITE_1" /></translation>
-<translation id="5679785611070310751">Non riceverai più aggiornamenti della sicurezza per questo Chromebook a partire da <ph name="MONTH_AND_YEAR" />. È il momento di eseguire l'upgrade all'ultima versione del software e della sicurezza. Si applicano i termini dell'offerta.</translation>
+<translation id="5679785611070310751">Non riceverai più aggiornamenti della sicurezza per questo Chromebook a partire da <ph name="MONTH_AND_YEAR" />. È il momento di fare l'upgrade all'ultima versione del software e della sicurezza. Si applicano i termini dell'offerta.</translation>
 <translation id="5680050361008726776">Vuoi rimuovere "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">Il file è già in fase di apertura</translation>
 <translation id="5684181005476681636">Dettagli Wi-Fi</translation>
@@ -8211,7 +8211,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6580203076670148210">Velocità di scansione</translation>
 <translation id="6580676117087365538">Per ottenere questa estensione su tutti i tuoi computer, verifica la tua identità</translation>
 <translation id="6581356304040102696">Impossibile importare le password. Le dimensioni file devono essere minori di 1 MB.</translation>
-<translation id="6582080224869403177">Ripristina il tuo dispositivo <ph name="DEVICE_TYPE" /> per eseguire l'upgrade della sicurezza.</translation>
+<translation id="6582080224869403177">Ripristina il tuo dispositivo <ph name="DEVICE_TYPE" /> per fare l'upgrade della sicurezza.</translation>
 <translation id="6582274660680936615">Stai navigando come Ospite</translation>
 <translation id="6583328141350416497">Continua il download</translation>
 <translation id="6584878029876017575">Firma definitiva Microsoft</translation>
@@ -8907,7 +8907,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7039326228527141150">Accedi a dispositivi USB di <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Accesso smart card Microsoft</translation>
 <translation id="7039951224110875196">Crea un Account Google per un bambino</translation>
-<translation id="7039968672732182060">Il tuo Chromebook non riceve più aggiornamenti della sicurezza. È il momento di eseguire l'upgrade all'ultima versione del software e della sicurezza. Si applicano i termini dell'offerta.</translation>
+<translation id="7039968672732182060">Il tuo Chromebook non riceve più aggiornamenti della sicurezza. È il momento di fare l'upgrade all'ultima versione del software e della sicurezza. Si applicano i termini dell'offerta.</translation>
 <translation id="7042116641003232070">Autorizzato a salvare i dati sul tuo dispositivo</translation>
 <translation id="7044124535091449260">Ulteriori informazioni sull'accesso ai siti</translation>
 <translation id="7044207729381622209">Uscirai da questi siti, schede aperte incluse</translation>

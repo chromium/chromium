@@ -4443,7 +4443,7 @@ Batafsil axborot:
 <translation id="7976053965094442846">Muddatli toʻlov taklif qiladigan hozir olib, keyin toʻlash emitentlari. Klaviatura yashirildi.</translation>
 <translation id="7976214039405368314">Limitdan oshib ketdi</translation>
 <translation id="7977538094055660992">Chiqarish qurilmasi</translation>
-<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> daq oldin}=1{<ph name="TIME_COUNT" /> st oldin}other{<ph name="TIME_COUNT" /> kun oldin}}</translation>
+<translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> dq oldin}=1{<ph name="TIME_COUNT" /> st oldin}other{<ph name="TIME_COUNT" /> kun oldin}}</translation>
 <translation id="7979595116210197019">Taom xizmati</translation>
 <translation id="798134797138789862">Virtual reallik qurilmalari va axborotlardan foydalanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="7983008347525536475">Yoʻl tanlamas avtomobillar</translation>

@@ -1815,7 +1815,7 @@ L'indirizzo IPv4 reca il prefisso 0010; l'indirizzo IPv6 reca il prefisso 0020. 
 
 Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questa policy o la policy <ph name="DOH_TEMPLATES_POLICY_NAME" /> e il campo non può essere lasciato vuoto.
 
-Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+Se la policy <ph name="DOH_MODE_POLICY_NAME" /> viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di fare l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
 
 Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" />.
 
@@ -2016,7 +2016,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se questa policy viene impostata su False, <ph name="PRODUCT_NAME" /> disattiva queste protezioni di sicurezza per le connessioni autenticate con certificati CA installati a livello locale. Queste protezioni sono sempre attive per le connessioni autenticate con certificati CA considerati pubblicamente attendibili.
 
-      Il valore predefinito di questa policy è stato modificato in <ph name="PRODUCT_NAME" /> 81 da False a True. Il codice di errore previsto per il problema di connessione dei proxy interessati è ERR_TLS13_DOWNGRADE_DETECTED. Gli amministratori a cui occorre più tempo per eseguire l'upgrade dei proxy interessati potrebbero usare questa policy per disattivare temporaneamente questa funzionalità di sicurezza. Questa policy è stata rimossa nella versione 86.
+      Il valore predefinito di questa policy è stato modificato in <ph name="PRODUCT_NAME" /> 81 da False a True. Il codice di errore previsto per il problema di connessione dei proxy interessati è ERR_TLS13_DOWNGRADE_DETECTED. Gli amministratori a cui occorre più tempo per fare l'upgrade dei proxy interessati potrebbero usare questa policy per disattivare temporaneamente questa funzionalità di sicurezza. Questa policy è stata rimossa nella versione 86.
       </translation>
 <translation id="2336822410658374491">Disattiva l'accesso al menu contestuale del provider di ricerca predefinito</translation>
 <translation id="233726003666026610">Impostazioni per i gruppi suggeriti</translation>
@@ -4869,7 +4869,7 @@ Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina ht
 Se questa policy non viene impostata, per tutti i siti viene usato il valore predefinito globale, configurato dalla policy <ph name="DEFAULT_IDLE_DETECTION_SETTING_POLICY_NAME" /> (Impostazione predefinita rilevamento inattività), se impostato, o altrimenti dalla configurazione personale dell'utente.</translation>
 <translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4251370222792468420">Chrome tenta di eseguire l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
+<translation id="4251370222792468420">Chrome tenta di fare l'upgrade di alcuni tipi di sottorisorse di contenuto misto (HTTP su un sito HTTPS) su iOS.
 Per informazioni dettagliate, visita la pagina https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
 
 Questa policy è stata utilizzata per disattivare l'upgrade automatico dei contenuti misti su iOS. La policy è deprecata e non è supportata.</translation>
@@ -8395,7 +8395,7 @@ Se la policy viene impostata su Disattivata o se non viene configurata, la ricer
 <translation id="6431446111529802555">Europa.</translation>
 <translation id="6433697627431665375">Impedisci l'inclusione dei dati di <ph name="PRODUCT_NAME" /> nei backup</translation>
 <translation id="6436052172226685535">Comportamento predefinito di LBS</translation>
-<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di eseguire l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questa policy per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
+<translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> tenta di fare l'upgrade di alcune navigazioni da HTTP a HTTPS, se possibile. È possibile utilizzare questa policy per disabilitare questo comportamento. Se viene impostata su "true" o non viene impostata, questa funzionalità verrà attivata per impostazione predefinita.
 
 La policy <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separata può essere utilizzata per escludere determinati nomi host o pattern dei nomi host dall'upgrade a HTTPS da parte di questa funzionalità.
 
@@ -12495,7 +12495,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_SECURE" />, questa policy deve essere impostata e non può essere vuota. Soltanto su <ph name="PRODUCT_OS_NAME" /> è necessario impostare questa policy o la policy <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />, altrimenti la risoluzione DNS non andrà a buon fine.
 
-      Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+      Se la policy DnsOverHttpsMode viene impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questa policy viene configurata, verranno usati i modelli URI specificati; se questa policy non viene configurata, verranno usate le mappature impostate come hardcoded per cercare di fare l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
 
       Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" /> per le richieste.
 
