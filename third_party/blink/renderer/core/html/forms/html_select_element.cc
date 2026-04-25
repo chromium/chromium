@@ -1030,6 +1030,7 @@ void HTMLSelectElement::SelectOptionFromPopoverPickerOrListbox(
         }
       }
     }
+    SetNeedsValidityCheck();
     DispatchInputEvent();
     DispatchChangeEvent();
     // TODO call UpdateAllSelectedcontents()
