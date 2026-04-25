@@ -32,6 +32,7 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
       label: {type: String},
       errorMessage: {type: String},
       someArrayProp: {type: Array},
+      onClick_: {type: Array},
     };
   }
 
@@ -41,6 +42,7 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
   accessor errorMessage: string = '';
   accessor label: string = 'hello world';
   accessor someArrayProp: string = '';
+  accessor onClick_: number[] = [0];
   trustedHtml: TrustedHTML = window.trustedTypes!.emptyHTML;
 
   getErrorMessage(): string {
@@ -50,6 +52,8 @@ export class LitElementBindingsViolationsElement extends CrLitElement {
   getLabels() {
     return ['label1', 'label2'];
   }
+
+  onClick() {}
 
   accessor description:
       {[key: string]: string} = {'is': 'input', 'controls': 'count'};

@@ -4,7 +4,7 @@
 
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpSearchboxElement} from './ntp_searchbox.js';
 import {getHtml as getContextualEntrypointHtml} from './ntp_searchbox_contextual_entrypoint.html.js';
@@ -14,10 +14,10 @@ export function getHtml(this: NtpSearchboxElement) {
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}"
-    @dragenter="${this.dragAndDropHandler?.handleDragEnter}"
-    @dragover="${this.dragAndDropHandler?.handleDragOver}"
-    @dragleave="${this.dragAndDropHandler?.handleDragLeave}"
-    @drop="${this.dragAndDropHandler?.handleDrop}">
+    @dragenter="${this.dragAndDropHandler?.handleDragEnter || nothing}"
+    @dragover="${this.dragAndDropHandler?.handleDragOver || nothing}"
+    @dragleave="${this.dragAndDropHandler?.handleDragLeave || nothing}"
+    @drop="${this.dragAndDropHandler?.handleDrop || nothing}">
   ${this.ntpRealboxNextEnabled ?
     html`
       <search-animated-glow animation-state="${this.animationState}" part="animated-glow">

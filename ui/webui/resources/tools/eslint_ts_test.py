@@ -745,8 +745,13 @@ class EslintTsTest(unittest.TestCase):
 
     _BINDING_TYPE_MISMATCH_PREFIX_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s'"
 
+    _LISTENER_NOT_CALLABLE_ERROR = "Event listener for '@%(eventName)s' must be callable"
+
     # The following strings *should* appear in the error output.
     errors = [
+        _LISTENER_NOT_CALLABLE_ERROR % {
+            'eventName': 'click',
+        },
         _BINDING_TYPE_MISMATCH_ERROR % {
             'propertyName': 'fooString',
             'tagName': 'hello-world-child',

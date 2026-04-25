@@ -13,7 +13,7 @@ import {dashCaseToCamelCase, extractClassImport, extractPropertiesFromClass, get
 type Options = [];
 type MessageIds = 'incorrectAttributeBinding'|'incorrectBooleanBinding'|
     'noTrueBinding'|'noFalseBinding'|'propertyTypeMismatch'|
-    'bindingTypeMismatch'|'propertyNotFound';
+    'bindingTypeMismatch'|'propertyNotFound'|'listenerNotCallable';
 
 export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
     Options, MessageIds>({
@@ -38,6 +38,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           'Type mismatch in property binding: Property \'{{propertyName}}\' on element \'{{tagName}}\' expects type \'{{expectedType}}\', but was provided \'{{providedType}}\'.',
       propertyNotFound:
           'Property \'{{propertyName}}\' was not found on element \'{{tagName}}\'.',
+      listenerNotCallable:
+          'Event listener for \'@{{eventName}}\' must be callable.',
     },
     schema: [],
   },
@@ -178,6 +180,37 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       });
     }
 
+    function checkEventListenerBinding(
+        eventName: string, expression: TSESTree.Expression,
+        expressionType: ts.Type, checker: ts.TypeChecker) {
+      const expressionText = context.sourceCode.getText(expression);
+
+      function isValidListenerType(type: ts.Type): boolean {
+        // Exception for Lit's "nothing" symbol.
+        if (expressionText.endsWith('nothing')) {
+          return true;
+        }
+
+        return checker.getSignaturesOfType(type, ts.SignatureKind.Call).length >
+            0;
+      }
+
+      if (expressionType.isUnion() &&
+          expressionType.types.every(isValidListenerType)) {
+        return;
+      }
+
+      if (!expressionType.isUnion() && isValidListenerType(expressionType)) {
+        return;
+      }
+
+      context.report({
+        node: expression,
+        messageId: 'listenerNotCallable',
+        data: {eventName},
+      });
+    }
+
     const templateFilename = context.filename.replaceAll('\\', '/');
     assert.ok(templateFilename.endsWith('.html.ts'));
 
@@ -224,7 +257,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         extractPropertiesFromClass(classDefinitionFile, className, context);
 
         const bindingRegex =
-            /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+))="$/;
+            /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$/;
         let currentTagName = '';
 
         for (let i = 0; i < node.quasis.length; i++) {
@@ -282,6 +315,14 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           if (boolName) {
             checkBooleanAttributeBinding(
                 boolName, expression, expressionTypeStr, propName);
+            continue;
+          }
+
+          // Event listener binding validation
+          const eventName = match.groups['eventName'];
+          if (eventName) {
+            checkEventListenerBinding(
+                eventName, expression, expressionType, checker);
             continue;
           }
 
