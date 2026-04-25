@@ -40,7 +40,7 @@ void DispatchManifestNotFound(
 std::optional<std::string> MaybeGetBadMessageStringForManifest(
     blink::mojom::ManifestRequestResult result,
     const blink::mojom::Manifest& manifest,
-    const GURL& document_url) {
+    const url::Origin& document_origin) {
   if (result == blink::mojom::ManifestRequestResult::kSuccess &&
       blink::IsEmptyManifest(manifest)) {
     return "RequestManifest reported success but didn't return a manifest";
@@ -65,27 +65,55 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
            valid_to_string(scope_valid), ")."});
     }
 
+    if (!document_origin.IsSameOriginWith(manifest.start_url)) {
+      return "Manifest start_url must be same-origin with the document.";
+    }
+
+    if (!document_origin.IsSameOriginWith(manifest.id)) {
+      return "Manifest id must be same-origin with the document.";
+    }
+
+    if (!document_origin.IsSameOriginWith(manifest.scope)) {
+      return "Manifest scope must be same-origin with the document.";
+    }
+
+    if (manifest.share_target &&
+        !document_origin.IsSameOriginWith(manifest.share_target->action)) {
+      return "Manifest share_target must be same-origin with the document.";
+    }
+
+    for (const auto& file_handler : manifest.file_handlers) {
+      if (!document_origin.IsSameOriginWith(file_handler->action)) {
+        return "Manifest file_handlers must be same-origin with the document.";
+      }
+    }
+
+    for (const auto& protocol_handler : manifest.protocol_handlers) {
+      if (!document_origin.IsSameOriginWith(protocol_handler->url)) {
+        return "Manifest protocol_handlers must be same-origin with the "
+               "document.";
+      }
+    }
+
+    net::SchemefulSite document_site(document_origin);
     for (const auto& migrate_from : manifest.migrate_from) {
-      if (!net::SchemefulSite::IsSameSite(document_url, migrate_from->id)) {
+      if (!document_site.IsSameSiteWith(migrate_from->id)) {
         return "Manifest migrate_from id must be the same site as the "
                "document.";
       }
       if (migrate_from->install_url && migrate_from->install_url->is_valid() &&
-          !net::SchemefulSite::IsSameSite(document_url,
-                                          *migrate_from->install_url)) {
+          !document_site.IsSameSiteWith(*migrate_from->install_url)) {
         return "Manifest migrate_from install_url must be the same site as the "
                "document.";
       }
     }
 
     if (manifest.migrate_to) {
-      if (!net::SchemefulSite::IsSameSite(document_url,
-                                          manifest.migrate_to->id)) {
+      if (!document_site.IsSameSiteWith(manifest.migrate_to->id)) {
         return "Manifest migrate_to id must be the same site as the document.";
       }
       if (manifest.migrate_to->install_url.is_valid() &&
-          !net::SchemefulSite::IsSameSite(document_url,
-                                          manifest.migrate_to->install_url)) {
+          !document_site.IsSameSiteWith(manifest.migrate_to->install_url)) {
         return "Manifest migrate_to install_url must be the same site as the "
                "document.";
       }
@@ -188,9 +216,10 @@ blink::mojom::ManifestPtr ManifestManagerHost::ValidateAndMaybeOverrideManifest(
     blink::mojom::ManifestPtr manifest) {
   // Mojo bindings guarantee that `manifest` isn't null.
   CHECK(manifest);
-  const GURL& document_url = page().GetMainDocument().GetLastCommittedURL();
   if (std::optional<std::string> bad_message_error =
-          MaybeGetBadMessageStringForManifest(result, *manifest, document_url);
+          MaybeGetBadMessageStringForManifest(
+              result, *manifest,
+              page().GetMainDocument().GetLastCommittedOrigin());
       bad_message_error.has_value()) {
     mojo::ReportBadMessage(*bad_message_error);
     return blink::mojom::Manifest::New();
