@@ -44,6 +44,8 @@ class GPU_GLES2_EXPORT GLContextVirtualDelegate {
   virtual void RestoreVertexAttribArray(unsigned index) = 0;
   virtual void RestoreAllExternalTextureBindingsIfNeeded() = 0;
 
+  virtual void PauseTransformFeedback() {}
+
   virtual QueryManager* GetQueryManager() = 0;
 };
 

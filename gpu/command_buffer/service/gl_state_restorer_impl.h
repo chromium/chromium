@@ -41,6 +41,7 @@ class GPU_GLES2_EXPORT GLStateRestorerImpl : public gl::GLStateRestorer {
   void RestoreProgramBindings() override;
   void RestoreBufferBinding(unsigned int target) override;
   void RestoreVertexAttribArray(unsigned int index) override;
+  void PauseTransformFeedback() override;
   void PauseQueries() override;
   void ResumeQueries() override;
 
