@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -565,6 +566,11 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
                 factory->manifest_.GetRecipes().base_models().at(model_id);
             auto params = on_device_model::mojom::LoadModelParams::New();
             params->max_tokens = recipe.max_tokens();
+            if (params->max_tokens == 0) {
+              LOG(ERROR) << "Model recipe " << model_id << " has 0 max_tokens, "
+                         << "using fallback value " << kOnDeviceModelMaxTokens;
+              params->max_tokens = kOnDeviceModelMaxTokens;
+            }
             params->performance_hint =
                 ConvertPerformanceHint(recipe.performance_hint());
             for (int32_t rank : recipe.supported_adaptation_ranks()) {

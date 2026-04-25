@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
@@ -60,5 +61,46 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
 // BrokerCreateSessionRunsPerformanceClassCheck
 // BrokerCreateSessionFailedOnDeviceIncapable
 // BrokerCreateSessionFailedOnNotEnoughDiskSpace
+
+// Tests fallback when `max_tokens` manifest proto field is 0 or unspecified.
+TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
+  std::string name = "model_A";
+  fake_.component_state().UpdateBaseModel(name + "_key", []() {
+    auto base_model_asset = std::make_unique<FakeBaseModelAsset>();
+    base_model_asset->set_version("1.0.0.0");
+    return base_model_asset;
+  }());
+
+  ManifestBuilder builder;
+  builder.Add(name + "_asset", OnDemandComponent(name + "_key", "1.0.0.0"));
+  builder.Add(name + "_recipe",
+              BaseModelRecipe(
+                  FileReference(name + "_asset", "weights.bin"),
+                  BaseModelRecipeArgs(
+                      proto::BaseModelRecipe::BACKEND_TYPE_CPU,
+                      proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {},
+                      /*max_tokens=*/0)));
+  builder.Add("test_solution",
+              SolutionRecipe(name + "_recipe", "",
+                             ManifestFileReference("testconfig.pb")));
+  builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, "test"},
+              "test_solution");
+
+  auto manifest_directory =
+      std::make_unique<ManifestComponentDirectory>(builder.Build());
+  proto::SolutionConfig solution_config;
+  *solution_config.mutable_feature() = SimpleTestFeatureConfig();
+  manifest_directory->Add("testconfig.pb", solution_config);
+  fake_.component_state().UpdateManifest(std::move(manifest_directory));
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+  EXPECT_EQ(session->GetTokenLimits().max_tokens, kOnDeviceModelMaxTokens);
+}
 
 }  // namespace optimization_guide
