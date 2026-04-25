@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
-#define EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
+#define CHROME_BROWSER_EXTENSIONS_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
 
 #include "components/storage_monitor/storage_info.h"
 
@@ -25,4 +25,4 @@ storage_monitor::StorageInfo BuildStorageInfoFromTestStorageUnitInfo(
 
 }  // namespace extensions::test
 
-#endif  // EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_

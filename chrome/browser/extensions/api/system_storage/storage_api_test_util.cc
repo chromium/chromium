@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/system_storage/storage_api_test_util.h"
+#include "chrome/browser/extensions/api/system_storage/storage_api_test_util.h"
 
 #include "base/strings/utf_string_conversions.h"
 
 namespace extensions::test {
 
-const struct TestStorageUnitInfo kRemovableStorageData = {"dcim:device:001",
-                                                          "/media/usb1",
-                                                          4098,
-                                                          1000};
+const struct TestStorageUnitInfo kRemovableStorageData = {
+    "dcim:device:001", "/media/usb1", 4098, 1000};
 
 storage_monitor::StorageInfo BuildStorageInfoFromTestStorageUnitInfo(
     const TestStorageUnitInfo& unit) {

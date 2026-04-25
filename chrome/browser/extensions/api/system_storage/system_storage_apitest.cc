@@ -9,19 +9,23 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "chrome/browser/extensions/api/system_storage/storage_api_test_util.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
-#include "extensions/browser/api/system_storage/storage_api_test_util.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_storage/storage_info_provider.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+
+// This API is not supported on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace {
 
 using extensions::StorageUnitInfoList;
-using extensions::test::TestStorageUnitInfo;
 using extensions::test::kRemovableStorageData;
+using extensions::test::TestStorageUnitInfo;
 using storage_monitor::StorageMonitor;
 using storage_monitor::TestStorageMonitor;
 
@@ -29,8 +33,6 @@ constexpr TestStorageUnitInfo kTestingData[] = {
     {"dcim:device:001", "0xbeaf", 4098, 1},
     {"path:device:002", "/home", 4098, 2},
     {"path:device:003", "/data", 10000, 3}};
-
-}  // namespace
 
 class TestStorageInfoProvider : public extensions::StorageInfoProvider {
  public:
@@ -78,14 +80,17 @@ double TestStorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
   return result;
 }
 
-class SystemStorageApiTest : public extensions::ShellApiTest {
+}  // namespace
+
+// Cannot be in the anonymous namespace as it is a friend of StorageMonitor.
+class SystemStorageApiTest : public extensions::ExtensionApiTest {
  public:
   SystemStorageApiTest() = default;
   ~SystemStorageApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
-    TestStorageMonitor::CreateForBrowserTests();
+    ExtensionApiTest::SetUpOnMainThread();
+    CHECK(StorageMonitor::GetInstance());
   }
 
   void SetUpAllMockStorageDevices() {
@@ -120,9 +125,10 @@ IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
   }
   // Set the number of expected callbacks into the StorageInfoProvider.
   provider->set_expected_call_count(device_ids_listeners.size());
-  ASSERT_TRUE(RunAppTest("system/storage")) << message_;
-  for (const auto& listener : device_ids_listeners)
+  ASSERT_TRUE(RunExtensionTest("system/storage")) << message_;
+  for (const auto& listener : device_ids_listeners) {
     EXPECT_TRUE(listener->WaitUntilSatisfied());
+  }
   // Wait for the callbacks to complete so they don't run during
   // teardown.
   provider->WaitForCallbacks();
@@ -133,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, StorageAttachment) {
   ExtensionTestMessageListener attach_listener("attach");
   ExtensionTestMessageListener detach_listener("detach");
 
-  EXPECT_TRUE(LoadApp("system/storage_attachment"));
+  EXPECT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("system/storage_attachment")));
   // Simulate triggering onAttached event.
   ASSERT_TRUE(attach_listener.WaitUntilSatisfied());
 

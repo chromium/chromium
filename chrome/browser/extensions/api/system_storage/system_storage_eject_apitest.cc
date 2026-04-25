@@ -8,29 +8,34 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/api/system_storage/storage_api_test_util.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/api/system_storage/storage_api_test_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
+
+// This API is not supported on Android.
+static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace {
 
-using extensions::test::TestStorageUnitInfo;
 using extensions::test::kRemovableStorageData;
+using extensions::test::TestStorageUnitInfo;
 using storage_monitor::StorageMonitor;
 using storage_monitor::TestStorageMonitor;
 
 }  // namespace
 
-class SystemStorageEjectApiTest : public extensions::ShellApiTest {
+class SystemStorageEjectApiTest : public extensions::ExtensionApiTest {
  public:
   SystemStorageEjectApiTest() : monitor_(nullptr) {}
 
@@ -43,18 +48,24 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
  protected:
   void SetUpOnMainThread() override {
     monitor_ = TestStorageMonitor::CreateForBrowserTests();
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    monitor_ = nullptr;
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
   content::RenderFrameHost* GetMainFrame() {
     ExtensionTestMessageListener listener("loaded");
-    const extensions::Extension* extension = LoadApp("system/storage_eject");
+    const extensions::Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII("system/storage_eject"));
 
     // Wait for the extension to load completely so we can execute
     // the JavaScript function from test case.
     EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-    return extensions::ProcessManager::Get(browser_context())
+    return extensions::ProcessManager::Get(profile())
         ->GetBackgroundHostForExtension(extension->id())
         ->main_frame_host();
   }
@@ -85,7 +96,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   }
 
  protected:
-  raw_ptr<TestStorageMonitor, DanglingUntriaged> monitor_;
+  raw_ptr<TestStorageMonitor> monitor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {
