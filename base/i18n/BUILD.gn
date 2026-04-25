@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("base_i18n_export") {
+  public = [ "base_i18n_export.h" ]
+}
+
+source_set("language_code") {
+  sources = [
+    "language_code.cc",
+    "language_code.h",
+  ]
+
+  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+
+  public_deps = [ ":base_i18n_export" ]
+  deps = [ "//base" ]
+  visibility = [
+    ":*",
+    "//base:i18n",
+  ]
+}

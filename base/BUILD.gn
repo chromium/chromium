@@ -3061,7 +3061,6 @@ if (enable_rust_translit) {
 component("i18n") {
   output_name = "base_i18n"
   sources = [
-    "i18n/base_i18n_export.h",
     "i18n/base_i18n_switches.cc",
     "i18n/base_i18n_switches.h",
     "i18n/break_iterator.cc",
@@ -3108,6 +3107,8 @@ component("i18n") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     ":base",
+    "//base/i18n:base_i18n_export",
+    "//base/i18n:language_code",
     "//third_party/ced",
     "//third_party/icu",
   ]
