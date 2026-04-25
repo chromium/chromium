@@ -748,3 +748,10 @@ bool IsGeminiMultiTabContextEnabled() {
   }
   return base::FeatureList::IsEnabled(kGeminiMultiTabContext);
 }
+
+BASE_FEATURE(kAppStoreInAppEvents, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAppStoreInAppEventsEnabled() {
+  return IsPageActionMenuEnabled() &&
+         base::FeatureList::IsEnabled(kAppStoreInAppEvents);
+}

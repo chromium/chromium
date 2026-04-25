@@ -54,6 +54,12 @@ const char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kAppStoreInAppEventsName[] = "App Store In-App Events";
+const char kAppStoreInAppEventsDescription[] =
+    "Enables a user to tap the promo within the iOS App Store and invoke the "
+    "Gemini FRE after navigating to a Gemini related web page through an "
+    "external action.";
+
 const char kAppleCalendarExperienceKitName[] = "Experience Kit Apple Calendar";
 const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "

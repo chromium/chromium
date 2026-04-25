@@ -400,4 +400,12 @@ BASE_DECLARE_FEATURE(kGeminiMultiTabContext);
 // Returns true if the GeminiMultiTabContext feature is enabled.
 bool IsGeminiMultiTabContextEnabled();
 
+// Feature flag to control the App Store In-App Events feature. Enables a
+// user to tap the promo within the iOS App Store and invoke the Gemini FRE
+// after navigating to a Gemini related web page through an external action.
+BASE_DECLARE_FEATURE(kAppStoreInAppEvents);
+
+// Returns true if the App Store In-App Events feature is enabled.
+bool IsAppStoreInAppEventsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

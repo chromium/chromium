@@ -523,6 +523,14 @@
     "expiry_milestone": 142
   },
   {
+    "name": "app-store-in-app-events",
+    "owners": [
+      "joemerramos@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "apply-clientside-model-predictions-for-password-types",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 149

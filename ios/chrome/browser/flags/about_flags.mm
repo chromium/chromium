@@ -2889,6 +2889,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"cross-device-signin", flag_descriptions::kCrossDeviceSigninName,
      flag_descriptions::kCrossDeviceSigninDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kCrossDeviceSignin)},
+    {"app-store-in-app-events", flag_descriptions::kAppStoreInAppEventsName,
+     flag_descriptions::kAppStoreInAppEventsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAppStoreInAppEvents)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

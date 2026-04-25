@@ -50,6 +50,9 @@ extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];
 
+extern const char kAppStoreInAppEventsName[];
+extern const char kAppStoreInAppEventsDescription[];
+
 extern const char kAppleCalendarExperienceKitName[];
 extern const char kAppleCalendarExperienceKitDescription[];
 
