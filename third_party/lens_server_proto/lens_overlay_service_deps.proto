@@ -10,6 +10,7 @@ package lens;
 
 import "lens_overlay_client_context.proto";
 import "lens_overlay_cluster_info.proto";
+import "lens_overlay_content_metadata.proto";
 import "lens_overlay_deep_gleam_data.proto";
 import "lens_overlay_document.proto";
 import "lens_overlay_image_crop.proto";
@@ -131,7 +132,7 @@ message LensOverlayInteractionResponse {
   reserved 1, 2, 4;
 }
 
-// Next ID: 11
+// Next ID: 13
 message Payload {
   // Optional. The type of the request.
   RequestType request_type = 6;
@@ -169,6 +170,9 @@ message Payload {
 
   // Non-image content to be sent to the Lens server.
   Content content = 10;
+
+  // Optional. Metadata associated with the payload.
+  LensOverlayContentMetadata content_metadata = 12;
 
   reserved 1;
 }

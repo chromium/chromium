@@ -61,6 +61,11 @@ struct ContextualInputData {
   // If the context is a webpage or pdf, and viewport_screenshot_bytes is null,
   // this is the viewport screenshot.
   std::optional<SkBitmap> viewport_screenshot;
+  // If the context originated from a Google Drive file, this is its drive ID.
+  std::optional<std::string> drive_id;
+  // If the context originated from a Google Drive file, this is its resource
+  // key.
+  std::optional<std::string> resource_key;
   // Whether or not webpage or pdf context is eligible.
   std::optional<bool> is_page_context_eligible;
   // If set, the context id to use for referring to this context in the server.

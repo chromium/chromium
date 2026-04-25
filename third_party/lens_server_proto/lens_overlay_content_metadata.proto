@@ -1,0 +1,39 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+message LensOverlayContentMetadata {
+  // Optional. The title of the content.
+  // For a webpage, this is the webpage title. For a PDF, this is the document's
+  // internal title metadata. If the content does not have a definitive title,
+  // this field should remain empty.
+  // Example: "Google Product Presentation"
+  string content_title = 1;
+
+  // Optional. The filename of the content, including the extension.
+  // This should NOT include the local file directory path.
+  // Example: "product_presentation_final.pdf"
+  string file_name = 2;
+
+  reserved 3, 4, 5;
+
+  // Optional. Metadata for Drive content.
+  DriveMetadata drive_metadata = 6;
+}
+
+// Metadata for Google Drive content.
+// Next ID: 3
+message DriveMetadata {
+  // Optional. The Google Drive ID associated with the content.
+  string drive_id = 1;
+
+  // Optional. The resource key required to access link-shared Drive files.
+  // See go/drive-resource-keys for more details.
+  string resource_key = 2;
+}

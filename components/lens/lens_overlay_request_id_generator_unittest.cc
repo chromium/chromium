@@ -395,7 +395,8 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator.GetNextRequestId(
-          RequestIdUpdateMode::kFullImageRequest, "application/pdf");
+          RequestIdUpdateMode::kFullImageRequest, "application/pdf",
+          lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
   ASSERT_EQ(request_id->media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
   ASSERT_EQ(request_id->mime_type(), "application/pdf");
@@ -406,7 +407,8 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> first_id =
       request_id_generator.GetNextRequestId(
-          RequestIdUpdateMode::kFullImageRequest, "application/pdf");
+          RequestIdUpdateMode::kFullImageRequest, "application/pdf",
+          lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
   ASSERT_EQ(first_id->media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
   ASSERT_EQ(first_id->mime_type(), "application/pdf");
