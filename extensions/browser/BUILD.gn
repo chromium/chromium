@@ -1291,7 +1291,6 @@ if (enable_extensions) {
   source_set("browser_tests") {
     testonly = true
     sources = [
-      "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
       "api/system_storage/storage_api_test_util.cc",
       "api/system_storage/storage_api_test_util.h",
       "api/system_storage/system_storage_apitest.cc",
