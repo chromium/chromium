@@ -197,4 +197,12 @@ void RenderInputRouterDelegateImpl::DidOverscroll(
   remote->StateOnOverscrollTransfer(std::move(params));
 }
 
+void RenderInputRouterDelegateImpl::OnInputRouterActive() {
+  auto* remote = delegate_->GetRIRDelegateClientRemote(frame_sink_id_);
+  if (!remote) {
+    return;
+  }
+  remote->OnInputRouterActive();
+}
+
 }  // namespace viz

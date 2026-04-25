@@ -126,4 +126,7 @@ interface RenderInputRouterDelegateClient {
   RendererInputResponsivenessChanged(
     bool is_responsive,
     mojo_base.mojom.TimeTicks? ack_timeout_ts);
+
+  // Notifies browser that the input router has become active.
+  OnInputRouterActive();
 };

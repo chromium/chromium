@@ -2100,6 +2100,14 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false)));
 }
 
+void RenderWidgetHostImpl::SetReadyForInputCallbackForTesting(  // IN-TEST
+    base::OnceClosure callback) {
+  ready_for_input_callback_for_testing_ = std::move(callback);
+  if (input_router_active_ && ready_for_input_callback_for_testing_) {
+    std::move(ready_for_input_callback_for_testing_).Run();
+  }
+}
+
 void RenderWidgetHostImpl::SetHungRendererDelay(const base::TimeDelta& delay) {
   hung_renderer_delay_ = delay;
   GetRenderInputRouter()->SetHungRendererDelay(delay);
@@ -3237,6 +3245,15 @@ void RenderWidgetHostImpl::OnStartStylusWriting() {
 void RenderWidgetHostImpl::OnUnconfirmedTapConvertedToTap() {
   if (view_) {
     view_->OnUnconfirmedTapConvertedToTap();
+  }
+}
+
+void RenderWidgetHostImpl::OnInputRouterActive() {
+  input_router_active_ = true;
+  if (delegate_ && delegate_->IsWidgetForPrimaryMainFrame(this)) {
+    if (ready_for_input_callback_for_testing_) {
+      std::move(ready_for_input_callback_for_testing_).Run();
+    }
   }
 }
 

@@ -324,6 +324,12 @@ void RenderInputRouter::OnUnconfirmedTapConvertedToTap() {
   }
 }
 
+void RenderInputRouter::OnInputRouterActive() {
+  if (delegate_) {
+    delegate_->OnInputRouterActive();
+  }
+}
+
 blink::mojom::InputEventResultState RenderInputRouter::FilterInputEvent(
     const blink::WebInputEvent& event,
     const ui::LatencyInfo& latency_info) {

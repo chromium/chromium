@@ -3128,6 +3128,36 @@ void MainThreadFrameObserver::Quit(bool) {
   }
 }
 
+ReadyForInputObserver::ReadyForInputObserver(WebContents* web_contents) {
+  rwhi_ = RenderWidgetHostImpl::From(
+      web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  rwhi_->AddObserver(this);
+  rwhi_->SetReadyForInputCallbackForTesting(base::BindOnce(
+      &ReadyForInputObserver::OnReadyForInput, base::Unretained(this)));
+}
+
+ReadyForInputObserver::~ReadyForInputObserver() {
+  if (rwhi_) {
+    rwhi_->RemoveObserver(this);
+    rwhi_->SetReadyForInputCallbackForTesting(base::DoNothing());
+  }
+}
+
+void ReadyForInputObserver::Wait() {
+  run_loop_.Run();
+}
+
+void ReadyForInputObserver::RenderWidgetHostDestroyed(
+    RenderWidgetHost* widget_host) {
+  if (widget_host == rwhi_) {
+    rwhi_ = nullptr;
+  }
+}
+
+void ReadyForInputObserver::OnReadyForInput() {
+  run_loop_.Quit();
+}
+
 InputMsgWatcher::InputMsgWatcher(RenderWidgetHost* render_widget_host,
                                  blink::WebInputEvent::Type type)
     : render_widget_host_(render_widget_host),

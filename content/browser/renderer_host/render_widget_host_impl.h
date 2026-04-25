@@ -324,6 +324,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const ui::mojom::MenuSourceType source_type) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
   void SetHungRendererDelay(const base::TimeDelta& delay) override;
+  void SetReadyForInputCallbackForTesting(base::OnceClosure callback);
 
   // RenderProcessHostPriorityClient implementation.
   RenderProcessHostPriorityClient::Priority GetPriority() override;
@@ -402,6 +403,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInputEventAckTimeout(base::TimeTicks ack_timeout_ts) override;
   void RendererIsResponsive() override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
+  void OnInputRouterActive() override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -1521,6 +1523,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // renderer.
   bool is_active_ = false;
 
+  // Indicates whether the input router is active.
+  bool input_router_active_ = false;
+
   // This value indicates how long to wait for a new compositor frame from a
   // renderer process before clearing any previously displayed content.
   base::TimeDelta new_content_rendering_delay_;
@@ -1613,6 +1618,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool view_is_frame_sink_id_owner_{false};
 
   std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
+  base::OnceClosure ready_for_input_callback_for_testing_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

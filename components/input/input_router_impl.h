@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   ~InputRouterImpl() override;
 
   // InputRouter
+  bool IsActive() const override;
+  void MakeActive() override;
+  void MakeInactiveForTesting() override;
   void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
                       MouseEventCallback event_result_callback,
                       DispatchToRendererCallback& dispatch_callback) override;
@@ -256,6 +259,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
 
   raw_ptr<InputRouterClient> client_;
   raw_ptr<InputDispositionHandler> disposition_handler_;
+
+  // True if the router accepts input events.
+  bool active_ = false;
 
   // Whether the TouchScrollStarted event has been sent for the current
   // gesture scroll yet.

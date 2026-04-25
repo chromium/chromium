@@ -36,6 +36,7 @@ class MockInputRouterClient : public input::InputRouterClient,
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
   void OnSetCompositorAllowedTouchAction(cc::TouchAction touch_action) override;
   void DidStartScrollingViewport() override;
+  void OnInputRouterActive() override;
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;

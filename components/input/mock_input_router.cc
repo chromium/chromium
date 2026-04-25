@@ -9,6 +9,18 @@
 
 namespace input {
 
+bool MockInputRouter::IsActive() const {
+  return active_;
+}
+
+void MockInputRouter::MakeActive() {
+  active_ = true;
+}
+
+void MockInputRouter::MakeInactiveForTesting() {
+  active_ = false;
+}
+
 void MockInputRouter::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,
     MouseEventCallback event_result_callback,

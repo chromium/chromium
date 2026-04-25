@@ -85,6 +85,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   void OnInputEventAckTimeout(base::TimeTicks ack_timeout_ts) override;
   void RendererIsResponsive() override;
   void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
+  void OnInputRouterActive() override;
 
   void SetIsHidden(bool is_hidden) { is_hidden_ = is_hidden; }
 

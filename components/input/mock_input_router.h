@@ -29,6 +29,9 @@ class MockInputRouter : public InputRouter {
   ~MockInputRouter() override = default;
 
   // InputRouter:
+  bool IsActive() const override;
+  void MakeActive() override;
+  void MakeInactiveForTesting() override;
   void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
                       MouseEventCallback event_result_callback,
                       DispatchToRendererCallback& dispatch_callback) override;
@@ -65,6 +68,7 @@ class MockInputRouter : public InputRouter {
 
  private:
   raw_ptr<InputRouterClient> client_ = nullptr;
+  bool active_ = false;
 };
 
 }  // namespace input

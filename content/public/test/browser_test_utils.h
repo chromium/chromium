@@ -42,6 +42,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
@@ -1649,6 +1650,29 @@ class MainThreadFrameObserver {
   raw_ptr<RenderWidgetHost, FlakyDanglingUntriaged> render_widget_host_;
   base::OnceClosure quit_closure_;
   int routing_id_;
+};
+
+// Watches for the primary main frame to become ready for input.
+class ReadyForInputObserver : public RenderWidgetHostObserver {
+ public:
+  explicit ReadyForInputObserver(WebContents* web_contents);
+
+  ReadyForInputObserver(const ReadyForInputObserver&) = delete;
+  ReadyForInputObserver& operator=(const ReadyForInputObserver&) = delete;
+
+  ~ReadyForInputObserver() override;
+
+  // Waits until the primary main frame is ready for input.
+  void Wait();
+
+ private:
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
+
+  void OnReadyForInput();
+
+  raw_ptr<RenderWidgetHostImpl> rwhi_ = nullptr;
+  base::RunLoop run_loop_;
 };
 
 // Watches for an input msg to be consumed.

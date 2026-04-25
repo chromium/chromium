@@ -58,6 +58,7 @@ class MojoRenderInputRouterDelegateImpl
   void RendererInputResponsivenessChanged(
       bool is_responsive,
       std::optional<base::TimeTicks> ack_timeout_ts) override;
+  void OnInputRouterActive() override;
 
   void SetRenderInputRouterDelegateRemoteForTesting(
       mojo::PendingAssociatedRemote<input::mojom::RenderInputRouterDelegate>

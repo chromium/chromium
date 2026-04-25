@@ -103,6 +103,19 @@ InputRouterImpl::InputRouterImpl(
 
 InputRouterImpl::~InputRouterImpl() = default;
 
+bool InputRouterImpl::IsActive() const {
+  return active_;
+}
+
+void InputRouterImpl::MakeActive() {
+  active_ = true;
+  client_->OnInputRouterActive();
+}
+
+void InputRouterImpl::MakeInactiveForTesting() {
+  active_ = false;
+}
+
 void InputRouterImpl::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,
     MouseEventCallback event_result_callback,

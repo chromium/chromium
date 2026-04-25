@@ -62,6 +62,8 @@ void MockInputRouterClient::OnSetCompositorAllowedTouchAction(
 
 void MockInputRouterClient::DidStartScrollingViewport() {}
 
+void MockInputRouterClient::OnInputRouterActive() {}
+
 void MockInputRouterClient::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {

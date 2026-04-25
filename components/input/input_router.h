@@ -41,9 +41,9 @@ class InputRouter {
   // The input router starts in an inactive state and becomes active when the
   // browser gets the notification that the renderer has produced content.  All
   // input events are dropped during the inactive state.
-  bool IsActive() const { return active_; }
-  void MakeActive() { active_ = true; }
-  void MakeInactiveForTesting() { active_ = false; }
+  virtual bool IsActive() const = 0;
+  virtual void MakeActive() = 0;
+  virtual void MakeInactiveForTesting() = 0;
 
   // Note: if the event is processed immediately, the supplied callback is run
   // *synchronously*. If |this| is destroyed while waiting on a result from
@@ -121,8 +121,6 @@ class InputRouter {
   // been submitted to the browser.
   virtual void WaitForInputProcessed(base::OnceClosure callback) = 0;
 
- private:
-  bool active_ = false;
 };
 
 }  // namespace input

@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
 
   // Passes the overscroll parameters to the delegate.
   virtual void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) = 0;
+
+  // Called when the input router becomes active.
+  virtual void OnInputRouterActive() = 0;
 };
 
 }  // namespace input

@@ -58,6 +58,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
   // Called when a GSB has started scrolling a viewport.
   virtual void DidStartScrollingViewport() = 0;
 
+  // Called when the input router becomes active.
+  virtual void OnInputRouterActive() = 0;
+
   // Called when the input router generates an event. It is intended that the
   // client will do some processing on |gesture_event| and then send it back
   // to the InputRouter via SendGestureEvent.
