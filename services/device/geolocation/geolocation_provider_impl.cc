@@ -242,10 +242,13 @@ void GeolocationProviderImpl::OnClientsChanged() {
     if (!ignore_location_updates_) {
       // We have no more observers, so we clear the cached geoposition so that
       // when the next observer is added we will not provide a stale position.
+      // We do not clear `low_accuracy_result_` and
+      // `last_low_accuracy_result_time_` so that the anti-exploitation
+      // throttle for approximate location persists across client churn.
+      // This prevents malicious sites from collecting enough approximate
+      // positions to reconstruct a precise location.
       result_.reset();
-      low_accuracy_result_.reset();
       high_accuracy_result_.reset();
-      last_low_accuracy_result_time_ = base::TimeTicks();
     }
     task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StopProviders,

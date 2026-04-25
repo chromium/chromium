@@ -688,6 +688,70 @@ TEST_F(GeolocationProviderApproxGeoTest, ThrottlingApproximateUpdates) {
   EXPECT_EQ(result4->get_position()->latitude, 7.0);
 }
 
+TEST_F(GeolocationProviderApproxGeoTest, ThrottlePersistsAcrossClientChurn) {
+  SetFakeLocationProviderManager();
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  // 1. Subscribe a low-accuracy client and get an initial fix.
+  {
+    base::test::TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+    base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+        low_accuracy_callback;
+    EXPECT_CALL(low_accuracy_callback, Run)
+        .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+          low_accuracy_future.SetValue(result.Clone());
+        });
+    base::CallbackListSubscription low_accuracy_subscription =
+        provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                              /*enable_high_accuracy=*/false);
+
+    SendMockLocation(*approximate_position_result_);
+    auto result = low_accuracy_future.Take();
+    EXPECT_TRUE(result->is_position());
+    EXPECT_EQ(result->get_position()->latitude,
+              approximate_position_result_->get_position()->latitude);
+  }
+  // At this point, the subscription is destroyed, and client count drops to 0.
+
+  // 2. Resubscribe a new low-accuracy client. It should receive the cached fix.
+  {
+    base::test::TestFuture<mojom::GeopositionResultPtr> low_accuracy_future;
+    base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+        low_accuracy_callback;
+    EXPECT_CALL(low_accuracy_callback, Run)
+        .WillRepeatedly([&](const mojom::GeopositionResult& result) {
+          low_accuracy_future.SetValue(result.Clone());
+        });
+    base::CallbackListSubscription low_accuracy_subscription =
+        provider()->AddLocationUpdateCallback(low_accuracy_callback.Get(),
+                                              /*enable_high_accuracy=*/false);
+
+    auto result = low_accuracy_future.Take();
+    EXPECT_TRUE(result->is_position());
+    EXPECT_EQ(result->get_position()->latitude,
+              approximate_position_result_->get_position()->latitude);
+
+    // 3. Send a DIFFERENT location fix within the 15-minute window.
+    // It should be throttled (NOT received).
+    auto second_approx_result = approximate_position_result_.Clone();
+    second_approx_result->get_position()->latitude = 5.0;
+    SendMockLocation(*second_approx_result);
+
+    base::test::TestFuture<void> flush_future;
+    provider()->task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                                flush_future.GetCallback());
+    EXPECT_TRUE(flush_future.Wait());
+    EXPECT_FALSE(low_accuracy_future.IsReady());
+
+    // 4. Fast-forward past 15 minutes - next update should be accepted.
+    task_environment_.FastForwardBy(base::Minutes(16));
+    SendMockLocation(*second_approx_result);
+    auto result2 = low_accuracy_future.Take();
+    EXPECT_TRUE(result2->is_position());
+    EXPECT_EQ(result2->get_position()->latitude, 5.0);
+  }
+}
+
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
   SetFakeLocationProviderManager();
