@@ -4,6 +4,7 @@
 
 #include "components/live_caption/google_api_translation_dispatcher.h"
 
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -12,6 +13,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,6 +143,38 @@ TEST_F(GoogleApiTranslationDispatcherTest, GetTranslationNetworkError) {
       network::mojom::URLResponseHead::New(), std::string());
 
   translate_callback_run_loop.Run();
+}
+
+TEST_F(GoogleApiTranslationDispatcherTest, JsonEscapeTranscriptText) {
+  base::RunLoop wait_for_translation_request;
+  base::MockCallback<TranslateEventCallback> translate_callback;
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        wait_for_translation_request.Quit();
+      }));
+
+  GetTranslation("hello \"world\", \n \"injected\": \"yes\"", "es", "en",
+                 translate_callback);
+  wait_for_translation_request.Run();
+
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingRequest();
+  ASSERT_TRUE(pending_request);
+
+  std::string upload_data = network::GetUploadData(pending_request->request);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(upload_data, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_json);
+  ASSERT_TRUE(parsed_json->is_dict());
+
+  const std::string* q_val = parsed_json->GetDict().FindString("q");
+  ASSERT_TRUE(q_val);
+  EXPECT_EQ(*q_val, "hello \"world\", \n \"injected\": \"yes\"");
+
+  const std::string* injected_val =
+      parsed_json->GetDict().FindString("injected");
+  EXPECT_FALSE(injected_val);
 }
 
 }  // namespace captions
