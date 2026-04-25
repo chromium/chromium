@@ -46,7 +46,8 @@ bool GetSessionId(std::istringstream& header_stream, std::string* session_id) {
 
   // skip 12 leading characters: (session_id=
   // and one trailing character: )
-  *session_id = sid.substr(12, sid.size() - 12 - 1);
+  size_t size = sid.size();
+  *session_id = std::move(sid).substr(12, size - 12 - 1);
   return true;
 }
 
