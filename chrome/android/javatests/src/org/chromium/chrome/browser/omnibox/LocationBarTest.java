@@ -289,9 +289,8 @@ public class LocationBarTest {
     @Test
     @MediumTest
     public void testEditingText() {
-        testEditingText(
-                /* expectDesktopMode= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::isDesktopMode));
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        testEditingText(/* expectDesktopMode= */ true);
     }
 
     @Test
@@ -596,9 +595,7 @@ public class LocationBarTest {
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet() {
-        testFocusLogic_buttonVisibilityTablet(
-                /* expectDesktopMode= */ ThreadUtils.runOnUiThreadBlocking(
-                        OmniboxFeatures::isDesktopMode));
+        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
     }
 
     @Test
@@ -628,6 +625,7 @@ public class LocationBarTest {
     }
 
     private void testFocusLogic_buttonVisibilityTablet(boolean expectDesktopMode) {
+        OmniboxFeatures.setIsDesktopModeForTesting(expectDesktopMode);
         startActivityNormally();
 
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

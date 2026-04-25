@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.Context;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
@@ -135,10 +137,12 @@ public class FuseboxSessionState implements UserData {
      * initialize all required session controllers. The caller may supply an optional {@link
      * Runnable} to be notified when the session is fully set up.
      *
+     * @param context The context appropriate for the current Activity window.
      * @param profileSupplier The supplier for the {@link Profile} object.
      * @param onFullyActivated Optional runnable to be invoked when the session is fully activated.
      */
     public void activate(
+            Context context,
             MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable Runnable onFullyActivated) {
         if (mIsActive) {
@@ -155,7 +159,7 @@ public class FuseboxSessionState implements UserData {
         // Use current URL if the Retention is active as the starting input.
         // On eligible LFF devices the Omnibox should, by default, present the
         // current page URL (if the URL is eligible for display).
-        if (OmniboxFeatures.isDesktopMode()
+        if (OmniboxFeatures.isDesktopMode(context)
                 && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
             var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
             mAutocompleteInput.setInitialUserText(editUrl);
@@ -168,7 +172,7 @@ public class FuseboxSessionState implements UserData {
             mAutocompleteInput
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(
-                            OmniboxFeatures.isDesktopMode() ? 0 : Integer.MAX_VALUE,
+                            OmniboxFeatures.isDesktopMode(context) ? 0 : Integer.MAX_VALUE,
                             Integer.MAX_VALUE);
         }
 

@@ -1920,7 +1920,7 @@ public class LocationBarMediatorTest {
         var newState = mSessionState;
         newState.getAutocompleteInput().setUserText(newText);
         newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
-        newState.activate(mProfileSupplier, null);
+        newState.activate(mContext, mProfileSupplier, null);
 
         FuseboxSessionState previousState = new FuseboxSessionState();
         doReturn(previousState).when(mLocationBarDataProvider).getFuseboxSessionState();

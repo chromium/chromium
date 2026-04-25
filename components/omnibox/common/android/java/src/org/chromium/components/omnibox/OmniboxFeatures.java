@@ -4,9 +4,9 @@
 
 package org.chromium.components.omnibox;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.format.DateUtils;
-import android.util.DisplayMetrics;
 
 import androidx.annotation.IntDef;
 
@@ -418,18 +418,15 @@ public class OmniboxFeatures {
      *
      * <p>We're not limiting to tablet modes here, because narrow windows on LFF devices are
      * eligible for Desktop treatment, too.
+     *
+     * @param context the context to use to determine device form factor
      */
-    public static boolean isDesktopMode() {
+    public static boolean isDesktopMode(Context context) {
         if (sIsDesktopModeForTesting != null) {
             return sIsDesktopModeForTesting;
         }
 
-        // Migrate this to appropriate DisplayMetrics-based DeviceFormFactor logic once one is
-        // available.
-        DisplayMetrics dm = ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
-        float widthDp = dm.widthPixels / dm.density;
-
-        return widthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
     }
