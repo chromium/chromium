@@ -280,6 +280,9 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
   mixer[kColorNewTabPageRealboxNextIconHover] = {
       kColorSysStateHoverOnSubtle_Light};
 
+  mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
+      SkColorSetRGB(0x34, 0x6B, 0xF1)};
+
   mixer[kColorComposeboxBackground] = {SK_ColorWHITE};
   mixer[kColorComposeboxFileChipSpinner] = {kColorSysPrimary_Light};
   mixer[kColorComposeboxFont] = {
