@@ -6,7 +6,9 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -28,11 +30,6 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 #endif
 
 SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
@@ -101,7 +98,6 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true)) {
@@ -111,7 +107,6 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
         {components_sharing_message::SharingMessage::
              kGlicExperimentalTriggering});
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 SharingHandlerRegistryImpl::~SharingHandlerRegistryImpl() = default;

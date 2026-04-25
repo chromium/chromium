@@ -43,6 +43,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/sharing/click_to_call",
+    "//chrome/browser/sharing/glic_experimental_triggering",
     "//chrome/browser/sharing/one_time_tokens",
     "//chrome/browser/sharing/optimization_guide",
     "//chrome/browser/sharing/shared_clipboard",
@@ -63,7 +64,6 @@ source_set("impl") {
       "sharing_ui_controller.cc",
     ]
     deps += [
-      "//chrome/browser/sharing/glic_experimental_triggering",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
       "//components/send_tab_to_self:features",

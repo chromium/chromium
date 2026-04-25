@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -191,7 +192,7 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
         }
         return true;  // Continue
       });
-  return browser ? browser->GetActiveTabInterface() : nullptr;
+  return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
 }
 
 void GlicExperimentalTriggeringMessageHandler::OnMessage(
