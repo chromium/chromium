@@ -3193,6 +3193,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
     expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form_.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form_)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form_.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,

@@ -40,6 +40,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/metrics_enums.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1246,18 +1247,28 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     ukm::SourceId source_id,
     const FormStructure& form,
     base::TimeTicks form_submitted_timestamp) {
+  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
+      form.fields(), std::less<>(),
+      [](const std::unique_ptr<AutofillField>& field) {
+        return std::make_pair(field->GetFieldSignature(), 0);
+      });
+
   for (const auto& field : form) {
     // The possible field submitted types determined by comparing the submitted
     // value in the field with the data stored in the Autofill server. We will
     // have at most three possible field submitted types.
     FieldType submitted_type1 = UNKNOWN_TYPE;
+    const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
 
     ukm::builders::Autofill2_FieldInfoAfterSubmission builder(source_id);
     builder
         .SetFormSessionIdentifier(
             autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
+        .SetFormSignature(HashFormSignature(form.form_signature()))
         .SetFieldSessionIdentifier(
-            autofill_metrics::FieldGlobalIdToHash64Bit(field->global_id()));
+            autofill_metrics::FieldGlobalIdToHash64Bit(field->global_id()))
+        .SetFieldSignature(HashFieldSignature(field->GetFieldSignature()))
+        .SetRankInFieldSignatureGroup(field_rank);
 
     const FieldTypeSet& type_set = field->possible_types();
     if (!type_set.empty()) {

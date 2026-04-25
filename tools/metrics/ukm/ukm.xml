@@ -3577,6 +3577,12 @@ be describing additional metrics about the same event.
       Autofill2.FormSummary.
     </summary>
   </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form, which is a 10-bit hash of the form's domain,
+      name and all the supported form fields (including empty names).
+    </summary>
+  </metric>
   <metric name="HeuristicType" enum="AutofillFieldType">
     <summary>
       The type of the field predicted the regular expressions. The types are
@@ -3686,6 +3692,12 @@ be describing additional metrics about the same event.
       Autofill2.FieldInfo.
     </summary>
   </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field, a 10 bit hash value (0-1021) of the field name
+      and field type used to denote this field for query and voting purposes.
+    </summary>
+  </metric>
   <metric name="FormSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a HTML form in a
@@ -3696,10 +3708,23 @@ be describing additional metrics about the same event.
       together are used to link to the field in Autofill2.FieldInfo.
     </summary>
   </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form, which is a 10-bit hash of the form's domain,
+      name and all the supported form fields (including empty names).
+    </summary>
+  </metric>
   <metric name="MillisecondsFromFormParsedUntilSubmission">
     <summary>
       The time interval from form parse to form submission in ms in exponential
       buckets from |GetSemanticBucketMinForDurationTiming()|.
+    </summary>
+  </metric>
+  <metric name="RankInFieldSignatureGroup">
+    <summary>
+      If multiple fields have the same signature, this indicates the position
+      within this set of fields. This allows us to understand problems related
+      to duplicated field signatures.
     </summary>
   </metric>
   <metric name="SubmissionSource" enum="AutofillSubmissionSource">

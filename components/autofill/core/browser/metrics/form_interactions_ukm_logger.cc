@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/signatures.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -465,6 +466,7 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
 
   ukm::builders::Autofill2_FieldInfo builder(ukm_source_id);
   builder.SetFormSessionIdentifier(FormGlobalIdToHash64Bit(form.global_id()))
+      .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSessionIdentifier(FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormControlType2(std::to_underlying(field.form_control_type()))

@@ -274,6 +274,8 @@ TEST_F(FieldLogUkmMetricTest, TestShowSuggestionAutofillStatus) {
     std::vector<UkmMetricNameAndValue> expected = {
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[0].global_id())},
         {UFIT::kFieldSignatureName,
@@ -293,11 +295,12 @@ TEST_F(FieldLogUkmMetricTest, TestShowSuggestionAutofillStatus) {
 // address form.
 TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
   RecreateProfile();
-  FormData form = test::GetFormData({.fields = {
-                                         {.label = u"State", .name = u"state"},
-                                         {.label = u"Street"},
-                                         {.label = u"Number"},
-                                     }});
+  FormData form =
+      test::GetFormData({.fields = {
+                             {.label = u"State", .name = u"state"},
+                             {.label = u"Street", .name = u"street"},
+                             {.label = u"Number", .name = u"number"},
+                         }});
   autofill_driver().SetLocalFrameToken(form.host_frame());
 
   std::vector<FieldType> field_types = {
@@ -368,6 +371,8 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
       expected_events.push_back({
           {UFIT::kFormSessionIdentifierName,
            FormGlobalIdToHash64Bit(form.global_id())},
+          {UFIT::kFormSignatureName,
+           Collapse(CalculateFormSignature(form)).value()},
           {UFIT::kFieldSessionIdentifierName,
            FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
           {UFIT::kFieldSignatureName,
@@ -405,6 +410,12 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
            FormGlobalIdToHash64Bit(form.global_id())},
           {UFIAST::kFieldSessionIdentifierName,
            FieldGlobalIdToHash64Bit(form.fields()[i % 3].global_id())},
+          {UFIAST::kFormSignatureName,
+           Collapse(CalculateFormSignature(form)).value()},
+          {UFIAST::kFieldSignatureName,
+           Collapse(CalculateFieldSignatureForField(form.fields()[i % 3]))
+               .value()},
+          {UFIAST::kRankInFieldSignatureGroupName, 1},
           {UFIAST::kSubmittedType1Name, submitted_type1},
           {UFIAST::kSubmissionSourceName, submission_source},
           {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
@@ -561,6 +572,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
     std::vector<UkmMetricNameAndValue> expected = {
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(field.global_id())},
         {UFIT::kFieldSignatureName,
@@ -607,6 +620,11 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIAST::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(field.global_id())},
+        {UFIAST::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
+        {UFIAST::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(field)).value()},
+        {UFIAST::kRankInFieldSignatureGroupName, 1},
         {UFIAST::kSubmittedType1Name, EMPTY_TYPE},
         {UFIAST::kSubmissionSourceName, SubmissionSource::FORM_SUBMISSION},
         {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 35000},
@@ -686,6 +704,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
     expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,
@@ -713,6 +733,12 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIAST::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[i % 3].global_id())},
+        {UFIAST::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
+        {UFIAST::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields()[i % 3]))
+             .value()},
+        {UFIAST::kRankInFieldSignatureGroupName, 1},
         {UFIAST::kSubmittedType1Name, submitted_types[i % 3]},
         {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
         {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
@@ -900,6 +926,8 @@ TEST_F(FieldLogUkmMetricTest,
     expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,
@@ -993,6 +1021,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
     expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFormSignatureName,
+         Collapse(CalculateFormSignature(form)).value()},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,
