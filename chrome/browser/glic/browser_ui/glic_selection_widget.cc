@@ -18,9 +18,11 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/image_button.h"
@@ -65,13 +67,20 @@ class GlicSelectionContentsView : public views::View {
         GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
         ask_gemini_tooltip));
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
-    views::SetImageFromVectorIconWithColor(
-        ask_gemini_btn,
-        GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-        kIconSize,
-        views::IconColors(ui::kColorSysOnSurface,
-                          ui::kColorLabelForegroundDisabled,
-                          ui::kColorSysOnSurface));
+
+    gfx::ImageSkia* icon_skia =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GLIC_BUTTON_ALT_ICON);
+    gfx::ImageSkia resized_icon = gfx::ImageSkiaOperations::CreateResizedImage(
+        *icon_skia, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kIconSize, kIconSize));
+    auto icon_model = ui::ImageModel::FromImageSkia(resized_icon);
+
+    ask_gemini_btn->SetImageModel(views::Button::STATE_NORMAL, icon_model);
+    ask_gemini_btn->SetImageModel(views::Button::STATE_HOVERED, icon_model);
+    ask_gemini_btn->SetImageModel(views::Button::STATE_PRESSED, icon_model);
+    ask_gemini_btn->SetImageModel(views::Button::STATE_DISABLED, icon_model);
+
     CreateToolbarInkdropCallbacks(ask_gemini_btn,
                                   kColorTabBackgroundInactiveHoverFrameActive,
                                   kColorTabStripControlButtonInkDropRipple);
