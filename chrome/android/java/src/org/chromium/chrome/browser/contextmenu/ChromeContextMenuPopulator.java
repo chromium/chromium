@@ -324,8 +324,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 assert histogramName.equals(
                         "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction");
                 if (action != Action.SHARE_HIGHLIGHT
-                        || action != Action.REMOVE_HIGHLIGHT
-                        || action != Action.LEARN_MORE) {
+                        && action != Action.REMOVE_HIGHLIGHT
+                        && action != Action.LEARN_MORE) {
                     histogramName = "ContextMenu.SelectedOptionAndroid.Link";
                 }
             }
