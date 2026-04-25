@@ -121,18 +121,12 @@ bool IsMatchingServiceWorker(const GURL& my_url, const GURL& document_url) {
 
   // The paths up to the filenames should be the same.
   std::string my_path_without_filename = my_url.GetPath();
-  size_t my_path_without_filename_length = my_path_without_filename.length();
-  my_path_without_filename =
-      std::move(my_path_without_filename)
-          .substr(0, my_path_without_filename_length - my_filename.length());
+  my_path_without_filename.erase(my_path_without_filename.length() -
+                                 my_filename.length());
   std::string document_filename = document_url.ExtractFileName();
   std::string document_path_without_filename = document_url.GetPath();
-  size_t document_path_without_filename_length =
-      document_path_without_filename.length();
-  document_path_without_filename =
-      std::move(document_path_without_filename)
-          .substr(0, document_path_without_filename_length -
-                         document_filename.length());
+  document_path_without_filename.erase(document_path_without_filename.length() -
+                                       document_filename.length());
 
   return my_path_without_filename == document_path_without_filename;
 }
