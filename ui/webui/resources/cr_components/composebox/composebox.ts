@@ -285,9 +285,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     this.searchboxHandler_.notifySessionStarted();
 
-    const inputState = await this.searchboxHandler_.getInputState();
-      if (inputState) {
-        this.inputState = inputState.state;
+    const inputStateResponse = await this.searchboxHandler_.getInputState();
+      if (inputStateResponse) {
+        this.inputState = inputStateResponse.state;
     }
 
     this.syncResizeObservers_();
@@ -494,6 +494,17 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected async updateState_(state: ComposeboxState) {
+    if (!this.inputState) {
+      const inputStateResponse = await this.searchboxHandler_.getInputState();
+      // Check if a newer updateState_ is running and we can quit.
+      if (state !== this.state) {
+        return;
+      }
+      if (inputStateResponse) {
+        this.inputState = inputStateResponse.state;
+      }
+    }
+
     const text = state.text || '';
     const files = state.files || [];
     const mode = state.mode ?? ToolMode.kUnspecified;
