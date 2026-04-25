@@ -14,7 +14,7 @@ export function getHtml(this: AdvancedSettingsItemElement) {
   ${this.isCapabilityTypeSelect_() ? html`
     <div>
       <select class="md-select" @change="${this.onSelectChange_}">
-        ${this.capability.select_cap!.option!.map(item => html`
+        ${this.capability.select_cap.option!.map(item => html`
           <option class="searchable" value="${item.value}"
               ?selected="${this.isOptionSelected_(item)}">
              ${this.getDisplayName_(item)}

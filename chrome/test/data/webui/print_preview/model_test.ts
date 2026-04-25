@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {ColorOption, DocumentSettings, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, Settings} from 'chrome://print/print_preview.js';
+import type {CloudJobTicket, ColorOption, DocumentSettings, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, Settings} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -175,8 +175,8 @@ suite('ModelTest', function() {
       duplexShortEdge: true,
       headerFooter: false,
       vendorItems: {
-        printArea: 6,
-        paperType: 1,
+        printArea: '6',
+        paperType: '1',
       },
       ranges: [{from: 2, to: 2}],
     };
@@ -221,7 +221,7 @@ suite('ModelTest', function() {
     // Initialize some settings that don't have defaults to the destination
     // defaults.
     model.setSetting('dpi', {horizontal_dpi: 200, vertical_dpi: 200});
-    model.setSetting('vendorItems', {paperType: 0, printArea: 4});
+    model.setSetting('vendorItems', {paperType: '0', printArea: '4'});
   }
 
   function initializeScalingTypePdf(initialScalingType: ScalingType) {
@@ -422,7 +422,7 @@ suite('ModelTest', function() {
     await microtasksFinished();
 
     const defaultTicket = model.createCloudJobTicket(testDestination);
-    const expectedDefaultTicket = JSON.stringify({
+    const expectedDefaultTicket: CloudJobTicket = {
       version: '1.0',
       print: {
         collate: {collate: true},
@@ -441,17 +441,17 @@ suite('ModelTest', function() {
           vertical_dpi: 200,
         },
         vendor_ticket_item: [
-          {id: 'printArea', value: 4},
-          {id: 'paperType', value: 0},
+          {id: 'printArea', value: '4'},
+          {id: 'paperType', value: '0'},
         ],
       },
-    });
-    assertEquals(expectedDefaultTicket, defaultTicket);
+    };
+    assertEquals(defaultTicket, JSON.stringify(expectedDefaultTicket));
 
     // Toggle all the values and create a new cloud job ticket.
     toggleSettings(testDestination, true);
     const newTicket = model.createCloudJobTicket(testDestination);
-    const expectedNewTicket = JSON.stringify({
+    const expectedNewTicket: CloudJobTicket = {
       version: '1.0',
       print: {
         collate: {collate: false},
@@ -470,12 +470,12 @@ suite('ModelTest', function() {
           vertical_dpi: 100,
         },
         vendor_ticket_item: [
-          {id: 'printArea', value: 6},
-          {id: 'paperType', value: 1},
+          {id: 'printArea', value: '6'},
+          {id: 'paperType', value: '1'},
         ],
       },
-    });
-    assertEquals(expectedNewTicket, newTicket);
+    };
+    assertEquals(newTicket, JSON.stringify(expectedNewTicket));
   });
 
   test('RemoveUnsupportedDestinations', function() {

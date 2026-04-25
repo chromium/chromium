@@ -5,6 +5,7 @@
 import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewAdvancedSettingsItemElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {VendorCapabilityType} from 'chrome://print/print_preview.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -97,7 +98,7 @@ suite('AdvancedItemTest', function() {
     assertEquals(0, select.selectedIndex);
 
     // Update the setting.
-    item.setSetting('vendorItems', {paperType: 1});
+    item.setSetting('vendorItems', {paperType: '1'});
     await microtasksFinished();
     assertEquals(1, select.selectedIndex);
   });
@@ -188,7 +189,7 @@ suite('AdvancedItemTest', function() {
     item.capability = {
       display_name: settingName,
       id: 'capability',
-      type: 'SELECT',
+      type: VendorCapabilityType.SELECT,
       select_cap: {
         option: [],
       },

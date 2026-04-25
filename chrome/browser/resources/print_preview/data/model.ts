@@ -13,7 +13,7 @@ import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
 import type {Range} from '../print_preview_utils.js';
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption} from './cdd.js';
-import {DuplexType} from './cdd.js';
+import {DuplexType, VendorCapabilityType} from './cdd.js';
 import type {Destination, RecentDestination} from './destination.js';
 import {DestinationOrigin, PrinterType} from './destination.js';
 import {createDocumentSettings} from './document_info.js';
@@ -67,7 +67,7 @@ export interface Settings {
   selectionOnly: Setting<boolean>;
   headerFooter: Setting<boolean>;
   rasterize: Setting<boolean>;
-  vendorItems: Setting<{[key: string]: any}>;
+  vendorItems: Setting<Record<string, string>>;
   otherOptions: Setting<null>;
   ranges: Setting<Range[]>;
   pagesPerSheet: Setting<number>;
@@ -118,17 +118,22 @@ export interface PolicySettings {
 }
 
 interface CloudJobTicketPrint {
-  page_orientation?: object;
-  dpi?: object;
-  vendor_ticket_item?: object[];
-  copies?: object;
-  media_size?: object;
-  duplex?: object;
+  page_orientation?: {type: string};
+  dpi?: {horizontal_dpi: number, vertical_dpi: number, vendor_id?: string};
+  vendor_ticket_item?: Array<{id: string, value: string}>;
+  copies?: {copies: number};
+  media_size?: {
+    width_microns: number,
+    height_microns: number,
+    is_continuous_feed?: boolean,
+    vendor_id?: string,
+  };
+  duplex?: {type: string};
   color?: {vendor_id?: string, type?: string};
-  collate?: object;
+  collate?: {collate: boolean};
 }
 
-interface CloudJobTicket {
+export interface CloudJobTicket {
   version: string;
   print: CloudJobTicketPrint;
 }
@@ -956,19 +961,15 @@ export class PrintPreviewModelElement extends CrLitElement {
       const vendorSettings: {[key: string]: any} = {};
       for (const item of caps.vendor_capability!) {
         let defaultValue = null;
-        if (item.type === 'SELECT' && item.select_cap &&
+        if (item.type === VendorCapabilityType.SELECT &&
             item.select_cap.option) {
           const defaultOption =
               item.select_cap.option.find(o => !!o.is_default);
           defaultValue = defaultOption ? defaultOption.value : null;
-        } else if (item.type === 'RANGE') {
-          if (item.range_cap) {
-            defaultValue = item.range_cap.default || null;
-          }
-        } else if (item.type === 'TYPED_VALUE') {
-          if (item.typed_value_cap) {
-            defaultValue = item.typed_value_cap.default || null;
-          }
+        } else if (item.type === VendorCapabilityType.RANGE) {
+          defaultValue = item.range_cap.default || null;
+        } else if (item.type === VendorCapabilityType.TYPED_VALUE) {
+          defaultValue = item.typed_value_cap.default || null;
         }
         if (defaultValue !== null) {
           vendorSettings[item.id] = defaultValue;
@@ -1555,7 +1556,8 @@ export class PrintPreviewModelElement extends CrLitElement {
       cjt.print.vendor_ticket_item = [];
       for (const itemId in items) {
         if (items.hasOwnProperty(itemId)) {
-          cjt.print.vendor_ticket_item.push({id: itemId, value: items[itemId]});
+          cjt.print.vendor_ticket_item.push(
+              {id: itemId, value: items[itemId]!});
         }
       }
     }

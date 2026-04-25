@@ -9,8 +9,8 @@ export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-export type {Cdd, ColorOption, DpiOption, DuplexOption, MediaSizeCapability, MediaSizeOption, PageOrientationOption, SelectOption} from './data/cdd.js';
-export {DuplexType, VendorCapabilityValueType} from './data/cdd.js';
+export type {Cdd, ColorOption, DpiOption, DuplexOption, MediaSizeCapability, MediaSizeOption, PageOrientationOption, SelectOption, VendorCapability} from './data/cdd.js';
+export {DuplexType, VendorCapabilityType, VendorCapabilityValueType} from './data/cdd.js';
 export type {DestinationOptionalParams, RecentDestination} from './data/destination.js';
 export {ColorMode, createDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType} from './data/destination.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
@@ -20,7 +20,7 @@ export type {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_
 export type {MarginsSetting} from './data/margins.js';
 export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
-export type {PolicyObjectEntry, PrintTicket, SerializedSettings, Setting, Settings} from './data/model.js';
+export type {CloudJobTicket, PolicyObjectEntry, PrintTicket, SerializedSettings, Setting, Settings} from './data/model.js';
 export {DuplexMode, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
 export type {WildcardChangeRecord} from './data/observable.js';
 export {Observable, setValueAtPath} from './data/observable.js';

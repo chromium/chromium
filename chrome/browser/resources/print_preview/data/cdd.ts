@@ -12,8 +12,9 @@ export interface LocalizedString {
 }
 
 export type VendorCapabilitySelectOption = {
+  value: string,
   display_name?: string,
-  display_name_localized?: LocalizedString[], value: number|string|boolean,
+  display_name_localized?: LocalizedString[],
 }&OptionWithDefault;
 
 /**
@@ -48,18 +49,45 @@ interface RangeCapability {
   default: number;
 }
 
-/**
- * Specifies a custom vendor capability.
- */
-export interface VendorCapability {
+export enum VendorCapabilityType {
+  RANGE = 'RANGE',
+  SELECT = 'SELECT',
+  TYPED_VALUE = 'TYPED_VALUE',
+  UNKNOWN = 'UNKNOWN',
+}
+
+interface VendorCapabilityBase {
+  type: VendorCapabilityType;
   id: string;
   display_name?: string;
   display_name_localized?: LocalizedString[];
-  type: string;
-  select_cap?: SelectCapability;
-  typed_value_cap?: TypedValueCapability;
-  range_cap?: RangeCapability;
 }
+
+interface VendorCapabilityUnknown extends VendorCapabilityBase {
+  type: VendorCapabilityType.UNKNOWN;
+  id: '';
+}
+
+interface VendorCapabilityRange extends VendorCapabilityBase {
+  type: VendorCapabilityType.RANGE;
+  range_cap: RangeCapability;
+}
+
+interface VendorCapabilitySelect extends VendorCapabilityBase {
+  type: VendorCapabilityType.SELECT;
+  select_cap: SelectCapability;
+}
+
+interface VendorCapabilityTypedValue extends VendorCapabilityBase {
+  type: VendorCapabilityType.TYPED_VALUE;
+  typed_value_cap: TypedValueCapability;
+}
+
+/**
+ * Specifies a custom vendor capability.
+ */
+export type VendorCapability = VendorCapabilityUnknown|VendorCapabilityRange|
+    VendorCapabilitySelect|VendorCapabilityTypedValue;
 
 export interface CapabilityWithReset {
   reset_to_default?: boolean;

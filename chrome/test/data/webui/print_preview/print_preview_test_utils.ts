@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CapabilitiesResponse, Cdd, ColorOption, DocumentSettings, DpiOption, DuplexOption, ExtensionDestinationInfo, LocalDestinationInfo, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, PageOrientationOption} from 'chrome://print/print_preview.js';
-import {createDocumentSettings as createDefaultDocumentSettings, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, MeasurementSystemUnitType, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import type {CapabilitiesResponse, Cdd, ColorOption, DocumentSettings, DpiOption, DuplexOption, ExtensionDestinationInfo, LocalDestinationInfo, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, PageOrientationOption, VendorCapability} from 'chrome://print/print_preview.js';
+import {createDocumentSettings as createDefaultDocumentSettings, DEFAULT_MAX_COPIES, Destination, DestinationOrigin, DestinationStore, GooglePromotedDestinationId, MeasurementSystemUnitType, VendorCapabilityType, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -111,33 +111,34 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability = [{
+  const vendorCapability: VendorCapability[] = [{
     display_name: 'Print Area',
     id: 'printArea',
-    type: 'SELECT',
+    type: VendorCapabilityType.SELECT,
     select_cap: {
       option: [
-        {display_name: 'A4', value: 4, is_default: true},
-        {display_name: 'A6', value: 6},
-        {display_name: 'A7', value: 7},
+        {display_name: 'A4', value: '4', is_default: true},
+        {display_name: 'A6', value: '6'},
+        {display_name: 'A7', value: '7'},
       ],
     },
   }];
+  template.capabilities!.printer.vendor_capability = vendorCapability;
 
   if (numSettings < 2) {
     return template;
   }
 
   // Add new capability.
-  template.capabilities!.printer.vendor_capability.push({
+  vendorCapability.push({
     display_name: 'Paper Type',
     id: 'paperType',
-    type: 'SELECT',
+    type: VendorCapabilityType.SELECT,
     select_cap: {
       option: [
-        {display_name: 'Standard', value: 0, is_default: true},
-        {display_name: 'Recycled', value: 1},
-        {display_name: 'Special', value: 2},
+        {display_name: 'Standard', value: '0', is_default: true},
+        {display_name: 'Recycled', value: '1'},
+        {display_name: 'Special', value: '2'},
       ],
     },
   });
@@ -146,10 +147,10 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability.push({
+  vendorCapability.push({
     display_name: 'Watermark',
     id: 'watermark',
-    type: 'TYPED_VALUE',
+    type: VendorCapabilityType.TYPED_VALUE,
     typed_value_cap: {
       default: '',
     },
@@ -159,10 +160,10 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability.push({
+  vendorCapability.push({
     display_name: 'Staple',
     id: 'finishings/4',
-    type: 'TYPED_VALUE',
+    type: VendorCapabilityType.TYPED_VALUE,
     typed_value_cap: {
       default: '',
       value_type: VendorCapabilityValueType.BOOLEAN,
@@ -173,10 +174,10 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities!.printer.vendor_capability.push({
+  vendorCapability.push({
     display_name: 'Quality',
     id: 'print-quality',
-    type: 'SELECT',
+    type: VendorCapabilityType.SELECT,
     select_cap: {
       option: [
         {display_name: 'Draft', value: '3'},

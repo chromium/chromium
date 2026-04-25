@@ -7,11 +7,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
+import {VendorCapabilityType, VendorCapabilityValueType} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {getCss} from './advanced_settings_item.css.js';
@@ -20,6 +22,12 @@ import {updateHighlights} from './highlight_utils.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 const PrintPreviewAdvancedSettingsItemElementBase = SettingsMixin(CrLitElement);
+
+type AdvancedItemWithSelectCapability =
+    PrintPreviewAdvancedSettingsItemElement&{
+      capability:
+          Extract<VendorCapability, {type: VendorCapabilityType.SELECT}>,
+    };
 
 export class PrintPreviewAdvancedSettingsItemElement extends
     PrintPreviewAdvancedSettingsItemElementBase {
@@ -42,7 +50,8 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     };
   }
 
-  accessor capability: VendorCapability = {id: '', type: ''};
+  accessor capability:
+      VendorCapability = {id: '', type: VendorCapabilityType.UNKNOWN};
   private accessor currentValue_: string = '';
 
   override connectedCallback() {
@@ -99,8 +108,9 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   /**
    * @return Whether the capability represented by this item is of type select.
    */
-  protected isCapabilityTypeSelect_(): boolean {
-    return this.capability.type === 'SELECT';
+  protected isCapabilityTypeSelect_():
+      this is AdvancedItemWithSelectCapability {
+    return this.capability.type === VendorCapabilityType.SELECT;
   }
 
   /**
@@ -108,8 +118,9 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    *     checkbox.
    */
   protected isCapabilityTypeCheckbox_(): boolean {
-    return this.capability.type === 'TYPED_VALUE' &&
-        this.capability.typed_value_cap!.value_type === 'BOOLEAN';
+    return this.capability.type === VendorCapabilityType.TYPED_VALUE &&
+        this.capability.typed_value_cap.value_type ===
+        VendorCapabilityValueType.BOOLEAN;
   }
 
   /**
@@ -140,12 +151,11 @@ export class PrintPreviewAdvancedSettingsItemElement extends
    * @return The placeholder value for the capability's text input.
    */
   protected getCapabilityPlaceholder_(): string {
-    if (this.capability.type === 'TYPED_VALUE' &&
-        this.capability.typed_value_cap &&
+    if (this.capability.type === VendorCapabilityType.TYPED_VALUE &&
         this.capability.typed_value_cap.default !== undefined) {
       return this.capability.typed_value_cap.default.toString() || '';
     }
-    if (this.capability.type === 'RANGE' && this.capability.range_cap &&
+    if (this.capability.type === VendorCapabilityType.RANGE &&
         this.capability.range_cap.default !== undefined) {
       return this.capability.range_cap.default.toString() || '';
     }
@@ -153,8 +163,8 @@ export class PrintPreviewAdvancedSettingsItemElement extends
   }
 
   private hasOptionWithValue_(value: string): boolean {
-    return !!this.capability.select_cap &&
-        !!this.capability.select_cap.option &&
+    assert(this.isCapabilityTypeSelect_());
+    return !!this.capability.select_cap.option &&
         this.capability.select_cap.option.some(
             option => option.value === value);
   }
@@ -178,7 +188,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
       return false;
     }
 
-    for (const option of this.capability.select_cap!.option!) {
+    for (const option of this.capability.select_cap.option!) {
       const strippedOptionName = stripDiacritics(this.getDisplayName_(option));
       if (strippedOptionName.match(query)) {
         return true;
