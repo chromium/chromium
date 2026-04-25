@@ -1077,6 +1077,25 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoUseCount) {
   EXPECT_FALSE(fshader->InUse());
 }
 
+TEST_F(ProgramManagerWithShaderTest, ProgramInfoActiveTransformFeedbackCount) {
+  Program* program =
+      manager_->CreateProgram(kClientProgramId, kServiceProgramId);
+  ASSERT_TRUE(program != nullptr);
+  EXPECT_FALSE(program->IsActiveForTransformFeedback());
+
+  program->IncrementActiveTransformFeedbackCount();
+  EXPECT_TRUE(program->IsActiveForTransformFeedback());
+
+  program->IncrementActiveTransformFeedbackCount();
+  EXPECT_TRUE(program->IsActiveForTransformFeedback());
+
+  program->DecrementActiveTransformFeedbackCount();
+  EXPECT_TRUE(program->IsActiveForTransformFeedback());
+
+  program->DecrementActiveTransformFeedbackCount();
+  EXPECT_FALSE(program->IsActiveForTransformFeedback());
+}
+
 TEST_F(ProgramManagerWithShaderTest, ProgramInfoUseCount2) {
   Program* program =
       manager_->CreateProgram(kClientProgramId, kServiceProgramId);

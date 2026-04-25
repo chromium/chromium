@@ -335,6 +335,16 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
     return use_count_ != 0;
   }
 
+  void IncrementActiveTransformFeedbackCount() {
+    ++active_transform_feedback_count_;
+  }
+
+  void DecrementActiveTransformFeedbackCount();
+
+  bool IsActiveForTransformFeedback() const {
+    return active_transform_feedback_count_ > 0;
+  }
+
   // Sets attribute-location binding from a glBindAttribLocation() call.
   void SetAttribLocationBinding(const std::string& attrib, GLint location) {
     bind_attrib_location_map_[attrib] = location;
@@ -545,6 +555,8 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   raw_ptr<ProgramManager> manager_;
 
   int use_count_;
+
+  int active_transform_feedback_count_;
 
   GLsizei max_attrib_name_length_;
 
