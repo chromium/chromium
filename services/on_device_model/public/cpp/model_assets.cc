@@ -31,6 +31,8 @@ namespace {
 // (due to an apparent bug?) doesn't seem to support copy-on-write mapping of
 // file objects which are not writable. So we open as writable on Fuchsia even
 // though nothing should write through to the file.
+// TODO(b/500837296): Add `AddFlagsForPassingToUntrustedProcess` flag for all
+// model asset files before passing to sandboxed ODMS process.
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
@@ -138,7 +140,8 @@ ModelAssets::ModelAssets(const ModelAssets& other)
       sp_model_path(other.sp_model_path),
       cache(other.cache.Duplicate()),
       encoder_cache(other.encoder_cache.Duplicate()),
-      adapter_cache(other.adapter_cache.Duplicate()) {}
+      adapter_cache(other.adapter_cache.Duplicate()),
+      program_cache(other.program_cache.Duplicate()) {}
 
 ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
   weights = other.weights;
@@ -146,6 +149,7 @@ ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
   cache = other.cache.Duplicate();
   encoder_cache = other.encoder_cache.Duplicate();
   adapter_cache = other.adapter_cache.Duplicate();
+  program_cache = other.program_cache.Duplicate();
   return *this;
 }
 
@@ -177,6 +181,11 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
   if (!paths.adapter_cache.empty()) {
     PrefetchFile(paths.adapter_cache);
     assets.adapter_cache = base::File(paths.adapter_cache, kCacheFlags);
+  }
+
+  if (!paths.program_cache.empty()) {
+    PrefetchFile(paths.program_cache);
+    assets.program_cache = base::File(paths.program_cache, kCacheFlags);
   }
 
   return assets;
