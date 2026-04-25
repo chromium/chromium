@@ -4,12 +4,16 @@
 
 package org.chromium.components.browser_ui.webshare;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.net.Uri;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -206,11 +210,24 @@ public class ShareServiceImpl implements ShareService {
             }
         }
 
+        final ArrayList<BlobReceiver> blobReceivers = new ArrayList<>(files.length);
         new AsyncTask<Boolean>() {
+            private @Nullable SharedFileCollator mCollator;
+
             @Override
             protected void onPostExecute(Boolean result) {
                 if (!result) {
                     callback.call(ShareError.INTERNAL_ERROR);
+                } else {
+                    // This runs on the UI thread, and the BlobReceiver is responsible for ensuring
+                    // that the heavy I/O operations run in a separate thread.
+                    // This is done because the Blob Mojom proxy is not thread-safe, and it is
+                    // created on the UI thread. Running it in the background and causing it to be
+                    // destroyed (like with a compromised renderer) causes a UAF.
+                    for (int index = 0; index < files.length; ++index) {
+                        assumeNonNull(mCollator);
+                        blobReceivers.get(index).start(files[index].blob.blob, mCollator);
+                    }
                 }
             }
 
@@ -219,7 +236,8 @@ public class ShareServiceImpl implements ShareService {
             @NullUnmarked
             protected Boolean doInBackground() {
                 ArrayList<Uri> fileUris = new ArrayList<>(files.length);
-                ArrayList<BlobReceiver> blobReceivers = new ArrayList<>(files.length);
+                ArrayList<FileOutputStream> outputStreams = new ArrayList<>(files.length);
+                boolean fileCreationSuccess = false;
                 try {
                     File sharePath = ShareImageFileUtils.getSharedFilesDirectory();
 
@@ -248,33 +266,43 @@ public class ShareServiceImpl implements ShareService {
                             tempFile = new File(tempDir, file.name.path.path);
                         } while (!tempFile.createNewFile());
 
+                        FileOutputStream outputStream = new FileOutputStream(tempFile);
+                        outputStreams.add(outputStream);
+
                         fileUris.add(FileProviderUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(
-                                new BlobReceiver(
-                                        new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));
+                                new BlobReceiver(outputStream, MAX_SHARED_FILE_BYTES, TASK_RUNNER));
                     }
-
+                    fileCreationSuccess = true;
                 } catch (IOException ie) {
                     Log.w(TAG, "Error creating shared file", ie);
                     return false;
+                } finally {
+                    if (!fileCreationSuccess) {
+                        // In case there is an IOException (or any other exception), this guarantees
+                        // that the FileOutputStreams are closed, since the BlobReceivers will not
+                        // be able to close them, and will be GC'd.
+                        for (FileOutputStream os : outputStreams) {
+                            StreamUtil.closeQuietly(os);
+                        }
+                    }
                 }
 
                 paramsBuilder.setFileContentType(SharedFileCollator.commonMimeType(files));
                 paramsBuilder.setFileUris(fileUris);
-                SharedFileCollator collator =
+                mCollator =
                         new SharedFileCollator(
                                 files.length,
-                                success -> {
-                                    if (success) {
-                                        mDelegate.share(paramsBuilder.build());
-                                    } else {
-                                        callback.call(ShareError.INTERNAL_ERROR);
+                                new Callback<Boolean>() {
+                                    @Override
+                                    public void onResult(Boolean success) {
+                                        if (success) {
+                                            mDelegate.share(paramsBuilder.build());
+                                        } else {
+                                            callback.call(ShareError.INTERNAL_ERROR);
+                                        }
                                     }
                                 });
-
-                for (int index = 0; index < files.length; ++index) {
-                    blobReceivers.get(index).start(files[index].blob.blob, collator);
-                }
                 return true;
             }
         }.executeOnTaskRunner(TASK_RUNNER);
