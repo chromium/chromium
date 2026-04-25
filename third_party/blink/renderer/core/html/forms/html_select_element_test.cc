@@ -70,6 +70,10 @@ class HTMLSelectElementTest : public PageTestBase {
     auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     return select->InnerElement().textContent();
   }
+
+  bool HasDescendantsObserver(const HTMLSelectElement& select) const {
+    return select.descendants_observer_ != nullptr;
+  }
 };
 
 void HTMLSelectElementTest::SetUp() {
@@ -1227,6 +1231,29 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectNestedButton) {
   Compositor().BeginFrame();
 
   ASSERT_FALSE(select->IsInDialogMode());
+}
+
+TEST_F(HTMLSelectElementTest,
+       RemovedFromDocumentDisconnectsDescendantsObserver) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      select, ::picker(select) { appearance: base-select; }
+    </style>
+    <select id=select>
+      <option>one</option>
+    </select>
+  )HTML");
+  auto* select = To<HTMLSelectElement>(
+      GetDocument().getElementById(AtomicString("select")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  ASSERT_TRUE(HasDescendantsObserver(*select));
+
+  select->appendChild(MakeGarbageCollected<HTMLInputElement>(GetDocument()));
+
+  select->remove();
+  EXPECT_FALSE(HasDescendantsObserver(*select));
+
+  test::RunPendingTasks();
 }
 
 }  // namespace blink

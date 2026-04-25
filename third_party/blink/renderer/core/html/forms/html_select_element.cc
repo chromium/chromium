@@ -1662,6 +1662,16 @@ void HTMLSelectElement::DetachLayoutTree(bool performing_reattach) {
   select_type_->DidDetachLayoutTree();
 }
 
+void HTMLSelectElement::RemovedFrom(ContainerNode& insertion_point) {
+  // Disconnect the descendants observer on the way out of the document.
+  // Otherwise any mutation records it still has queued will be delivered
+  // after the select is detached, and the DCHECK(IsAppearanceBase()) in
+  // IncreaseContentModelViolationCount() will fire -- a detached element
+  // has no computed style, so IsAppearanceBase() returns false.
+  UpdateMutationObserver();
+  HTMLFormControlElementWithState::RemovedFrom(insertion_point);
+}
+
 void HTMLSelectElement::ResetTypeAheadSessionForTesting() {
   type_ahead_.ResetSession();
 }
