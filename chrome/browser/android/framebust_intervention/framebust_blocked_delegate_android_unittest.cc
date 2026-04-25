@@ -53,6 +53,10 @@ class FramebustBlockedMessageDelegateTest
     return framebust_blocked_message_delegate_;
   }
 
+  messages::MockMessageDispatcherBridge& message_dispatcher_bridge() {
+    return message_dispatcher_bridge_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
@@ -193,6 +197,32 @@ TEST_F(FramebustBlockedMessageDelegateTest, AllowOnce) {
   EXPECT_EQ(settings_map()->GetContentSetting(GURL(kPageUrl), GURL(kPageUrl),
                                               ContentSettingsType::POPUPS),
             CONTENT_SETTING_BLOCK);
+}
+
+// Tests that the message is dismissed when a navigation happens.
+TEST_F(FramebustBlockedMessageDelegateTest, ClearOnNavigation) {
+  EnqueueMessage(GURL("a.test"));
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // This will be called when the navigation happens.
+  EXPECT_CALL(message_dispatcher_bridge(), DismissMessage)
+      .WillOnce(testing::Return());
+
+  // Same-site cross-document navigation.
+  NavigateAndCommit(GURL(kPageUrl).Resolve("/new_path"));
+}
+
+// Tests that the message is dismissed when a reload happens.
+TEST_F(FramebustBlockedMessageDelegateTest, ClearOnReload) {
+  EnqueueMessage(GURL("a.test"));
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // This will be called when the reload happens.
+  EXPECT_CALL(message_dispatcher_bridge(), DismissMessage)
+      .WillOnce(testing::Return());
+
+  // Simulate reload by navigating to the same URL.
+  NavigateAndCommit(GURL(kPageUrl));
 }
 
 }  // namespace blocked_content

@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -26,7 +28,8 @@ namespace blocked_content {
 // Created lazily when a framebust is first blocked, and matches the
 // lifetime of WebContents afterwards.
 class FramebustBlockedMessageDelegate
-    : public content::WebContentsUserData<FramebustBlockedMessageDelegate> {
+    : public content::WebContentsUserData<FramebustBlockedMessageDelegate>,
+      public content::WebContentsObserver {
  public:
   // Describes the actions the user can take regarding this intervention, they
   // are provided through a callback the caller can pass to the delegate's
@@ -56,6 +59,10 @@ class FramebustBlockedMessageDelegate
   void HandleClick();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void HandleOpenLink();
+  void DismissMessage();
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
 
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
 

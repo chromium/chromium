@@ -84,16 +84,14 @@ bool FramebustBlockedMessageDelegate::ShowMessage(
 }
 
 FramebustBlockedMessageDelegate::~FramebustBlockedMessageDelegate() {
-  if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::UNKNOWN);
-  }
+  DismissMessage();
 }
 
 FramebustBlockedMessageDelegate::FramebustBlockedMessageDelegate(
     content::WebContents* web_contents)
     : content::WebContentsUserData<FramebustBlockedMessageDelegate>(
-          *web_contents) {}
+          *web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 void FramebustBlockedMessageDelegate::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {
@@ -126,6 +124,17 @@ void FramebustBlockedMessageDelegate::HandleOpenLink() {
   if (intervention_callback_)
     std::move(intervention_callback_)
         .Run(InterventionOutcome::kDeclinedAndNavigated);
+}
+
+void FramebustBlockedMessageDelegate::DismissMessage() {
+  if (message_ != nullptr) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::UNKNOWN);
+  }
+}
+
+void FramebustBlockedMessageDelegate::PrimaryPageChanged(content::Page& page) {
+  DismissMessage();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockedMessageDelegate);
