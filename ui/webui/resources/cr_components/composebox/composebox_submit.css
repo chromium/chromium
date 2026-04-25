@@ -17,13 +17,17 @@
 }
 
 #submitContainer {
-  border-radius: 50%;
+  border-radius: var(--cr-composebox-submit-border-radius, 50%);
   bottom: var(--input-bottom-spacing);
   cursor: pointer;
-  height: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
+  height: var(
+    --cr-composebox-submit-height,
+    var(--cr-composebox-submit-container-size));
   inset-inline-end: 10px;
   position: absolute;
-  width: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
+  width: var(
+    --cr-composebox-submit-width,
+    var(--cr-composebox-submit-container-size));
 }
 
 #submitContainer:focus-visible {
@@ -36,13 +40,18 @@
 
 #submitIcon {
   --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
-  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-icon-size: var(--cr-composebox-submit-icon-size, 16px);
+  --cr-icon-button-width: var(
+    --cr-composebox-submit-width, var(--cr-icon-button-size));
+  --cr-icon-button-height: var(
+    --cr-composebox-submit-height, var(--cr-icon-button-size));
+  border-radius: var(--cr-composebox-submit-border-radius, 50%);
   display: block;
   background-color: var(--color-composebox-submit-button-background);
-  inset-inline-start: 2px;
+  inset-inline-start: var(--cr-composebox-submit-icon-offset, 2px);
   margin-inline-start: 0;
   opacity: 100%;
-  top: 2px;
+  top: var(--cr-composebox-submit-icon-offset, 2px);
   transition: var(--submit-enabled-transition);
 }
 
@@ -60,11 +69,13 @@
 #submitOverlay {
   border-radius: inherit;
   display: inherit;
-  height: var(--cr-icon-button-size);
-  margin-inline-start: 2px;
-  margin-top: 2px;
+  height: var(
+    --cr-composebox-submit-height, var(--cr-icon-button-size));
+  margin-inline-start: var(--cr-composebox-submit-icon-offset, 2px);
+  margin-top: var(--cr-composebox-submit-icon-offset, 2px);
   position: absolute;
-  width: var(--cr-icon-button-size);
+  width: var(
+    --cr-composebox-submit-width, var(--cr-icon-button-size));
   z-index: 2;
 }
 

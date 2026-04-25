@@ -192,6 +192,33 @@ void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
       ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis);
 }
 
+// Applies specific baseline colors for the composebox submit button, per Aurora
+// project design specs. These override CR2023 colors when the user doesn't
+// have a custom theme or user color set.
+void ApplyComposeboxBaselineColors(ui::ColorMixer& mixer,
+                                   const ui::ColorProviderKey& key) {
+  if (key.custom_theme || key.user_color.has_value()) {
+    return;
+  }
+
+  // Specific baseline colors for the composebox submit button, per Aurora
+  // project design specs.
+  constexpr SkColor kComposeboxSubmitButtonBackgroundDark =
+      SkColorSetRGB(0xA8, 0xC7, 0xFA);
+  constexpr SkColor kComposeboxSubmitButtonBackgroundLight =
+      SkColorSetRGB(0x34, 0x6B, 0xF1);
+  constexpr SkColor kComposeboxSubmitButtonIconDark =
+      SkColorSetRGB(0x06, 0x2E, 0x6F);
+
+  mixer[kColorOmniboxComposeboxSubmitButtonBackground] =
+      ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
+                                 kComposeboxSubmitButtonBackgroundDark,
+                                 kComposeboxSubmitButtonBackgroundLight);
+  mixer[kColorOmniboxComposeboxSubmitButtonIcon] = ui::SelectBasedOnDarkInput(
+      kColorOmniboxResultsBackground, kComposeboxSubmitButtonIconDark,
+      SK_ColorWHITE);
+}
+
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
 void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
@@ -472,4 +499,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
 
   // Override omnibox colors per CR2023 spec.
   ApplyOmniboxCR2023Colors(mixer, key);
+
+  // Apply specific baseline colors for the composebox submit button.
+  ApplyComposeboxBaselineColors(mixer, key);
 }
