@@ -1733,6 +1733,17 @@ class CORE_EXPORT Document : public ContainerNode,
   PopoverStack& PopoverAutoStack() { return popover_auto_stack_; }
   const PopoverStack& PopoverAutoStack() const { return popover_auto_stack_; }
   bool PopoverAutoShowing() const { return !popover_auto_stack_.empty(); }
+  bool PopoverShowing() const { return popover_showing_; }
+  void SetPopoverShowing(bool showing) { popover_showing_ = showing; }
+  uint32_t PopoverHidingNestingCount() const {
+    return popover_hiding_nesting_count_;
+  }
+  void IncrementPopoverHidingNestingCount() { ++popover_hiding_nesting_count_; }
+  void DecrementPopoverHidingNestingCount() {
+    CHECK(popover_hiding_nesting_count_);
+    --popover_hiding_nesting_count_;
+  }
+
   HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
     return all_open_popovers_;
   }
@@ -3008,6 +3019,10 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
   // A set of all open popovers, of all types.
   HeapHashSet<Member<HTMLElement>> all_open_popovers_;
+
+  // Used during the popover show/hide process to avoid reentrant show/hide.
+  bool popover_showing_ = false;
+  uint32_t popover_hiding_nesting_count_ = 0;
 
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;

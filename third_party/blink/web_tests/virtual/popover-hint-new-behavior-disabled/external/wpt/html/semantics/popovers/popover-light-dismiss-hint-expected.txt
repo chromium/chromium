@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] Auto cannot be nested inside hint (invalidauto1)
-  assert_throws_dom: function "() => {\n      invalidauto1.showPopover();\n    }" did not throw
-[FAIL] Auto cannot be nested inside hint (invalidauto2)
-  assert_throws_dom: function "() => {\n      invalidauto2.showPopover();\n    }" did not throw
+[FAIL] Auto can be nested inside hint (nothing should throw, auto demoted to hint)
+  assert_equals: Error, index 2 (innerhint1) expected true but got false
 Harness: the test ran to completion.
 

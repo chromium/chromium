@@ -1,5 +1,16 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_throws_dom: function "() => p28.showPopover()" did not throw
+[FAIL] Show a sibling popover during "hide all popovers until"
+  assert_array_equals: There should not be a hide event for p17 lengths differ, expected array ["hide p18", "hide p16"] length 2, got ["hide p18", "show p17", "hide p16"] length 3
+[FAIL] Show an unrelated popover during "hide popover"
+  assert_array_equals: There should not be a second hide event for 19 lengths differ, expected array ["hide p19"] length 1, got ["hide p19", "show p20"] length 2
+[FAIL] Show other auto popover during "hide all popover until"
+  assert_array_equals: hiding p24 does not fire event lengths differ, expected array ["show p23", "hide p22"] length 2, got ["show p23", "hide p22", "show p24"] length 3
+[FAIL] Nested showPopover
+  assert_array_equals: Nested showPopover should not fire event for its HideAllPopoversUntil lengths differ, expected array ["show p27", "hide p26"] length 2, got ["show p27", "hide p26", "show p28", "show p27"] length 4
 [FAIL] Light dismissing from within an auto popover should not hide a hint whose topmost popover ancestor is not hidden
   assert_true: p35 should be open expected true got false
+[FAIL] Opening a new auto popover should hide all hint popovers, even in the nested case
+  assert_false: expected false got true
 Harness: the test ran to completion.
 

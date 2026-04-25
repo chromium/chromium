@@ -1349,6 +1349,98 @@ bool HTMLElement::popoverOpen() const {
   return false;
 }
 
+namespace {
+void AddBeforetoggleConsoleWarning(Document& document) {
+  document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kOther,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()
+          ? "The `beforetoggle` event handler for a popover triggered "
+            "another popover to be shown, or a `loseinterest` "
+            "event handler was cancelled. This is not recommended."
+          : "The `beforetoggle` event handler for a popover triggered "
+            "another popover to be shown. This is not recommended."));
+}
+}  // namespace
+
+// https://html.spec.whatwg.org/multipage/popover.html#showing-popover
+class ScopedPopoverShowing {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedPopoverShowing(HTMLElement& popover)
+      : popover_(popover),
+        document_(popover.GetDocument()),
+        was_being_shown_(document_.PopoverShowing()),
+        was_being_hidden_(popover.GetPopoverData()->hiding_this_popover()) {
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      // When the PopoverHintNewBehavior flag is removed, was_being_hidden_ can
+      // be removed and just replaced here with
+      // CHECK(!popover.GetPopoverData()->hiding_this_popover()).
+      CHECK(!was_being_hidden_);
+    } else {
+      if (was_being_hidden_) {
+        AddBeforetoggleConsoleWarning(document_);
+      } else {
+        popover_.GetPopoverData()->setHidingThisPopover(true);
+      }
+      return;
+    }
+    document_.SetPopoverShowing(true);
+  }
+  ~ScopedPopoverShowing() {
+    if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      if (!was_being_hidden_ && popover_.GetPopoverData()) {
+        popover_.GetPopoverData()->setHidingThisPopover(false);
+      }
+      return;
+    }
+    document_.SetPopoverShowing(was_being_shown_);
+  }
+  bool HideOperationInProgress() const { return was_being_hidden_; }
+
+ private:
+  const HTMLElement& popover_;
+  Document& document_;
+  bool was_being_shown_;
+  bool was_being_hidden_;
+};
+
+// https://html.spec.whatwg.org/multipage/popover.html#hiding-popover-nesting-count
+// https://html.spec.whatwg.org/multipage/popover.html#popover-hiding
+class ScopedPopoverHiding {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedPopoverHiding(HTMLElement& popover, bool show_warning)
+      : popover_(popover),
+        document_(popover.GetDocument()),
+        was_hiding_(popover.GetPopoverData()->hiding_this_popover()) {
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      document_.IncrementPopoverHidingNestingCount();
+    }
+    if (was_hiding_ && show_warning) {
+      AddBeforetoggleConsoleWarning(popover_.GetDocument());
+    } else {
+      popover_.GetPopoverData()->setHidingThisPopover(true);
+    }
+  }
+  ~ScopedPopoverHiding() {
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      document_.DecrementPopoverHidingNestingCount();
+    }
+    if (!was_hiding_ && popover_.GetPopoverData()) {
+      popover_.GetPopoverData()->setHidingThisPopover(false);
+    }
+  }
+  bool WasHiding() const { return was_hiding_; }
+
+ private:
+  const HTMLElement& popover_;
+  Document& document_;
+  bool was_hiding_;
+};
+
 bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                                  ExceptionState* exception_state,
                                  bool include_event_handler_text,
@@ -1409,6 +1501,19 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
       return false;
     }
   }
+  // A non-null expected_document indicates this is an internal re-validation
+  // (e.g. after firing a beforetoggle event), so we bypass the re-entrancy
+  // check which would otherwise fail because the show operation is active.
+  if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+      !expected_document && action == PopoverTriggerAction::kShow &&
+      (GetDocument().PopoverShowing() ||
+       GetDocument().PopoverHidingNestingCount())) {
+    maybe_throw_exception(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid to show a popover during another show operation");
+    return false;
+  }
+
   if (action == PopoverTriggerAction::kShow &&
       Fullscreen::IsFullscreenElement(*this)) {
     maybe_throw_exception(
@@ -1518,9 +1623,12 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK(!GetPopoverData() || !GetPopoverData()->invoker());
 
   // Fire events by default, unless we're recursively showing this popover.
-  PopoverData::ScopedStartShowingOrHiding scoped_was_showing_or_hiding(*this);
+  // Note: recursively showing this popover is only possible when the
+  // PopoverHintNewBehavior feature is disabled. This check can be removed when
+  // that feature flag is removed.
+  ScopedPopoverShowing scoped_showing(*this);
   auto transition_behavior =
-      scoped_was_showing_or_hiding
+      scoped_showing.HideOperationInProgress()
           ? HidePopoverTransitionBehavior::kNoEventsNoWaiting
           : HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions;
 
@@ -1541,7 +1649,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
 
   // The 'beforetoggle' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, moving it to another
-  // document, or calling showPopover().
+  // document, or (if PopoverHintNewBehavior is disabled) calling showPopover().
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
                       /*include_event_handler_text=*/true,
                       &original_document)) {
@@ -1605,28 +1713,35 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
                                      TopLayerElementType::kPopover);
       if (popoverToOpenParent && hint_stack.Contains(popoverToOpenParent)) {
         if (new_popover_is_auto) {
-          if (exception_state) {
-            exception_state->ThrowDOMException(
-                DOMExceptionCode::kInvalidStateError,
-                "Cannot open an auto popover nested inside a hint popover.");
+          if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+            if (exception_state) {
+              exception_state->ThrowDOMException(
+                  DOMExceptionCode::kInvalidStateError,
+                  "Cannot open an auto popover nested inside a hint popover.");
+            } else {
+              auto* message = MakeGarbageCollected<ConsoleMessage>(
+                  mojom::blink::ConsoleMessageSource::kOther,
+                  mojom::blink::ConsoleMessageLevel::kError,
+                  "Cannot open an auto popover nested inside a hint popover.");
+              Vector<DOMNodeId> nodes;
+              nodes.push_back(GetDomNodeId());
+              message->SetNodes(original_document.GetFrame(), nodes);
+              original_document.AddConsoleMessage(message);
+            }
+            return;
           } else {
-            auto* message = MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kOther,
-                mojom::blink::ConsoleMessageLevel::kError,
-                "Cannot open an auto popover nested inside a hint popover.");
-            Vector<DOMNodeId> nodes;
-            nodes.push_back(GetDomNodeId());
-            message->SetNodes(original_document.GetFrame(), nodes);
-            original_document.AddConsoleMessage(message);
+            // This auto popover is being "demoted" to a hint.
+            new_popover_is_auto = false;
           }
-          return;
         }
         HideAllPopoversUntil(popoverToOpenParent, original_document,
                              focus_behavior, transition_behavior);
         append_to_stack = &hint_stack;
+
       } else {
-        auto hide_result = CloseEntirePopoverStack(hint_stack, focus_behavior,
-                                                   transition_behavior);
+        auto hide_result = PopoverHideResult::kHidden;
+        hide_result = CloseEntirePopoverStack(hint_stack, focus_behavior,
+                                              transition_behavior);
         if (hide_result != PopoverHideResult::kForcedOpenByInspector) {
           original_document.SetPopoverHintStackParent(nullptr);
         }
@@ -1639,7 +1754,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
         popoverToOpenParent =
             FindTopmostPopoverAncestor(*this, /*stack_to_check=*/nullptr,
                                        invoker, TopLayerElementType::kPopover);
-
         if (new_popover_is_auto) {
           auto auto_hide_result =
               HideAllPopoversUntil(popoverToOpenParent, original_document,
@@ -1648,11 +1762,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
                                       "hiding other popovers.")) {
             return;
           }
-          if (!hint_stack.empty() &&
+          if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+              !hint_stack.empty() &&
               auto_hide_result != PopoverHideResult::kForcedOpenByInspector) {
             return;
           }
-
           append_to_stack = &auto_stack;
         } else {
           DCHECK(hint_stack.empty() ||
@@ -1935,6 +2049,7 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
           (popover_stack_for_inspector->empty() || !stack.empty()) &&
           stack.Contains(endpoint) && stack.back() != endpoint;
       if (repeating_hide) {
+        CHECK(!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled());
         // No longer fire events.
         transition_behavior = HidePopoverTransitionBehavior::kNoEventsNoWaiting;
         document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -1957,7 +2072,12 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
   if (hint_stack.Contains(endpoint)) {
     // If the hint stack contains this endpoint, close the popovers above that
     // point in the stack, then return.
-    CHECK_EQ(endpoint->PopoverType(), PopoverValueType::kHint);
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      CHECK_NE(endpoint->PopoverType(), PopoverValueType::kManual);
+      CHECK_NE(endpoint->PopoverType(), PopoverValueType::kNone);
+    } else {
+      CHECK_EQ(endpoint->PopoverType(), PopoverValueType::kHint);
+    }
     return hide_stack_until(endpoint, hint_stack);
   }
 
@@ -2027,9 +2147,8 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   auto& document = GetDocument();
   bool show_warning =
       transition_behavior != HidePopoverTransitionBehavior::kNoEventsNoWaiting;
-  PopoverData::ScopedStartShowingOrHiding scoped_was_showing_or_hiding(
-      *this, show_warning);
-  if (scoped_was_showing_or_hiding) {
+  ScopedPopoverHiding scoped_hiding(*this, show_warning);
+  if (scoped_hiding.WasHiding()) {
     // We're in a loop, so stop firing events.
     transition_behavior = HidePopoverTransitionBehavior::kNoEventsNoWaiting;
   }
@@ -2204,7 +2323,12 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   if (PopoverType() != PopoverValueType::kManual) {
     if (!hint_stack.empty() &&
         stack_top_ignoring_inspector(hint_stack) == this) {
-      CHECK_EQ(PopoverType(), PopoverValueType::kHint);
+      if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+        CHECK_NE(PopoverType(), PopoverValueType::kManual);
+        CHECK_NE(PopoverType(), PopoverValueType::kNone);
+      } else {
+        CHECK_EQ(PopoverType(), PopoverValueType::kHint);
+      }
       hint_stack.EraseAt(hint_stack.Find(this));
       if (hint_stack.empty() &&
           RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
@@ -2627,6 +2751,11 @@ void HTMLElement::HidePopoversForLightDismiss(const HTMLElement* target_popover,
   auto* hint_parent = document.PopoverHintStackParent();
   bool clicked_on_hint = target_popover && target_popover->PopoverType() ==
                                                PopoverValueType::kHint;
+  if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+    clicked_on_hint = target_popover && (target_popover->PopoverType() ==
+                                             PopoverValueType::kHint ||
+                                         hint_stack.Contains(target_popover));
+  }
   if (!clicked_on_hint) {
     if (CloseEntirePopoverStack(
             hint_stack, HidePopoverFocusBehavior::kNone,

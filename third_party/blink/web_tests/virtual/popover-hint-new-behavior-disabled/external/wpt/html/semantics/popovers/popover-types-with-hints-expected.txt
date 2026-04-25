@@ -3,11 +3,13 @@ This is a testharness.js-based test.
   assert_equals: Error, index 1 (<div popover="hint">Hint</div>) expected true but got false
 [FAIL] autos close hints but not manuals
   assert_equals: Error, index 2 (<div popover="manual">Async</div>) expected false but got true
-[FAIL] Opening an auto popover inside a hint popover is disallowed and will fail.
-  assert_throws_dom: function "() => {\n      auto.showPopover();\n    }" did not throw
+[FAIL] Opening an auto popover inside a hint popover is allowed and it downgrades to hint.
+  assert_equals: Error, index 0 (<div popover="hint">Hint\n    </div>) expected true but got false
 [FAIL] If you: a) show a popover=auto (call it D), then b) show a descendent popover=hint of D (call it T), then c) hide D, then T should be hidden. (A popover=hint gets hidden when its ancestral popover=auto is hidden)
   assert_equals: Error, index 1 (<div popover="">Nested Auto</div>) expected true but got false
 [FAIL] If you: a) show a popover=auto (call it D), then b) show a non-descendent popover=hint of D (call it T), then c) hide D, then T should stay open. (Non-nested popover=hint does not get hidden when unrelated popover=autos are hidden)
   assert_equals: Error, index 1 (<div popover="hint">Non-Nested hint</div>) expected true but got false
+[FAIL] When showing an auto popover, hint popovers should be closed before auto popovers.
+  assert_array_equals: Hint should be hidden before Auto lengths differ, expected array ["hint", "auto"] length 2, got ["hint"] length 1
 Harness: the test ran to completion.
 

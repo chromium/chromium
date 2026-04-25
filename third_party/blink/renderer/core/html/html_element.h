@@ -287,7 +287,9 @@ class CORE_EXPORT HTMLElement : public Element {
   // state in |action|. |include_event_handler_text| adds some additional text
   // to the exception if an exception is thrown. When |expected_document| is
   // set, it will be compared to the current document and return false if they
-  // do not match.
+  // do not match. Passing a non-null |expected_document| also signifies that
+  // this is an internal re-validation check (e.g. after a beforetoggle event),
+  // which will bypass the re-entrancy check for show operations.
   bool IsPopoverReady(PopoverTriggerAction action,
                       ExceptionState* exception_state,
                       bool include_event_handler_text,

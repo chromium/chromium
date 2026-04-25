@@ -111,10 +111,10 @@ promise_test(async (t) => {
   assertOpen('initial',hint1);
 
   // Imperative
-  assert_throws_dom('InvalidStateError', () => {
-    auto1.showPopover({source: hint1});
-  }, 'Opening auto popover inside hint popover is not allowed');
-  assertOpen('after show',hint1);
+  auto1.showPopover({source: hint1}); // "demoted" to hint
+  assertOpen('after show',auto1,hint1);
+
+  auto1.hidePopover();
 
   // Declarative
   const invoker = document.createElement('button');
@@ -122,6 +122,6 @@ promise_test(async (t) => {
   t.add_cleanup(() => invoker.remove());
   hint1.appendChild(invoker);
   await clickOn(invoker);
-  assertOpen('after click',hint1);
-}, 'Opening an auto popover inside a hint popover is disallowed and will fail.');
+  assertOpen('after click',auto1,hint1);
+}, 'Opening an auto popover inside a hint popover is allowed and it downgrades to hint.');
 </script>
