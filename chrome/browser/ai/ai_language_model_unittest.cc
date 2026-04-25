@@ -80,6 +80,7 @@ constexpr float kTestDefaultTemperature = 0.0f;
 constexpr uint32_t kTestMaxTopK = 5u;
 constexpr float kTestMaxTemperature = 1.5;
 constexpr uint32_t kTestMaxTokens = 100u;
+constexpr uint32_t kTestConfiguredMaxOutputTokens = 10u;
 static_assert(kTestDefaultTopK <= kTestMaxTopK);
 static_assert(kTestDefaultTemperature <= kTestMaxTemperature);
 
@@ -2216,6 +2217,33 @@ TEST_F(AILanguageModelTest, CreateOnDeviceAiUserSettingDisabled) {
       blink::mojom::AILanguageModelCreateOptions::New());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetOnDeviceAiUserSetting(true);
+}
+
+class AILanguageModelConfiguredMaxOutputTokensTest
+    : public AILanguageModelTest {
+ protected:
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    auto config = AILanguageModelTest::CreateConfig();
+    config.mutable_output_config()->set_max_output_tokens(
+        kTestConfiguredMaxOutputTokens);
+    return config;
+  }
+};
+
+TEST_F(AILanguageModelConfiguredMaxOutputTokensTest,
+       OutputCappedByConfiguredMaxOutputTokens) {
+  auto session = CreateSession();
+  // Set a fake response that exceeds the configured max_output_tokens (10) but
+  // is well within the context-window capacity. Without the cap, this would
+  // succeed; with the cap it should trigger kErrorResponseExceedsMaxTokens.
+  fake_broker_->settings().set_execute_result({std::string(15, 'a')});
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::
+                kErrorResponseExceedsMaxTokens);
 }
 
 }  // namespace
