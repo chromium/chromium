@@ -18,6 +18,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/sequence_checker.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/base/bitstream_buffer.h"
@@ -25,6 +26,7 @@
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_converter.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
@@ -35,10 +37,12 @@ namespace media {
 class CommandBufferHelper;
 class VEAEncodingLatencyMetricsHelper;
 
-typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
-                                base::win::ScopedHandle shared_handle,
-                                uint64_t source_texture_fence_value,
-                                HRESULT hr)>
+typedef base::OnceCallback<void(
+    scoped_refptr<VideoFrame> frame,
+    base::win::ScopedHandle shared_handle,
+    Microsoft::WRL::ComPtr<SharedImageReadLock> scoped_read_access,
+    uint64_t source_texture_fence_value,
+    HRESULT hr)>
     FrameAvailableCB;
 
 class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
@@ -126,7 +130,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
                   const VideoEncoder::EncodeOptions& options);
 
   // Returns false if an error was encountered.
-  bool DoEncodeTask(const InputFrameRef& input_frame,
+  bool DoEncodeTask(InputFrameRef& input_frame,
                     const BitstreamBuffer& bitstream_buffer);
 
   void TryEncodeFrames();
@@ -147,10 +151,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void OnCommandBufferHelperAvailable(GetCommandBufferHelperResult result);
 
   // Invoked when a shared image backed VideoFrame is resolved.
-  void OnSharedImageResolved(scoped_refptr<VideoFrame> frame,
-                             base::win::ScopedHandle shared_handle,
-                             uint64_t source_texture_fence_value,
-                             HRESULT hr);
+  void OnSharedImageResolved(
+      scoped_refptr<VideoFrame> frame,
+      base::win::ScopedHandle shared_handle,
+      Microsoft::WRL::ComPtr<SharedImageReadLock> scoped_read_access,
+      uint64_t source_texture_fence_value,
+      HRESULT hr);
 
   std::vector<D3D12_VIDEO_ENCODER_CODEC> codecs_;
 

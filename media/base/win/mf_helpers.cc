@@ -45,6 +45,20 @@
 
 namespace media {
 
+SharedImageReadLock::SharedImageReadLock(
+    std::unique_ptr<gpu::VideoImageRepresentation> representation,
+    std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
+        scoped_read_access)
+    : representation_(representation.release(),
+                      base::OnTaskRunnerDeleter(
+                          base::SequencedTaskRunner::GetCurrentDefault())),
+      scoped_read_access_(scoped_read_access.release(),
+                          base::OnTaskRunnerDeleter(
+                              base::SequencedTaskRunner::GetCurrentDefault())) {
+}
+
+SharedImageReadLock::~SharedImageReadLock() = default;
+
 using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::MakeAndInitialize;
 
@@ -1047,12 +1061,13 @@ void GenerateResourceOnSyncTokenReleased(
     ResourceAvailableCB sample_available_cb) {
   TRACE_EVENT0("media", "GenerateResourceOnSyncTokenReleased");
 
-#define RETURN_ON_FAILURE_WITH_CALLBACK(hr, message)                       \
-  if (FAILED(hr)) {                                                        \
-    LOG(ERROR) << message << ": " << logging::SystemErrorCodeToString(hr); \
-    std::move(sample_available_cb)                                         \
-        .Run(std::move(frame), nullptr, std::nullopt, std::nullopt, hr);   \
-    return;                                                                \
+#define RETURN_ON_FAILURE_WITH_CALLBACK(hr, message)                         \
+  if (FAILED(hr)) {                                                          \
+    LOG(ERROR) << message << ": " << logging::SystemErrorCodeToString(hr);   \
+    std::move(sample_available_cb)                                           \
+        .Run(std::move(frame), nullptr, std::nullopt, nullptr, std::nullopt, \
+             hr);                                                            \
+    return;                                                                  \
   }
 
   auto* shared_image_stub = command_buffer_helper->GetSharedImageStub();
@@ -1083,8 +1098,19 @@ void GenerateResourceOnSyncTokenReleased(
   }
 
   auto scoped_read_access = image_representation->BeginScopedReadAccess();
+  if (!scoped_read_access) {
+    RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to begin read access");
+  }
+  ComPtr<SharedImageReadLock> si_lock =
+      Microsoft::WRL::Make<SharedImageReadLock>(std::move(image_representation),
+                                                std::move(scoped_read_access));
+  if (!si_lock) {
+    RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
+                                    "Failed to create SharedImageReadLock");
+  }
+
   gpu::D3D11TextureAndArrayIndex input_texture =
-      scoped_read_access->GetD3D11Texture();
+      si_lock->access()->GetD3D11Texture();
 
   D3D11_TEXTURE2D_DESC texture_desc;
   input_texture.texture->GetDesc(&texture_desc);
@@ -1104,8 +1130,8 @@ void GenerateResourceOnSyncTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(sample != nullptr ? S_OK : E_FAIL,
                                     "Failed to create MF sample");
     std::move(sample_available_cb)
-        .Run(std::move(frame), std::move(sample), std::nullopt, std::nullopt,
-             S_OK);
+        .Run(std::move(frame), std::move(sample), std::nullopt,
+             std::move(si_lock), std::nullopt, S_OK);
     return;
   }
 
@@ -1185,7 +1211,7 @@ void GenerateResourceOnSyncTokenReleased(
 
   std::move(sample_available_cb)
       .Run(std::move(frame), nullptr, std::move(scoped_shared_handle),
-           input_texture_has_been_copied, S_OK);
+           std::move(si_lock), input_texture_has_been_copied, S_OK);
 #undef RETURN_ON_FAILURE_WITH_CALLBACK
 }
 

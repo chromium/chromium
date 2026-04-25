@@ -277,7 +277,8 @@ class MFAsyncCallbackProxy
 struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   PendingInput() = default;
   ~PendingInput() = default;
-  PendingInput(const PendingInput&) = default;
+  PendingInput(PendingInput&&) = default;
+  PendingInput& operator=(PendingInput&&) = default;
   // If true, output bits should be discarded and the rate control object
   // shouldn't be let known about the encode.
   bool discard_output = false;
@@ -285,6 +286,7 @@ struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   base::TimeDelta timestamp;
   gfx::ColorSpace color_space;
   ComMFSample input_sample;
+  Microsoft::WRL::ComPtr<SharedImageReadLock> si_lock;
   bool resolving_shared_image = false;
   gpu::Mailbox shared_image_token;
   base::TimeTicks frame_encode_start_time = base::TimeTicks::Now();
@@ -825,7 +827,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
                  "GenerateSampleOnWaitSyncToken");
     result.resolving_shared_image = true;
     result.shared_image_token = frame->shared_image()->mailbox();
-    pending_input_queue_.push_back(result);
+    pending_input_queue_.push_back(std::move(result));
     auto d3d_device = dxgi_device_manager_->GetDevice();
     if (!d3d_device) {
       NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
@@ -853,7 +855,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     return;
   }
 
-  pending_input_queue_.push_back(result);
+  pending_input_queue_.push_back(std::move(result));
 }
 
 void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
@@ -1958,10 +1960,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
-    const PendingInput& input,
+    PendingInput& input,
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto input_sample = input.input_sample;
+  if (input.si_lock) {
+    HRESULT hr = input_sample->SetUnknown(
+        SharedImageReadLock::kSampleExtensionGUID, input.si_lock.Get());
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to attach ScopedReadAccess to IMFSample: "
+                 << PrintHr(hr);
+      return hr;
+    }
+  }
+
   if (!frame->HasMappableSharedImage() && !frame->HasDirectCpuAccess() &&
       !input.generate_sample_on_wait_sync_token) {
     LOG(ERROR) << "Unsupported video frame storage type";
@@ -2157,7 +2169,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 // different from that is currently used for encoding.
 HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
     scoped_refptr<VideoFrame> frame,
-    const PendingInput& input) {
+    PendingInput& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame->HasNativeMappableSharedImage() ||
          input.generate_sample_on_wait_sync_token);
@@ -2266,7 +2278,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 // Handle case where video frame is backed by a GPU texture
 HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     scoped_refptr<VideoFrame> frame,
-    const PendingInput& input) {
+    PendingInput& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(dxgi_device_manager_);
   auto& input_sample = input.input_sample;
@@ -2988,12 +3000,12 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     scoped_refptr<VideoFrame> frame,
     ComPtr<IMFSample> sample,
     std::optional<base::win::ScopedHandle> texture_handle,
+    Microsoft::WRL::ComPtr<SharedImageReadLock> si_lock,
     std::optional<bool> has_been_copied,
-    HRESULT hrResult) {
+    HRESULT hr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (FAILED(hrResult)) {
-    LOG(ERROR) << "Failed to obtain shared image for encoding: "
-               << PrintHr(hrResult);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to obtain shared image for encoding: " << PrintHr(hr);
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                        "Failed to obtain shared image for encoding"});
     return;
@@ -3003,7 +3015,7 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     CHECK(texture_handle.has_value());
     ComPtr<ID3D11Device> d3d_device = dxgi_device_manager_->GetDevice();
     Microsoft::WRL::ComPtr<ID3D11Device1> d3d_device1;
-    auto hr = d3d_device.As(&d3d_device1);
+    hr = d3d_device.As(&d3d_device1);
     CHECK(SUCCEEDED(hr));
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
     hr = d3d_device1->OpenSharedResource1(texture_handle->Get(),
@@ -3040,13 +3052,14 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     if (it->shared_image_token == frame->shared_image()->mailbox() &&
         it->resolving_shared_image) {
       it->input_sample = sample;
+      it->si_lock = std::move(si_lock);
       it->resolving_shared_image = false;
       break;
     }
   }
   DCHECK(it != pending_input_queue_.end());
 
-  HRESULT hr = PopulateInputSampleBuffer(*it, std::move(frame));
+  hr = PopulateInputSampleBuffer(*it, std::move(frame));
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Failed to populate input sample buffer"});

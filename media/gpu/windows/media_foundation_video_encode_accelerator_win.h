@@ -24,6 +24,7 @@
 #include "base/threading/thread.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_types.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -33,6 +34,7 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/win/dxgi_device_manager.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
@@ -193,12 +195,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void FeedInputs();
 
   // Populates input sample buffer with contents of a video frame
-  HRESULT PopulateInputSampleBuffer(const PendingInput& input,
+  HRESULT PopulateInputSampleBuffer(PendingInput& input,
                                     scoped_refptr<VideoFrame> frame);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame,
-                                       const PendingInput& input);
+                                       PendingInput& input);
   HRESULT CopyInputSampleBufferFromGpu(scoped_refptr<VideoFrame> frame,
-                                       const PendingInput& input);
+                                       PendingInput& input);
 
   bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
@@ -242,6 +244,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       scoped_refptr<VideoFrame> frame,
       Microsoft::WRL::ComPtr<IMFSample> sample,
       std::optional<base::win::ScopedHandle> texture_handle,
+      Microsoft::WRL::ComPtr<SharedImageReadLock> si_lock,
       std::optional<bool> has_been_copied,
       HRESULT hr);
 

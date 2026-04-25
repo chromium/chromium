@@ -9,10 +9,13 @@
 #include <mfidl.h>
 #include <stdint.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
@@ -228,6 +231,46 @@ MEDIA_EXPORT HRESULT GenerateSampleFromVideoFrame(
 
 class CommandBufferHelper;
 
+// Manages the lifetime of a VideoImageRepresentation and its ScopedReadAccess.
+// Since these objects are not thread-safe and must be destroyed on the GPU
+// main thread, this COM class encapsulates them and uses
+// base::OnTaskRunnerDeleter to ensure they are safely destroyed on the
+// original task runner, even if the SharedImageReadLock is passed to and
+// destroyed by a background OS thread (e.g., inside an IMFSample).
+// It also guarantees destruction order (ScopedReadAccess before
+// VideoImageRepresentation).
+class MEDIA_EXPORT SharedImageReadLock
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUnknown> {
+ public:
+  // Custom GUID used to attach the SharedImageReadLock to an IMFSample.
+  // This is a randomly generated GUID and has no special meaning.
+  static constexpr GUID kSampleExtensionGUID = {
+      0xb30e9cc8,
+      0xd05a,
+      0x482a,
+      {0xba, 0x28, 0x0e, 0x21, 0xc0, 0xe3, 0x95, 0xa9}};
+
+  SharedImageReadLock(
+      std::unique_ptr<gpu::VideoImageRepresentation> representation,
+      std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
+          scoped_read_access);
+
+  gpu::VideoImageRepresentation::ScopedReadAccess* access() const {
+    return scoped_read_access_.get();
+  }
+
+ private:
+  ~SharedImageReadLock() override;
+
+  std::unique_ptr<gpu::VideoImageRepresentation, base::OnTaskRunnerDeleter>
+      representation_;
+  std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess,
+                  base::OnTaskRunnerDeleter>
+      scoped_read_access_;
+};
+
 // Parameters:
 //   frame: The original video frame.
 //   sample: The generated IMFSample, or nullptr if a shared handle is needed.
@@ -245,6 +288,7 @@ typedef base::OnceCallback<void(
     scoped_refptr<VideoFrame> frame,
     Microsoft::WRL::ComPtr<IMFSample> sample,
     std::optional<base::win::ScopedHandle> texture_handle,
+    Microsoft::WRL::ComPtr<SharedImageReadLock> scoped_read_access,
     std::optional<bool> texture_has_been_copied,
     HRESULT hr)>
     ResourceAvailableCB;
