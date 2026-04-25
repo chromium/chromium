@@ -6602,6 +6602,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAimServerEligibilityDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
 
+    {"omnibox-zero-suggest-prefetching-for-composebox",
+     flag_descriptions::kZeroSuggestPrefetchingForComposeboxName,
+     flag_descriptions::kZeroSuggestPrefetchingForComposeboxDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetchingForComposebox)},
+
     {"aim-server-eligibility-include-client-locale",
      flag_descriptions::kAimServerEligibilityIncludeClientLocaleName,
      flag_descriptions::kAimServerEligibilityIncludeClientLocaleDescription,

@@ -60,6 +60,11 @@ inline constexpr char kOmniboxAimServerEligibilityName[] =
     "AIM Server Eligibility";
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
     "Enable AIM server eligibility checks.";
+inline constexpr char kZeroSuggestPrefetchingForComposeboxName[] =
+    "Zero suggest prefetching for composebox";
+inline constexpr char kZeroSuggestPrefetchingForComposeboxDescription[] =
+    "Enables prefetching of the zero prefix suggestions for composebox "
+    "contexts.";
 
 inline constexpr char kAimServerEligibilityIncludeClientLocaleName[] =
     "AIM Server Eligibility: Include Client Locale";
