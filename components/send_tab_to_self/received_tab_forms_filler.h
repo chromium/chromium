@@ -93,7 +93,7 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
   // Ensures the signature is unique in both the receiver form and pending
   // fields.
   const PageContext::FormField* FindPendingFieldBySignature(
-      const PageContext::FormFieldAutofillSignature& sig,
+      const PageContext::FormFieldAutofillSignature& signature,
       const base::flat_set<autofill::FieldSignature>& form_unique_signatures);
 
   const url::Origin origin_;

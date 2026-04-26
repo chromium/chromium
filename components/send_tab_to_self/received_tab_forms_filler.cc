@@ -36,23 +36,23 @@ base::flat_set<PageContext::FormFieldAutofillSignature> ComputeUniqueSignatures(
     const std::vector<PageContext::FormField>& fields) {
   // Count occurrences of each valid signature.
   base::flat_map<PageContext::FormFieldAutofillSignature, size_t> counts;
-  for (const auto& field : fields) {
+  for (const PageContext::FormField& field : fields) {
     if (!field.autofill_signature.form_signature.value() ||
         !field.autofill_signature.field_signature.value()) {
       continue;
     }
-    counts[field.autofill_signature]++;
+    ++counts[field.autofill_signature];
   }
 
   // Filter for signatures that appeared exactly once.
-  std::vector<PageContext::FormFieldAutofillSignature> unique_sigs;
-  for (const auto& [sig, count] : counts) {
+  std::vector<PageContext::FormFieldAutofillSignature> unique_signatures;
+  for (const auto& [signature, count] : counts) {
     if (count == 1) {
-      unique_sigs.push_back(sig);
+      unique_signatures.push_back(signature);
     }
   }
   return base::flat_set<PageContext::FormFieldAutofillSignature>(
-      base::sorted_unique, std::move(unique_sigs));
+      base::sorted_unique, std::move(unique_signatures));
 }
 
 // Returns the set of field signatures that are unique within `form`.
@@ -63,22 +63,22 @@ base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
   }
   // Count occurrences of each signature in the form.
   base::flat_map<autofill::FieldSignature, size_t> counts;
-  for (const auto& field : form.fields()) {
-    autofill::FieldSignature sig = field->GetFieldSignature();
-    if (sig.value() != 0) {
-      counts[sig]++;
+  for (const std::unique_ptr<autofill::AutofillField>& field : form.fields()) {
+    autofill::FieldSignature signature = field->GetFieldSignature();
+    if (signature.value() != 0) {
+      ++counts[signature];
     }
   }
 
   // Collect signatures that appeared exactly once.
-  std::vector<autofill::FieldSignature> unique_sigs;
-  for (const auto& [sig, count] : counts) {
+  std::vector<autofill::FieldSignature> unique_signatures;
+  for (const auto& [signature, count] : counts) {
     if (count == 1) {
-      unique_sigs.push_back(sig);
+      unique_signatures.push_back(signature);
     }
   }
   return base::flat_set<autofill::FieldSignature>(base::sorted_unique,
-                                                  std::move(unique_sigs));
+                                                  std::move(unique_signatures));
 }
 
 }  // namespace
@@ -197,9 +197,9 @@ const PageContext::FormField* ReceivedTabFormsFiller::FindPendingFieldMatching(
 
   // 2. Try fallback match using unique Autofill signatures. Return nullptr if
   // no match is found or the signature is not unique in the receiver form.
-  const PageContext::FormFieldAutofillSignature sig{form.form_signature(),
-                                                    field.GetFieldSignature()};
-  return FindPendingFieldBySignature(sig, form_unique_signatures);
+  const PageContext::FormFieldAutofillSignature signature{
+      form.form_signature(), field.GetFieldSignature()};
+  return FindPendingFieldBySignature(signature, form_unique_signatures);
 }
 
 const PageContext::FormField*
@@ -213,15 +213,15 @@ ReceivedTabFormsFiller::FindPendingFieldByIdNameAndType(
 
 const PageContext::FormField*
 ReceivedTabFormsFiller::FindPendingFieldBySignature(
-    const PageContext::FormFieldAutofillSignature& sig,
+    const PageContext::FormFieldAutofillSignature& signature,
     const base::flat_set<autofill::FieldSignature>& form_unique_signatures) {
   // Check if the signature was unique in pending_fields_ initially.
-  if (!received_unique_signatures_.contains(sig)) {
+  if (!received_unique_signatures_.contains(signature)) {
     return nullptr;
   }
 
   // Check if the signature is unique in the receiver form.
-  if (!form_unique_signatures.contains(sig.field_signature)) {
+  if (!form_unique_signatures.contains(signature.field_signature)) {
     return nullptr;
   }
 
@@ -229,7 +229,7 @@ ReceivedTabFormsFiller::FindPendingFieldBySignature(
   // returned.
   auto find_it = std::find_if(pending_fields_.begin(), pending_fields_.end(),
                               [&](const PageContext::FormField& pending) {
-                                return pending.autofill_signature == sig;
+                                return pending.autofill_signature == signature;
                               });
   return find_it != pending_fields_.end() ? &*find_it : nullptr;
 }
