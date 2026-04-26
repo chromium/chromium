@@ -46,31 +46,31 @@ uint64_t ModifyFlag(uint64_t bitfield, uint32_t flag, bool set) {
 }
 
 std::string ActionsBitfieldToString(uint64_t actions) {
-  std::string str;
+  std::vector<std::string> action_strs;
+  action_strs.reserve(static_cast<size_t>(ax::mojom::Action::kMaxValue) + 1);
   for (uint32_t i = static_cast<uint32_t>(ax::mojom::Action::kNone) + 1;
        i <= static_cast<uint32_t>(ax::mojom::Action::kMaxValue); ++i) {
     if (IsFlagSet(actions, i)) {
-      str += ui::ToString(static_cast<ax::mojom::Action>(i));
+      action_strs.push_back(ui::ToString(static_cast<ax::mojom::Action>(i)));
       actions = ModifyFlag(actions, i, false);
-      str += actions ? "," : "";
     }
   }
-  return str;
+  return base::JoinString(action_strs, ",");
 }
 
 template <typename ItemType, typename ItemToStringFunction>
 std::string VectorToString(const std::vector<ItemType>& items,
                            ItemToStringFunction itemToStringFunction) {
-  std::string str;
-  for (size_t i = 0; i < items.size(); ++i) {
-    std::string item_str = itemToStringFunction(items[i]);
-    if (item_str.empty())
+  std::vector<std::string> item_strs;
+  item_strs.reserve(items.size());
+  for (const auto& item : items) {
+    std::string item_str = itemToStringFunction(item);
+    if (item_str.empty()) {
       continue;
-    if (i > 0)
-      str += ",";
-    str += itemToStringFunction(items[i]);
+    }
+    item_strs.push_back(std::move(item_str));
   }
-  return str;
+  return base::JoinString(item_strs, ",");
 }
 
 std::string IntVectorToString(const std::vector<int32_t>& items) {
@@ -1219,18 +1219,18 @@ std::string AXNodeData::ToString(bool verbose) const {
         }
         break;
       case ax::mojom::IntAttribute::kTextStyle: {
-        std::string text_style_value;
+        std::vector<std::string_view> text_styles;
         if (HasTextStyle(ax::mojom::TextStyle::kBold))
-          text_style_value += "bold,";
+          text_styles.push_back("bold");
         if (HasTextStyle(ax::mojom::TextStyle::kItalic))
-          text_style_value += "italic,";
+          text_styles.push_back("italic");
         if (HasTextStyle(ax::mojom::TextStyle::kUnderline))
-          text_style_value += "underline,";
+          text_styles.push_back("underline");
         if (HasTextStyle(ax::mojom::TextStyle::kLineThrough))
-          text_style_value += "line-through,";
+          text_styles.push_back("line-through,");
         if (HasTextStyle(ax::mojom::TextStyle::kOverline))
-          text_style_value += "overline,";
-        result += text_style_value.substr(0, text_style_value.size() - 1);
+          text_styles.push_back("overline");
+        result += base::JoinString(text_styles, ",");
         break;
       }
       case ax::mojom::IntAttribute::kTextOverlineStyle:
@@ -1394,7 +1394,8 @@ std::string AXNodeData::ToString(bool verbose) const {
         base::StrAppend(&result, {" access_key=", value});
         break;
       case ax::mojom::StringAttribute::kAppId:
-        base::StrAppend(&result, {" app_id=", value.substr(0, 8)});
+        base::StrAppend(&result,
+                        {" app_id=", std::string_view(value).substr(0, 8)});
         break;
       case ax::mojom::StringAttribute::kAriaCellColumnIndexText:
         base::StrAppend(&result, {" aria_cell_column_index_text=", value});
@@ -1426,11 +1427,11 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kChildTreeId:
         // This is covered by has_child_tree above. The exact value of the
         // child tree is not added to the string as it varies, and adding it
-        // would cause tesrt failures.
+        // would cause test failures.
         break;
       case ax::mojom::StringAttribute::kChildTreeNodeAppId:
-        base::StrAppend(&result,
-                        {" child_tree_node_app_id=", value.substr(0, 8)});
+        base::StrAppend(&result, {" child_tree_node_app_id=",
+                                  std::string_view(value).substr(0, 8)});
         break;
       case ax::mojom::StringAttribute::kDateTime:
         base::StrAppend(&result, {" datetime=", value});
@@ -1667,36 +1668,35 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntListAttribute::kMarkerTypes: {
         std::string types_str = VectorToString(values, [](const int32_t type) {
-          std::string type_str;
           if (type == static_cast<int32_t>(ax::mojom::MarkerType::kNone)) {
-            return type_str;
+            return std::string();
           }
 
+          std::vector<std::string_view> type_strs;
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) {
-            type_str += "spelling&";
+            type_strs.push_back("spelling");
           }
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) {
-            type_str += "grammar&";
+            type_strs.push_back("grammar");
           }
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) {
-            type_str += "highlight&";
+            type_strs.push_back("highlight");
           }
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kTextMatch)) {
-            type_str += "text_match&";
+            type_strs.push_back("text_match");
           }
           if (type &
               static_cast<int32_t>(ax::mojom::MarkerType::kActiveSuggestion)) {
-            type_str += "active_suggestion&";
+            type_strs.push_back("active_suggestion");
           }
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSuggestion)) {
-            type_str += "suggestion&";
+            type_strs.push_back("suggestion");
           }
 
-          return type_str;
+          return base::JoinString(type_strs, "&");
         });
 
         if (!types_str.empty()) {
-          types_str = types_str.substr(0, types_str.size() - 1);
           base::StrAppend(&result, {" marker_types=", types_str});
         }
 
@@ -1814,8 +1814,8 @@ std::string AXNodeData::ToString(bool verbose) const {
                                   base::JoinString(values, ",")});
         break;
       case ax::mojom::StringListAttribute::kTextOperationReplacementStrings:
-        result += " text_operation_replacement_strings=" +
-                  base::JoinString(values, ",");
+        base::StrAppend(&result, {" text_operation_replacement_strings=",
+                                  base::JoinString(values, ",")});
         break;
       case ax::mojom::StringListAttribute::kNone:
         break;
