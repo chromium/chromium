@@ -12,11 +12,19 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
+#include "base/test/mock_log.h"
+#include "base/test/test_file_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-class DuplicateTreeDetectorTest : public testing::Test {
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::HasSubstr;
+using ::testing::Return;
+
+class DuplicateTreeDetectorTest : public ::testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_source_dir_.CreateUniqueTempDir());
@@ -155,4 +163,65 @@ TEST_F(DuplicateTreeDetectorTest, TestSingleFiles) {
 
   EXPECT_TRUE(installer::IsIdenticalFileHierarchy(source_file, dest_file));
   EXPECT_FALSE(installer::IsIdenticalFileHierarchy(source_file, other_file));
+}
+
+// Test enumeration failure handling.
+TEST_F(DuplicateTreeDetectorTest, IsIdenticalFileHierarchyEnumerationFailure) {
+  CreateTwoIdenticalHierarchies(temp_source_dir_.GetPath(),
+                                temp_dest_dir_.GetPath());
+
+  // Make the source directory unreadable to trigger enumeration failure.
+  base::FilePermissionRestorer restorer(temp_source_dir_.GetPath());
+  ASSERT_TRUE(base::MakeFileUnreadable(temp_source_dir_.GetPath()));
+
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(_, _, _, _, _)).Times(AnyNumber());
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, _, _, _,
+                       HasSubstr("Failed to enumerate files in directory: ")))
+      .WillOnce(Return(true));
+
+  log.StartCapturingLogs();
+
+  // The enumeration should fail, and IsIdenticalFileHierarchy should return
+  // false.
+  EXPECT_FALSE(installer::IsIdenticalFileHierarchy(temp_source_dir_.GetPath(),
+                                                   temp_dest_dir_.GetPath()));
+}
+
+// Test GetFileInfo failure handling for source path.
+TEST_F(DuplicateTreeDetectorTest,
+       IsIdenticalFileHierarchySourceFileInfoFailure) {
+  base::FilePath valid_path = temp_source_dir_.GetPath();
+  base::FilePath non_existent_path =
+      valid_path.Append(FILE_PATH_LITERAL("non_existent_file_or_dir"));
+
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(_, _, _, _, _)).Times(AnyNumber());
+  EXPECT_CALL(log, Log(::logging::LOGGING_ERROR, _, _, _,
+                       HasSubstr("Failed to get file info for source path: ")))
+      .WillOnce(Return(true));
+
+  log.StartCapturingLogs();
+
+  EXPECT_FALSE(
+      installer::IsIdenticalFileHierarchy(non_existent_path, valid_path));
+}
+
+// Test GetFileInfo failure handling for destination path.
+TEST_F(DuplicateTreeDetectorTest, IsIdenticalFileHierarchyDestFileInfoFailure) {
+  base::FilePath valid_path = temp_source_dir_.GetPath();
+  base::FilePath non_existent_path =
+      valid_path.Append(FILE_PATH_LITERAL("non_existent_file_or_dir"));
+
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log(_, _, _, _, _)).Times(AnyNumber());
+  EXPECT_CALL(log,
+              Log(::logging::LOGGING_ERROR, _, _, _,
+                  HasSubstr("Failed to get file info for destination path: ")))
+      .WillOnce(Return(true));
+
+  log.StartCapturingLogs();
+
+  EXPECT_FALSE(
+      installer::IsIdenticalFileHierarchy(valid_path, non_existent_path));
 }
