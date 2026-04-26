@@ -248,8 +248,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 2.0: M146 respin launch candidate.
 // Version 2.1: Enables stratus dark mode colors.
 // Version 2.2: Added UI fixes for NLM.
+// Version 2.3: UI fixes for transitions from search results.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.2"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.3"};
 
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
