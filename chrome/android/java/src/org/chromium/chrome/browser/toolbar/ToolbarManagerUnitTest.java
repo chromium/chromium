@@ -96,6 +96,8 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarSceneLayerJni;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
@@ -126,6 +128,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
@@ -205,6 +208,8 @@ public class ToolbarManagerUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
+    @Mock private ActionRegistry mActionRegistry;
+    @Mock private PropertyModel mActionPropertyModel;
 
     private ActivityController<TestActivity> mActivityController;
     private ToolbarManager mToolbarManager;
@@ -308,6 +313,9 @@ public class ToolbarManagerUnitTest {
         when(mInsetObserver.getSupplierForKeyboardInset())
                 .thenReturn(ObservableSuppliers.createNonNull(0));
 
+        when(mActionRegistry.get(ActionId.NEW_TAB))
+                .thenReturn(ObservableSuppliers.createNullable(mActionPropertyModel));
+
         SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier =
                 ObservableSuppliers.createMonotonic();
         SettableMonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier =
@@ -401,7 +409,8 @@ public class ToolbarManagerUnitTest {
                         mPageZoomManager,
                         mSnackbarManager,
                         mOmniboxChipManager,
-                        mBottomBarHostManager);
+                        mBottomBarHostManager,
+                        mActionRegistry);
 
         NonNullObservableSupplier<TabModelDotInfo> dotSupplier =
                 ObservableSuppliers.createNonNull(mTabModelDotInfo);

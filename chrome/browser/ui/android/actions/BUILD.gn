@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [ "java/res/drawable/new_tab_icon.xml" ]
+  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
 
 android_library("java") {
@@ -16,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/ActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionRegistry.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/ActionViewBinding.java",
     "java/src/org/chromium/chrome/browser/ui/actions/IphIntent.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ResourceTextResolver.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ActionButtonData.java",

@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabstrip.TabStripTopControlLayer;
@@ -192,6 +193,9 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionProperties;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
@@ -244,6 +248,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.DynamicResourceSnapshot;
 import org.chromium.ui.util.KeyEventUtils;
@@ -274,6 +279,7 @@ public class ToolbarManager
     private final MonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
+    private final @Nullable ActionRegistry mActionRegistry;
     private final SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
     private final ToolbarLayout mToolbarLayout;
@@ -846,8 +852,10 @@ public class ToolbarManager
             PageZoomManager pageZoomManager,
             SnackbarManager snackbarManager,
             @Nullable OmniboxChipManager omniboxChipManager,
-            @Nullable BottomBarHostManager bottomBarHostManager) {
+            @Nullable BottomBarHostManager bottomBarHostManager,
+            @Nullable ActionRegistry actionRegistry) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
+        mActionRegistry = actionRegistry;
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mCompositorViewHolder = compositorViewHolder;
@@ -2404,11 +2412,11 @@ public class ToolbarManager
         var bottomBarContainerOneshotSupplier =
                 new OneshotSupplierImpl<BottomControlsContentDelegate>();
 
-        // TODO(crbug.com/504612877): Pass the action registry once we register actions.
         BottomBarContainerCoordinator bottomBarContainerCoordinator =
                 new BottomBarContainerCoordinator(
                         bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
                         mBottomControlsStacker::requestLayerUpdate,
+                        assumeNonNull(mActionRegistry),
                         mCurrentTabSupplier,
                         mAppThemeColorProvider);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
@@ -2485,13 +2493,25 @@ public class ToolbarManager
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
-        assert mTabModelSelectorSupplier.get() != null;
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        assert tabModelSelector != null;
 
         mStripLayoutHelperManager = stripLayoutHelperManager;
         mUndoBarThrottle = undoBarThrottle;
 
-        mTabModelSelector = mTabModelSelectorSupplier.get();
-        Profile profile = mTabModelSelector.getModel(false).getProfile();
+        mTabModelSelector = tabModelSelector;
+        if (mActionRegistry != null) {
+            PropertyModel newTabModel = mActionRegistry.get(ActionId.NEW_TAB).get();
+            assert newTabModel != null : "NEW_TAB action should be registered";
+            newTabModel.set(
+                    ActionProperties.ON_PRESS_CALLBACK,
+                    v -> {
+                        TabCreatorUtil.launchNtp(
+                                mTabCreatorManager.getTabCreator(
+                                        tabModelSelector.isIncognitoSelected()));
+                    });
+        }
+        Profile profile = tabModelSelector.getModel(false).getProfile();
         assert profile != null;
 
         mOverrideUrlLoadingDelegate.setOpenGridTabSwitcherCallback(openGridTabSwitcherHandler);
@@ -2608,18 +2628,18 @@ public class ToolbarManager
                         mActivity,
                         getOmniboxStub(),
                         mLayoutManager,
-                        mTabModelSelector,
+                        tabModelSelector,
                         IncognitoNtpUtils::getIncognitoNtpView,
                         IncognitoNtpUtils::getIncognitoNtpScrollView,
                         IncognitoNtpUtils::getIncognitoNtpContentMetrics);
 
         mInitializedWithNative = true;
-        mTabModelSelector
+        tabModelSelector
                 .getCurrentTabModelSupplier()
                 .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
-        mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);
+        mIncognitoStateProvider.setTabModelSelector(tabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
 
         BottomControlsCoordinator tabGroupUiBottomControlsCoordinator =
@@ -2638,7 +2658,7 @@ public class ToolbarManager
         }
 
         // Allow bitmap capturing once everything has been initialized.
-        Tab currentTab = mTabModelSelector.getCurrentTab();
+        Tab currentTab = tabModelSelector.getCurrentTab();
         if (currentTab != null
                 && currentTab.getWebContents() != null
                 && !currentTab.getUrl().isEmpty()) {

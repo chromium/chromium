@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
@@ -48,13 +49,15 @@ public class BottomBarContainerCoordinator
     public BottomBarContainerCoordinator(
             FrameLayout bottomBarContainer,
             Callback<Boolean> requestLayerUpdateCallback,
+            ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
 
         mBottomBarCoordinator =
-                new BottomBarCoordinator(bottomBarContainer, themeColorProvider, tabSupplier, this);
+                new BottomBarCoordinator(
+                        bottomBarContainer, actionRegistry, themeColorProvider, tabSupplier, this);
     }
 
     @Override

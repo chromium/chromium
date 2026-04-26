@@ -13,44 +13,78 @@ found in the LICENSE file.
     android:layout_height="@dimen/bottom_controls_height"
     android:orientation="horizontal"
     android:gravity="center"
+    android:baselineAligned="false"
     android:background="@macro/default_bg_color">
 
     <!-- TODO(crbug.com/504981728): Try to unify ids with the toolbar. -->
-    <ViewStub
-        android:id="@+id/home_stub"
+    <FrameLayout
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout="@layout/bottom_bar_button_template" />
+        android:layout_weight="1">
+        <ViewStub
+            android:id="@+id/home_stub"
+            android:inflatedId="@+id/home_button"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout="@layout/bottom_bar_button_template" />
+    </FrameLayout>
 
-    <ViewStub
-        android:id="@+id/extra_stub"
+    <FrameLayout
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout="@layout/bottom_bar_button_template" />
+        android:layout_weight="1">
+        <ViewStub
+            android:id="@+id/extra_stub"
+            android:inflatedId="@+id/extra_button"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout="@layout/bottom_bar_button_template" />
+    </FrameLayout>
 
-    <ImageView
-        android:id="@+id/new_tab_button"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:focusable="true"
-        tools:ignore="ContentDescription" />
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/new_tab_button"
+            style="@style/BottomToolbarButton"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:focusable="true"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
-    <ImageView
-        android:id="@+id/tab_switcher_button"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:focusable="true"
-        tools:ignore="ContentDescription" />
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/tab_switcher_button"
+            style="@style/BottomToolbarButton"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:focusable="true"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
-    <ViewStub
-        android:id="@+id/app_menu_stub"
+    <FrameLayout
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout="@layout/bottom_bar_button_template" />
+        android:layout_weight="1">
+        <ViewStub
+            android:id="@+id/app_menu_stub"
+            android:inflatedId="@+id/app_menu_button"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout="@layout/bottom_bar_button_template" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -206,6 +206,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.ActionUtils;
 import org.chromium.chrome.browser.ui.app_rating.AppRatingPromoController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -581,6 +583,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         activityLifecycleDispatcher,
                         multiInstanceManager),
                 bottomBarHostManager);
+
+        if (BottomBarConfigUtils.isBottomBarEnabled(activity)) {
+            mActionRegistry = new ActionRegistry();
+            ActionUtils.registerBottomBarActions(mActionRegistry);
+        }
+
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;

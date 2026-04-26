@@ -183,6 +183,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -440,6 +441,7 @@ public class RootUiCoordinator
             mReaderModeIphControllerSupplier = ObservableSuppliers.createMonotonic();
     protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
     protected @Nullable OmniboxChipManager mOmniboxChipManager;
+    protected @Nullable ActionRegistry mActionRegistry;
     protected @Nullable BottomBarHostManager mBottomBarHostManager;
     private @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
 
@@ -2031,7 +2033,8 @@ public class RootUiCoordinator
                             mPageZoomManager,
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             mOmniboxChipManager,
-                            mBottomBarHostManager);
+                            mBottomBarHostManager,
+                            mActionRegistry);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

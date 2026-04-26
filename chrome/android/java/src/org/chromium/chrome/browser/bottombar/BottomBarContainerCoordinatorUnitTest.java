@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
@@ -35,9 +36,12 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerS
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BottomBarContainerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,8 +57,11 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private BottomControlsVisibilityController mVisibilityController;
     @Mock private Callback<Object> mOnModelTokenChange;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ActionRegistry mActionRegistry;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<PropertyModel> mActionSupplier =
             ObservableSuppliers.createNullable();
 
     private Activity mActivity;
@@ -64,6 +71,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Before
     public void setUp() {
         mTabSupplier.set(null);
+        when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -74,6 +82,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
                                             mRequestLayerUpdateCallback,
+                                            mActionRegistry,
                                             mTabSupplier,
                                             mThemeColorProvider);
                         });
@@ -84,6 +93,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
         verify(mVisibilityController).setBottomControlsVisible(true);
         verify(mOnModelTokenChange).onResult(any());
+        verify(mActionRegistry).get(ActionId.NEW_TAB);
     }
 
     @Test

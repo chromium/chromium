@@ -12,10 +12,16 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Coordinator for the bottom bar. */
 @NullMarked
@@ -24,6 +30,7 @@ public class BottomBarCoordinator implements BottomBar {
     private final BottomBarMediator mMediator;
     private final View mView;
     private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mMcp;
+    private final List<ActionViewBinding> mBindings = new ArrayList<>();
 
     /**
      * @param parent The parent view to inflate the bottom bar into.
@@ -33,6 +40,7 @@ public class BottomBarCoordinator implements BottomBar {
      */
     public BottomBarCoordinator(
             ViewGroup parent,
+            ActionRegistry actionRegistry,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate) {
@@ -45,6 +53,11 @@ public class BottomBarCoordinator implements BottomBar {
                 new BottomBarMediator(mModel, themeColorProvider, tabSupplier, visibilityDelegate);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
+
+        mBindings.add(
+                new ActionViewBinding(
+                        actionRegistry.get(ActionId.NEW_TAB),
+                        mView.findViewById(R.id.new_tab_button)));
     }
 
     @Override
@@ -59,5 +72,9 @@ public class BottomBarCoordinator implements BottomBar {
     public void destroy() {
         mMediator.destroy();
         mMcp.destroy();
+        for (ActionViewBinding binding : mBindings) {
+            binding.destroy();
+        }
+        mBindings.clear();
     }
 }

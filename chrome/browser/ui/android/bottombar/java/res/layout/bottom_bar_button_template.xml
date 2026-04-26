@@ -8,5 +8,6 @@ found in the LICENSE file.
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BottomToolbarButton"
     android:focusable="true"
     tools:ignore="ContentDescription" />
