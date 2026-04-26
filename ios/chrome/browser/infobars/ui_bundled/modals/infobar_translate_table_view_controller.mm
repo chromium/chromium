@@ -464,6 +464,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                textFieldValue:(NSString*)value {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:itemType];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldEnabled = NO;
   item.fieldNameLabelText = name;
   item.textFieldValue = value;
