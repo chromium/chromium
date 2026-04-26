@@ -77,6 +77,7 @@ type MockComposeboxVoiceSearch = Omit<
     'state_'|'voiceRecognition_'|'onFinalResult_'|'onCloseClick_'|'onEnd_'|
     'onTryAgainClick_'|'onLinkClick_'>&{
   state_: number,
+  metricSource_: string,
   voiceRecognition_: MockSpeechRecognition,
   onFinalResult_: (result: string) => void,
   onCloseClick_: () => void,
@@ -932,6 +933,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     searchboxHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    document.body.removeChild(voiceSearchElement);
+    document.body.appendChild(voiceSearchElement);
     await microtasksFinished();
 
     // Trigger: Simulate underlying API throwing an error (network).
@@ -1173,4 +1176,68 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     mockVoiceSearch.voiceRecognition_.abort();
     await microtasksFinished();
   });
+
+  test('Records legacy NTP metrics only for NTP_REALBOX', async () => {
+    // This composebox_voice_search component is designed to replace the
+    // existing voice_search_overlay.ts on the NTP. Dual-logging the legacy
+    // NewTabPage.* metrics here to ensure data continuity during the upcoming
+    // UI migration and to validate the accuracy of the new unified
+    // VoiceSearch.* metrics. These legacy metrics should be removed entirely
+    // once the new metrics are fully validated and approved.
+    mockVoiceSearch.metricSource_ = 'NTP_REALBOX';
+
+    voiceSearchElement.$.closeButton.click();
+    await microtasksFinished();
+
+    // Verify: The legacy NewTabPage.VoiceActions metric records
+    // CLOSE_OVERLAY (value 2), instead of the new CANCELED_BY_USER (value 11).
+    assertEquals(
+        1, metrics.count('NewTabPage.VoiceActions', /* CLOSE_OVERLAY */ 2));
+    assertEquals(
+        0,
+        metrics.count(
+            'NewTabPage.VoiceActions', VoiceSearchAction.CANCELED_BY_USER));
+
+    // Trigger: Simulate a network error.
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    // Verify: The legacy NewTabPage.VoiceErrors metric records NETWORK.
+    assertEquals(
+        1, metrics.count('NewTabPage.VoiceErrors', VoiceSearchError.NETWORK));
+
+    // Clean up internal state to prevent leaking into the next test.
+    mockVoiceSearch.state_ = -1;
+    mockVoiceSearch.voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
+  test('Does not record legacy NTP metrics for non-NTP surfaces', async () => {
+    mockVoiceSearch.metricSource_ = 'CO_BROWSING_COMPOSEBOX';
+
+    voiceSearchElement.$.closeButton.click();
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    // Verify: The unified histograms are recorded correctly.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.CO_BROWSING_COMPOSEBOX',
+            VoiceSearchAction.CANCELED_BY_USER));
+
+    // Verify: The legacy NTP histograms are completely ignored and not
+    // polluted.
+    assertEquals(0, metrics.count('NewTabPage.VoiceSearch.Action', 2));
+    assertEquals(
+        0, metrics.count('NewTabPage.VoiceErrors', VoiceSearchError.NETWORK));
+
+    // Clean up internal state to prevent leaking into the next test.
+    mockVoiceSearch.state_ = -1;
+    mockVoiceSearch.voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
 });

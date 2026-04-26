@@ -95,6 +95,9 @@ export function setupComposeboxTest(): ComposeboxTestElement {
         modelSectionConfig: {header: ''},
       }),
     });
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_COMPOSEBOX'}));
     const searchboxCallbackRouterRemote =
         ComposeboxProxyImpl.getInstance()
             .searchboxCallbackRouter.$.bindNewPipeAndPassRemote();

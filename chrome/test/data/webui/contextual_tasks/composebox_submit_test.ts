@@ -99,7 +99,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getInputState', Promise.resolve({state: new MockInputState()}));
-
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();

@@ -187,6 +187,7 @@ export class ComposeboxVoiceSearchElement extends
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
   private accessor state_: State = State.UNINITIALIZED;
+  private metricSource_: string = '';
 
   private pageHandler_: PageHandlerRemote =
       ComposeboxProxyImpl.getInstance().handler;
@@ -212,6 +213,13 @@ export class ComposeboxVoiceSearchElement extends
     this.voiceRecognition_.onnomatch = () => {
       this.onError_(VoiceSearchError.NO_MATCH);
     };
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.searchboxHandler_.getPageClassification().then(({metricSource}) => {
+      this.metricSource_ = metricSource || '';
+    });
   }
 
   override disconnectedCallback() {
@@ -362,23 +370,42 @@ export class ComposeboxVoiceSearchElement extends
     }
   }
 
-  private async recordMetric_(
-      type: VoiceSearchMetricType, value: number, max: number) {
+  private recordMetric_(
+      type: VoiceSearchMetricType, metricEnumValue: number, max: number) {
     // Safety return statement in rare case chrome metrics is not available.
     if (!chrome.metricsPrivate) {
       return;
     }
-
-    const {metricSource} = await this.searchboxHandler_.getPageClassification();
-    if (!metricSource) {
+    if (!this.metricSource_) {
       return;
     }
-    const metricName = `VoiceSearch.${type}.${metricSource}`;
-    chrome.metricsPrivate.recordEnumerationValue(metricName, value, max);
+
+    const metricName = `VoiceSearch.${type}.${this.metricSource_}`;
+    chrome.metricsPrivate.recordEnumerationValue(
+        metricName, metricEnumValue, max);
 
     const aggregateMetricName = `VoiceSearch.${type}`;
     chrome.metricsPrivate.recordEnumerationValue(
-        aggregateMetricName, value, max);
+        aggregateMetricName, metricEnumValue, max);
+
+    // TODO(b/501544449): This dual-logging block is temporary to ensure data
+    // continuity. Remove this once the unified VoiceSearch metrics are
+    // validated.
+    if (this.metricSource_ === 'NTP_REALBOX') {
+      if (type === VoiceSearchMetricType.ACTION) {
+        // Handle the case that NewTabPage metric `CLOSE_OVERLAY` is replaced by
+        // `CANCELED_BY_USER`.
+        let legacyMetricEnumValue = metricEnumValue;
+        if (metricEnumValue === VoiceSearchAction.CANCELED_BY_USER) {
+          legacyMetricEnumValue = 2;
+        }
+        chrome.metricsPrivate.recordEnumerationValue(
+            'NewTabPage.VoiceActions', legacyMetricEnumValue, max);
+      } else if (type === VoiceSearchMetricType.ERROR) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            'NewTabPage.VoiceErrors', metricEnumValue, max);
+      }
+    }
   }
 
   private onError_(error: VoiceSearchError) {

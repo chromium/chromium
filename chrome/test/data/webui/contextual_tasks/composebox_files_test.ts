@@ -96,6 +96,9 @@ suite('ContextualTasksComposeboxFilesTest', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
       state: {
         allowedModels: [],

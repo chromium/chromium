@@ -135,6 +135,9 @@ suite('ContextualTasksComposeboxTest', () => {
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
     mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    mockSearchboxPageHandler.setResultFor(
         'addTabContext', Promise.resolve({high: BigInt(1), low: BigInt(2)}));
     mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
       state: {
@@ -516,6 +519,9 @@ suite('ContextualTasksComposeboxTest', () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mockSearchboxPageHandler.reset();
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
       state: {
         allowedModels: [],
@@ -572,6 +578,9 @@ suite('ContextualTasksComposeboxTest', () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mockSearchboxPageHandler.reset();
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
     mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
       state: {
         allowedModels: [],
@@ -613,6 +622,9 @@ suite('ContextualTasksComposeboxTest', () => {
         // Clear the body and reset the mock to test a fresh instance.
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         mockSearchboxPageHandler.reset();
+        mockSearchboxPageHandler.setResultFor(
+            'getPageClassification',
+            Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
         mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
           state: {
             allowedModels: [],
@@ -776,6 +788,9 @@ suite('ContextualTasksComposeboxTest', () => {
     const composebox = contextualTasksApp.$.composebox;
 
     mockSearchboxPageHandler.reset();
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
 
     // Set to zero state to ensure autocomplete is queried.
     testProxy.callbackRouterRemote.onZeroStateChange(true);

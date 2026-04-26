@@ -118,7 +118,9 @@ suite('NewTabPageAppTest', () => {
         disabledInputTypes: [],
       },
     });
-
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_REALBOX'}));
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
     await microtasksFinished();
@@ -2594,6 +2596,9 @@ suite('NewTabPageAppReducedMotionTest', () => {
         modelConfigs: [],
       },
     }));
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_REALBOX'}));
     installMock(
         ActionChipsHandlerRemote, mock => ActionChipsApiProxyImpl.setInstance({
           getHandler: () => mock,
