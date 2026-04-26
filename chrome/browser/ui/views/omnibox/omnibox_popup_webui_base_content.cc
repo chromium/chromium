@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -132,7 +133,7 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
   WebView::ResizeDueToAutoResize(source, new_size);
-  if (popup_presenter_->ShouldDeferUntilVisualStateReady()) {
+  if (popup_presenter_->ShouldDeferUntilVisualStateReady().has_value()) {
     popup_presenter_->OnContentHeightChanged(new_size.height());
   } else {
     // Debounce the resize event by 2 frame's time (assuming 60 Hz) to avoid
@@ -219,6 +220,9 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
 }
 
 void OmniboxPopupWebUIBaseContent::Detach() {
+  if (!popup_presenter_->ShouldDetachWebContentsOnHide()) {
+    return;
+  }
   // This removes the content from being considered for rendering by the
   // compositor while the popup is closed. The content is re-inserted right
   // before the view is displayed. This has the effect of tossing out old,

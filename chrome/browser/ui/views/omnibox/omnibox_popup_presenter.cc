@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/views/view_utils.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(
@@ -59,4 +60,19 @@ bool OmniboxPopupPresenter::ShouldShowLocationBarCutout() const {
 bool OmniboxPopupPresenter::ShouldReceiveFocus() const {
   return views::AsViewClass<OmniboxPopupWebUIContent>(GetWebUIContent())
       ->wants_focus();
+}
+
+std::optional<base::TimeDelta>
+OmniboxPopupPresenter::ShouldDeferUntilVisualStateReady() const {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady)) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(
+      omnibox::kOmniboxWebUIDeferShowUntilVisualStateReadyTimeoutMs.Get());
+}
+
+bool OmniboxPopupPresenter::ShouldDetachWebContentsOnHide() const {
+  return base::FeatureList::IsEnabled(
+      omnibox::kOmniboxWebUIDetachWebContentsOnHide);
 }

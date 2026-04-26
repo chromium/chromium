@@ -63,9 +63,13 @@ class OmniboxPopupPresenterBase {
   // going to be visible within the popup.
   OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
-  // Override to enable deferred showing until the WebUI has painted a new
-  // frame.
-  virtual bool ShouldDeferUntilVisualStateReady() const;
+  // Returns the timeout if showing should be deferred until the WebUI has
+  // painted a new frame, or std::nullopt if it should not be deferred.
+  virtual std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
+      const = 0;
+
+  // Returns if the WebContents should be detached when the popup is hidden.
+  virtual bool ShouldDetachWebContentsOnHide() const = 0;
 
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 

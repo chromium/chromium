@@ -59,7 +59,8 @@ void OmniboxPopupPresenterBase::Show() {
     content->ShowUI();
 
     auto show_request_time = base::TimeTicks::Now();
-    if (ShouldDeferUntilVisualStateReady()) {
+    auto timeout = ShouldDeferUntilVisualStateReady();
+    if (timeout.has_value()) {
       is_deferred_ = true;
 
       // Call WasShown to mark the WebContents as visible so that a frame will
@@ -83,9 +84,7 @@ void OmniboxPopupPresenterBase::Show() {
                          weak_factory_.GetWeakPtr(), show_request_time,
                          /*from_fallback=*/true,
                          /*success=*/false),
-          base::Milliseconds(
-              omnibox::kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs
-                  .Get()));
+          timeout.value());
     } else {
       ShowWidget(show_request_time);
     }
@@ -104,6 +103,12 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
       base::StrCat(
           {GetPopupMetricPrefix(), ".DeferredShowVisualStateReadyFromTimeout"}),
       from_fallback);
+
+  base::TimeDelta duration = base::TimeTicks::Now() - show_request_time;
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {GetPopupMetricPrefix(), ".DeferredShowVisualStateReadyDuration"}),
+      duration);
 
   is_deferred_ = false;
   // Fall back to showing the widget even if success == false
@@ -150,10 +155,6 @@ void OmniboxPopupPresenterBase::Hide() {
 
 bool OmniboxPopupPresenterBase::IsShown() const {
   return is_deferred_ || (widget_ && widget_->IsVisible());
-}
-
-bool OmniboxPopupPresenterBase::ShouldDeferUntilVisualStateReady() const {
-  return false;
 }
 
 void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {

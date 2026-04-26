@@ -62,6 +62,13 @@ inline constexpr base::FeatureParam<int>
     kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs{
         &kOmniboxAimDeferShowUntilVisualStateReady,
         "omnibox_aim_defer_show_until_visual_state_ready_timeout_ms", 250};
+BASE_DECLARE_FEATURE(kOmniboxWebUIDeferShowUntilVisualStateReady);
+inline constexpr base::FeatureParam<int>
+    kOmniboxWebUIDeferShowUntilVisualStateReadyTimeoutMs{
+        &kOmniboxWebUIDeferShowUntilVisualStateReady,
+        "omnibox_webui_defer_show_until_visual_state_ready_timeout_ms", 250};
+BASE_DECLARE_FEATURE(kOmniboxAimDetachWebContentsOnHide);
+BASE_DECLARE_FEATURE(kOmniboxWebUIDetachWebContentsOnHide);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

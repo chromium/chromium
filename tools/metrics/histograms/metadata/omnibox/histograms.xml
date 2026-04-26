@@ -3208,6 +3208,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.Aim.DeferredShowVisualStateReadyDuration"
+    units="ms" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the duration it took for the visual state callback to be called (or
+    fallback timeout to be reached) during a deferred show of the AI Mode popup.
+    Logged every time the popup show is triggered.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.Aim.DeferredShowVisualStateReadyFromTimeout"
     enum="Boolean" expires_after="2026-12-22">
   <owner>avivkiss@chromium.org</owner>
@@ -3264,6 +3276,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Records whether the renderer process has crashed and the contents is being
     reloaded before showing the WebUI Omnibox popup.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.DeferredShowVisualStateReadyDuration"
+    units="ms" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the duration it took for the visual state callback to be called (or
+    fallback timeout to be reached) during a deferred show of the WebUI popup.
+    Logged every time the popup show is triggered.
   </summary>
 </histogram>
 

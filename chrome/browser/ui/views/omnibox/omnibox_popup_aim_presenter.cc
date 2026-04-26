@@ -53,9 +53,19 @@ std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
   return "Omnibox.Popup.Aim";
 }
 
-bool OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
+std::optional<base::TimeDelta>
+OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(
+      omnibox::kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs.Get());
+}
+
+bool OmniboxPopupAimPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
-      omnibox::kOmniboxAimDeferShowUntilVisualStateReady);
+      omnibox::kOmniboxAimDetachWebContentsOnHide);
 }
 
 void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
