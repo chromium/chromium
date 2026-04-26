@@ -677,7 +677,8 @@ should be able to be added at any place in this file.
   <variant name="_PlusAddressCreateSuggestion"
       summary="For creating plus addresses. (obsolete)"/>
   <variant name="_PlusAddressFirstSaveFeature"
-      summary="For accessing settings after saving the first plus address."/>
+      summary="For accessing settings after saving the first plus address.
+               (obsolete)"/>
   <variant name="_PowerBookmarksSidePanel"
       summary="For power bookmarks side panel feature."/>
   <variant name="_PreviewsOmniboxUI"

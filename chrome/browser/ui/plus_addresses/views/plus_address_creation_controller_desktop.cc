@@ -205,12 +205,6 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
           ->GetPrefs()
           ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
-      if (auto* interface =
-              BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-                  &GetWebContents())) {
-        interface->MaybeShowFeaturePromo(
-            feature_engagement::kIPHPlusAddressFirstSaveFeature);
-      }
     }
 
   }

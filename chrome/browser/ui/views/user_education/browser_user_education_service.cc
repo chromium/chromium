@@ -534,28 +534,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "externally-saved card.")));
 
 
-  // kIPHPlusAddressFirstSaveFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHPlusAddressFirstSaveFeature,
-          kToolbarAvatarButtonElementId,
-          IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_DESCRIPTION,
-          IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_ACCEPT,
-          CreateNavigationAction(
-              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())))
-          .SetCustomActionIsDefault(true)
-          .SetBubbleIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-              &plus_addresses::kPlusAddressLogoSmallIcon
-#else
-              &vector_icons::kEmailIcon
-#endif
-              )
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetBubbleTitleText(IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_TITLE)
-          .SetMetadata(
-              131, "jkeitel@google.com",
-              "Triggered after first creation of a plus address on Desktop.")));
 
   // TODO(crbug.com/404437008): Update with final IPH strings.
   // kIPHAutofillEnableLoyaltyCardsFeature:
