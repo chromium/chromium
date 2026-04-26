@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
@@ -216,18 +217,9 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
                                                          /*create=*/false);
   CHECK(glic_service);
 
-  glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      CreateInvokeOptions(request, active_tab));
+  auto options = CreateInvokeOptions(request, active_tab);
 
   if (message.has_server_channel_configuration()) {
-    mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
-        remote;
-    auto listener_receiver = remote.InitWithNewPipeAndPassReceiver();
-
-    glic_service->instance_coordinator().GetExperimentalTriggeringUpdates(
-        std::move(remote), base::DoNothing());
-
     std::optional<int64_t> last_seen_sequence_number;
     if (request.has_task_metadata() &&
         request.task_metadata().has_sender_sequence_number()) {
@@ -235,13 +227,34 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
           request.task_metadata().sender_sequence_number();
     }
 
-    listeners_.Add(
-        std::make_unique<UpdatesListener>(
-            message_sender_,
-            std::move(*message.mutable_server_channel_configuration()),
-            last_seen_sequence_number),
-        std::move(listener_receiver));
+    options.on_client_connected = base::BindOnce(
+        &GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates,
+        weak_ptr_factory_.GetWeakPtr(),
+        std::move(*message.mutable_server_channel_configuration()),
+        last_seen_sequence_number);
   }
 
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options));
+
   std::move(done_callback).Run(nullptr);
+}
+
+void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
+    components_sharing_message::ServerChannelConfiguration server_channel,
+    std::optional<int64_t> last_seen_sequence_number,
+    glic::GlicInstance* instance) {
+  CHECK(instance);
+
+  mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler> remote;
+  auto listener_receiver = remote.InitWithNewPipeAndPassReceiver();
+
+  instance->host().getExperimentalTriggeringUpdates(std::move(remote),
+                                                    base::DoNothing());
+
+  listeners_.Add(std::make_unique<UpdatesListener>(message_sender_,
+                                                   std::move(server_channel),
+                                                   last_seen_sequence_number),
+                 std::move(listener_receiver));
 }

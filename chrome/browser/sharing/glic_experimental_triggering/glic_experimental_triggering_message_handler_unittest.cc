@@ -11,9 +11,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -55,6 +57,19 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
               instance_coordinator,
               (),
               (const, override));
+};
+
+class MockHost : public glic::Host {
+ public:
+  MockHost() : glic::Host(nullptr, nullptr, nullptr, nullptr) {}
+  ~MockHost() override = default;
+
+  MOCK_METHOD(void,
+              getExperimentalTriggeringUpdates,
+              (mojo::PendingRemote<
+                   glic::mojom::ExperimentalTriggeringUpdatesHandler> handler,
+               base::OnceCallback<void(bool)> success_status_callback),
+              (override));
 };
 
 class TestGlicExperimentalTriggeringMessageHandler
@@ -158,14 +173,24 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
   tabs::MockTabInterface mock_tab;
   handler_->SetActiveTab(&mock_tab);
 
-  // Expect InvokeWithAutoSubmit to be called
-  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(1);
+  // Expect InvokeWithAutoSubmit to be called and capture options
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kExperimentalTriggering);
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _))
+      .WillOnce(testing::WithArg<1>(
+          [&captured_options](glic::GlicInvokeOptions options) {
+            captured_options = std::move(options);
+          }));
 
-  // Expect GetExperimentalTriggeringUpdates to be called
+  glic::MockGlicInstance mock_instance;
+  MockHost mock_host;
+  EXPECT_CALL(mock_instance, host())
+      .WillRepeatedly(testing::ReturnRef(mock_host));
+
+  // Expect GetExperimentalTriggeringUpdates to be called on host
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
       updates_handler_remote;
-  EXPECT_CALL(mock_instance_coordinator_,
-              GetExperimentalTriggeringUpdates(_, _))
+  EXPECT_CALL(mock_host, getExperimentalTriggeringUpdates(_, _))
       .WillOnce(
           [&updates_handler_remote](
               mojo::PendingRemote<
@@ -179,7 +204,11 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
 
   handler_->OnMessage(std::move(message), done_callback.Get());
 
-  // Now simulate an update from the remote
+  // Run the callback to simulate connection.
+  ASSERT_FALSE(captured_options.on_client_connected.is_null());
+  std::move(captured_options.on_client_connected).Run(&mock_instance);
+
+  // Now simulate updates from the remote
   ASSERT_TRUE(updates_handler_remote.is_valid());
   mojo::Remote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
       updates_handler(std::move(updates_handler_remote));
@@ -242,14 +271,24 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   tabs::MockTabInterface mock_tab;
   handler_->SetActiveTab(&mock_tab);
 
-  // Expect InvokeWithAutoSubmit to be called
-  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(1);
+  glic::MockGlicInstance mock_instance;
+  MockHost mock_host;
+  EXPECT_CALL(mock_instance, host())
+      .WillRepeatedly(testing::ReturnRef(mock_host));
 
-  // Expect GetExperimentalTriggeringUpdates to be called
+  // Expect InvokeWithAutoSubmit to be called and capture options
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kExperimentalTriggering);
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _))
+      .WillOnce(testing::WithArg<1>(
+          [&captured_options](glic::GlicInvokeOptions options) {
+            captured_options = std::move(options);
+          }));
+
+  // Expect GetExperimentalTriggeringUpdates to be called on host
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
       updates_handler_remote;
-  EXPECT_CALL(mock_instance_coordinator_,
-              GetExperimentalTriggeringUpdates(_, _))
+  EXPECT_CALL(mock_host, getExperimentalTriggeringUpdates(_, _))
       .WillOnce(
           [&updates_handler_remote](
               mojo::PendingRemote<
@@ -262,6 +301,10 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   EXPECT_CALL(done_callback, Run(_)).Times(1);
 
   handler_->OnMessage(std::move(message), done_callback.Get());
+
+  // Run the callback to simulate connection.
+  ASSERT_FALSE(captured_options.on_client_connected.is_null());
+  std::move(captured_options.on_client_connected).Run(&mock_instance);
 
   // Now simulate updates from the remote
   ASSERT_TRUE(updates_handler_remote.is_valid());
@@ -346,12 +389,22 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   tabs::MockTabInterface mock_tab;
   handler_->SetActiveTab(&mock_tab);
 
-  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(1);
+  glic::MockGlicInstance mock_instance;
+  MockHost mock_host;
+  EXPECT_CALL(mock_instance, host())
+      .WillRepeatedly(testing::ReturnRef(mock_host));
+
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kExperimentalTriggering);
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _))
+      .WillOnce(testing::WithArg<1>(
+          [&captured_options](glic::GlicInvokeOptions options) {
+            captured_options = std::move(options);
+          }));
 
   mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
       updates_handler_remote;
-  EXPECT_CALL(mock_instance_coordinator_,
-              GetExperimentalTriggeringUpdates(_, _))
+  EXPECT_CALL(mock_host, getExperimentalTriggeringUpdates(_, _))
       .WillOnce(
           [&updates_handler_remote](
               mojo::PendingRemote<
@@ -364,6 +417,10 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   EXPECT_CALL(done_callback, Run(_)).Times(1);
 
   handler_->OnMessage(std::move(message), done_callback.Get());
+
+  // Run the callback to simulate connection.
+  ASSERT_FALSE(captured_options.on_client_connected.is_null());
+  std::move(captured_options.on_client_connected).Run(&mock_instance);
 
   // Simulate updates from remote.
   ASSERT_TRUE(updates_handler_remote.is_valid());
