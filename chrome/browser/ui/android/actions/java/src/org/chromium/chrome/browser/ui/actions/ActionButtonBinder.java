@@ -23,6 +23,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class ActionButtonBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (view instanceof DelegatingActionView delegatingView) {
+            View target = delegatingView.getTargetView();
+            if (target != view) {
+                bind(model, target, propertyKey);
+                return;
+            }
+        }
+
         if (ActionProperties.ICON_ID == propertyKey
                 || ActionProperties.ICON_DRAWABLE == propertyKey) {
             Drawable drawable = model.get(ActionProperties.ICON_DRAWABLE);

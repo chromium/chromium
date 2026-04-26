@@ -63,6 +63,20 @@ public class ActionButtonBinderUnitTest {
     private PropertyModel mModel;
     private Drawable mDrawable;
 
+    private static class TestDelegatingView extends ImageView implements DelegatingActionView {
+        private final View mTarget;
+
+        public TestDelegatingView(Context context, View target) {
+            super(context);
+            mTarget = target;
+        }
+
+        @Override
+        public View getTargetView() {
+            return mTarget;
+        }
+    }
+
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -325,5 +339,24 @@ public class ActionButtonBinderUnitTest {
 
         // Ensure that the IPH intent is only shown on the first view.
         assertEquals(mView, captor.getValue().anchorView);
+    }
+
+    @Test
+    @SmallTest
+    public void testDelegation() {
+        ImageView targetView = new ImageView(mActivity);
+        TestDelegatingView delegatingView = new TestDelegatingView(mActivity, targetView);
+
+        PropertyModel model = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(model, delegatingView, ActionButtonBinder::bind);
+
+        assertNull(targetView.getDrawable());
+        assertNull(delegatingView.getDrawable());
+
+        int resId = android.R.drawable.ic_delete;
+        model.set(ActionProperties.ICON_ID, resId);
+
+        assertNotNull(targetView.getDrawable());
+        assertNull(delegatingView.getDrawable());
     }
 }
