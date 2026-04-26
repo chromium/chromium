@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">गलत इकाई पहचानकर्ता</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (अपने-आप पहचानी गई भाषा)</translation>
 <translation id="1232569758102978740">टाइटल रहित</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> में जानकारी भरना ज़रूरी है</translation>
 <translation id="1236081509407217141">क्या आप वीआर के लिए अनुमति देना चाहते हैं?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">आपके डिवाइस का नाम</translation>
@@ -473,6 +474,7 @@
 <translation id="1721424275792716183">* फ़ील्ड ज़रूरी है</translation>
 <translation id="1723636263173393300">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा शॉर्टकट नहीं हो सकते.</translation>
 <translation id="1725591448053514783">यू 6 साइज़ का लिफ़ाफ़ा</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> या <ph name="FIELD_3" /> में से किसी एक में जानकारी भरना ज़रूरी है</translation>
 <translation id="1727613060316725209">प्रमाणपत्र मान्य है</translation>
 <translation id="1728677426644403582">एक वेब पेज का सोर्स देखा जा रहा है</translation>
 <translation id="173080396488393970">इस तरह का कार्ड काम नहीं करता</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">फ़ॉर्मल कपड़े</translation>
 <translation id="3223287115535306850">ऐप्लिकेशन लॉन्च होने की जानकारी देने वाला लोडिंग आइकॉन</translation>
 <translation id="3223425961342298674">जगह की जानकारी ऐक्सेस करने की अनुमति नहीं है</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> या <ph name="FIELD_2" /> में से किसी एक में जानकारी भरना ज़रूरी है</translation>
 <translation id="3225319735946384299">कोड हस्ताक्षर</translation>
 <translation id="3225919329040284222">सर्वर द्वारा कोई प्रमाणपत्र प्रस्‍तुत किया गया, जो बिल्‍ट-इन अपेक्षाओं से मिलान नहीं करता. इन अपेक्षाओं को आपकी सुरक्षा करने के लिए कुछ, उच्‍च-सुरक्षा वेबसाइटों के लिए शामिल किया गया है.</translation>
 <translation id="3226128629678568754">पेज को लोड करने के लिए ज़रूरी डेटा फिर सबमिट करने के लिए 'फिर लोड करें' बटन दबाएं.</translation>

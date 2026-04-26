@@ -837,6 +837,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1567579616025300478">To spletno mesto ne sme shranjevati podatkov v napravi.</translation>
 <translation id="156793199942386351">Tipka »<ph name="CURRENTKEY" />« je že dodeljena dejanju »<ph name="ACTION" />«. Pritisnite poljubno tipko, če želite <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konzola JavaScript</translation>
+<translation id="157005186601751931">Odpri zavihek v aplikaciji</translation>
 <translation id="1570604804919108255">Vklop zvoka obvestil</translation>
 <translation id="1570990174567554976">Mapa za zaznamke »<ph name="BOOKMARK_TITLE" />« je ustvarjena.</translation>
 <translation id="1571041387761170095">Ni šibkih ali znova uporabljenih gesel</translation>
@@ -6123,6 +6124,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5204967432542742771">Vnesite geslo</translation>
 <translation id="5205484256512407285">Za prenos ne uporabite prenosa podatkov v mobilnem omrežju.</translation>
 <translation id="520568280985468584">Omrežje je bilo uspešno dodano. Mine lahko več minut, preden bo mobilno omrežje aktivno.</translation>
+<translation id="5207395053540207113">Želite Iskanju Google dovoliti dostop do vsebine v Googlu Drive?</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi preveriti, ali uporabljate primerno napravo s sistemom Chrome OS.</translation>
 <translation id="5208926629108082192">Podatki o mobilnem omrežju naprave</translation>
@@ -9038,6 +9040,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="727595954130325265">Nakup</translation>
 <translation id="7277275452721470458">Dejavnost v načinu umetne inteligence</translation>
 <translation id="727952162645687754">Napaka pri prenosu</translation>
+<translation id="7280265656690268844">Optimizacija JavaScripta je izklopljena</translation>
 <translation id="7280649757394340890">Glasovne nastavitve pretvorbe besedila v govor</translation>
 <translation id="7280683802406059877">Prilagajanje bližnjičnih tipk</translation>
 <translation id="7280877790564589615">Zahtevano je dovoljenje</translation>
