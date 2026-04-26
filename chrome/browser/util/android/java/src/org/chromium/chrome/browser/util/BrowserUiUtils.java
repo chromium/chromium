@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.util;
 
+import android.content.Context;
 import android.view.KeyEvent;
 
 import androidx.annotation.IntDef;
@@ -11,6 +12,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** Deals with multiple parts of browser UI code calls. */
@@ -123,5 +126,14 @@ public class BrowserUiUtils {
             return WindowOpenDisposition.NEW_WINDOW;
         }
         return WindowOpenDisposition.CURRENT_TAB;
+    }
+
+    /**
+     * @param context The current context (should be the activity context when possible).
+     * @return Whether the page info item should be moved to the app menu.
+     */
+    public static boolean isPageInfoMovedToAppMenu(Context context) {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 }

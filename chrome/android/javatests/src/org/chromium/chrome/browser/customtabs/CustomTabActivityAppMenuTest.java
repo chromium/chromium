@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -186,10 +187,10 @@ public class CustomTabActivityAppMenuTest {
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
     }
 
-    private static int adjustMenuSize(int expectedMenuSize) {
+    private int adjustMenuSize(int expectedMenuSize) {
         // history menu won't be shown on pre-U devices. Decrease the expected size by 1.
         int result = BuildCompat.isAtLeastU() ? expectedMenuSize : expectedMenuSize - 1;
-        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+        if (BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())) {
             result++;
         }
         return result;
@@ -219,7 +220,7 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize =
-                ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()
+                BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())
                         ? NUM_CHROME_MENU_ITEMS
                         : NUM_CHROME_MENU_ITEMS - 1;
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
@@ -360,7 +361,7 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
         int expectedMenuSize = 2;
-        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+        if (BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())) {
             expectedMenuSize++;
         }
 
@@ -394,7 +395,7 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
         int expectedMenuSize = 3;
-        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+        if (BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())) {
             expectedMenuSize++;
         }
 
@@ -446,7 +447,7 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
         int expectedMenuSize = 3;
-        if (ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) {
+        if (BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())) {
             expectedMenuSize++;
         }
 
