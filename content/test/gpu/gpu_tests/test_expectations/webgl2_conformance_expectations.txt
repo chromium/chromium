@@ -502,7 +502,7 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/fun
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
-crbug.com/891953 [ android renderer-skia-gl ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 
 
 # ========================
