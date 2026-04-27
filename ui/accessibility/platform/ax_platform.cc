@@ -137,6 +137,56 @@ bool AXPlatform::HasServicedUiaClients() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return has_serviced_uia_clients_;
 }
+
+void AXPlatform::SetMsaaRequested() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  msaa_requested_ = true;
+}
+
+void AXPlatform::SetUiaRequested() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  uia_requested_ = true;
+}
+
+std::optional<AXPlatform::ActiveClientApi> AXPlatform::GetRequestedClientApi()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (msaa_requested_ && uia_requested_) {
+    return ActiveClientApi::kBoth;
+  }
+  if (uia_requested_) {
+    return ActiveClientApi::kUiaOnly;
+  }
+  if (msaa_requested_) {
+    return ActiveClientApi::kMsaaOnly;
+  }
+  return std::nullopt;
+}
+
+void AXPlatform::SetMsaaActive() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  msaa_active_ = true;
+}
+
+void AXPlatform::SetUiaActive() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  uia_active_ = true;
+}
+
+std::optional<AXPlatform::ActiveClientApi> AXPlatform::GetActiveClientApi()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (msaa_active_ && uia_active_) {
+    return ActiveClientApi::kBoth;
+  }
+  if (uia_active_) {
+    return ActiveClientApi::kUiaOnly;
+  }
+  if (msaa_active_) {
+    return ActiveClientApi::kMsaaOnly;
+  }
+  return std::nullopt;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

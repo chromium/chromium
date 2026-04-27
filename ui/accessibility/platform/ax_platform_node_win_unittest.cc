@@ -37,6 +37,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
@@ -8324,6 +8325,133 @@ TEST_F(AXPlatformNodeWinTest, DestroyedNodeNotAddedToAlertTargets) {
             AXPlatformNodeWin::GetAlertTargetCountForTesting());
 
   alert_node->SetDelegateForTesting(original_delegate);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_NoneByDefault) {
+  EXPECT_FALSE(AXPlatform::GetInstance().GetActiveClientApi().has_value());
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_MsaaOnly) {
+  AXPlatform::GetInstance().SetMsaaActive();
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kMsaaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_UiaOnly) {
+  AXPlatform::GetInstance().SetUiaActive();
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kUiaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_Both) {
+  AXPlatform::GetInstance().SetMsaaActive();
+  AXPlatform::GetInstance().SetUiaActive();
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kBoth, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_SetMsaaActiveIdempotent) {
+  AXPlatform::GetInstance().SetMsaaActive();
+  AXPlatform::GetInstance().SetMsaaActive();
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kMsaaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_MsaaSetViaIAccessible) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  Init(root);
+
+  ComPtr<IAccessible> root_accessible = GetRootIAccessible();
+  ASSERT_NE(nullptr, root_accessible.Get());
+
+  EXPECT_FALSE(AXPlatform::GetInstance().GetActiveClientApi().has_value());
+
+  ScopedBstr name;
+  root_accessible->get_accName(SELF, name.Receive());
+
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kMsaaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_UiaSetViaProvider) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  Init(root);
+
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+  ASSERT_NE(nullptr, root_node.Get());
+
+  EXPECT_FALSE(AXPlatform::GetInstance().GetActiveClientApi().has_value());
+
+  ScopedVariant property_value;
+  root_node->GetPropertyValue(UIA_NamePropertyId, property_value.Receive());
+
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kUiaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, ActiveClientApi_BothSetViaMixedCalls) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  Init(root);
+
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  ComPtr<IAccessible> root_accessible = GetRootIAccessible();
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ScopedBstr name;
+  root_accessible->get_accName(SELF, name.Receive());
+
+  ScopedVariant property_value;
+  root_node->GetPropertyValue(UIA_NamePropertyId, property_value.Receive());
+
+  auto result = AXPlatform::GetInstance().GetActiveClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kBoth, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, RequestedClientApi_NoneByDefault) {
+  EXPECT_FALSE(AXPlatform::GetInstance().GetRequestedClientApi().has_value());
+}
+
+TEST_F(AXPlatformNodeWinTest, RequestedClientApi_MsaaOnly) {
+  AXPlatform::GetInstance().SetMsaaRequested();
+  auto result = AXPlatform::GetInstance().GetRequestedClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kMsaaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, RequestedClientApi_UiaOnly) {
+  AXPlatform::GetInstance().SetUiaRequested();
+  auto result = AXPlatform::GetInstance().GetRequestedClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kUiaOnly, *result);
+}
+
+TEST_F(AXPlatformNodeWinTest, RequestedClientApi_Both) {
+  AXPlatform::GetInstance().SetMsaaRequested();
+  AXPlatform::GetInstance().SetUiaRequested();
+  auto result = AXPlatform::GetInstance().GetRequestedClientApi();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(AXPlatform::ActiveClientApi::kBoth, *result);
 }
 
 }  // namespace ui

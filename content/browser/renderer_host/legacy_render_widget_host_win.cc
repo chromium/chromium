@@ -315,6 +315,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
 
   switch (obj_id) {
     case UiaRootObjectId:
+      ui::AXPlatform::GetInstance().SetUiaRequested();
       if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
         // Return the IRawElementProviderSimple for the window's client area to
         // a UI Automation client.
@@ -332,6 +333,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
       break;
 
     case OBJID_CLIENT:
+      ui::AXPlatform::GetInstance().SetMsaaRequested();
       // Return the IAccessible for the web content to an MSAA client.
       if (IAccessible* root =
               GetOrCreateWindowRootAccessible(/*is_uia_request=*/false)) {

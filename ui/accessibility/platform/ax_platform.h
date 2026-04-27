@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
@@ -134,6 +136,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Returns true if the UI Automation Provider for Windows is enabled.
   bool IsUiaProviderEnabled() const;
 
+  // Three levels of Windows API tracking:
+  // - "Serviced": a UIA provider was returned to the OS. Runtime flag used
+  //   for cleanup (e.g. disconnecting providers on window destroy).
+  // - "Requested": a WM_GETOBJECT was received for MSAA or UIA. One-way
+  //   flag for histogram reporting, fires even if UIA is disabled.
+  // - "Active": an API call reached a function that activates AXMode.
+  //   One-way flag for histogram reporting, scoped to AXMode-modifying paths.
+
   // Notes that an inbound request from a UIA client has been serviced; for
   // example, by calling UiaReturnRawElementProvider to give it a window's
   // root object.
@@ -141,6 +151,35 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Returns true if a UIA client has been serviced; see above.
   bool HasServicedUiaClients();
+
+  // Identifies which Windows accessibility client APIs were active or
+  // requested. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  //
+  // LINT.IfChange(ActiveClientApi)
+  enum class ActiveClientApi {
+    kUiaOnly = 0,
+    kMsaaOnly = 1,
+    kBoth = 2,
+    kMaxValue = kBoth,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ActiveClientApi)
+
+  // Records that a WM_GETOBJECT message was received for a specific platform
+  // API. Does not necessarily reflect a real AXMode activation.
+  void SetMsaaRequested();
+  void SetUiaRequested();
+
+  // Returns which APIs were requested via WM_GETOBJECT, or nullopt if neither.
+  std::optional<ActiveClientApi> GetRequestedClientApi() const;
+
+  // Records that a specific platform API call led to a function that
+  // activates the process-wide AXMode.
+  void SetMsaaActive();
+  void SetUiaActive();
+
+  // Returns which APIs activated AXMode, or nullopt if neither has.
+  std::optional<ActiveClientApi> GetActiveClientApi() const;
 #endif
 
   // A very basic accessible property was used, such as role, name or location.
@@ -214,6 +253,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
       false;
   bool is_name_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
   bool has_serviced_uia_clients_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool msaa_requested_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool uia_requested_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool msaa_active_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool uia_active_ GUARDED_BY_CONTEXT(thread_checker_) = false;
 #endif
 
   THREAD_CHECKER(thread_checker_);

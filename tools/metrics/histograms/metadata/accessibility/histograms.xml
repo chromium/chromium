@@ -4049,6 +4049,35 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Win.ActiveClientApis" enum="ActiveClientApi"
+    expires_after="2027-04-17">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    Records which Windows accessibility client APIs (UIA, MSAA/IA2, or both)
+    have been actively used during the lifetime of the process. Recorded once
+    per UMA upload interval when the kNativeAPIs accessibility mode is active.
+    Unlike Accessibility.Win.RequestedClientApis, this only tracks API calls
+    that led to functions which may potentially modify the process-wide AXMode.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.Win.RequestedClientApis" enum="ActiveClientApi"
+    expires_after="2027-04-17">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    Records which Windows accessibility client APIs (UIA, MSAA/IA2, or both)
+    were requested via WM_GETOBJECT during the lifetime of the process. This is
+    an upper-bound signal recorded once per UMA upload interval regardless of
+    whether the kNativeAPIs accessibility mode is active.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
     expires_after="2026-10-04">
   <owner>lucasradaelli@google.com</owner>

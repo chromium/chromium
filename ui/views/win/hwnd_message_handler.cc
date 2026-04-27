@@ -2127,6 +2127,7 @@ LRESULT HWNDMessageHandler::OnGetObject(UINT message,
   // only the low-order 32-bits are preserved.
   switch (static_cast<LONG>(l_param)) {
     case UiaRootObjectId:
+      ui::AXPlatform::GetInstance().SetUiaRequested();
       if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
         // Return the IRawElementProviderSimple for the window's client area to
         // a UI Automation client.
@@ -2144,6 +2145,7 @@ LRESULT HWNDMessageHandler::OnGetObject(UINT message,
       break;
 
     case OBJID_CLIENT:
+      ui::AXPlatform::GetInstance().SetMsaaRequested();
       // Return the IAccessible for the window's client area to an MSAA client.
       if (auto root_accessible = delegate_->GetNativeViewAccessible()) {
         return ::LresultFromObject(IID_IAccessible, w_param, root_accessible);

@@ -339,6 +339,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetNativeViewAccessible() {
   if (!AXPlatformNodeWin::AreAXModeChangesPaused()) {
     // The fragment root is the entry point from the operating system for UI
     // Automation. Signal when we're asked for a platform object on it.
+    AXPlatform::GetInstance().SetUiaActive();
     AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
   }
   return static_cast<AXFragmentRootPlatformNodeWin*>(platform_node_.get());

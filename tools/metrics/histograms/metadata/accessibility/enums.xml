@@ -1214,6 +1214,19 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<!-- LINT.IfChange(ActiveClientApi) -->
+
+<enum name="ActiveClientApi">
+  <summary>
+    Which Windows accessibility client APIs have been actively used.
+  </summary>
+  <int value="0" label="UIA only"/>
+  <int value="1" label="MSAA/IA2 only"/>
+  <int value="2" label="Both UIA and MSAA/IA2"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform.h:ActiveClientApi) -->
+
 <!-- LINT.IfChange(AssistiveTech)-->
 
 <enum name="AssistiveTech">

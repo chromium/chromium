@@ -4,9 +4,15 @@
 
 #include "chrome/browser/metrics/accessibility_state_provider.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/accessibility/ax_mode.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/metrics/histogram_functions.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#endif
 
 namespace {
 
@@ -58,6 +64,15 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile) {
   const ui::AXMode mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+
+#if BUILDFLAG(IS_WIN)
+  auto requested_api = ui::AXPlatform::GetInstance().GetRequestedClientApi();
+  if (requested_api.has_value()) {
+    base::UmaHistogramEnumeration("Accessibility.Win.RequestedClientApis",
+                                  *requested_api);
+  }
+#endif
+
   if (mode.is_mode_off()) {
     return;
   }
@@ -83,4 +98,14 @@ void AccessibilityStateProvider::ProvideSystemProfileMetrics(
   // never present in `mode`.
   CHECK(!mode.has_mode(ui::AXMode::kFromPlatform));
   MaybeAddAccessibilityModeFlags(mode, ui::AXMode::kScreenReader, state);
+
+#if BUILDFLAG(IS_WIN)
+  if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
+    auto active_api = ui::AXPlatform::GetInstance().GetActiveClientApi();
+    if (active_api.has_value()) {
+      base::UmaHistogramEnumeration("Accessibility.Win.ActiveClientApis",
+                                    *active_api);
+    }
+  }
+#endif
 }
