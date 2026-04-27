@@ -1878,6 +1878,12 @@ data/accessibility/aria/aria-treeitem-nested-in-lists-expected-mac.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists-expected-uia-win.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists-expected-win.txt
 data/accessibility/aria/aria-treeitem-nested-in-lists.html
+data/accessibility/aria/aria-treeitem-tabindex-expected-android.txt
+data/accessibility/aria/aria-treeitem-tabindex-expected-auralinux.txt
+data/accessibility/aria/aria-treeitem-tabindex-expected-blink.txt
+data/accessibility/aria/aria-treeitem-tabindex-expected-mac.txt
+data/accessibility/aria/aria-treeitem-tabindex-expected-win.txt
+data/accessibility/aria/aria-treeitem-tabindex.html
 data/accessibility/aria/aria-two-owners-remove-one-expected-auralinux.txt
 data/accessibility/aria/aria-two-owners-remove-one-expected-blink.txt
 data/accessibility/aria/aria-two-owners-remove-one.html

@@ -1,0 +1,9 @@
+AXWebArea
+++AXOutline
+++++AXRow AXSubrole=AXOutlineRow AXIndex=0 AXTitle='Cat'
+++++++AXStaticText AXValue='%E2%80%A2 '
+++++++AXGroup AXSubrole=AXStrongStyleGroup
+++++++++AXStaticText AXValue='Cat'
+++++AXRow AXSubrole=AXOutlineRow AXIndex=1 AXTitle='Dog'
+++++++AXStaticText AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='Dog'

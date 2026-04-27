@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tree setSize=2
+++++++++treeItem name='Cat' hierarchicalLevel=1 setSize=2 posInSet=1 selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++strong
+++++++++++++staticText name='Cat'
+++++++++++++++inlineTextBox name='Cat'
+++++++++treeItem name='Dog' hierarchicalLevel=1 setSize=2 posInSet=2 selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Dog'
+++++++++++++inlineTextBox name='Dog'

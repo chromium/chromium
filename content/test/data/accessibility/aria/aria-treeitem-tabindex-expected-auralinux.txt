@@ -1,0 +1,9 @@
+[document web]
+++[tree] setsize:2
+++++[tree item] name='Cat' selectable level:1 posinset:1 setsize:2
+++++++[static] name='%E2%80%A2 '
+++++++[static]
+++++++++[static] name='Cat'
+++++[tree item] name='Dog' selectable level:1 posinset:2 setsize:2
+++++++[static] name='%E2%80%A2 '
+++++++[static] name='Dog'

@@ -1972,6 +1972,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaTreeitemTabIndex) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-tabindex.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaTreeitemNestedInLists) {
   RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-nested-in-lists.html"));
 }
