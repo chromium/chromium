@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var util = {};
-var embedder = {};
+const embedder = {};
 
 window.runTest = function(testName, appToEmbed) {
   if (!embedder.test.testList[testName]) {
@@ -16,7 +15,7 @@ window.runTest = function(testName, appToEmbed) {
   embedder.test.testList[testName](appToEmbed);
 };
 
-var LOG = function(msg) {
+const LOG = function(msg) {
   window.console.log(msg);
 };
 
@@ -30,29 +29,29 @@ embedder.test.fail = function() {
 };
 
 embedder.test.assertEq = function(a, b) {
-  if (a != b) {
-    console.log('Assertion failed: ' + a + ' != ' + b);
+  if (a !== b) {
+    console.assert(a !== b, 'Assertion failed: ' + a + ' != ' + b);
     embedder.test.fail();
   }
 };
 
 embedder.test.assertTrue = function(condition) {
   if (!condition) {
-    console.log('Assertion failed: true != ' + condition);
+    console.assert(condition, 'Assertion failed: true != ' + condition);
     embedder.test.fail();
   }
 };
 
 embedder.test.assertFalse = function(condition) {
   if (condition) {
-    console.log('Assertion failed: false != ' + condition);
+    console.assert(condition, 'Assertion failed: false != ' + condition);
     embedder.test.fail();
   }
 };
 
 // Tests begin.
 function testAppViewGoodDataShouldSucceed(appToEmbed) {
-  var appview = new AppView();
+  const appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
   LOG('Attempting to connect to app with good params.');
@@ -67,10 +66,10 @@ function testAppViewGoodDataShouldSucceed(appToEmbed) {
     LOG('Connected.');
     embedder.test.succeed();
   });
-};
+}
 
 function testAppViewMediaRequest(appToEmbed) {
-  var appview = new AppView();
+  const appview = new AppView();
   window.console.log('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
   window.console.log('Attempting to connect to app.');
@@ -84,10 +83,10 @@ function testAppViewMediaRequest(appToEmbed) {
     window.console.log('Connected.');
     embedder.test.succeed();
   });
-};
+}
 
 function testAppViewRefusedDataShouldFail(appToEmbed) {
-  var appview = new AppView();
+  const appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
   LOG('Attempting to connect to app with refused params.');
@@ -101,10 +100,10 @@ function testAppViewRefusedDataShouldFail(appToEmbed) {
     LOG('Failed to connect.');
     embedder.test.succeed();
   });
-};
+}
 
 function testAppViewWithUndefinedDataShouldSucceed(appToEmbed) {
-  var appview = new AppView();
+  const appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
   // Step 1: Attempt to connect to a non-existent app (abc123).
@@ -130,10 +129,10 @@ function testAppViewWithUndefinedDataShouldSucceed(appToEmbed) {
       embedder.test.succeed();
     });
   });
-};
+}
 
 function testAppViewNoEmbedRequestListener(appToEmbed) {
-  var appview = new AppView();
+  const appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
   LOG('Attempting to connect to app that does not listen for embed requests.');
@@ -146,7 +145,7 @@ function testAppViewNoEmbedRequestListener(appToEmbed) {
       embedder.test.succeed();
     }
   });
-};
+}
 
 embedder.test.testList = {
   'testAppViewGoodDataShouldSucceed': testAppViewGoodDataShouldSucceed,
@@ -154,7 +153,7 @@ embedder.test.testList = {
   'testAppViewRefusedDataShouldFail': testAppViewRefusedDataShouldFail,
   'testAppViewWithUndefinedDataShouldSucceed':
       testAppViewWithUndefinedDataShouldSucceed,
-  'testAppViewNoEmbedRequestListener': testAppViewNoEmbedRequestListener
+  'testAppViewNoEmbedRequestListener': testAppViewNoEmbedRequestListener,
 };
 
 onload = function() {

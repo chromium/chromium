@@ -6,9 +6,9 @@ chrome.app.runtime.onEmbedRequested.addListener(function(request) {
   if (!request.data.foo) {
     request.allow('main.html');
     return;
-  } else if (request.data.foo == 'bar') {
+  } else if (request.data.foo === 'bar') {
     request.deny();
-  } else if (request.data.foo == 'bleep') {
+  } else if (request.data.foo === 'bleep') {
     request.allow('main.html');
   }
 });
