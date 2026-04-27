@@ -791,7 +791,8 @@ void ContextualTasksContextService::OnAllTabsScored(
         on_tab_selection_complete,
     scoped_refptr<ScoringState> scoring_state,
     optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
-  std::vector<base::WeakPtr<content::WebContents>> relevant_tabs;
+  std::vector<std::pair<double, base::WeakPtr<content::WebContents>>>
+      scored_relevant_tabs;
 
   for (size_t i = 0; i < all_tabs.size(); ++i) {
     const auto& web_contents = all_tabs[i];
@@ -804,7 +805,7 @@ void ContextualTasksContextService::OnAllTabsScored(
 
     if (score >=
         options.min_model_score.value_or(kTabSelectionScoreThreshold.Get())) {
-      relevant_tabs.push_back(web_contents);
+      scored_relevant_tabs.emplace_back(score, web_contents);
     }
 
     // Recording signals and scores for analysis.
@@ -843,6 +844,15 @@ void ContextualTasksContextService::OnAllTabsScored(
         tab_signals.duration_of_last_visit.has_value()
             ? tab_signals.duration_of_last_visit->InSecondsF()
             : -1.0));
+  }
+
+  std::sort(scored_relevant_tabs.begin(), scored_relevant_tabs.end(),
+            [](const auto& a, const auto& b) { return a.first > b.first; });
+
+  std::vector<base::WeakPtr<content::WebContents>> relevant_tabs;
+  relevant_tabs.reserve(scored_relevant_tabs.size());
+  for (const auto& pair : scored_relevant_tabs) {
+    relevant_tabs.push_back(pair.second);
   }
 
   std::move(on_tab_selection_complete).Run(std::move(relevant_tabs));
