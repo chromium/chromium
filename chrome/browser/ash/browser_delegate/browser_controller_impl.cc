@@ -24,13 +24,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/simple_web_view_dialog.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
-#include "components/tabs/public/tab_interface.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -147,7 +147,16 @@ BrowserDelegate* BrowserControllerImpl::GetBrowserForTab(
   // tabs::TabInterface::MaybeGetFromContents followed by
   // tabs::TabInterface::GetBrowserWindowInterface here but this can CHECK-fail
   // during shutdown. Find a solution.
-  return GetDelegate(chrome::FindBrowserWithTab(contents));
+  BrowserWindowInterface* found = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&found, contents](BrowserWindowInterface* browser) {
+        TabStripModel* model = browser->GetTabStripModel();
+        if (model->GetIndexOfWebContents(contents) != TabStripModel::kNoTab) {
+          found = browser;
+        }
+        return !found;
+      });
+  return GetDelegate(found);
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,

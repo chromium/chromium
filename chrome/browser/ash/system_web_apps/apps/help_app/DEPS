@@ -3,7 +3,8 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/common/chrome_features.h",
     "+chrome/browser/web_applications/web_app_provider.h",
-    "+chrome/browser/web_applications/web_app_registrar.h"
+    "+chrome/browser/web_applications/web_app_registrar.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   ],
   "help_app_ui_delegate_unittest\\.cc": [
     "+chrome/browser/ui/settings_window_manager_chromeos.h",

@@ -22,6 +22,7 @@ include_rules = [
   "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/mojom",

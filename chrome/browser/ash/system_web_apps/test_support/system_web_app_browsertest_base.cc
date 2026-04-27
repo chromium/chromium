@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -95,8 +95,13 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   }
 
   if (out_browser) {
+    BrowserWindowInterface* target_browser =
+        web_contents
+            ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                  web_contents)
+            : nullptr;
     *out_browser =
-        web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
+        target_browser ? target_browser->GetBrowserForMigrationOnly() : nullptr;
   }
 
   return web_contents;

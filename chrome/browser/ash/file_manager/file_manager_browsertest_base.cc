@@ -136,9 +136,9 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/chrome_paths.h"
@@ -4288,9 +4288,11 @@ bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
     web_contents = std::prev(swa_web_contents_.end())->second;
   }
   if (web_contents) {
-    const Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents);
     if (browser) {
-      BrowserWindow* window = browser->window();
+      ui::BaseWindow* window = browser->GetWindow();
       if (window) {
         native_window = window->GetNativeWindow();
       }

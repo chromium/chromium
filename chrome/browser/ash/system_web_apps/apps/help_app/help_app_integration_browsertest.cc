@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
             0);
 
   BrowserWindowInterface* help_app_browser =
-      chrome::FindBrowserWithTab(web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   ui_test_utils::BrowserDestroyedObserver observer(help_app_browser);
   // Close the web contents we just created to simulate what would happen in
   // production with a background page. This helps us ensure that our

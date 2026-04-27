@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -158,6 +157,13 @@ bool IsAppListItemViewForWebApp(std::string_view id, const views::View* view) {
 bool IsBrowserForWebApp(const webapps::AppId& id,
                         const BrowserWindowInterface* browser) {
   return web_app::AppBrowserController::IsForWebApp(browser, id);
+}
+
+// Returns the browser containing `web_contents` as a tab.
+BrowserWindowInterface* FindBrowserWithTab(
+    const content::WebContents* web_contents) {
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_contents);
 }
 
 // Returns if the menu is currently showing.
@@ -514,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
           base::BindOnce(&AsInstrumentedWebContents)
               .Then(
                   base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
-              .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+              .Then(base::BindOnce(&FindBrowserWithTab))
               .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
 
       // Check Gemini app launch URL.
@@ -579,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
           base::BindOnce(&AsInstrumentedWebContents)
               .Then(
                   base::BindOnce(&WebContentsInteractionTestUtil::web_contents))
-              .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+              .Then(base::BindOnce(&FindBrowserWithTab))
               .Then(base::BindOnce(&IsBrowserForWebApp, ash::kGeminiAppId))),
 
       // Check Gemini app launch URL.
@@ -631,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest,
           // Check Gemini app browser.
           CheckElement(kGeminiAppWebContentsElementId,
                        [](ui::TrackedElement* el) {
-                         auto* const browser = chrome::FindBrowserWithTab(
+                         auto* const browser = FindBrowserWithTab(
                              AsInstrumentedWebContents(el)->web_contents());
                          return IsBrowserForWebApp(ash::kGeminiAppId, browser);
                        }),
@@ -737,7 +743,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromSettings) {
                    base::BindOnce(&AsInstrumentedWebContents)
                        .Then(base::BindOnce(
                            &WebContentsInteractionTestUtil::web_contents))
-                       .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+                       .Then(base::BindOnce(&FindBrowserWithTab))
                        .Then(base::BindOnce(&IsBrowserForWebApp,
                                             ash::kOsSettingsAppId))),
 
