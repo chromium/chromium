@@ -118,19 +118,11 @@ const CGFloat kInsetAdjustment = 20;
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-  __weak GeminiFREWrapperViewController* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
         [weakSelf updateContentHeightConstraint];
-        [weakSelf.view layoutIfNeeded];
-        if ([weakSelf isShowingConsentViewAfterPromo]) {
-          CGFloat newWidth = weakSelf.horizontalScrollView.frame.size.width;
-          weakSelf.horizontalScrollView.contentOffset =
-              CGPointMake(newWidth, 0);
-        }
-        [weakSelf.sheetPresentationController invalidateDetents];
       }
                       completion:nil];
 }
@@ -158,11 +150,6 @@ const CGFloat kInsetAdjustment = 20;
 }
 
 #pragma mark - Private
-
-// Whether the consent is currently shown as the second step after the promo.
-- (BOOL)isShowingConsentViewAfterPromo {
-  return _showPromo && (_currentChildViewController == _consentViewController);
-}
 
 // Updates the content height constraint.
 - (void)updateContentHeightConstraint {
@@ -371,12 +358,18 @@ const CGFloat kInsetAdjustment = 20;
   [self updateAccessibilityVisibility];
   [self updateButtonConfiguration];
 
+  // Fixed offset on both LTR and RTL languages after setting `hidden = NO`.
+  [self.view layoutIfNeeded];
+  CGFloat start = _promoViewController.view.frame.origin.x;
+  self.horizontalScrollView.contentOffset = CGPointMake(start, 0);
+
   __weak __typeof(self) weakSelf = self;
   [self.sheetPresentationController animateChanges:^{
     [weakSelf updateContentHeightConstraint];
   }];
 
-  CGFloat target = self.contentView.frame.size.width;
+  GeminiPromoViewController* promoViewController = _promoViewController;
+  CGFloat target = _consentViewController.view.frame.origin.x;
   [UIView animateWithDuration:kSlideDuration
       delay:0.0
       usingSpringWithDamping:kSpringDamping
@@ -386,6 +379,7 @@ const CGFloat kInsetAdjustment = 20;
         weakSelf.horizontalScrollView.contentOffset = CGPointMake(target, 0);
       }
       completion:^(BOOL finished) {
+        promoViewController.view.hidden = YES;
         if (finished && UIAccessibilityIsVoiceOverRunning()) {
           [weakSelf updateAccessibilityFocus];
         }
