@@ -206,8 +206,6 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(crbug.com/491905300#comment16): Add this builder back to CQ once there is
-# sufficient build capacity.
 try_.orchestrator_builder(
     name = "mac-gpu-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
@@ -233,6 +231,9 @@ try_.orchestrator_builder(
     compilator = "mac-gpu-rel-compilator",
     contact_team_email = "chrome-gpu-infra@google.com",
     coverage_test_types = ["overall", "unit"],
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
