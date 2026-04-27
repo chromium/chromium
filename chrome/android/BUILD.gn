@@ -293,12 +293,20 @@ if (_is_default_toolchain) {
   }
 
   android_library("screenshot_provider_java") {
-    sources = [ "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImpl.java" ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImpl.java",
+      "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotInvocationState.java",
+      "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotUriProvider.java",
+    ]
     deps = [
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/android:base_module_java",
+      "//chrome/browser/tab:java",
+      "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
     ]
   }
 

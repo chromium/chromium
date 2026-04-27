@@ -1548,7 +1548,11 @@ if (is_android) {
 
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.screenshotprovider") {
-    sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImplUnitTest.java" ]
+    sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderImplUnitTest.java",
+      "src/org/chromium/chrome/browser/screenshotprovider/ScreenshotInvocationStateUnitTest.java",
+      "src/org/chromium/chrome/browser/screenshotprovider/ScreenshotUriProviderUnitTest.java",
+    ]
     deps = [ ":chrome_junit_tests_helper" ]
   }
 }
