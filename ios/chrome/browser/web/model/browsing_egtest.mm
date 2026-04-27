@@ -8,6 +8,7 @@
 #import <memory>
 #import <string>
 
+#import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -15,16 +16,17 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/test/http_server/data_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
 #import "net/http/http_response_headers.h"
+#import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/expectation_handler.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -34,47 +36,48 @@ using chrome_test_util::OmniboxText;
 namespace {
 
 // URL used for the reload test.
-const char kReloadTestUrl[] = "http://mock/reloadTest";
+const char kReloadTestUrl[] = "/reloadTest";
 
-// Returns the number of serviced requests in HTTP body.
-class ReloadResponseProvider : public web::DataResponseProvider {
+class ReloadHandler {
  public:
-  ReloadResponseProvider() : request_number_(0) {}
-
-  // URL used for the reload test.
-  static GURL GetReloadTestUrl() {
-    return web::test::HttpServer::MakeUrl(kReloadTestUrl);
-  }
-
-  bool CanHandleRequest(const Request& request) override {
-    return request.url == ReloadResponseProvider::GetReloadTestUrl();
-  }
-
-  void GetResponseHeadersAndBody(
-      const Request& request,
-      scoped_refptr<net::HttpResponseHeaders>* headers,
-      std::string* response_body) override {
-    DCHECK_EQ(ReloadResponseProvider::GetReloadTestUrl(), request.url);
-    *headers = GetDefaultResponseHeaders();
-    *response_body = GetResponseBody(request_number_++);
-  }
-
-  // static
-  static std::string GetResponseBody(int request_number) {
-    return base::StringPrintf("Load request %d", request_number);
+  ReloadHandler() : count_(0) {}
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == kReloadTestUrl) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(base::StringPrintf("Load request %d", count_++));
+      return response;
+    }
+    return nullptr;
   }
 
  private:
-  int request_number_;  // Count of requests received by the response provider.
+  int count_;
 };
 
 }  // namespace
 
 // Tests web browsing scenarios.
-@interface BrowsingTestCase : WebHttpServerChromeTestCase
+@interface BrowsingTestCase : ChromeTestCase {
+  std::unique_ptr<net::test_server::ExpectationHandler> _expectationHandler;
+  std::unique_ptr<ReloadHandler> _reloadHandler;
+}
 @end
 
 @implementation BrowsingTestCase
+
+- (void)setUp {
+  [super setUp];
+  _reloadHandler = std::make_unique<ReloadHandler>();
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &ReloadHandler::HandleRequest, base::Unretained(_reloadHandler.get())));
+  _expectationHandler =
+      std::make_unique<net::test_server::ExpectationHandler>(self.testServer);
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Server failed to start.");
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -97,8 +100,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that page successfully loads.
 - (void)testLoad {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
   const GURL URL = self.testServer->GetURL("/echo");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
@@ -106,8 +107,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that page successfully loads when using `document.write`.
 - (void)testDocumentWrite {
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
   const GURL URL = self.testServer->GetURL("/echo");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
@@ -122,20 +121,13 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that page successfully reloads.
 - (void)testReload {
-  // Set up test HTTP server responses.
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new ReloadResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  GURL URL = ReloadResponseProvider::GetReloadTestUrl();
+  GURL URL = self.testServer->GetURL(kReloadTestUrl);
   [ChromeEarlGrey loadURL:URL];
-  std::string expectedBodyBeforeReload(
-      ReloadResponseProvider::GetResponseBody(0 /* request number */));
+  std::string expectedBodyBeforeReload = "Load request 0";
   [ChromeEarlGrey waitForWebStateContainingText:expectedBodyBeforeReload];
 
   [ChromeEarlGreyUI reload];
-  std::string expectedBodyAfterReload(
-      ReloadResponseProvider::GetResponseBody(1 /* request_number */));
+  std::string expectedBodyAfterReload = "Load request 1";
   [ChromeEarlGrey waitForWebStateContainingText:expectedBodyAfterReload];
 }
 
@@ -146,7 +138,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
     EARL_GREY_TEST_SKIPPED(@"Tab Title not displayed on handset.");
   }
 
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:destinationURL];
 
@@ -164,7 +155,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
     EARL_GREY_TEST_SKIPPED(@"Tab Title not displayed on handset.");
   }
 
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL destinationURL = self.testServer->GetURL("/testpage.pdf");
   [ChromeEarlGrey loadURL:destinationURL];
 
@@ -201,12 +191,10 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingPreventDefaultWithLinkOpenedByJavascript {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl(
-      "http://preventDefaultWithLinkOpenedByJavascript");
-  const GURL anchorURL =
-      web::test::HttpServer::MakeUrl("http://anchorDestination");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://javaScriptDestination");
+  const GURL URL =
+      self.testServer->GetURL("/preventDefaultWithLinkOpenedByJavascript");
+  const GURL anchorURL = self.testServer->GetURL("/anchorDestination");
+  const GURL destinationURL = self.testServer->GetURL("/javaScriptDestination");
   // This is a page with a link where the href and JavaScript are setting the
   // destination to two different URLs so the test can verify which one the
   // browser uses.
@@ -217,7 +205,10 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       anchorURL.spec().c_str(), destinationURL.spec().c_str());
   responses[anchorURL] = "anchor destination";
 
-  web::test::SetUpSimpleHttpServer(responses);
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
 
@@ -238,12 +229,9 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)DISABLED_testBrowsingWindowDataLinkScriptRedirect {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL URL =
-      web::test::HttpServer::MakeUrl("http://windowDataLinkScriptRedirect");
-  const GURL intermediateURL =
-      web::test::HttpServer::MakeUrl("http://intermediate");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
+  const GURL URL = self.testServer->GetURL("/windowDataLinkScriptRedirect");
+  const GURL intermediateURL = self.testServer->GetURL("/intermediate");
+  const GURL destinationURL = self.testServer->GetURL("/destination");
   // This is a page with a link to the intermediate page.
   responses[URL] =
       base::StringPrintf("<a id='link' href='%s' target='_blank'>link</a>",
@@ -256,7 +244,10 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   // This is the page that should be showing at the end of the test.
   responses[destinationURL] = "You've arrived!";
 
-  web::test::SetUpSimpleHttpServer(responses);
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
 
@@ -275,8 +266,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 // that the back button works as expected afterwards.
 - (void)testBrowsingJavaScriptBasedNavigation {
   std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
-  const GURL destURL = web::test::HttpServer::MakeUrl("http://destination");
+  const GURL URL = self.testServer->GetURL("/origin");
+  const GURL destURL = self.testServer->GetURL("/destination");
   // Page containing a link with onclick attribute that sets window.location
   // to the destination URL.
   responses[URL] = base::StringPrintf(
@@ -284,7 +275,11 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       destURL.spec().c_str());
   // Page with some text.
   responses[destURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
+
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
@@ -292,7 +287,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:"Link"];
-  const GURL newOriginURL = web::test::HttpServer::MakeUrl("http://origin/#");
+  const GURL newOriginURL = self.testServer->GetURL("/origin#");
 
   // The displayed URL is now "http://origin/#" due to the link click. This is
   // consistent with all other browsers.
@@ -305,7 +300,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)testTapLinkWithWebUIURL {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL URL(web::test::HttpServer::MakeUrl("http://pageWithWebUILink"));
+  const GURL URL = self.testServer->GetURL("/pageWithWebUILink");
   const char kPageHTML[] =
       "<script>"
       "  function printMsg() {"
@@ -317,7 +312,11 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       "</script>"
       "<a href='chrome://version' id='link' onclick='printMsg()'>Version</a>";
   responses[URL] = kPageHTML;
-  web::test::SetUpSimpleHttpServer(responses);
+
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   // Assert that test is starting with one tab.
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -343,12 +342,16 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 - (void)testLoadWebUIURLWithIFrame {
   // Set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL URL(web::test::HttpServer::MakeUrl("http://pageWithWebUILink"));
+  const GURL URL = self.testServer->GetURL("/pageWithWebUILink");
   const char kPageHTML[] =
       "<p>Hello world!</p>"
       "<iframe src='chrome://chrome-urls' width='400' height='300'>";
   responses[URL] = kPageHTML;
-  web::test::SetUpSimpleHttpServer(responses);
+
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   // Assert that test is starting with one tab.
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -377,11 +380,15 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL startURL = web::test::HttpServer::MakeUrl("http://startpage");
+  const GURL startURL = self.testServer->GetURL("/startpage");
+  const GURL targetURL = self.testServer->GetURL("/targetpage");
   responses[startURL] = "<html><body><p>Ready to begin.</p></body></html>";
-  const GURL targetURL = web::test::HttpServer::MakeUrl("http://targetpage");
   responses[targetURL] = "<html><body><p>You've arrived!</p></body></html>";
-  web::test::SetUpSimpleHttpServer(responses);
+
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   // Load the first page and run JS (using the codepath that user-entered JS in
   // the omnibox would take, not page-triggered) that should navigate.
@@ -418,13 +425,17 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
-  const GURL firstURL = web::test::HttpServer::MakeUrl("http://firstURL");
+  const GURL firstURL = self.testServer->GetURL("/firstURL");
+  const GURL secondURL = self.testServer->GetURL("/secondURL");
   const std::string firstResponse = "Test Page 1";
-  const GURL secondURL = web::test::HttpServer::MakeUrl("http://secondURL");
   const std::string secondResponse = "Test Page 2";
   responses[firstURL] = firstResponse;
   responses[secondURL] = secondResponse;
-  web::test::SetUpSimpleHttpServer(responses);
+
+  for (const auto& [url, content] : responses) {
+    _expectationHandler->OnRequest(url.path())
+        .RespondWith("text/html", content);
+  }
 
   [ChromeEarlGrey loadURL:firstURL];
   [ChromeEarlGrey loadURL:secondURL];
