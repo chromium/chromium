@@ -44,11 +44,19 @@ TEST_F(CSSAttrTypeTest, ConsumeNumberType) {
   EXPECT_TRUE(valid_stream.AtEnd());
 }
 
-TEST_F(CSSAttrTypeTest, ConsumeInvalidType) {
-  CSSParserTokenStream stream("invalid");
+TEST_F(CSSAttrTypeTest, ConsumeInvalidFunctionType) {
+  CSSParserTokenStream stream("invalid()");
   std::optional<CSSAttrType> type = CSSAttrType::Consume(stream);
   ASSERT_FALSE(type.has_value());
   EXPECT_EQ(stream.Offset(), 0u);
+}
+
+TEST_F(CSSAttrTypeTest, ConsumeUnknownUnitType) {
+  CSSParserTokenStream stream("unknown");
+  std::optional<CSSAttrType> type = CSSAttrType::Consume(stream);
+  ASSERT_TRUE(type.has_value());
+  EXPECT_TRUE(type->IsDimensionUnit());
+  EXPECT_TRUE(stream.AtEnd());
 }
 
 class ValidSyntaxTest : public CSSAttrTypeTest,

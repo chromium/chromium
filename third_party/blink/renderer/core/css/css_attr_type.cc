@@ -35,8 +35,8 @@ std::optional<CSSPrimitiveValue::UnitType> ConsumeDimensionUnitType(
     stream.Consume();
     return CSSPrimitiveValue::UnitType::kNumber;
   }
-  CSSPrimitiveValue::UnitType unit =
-      CSSPrimitiveValue::StringToUnitType(stream.Peek().Value());
+  CSSPrimitiveValue::UnitType unit = CSSPrimitiveValue::StringToUnitType(
+      stream.ConsumeIncludingWhitespace().Value());
   // The <dimension-unit> production matches a literal "%"
   // character (that is, a <delim-token> with a value of "%")
   // or an ident whose value is any of the CSS units for
@@ -46,9 +46,8 @@ std::optional<CSSPrimitiveValue::UnitType> ConsumeDimensionUnitType(
       !CSSPrimitiveValue::IsFrequency(unit) &&
       !CSSPrimitiveValue::IsFlex(unit) &&
       !CSSPrimitiveValue::IsPercentage(unit)) {
-    return std::nullopt;
+    unit = CSSPrimitiveValue::UnitType::kUnknown;
   }
-  stream.Consume();
   return unit;
 }
 
@@ -90,8 +89,9 @@ const CSSValue* CSSAttrType::Parse(StringView text,
     CSSParserTokenStream stream(text);
     CSSPrimitiveValue* number_value = css_parsing_utils::ConsumeNumber(
         stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
-    if (CSSNumericLiteralValue* literal =
-            DynamicTo<CSSNumericLiteralValue>(number_value)) {
+    CSSNumericLiteralValue* literal =
+        DynamicTo<CSSNumericLiteralValue>(number_value);
+    if (literal && dimension_unit_ != CSSPrimitiveValue::UnitType::kUnknown) {
       return MakeGarbageCollected<CSSNumericLiteralValue>(
           literal->ClampedDoubleValue(), *dimension_unit_);
     }
