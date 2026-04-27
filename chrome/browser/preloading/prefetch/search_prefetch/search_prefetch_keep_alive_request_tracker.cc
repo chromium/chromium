@@ -61,11 +61,14 @@ void SearchPrefetchKeepAliveRequestTracker::AddStageMetrics(
     case RequestStageType::kRequestCancelledAfterTimeLimit:
     case RequestStageType::kLoaderCompleted:
     case RequestStageType::kRequestRetried:
+    case RequestStageType::kRequestBlockedByClient:
       current_stage_ = stage.type;
       break;
     case RequestStageType::kBrowserShutdown:
+      // Terminal stages.
       if (current_stage_ == RequestStageType::kResponseReceived ||
-          current_stage_ == RequestStageType::kLoaderCompleted) {
+          current_stage_ == RequestStageType::kLoaderCompleted ||
+          current_stage_ == RequestStageType::kRequestBlockedByClient) {
         break;
       }
       current_stage_ = RequestStageType::kBrowserShutdown;

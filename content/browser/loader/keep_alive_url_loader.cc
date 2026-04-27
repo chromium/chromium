@@ -31,8 +31,10 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/keep_alive_request_tracker.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_util.h"
@@ -810,9 +812,16 @@ void KeepAliveURLLoader::OnComplete(
   }
 
   for (auto& request_tracker : request_trackers_) {
-    request_tracker->AdvanceToNextStage(
-        KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
-        completion_status);
+    KeepAliveRequestTracker::RequestStageType next_stage =
+        KeepAliveRequestTracker::RequestStageType::kLoaderCompleted;
+    if (completion_status.error_code == net::ERR_BLOCKED_BY_CLIENT &&
+        base::FeatureList::IsEnabled(
+            features::kKeepAliveReportBlockedByClient)) {
+      next_stage =
+          KeepAliveRequestTracker::RequestStageType::kRequestBlockedByClient;
+    }
+    // TODO(crbug.com/504836742): Track other non-OK code.
+    request_tracker->AdvanceToNextStage(next_stage, completion_status);
   }
   if (completion_status.error_code != net::OK) {
     // If the request succeeds, it should've been logged in `OnReceiveResponse`.

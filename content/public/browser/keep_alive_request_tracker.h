@@ -89,7 +89,11 @@ class CONTENT_EXPORT KeepAliveRequestTracker {
     // The browser-side loader has retried the request from the beginning.
     kRequestRetried = 12,
 
-    kMaxValue = kRequestRetried,
+    // The browser-side loader fails to load the fetch keepalive request because
+    // it was blocked by client.
+    kRequestBlockedByClient = 13,
+
+    kMaxValue = kRequestBlockedByClient,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FetchKeepAliveRequestStage)
   friend std::ostream& operator<<(std::ostream&, const RequestStageType&);

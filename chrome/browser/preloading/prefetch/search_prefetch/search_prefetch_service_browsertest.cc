@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -66,6 +67,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/base/features.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
@@ -4253,7 +4255,8 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchIncognitoBrowserTest,
 }
 
 class SearchKeepAliveRequestTrackerBrowserTest
-    : public SearchPrefetchBaseBrowserTest {
+    : public SearchPrefetchBaseBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SearchKeepAliveRequestTrackerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
@@ -4263,16 +4266,24 @@ class SearchKeepAliveRequestTrackerBrowserTest
           {"device_memory_threshold_MB", "0"}}},
         {
             kSearchPrefetchBeaconLogging,
-            {{"search_prefetch_beacon_host", ""}},
+            {{"search_prefetch_beacon_host", "search.com"}},
         }};
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(
+          {features::kKeepAliveReportBlockedByClient, {}});
+    } else {
+      disabled_features.push_back(features::kKeepAliveReportBlockedByClient);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchKeepAliveRequestTrackerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SearchKeepAliveRequestTrackerBrowserTest,
                        BasicPrefetchFunctionality) {
   base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
@@ -4313,12 +4324,9 @@ IN_PROC_BROWSER_TEST_F(SearchKeepAliveRequestTrackerBrowserTest,
     )";
   GURL ack_url = GetSearchServerQueryURLWithNoQuery(
       "/ack?pf=" + kSuggestPrefetchParam.Get());
-  EXPECT_EQ(true, content::ExecJs(
-                      frame, base::ReplaceStringPlaceholders(js_template,
-                                                             {
-                                                                 ack_url.spec(),
-                                                             },
-                                                             nullptr)));
+  EXPECT_TRUE(content::ExecJs(
+      frame,
+      base::ReplaceStringPlaceholders(js_template, {ack_url.spec()}, nullptr)));
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     auto count_map = histogram_tester.GetTotalCountsForPrefix(
@@ -4330,6 +4338,66 @@ IN_PROC_BROWSER_TEST_F(SearchKeepAliveRequestTrackerBrowserTest,
       "Omnibox.SearchPrefetch.KeepAliveRequestFinalStage",
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted, 1);
 }
+
+IN_PROC_BROWSER_TEST_P(SearchKeepAliveRequestTrackerBrowserTest,
+                       BlockedByClient) {
+  base::HistogramTester histogram_tester;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        if (params->url_request.url.path() == "/block-me") {
+          params->client->OnComplete(
+              network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
+          return true;
+        }
+        return false;
+      }));
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  GURL ack_url = GetSearchServerQueryURLWithNoQuery("/block-me");
+  GURL ack_url_with_param =
+      net::AppendQueryParameter(ack_url, "pf", kSuggestPrefetchParam.Get());
+
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+  std::ignore = content::ExecJs(
+      frame,
+      base::StringPrintf("fetch('%s', {method: 'POST', keepalive: true})",
+                         ack_url_with_param.spec().c_str()));
+
+  const auto expected_stage =
+      GetParam() ? content::KeepAliveRequestTracker::RequestStageType::
+                       kRequestBlockedByClient
+                 : content::KeepAliveRequestTracker::RequestStageType::
+                       kLoaderCompleted;
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Omnibox.SearchPrefetch.KeepAliveRequestFinalStage",
+               expected_stage) > 0;
+  })) << "Timeout waiting keep alive loader finishes";
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.KeepAliveRequestFinalStage", expected_stage, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchKeepAliveRequestTrackerBrowserTest,
+                         ::testing::Bool());
 
 // Test suite for `kSuppressPrefetchForUnsupportedSearchMode`.
 class SearchPrefetchUnsupportedModeBrowserTest
