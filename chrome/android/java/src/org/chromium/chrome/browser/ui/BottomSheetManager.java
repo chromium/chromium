@@ -380,6 +380,13 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         }
 
         @Override
+        public @Nullable Integer getBackgroundColor() {
+            return BottomSheetUtils.isContentActingAsBrowserControls(mSheetController)
+                    ? mSheetController.getSheetBackgroundColor()
+                    : null;
+        }
+
+        @Override
         public void onBrowserControlsOffsetUpdate(int layerYOffset) {
             // The layerYOffset is the distance between the bottom of the layer and the bottom
             // of the screen, so it does not include the bottom sheet's height. The value of
@@ -415,8 +422,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             if (!mSheetController.isFullWidth()) {
                 return 0;
             }
-            BottomSheetContent content = mSheetController.getCurrentSheetContent();
-            return content != null && content.actsAsBrowserControls()
+            return BottomSheetUtils.isContentActingAsBrowserControls(mSheetController)
                     ? mSheetController.getCurrentPeekHeightPx()
                     : 0;
         }

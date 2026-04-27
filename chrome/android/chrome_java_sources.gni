@@ -1250,6 +1250,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/BottomContainer.java",
   "java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java",
+  "java/src/org/chromium/chrome/browser/ui/BottomSheetUtils.java",
   "java/src/org/chromium/chrome/browser/ui/ChromeActivitySnackbarHelper.java",
   "java/src/org/chromium/chrome/browser/ui/ExclusiveAccessBubble.java",
   "java/src/org/chromium/chrome/browser/ui/ExclusiveAccessContext.java",

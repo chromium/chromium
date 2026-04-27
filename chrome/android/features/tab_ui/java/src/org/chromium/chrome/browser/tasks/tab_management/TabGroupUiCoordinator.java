@@ -378,7 +378,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
     @Override
     public @Nullable @ColorInt Integer getBackgroundColor() {
-        return null;
+        return mModel.get(TabGroupUiProperties.BACKGROUND_COLOR);
     }
 
     @Override

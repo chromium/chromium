@@ -836,6 +836,25 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_SHEET_AS_BROWSER_CONTROLS)
+    public void testAdaptsColorToBottomSheet_actsAsBrowserControls() {
+        doReturn(true)
+                .when(mBottomControlsStacker)
+                .hasVisibleLayersOtherThan(eq(BottomControlsStacker.LayerType.BOTTOM_CHIN));
+        doReturn(true).when(mSheetContent).actsAsBrowserControls();
+        doReturn(mSheetContent).when(mBottomSheetController).getCurrentSheetContent();
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
+        openBottomSheet();
+
+        // Color should be BROWSER_CONTROLS_COLOR, not BOTTOM_SHEET_YELLOW.
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+    }
+
+    @Test
     public void testDestroy() {
         mBottomAttachedUiObserver.destroy();
         verify(mOmniboxSuggestionsVisualState).setOmniboxSuggestionsVisualStateObserver(eq(null));
