@@ -60,9 +60,8 @@ source_set("impl") {
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
-    sources = [
-      "javascript_tab_modal_dialog_manager_delegate_desktop_unittest.cc",
-    ]
+    sources =
+        [ "javascript_tab_modal_dialog_manager_delegate_desktop_unittest.cc" ]
     deps = [
       ":impl",
       ":javascript_dialogs",
