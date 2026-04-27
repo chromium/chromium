@@ -96,8 +96,15 @@ bool ServiceWorkerResourceLoader::IsValidStaticRouterResponse(
     CORPCheckResult result = CORPCheckResult::kSuccess;
     bool is_enabled = base::FeatureList::IsEnabled(
         features::kServiceWorkerStaticRouterCORPCheck);
-    if (network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
-            resource_request.url, resource_request.url,
+    // If the url_list is empty, the response is synthesized in the service
+    // worker (e.g. new Response("...")), so it's considered as same-origin.
+    // Otherwise, the response may contain third-party data. We must use the
+    // response's URL list for the CORP check instead of the request URL to
+    // prevent a same-origin alias URL from bypassing the check.
+    // This matches the behavior in CrossOriginResourcePolicyChecker::IsBlocked.
+    if (!response->url_list.empty() &&
+        network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
+            response->url_list.back(), response->url_list.front(),
             resource_request.request_initiator, corp_header_value,
             resource_request.mode, resource_request.destination,
             response->request_include_credentials, cross_origin_embedder_policy,

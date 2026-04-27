@@ -135,7 +135,6 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidServiceWorkerResponse) {
 
 TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
   TestServiceWorkerResourceLoader loader(/*is_main_resource=*/false);
-  base::HistogramTester histogram_tester;
 
   network::ResourceRequest request;
   request.url = GURL("https://b.test/resource");
@@ -145,6 +144,7 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
 
   auto response = blink::mojom::FetchAPIResponse::New();
   response->response_type = network::mojom::FetchResponseType::kOpaque;
+  response->request_include_credentials = true;
 
   network::CrossOriginEmbedderPolicy coep;
   coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
@@ -152,14 +152,22 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
 
   // Case 1: Same-origin request should be valid even without CORP.
   {
+    base::HistogramTester histogram_tester;
     network::ResourceRequest same_origin_request;
     same_origin_request.url = GURL("https://a.test/resource");
     same_origin_request.request_initiator =
         url::Origin::Create(GURL("https://a.test/"));
     same_origin_request.mode = network::mojom::RequestMode::kNoCors;
 
-    EXPECT_TRUE(loader.IsValidStaticRouterResponse(
-        same_origin_request, response, coep, nullptr, dip, nullptr));
+    auto same_origin_response = blink::mojom::FetchAPIResponse::New();
+    same_origin_response->response_type =
+        network::mojom::FetchResponseType::kOpaque;
+    same_origin_response->request_include_credentials = true;
+    same_origin_response->url_list.emplace_back("https://a.test/resource");
+
+    EXPECT_TRUE(loader.IsValidStaticRouterResponse(same_origin_request,
+                                                   same_origin_response, coep,
+                                                   nullptr, dip, nullptr));
     histogram_tester.ExpectBucketCount(
         "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
         ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 1);
@@ -167,12 +175,19 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
 
   // Case 2: Cross-origin request without CORP, flag OFF.
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(
         features::kServiceWorkerStaticRouterCORPCheck);
 
-    EXPECT_TRUE(loader.IsValidStaticRouterResponse(request, response, coep,
-                                                   nullptr, dip, nullptr));
+    auto cross_origin_response = blink::mojom::FetchAPIResponse::New();
+    cross_origin_response->response_type =
+        network::mojom::FetchResponseType::kOpaque;
+    cross_origin_response->request_include_credentials = true;
+    cross_origin_response->url_list.emplace_back("https://b.test/resource");
+
+    EXPECT_TRUE(loader.IsValidStaticRouterResponse(
+        request, cross_origin_response, coep, nullptr, dip, nullptr));
     histogram_tester.ExpectBucketCount(
         "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
         ServiceWorkerResourceLoader::CORPCheckResult::kViolation, 1);
@@ -180,32 +195,105 @@ TEST(ServiceWorkerResourceLoaderTest, IsValidStaticRouterResponse) {
 
   // Case 3: Cross-origin request without CORP, flag ON.
   {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
         features::kServiceWorkerStaticRouterCORPCheck);
 
-    EXPECT_FALSE(loader.IsValidStaticRouterResponse(request, response, coep,
-                                                    nullptr, dip, nullptr));
+    // Before the fix, this would have been TRUE because it used request.url
+    // (a.test) which matches the initiator (a.test).
+    // After the fix, it should be FALSE because it uses response->url_list
+    // which contains b.test.
+    network::ResourceRequest alias_request;
+    alias_request.url = GURL("https://a.test/alias");
+    alias_request.request_initiator =
+        url::Origin::Create(GURL("https://a.test/"));
+    alias_request.mode = network::mojom::RequestMode::kNoCors;
+
+    auto cross_origin_response = blink::mojom::FetchAPIResponse::New();
+    cross_origin_response->response_type =
+        network::mojom::FetchResponseType::kOpaque;
+    cross_origin_response->request_include_credentials = true;
+    cross_origin_response->url_list.emplace_back("https://b.test/resource");
+
+    EXPECT_FALSE(loader.IsValidStaticRouterResponse(
+        alias_request, cross_origin_response, coep, nullptr, dip, nullptr));
     histogram_tester.ExpectBucketCount(
         "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
         ServiceWorkerResourceLoader::CORPCheckResult::kBlocked, 1);
   }
 
-  // Case 4: Cross-origin request WITH CORP, flag ON.
+  // Case 4: Same-origin request via alias, should be valid.
   {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kServiceWorkerStaticRouterCORPCheck);
+
+    network::ResourceRequest alias_request;
+    alias_request.url = GURL("https://a.test/alias");
+    alias_request.request_initiator =
+        url::Origin::Create(GURL("https://a.test/"));
+    alias_request.mode = network::mojom::RequestMode::kNoCors;
+
+    auto same_origin_response = blink::mojom::FetchAPIResponse::New();
+    same_origin_response->response_type =
+        network::mojom::FetchResponseType::kOpaque;
+    same_origin_response->request_include_credentials = true;
+    same_origin_response->url_list.emplace_back("https://a.test/resource");
+
+    EXPECT_TRUE(loader.IsValidStaticRouterResponse(
+        alias_request, same_origin_response, coep, nullptr, dip, nullptr));
+    histogram_tester.ExpectBucketCount(
+        "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
+        ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 1);
+  }
+
+  // Case 5: Empty url_list (synthesized response), should be treated as
+  // same-origin.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kServiceWorkerStaticRouterCORPCheck);
+
+    network::ResourceRequest alias_request;
+    alias_request.url = GURL("https://a.test/alias");
+    alias_request.request_initiator =
+        url::Origin::Create(GURL("https://a.test/"));
+    alias_request.mode = network::mojom::RequestMode::kNoCors;
+
+    auto synthesized_response = blink::mojom::FetchAPIResponse::New();
+    synthesized_response->response_type =
+        network::mojom::FetchResponseType::kDefault;
+    synthesized_response->request_include_credentials = true;
+    // url_list is empty.
+
+    EXPECT_TRUE(loader.IsValidStaticRouterResponse(
+        alias_request, synthesized_response, coep, nullptr, dip, nullptr));
+    histogram_tester.ExpectBucketCount(
+        "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
+        ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 1);
+  }
+
+  // Case 6: Cross-origin request WITH CORP, flag ON.
+  {
+    base::HistogramTester histogram_tester;
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
         features::kServiceWorkerStaticRouterCORPCheck);
 
     auto corp_response = blink::mojom::FetchAPIResponse::New();
     corp_response->response_type = network::mojom::FetchResponseType::kOpaque;
+    corp_response->request_include_credentials = true;
+    corp_response->url_list.emplace_back("https://b.test/resource");
     corp_response->headers["Cross-Origin-Resource-Policy"] = "cross-origin";
 
     EXPECT_TRUE(loader.IsValidStaticRouterResponse(request, corp_response, coep,
                                                    nullptr, dip, nullptr));
     histogram_tester.ExpectBucketCount(
         "ServiceWorker.StaticRouter.Subresource.CORPCheckResult",
-        ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 2);
+        ServiceWorkerResourceLoader::CORPCheckResult::kSuccess, 1);
   }
 }
 
