@@ -34,6 +34,7 @@ class SelectTool : public WebActorTool {
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
+  base::WeakPtr<web::WebState> GetTargetWebState() const override;
 
  private:
   SelectTool(const optimization_guide::proto::SelectAction& action,

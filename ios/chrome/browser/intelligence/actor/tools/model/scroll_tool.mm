@@ -94,6 +94,10 @@ void ScrollTool::Execute(ToolExecutionCallback callback) {
                                     std::move(callback)));
 }
 
+base::WeakPtr<web::WebState> ScrollTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 ScrollTool::ScrollTool(const optimization_guide::proto::ScrollAction& action,
                        base::WeakPtr<web::WebState> web_state)
     : action_(action),

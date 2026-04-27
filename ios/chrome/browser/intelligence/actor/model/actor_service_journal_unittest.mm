@@ -26,6 +26,10 @@ namespace {
 class MockActorTool : public ActorTool {
  public:
   MOCK_METHOD(void, Execute, (ToolExecutionCallback callback), (override));
+
+  base::WeakPtr<web::WebState> GetTargetWebState() const override {
+    return nullptr;
+  }
 };
 
 class MockActorToolFactory : public ActorToolFactory {

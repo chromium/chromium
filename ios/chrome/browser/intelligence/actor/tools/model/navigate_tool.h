@@ -40,6 +40,7 @@ class NavigateTool : public ActorTool {
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
+  base::WeakPtr<web::WebState> GetTargetWebState() const override;
 
  private:
   NavigateTool(const std::string& url,

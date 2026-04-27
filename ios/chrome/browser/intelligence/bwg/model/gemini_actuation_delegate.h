@@ -19,6 +19,9 @@
 // the upstream ActorService.
 @protocol GeminiActuationDelegate <NSObject>
 
+// TODO(crbug.com/501043031): Remove @optional when API stabilizes.
+@optional
+
 // Creates a new task with the given title.
 - (actor::ActorTaskId)createTaskWithTitle:(NSString*)title;
 
@@ -30,13 +33,33 @@
 - (void)setTaskInterventionDelegate:(id<ActorTaskInterventionDelegate>)delegate
                           forTaskID:(actor::ActorTaskId)taskID;
 
-// Request to perform actions.
+// TODO(crbug.com/501043031): Do not use, deprecated method. To be cleaned up
+// once the below one lands. Request to perform actions.
 - (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
                       taskUpdate:(NSString*)taskUpdate
           serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
                       completion:
                           (void (^)(BOOL success,
                                     std::vector<bool> results))completionBlock;
+
+// Request to perform actions with a callback to receive results and updated
+// PageContexts in a serialized `ActionsResult` proto. The proto will include
+// the PageContexts of all of the task's controlled WebStates.
+- (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
+                      taskUpdate:(NSString*)taskUpdate
+          serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
+                 completionBlock:
+                     (void (^)(NSData* serializedActionsResult))completionBlock;
+
+// Request PageContext with actionable mode APC for specific WebStates of a
+// given task.
+- (void)requestActionablePageContextForWebStateIDs:
+            (NSArray<NSNumber*>*)webStateIDs
+                                            taskID:(actor::ActorTaskId)taskID
+                                   completionBlock:
+                                       (void (^)(NSArray<NSData*>*
+                                                     serializedTabObservations))
+                                           completionBlock;
 
 // Request to pause the task.
 - (void)pauseTaskWithID:(actor::ActorTaskId)taskID;

@@ -76,6 +76,10 @@ void ClickTool::Execute(ToolExecutionCallback callback) {
                                     std::move(callback)));
 }
 
+base::WeakPtr<web::WebState> ClickTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 void ClickTool::OnTargetFrameResolved(
     const optimization_guide::proto::ClickAction& action,
     ToolExecutionCallback callback,

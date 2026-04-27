@@ -74,7 +74,7 @@ class ActorEngine {
   // Performs the given sequence of tools and invokes the callback when
   // completed.
   void Act(std::vector<std::unique_ptr<ActorTool>> actions,
-           PerformActionsCallback callback);
+           ActCallback callback);
 
   // Cancels any ongoing and pending actions.
   void CancelOngoingAndPendingActions(EngineResult reason);
@@ -124,7 +124,7 @@ class ActorEngine {
   size_t next_action_index_ = 0;
 
   // Invoked when all actions complete or a terminal error occurs.
-  PerformActionsCallback completion_callback_;
+  ActCallback completion_callback_;
 
   // Accumulated results of executed actions. Results are added here in
   // `FinishedToolInvoke` on successful tool execution. If a subsequent step

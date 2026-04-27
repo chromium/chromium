@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
+#import <algorithm>
+
+#import "base/barrier_callback.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/string_number_conversions.h"
@@ -19,7 +22,11 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -76,8 +83,8 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   CHECK(IsActorEnabled());
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
-  active_tasks_[task_id] =
-      std::make_unique<ActorTask>(task_id, title, journal_.get());
+  active_tasks_[task_id] = std::make_unique<ActorTask>(
+      task_id, title, allow_incognito_web_states, journal_.get());
   return task_id;
 }
 
@@ -134,12 +141,15 @@ void ActorService::PerformActions(
   if (it == active_tasks_.end()) {
     // TODO(crbug.com/503054406): Return high level error for non-existent
     // task.
-    std::move(callback).Run(std::vector<ActionResult>());
+    PerformActionsResult actions_result;
+    std::move(callback).Run(std::move(actions_result));
     return;
   }
 
-  // TODO(crbug.com/503054406): Return high level error for already acting task.
-  it->second->Act(std::move(actions), task_update, std::move(callback));
+  it->second->Act(std::move(actions), task_update,
+                  base::BindOnce(&ActorService::OnActCompleted,
+                                 weak_ptr_factory_.GetWeakPtr(), task_id,
+                                 std::move(callback)));
 }
 
 void ActorService::RequestTabObservation(ActorTaskId task_id,
@@ -177,6 +187,109 @@ void ActorService::OnPageContextExtractionComplete(
     PageContextWrapperCallbackResponse response) {
   pending_observations_.erase(web_state_id);
   std::move(callback).Run(std::move(response));
+}
+
+void ActorService::OnActCompleted(ActorTaskId task_id,
+                                  PerformActionsCallback callback,
+                                  std::vector<ActionResult> results) {
+  PerformActionsResult perform_actions_result;
+  perform_actions_result.action_results = std::move(results);
+
+  auto it = active_tasks_.find(task_id);
+  if (it == active_tasks_.end()) {
+    std::move(callback).Run(std::move(perform_actions_result));
+    return;
+  }
+
+  ActorTask* task = it->second.get();
+  std::vector<web::WebState*> web_states_to_extract;
+
+  // TODO(crbug.com/505080093): Extract PageContext for *all* of the controlled
+  // WebStates when this is supported, instead of just one. Right now there
+  // should only be one, we iterate until the first valid one.
+  for (const auto& weak_web_state : task->controlled_web_states()) {
+    if (web::WebState* web_state = weak_web_state.get()) {
+      web_states_to_extract.push_back(web_state);
+      break;
+    }
+  }
+
+  if (web_states_to_extract.empty()) {
+    std::move(callback).Run(std::move(perform_actions_result));
+    return;
+  }
+
+  // Barrier to wait for all PageContext extractions and add them to
+  // ActionsResult.
+  auto barrier = base::BarrierCallback<std::unique_ptr<TabObservationResponse>>(
+      web_states_to_extract.size(),
+      base::BindOnce(
+          [](PerformActionsCallback callback, PerformActionsResult result,
+             std::vector<std::unique_ptr<TabObservationResponse>> contexts) {
+            result.page_contexts = std::move(contexts);
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(callback), std::move(perform_actions_result)));
+
+  for (web::WebState* web_state : web_states_to_extract) {
+    web::WebStateID id = web_state->GetUniqueIdentifier();
+    RequestTabObservation(
+        task_id, web_state,
+        base::BindOnce(
+            [](web::WebStateID id,
+               base::RepeatingCallback<void(
+                   std::unique_ptr<actor::TabObservationResponse>)> barrier,
+               PageContextWrapperCallbackResponse response) {
+              barrier.Run(std::make_unique<actor::TabObservationResponse>(
+                  id, std::move(response), true));
+            },
+            id, barrier));
+  }
+}
+
+web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
+                                              ActorTaskId task_id) {
+  bool allows_incognito = false;
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    allows_incognito = it->second->allow_incognito_web_states();
+  } else {
+    return nullptr;
+  }
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+
+  std::set<Browser*> browsers =
+      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+  if (allows_incognito) {
+    const std::set<Browser*>& incognito_browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
+    browsers.insert(incognito_browsers.begin(), incognito_browsers.end());
+  }
+
+  BrowserAndIndex browser_and_index =
+      FindBrowserAndIndex(web_state_id, browsers);
+
+  if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
+      !browser_and_index.browser) {
+    return nullptr;
+  }
+
+  web::WebState* web_state =
+      browser_and_index.browser->GetWebStateList()->GetWebStateAt(
+          browser_and_index.tab_index);
+
+  if (!web_state) {
+    return nullptr;
+  }
+
+  // Check if the WebState is in the task's controlled WebStates.
+  if (!std::ranges::contains(it->second->controlled_web_states(), web_state,
+                             &base::WeakPtr<web::WebState>::get)) {
+    return nullptr;
+  }
+
+  return web_state;
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {

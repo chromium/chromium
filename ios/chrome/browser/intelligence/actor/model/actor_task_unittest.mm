@@ -9,11 +9,29 @@
 #import "base/types/strong_alias.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace actor {
+
+class MockTool : public ActorTool {
+ public:
+  MockTool(base::WeakPtr<web::WebState> web_state) : web_state_(web_state) {}
+  ~MockTool() override = default;
+
+  void Execute(ToolExecutionCallback callback) override {
+    std::move(callback).Run(ToolExecutionResult::Ok());
+  }
+
+  base::WeakPtr<web::WebState> GetTargetWebState() const override {
+    return web_state_;
+  }
+
+ private:
+  base::WeakPtr<web::WebState> web_state_;
+};
 
 class ActorTaskTest : public PlatformTest {
  protected:
@@ -21,6 +39,7 @@ class ActorTaskTest : public PlatformTest {
     PlatformTest::SetUp();
     journal_ = std::make_unique<AggregatedJournal>();
     task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task",
+                                        /*allow_incognito_web_states=*/false,
                                         journal_.get());
   }
 
@@ -32,6 +51,11 @@ class ActorTaskTest : public PlatformTest {
 
   void AddControlledWebState(base::WeakPtr<web::WebState> web_state) {
     task_->controlled_web_states_.push_back(web_state);
+  }
+
+  void AddControlledWebStates(
+      const std::vector<std::unique_ptr<ActorTool>>& actions) {
+    task_->AddControlledWebStates(actions);
   }
 
   const std::vector<base::WeakPtr<web::WebState>>& GetControlledWebStates()
@@ -103,6 +127,28 @@ TEST_F(ActorTaskTest, SetState) {
   EXPECT_EQ("Init", logs[0].details[0].value);
   EXPECT_EQ("new_state", logs[0].details[1].key);
   EXPECT_EQ("Acting", logs[0].details[1].value);
+}
+
+// Tests that AddControlledWebStates correctly adds targeted tabs and ignores
+// duplicates.
+TEST_F(ActorTaskTest, AddControlledWebStates) {
+  std::unique_ptr<web::FakeWebState> web_state1 =
+      std::make_unique<web::FakeWebState>();
+  std::unique_ptr<web::FakeWebState> web_state2 =
+      std::make_unique<web::FakeWebState>();
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(std::make_unique<MockTool>(web_state1->GetWeakPtr()));
+  actions.push_back(std::make_unique<MockTool>(web_state2->GetWeakPtr()));
+  actions.push_back(
+      std::make_unique<MockTool>(web_state1->GetWeakPtr()));  // Duplicate
+
+  AddControlledWebStates(actions);
+
+  const auto& controlled_states = GetControlledWebStates();
+  EXPECT_EQ(2u, controlled_states.size());
+  EXPECT_EQ(web_state1.get(), controlled_states[0].get());
+  EXPECT_EQ(web_state2.get(), controlled_states[1].get());
 }
 
 }  // namespace actor

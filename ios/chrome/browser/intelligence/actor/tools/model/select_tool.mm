@@ -81,6 +81,10 @@ void SelectTool::Execute(ToolExecutionCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+base::WeakPtr<web::WebState> SelectTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 SelectTool::SelectTool(const optimization_guide::proto::SelectAction& action,
                        base::WeakPtr<web::WebState> web_state)
     : action_(action),

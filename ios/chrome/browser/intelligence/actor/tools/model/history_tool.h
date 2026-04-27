@@ -41,6 +41,7 @@ class HistoryTool : public ActorTool {
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
+  base::WeakPtr<web::WebState> GetTargetWebState() const override;
 
  private:
   // Internal helper to create the public `Create` method.

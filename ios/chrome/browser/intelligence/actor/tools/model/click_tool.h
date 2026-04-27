@@ -33,6 +33,7 @@ class ClickTool : public WebActorTool {
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
+  base::WeakPtr<web::WebState> GetTargetWebState() const override;
 
  private:
   void OnTargetFrameResolved(

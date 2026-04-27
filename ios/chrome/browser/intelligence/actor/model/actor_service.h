@@ -83,6 +83,12 @@ class ActorService : public KeyedService {
   // Returns the aggregated journal for this service.
   AggregatedJournal* GetJournal() { return journal_.get(); }
 
+  // Returns the WebState associated with the given ActorTask by its ID, or
+  // nullptr if not found or is not in the set of the task's controlled
+  // WebStates.
+  web::WebState* GetWebStateForID(web::WebStateID web_state_id,
+                                  ActorTaskId task_id);
+
  private:
   // The profile associated with this service instance.
   raw_ptr<ProfileIOS> profile_;
@@ -105,6 +111,11 @@ class ActorService : public KeyedService {
       web::WebStateID web_state_id,
       TabObservationCallback callback,
       PageContextWrapperCallbackResponse response);
+
+  // Callback for when actions execution completes.
+  void OnActCompleted(ActorTaskId task_id,
+                      PerformActionsCallback callback,
+                      std::vector<ActionResult> results);
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;

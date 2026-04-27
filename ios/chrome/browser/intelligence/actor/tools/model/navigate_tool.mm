@@ -77,6 +77,10 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
+base::WeakPtr<web::WebState> NavigateTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 NavigateTool::NavigateTool(const std::string& url,
                            base::WeakPtr<web::WebState> web_state,
                            WebStateList* web_state_list,

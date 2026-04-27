@@ -77,8 +77,8 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   }
 
   auto action_performed_callback =
-      base::BindOnce(^(std::vector<actor::ActionResult> results) {
-        [ActorAppInterface handleActionResults:std::move(results)
+      base::BindOnce(^(actor::PerformActionsResult result) {
+        [ActorAppInterface handleActionResults:std::move(result.action_results)
                                     completion:completion];
       });
 

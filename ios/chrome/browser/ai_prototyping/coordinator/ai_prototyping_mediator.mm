@@ -626,8 +626,9 @@
   actorService->PerformActions(
       task_id, std::move(tools_result.value()),
       "Executing AI Prototyping actions",
-      base::BindOnce(^(std::vector<actor::ActionResult> results) {
-        [weakSelf onActionsPerformed:std::move(results) withActions:actions];
+      base::BindOnce(^(actor::PerformActionsResult result) {
+        [weakSelf onActionsPerformed:std::move(result.action_results)
+                         withActions:actions];
       }));
 }
 

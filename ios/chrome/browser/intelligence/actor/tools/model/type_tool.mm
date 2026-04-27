@@ -81,6 +81,10 @@ void TypeTool::Execute(ToolExecutionCallback callback) {
                                     std::move(callback)));
 }
 
+base::WeakPtr<web::WebState> TypeTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 TypeTool::TypeTool(const optimization_guide::proto::TypeAction& action,
                    base::WeakPtr<web::WebState> web_state)
     : action_(action),

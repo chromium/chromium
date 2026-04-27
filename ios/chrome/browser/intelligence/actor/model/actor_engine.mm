@@ -121,7 +121,7 @@ ActorEngine::ActorEngine(ActorTaskId task_id, AggregatedJournal* journal)
 ActorEngine::~ActorEngine() = default;
 
 void ActorEngine::Act(std::vector<std::unique_ptr<ActorTool>> actions,
-                      PerformActionsCallback callback) {
+                      ActCallback callback) {
   // TODO(crbug.com/503054406): Add guards for invalid start states.
   action_sequence_ = std::move(actions);
   completion_callback_ = std::move(callback);

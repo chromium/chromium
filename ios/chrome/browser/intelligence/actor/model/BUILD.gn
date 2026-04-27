@@ -27,8 +27,10 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/web/public",
   ]
 }
@@ -51,7 +53,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",

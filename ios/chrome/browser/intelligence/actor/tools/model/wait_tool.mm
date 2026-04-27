@@ -57,6 +57,10 @@ void WaitTool::Execute(ToolExecutionCallback callback) {
       wait_duration_);
 }
 
+base::WeakPtr<web::WebState> WaitTool::GetTargetWebState() const {
+  return observe_web_state_;
+}
+
 void WaitTool::OnDelayFinished(ToolExecutionCallback callback) {
   std::move(callback).Run(ToolExecutionResult::Ok());
 }

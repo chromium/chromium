@@ -31,6 +31,10 @@ class MockTool : public ActorTool {
     }
   }
 
+  base::WeakPtr<web::WebState> GetTargetWebState() const override {
+    return nullptr;
+  }
+
  private:
   bool success_;
 };
@@ -41,8 +45,11 @@ class ActorEngineTest : public PlatformTest {
  protected:
   ActorEngineTest()
       : journal_(std::make_unique<AggregatedJournal>()),
-        task_(ActorTaskId(), "Test Task", journal_.get()),
-        engine_(task_.task_id(), journal_.get()) {}
+        task_(ActorTaskId(),
+              "Test Task",
+              /*allow_incognito_web_states=*/false,
+              journal_.get()),
+        engine_(ActorTaskId(), journal_.get()) {}
 
   // Wrapper methods to access private members of ActorEngine for testing.
 

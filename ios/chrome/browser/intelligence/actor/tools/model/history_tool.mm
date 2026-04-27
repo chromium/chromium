@@ -62,6 +62,10 @@ void HistoryTool::Execute(ToolExecutionCallback callback) {
   }
 }
 
+base::WeakPtr<web::WebState> HistoryTool::GetTargetWebState() const {
+  return web_state_;
+}
+
 // static
 template <typename HistoryAction>
 base::expected<std::unique_ptr<HistoryTool>, ActorToolError>
