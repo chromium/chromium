@@ -269,7 +269,7 @@ void AndroidAutofillManager::FillOrPreviewField(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& value,
-    SuggestionType type,
+    FillingProduct filling_product,
     std::optional<FieldType> field_type_used) {
   driver().ApplyFieldAction(action_type, action_persistence, field.global_id(),
                             value);

@@ -531,8 +531,8 @@ TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
   EXPECT_CALL(autofill_driver(), ApplyFieldAction);
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"Some Name",
-      SuggestionType::kAddressFieldByFieldFilling, NAME_FULL);
+      form, form.fields().front(), u"Some Name", FillingProduct::kAddress,
+      NAME_FULL);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.

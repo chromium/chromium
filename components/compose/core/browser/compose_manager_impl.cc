@@ -52,7 +52,7 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                            autofill::mojom::FieldActionType::kReplaceSelection,
                            form, field, trimmed_text,
-                           SuggestionType::kComposeResumeNudge,
+                           autofill::FillingProduct::kCompose,
                            /*field_type_used=*/std::nullopt);
 }
 

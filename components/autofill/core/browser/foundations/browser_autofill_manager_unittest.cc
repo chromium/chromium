@@ -5107,7 +5107,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields().front(), u"CH93 0076 2011 6238 5295 7",
-      SuggestionType::kIbanEntry, IBAN_VALUE);
+      FillingProduct::kIban, IBAN_VALUE);
   FormSubmitted(form);
 
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
@@ -6097,8 +6097,8 @@ TEST_F(BrowserAutofillManagerTest, NullAutofillFieldDoesNotCrash) {
 
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"12345678",
-      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+      form, form.fields().front(), u"12345678", FillingProduct::kLoyaltyCard,
+      LOYALTY_MEMBERSHIP_ID);
 }
 
 TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
@@ -6565,7 +6565,7 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields().front(), u"CH93 0076 2011 6238 5295 7",
-      SuggestionType::kIbanEntry, IBAN_VALUE);
+      FillingProduct::kIban, IBAN_VALUE);
 
   FormSubmitted(form);
 

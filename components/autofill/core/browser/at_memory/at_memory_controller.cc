@@ -348,7 +348,7 @@ void AtMemoryController::FillOrPreviewSearchResult(
     case mojom::ActionPersistence::kPreview:
       manager_->FillOrPreviewField(
           action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger,
-          form, field, payload.value, suggestion.type,
+          form, field, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       break;
     case mojom::ActionPersistence::kFill:
@@ -372,7 +372,8 @@ void AtMemoryController::FillOrPreviewSearchResult(
           manager_->FillOrPreviewField(
               action_persistence,
               mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-              payload.value, suggestion.type, /*field_type_used=*/std::nullopt);
+              payload.value, FillingProduct::kAtMemory,
+              /*field_type_used=*/std::nullopt);
           break;
       }
       break;
@@ -465,7 +466,7 @@ void AtMemoryController::FillIban(
               controller->manager_->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-                  unmasked_value, suggestion.type,
+                  unmasked_value, FillingProduct::kAtMemory,
                   /*field_type_used=*/std::nullopt);
             }
           },
@@ -523,7 +524,7 @@ void AtMemoryController::FillCreditCard(
             controller->manager_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-                fill_value, suggestion.type,
+                fill_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));

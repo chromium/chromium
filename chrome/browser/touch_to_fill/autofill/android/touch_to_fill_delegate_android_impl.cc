@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -456,7 +457,7 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
                       mojom::ActionPersistence::kFill,
                       mojom::FieldActionType::kReplaceAll,
                       delegate->query_form_, delegate->query_field_, value,
-                      SuggestionType::kIbanEntry, IBAN_VALUE);
+                      FillingProduct::kIban, IBAN_VALUE);
                 }
               },
               GetWeakPtr()));
@@ -470,7 +471,7 @@ void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       query_form_, query_field_,
       base::UTF8ToUTF16(loyalty_card.loyalty_card_number()),
-      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+      FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
   ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
   CHECK(vdm);
   manager_->LogAndRecordLoyaltyCardFill(loyalty_card, query_form_.global_id(),

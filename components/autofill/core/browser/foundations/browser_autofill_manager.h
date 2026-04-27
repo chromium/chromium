@@ -173,7 +173,7 @@ class BrowserAutofillManager : public AutofillManager {
                           const FormData& form,
                           const FormFieldData& field,
                           const std::u16string& value,
-                          SuggestionType type,
+                          FillingProduct filling_product,
                           std::optional<FieldType> field_type_used) override;
 
   // Logs metrics when the user accepts address form filling suggestion. This

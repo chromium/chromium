@@ -204,7 +204,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData& form,
                const FormFieldData& field,
                const std::u16string& value,
-               SuggestionType type,
+               FillingProduct filling_product,
                std::optional<FieldType> field_type),
               (override));
   MOCK_METHOD(void,
@@ -1481,7 +1481,7 @@ TEST_F(TouchToFillDelegateAndroidImplLoyaltyCardUnitTest,
       FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           _, _, base::UTF8ToUTF16(kLoyaltyCard.loyalty_card_number()),
-          SuggestionType::kLoyaltyCardEntry, Optional(LOYALTY_MEMBERSHIP_ID)));
+          FillingProduct::kLoyaltyCard, Optional(LOYALTY_MEMBERSHIP_ID)));
   EXPECT_CALL(autofill_manager(),
               LogAndRecordLoyaltyCardFill(kLoyaltyCard, _, _));
   touch_to_fill_delegate_->LoyaltyCardSuggestionSelected(kLoyaltyCard);
@@ -1532,7 +1532,7 @@ TEST_F(
       FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           _, _, base::UTF8ToUTF16(kLoyaltyCard.loyalty_card_number()),
-          SuggestionType::kLoyaltyCardEntry, Optional(LOYALTY_MEMBERSHIP_ID)));
+          FillingProduct::kLoyaltyCard, Optional(LOYALTY_MEMBERSHIP_ID)));
   EXPECT_CALL(autofill_manager(),
               LogAndRecordLoyaltyCardFill(kLoyaltyCard, _, _));
   touch_to_fill_delegate_->LoyaltyCardSuggestionSelected(kLoyaltyCard);

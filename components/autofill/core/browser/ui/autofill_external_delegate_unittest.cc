@@ -342,7 +342,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData&,
                const FormFieldData&,
                const std::u16string&,
-               SuggestionType,
+               FillingProduct,
                std::optional<FieldType>),
               (override));
   MOCK_METHOD(void,
@@ -1872,23 +1872,23 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsIbanEntry) {
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 iban.GetIdentifierStringForAutofillDisplay(),
-                                 SuggestionType::kIbanEntry,
-                                 std::optional(IBAN_VALUE)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         iban.GetIdentifierStringForAutofillDisplay(),
+                         FillingProduct::kIban, std::optional(IBAN_VALUE)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 iban.value(), SuggestionType::kIbanEntry,
-                                 std::optional(IBAN_VALUE)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), iban.value(),
+                         FillingProduct::kIban, std::optional(IBAN_VALUE)));
   Suggestion suggestion(u"My doctor's IBAN", SuggestionType::kIbanEntry);
   suggestion.payload = Suggestion::Guid(iban.guid());
   suggestion.labels = {
@@ -1926,24 +1926,24 @@ TEST_F(AutofillExternalDelegateTest,
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 promo_code_value,
-                                 SuggestionType::kMerchantPromoCodeEntry,
-                                 std::optional(MERCHANT_PROMO_CODE)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         promo_code_value, FillingProduct::kMerchantPromoCode,
+                         std::optional(MERCHANT_PROMO_CODE)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 promo_code_value,
-                                 SuggestionType::kMerchantPromoCodeEntry,
-                                 std::optional(MERCHANT_PROMO_CODE)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         promo_code_value, FillingProduct::kMerchantPromoCode,
+                         std::optional(MERCHANT_PROMO_CODE)));
 
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
@@ -1971,7 +1971,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegatePreviewsLoyaltyCardEntry) {
       FillOrPreviewField(mojom::ActionPersistence::kPreview,
                          mojom::FieldActionType::kReplaceAll,
                          HasQueriedFormId(), HasQueriedFieldId(),
-                         loyalty_card_value, SuggestionType::kLoyaltyCardEntry,
+                         loyalty_card_value, FillingProduct::kLoyaltyCard,
                          std::optional(LOYALTY_MEMBERSHIP_ID)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
 }
@@ -1995,25 +1995,24 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 full_loyalty_card_value,
-                                 SuggestionType::kLoyaltyCardEntry,
-                                 std::optional(LOYALTY_MEMBERSHIP_ID)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         full_loyalty_card_value, FillingProduct::kLoyaltyCard,
+                         std::optional(LOYALTY_MEMBERSHIP_ID)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
 
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 full_loyalty_card_value,
-                                 SuggestionType::kLoyaltyCardEntry,
-                                 std::optional(LOYALTY_MEMBERSHIP_ID)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+          HasQueriedFormId(), HasQueriedFieldId(), full_loyalty_card_value,
+          FillingProduct::kLoyaltyCard, std::optional(LOYALTY_MEMBERSHIP_ID)));
 
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
@@ -2066,12 +2065,11 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateClearPreviewedForm) {
   // get cleared.
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm());
   EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 std::u16string(u"baz foo"),
-                                 SuggestionType::kAutocompleteEntry,
-                                 std::optional<FieldType>()));
+              FillOrPreviewField(
+                  mojom::ActionPersistence::kPreview,
+                  mojom::FieldActionType::kReplaceAll, HasQueriedFormId(),
+                  HasQueriedFieldId(), std::u16string(u"baz foo"),
+                  FillingProduct::kAutocomplete, std::optional<FieldType>()));
   external_delegate().DidSelectSuggestion(
       CreateAutofillSuggestion(SuggestionType::kAutocompleteEntry, u"baz foo"));
 
@@ -3327,7 +3325,7 @@ TEST_F(AutofillExternalDelegateTest,
       FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(), dummy_autocomplete_string,
-          SuggestionType::kAutocompleteEntry, std::optional<FieldType>()));
+          FillingProduct::kAutocomplete, std::optional<FieldType>()));
   MockAutocompleteHistoryManager* autocomplete_history_manager =
       static_cast<MockAutocompleteHistoryManager*>(
           autofill_client().GetAutocompleteHistoryManager());
@@ -3368,7 +3366,7 @@ TEST_F(AutofillExternalDelegateTest,
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(),
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
-          SuggestionType::kAddressEntryOnTyping, std::optional(NAME_FULL)));
+          FillingProduct::kAddress, std::optional(NAME_FULL)));
   EXPECT_CALL(autofill_manager(), OnDidFillAddressFormFillingSuggestion)
       .Times(0);
   EXPECT_CALL(
@@ -3410,7 +3408,7 @@ TEST_F(AutofillExternalDelegateTest,
                                  mojom::FieldActionType::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  dummy_promo_code_string,
-                                 SuggestionType::kMerchantPromoCodeEntry,
+                                 FillingProduct::kMerchantPromoCode,
                                  std::optional(MERCHANT_PROMO_CODE)));
   EXPECT_CALL(*payments_autofill_client().GetMerchantPromoCodeManager(),
               OnSingleFieldSuggestionSelected(suggestion));
@@ -3431,12 +3429,12 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillFieldWithValue_Iban) {
   Suggestion suggestion(SuggestionType::kIbanEntry);
   suggestion.main_text.value = iban.GetIdentifierStringForAutofillDisplay();
   suggestion.payload = Suggestion::Guid(iban.guid());
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 iban.value(), SuggestionType::kIbanEntry,
-                                 std::optional(IBAN_VALUE)));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), iban.value(),
+                         FillingProduct::kIban, std::optional(IBAN_VALUE)));
   EXPECT_CALL(*payments_autofill_client().GetIbanManager(),
               OnSingleFieldSuggestionSelected(suggestion));
 
@@ -3470,8 +3468,7 @@ TEST_F(AutofillExternalDelegateTest,
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(),
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
-          SuggestionType::kAddressFieldByFieldFilling,
-          std::optional(NAME_FIRST)));
+          FillingProduct::kAddress, std::optional(NAME_FIRST)));
   EXPECT_CALL(autofill_manager(),
               OnDidFillAddressFormFillingSuggestion(
                   Property(&AutofillProfile::guid, profile.guid()),
@@ -3642,7 +3639,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
       FillOrPreviewField(mojom::ActionPersistence::kPreview,
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          std::u16string(u"pasted text"),
-                         SuggestionType::kAtMemorySearchResult, _));
+                         FillingProduct::kAtMemory, _));
   external_delegate().DidSelectSuggestion(suggestion);
 
   // 2. Test Fill
@@ -3651,7 +3648,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
       FillOrPreviewField(mojom::ActionPersistence::kFill,
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          std::u16string(u"pasted text"),
-                         SuggestionType::kAtMemorySearchResult, _));
+                         FillingProduct::kAtMemory, _));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
 }
@@ -3677,11 +3674,11 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
         std::move(callback).Run(iban.value());
       });
 
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                  iban.value(), SuggestionType::kAtMemorySearchResult, _));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         iban.value(), FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
@@ -3716,11 +3713,11 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsCreditCard) {
             std::move(callback).Run(card);
           });
 
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                  card.number(), SuggestionType::kAtMemorySearchResult, _));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         card.number(), FillingProduct::kAtMemory, _));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

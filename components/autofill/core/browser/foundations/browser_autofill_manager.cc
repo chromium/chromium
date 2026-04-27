@@ -1802,7 +1802,7 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& value,
-    SuggestionType type,
+    FillingProduct filling_product,
     std::optional<FieldType> field_type_used) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1814,8 +1814,6 @@ void BrowserAutofillManager::FillOrPreviewField(
   // starts storing all forms and fields.
   std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
                                       &form_structure, &autofill_field);
-  const FillingProduct filling_product =
-      GetFillingProductFromSuggestionType(type);
   form_filler_->FillOrPreviewField(action_persistence, action_type, field,
                                    autofill_field, value, filling_product,
                                    field_type_used);

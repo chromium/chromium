@@ -276,7 +276,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
         form, form.fields()[field_index],
         base::UTF8ToUTF16(card.loyalty_card_number()),
-        SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+        FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
     autofill_manager().LogAndRecordLoyaltyCardFill(
         card, form.global_id(), form.fields()[field_index].global_id());
   }

@@ -106,7 +106,7 @@ class MockAutofillManager : public AutofillManager {
                const FormData& form,
                const FormFieldData& field,
                const std::u16string& value,
-               SuggestionType type,
+               FillingProduct filling_product,
                std::optional<FieldType> field_type_used),
               (override));
   MOCK_METHOD(CreditCardAccessManager*,
