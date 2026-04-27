@@ -11,6 +11,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import android.annotation.SuppressLint;
 import android.view.KeyEvent;
 import android.widget.ImageView;
@@ -114,11 +118,11 @@ public class OmniboxTest {
 
         // Omnibox on NTP shows the hint text.
         Assert.assertNotNull(urlBar);
-        Assert.assertEquals("Location bar has text.", "", urlBar.getText().toString());
+        assertEquals("Location bar has text.", "", urlBar.getText().toString());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Assert.assertEquals(
+                    assertEquals(
                             "Location bar has incorrect hint.",
                             OmniboxResourceProvider.getString(
                                     mActivityTestRule.getActivity(),
@@ -135,7 +139,7 @@ public class OmniboxTest {
                     urlBar.requestFocus();
                     urlBar.setText("G");
                 });
-        Assert.assertEquals("Location bar should have text.", "G", urlBar.getText().toString());
+        assertEquals("Location bar should have text.", "G", urlBar.getText().toString());
     }
 
     @Test
@@ -159,7 +163,7 @@ public class OmniboxTest {
                 "The result should be loaded in a new tab that is brought to the foreground.",
                 currentTab,
                 resultTab);
-        Assert.assertEquals(
+        assertEquals(
                 "Tab count should reflect new tab.",
                 tabCount + 1,
                 ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
@@ -222,8 +226,8 @@ public class OmniboxTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
         boolean securityIcon = statusCoordinator.isSecurityViewShown();
-        Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-        Assert.assertEquals(
+        assertTrue("Omnibox should have a Security icon", securityIcon);
+        assertEquals(
                 R.drawable.omnibox_info, statusCoordinator.getSecurityIconResourceIdForTesting());
     }
 
@@ -251,21 +255,21 @@ public class OmniboxTest {
         final String testHttpsUrl =
                 httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
         ImageView securityView =
-                (ImageView)
-                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
+                mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         mActivityTestRule.loadUrl(testHttpsUrl);
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         final LocationBarLayout locationBar =
-                (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
+                mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
         boolean securityIcon = statusCoordinator.isSecurityViewShown();
-        Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-        Assert.assertEquals(
+        assertTrue("Omnibox should have a Security icon", securityIcon);
+        assertEquals(
                 "location_bar_status_icon with wrong resource-id",
                 R.id.location_bar_status_icon,
                 securityView.getId());
-        Assert.assertTrue(securityView.isShown());
-        Assert.assertEquals(R.drawable.omnibox_https_valid_page_info,
+        assertTrue(securityView.isShown());
+        assertEquals(
+                R.drawable.omnibox_https_valid_page_info,
                 statusCoordinator.getSecurityIconResourceIdForTesting());
     }
 
@@ -300,7 +304,11 @@ public class OmniboxTest {
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
         boolean securityIcon = statusCoordinator.isSecurityViewShown();
-        Assert.assertFalse("Omnibox should not have a Security icon", securityIcon);
+        if (mActivityTestRule.getActivity().isTablet()) {
+            assertTrue("Omnibox should have a Security icon", securityIcon);
+        } else {
+            assertFalse("Omnibox should not have a Security icon", securityIcon);
+        }
     }
 
     /**
@@ -365,13 +373,13 @@ public class OmniboxTest {
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != secondIcon);
 
             boolean securityIcon = statusCoordinator.isSecurityViewShown();
-            Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-            Assert.assertEquals(
+            assertTrue("Omnibox should have a Security icon", securityIcon);
+            assertEquals(
                     "location_bar_status_icon with wrong resource-id",
                     R.id.location_bar_status_icon,
                     securityView.getId());
-            Assert.assertTrue(securityView.isShown());
-            Assert.assertEquals(
+            assertTrue(securityView.isShown());
+            assertEquals(
                     R.drawable.omnibox_https_valid_page_info,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
@@ -471,20 +479,20 @@ public class OmniboxTest {
                         mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         boolean securityIcon =
                 locationBarLayout.getStatusCoordinatorForTesting().isSecurityViewShown();
-        Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-        Assert.assertEquals(
+        assertTrue("Omnibox should have a Security icon", securityIcon);
+        assertEquals(
                 "location_bar_status_icon with wrong resource-id",
                 R.id.location_bar_status_icon,
                 securityView.getId());
         if (mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(
+            assertTrue(
                     mActivityTestRule
                             .getActivity()
                             .getToolbarManager()
                             .getLocationBarModelForTesting()
                             .shouldEmphasizeHttpsScheme());
         } else {
-            Assert.assertFalse(
+            assertFalse(
                     mActivityTestRule
                             .getActivity()
                             .getToolbarManager()
@@ -537,13 +545,15 @@ public class OmniboxTest {
         }
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         LocationBarLayout locationBarLayout =
-                (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        ImageView securityView =
-                (ImageView)
-                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
+                mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         boolean securityIcon =
                 locationBarLayout.getStatusCoordinatorForTesting().isSecurityViewShown();
-        Assert.assertFalse("Omnibox should not have a Security icon", securityIcon);
+
+        if (mActivityTestRule.getActivity().isTablet()) {
+            assertTrue("Omnibox should have a Security icon", securityIcon);
+        } else {
+            assertFalse("Omnibox should not have a Security icon", securityIcon);
+        }
     }
 
     @Test

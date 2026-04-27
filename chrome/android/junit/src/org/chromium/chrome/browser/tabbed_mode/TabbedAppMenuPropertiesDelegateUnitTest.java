@@ -161,7 +161,9 @@ import java.util.List;
     ChromeFeatureList.TASK_MANAGER_CLANK,
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
-    DomDistillerFeatures.READER_MODE_DISTILL_IN_APP
+    DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
+    // TODO(crbug.com/504757384): Add test for three dot menu flag.
+    ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
@@ -696,10 +698,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         historyExpectedTitles.add(R.string.menu_recent_tabs);
         historyExpectedItems.add(R.id.quick_delete_menu_id);
         historyExpectedTitles.add(R.string.menu_quick_delete);
-        expectedItems.add(R.id.info_menu_id);
-        expectedTitles.add(R.string.menu_site_controls);
-        expectedItems.add(R.id.page_info_divider_line_id);
-        expectedTitles.add(0);
+        if (!mTabbedAppMenuPropertiesDelegate.isTabletSizeScreen()) {
+            expectedItems.add(R.id.info_menu_id);
+            expectedTitles.add(R.string.menu_site_controls);
+            expectedItems.add(R.id.page_info_divider_line_id);
+            expectedTitles.add(0);
+        }
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -810,10 +814,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(R.id.history_parent_menu_id);
             expectedTitles.add(R.string.menu_history);
         }
-        expectedItems.add(R.id.info_menu_id);
-        expectedTitles.add(R.string.menu_site_controls);
-        expectedItems.add(R.id.page_info_divider_line_id);
-        expectedTitles.add(0);
+        if (!mTabbedAppMenuPropertiesDelegate.isTabletSizeScreen()) {
+            expectedItems.add(R.id.info_menu_id);
+            expectedTitles.add(R.string.menu_site_controls);
+            expectedItems.add(R.id.page_info_divider_line_id);
+            expectedTitles.add(0);
+        }
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);

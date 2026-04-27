@@ -60,6 +60,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
@@ -79,6 +80,7 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -98,6 +100,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Features.DisableFeatures({
+    // TODO(crbug.com/504757384): Add test for three dot menu flag.
+    ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON
+})
 @Batch(Batch.PER_CLASS)
 public class CustomTabActivityIncognitoTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
@@ -375,7 +381,10 @@ public class CustomTabActivityIncognitoTest {
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
 
-        int expectedMenuSize = ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() ? 4 : 3;
+        int expectedMenuSize =
+                BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())
+                        ? 4
+                        : 3;
 
         // Check the menu items have only 3 or 4 items visible including the top icon row menu for
         // incognito tabs.
@@ -409,7 +418,10 @@ public class CustomTabActivityIncognitoTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
-        int expectedMenuSize = ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled() ? 3 : 2;
+        int expectedMenuSize =
+                BrowserUiUtils.isPageInfoMovedToAppMenu(mCustomTabActivityTestRule.getActivity())
+                        ? 3
+                        : 2;
 
         // Check the menu items have only 2 or 3 items visible "not" including the top icon row
         // menu.

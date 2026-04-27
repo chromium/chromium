@@ -25,7 +25,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -517,8 +517,14 @@ public class LocationBarLayout extends ConstraintLayout {
     void onSuggestionsChanged(boolean hasSuggestions) {}
 
     private void setLocationBarStartPadding(int padding) {
-        if (!ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled()) return;
+        if (!isPageInfoMovedToAppMenu()) {
+            return;
+        }
         setPaddingRelative(padding, getPaddingTop(), getPaddingEnd(), getPaddingBottom());
+    }
+
+    private boolean isPageInfoMovedToAppMenu() {
+        return BrowserUiUtils.isPageInfoMovedToAppMenu(getContext());
     }
 
     /**
