@@ -748,7 +748,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
+    sources += [
+      "manifest_handlers/file_handler_manifest_unittest.cc",
+      "manifest_handlers/input_components_handler_unittest.cc",
+    ]
   }
 
   data = [
