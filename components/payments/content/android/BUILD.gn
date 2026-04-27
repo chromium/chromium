@@ -127,6 +127,7 @@ android_library("service_java") {
     "java/src/org/chromium/components/payments/PackageManagerDelegate.java",
     "java/src/org/chromium/components/payments/PayerData.java",
     "java/src/org/chromium/components/payments/PaymentAddressTypeConverter.java",
+    "java/src/org/chromium/components/payments/PaymentAppError.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateConnection.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateService.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateServiceHelper.java",
@@ -142,6 +143,7 @@ android_library("service_java") {
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [

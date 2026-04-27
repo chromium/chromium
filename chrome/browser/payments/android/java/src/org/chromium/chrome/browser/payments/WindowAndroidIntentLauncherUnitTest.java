@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -25,7 +26,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
+import org.chromium.components.payments.PaymentAppError;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
@@ -39,7 +42,7 @@ public class WindowAndroidIntentLauncherUnitTest {
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Callback<String> mErrorCallback;
+    @Mock private Callback<PaymentAppError> mErrorCallback;
     @Mock private IntentCallback mIntentCallback;
 
     @SmallTest
@@ -51,7 +54,15 @@ public class WindowAndroidIntentLauncherUnitTest {
         launcher.launchPaymentApp(mIntent, mErrorCallback, mIntentCallback);
 
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
-        verify(mErrorCallback).onResult("Unable to invoke the payment app.");
+        verify(mErrorCallback)
+                .onResult(
+                        argThat(
+                                error ->
+                                        error.responseType
+                                                        == PaymentEventResponseType
+                                                                .PAYMENT_EVENT_BROWSER_ERROR
+                                                && error.errorMessage.equals(
+                                                        "Unable to invoke the payment app.")));
     }
 
     @SmallTest
@@ -64,7 +75,15 @@ public class WindowAndroidIntentLauncherUnitTest {
         launcher.launchPaymentApp(mIntent, mErrorCallback, mIntentCallback);
 
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
-        verify(mErrorCallback).onResult("Unable to invoke the payment app.");
+        verify(mErrorCallback)
+                .onResult(
+                        argThat(
+                                error ->
+                                        error.responseType
+                                                        == PaymentEventResponseType
+                                                                .PAYMENT_EVENT_BROWSER_ERROR
+                                                && error.errorMessage.equals(
+                                                        "Unable to invoke the payment app.")));
     }
 
     @SmallTest
@@ -77,7 +96,15 @@ public class WindowAndroidIntentLauncherUnitTest {
 
         launcher.launchPaymentApp(mIntent, mErrorCallback, mIntentCallback);
 
-        verify(mErrorCallback).onResult("Unable to invoke the payment app.");
+        verify(mErrorCallback)
+                .onResult(
+                        argThat(
+                                error ->
+                                        error.responseType
+                                                        == PaymentEventResponseType
+                                                                .PAYMENT_EVENT_BROWSER_ERROR
+                                                && error.errorMessage.equals(
+                                                        "Unable to invoke the payment app.")));
     }
 
     @SmallTest
@@ -93,7 +120,15 @@ public class WindowAndroidIntentLauncherUnitTest {
 
         verify(mErrorCallback)
                 .onResult(
-                        "Payment app does not have android:exported=\"true\" on the PAY activity.");
+                        argThat(
+                                error ->
+                                        error.responseType
+                                                        == PaymentEventResponseType
+                                                                .PAYMENT_EVENT_INTERNAL_ERROR
+                                                && error.errorMessage.equals(
+                                                        "Payment app does not have"
+                                                            + " android:exported=\"true\" on the"
+                                                            + " PAY activity.")));
     }
 
     @SmallTest

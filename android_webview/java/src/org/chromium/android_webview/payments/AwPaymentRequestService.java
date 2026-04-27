@@ -18,6 +18,7 @@ import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentAddressTypeConverter;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppError;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
@@ -332,7 +333,7 @@ import java.util.List;
     @Override
     public void launchPaymentApp(
             Intent intent,
-            Callback<String> errorCallback,
+            Callback<PaymentAppError> errorCallback,
             WindowAndroid.IntentCallback intentCallback) {
         AwContents awContents = AwContents.fromWebContents(mPaymentRequestService.getWebContents());
         if (awContents != null) {

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -126,6 +127,21 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertEquals(
                 "Payment app returned RESULT_CANCELED code. This is how payment apps "
                         + "can close their activity programmatically.",
+                mErrorMessage);
+        Assert.assertNull(mPaymentMethodName);
+        Assert.assertNull(mPaymentDetails);
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testInternalAppErrorPayment() throws Exception {
+        AndroidPaymentApp app = createApp(/* showReadyToPayDebugInfo= */ false);
+        queryReadyToPay(app);
+        invokePaymentApp(app, WebPaymentIntentHelper.RESULT_INTERNAL_APP_ERROR);
+        Assert.assertEquals(
+                "Payment app returned RESULT_INTERNAL_APP_ERROR code. Native payment app"
+                        + " encountered an internal app error.",
                 mErrorMessage);
         Assert.assertNull(mPaymentMethodName);
         Assert.assertNull(mPaymentDetails);

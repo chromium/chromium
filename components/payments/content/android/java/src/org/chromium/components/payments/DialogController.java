@@ -23,11 +23,12 @@ public interface DialogController {
      * payment app.
      *
      * @param denyCallback The callback invoked when the user denies or dismisses the prompt. The
-     *     callback takes a string parameter to be returned to the merchant website's web developer
-     *     in a JavaScript error message. Should not be null.
+     *     callback takes a {@link PaymentAppError} parameter to be returned to the merchant
+     *     website's web developer in a JavaScript error message. Should not be null.
      * @param approveCallback The callback invoked when the user approves the prompt. The callback
      *     can be invoked immediately in case of an error (e.g., there's no UI) or in embedders that
      *     do not have the concept of incognito mode (e.g., in WebView). Should not be null.
      */
-    void showLeavingIncognitoWarning(Callback<String> denyCallback, Runnable approveCallback);
+    void showLeavingIncognitoWarning(
+            Callback<PaymentAppError> denyCallback, Runnable approveCallback);
 }

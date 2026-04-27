@@ -15,8 +15,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.payments.DialogController;
 import org.chromium.components.payments.ErrorStrings;
+import org.chromium.components.payments.PaymentAppError;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The implementation of dialog display controller for PaymentRequest using AlertDialog. */
@@ -72,13 +74,16 @@ import org.chromium.ui.base.WindowAndroid;
     // Implement DialogController:
     @Override
     public void showLeavingIncognitoWarning(
-            Callback<String> denyCallback, Runnable approveCallback) {
+            Callback<PaymentAppError> denyCallback, Runnable approveCallback) {
         assert denyCallback != null;
         assert approveCallback != null;
 
         Context context = getActivityContextForLiveVisibleWebContents();
         if (context == null) {
-            denyCallback.onResult(ErrorStrings.ACTIVITY_NOT_FOUND);
+            denyCallback.onResult(
+                    new PaymentAppError(
+                            PaymentEventResponseType.PAYMENT_EVENT_BROWSER_ERROR,
+                            ErrorStrings.ACTIVITY_NOT_FOUND));
             return;
         }
 
@@ -92,8 +97,18 @@ import org.chromium.ui.base.WindowAndroid;
                         R.string.cancel,
                         (OnClickListener)
                                 (dialog, which) ->
-                                        denyCallback.onResult(ErrorStrings.USER_CANCELLED))
-                .setOnCancelListener(dialog -> denyCallback.onResult(ErrorStrings.USER_CANCELLED))
+                                        denyCallback.onResult(
+                                                new PaymentAppError(
+                                                        PaymentEventResponseType
+                                                                .PAYMENT_HANDLER_WINDOW_CLOSING,
+                                                        ErrorStrings.USER_CANCELLED)))
+                .setOnCancelListener(
+                        dialog ->
+                                denyCallback.onResult(
+                                        new PaymentAppError(
+                                                PaymentEventResponseType
+                                                        .PAYMENT_HANDLER_WINDOW_CLOSING,
+                                                ErrorStrings.USER_CANCELLED)))
                 .show();
     }
 

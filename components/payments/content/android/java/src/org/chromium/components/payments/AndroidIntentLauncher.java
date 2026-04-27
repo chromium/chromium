@@ -17,12 +17,12 @@ public interface AndroidIntentLauncher {
      * Launch the payment app via an intent.
      *
      * @param intent The intent that includes the payment app identification and parameters.
-     * @param errorCallback The callback that is invoked with a web-developer visible error string,
-     *     when invoking the payment app fails.
+     * @param errorCallback The callback that is invoked with a {@link PaymentAppError}, when
+     *     invoking the payment app fails.
      * @param intentCallback The callback invoked when the payment app responds to the intent.
      */
     void launchPaymentApp(
             Intent intent,
-            Callback<String> errorCallback,
+            Callback<PaymentAppError> errorCallback,
             WindowAndroid.IntentCallback intentCallback);
 }

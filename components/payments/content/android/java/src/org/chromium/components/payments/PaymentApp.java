@@ -65,6 +65,9 @@ public abstract class PaymentApp extends EditableOption {
          * <p>TODO(crbug.com/473478138): Temporarily default to allow a unittest in Chrome for
          * Android internal code to keep compiling. Remove 'default' once the test overrides this
          * method.
+         * <p>TODO(crbug.com/506994069): Pass PaymentAppError directly to
+         * InstrumentDetailsCallback.onInstrumentDetailsError instead of separate error type and
+         * message.
          *
          * @param error One of the {@link PaymentEventResponseType} values.
          * @param errorMessage Developer-facing error message to be used when rejecting the promise

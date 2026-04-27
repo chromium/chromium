@@ -51,7 +51,7 @@ public class MockAndroidIntentLauncher implements AndroidIntentLauncher {
     @Override
     public void launchPaymentApp(
             Intent intent,
-            Callback<String> errorCallback,
+            Callback<PaymentAppError> errorCallback,
             WindowAndroid.IntentCallback intentCallback) {
         Bundle launchParameters = intent.getExtras();
         String paymentMethodName = launchParameters.getStringArrayList("methodNames").get(0);
