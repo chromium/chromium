@@ -399,6 +399,9 @@ try_.builder(
         ],
     ),
     contact_team_email = "clank-engprod@google.com",
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+    },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
