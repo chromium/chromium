@@ -67,7 +67,7 @@ void ReaderModeWebStateDelegate::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler) {
-  handler(web::PermissionDecisionShowDefaultPrompt);
+  handler(web::PermissionDecisionDeny);
 }
 
 void ReaderModeWebStateDelegate::ContextMenuConfiguration(
