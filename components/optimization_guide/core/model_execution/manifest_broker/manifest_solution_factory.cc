@@ -21,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -553,6 +554,11 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   on_device_model::ModelAssetPaths paths;
   // We should not get here unless the asset is available.
   paths.weights = *ResolveFile(recipe.weights_file());
+  if (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU) {
+    paths.cache = paths.weights.DirName().Append(kExperimentalCacheFile);
+  }
+  paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
+  paths.adapter_cache = paths.weights.DirName().Append(kAdapterCacheFile);
 
   service_client_->AddPendingUsage();
   base::ThreadPool::PostTaskAndReplyWithResult(

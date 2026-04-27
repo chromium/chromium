@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 
 namespace optimization_guide {
@@ -25,6 +26,8 @@ class ScenarioBuilder final {
   ScenarioBuilder& operator=(const ScenarioBuilder&) = delete;
 
   ScenarioBuilder& AddBaseModel(const std::string& name);
+  ScenarioBuilder& AddBaseModel(const std::string& name,
+                                BaseModelRecipeArgs args);
   ScenarioBuilder& AddSafetyModel(const std::string& name);
   ScenarioBuilder& AddAdaptation(const std::string& name,
                                  const std::string& base_model);
@@ -32,7 +35,8 @@ class ScenarioBuilder final {
                                      const std::string& model);
   ScenarioBuilder& AddSafeSolution(const std::string& use_case,
                                    const std::string& model,
-                                   const std::string& safety_model);
+                                   const std::string& safety_model,
+                                   proto::SolutionConfig config);
   ScenarioBuilder& SetFeatureConfig(DeviceCategory category,
                                     const std::string& use_case,
                                     const proto::Any& config);
