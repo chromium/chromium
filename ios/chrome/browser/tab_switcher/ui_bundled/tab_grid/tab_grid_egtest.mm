@@ -38,15 +38,15 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/data_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -76,14 +76,14 @@ using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
-const char kSearchEngineURL[] = "http://searchengine/?q={searchTerms}";
+const char kSearchEngineURL[] = "/searchengine/?q={searchTerms}";
 const char kSearchEngineHost[] = "searchengine";
 
 char kCountryCode[] = "us";
-char kURL1[] = "http://firstURL";
-char kURL2[] = "http://secondURL";
-char kURL3[] = "http://thirdURL";
-char kURL4[] = "http://fourthURL";
+char kURL1[] = "/firstURL";
+char kURL2[] = "/secondURL";
+char kURL3[] = "/thirdURL";
+char kURL4[] = "/fourthURL";
 NSString* const kTitle1 = @"Page one";
 NSString* const kTitle2 = @"Page two";
 NSString* const kTitle4 = @"Page four";
@@ -243,43 +243,54 @@ void TapTabGridOverflowMenuButton() {
       performAction:grey_tap()];
 }
 
-#pragma mark - TestResponseProvider
-
-// A ResponseProvider that provides html responses of the requested URL for
-// requests to `kSearchEngineHost`.
-class EchoURLDefaultSearchEngineResponseProvider
-    : public web::DataResponseProvider {
- public:
-  bool CanHandleRequest(const Request& request) override;
-  void GetResponseHeadersAndBody(
-      const Request& request,
-      scoped_refptr<net::HttpResponseHeaders>* headers,
-      std::string* response_body) override;
-};
-
-bool EchoURLDefaultSearchEngineResponseProvider::CanHandleRequest(
-    const Request& request) {
-  return request.url.spec().contains(kSearchEngineHost);
+// Handles requests to `/searchengine` by echoing the URL in the response body.
+std::unique_ptr<net::test_server::HttpResponse> HandleSearchEngineRequest(
+    const net::test_server::HttpRequest& request) {
+  if (!base::StartsWith(request.relative_url, "/searchengine")) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  std::string url_string = base::ToLowerASCII(request.relative_url);
+  response->set_content(
+      base::StringPrintf("<html><body>%s</body></html>", url_string.c_str()));
+  return response;
 }
 
-void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
-    const Request& request,
-    scoped_refptr<net::HttpResponseHeaders>* headers,
-    std::string* response_body) {
-  const GURL& url = request.url;
-  *headers = web::ResponseProvider::GetDefaultResponseHeaders();
-  std::string url_string = base::ToLowerASCII(url.spec());
-  *response_body =
-      base::StringPrintf("<html><body>%s</body></html>", url_string.c_str());
+// Handles requests by looking up the relative URL in the provided response map.
+std::unique_ptr<net::test_server::HttpResponse> HandleMappedResponseRequest(
+    const std::map<std::string, std::string>* responses,
+    const net::test_server::HttpRequest& request) {
+  auto it = responses->find(request.relative_url);
+  if (it == responses->end()) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  response->set_content(it->second);
+  return response;
+}
+
+// Main request handler that delegates to specific handlers.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const std::map<std::string, std::string>* responses,
+    const net::test_server::HttpRequest& request) {
+  if (auto response = HandleSearchEngineRequest(request)) {
+    return response;
+  }
+  return HandleMappedResponseRequest(responses, request);
 }
 
 }  // namespace
 
-@interface TabGridTestCase : WebHttpServerChromeTestCase {
+@interface TabGridTestCase : ChromeTestCase {
   GURL _URL1;
   GURL _URL2;
   GURL _URL3;
   GURL _URL4;
+  std::map<std::string, std::string> _responses;
 }
 @end
 
@@ -320,22 +331,24 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)setUp {
   [super setUp];
 
-  _URL1 = web::test::HttpServer::MakeUrl(kURL1);
-  _URL2 = web::test::HttpServer::MakeUrl(kURL2);
-  _URL3 = web::test::HttpServer::MakeUrl(kURL3);
-  _URL4 = web::test::HttpServer::MakeUrl(kURL4);
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleRequest, base::Unretained(&_responses)));
 
-  std::map<GURL, std::string> responses;
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  _URL1 = self.testServer->GetURL(kURL1);
+  _URL2 = self.testServer->GetURL(kURL2);
+  _URL3 = self.testServer->GetURL(kURL3);
+  _URL4 = self.testServer->GetURL(kURL4);
+
   const char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
-  responses[_URL1] = base::StringPrintf(
+  _responses[kURL1] = base::StringPrintf(
       kPageFormat, base::SysNSStringToUTF8(kTitle1).c_str(), kResponse1);
-  responses[_URL2] = base::StringPrintf(
+  _responses[kURL2] = base::StringPrintf(
       kPageFormat, base::SysNSStringToUTF8(kTitle2).c_str(), kResponse2);
-  // Page 3 does not have <title> tag, so URL will be its title.
-  responses[_URL3] = kResponse3;
-  responses[_URL4] = base::StringPrintf(
+  _responses[kURL3] = kResponse3;
+  _responses[kURL4] = base::StringPrintf(
       kPageFormat, base::SysNSStringToUTF8(kTitle4).c_str(), kResponse4);
-  web::test::SetUpSimpleHttpServer(responses);
 }
 
 - (void)tearDownHelper {
@@ -2312,9 +2325,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // returns to the tab grid.
 - (void)testSearchOnWebSuggestedActionInRegularTabsSearch {
   // Configure a testing search engine to prevent real external url requests.
-  web::test::AddResponseProvider(
-      std::make_unique<EchoURLDefaultSearchEngineResponseProvider>());
-  GURL searchEngineURL = web::test::HttpServer::MakeUrl(kSearchEngineURL);
+  GURL searchEngineURL = self.testServer->GetURL(kSearchEngineURL);
   NSString* searchEngineURLString =
       base::SysUTF8ToNSString(searchEngineURL.spec());
   [SettingsAppInterface overrideSearchEngineWithURL:searchEngineURLString];
