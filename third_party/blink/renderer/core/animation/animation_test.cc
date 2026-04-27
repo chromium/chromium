@@ -35,6 +35,7 @@
 #include <tuple>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "cc/trees/target_property.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,6 +80,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
@@ -2772,7 +2774,9 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     test::RunPendingTasks();
   }
 
-  void Initialize() {
+  void Initialize(std::string activate = "play-forwards",
+                  std::string deactivate = "play-backwards",
+                  std::string post_setup_code = "") {
     const char html[] = R"HTML(
       <style>
       div {
@@ -2787,7 +2791,8 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
 
     UpdateAllLifecyclePhasesForTest();
 
-    const char make_animation_js[] = (R"JS(
+    String make_animation_js = String::Format(
+        R"JS(
       function setupTriggeredAnimation() {
         const animation = new Animation(
           new KeyframeEffect(
@@ -2803,14 +2808,17 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),
-          activationRangeStart: "contain 0%",
-          activationRangeEnd: "contain 100%"}]);
+          activationRangeStart: "contain",
+          activationRangeEnd: "contain"}]);
+                                       /* activate */ /* deactivate */
+        trigger.addAnimation(animation,    "%s",           "%s"       );
 
-        trigger.addAnimation(animation, "play-forwards", "play-backwards");
+        // Run post-setup JS.
+        %s
       }
-
       setupTriggeredAnimation();
-    )JS");
+    )JS",
+        activate.c_str(), deactivate.c_str(), post_setup_code.c_str());
 
     ExecuteScript(make_animation_js);
 
@@ -2832,6 +2840,20 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     EXPECT_NE(timeline_, nullptr);
     EXPECT_NE(animation_, nullptr);
   }
+
+  class PromiseHandler final : public ThenCallable<Animation, PromiseHandler> {
+   public:
+    explicit PromiseHandler(base::OnceClosure callback)
+        : callback_(std::move(callback)) {}
+    void React(ScriptState* script_state, Animation* animation) {
+      if (callback_) {
+        std::move(callback_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure callback_;
+  };
 
  protected:
   frame_test_helpers::WebViewHelper helper_;
@@ -3009,6 +3031,51 @@ TEST_F(ScriptedTimelineTriggerTest, RemoveAnimationTarget) {
   EXPECT_EQ(trigger_, nullptr);
   EXPECT_EQ(timeline_, nullptr);
   EXPECT_EQ(animation_, nullptr);
+}
+
+TEST_F(ScriptedTimelineTriggerTest, ForbidScriptDuringActivation) {
+  // Define 'then' getter. This runs synchronously.
+  std::string remove_animation_code =
+      R"JS(Object.defineProperty(Animation.prototype, 'then', {
+        get() {
+          trigger.removeAnimation(animation);
+          return undefined;
+        }
+      });
+      )JS";
+
+  Initialize(/* activate= */ "reset", /* deactivate= */ "none",
+             /* post_sectup_code*/ remove_animation_code);
+
+  // Ensure we are pending_pause_.
+  animation_->play();
+  animation_->pause();
+  EXPECT_TRUE(animation_->pending_pause_);
+
+  // Establish context necessary to arm ready promise.
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  ScriptState::Scope script_scope(script_state);
+
+  // Arm the ready promise.
+  bool ready_promise_resolved = false;
+  auto ready_callback = [](bool* did_resolve) { *did_resolve = true; };
+  animation_->ready(script_state)
+      .Then(script_state,
+            MakeGarbageCollected<PromiseHandler>(base::BindOnce(
+                std::move(ready_callback), &ready_promise_resolved)));
+
+  // Perform activate. This should not resolved the ready promise and should not
+  // run script.
+  trigger_->PerformActivate();
+  EXPECT_EQ(trigger_->BehaviorMap().size(), 1);
+  EXPECT_FALSE(ready_promise_resolved);
+
+  // Ensure the ready promise does get resolved in due time.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return ready_promise_resolved; }));
+
+  EXPECT_EQ(trigger_->BehaviorMap().size(), 0);
 }
 
 class AnimationTypeMetricsTest : public AnimationAnimationTestCompositing {
