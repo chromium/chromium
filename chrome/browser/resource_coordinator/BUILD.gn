@@ -97,7 +97,6 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/engagement",
-    "//chrome/browser/history",
     "//chrome/browser/metrics",
     "//chrome/browser/notifications",
     "//chrome/browser/performance_manager:impl",

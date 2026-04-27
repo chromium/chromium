@@ -4,7 +4,6 @@
 
 #include "chrome/browser/history/chrome_history_client.h"
 
-#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"

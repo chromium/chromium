@@ -4,13 +4,9 @@
 
 #include "chrome/browser/history/domain_diversity_reporter_factory.h"
 
-#include <string>
 
-#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/time/default_clock.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/metrics/domain_diversity_reporter.h"

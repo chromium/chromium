@@ -36,7 +36,6 @@ if (!is_android) {
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
-      "//chrome/browser/history",
       "//chrome/browser/profiles",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",
@@ -67,7 +66,6 @@ if (!is_android) {
     deps = [
       ":action_chips",
       "//base/test:test_support",
-      "//chrome/browser/history",
       "//chrome/browser/search_engines",
       "//chrome/browser/sessions",
       "//chrome/browser/ui:test_support",

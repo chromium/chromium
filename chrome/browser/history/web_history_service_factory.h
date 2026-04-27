@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_HISTORY_WEB_HISTORY_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+
+class Profile;
 
 namespace history {
 class WebHistoryService;

@@ -4,11 +4,9 @@
 
 #include "chrome/browser/history/chrome_history_backend_client.h"
 
-#include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/bookmarks/browser/url_and_title.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "url/gurl.h"
 

@@ -8,7 +8,6 @@
 #include "chrome/browser/history/chrome_history_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/content/browser/content_visit_delegate.h"
 #include "components/history/content/browser/history_database_helper.h"
 #include "components/history/core/browser/history_database_params.h"

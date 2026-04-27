@@ -137,7 +137,6 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
-      "//chrome/browser/history",
       "//chrome/browser/preloading",
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/preloading:test_support",

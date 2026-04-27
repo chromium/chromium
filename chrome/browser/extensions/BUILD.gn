@@ -509,7 +509,6 @@ source_set("extensions") {
     "//chrome/browser/favicon",
     "//chrome/browser/gcm",
     "//chrome/browser/google",
-    "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
