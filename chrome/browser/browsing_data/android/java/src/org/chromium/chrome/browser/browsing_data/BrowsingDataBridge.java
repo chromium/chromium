@@ -176,8 +176,8 @@ public final class BrowsingDataBridge {
     }
 
     /**
-     * @return The maximum number of important sites that will be returned from the call above.
-     *         This is a constant that won't change.
+     * @return The maximum number of important sites that will be returned from the call above. This
+     *     is a constant that won't change.
      */
     public static int getMaxImportantSites() {
         return BrowsingDataBridgeJni.get().getMaxImportantSites();

@@ -24,6 +24,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:service_loader_java",
+      "//chrome/browser/browsing_data/android:java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
@@ -81,6 +82,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:tasks_java",
       "//chrome/android:chrome_java",
+      "//chrome/browser/browsing_data/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",

@@ -2968,7 +2968,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
       "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
       "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
-      "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
       "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
       "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
       "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
@@ -3129,6 +3128,7 @@ if (_is_default_toolchain) {
     public_deps = [
       ":base_module_jni",
       "//chrome/browser/bookmarks/android:jni_headers",
+      "//chrome/browser/browsing_data/android:jni_headers",
       "//chrome/browser/partnerbookmarks:jni_headers",
       "//chrome/browser/webid:jni_headers",
       "//components/tabs/public/android:jni_headers",

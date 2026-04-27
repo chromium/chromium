@@ -97,6 +97,7 @@ include_rules = [
   "+chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h",
   "+chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
   "+chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h",
+  "+chrome/browser/profiles/android",
   "+chrome/browser/profiles/keep_alive/profile_keep_alive_types.h",
   "+chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h",
   "+chrome/browser/profiles/profile.h",

@@ -41,7 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
+#include "chrome/browser/browsing_data/android/jni_headers/BrowsingDataBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

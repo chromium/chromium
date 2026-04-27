@@ -294,7 +294,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureInfobar.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureNotification.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbar.java",
-  "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java",
   "java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFetcher.java",
