@@ -200,7 +200,6 @@ component("x") {
     ":xlib_loader",
     ":xlib_xcb_loader",
     "//base",
-    "//base",
     "//base:i18n",
     "//skia",
     "//ui/events/platform",
