@@ -1363,7 +1363,8 @@ bool PaintArtifactCompositor::CanDirectlyUpdateProperties() const {
     return false;
   }
 
-  return root_layer_ && root_layer_->layer_tree_host();
+  return root_layer_ && root_layer_->layer_tree_host() &&
+         !root_layer_->layer_tree_host()->in_will_commit();
 }
 
 bool PaintArtifactCompositor::DirectlyUpdateCompositedOpacityValue(
