@@ -32,12 +32,12 @@ OriginChecker::OriginChecker() = default;
 OriginChecker::~OriginChecker() = default;
 
 bool OriginChecker::IsNavigationAllowed(
-    base::optional_ref<const url::Origin> initiator_origin,
+    const url::Origin& source_origin,
     const url::Origin& destination_origin) const {
   CHECK(IsNavigationGatingEnabled());
 
-  return (initiator_origin && IsSameForNewOriginNavigationGating(
-                                  *initiator_origin, destination_origin)) ||
+  return IsSameForNewOriginNavigationGating(source_origin,
+                                            destination_origin) ||
          std::ranges::any_of(allowed_navigation_origins_,
                              [&](const auto& pair) {
                                const url::Origin& origin = pair.first;

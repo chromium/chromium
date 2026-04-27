@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
 #define COMPONENTS_ACTOR_CORE_ORIGIN_CHECKER_H_
 
-#include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -17,13 +16,13 @@ class OriginChecker {
   OriginChecker();
   ~OriginChecker();
 
-  // Returns true iff navigation to `destination_origin` is allowed, either due
-  // to Same-Origin-Policy or by a previous call to `AllowNavigation`.
+  // Returns true iff navigation to `destination_origin` is allowed, either
+  // because the source and destination are considered the "same", or by a
+  // previous call to `AllowNavigation`.
   //
   // Must not be called if `actor::IsNavigationGatingEnabled()` returns false.
-  bool IsNavigationAllowed(
-      base::optional_ref<const url::Origin> initiator_origin,
-      const url::Origin& destination_origin) const;
+  bool IsNavigationAllowed(const url::Origin& source_origin,
+                           const url::Origin& destination_origin) const;
 
   // Returns true iff navigation to or interaction with `origin` has been
   // allowed (via a previous call to `AllowNavigationTo`) with

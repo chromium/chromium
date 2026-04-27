@@ -40,13 +40,14 @@ TEST(OriginCheckerTest, AllowNavigationToSingleOrigin) {
 }
 
 TEST(OriginCheckerTest, AllowNavigationTo_Opaque) {
+  const url::Origin example = url::Origin::Create(GURL(kExample));
   const url::Origin opaque;
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(opaque,
                                    /*is_user_confirmed=*/false);
 
-  EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, opaque));
-  EXPECT_FALSE(origin_checker.IsNavigationAllowed(std::nullopt, url::Origin()));
+  EXPECT_TRUE(origin_checker.IsNavigationAllowed(example, opaque));
+  EXPECT_FALSE(origin_checker.IsNavigationAllowed(example, url::Origin()));
   EXPECT_FALSE(origin_checker.IsNavigationAllowed(
       opaque, url::Origin::Create(GURL(kExample))));
 }
@@ -117,16 +118,6 @@ TEST(OriginCheckerTest, IsNavigationAllowed_OpaqueInitiator) {
       opaque, url::Origin::Create(GURL(kAnother))));
 }
 
-TEST(OriginCheckerTest, IsNavigationAllowed_OmittedInitiator) {
-  const url::Origin example = url::Origin::Create(GURL(kExample));
-  OriginChecker origin_checker;
-  origin_checker.AllowNavigationTo(example, /*is_user_confirmed=*/false);
-
-  EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, example));
-  EXPECT_FALSE(origin_checker.IsNavigationAllowed(
-      std::nullopt, url::Origin::Create(GURL(kAnother))));
-}
-
 TEST(OriginCheckerTest, ConfirmOrigin_Query) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
 
@@ -141,12 +132,13 @@ TEST(OriginCheckerTest, ConfirmOrigin_Query) {
 
 TEST(OriginCheckerTest, ConfirmOrigin_AllowsNavigation) {
   const url::Origin example = url::Origin::Create(GURL(kExample));
+  const url::Origin another_origin = url::Origin::Create(GURL(kAnother));
 
   OriginChecker origin_checker;
   origin_checker.AllowNavigationTo(example,
                                    /*is_user_confirmed=*/true);
 
-  EXPECT_TRUE(origin_checker.IsNavigationAllowed(std::nullopt, example));
+  EXPECT_TRUE(origin_checker.IsNavigationAllowed(another_origin, example));
 }
 
 TEST(OriginCheckerTest, ConfirmOrigin_Opaque) {

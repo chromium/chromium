@@ -202,18 +202,6 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return content::NavigationThrottle::PROCEED;
   }
 
-  if (initiator_origin && initiator_origin->IsSameOriginWith(navigation_url)) {
-    journal.Log(navigation_url, task_id_, "NavThrottle",
-                JournalDetailsBuilder()
-                    .Add("navigate", is_redirection ? "Same origin redirect"
-                                                    : "Same origin navigation")
-                    .Build());
-    // This isn't needed for correctness. We know that if the actor triggered a
-    // same origin navigation, the destination URL will be allowed. So we
-    // avoid an unnecessary defer.
-    return content::NavigationThrottle::PROCEED;
-  }
-
   actor::ActorTask* task =
       ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
   if (!task) {

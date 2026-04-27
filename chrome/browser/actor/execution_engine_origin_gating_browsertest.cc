@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/origin.h"
@@ -1035,6 +1036,55 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       NavigationBlockedByStaticList_CrossOriginIframe) {
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "*", "to": "blocked.example.com" }
+      ]
+    }
+  )json");
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/iframe.html");
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("blocked.example.com", "/empty.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "test", blocked_url));
+
+  OpenGlicAndCreateTask();
+
+  // No need to wait for the callback, since the tab is added to the controlled
+  // set synchronously.
+  actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                      base::DoNothing());
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
+
+  content::TestNavigationObserver observer(web_contents());
+  ASSERT_TRUE(content::ExecJs(
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+      content::JsReplace(R"(
+      const a = document.createElement('a');
+      a.target = "_parent";
+      a.href = $1;
+      document.body.appendChild(a);
+      a.click();
+      )",
+                         blocked_url)));
+  observer.Wait();
+
+  // The navigation is blocked by the blocklist even though the initiator is
+  // same-origin with the destination.
+  histogram_tester.ExpectBucketCount(
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationWithOpaqueSourceOriginBlockedUnderWildcard) {
   base::HistogramTester histogram_tester;
   const GURL blocked_url =
@@ -1503,12 +1553,52 @@ class ExecutionEngineSiteGatingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
-                       ConfirmNavigationToNewSite_Denied) {
+                       ConfirmNavigation_SameOrigin) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // Same origin source should never trigger gating
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
+                       ConfirmNavigation_CrossOrigin_Denied) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL same_site = embedded_https_test_server().GetURL(
       "other.example.com", "/actor/link.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Cross origin but same site source should trigger when we're gating on
+  // origin
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", same_site)));
+  ClickTarget("#link",
+              should_gate_by_site()
+                  ? mojom::ActionResultCode::kOk
+                  : mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.PermissionGranted",
+                                     false, should_gate_by_site() ? 0 : 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
+                       ConfirmNavigation_CrossSite_Denied) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL cross_site =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
@@ -1518,27 +1608,13 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleNavigationConfirmationTempl, false)));
 
-  // Same origin should never trigger gating
-  ASSERT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", start_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  // Cross origin but same site should only trigger when we're gating on origin
-  ASSERT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", same_site)));
-  ClickTarget("#link",
-              should_gate_by_site()
-                  ? mojom::ActionResultCode::kOk
-                  : mojom::ActionResultCode::kTriggeredNavigationBlocked);
-
-  // Cross site will always trigger gating
+  // Cross site source will always trigger gating
   ASSERT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", cross_site)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
 
-  // Should log that permission was *denied* once.
   histogram_tester.ExpectBucketCount("Actor.NavigationGating.PermissionGranted",
-                                     false, should_gate_by_site() ? 1 : 2);
+                                     false, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,

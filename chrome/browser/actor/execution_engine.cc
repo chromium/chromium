@@ -409,7 +409,7 @@ void ExecutionEngine::OnNavigationSensitiveUrlListChecked(
   // If not sensitive, check if it's an origin the actor has previously
   // interacted with or received instructions from the server to interact with.
   if (not_sensitive &&
-      origin_checker_.IsNavigationAllowed(initiator, destination)) {
+      origin_checker_.IsNavigationAllowed(source, destination)) {
     LogNavigationGating(source, initiator, destination,
                         /*applied_gate=*/false);
     ukm::builders::Actor_OriginGating builder(ukm_source_id);
