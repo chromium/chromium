@@ -7987,7 +7987,6 @@ test("unit_tests") {
       "../browser/android/compositor/tab_content_manager_unittest.cc",
       "../browser/android/customtabs/detached_resource_request_unittest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_android_unittest.cc",
-      "../browser/android/customtabs/text_fragment_lookup_state_tracker_unittest.cc",
       "../browser/android/framebust_intervention/framebust_blocked_delegate_android_unittest.cc",
       "../browser/android/history/history_deletion_bridge_unittest.cc",
       "../browser/android/locale/locale_template_url_loader_unittest.cc",

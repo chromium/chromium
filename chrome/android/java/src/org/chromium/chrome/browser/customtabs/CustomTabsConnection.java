@@ -2194,27 +2194,6 @@ public class CustomTabsConnection {
     }
 
     /**
-     * Called when text fragment lookups on the current page has completed.
-     *
-     * @param session session object.
-     * @param stateKey unique key for the embedder to keep track of the request.
-     * @param foundTextFragments text fragments from the initial request that were found on the
-     *     page.
-     */
-    @CalledByNative
-    private static void notifyClientOfTextFragmentLookupCompletion(
-            SessionHolder<?> session,
-            @JniType("std::string") String stateKey,
-            String[] foundTextFragments) {
-        getInstance()
-                .notifyClientOfTextFragmentLookupCompletionReportApp(
-                        session, stateKey, new ArrayList<>(Arrays.asList(foundTextFragments)));
-    }
-
-    protected void notifyClientOfTextFragmentLookupCompletionReportApp(
-            SessionHolder<?> session, String stateKey, ArrayList<String> foundTextFragments) {}
-
-    /**
      * @return The CalledWarmup state for the session.
      */
     public @CalledWarmup int getWarmupState(@Nullable SessionHolder<?> session) {
@@ -2261,16 +2240,5 @@ public class CustomTabsConnection {
                 @DetachedResourceRequestMotivation int motivation);
 
         void setClientDataHeader(WebContents webContents, @JniType("std::string") String header);
-
-        void textFragmentLookup(
-                SessionHolder<?> session,
-                WebContents webContents,
-                @JniType("std::string") String stateKey,
-                String[] textFragment);
-
-        void textFragmentFindScrollAndHighlight(
-                SessionHolder<?> session,
-                WebContents webContents,
-                @JniType("std::string") String textFragment);
     }
 }

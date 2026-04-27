@@ -1836,8 +1836,6 @@ static_library("browser") {
       "android/customtabs/detached_resource_request.h",
       "android/customtabs/tab_interaction_recorder_android.cc",
       "android/customtabs/tab_interaction_recorder_android.h",
-      "android/customtabs/text_fragment_lookup_state_tracker.cc",
-      "android/customtabs/text_fragment_lookup_state_tracker.h",
       "android/data_import/data_importer_bridge.cc",
       "android/data_import/data_importer_bridge.h",
       "android/devtools_manager_delegate_android.cc",

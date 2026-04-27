@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/customtabs/detached_resource_request.h"
-#include "chrome/browser/android/customtabs/text_fragment_lookup_state_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/common/referrer.h"
 #include "net/url_request/referrer_policy.h"
@@ -25,17 +24,6 @@ namespace customtabs {
 
 namespace {
 
-std::vector<std::string> ConvertJavaStringArrayToListValue(
-    JNIEnv* env,
-    const base::android::JavaRef<JArray<jstring>>& array) {
-  DCHECK(!array.is_null());
-  std::vector<std::string> vector_string;
-  for (auto j_str : array.CreateView(env)) {
-    vector_string.push_back(base::android::ConvertJavaStringToUTF8(env, j_str));
-  }
-  return vector_string;
-}
-
 void NotifyClientOfDetachedRequestCompletion(
     const base::android::ScopedJavaGlobalRef<jobject>& session,
     const GURL& url,
@@ -43,29 +31,6 @@ void NotifyClientOfDetachedRequestCompletion(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CustomTabsConnection_notifyClientOfDetachedRequestCompletion(
       env, session, url.spec(), net_error);
-}
-
-// Notify client of text fragment look up completion.
-// `state_key` is opaque id used by client to keep track of the request.
-// `lookup_results` is the mapping between the text fragments that were looked
-// up and whether they were found on the page or not.
-void NotifyClientOfTextFragmentLookupCompletion(
-    const base::android::ScopedJavaGlobalRef<jobject>& session,
-    const std::string& state_key,
-    const std::vector<std::pair<std::string, bool>>& lookup_results) {
-  std::vector<std::string> found_fragments;
-
-  // Extract the fragments that were found on the page.
-  for (auto it : lookup_results) {
-    if (it.second) {
-      found_fragments.push_back(it.first);
-    }
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CustomTabsConnection_notifyClientOfTextFragmentLookupCompletion(
-      env, session, state_key,
-      base::android::ToJavaArrayOfStrings(env, found_fragments));
 }
 
 }  // namespace
@@ -113,40 +78,6 @@ static void JNI_CustomTabsConnection_SetClientDataHeader(
   ClientDataHeaderWebContentsObserver::CreateForWebContents(web_contents);
   ClientDataHeaderWebContentsObserver::FromWebContents(web_contents)
       ->SetHeader(jheader);
-}
-
-static void JNI_CustomTabsConnection_TextFragmentLookup(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& session,
-    const base::android::JavaRef<jobject>& jweb_contents,
-    const std::string& state_key,
-    const base::android::JavaRef<JArray<jstring>>& jtext_fragments) {
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-
-  TextFragmentLookupStateTracker::OnResultCallback cb =
-      session.is_null()
-          ? base::DoNothing()
-          : base::BindOnce(
-                &NotifyClientOfTextFragmentLookupCompletion,
-                base::android::ScopedJavaGlobalRef<jobject>(session));
-
-  TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
-  TextFragmentLookupStateTracker::FromWebContents(web_contents)
-      ->LookupTextFragment(
-          state_key, ConvertJavaStringArrayToListValue(env, jtext_fragments),
-          std::move(cb));
-}
-
-static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& session,
-    const base::android::JavaRef<jobject>& jweb_contents,
-    const std::string& text_fragment) {
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-
-  TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
-  TextFragmentLookupStateTracker::FromWebContents(web_contents)
-      ->FindScrollAndHighlight(text_fragment);
 }
 
 }  // namespace customtabs
