@@ -13,6 +13,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "net/base/features.h"
 #include "net/base/pickle.h"
@@ -377,5 +378,21 @@ size_t PickleTraits<HttpNoVarySearchData>::PickleSize(
                             value.vary_by_default_);
 }
 // LINT.ThenChange(//net/http/http_no_vary_search_data.h:MagicNumber)
+
+std::ostream& operator<<(std::ostream& ostream,
+                         const HttpNoVarySearchData& no_vary_search_data) {
+  no_vary_search_data.DescribeForLog(ostream);
+  return ostream;
+}
+
+void HttpNoVarySearchData::DescribeForLog(std::ostream& ostream) const {
+  ostream << std::boolalpha;
+  ostream << "HttpNoVarySearchData{";
+  ostream << "vary_on_key_order: " << vary_on_key_order_ << ", ";
+  ostream << "vary_by_default: " << vary_by_default_ << ", ";
+  ostream << R"(affected_params: [")"
+          << base::JoinString(affected_params_, R"(", ")") << R"("])";
+  ostream << "}";
+}
 
 }  // namespace net

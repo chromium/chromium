@@ -1449,6 +1449,40 @@ TEST(HttpNoVarySearchDataTest, AbslHashValue) {
   }));
 }
 
+TEST(HttpNoVarySearchDataTest, DescribeForLog) {
+  struct FailureCase {
+    std::string_view header_value;
+    HttpNoVarySearchData::ParseErrorEnum expected_error;
+  };
+  struct TestCase {
+    std::string_view header_value;
+    std::string_view debug_output;
+  };
+  static constexpr TestCase cases[] = {
+      {R"(params=("a"))",
+       R"(HttpNoVarySearchData{vary_on_key_order: true, vary_by_default: true, affected_params: ["a"]})"},
+      {R"(key-order, params=("a" "b"))",
+       R"(HttpNoVarySearchData{vary_on_key_order: false, vary_by_default: true, affected_params: ["a", "b"]})"},
+      {R"(params, except=("a"))",
+       R"(HttpNoVarySearchData{vary_on_key_order: true, vary_by_default: false, affected_params: ["a"]})"},
+      {R"(key-order, params, except=("a" "b"))",
+       R"(HttpNoVarySearchData{vary_on_key_order: false, vary_by_default: false, affected_params: ["a", "b"]})"},
+      // The order of `affected_params` is the iteration order of `flat_set`.
+      {R"(params=("b" "alice" "a"))",
+       R"(HttpNoVarySearchData{vary_on_key_order: true, vary_by_default: true, affected_params: ["a", "alice", "b"]})"},
+  };
+  for (const auto& c : cases) {
+    SCOPED_TRACE(c.header_value);
+    const auto result =
+        HttpNoVarySearchData::ParseFromHeaderValue(c.header_value);
+    EXPECT_TRUE(result.has_value());
+
+    std::ostringstream oss;
+    oss << result.value();
+    EXPECT_EQ(c.debug_output, oss.str());
+  }
+}
+
 }  // namespace
 
 }  // namespace net
