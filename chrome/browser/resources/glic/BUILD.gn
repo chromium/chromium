@@ -10,7 +10,6 @@ build_webui("build") {
   grd_prefix = "glic"
 
   static_files = [
-    "fre/fre.css",
     "glic.css",
     "glic.html",
     "internals/glic_internals.html",
