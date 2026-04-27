@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_MOCK_SESSION_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SESSIONS_MOCK_SESSION_SYNC_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -35,6 +36,12 @@ class MockSessionSyncService : public SessionSyncService {
               (SessionID tab_id,
                std::string&& screenshot_data,
                const GURL& url),
+              (override));
+  MOCK_METHOD(void,
+              ReadTabScreenshot,
+              (const std::string& session_tag,
+               SessionID tab_id,
+               base::OnceCallback<void(std::optional<std::string>)> callback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               SubscribeToForeignSessionsChanged,

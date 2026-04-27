@@ -97,6 +97,33 @@ class MockOpenCallback {
   std::unique_ptr<SessionStore> store_;
 };
 
+sync_pb::SessionSpecifics CreateTabSpecifics(const std::string& session_tag,
+                                             int tab_node_id,
+                                             SessionID tab_id,
+                                             const GURL& url) {
+  sync_pb::SessionSpecifics tab;
+  tab.set_session_tag(session_tag);
+  tab.set_tab_node_id(tab_node_id);
+  tab.mutable_tab()->set_tab_id(tab_id.id());
+  tab.mutable_tab()->add_navigation()->set_virtual_url(url.spec());
+  tab.mutable_tab()->set_current_navigation_index(0);
+  return tab;
+}
+
+sync_pb::SessionSpecifics CreateTabScreenshotSpecifics(
+    const std::string& session_tag,
+    int tab_node_id,
+    SessionID tab_id,
+    const std::string& data,
+    const GURL& url) {
+  sync_pb::SessionSpecifics screenshot;
+  screenshot.set_session_tag(session_tag);
+  screenshot.set_tab_node_id(tab_node_id);
+  screenshot.mutable_tab_screenshot()->set_screenshot_data(data);
+  screenshot.mutable_tab_screenshot()->set_url(url.spec());
+  return screenshot;
+}
+
 MATCHER_P(EntityDataHasSpecifics, session_specifics_matcher, "") {
   return session_specifics_matcher.MatchAndExplain(arg.specifics.session(),
                                                    result_listener);
@@ -1045,6 +1072,220 @@ TEST_F(SessionStoreTest, ShouldStoreScreenshots) {
   }
 
   EXPECT_THAT(ReadAllPersistedDataFrom(underlying_store_.get()), IsEmpty());
+}
+
+TEST_F(SessionStoreTest, ShouldReadTabScreenshot) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+  const int kTabNodeId = 2;
+  const GURL kUrl("https://example.com/");
+  const std::string kScreenshotData = "screenshot data";
+
+  // Save a tab and a matching screenshot.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  batch->PutAndUpdateTracker(
+      CreateTabSpecifics(kForeignSessionTag, kTabNodeId, kTabId, kUrl),
+      base::Time::Now());
+
+  batch->PutAndUpdateTracker(
+      CreateTabScreenshotSpecifics(kForeignSessionTag, kTabNodeId, kTabId,
+                                   kScreenshotData, kUrl),
+      base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // Now read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+
+  EXPECT_EQ(future.Get(), kScreenshotData);
+}
+
+TEST_F(SessionStoreTest, ShouldNotReadTabScreenshotWithWrongUrl) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+  const int kTabNodeId = 2;
+  const GURL kTabUrl("https://example.com/");
+  const GURL kScreenshotUrl("https://different.com/");
+  const std::string kScreenshotData = "screenshot data";
+
+  // Save a tab, and a screenshot with a different URL.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  batch->PutAndUpdateTracker(
+      CreateTabSpecifics(kForeignSessionTag, kTabNodeId, kTabId, kTabUrl),
+      base::Time::Now());
+
+  batch->PutAndUpdateTracker(
+      CreateTabScreenshotSpecifics(kForeignSessionTag, kTabNodeId, kTabId,
+                                   kScreenshotData, kScreenshotUrl),
+      base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // Now try to read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+
+  // It should return no result, since the screenshot's URL doesn't match the
+  // tab's.
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(SessionStoreTest, ShouldNotReadTabScreenshotIfNotFound) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+  const int kTabNodeId = 2;
+  const GURL kUrl("https://example.com/");
+
+  // Save a tab without a screenshot.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  batch->PutAndUpdateTracker(
+      CreateTabSpecifics(kForeignSessionTag, kTabNodeId, kTabId, kUrl),
+      base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // Now try to read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+  // It should return no result.
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(SessionStoreTest, ShouldNotReadTabScreenshotForUnmappedTab) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+
+  // Save a session header (without any tabs) to establish the session in the
+  // tracker.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  sync_pb::SessionSpecifics header;
+  header.set_session_tag(kForeignSessionTag);
+  header.mutable_header();  // Empty header.
+  batch->PutAndUpdateTracker(header, base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // Now try to read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+  // It should return no result.
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(SessionStoreTest, ShouldNotReadTabScreenshotIfCorrupt) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+  const int kTabNodeId = 2;
+  const GURL kUrl("https://example.com/");
+
+  // 1. Save a tab to establish the mapping and current URL.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  batch->PutAndUpdateTracker(
+      CreateTabSpecifics(kForeignSessionTag, kTabNodeId, kTabId, kUrl),
+      base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // 2. Write corrupt data for the screenshot.
+  const std::string screenshot_storage_key =
+      SessionStore::GetTabScreenshotStorageKey(kForeignSessionTag, kTabNodeId);
+
+  std::unique_ptr<DataTypeStore::WriteBatch> store_batch =
+      underlying_store_->CreateWriteBatch();
+  store_batch->WriteData(screenshot_storage_key, "invalid proto data");
+
+  base::test::TestFuture<const std::optional<syncer::ModelError>&> commit_done;
+  underlying_store_->CommitWriteBatch(std::move(store_batch),
+                                      commit_done.GetCallback());
+  ASSERT_EQ(commit_done.Get(), std::nullopt);
+
+  // 3. Now try to read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+
+  // It should return nullopt because it failed to parse.
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(SessionStoreTest, ShouldNotReadTabScreenshotIfNoScreenshotInSpecifics) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const std::string kForeignSessionTag = "SomeForeignTag";
+  const SessionID kTabId = SessionID::FromSerializedValue(7);
+  const int kTabNodeId = 2;
+  const GURL kUrl("https://example.com/");
+
+  // 1. Save a tab to establish the mapping and current URL.
+  std::unique_ptr<SessionStore::WriteBatch> batch =
+      session_store()->CreateWriteBatch(/*error_handler=*/base::DoNothing());
+  ASSERT_THAT(batch, NotNull());
+
+  batch->PutAndUpdateTracker(
+      CreateTabSpecifics(kForeignSessionTag, kTabNodeId, kTabId, kUrl),
+      base::Time::Now());
+
+  SessionStore::WriteBatch::Commit(std::move(batch));
+
+  // 2. Write a specifics without screenshot data.
+  // Note: This will not be a valid specifics, so it can't be written via a
+  // `SessionStore::WriteBatch`, but has to be written directly to the
+  // underlying store.
+  const std::string screenshot_storage_key =
+      SessionStore::GetTabScreenshotStorageKey(kForeignSessionTag, kTabNodeId);
+
+  sync_pb::SessionSpecifics screenshot;
+  screenshot.set_session_tag(kForeignSessionTag);
+  screenshot.set_tab_node_id(kTabNodeId);
+  // Do NOT set tab_screenshot.
+
+  std::unique_ptr<DataTypeStore::WriteBatch> store_batch =
+      underlying_store_->CreateWriteBatch();
+  store_batch->WriteData(screenshot_storage_key,
+                         screenshot.SerializeAsString());
+
+  base::test::TestFuture<const std::optional<syncer::ModelError>&> commit_done;
+  underlying_store_->CommitWriteBatch(std::move(store_batch),
+                                      commit_done.GetCallback());
+  ASSERT_EQ(commit_done.Get(), std::nullopt);
+
+  // 3. Now try to read the screenshot.
+  base::test::TestFuture<std::optional<std::string>> future;
+  session_store()->ReadTabScreenshot(kForeignSessionTag, kTabId,
+                                     future.GetCallback());
+
+  // It should return nullopt because specifics has no screenshot.
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 TEST_F(SessionStoreTest, ShouldConsiderScreenshotInvalidWithoutFeature) {

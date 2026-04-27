@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -42,9 +43,23 @@ class SessionSyncService : public KeyedService {
   // enabled or not currently syncing, returns nullptr.
   virtual OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
 
+  // Stores a screenshot for the local tab identified by `tab_id` in persisted
+  // storage, and sends it to the sync server.
   virtual void AddTabScreenshot(SessionID tab_id,
                                 std::string&& screenshot_data,
                                 const GURL& url) = 0;
+
+  // Reads a screenshot for the (local or remote) tab identified by
+  // `session_tag` and `tab_id` from persisted storage and returns it to the
+  // `callback`. If no screenshot is available or an error occurs while
+  // reading it, the callback is invoked with a nullopt screenshot data.
+  // Note: This special API is required since screenshots (as opposed to the
+  // tabs themselves) are not stored in the in-memory model and are hence not
+  // available through the normal read APIs.
+  virtual void ReadTabScreenshot(
+      const std::string& session_tag,
+      SessionID tab_id,
+      base::OnceCallback<void(std::optional<std::string>)> callback) = 0;
 
   // Allows client code to be notified when foreign sessions change.
   [[nodiscard]] virtual base::CallbackListSubscription

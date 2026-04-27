@@ -31,6 +31,8 @@
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace sync_sessions {
 namespace {
@@ -704,6 +706,72 @@ std::unique_ptr<SessionStore::WriteBatch> SessionStore::CreateWriteBatch(
       base::BindOnce(&DataTypeStore::CommitWriteBatch,
                      base::Unretained(store_.get())),
       std::move(error_handler), &session_tracker_);
+}
+
+void SessionStore::ReadTabScreenshot(
+    const std::string& session_tag,
+    SessionID tab_id,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  int tab_node_id =
+      session_tracker_.LookupTabNodeFromTabId(session_tag, tab_id);
+  if (tab_node_id == TabNodePool::kInvalidTabNodeID) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (!session_tracker_.TabNodeHasScreenshot(session_tag, tab_node_id)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const sessions::SessionTab* tab =
+      session_tracker_.LookupSessionTab(session_tag, tab_id);
+  if (!tab || tab->current_navigation_index < 0 ||
+      tab->current_navigation_index >=
+          static_cast<int>(tab->navigations.size())) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  const GURL& tab_url =
+      tab->navigations[tab->current_navigation_index].virtual_url();
+  store_->ReadData({GetTabScreenshotStorageKey(session_tag, tab_node_id)},
+                   base::BindOnce(&SessionStore::OnReadTabScreenshotDone,
+                                  tab_url, std::move(callback)));
+}
+
+// static
+void SessionStore::OnReadTabScreenshotDone(
+    const GURL& tab_url,
+    base::OnceCallback<void(std::optional<std::string>)> callback,
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+    std::unique_ptr<syncer::DataTypeStore::IdList> missing_id_list) {
+  if (error || !data_records || data_records->empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  sync_pb::SessionSpecifics specifics;
+  if (!specifics.ParseFromString(data_records->front().value)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  if (!specifics.has_tab_screenshot() ||
+      specifics.tab_screenshot().screenshot_data().empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Verify that at least the scheme+host+port of the screenshot still matches
+  // that of the corresponding tab. Otherwise, the screenshot is stale and
+  // should not be used anymore.
+  url::SchemeHostPort shp(GURL(specifics.tab_screenshot().url()));
+  if (!shp.IsValid() || shp != url::SchemeHostPort(tab_url)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(std::move(
+      *specifics.mutable_tab_screenshot()->mutable_screenshot_data()));
 }
 
 // static

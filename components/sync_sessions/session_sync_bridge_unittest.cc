@@ -2072,7 +2072,7 @@ TEST_F(SessionSyncBridgeTest, ShouldAddTabScreenshot) {
           _));
 
   bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kTabId),
-                             kScreenshotData, kUrl);
+                             std::string(kScreenshotData), kUrl);
 
   // Note: GetAllData() is based on the in-memory representation, so it does not
   // return the actual screenshot *data*, only a placeholder entity.
@@ -2118,6 +2118,56 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreAddTabScreenshotForUnknownTab) {
 
   bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kUnknownTabId),
                              "data", GURL("https://foo.com/"));
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldReadTabScreenshot) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  const int kWindowId = 1000001;
+  const int kTabId = 1000002;
+  const std::string kScreenshotData = "test screenshot data";
+  const GURL kUrl("https://foo.com/");
+
+  AddWindow(kWindowId);
+  AddTab(kWindowId, kUrl.spec(), kTabId);
+
+  InitializeBridge();
+  StartSyncing();
+
+  bridge()->AddTabScreenshot(SessionID::FromSerializedValue(kTabId),
+                             std::string(kScreenshotData), kUrl);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  bridge()->ReadTabScreenshot(kLocalCacheGuid,
+                              SessionID::FromSerializedValue(kTabId),
+                              future.GetCallback());
+
+  EXPECT_EQ(future.Get(), kScreenshotData);
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldReturnEmptyScreenshotBeforeSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  InitializeBridge();
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  bridge()->ReadTabScreenshot(
+      kLocalCacheGuid, SessionID::FromSerializedValue(7), future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(SessionSyncBridgeTest, ShouldReturnEmptyScreenshotForUnknownTab) {
+  base::test::ScopedFeatureList scoped_feature_list{kSyncTabScreenshots};
+
+  InitializeBridge();
+  StartSyncing();
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  bridge()->ReadTabScreenshot(
+      kLocalCacheGuid, SessionID::FromSerializedValue(7), future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 }  // namespace

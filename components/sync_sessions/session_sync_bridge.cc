@@ -137,7 +137,7 @@ bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
 }
 
 void SessionSyncBridge::AddTabScreenshot(SessionID tab_id,
-                                         std::string screenshot_data,
+                                         std::string&& screenshot_data,
                                          const GURL& url) {
   CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
   if (!syncing_) {
@@ -172,6 +172,17 @@ void SessionSyncBridge::AddTabScreenshot(SessionID tab_id,
       batch->GetMetadataChangeList());
 
   SessionStore::WriteBatch::Commit(std::move(batch));
+}
+
+void SessionSyncBridge::ReadTabScreenshot(
+    const std::string& session_tag,
+    SessionID tab_id,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  if (!syncing_ || !store_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  store_->ReadTabScreenshot(session_tag, tab_id, std::move(callback));
 }
 
 std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(

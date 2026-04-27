@@ -146,6 +146,13 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
                         std::string&& screenshot_data,
                         const GURL& url) override {}
 
+  void ReadTabScreenshot(
+      const std::string& session_tag,
+      SessionID tab_id,
+      base::OnceCallback<void(std::optional<std::string>)> callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
       const base::RepeatingClosure& cb) override {
     return base::CallbackListSubscription();

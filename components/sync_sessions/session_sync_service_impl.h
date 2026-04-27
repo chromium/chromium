@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -36,6 +37,10 @@ class SessionSyncServiceImpl : public SessionSyncService {
   void AddTabScreenshot(SessionID tab_id,
                         std::string&& screenshot_data,
                         const GURL& url) override;
+  void ReadTabScreenshot(
+      const std::string& session_tag,
+      SessionID tab_id,
+      base::OnceCallback<void(std::optional<std::string>)> callback) override;
   [[nodiscard]] base::CallbackListSubscription
   SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
