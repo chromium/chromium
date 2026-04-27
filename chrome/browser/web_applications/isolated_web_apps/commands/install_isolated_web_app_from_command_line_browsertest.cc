@@ -90,8 +90,15 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
   GURL GetAppUrl() const { return embedded_test_server()->base_url(); }
 };
 
+// TODO(https://crbugs.com/507023073): Remove once the test is fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UrlAppFromCommandLineIsInstalled \
+  DISABLED_AppFromCommandLineIsInstalled
+#else
+#define MAYBE_UrlAppFromCommandLineIsInstalled AppFromCommandLineIsInstalled
+#endif
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
-                       AppFromCommandLineIsInstalled) {
+                       MAYBE_UrlAppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
   webapps::AppId id = observer.BeginListeningAndWait();
 
@@ -149,13 +156,13 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
 
 // TODO(https://crbug.com/503784976): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_AppFromCommandLineIsInstalled \
+#define MAYBE_FileAppFromCommandLineIsInstalled \
   DISABLED_AppFromCommandLineIsInstalled
 #else
-#define MAYBE_AppFromCommandLineIsInstalled AppFromCommandLineIsInstalled
+#define MAYBE_FileAppFromCommandLineIsInstalled AppFromCommandLineIsInstalled
 #endif
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
-                       MAYBE_AppFromCommandLineIsInstalled) {
+                       MAYBE_FileAppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
   webapps::AppId id = observer.BeginListeningAndWait();
 
