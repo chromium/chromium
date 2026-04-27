@@ -85,8 +85,6 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    browser()->profile()->GetPrefs()->ClearPref(
-        prefs::kTabSearchPinnedToTabstrip);
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
@@ -512,6 +510,11 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
       SendKeyPress(kOmniboxElementId, ui::VKEY_A),
       SendKeyPress(kOmniboxElementId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
       CheckViewProperty(kOmniboxElementId, &OmniboxViewViews::GetText, u"aB"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
+                       MaybeEnterInteractiveMode) {
+  RunTestSequence(MaybeEnterInteractiveMode(kBrowserViewElementId));
 }
 
 // Simple bubble containing a WebView. Allows us to simulate swapping out one

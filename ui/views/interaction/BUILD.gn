@@ -34,6 +34,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "accelerator_observer.cc",
+    "accelerator_observer.h",
     "interaction_test_util_views.cc",
     "interaction_test_util_views.h",
     "interactive_views_test.cc",

@@ -9,17 +9,22 @@
 #include <string_view>
 #include <variant>
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/interaction/accelerator_observer.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/view_tracker.h"
@@ -81,6 +86,36 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ScrollIntoView(
   return std::move(WithView(view, [](View* v) {
                      v->ScrollViewToVisible();
                    }).SetDescription("ScrollIntoView()"));
+}
+
+InteractiveViewsTestApi::StepBuilder
+InteractiveViewsTestApi::MaybeEnterInteractiveMode(
+    ElementSpecifier target,
+    ui::Accelerator exit_accelerator) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AcceleratorObserver,
+                                      kExitInteractiveModeObserver);
+  return If(
+      [] {
+        return base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestLauncherInteractive);
+      },
+      Then(Log("\n-----------------------------------"
+               "\nEntering interactive mode. Press ",
+               exit_accelerator.GetShortcutText(),
+               " to exit."
+               "\n-----------------------------------"),
+           CheckElement(
+               target,
+               [=, this](ui::TrackedElement* el) {
+                 return private_test_impl().AddStateObserver(
+                     kExitInteractiveModeObserver.identifier(), el->context(),
+                     std::make_unique<AcceleratorObserver>(
+                         el, private_test_impl().GetNativeWindowFor(el),
+                         exit_accelerator));
+               }),
+           WaitForState(kExitInteractiveModeObserver,
+                        testing::Ne(AcceleratorObserverState::kWaiting)),
+           StopObservingState(kExitInteractiveModeObserver)));
 }
 
 // static

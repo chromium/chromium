@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -33,6 +34,8 @@
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/interaction/polling_view_observer.h"
@@ -318,6 +321,24 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
   // outside its container. The view must be otherwise present and visible.
   // Has no effect if the view is not in a scroll container.
   [[nodiscard]] static StepBuilder ScrollIntoView(ElementSpecifier view);
+
+  // If `--test-launcher-interactive` is specified, pauses until the user enters
+  // `exit_accelerator` into the surface containing `target` or `target` is
+  // hidden.
+  //
+  // This is designed to be used to debug tests, alongside `Log()` and
+  // `DebugDumpElements()`.
+  //
+  // Note that enabling interactive mode via the command-line flag will also
+  // cause `Screenshot()` steps to pause.
+  //
+  // Note also that enabling interactive mode may extend overall timeouts for
+  // interactive tests.
+  [[nodiscard]] StepBuilder MaybeEnterInteractiveMode(
+      ElementSpecifier target,
+      ui::Accelerator exit_accelerator =
+          ui::Accelerator(ui::KeyboardCode::VKEY_RETURN,
+                          ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
 
   // As IfElement(), but `condition` takes a single argument that is a const
   // View pointer. If `element` is not a view of type V, then the test will
