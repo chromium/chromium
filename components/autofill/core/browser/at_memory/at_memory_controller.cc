@@ -90,9 +90,119 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
   return std::monostate();
 }
 
+Suggestion::Icon GetIconForEntryType(accessibility_annotator::EntryType type) {
+  switch (type) {
+    case accessibility_annotator::EntryType::kNameFull:
+    case accessibility_annotator::EntryType::kAddressFull:
+    case accessibility_annotator::EntryType::kAddressStreetAddress:
+    case accessibility_annotator::EntryType::kAddressCity:
+    case accessibility_annotator::EntryType::kAddressState:
+    case accessibility_annotator::EntryType::kAddressZip:
+    case accessibility_annotator::EntryType::kAddressCountry:
+    case accessibility_annotator::EntryType::kPhone:
+    case accessibility_annotator::EntryType::kCompanyName:
+      return Suggestion::Icon::kAccount;
+    case accessibility_annotator::EntryType::kEmail:
+      return Suggestion::Icon::kEmail;
+    case accessibility_annotator::EntryType::kIban:
+    case accessibility_annotator::EntryType::kIbanNickname:
+      return Suggestion::Icon::kIban;
+    case accessibility_annotator::EntryType::kVehicle:
+    case accessibility_annotator::EntryType::kVehicleMake:
+    case accessibility_annotator::EntryType::kVehicleModel:
+    case accessibility_annotator::EntryType::kVehicleYear:
+    case accessibility_annotator::EntryType::kVehicleOwner:
+    case accessibility_annotator::EntryType::kVehiclePlateNumber:
+    case accessibility_annotator::EntryType::kVehiclePlateState:
+    case accessibility_annotator::EntryType::kVehicleVin:
+      return Suggestion::Icon::kVehicle;
+    case accessibility_annotator::EntryType::kPassportFull:
+    case accessibility_annotator::EntryType::kPassportName:
+    case accessibility_annotator::EntryType::kPassportCountry:
+    case accessibility_annotator::EntryType::kPassportNumber:
+    case accessibility_annotator::EntryType::kPassportIssueDate:
+    case accessibility_annotator::EntryType::kPassportExpirationDate:
+      return Suggestion::Icon::kPassport;
+    case accessibility_annotator::EntryType::kFlightReservationFull:
+    case accessibility_annotator::EntryType::kFlightReservationFlightNumber:
+    case accessibility_annotator::EntryType::kFlightReservationTicketNumber:
+    case accessibility_annotator::EntryType::kFlightReservationConfirmationCode:
+    case accessibility_annotator::EntryType::kFlightReservationPassengerName:
+    case accessibility_annotator::EntryType::kFlightReservationDepartureAirport:
+    case accessibility_annotator::EntryType::kFlightReservationArrivalAirport:
+    case accessibility_annotator::EntryType::kFlightReservationDepartureDate:
+    case accessibility_annotator::EntryType::kFlightReservationArrivalDate:
+      return Suggestion::Icon::kFlight;
+    case accessibility_annotator::EntryType::kNationalIdCardFull:
+    case accessibility_annotator::EntryType::kNationalIdCardName:
+    case accessibility_annotator::EntryType::kNationalIdCardCountry:
+    case accessibility_annotator::EntryType::kNationalIdCardNumber:
+    case accessibility_annotator::EntryType::kNationalIdCardIssueDate:
+    case accessibility_annotator::EntryType::kNationalIdCardExpirationDate:
+    case accessibility_annotator::EntryType::kDriversLicenseFull:
+    case accessibility_annotator::EntryType::kDriversLicenseName:
+    case accessibility_annotator::EntryType::kDriversLicenseState:
+    case accessibility_annotator::EntryType::kDriversLicenseNumber:
+    case accessibility_annotator::EntryType::kDriversLicenseIssueDate:
+    case accessibility_annotator::EntryType::kDriversLicenseExpirationDate:
+      return Suggestion::Icon::kIdCard;
+    case accessibility_annotator::EntryType::kRedressNumberFull:
+    case accessibility_annotator::EntryType::kRedressNumberName:
+    case accessibility_annotator::EntryType::kRedressNumberNumber:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberFull:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberName:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberNumber:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberExpirationDate:
+      return Suggestion::Icon::kPersonCheck;
+    case accessibility_annotator::EntryType::kCreditCardNumber:
+    case accessibility_annotator::EntryType::kCreditCardExpirationDate:
+    case accessibility_annotator::EntryType::kCreditCardSecurityCode:
+    case accessibility_annotator::EntryType::kCreditCardNameOnCard:
+    case accessibility_annotator::EntryType::kCreditCardNickname:
+      return Suggestion::Icon::kCardGeneric;
+    case accessibility_annotator::EntryType::kOrderFull:
+    case accessibility_annotator::EntryType::kOrderId:
+    case accessibility_annotator::EntryType::kOrderAccount:
+    case accessibility_annotator::EntryType::kOrderDate:
+    case accessibility_annotator::EntryType::kOrderMerchantName:
+    case accessibility_annotator::EntryType::kOrderMerchantDomain:
+    case accessibility_annotator::EntryType::kOrderProductNames:
+    case accessibility_annotator::EntryType::kOrderGrandTotal:
+    case accessibility_annotator::EntryType::kShipmentFull:
+    case accessibility_annotator::EntryType::kShipmentTrackingNumber:
+    case accessibility_annotator::EntryType::kShipmentAssociatedOrderId:
+    case accessibility_annotator::EntryType::kShipmentDeliveryAddress:
+    case accessibility_annotator::EntryType::kShipmentDeliveryZipCode:
+    case accessibility_annotator::EntryType::kShipmentCarrierName:
+    case accessibility_annotator::EntryType::kShipmentCarrierDomain:
+    case accessibility_annotator::EntryType::kShipmentEstimatedDeliveryDate:
+    case accessibility_annotator::EntryType::kUnknown:
+      return Suggestion::Icon::kNoIcon;
+  }
+  return Suggestion::Icon::kNoIcon;
+}
+
 Suggestion TransformResultIntoSuggestion(
     const accessibility_annotator::MemorySearchResult& entry) {
   Suggestion suggestion(entry.value, SuggestionType::kAtMemorySearchResult);
+  suggestion.icon = GetIconForEntryType(entry.type);
+  if (suggestion.icon == Suggestion::Icon::kNoIcon && !entry.sources.empty()) {
+    switch (entry.sources.front().type) {
+      case accessibility_annotator::MemoryEntrySourceType::kGmail:
+        suggestion.icon = Suggestion::Icon::kGmail;
+        break;
+      case accessibility_annotator::MemoryEntrySourceType::kPhotos:
+        suggestion.icon = Suggestion::Icon::kGooglePhotos;
+        break;
+      case accessibility_annotator::MemoryEntrySourceType::kCalendar:
+        suggestion.icon = Suggestion::Icon::kGoogleCalendar;
+        break;
+      case accessibility_annotator::MemoryEntrySourceType::kAmbient:
+      case accessibility_annotator::MemoryEntrySourceType::kLiveTabs:
+      case accessibility_annotator::MemoryEntrySourceType::kAutofill:
+        break;
+    }
+  }
   // Label row: [type_name, metadata[0].value, ...]
   std::vector<Suggestion::Text> label_row;
   std::u16string type_name = entry.type_name.empty()

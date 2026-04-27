@@ -356,6 +356,9 @@ struct Suggestion {
     kUndo,
     kVehicle,
     kWork,
+    kGmail,
+    kGooglePhotos,
+    kGoogleCalendar,
     // Payment method icons
     kCardGeneric,
     kCardAmericanExpress,

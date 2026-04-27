@@ -165,6 +165,9 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kVehicle:
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
+    case Suggestion::Icon::kGmail:
+    case Suggestion::Icon::kGooglePhotos:
+    case Suggestion::Icon::kGoogleCalendar:
     case Suggestion::Icon::kError:
     case Suggestion::Icon::kFlight:
     case Suggestion::Icon::kGlobe:
@@ -394,6 +397,24 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kEmail:
       return ImageModelFromVectorIcon(vector_icons::kEmailOutlineIcon,
+                                      kIconSize);
+    case Suggestion::Icon::kGmail:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ImageModelFromVectorIcon(vector_icons::kGoogleGmailIcon,
+                                      kIconSize);
+#else
+      return ImageModelFromVectorIcon(vector_icons::kEmailOutlineIcon,
+                                      kIconSize);
+#endif
+    case Suggestion::Icon::kGooglePhotos:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return ImageModelFromVectorIcon(vector_icons::kGooglePhotosIcon,
+                                      kIconSize);
+#else
+      return ImageModelFromVectorIcon(vector_icons::kPhotoIcon, kIconSize);
+#endif
+    case Suggestion::Icon::kGoogleCalendar:
+      return ImageModelFromVectorIcon(vector_icons::kCalendarTodayIcon,
                                       kIconSize);
     case Suggestion::Icon::kError:
       return ui::ImageModel::FromVectorIcon(vector_icons::kErrorIcon,

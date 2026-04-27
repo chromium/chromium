@@ -120,6 +120,12 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kVehicle";
     case Suggestion::Icon::kWork:
       return "kWork";
+    case Suggestion::Icon::kGmail:
+      return "kGmail";
+    case Suggestion::Icon::kGooglePhotos:
+      return "kGooglePhotos";
+    case Suggestion::Icon::kGoogleCalendar:
+      return "kGoogleCalendar";
     case Suggestion::Icon::kCardGeneric:
       return "kCardGeneric";
     case Suggestion::Icon::kCardAmericanExpress:
