@@ -38,30 +38,48 @@ namespace blink {
 // TODO(esprehn): See if we can generalize IntToStringT in
 // base/strings/string_number_conversions.cc, and use unsigned type expansion
 // optimization here instead of base::CheckedNumeric::UnsignedAbs().
-template <typename IntegerType>
+template <typename IntegerType, int base = 10, bool is_uppercase = false>
 class IntegerToStringConverter {
   USING_FAST_MALLOC(IntegerToStringConverter);
 
  public:
   static_assert(std::is_integral<IntegerType>::value,
                 "IntegerType must be a type of integer.");
+  static_assert(base == 10 || base == 16, "Unsupported base");
 
   explicit IntegerToStringConverter(IntegerType input) {
-    // We need to switch to the unsigned type when negating the value since
-    // abs(INT_MIN) == INT_MAX + 1.
-    bool is_negative = base::IsValueNegative(input);
-    UnsignedIntegerType value = is_negative ? 0u - static_cast<UnsignedIntegerType>(input) : input;
+    UnsignedIntegerType value;
+    bool is_negative = false;
+
+    if constexpr (base == 16) {
+      value = static_cast<UnsignedIntegerType>(input);
+    } else {
+      // We need to switch to the unsigned type when negating the value since
+      // abs(INT_MIN) == INT_MAX + 1.
+      is_negative = base::IsValueNegative(input);
+      value =
+          is_negative ? 0u - static_cast<UnsignedIntegerType>(input) : input;
+    }
 
     size_t pos = buffer_.size();
+    auto digits = is_uppercase ? base::span_from_cstring("0123456789ABCDEF")
+                               : base::span_from_cstring("0123456789abcdef");
+
     do {
       --pos;
-      buffer_[pos] = static_cast<LChar>((value % 10) + '0');
-      value /= 10;
+      if constexpr (base == 10) {
+        buffer_[pos] = static_cast<LChar>((value % 10) + '0');
+      } else {
+        buffer_[pos] = static_cast<LChar>(digits[value % base]);
+      }
+      value /= base;
     } while (value);
 
-    if (is_negative) {
-      --pos;
-      buffer_[pos] = static_cast<LChar>('-');
+    if constexpr (base == 10) {
+      if (is_negative) {
+        --pos;
+        buffer_[pos] = static_cast<LChar>('-');
+      }
     }
 
     length_ = static_cast<unsigned>(buffer_.size() - pos);
@@ -73,8 +91,10 @@ class IntegerToStringConverter {
 
  private:
   using UnsignedIntegerType = typename std::make_unsigned<IntegerType>::type;
-  static const size_t kBufferSize = 3 * sizeof(UnsignedIntegerType) +
-                                    std::numeric_limits<IntegerType>::is_signed;
+  static const size_t kBufferSize =
+      (base == 16 ? sizeof(UnsignedIntegerType) * 2
+                  : 3 * sizeof(UnsignedIntegerType) +
+                        std::numeric_limits<IntegerType>::is_signed);
 
   std::array<LChar, kBufferSize> buffer_;
   unsigned length_;

@@ -128,6 +128,12 @@ class WTF_EXPORT String {
   [[nodiscard]] static String NumberToStringFixedWidth(double,
                                                        unsigned decimal_places);
 
+  // Serializes an unsigned 64-bit integer in hex. This adds no padding,
+  // uses lowercase letters for a-f, and adds no "0x" prefix.
+  //
+  // For example, 266 becomes "10a", and 0 becomes "0".
+  [[nodiscard]] static String HexNumber(uint64_t value);
+
   // Takes a printf format and args and prints into a String.
   // This function supports Latin-1 characters only.
   // PRECONDITIONS: `format` must be compatible with subsequent args.

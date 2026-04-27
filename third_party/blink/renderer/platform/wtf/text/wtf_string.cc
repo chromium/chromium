@@ -325,6 +325,11 @@ String String::NumberToStringFixedWidth(double number,
   return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }
 
+String String::HexNumber(uint64_t value) {
+  IntegerToStringConverter<uint64_t, 16, false> converter(value);
+  return StringImpl::Create(converter.Span());
+}
+
 Vector<String> String::Split(const StringView& separator) const {
   return internal::Split(*this, separator, /* allow_empty_entries */ true);
 }

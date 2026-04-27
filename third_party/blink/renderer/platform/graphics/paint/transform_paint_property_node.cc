@@ -218,7 +218,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   }
   if (state_.rendering_context_id) {
     json->SetString("renderingContextId",
-                    String::Format("%x", state_.rendering_context_id));
+                    String::HexNumber(state_.rendering_context_id));
   }
   if (state_.direct_compositing_reasons != CompositingReason::kNone) {
     json->SetString(
