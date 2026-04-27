@@ -589,17 +589,17 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteWrappedKeysSlowly(
       keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
-std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
-    base::span<const UnexportableSigningKey* const> signing_keys) {
+std::optional<size_t> UnexportableKeyProviderApple::DeleteKeysSlowly(
+    base::span<const UnexportableKey* const> keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  if (signing_keys.empty()) {
+  if (keys.empty()) {
     return 0;
   }
 
   ASSIGN_OR_RETURN(
-      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
+      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keychain_keys,
       FindUnexportableKeys({
           .access_group = objc_storage_->keychain_access_group_,
           .application_tag_prefix =
@@ -610,16 +610,15 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
         return std::nullopt;
       });
 
-  const auto keys_and_tags_to_delete =
-      ToFlatHashSet(signing_keys, [](const auto* key) {
-        // NOTE: The keys passed to this method should always be instances of
-        // `UnexportableSigningKeyApple`, which are guaranteed to be stateful.
-        // Thus we can confidently `CHECK` here.
-        return std::pair{key->GetWrappedKey(),
-                         CHECK_DEREF(key->AsStatefulKey()).GetKeyTag()};
-      });
+  const auto keys_and_tags_to_delete = ToFlatHashSet(keys, [](const auto* key) {
+    // NOTE: The keys passed to this method should always be instances of
+    // `UnexportableSigningKeyApple`, which are guaranteed to be stateful.
+    // Thus we can confidently `CHECK` here.
+    return std::pair{key->GetWrappedKey(),
+                     CHECK_DEREF(key->AsStatefulKey()).GetKeyTag()};
+  });
 
-  std::erase_if(keys, [&](const auto& key) {
+  std::erase_if(keychain_keys, [&](const auto& key) {
     return !keys_and_tags_to_delete.contains({
         base::ToVector(GetApplicationLabel(key.get())),
         GetApplicationTag(key.get()),
@@ -627,11 +626,10 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
   });
 
   return std::ranges::count_if(
-      keys, [&](const auto& key) { return DeleteKey(key.get()); });
+      keychain_keys, [&](const auto& key) { return DeleteKey(key.get()); });
 }
 
-std::optional<size_t>
-UnexportableKeyProviderApple::DeleteAllSigningKeysSlowly() {
+std::optional<size_t> UnexportableKeyProviderApple::DeleteAllKeysSlowly() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 

@@ -695,13 +695,12 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
   ASSERT_EQ(store().GetAllSessions().size(), 2u);
 
   // Finish loading the sessions, and wait for the stale key to be deleted.
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly)
-      .WillOnce([&](auto keys) {
-        auto wrapped_keys = base::ToVector(
-            keys, [](auto* key) { return key->GetWrappedKey(); });
-        EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
-        return wrapped_keys.size();
-      });
+  EXPECT_CALL(mock_key_provider, DeleteKeysSlowly).WillOnce([&](auto keys) {
+    auto wrapped_keys =
+        base::ToVector(keys, [](auto* key) { return key->GetWrappedKey(); });
+    EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
+    return wrapped_keys.size();
+  });
 
   // Advance time to allow StartGarbageCollection to run.
   FastForwardBy(kGarbageCollectionDelay);
@@ -731,7 +730,7 @@ TEST_F(SessionStoreImplTest, GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
       SwitchToMockKeyProvider().mock();
 
   EXPECT_CALL(mock_key_provider, GetAllKeysSlowly).Times(0);
-  EXPECT_CALL(mock_key_provider, DeleteAllSigningKeysSlowly).Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteAllKeysSlowly).Times(0);
 
   CreateStoreAndLoadSessions();
 }

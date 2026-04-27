@@ -868,7 +868,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeys) {
 
   // Delete all keys.
   EXPECT_CALL(scoped_provider.mock(),
-              DeleteSigningKeysSlowly(ElementsAreArray(raw_keys)))
+              DeleteKeysSlowly(ElementsAreArray(raw_keys)))
       .WillOnce(Return(kKeysToGenerate));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -905,8 +905,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysWithNonExistingKey) {
   std::vector<UnexportableKeyId> key_ids_to_delete = {key_id, fake_key_id};
 
   // Delete the keys. Only the existing key will be passed to the provider.
-  EXPECT_CALL(scoped_provider.mock(),
-              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
+  EXPECT_CALL(scoped_provider.mock(), DeleteKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(1));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -925,8 +924,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysOnlyNonExistingKeys) {
   std::vector<UnexportableKeyId> key_ids_to_delete = {fake_key_id};
 
   // The provider should not be called.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeysSlowly)
-      .Times(0);
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteKeysSlowly).Times(0);
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
   service().DeleteKeysSlowlyAsync(key_ids_to_delete, kTaskPriority,
@@ -954,8 +952,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
   ASSERT_OK(service().GetWrappedKey(key_id));
 
   // Try to delete the key.
-  EXPECT_CALL(scoped_provider.mock(),
-              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
+  EXPECT_CALL(scoped_provider.mock(), DeleteKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -987,8 +984,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId key_id, generate_future.Get());
 
   // Delete the key.
-  EXPECT_CALL(scoped_provider.mock(),
-              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
+  EXPECT_CALL(scoped_provider.mock(), DeleteKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(1));
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
   service().DeleteKeysSlowlyAsync({key_id}, kTaskPriority,
@@ -1046,7 +1042,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeys) {
   }
 
   // Delete all keys.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly)
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllKeysSlowly)
       .WillOnce(Return(kKeysToGenerate));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
@@ -1083,7 +1079,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   }
 
   // Delete all keys.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly)
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllKeysSlowly)
       .WillOnce(Return(kKeysToGenerate));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;
@@ -1158,7 +1154,7 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysProviderFails) {
   RunBackgroundTasks();
   ASSERT_OK(generate_future.Get());
 
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllSigningKeysSlowly())
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteAllKeysSlowly())
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_all_future;

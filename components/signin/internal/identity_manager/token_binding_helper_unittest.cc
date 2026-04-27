@@ -317,8 +317,8 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   helper().StartGarbageCollection({used_wrapped_key_in_db});
 
   EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeysSlowly(ElementsAre(
-                  raw_unused_unexportable_key1, raw_unused_unexportable_key2)))
+              DeleteKeysSlowly(ElementsAre(raw_unused_unexportable_key1,
+                                           raw_unused_unexportable_key2)))
       .WillOnce(Return(2));
   RunBackgroundTasks();
 

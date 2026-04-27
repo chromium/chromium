@@ -43,7 +43,7 @@ class ProfileDeleterIOSTest : public PlatformTest {
     EXPECT_CALL(scoped_mock_key_provider_.mock(),
                 AsStatefulUnexportableKeyProvider())
         .WillRepeatedly(testing::Return(&scoped_mock_key_provider_.mock()));
-    EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllSigningKeysSlowly())
+    EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllKeysSlowly())
         .WillRepeatedly(testing::Return(std::nullopt));
   }
 
@@ -167,7 +167,7 @@ TEST_F(ProfileDeleterIOSTest, DeleteProfile_DeletesClientCertificateKeys) {
   CreateProfileStorage(profile_name, profile_uuid);
   ASSERT_TRUE(base::DirectoryExists(profile_dir));
 
-  EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllSigningKeysSlowly())
+  EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllKeysSlowly())
       .Times(1)
       .WillOnce(testing::Return(1));
 

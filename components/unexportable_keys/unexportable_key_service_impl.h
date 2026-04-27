@@ -130,10 +130,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   static WrappedKeyAndTag Materialize(WrappedKeyAndTagView view);
 
   // Removes the key with `key_id` from the in-memory maps.
-  // Returns the mapped signing key on success, or
-  // `ServiceError::kKeyNotFound` if the key was not found.
-  ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
-  ExtractKeyFromMaps(UnexportableKeyId key_id);
+  // Returns the mapped key on success, or `ServiceError::kKeyNotFound` if the
+  // key was not found.
+  ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>> ExtractKeyFromMaps(
+      UnexportableKeyId key_id);
 
   // Callback for `GetAllKeysForGarbageCollectionSlowlyAsync()`.
   ServiceErrorOr<std::vector<UnexportableKeyId>>

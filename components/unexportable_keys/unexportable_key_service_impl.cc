@@ -236,24 +236,24 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   // Delete the keys from the in-memory maps.
-  std::vector<ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+  std::vector<ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>>
       keys_or_errors = base::ToVector(key_ids, [&](UnexportableKeyId key_id) {
         return ExtractKeyFromMaps(key_id);
       });
 
   // Collect the keys that were successfully deleted.
   std::erase_if(keys_or_errors, [](auto& k) { return !k.has_value(); });
-  std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> signing_keys =
+  std::vector<scoped_refptr<RefCountedUnexportableKey>> keys_to_delete =
       base::ToVector(keys_or_errors, [](auto& key) { return *std::move(key); });
 
   // If no keys were deleted, return an error.
-  if (signing_keys.empty()) {
+  if (keys_to_delete.empty()) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
 
-  task_manager_->DeleteSigningKeysSlowlyAsync(
-      task_origin_, config_, std::move(signing_keys), priority,
+  task_manager_->DeleteKeysSlowlyAsync(
+      task_origin_, config_, std::move(keys_to_delete), priority,
       WrapCallbackWithErrorIfCancelled(std::move(callback)));
 }
 
@@ -265,7 +265,7 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
   // Invalidate weak pointers to cancel pending key lookup requests.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  task_manager_->DeleteAllSigningKeysSlowlyAsync(
+  task_manager_->DeleteAllKeysSlowlyAsync(
       task_origin_, config_, BackgroundTaskPriority::kUserBlocking,
       WrapCallbackWithErrorIfCancelled(std::move(callback)));
 }
@@ -345,7 +345,7 @@ UnexportableKeyServiceImpl::Materialize(WrappedKeyAndTagView view) {
   return {base::ToVector(wrapped_key), std::string(tag)};
 }
 
-ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>
 UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
   auto key_id_it = key_by_key_id_.find(key_id);
   if (key_id_it == key_by_key_id_.end()) {

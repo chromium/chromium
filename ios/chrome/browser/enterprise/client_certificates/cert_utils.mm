@@ -123,8 +123,7 @@ void DeleteClientCertificateKeys(std::string_view profile_name) {
     config.application_tag = std::string(profile_name);
     auto provider = crypto::GetUnexportableKeyProvider(std::move(config));
     if (provider && provider->AsStatefulUnexportableKeyProvider()) {
-      provider->AsStatefulUnexportableKeyProvider()
-          ->DeleteAllSigningKeysSlowly();
+      provider->AsStatefulUnexportableKeyProvider()->DeleteAllKeysSlowly();
     }
   }
 }

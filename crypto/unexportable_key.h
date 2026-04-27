@@ -219,18 +219,18 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   virtual std::optional<size_t> DeleteWrappedKeysSlowly(
       base::span<const base::span<const uint8_t>> wrapped_keys) = 0;
 
-  // Deletes all state associated with the provided signing keys. Returns the
-  // number of keys deleted, or nullopt if unsuccessful. This can sometimes
-  // block, and therefore must not be called from the UI thread.
+  // Deletes all state associated with the provided keys. Returns the number of
+  // keys deleted, or nullopt if unsuccessful. This can sometimes block, and
+  // therefore must not be called from the UI thread.
   //
   // NOTE: For macOS this will perform prefix matching on
   // `Config::application_tag`. That is, only matching keys where the
   // application tag starts with the `Config::application_tag` will be deleted.
-  virtual std::optional<size_t> DeleteSigningKeysSlowly(
-      base::span<const UnexportableSigningKey* const> signing_keys) = 0;
+  virtual std::optional<size_t> DeleteKeysSlowly(
+      base::span<const UnexportableKey* const> keys) = 0;
 
-  // `DeleteAllSigningKeysSlowly()` deletes all state associated with all
-  // signing keys matching `UnexportableKeyProvider::Config`.
+  // `DeleteAllKeysSlowly()` deletes all state associated with all keys matching
+  // `UnexportableKeyProvider::Config`.
   //
   // NOTE: For macOS, this will perform prefix matching iff
   // `Config::application_tag` is set. That is, if `Config::application_tag` is
@@ -239,7 +239,7 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   //
   // Returns the number of keys deleted, or nullopt if unsuccessful. This can
   // sometimes block, and therefore must not be called from the UI thread.
-  virtual std::optional<size_t> DeleteAllSigningKeysSlowly() = 0;
+  virtual std::optional<size_t> DeleteAllKeysSlowly() = 0;
 };
 
 // This is an experimental API as it uses an unofficial Windows API.
