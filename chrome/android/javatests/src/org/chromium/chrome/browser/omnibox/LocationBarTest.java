@@ -245,7 +245,7 @@ public class LocationBarTest {
     public void testOnConfigurationChanged() {
         // Start activity in Desktop mode. Expect UrlBar to focus.
         // The DesktopMode check verifies connected peripherals, not just the Configuration change.
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         startActivityNormally();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -255,7 +255,7 @@ public class LocationBarTest {
 
         // Update configuration to non-Desktop mode. Expect focus clear.
         Configuration configuration = mActivity.getSavedConfigurationForTesting();
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarMediator.onConfigurationChanged(configuration);
@@ -285,21 +285,21 @@ public class LocationBarTest {
     @Test
     @MediumTest
     public void testEditingText() {
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         testEditingText(/* expectDesktopMode= */ true);
     }
 
     @Test
     @MediumTest
     public void testEditingText_withDesktopModeDisabled() {
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         testEditingText(/* expectDesktopMode= */ false);
     }
 
     @Test
     @MediumTest
     public void testEditingText_withDesktopModeEnabled() {
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         testEditingText(/* expectDesktopMode= */ true);
     }
 
@@ -601,7 +601,7 @@ public class LocationBarTest {
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTabletWithDesktopModeDisabled() {
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
         testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ false);
@@ -614,14 +614,14 @@ public class LocationBarTest {
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTabletWithDesktopModeEnabled() {
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
     }
 
     private void testFocusLogic_buttonVisibilityTablet(boolean expectDesktopMode) {
-        OmniboxFeatures.setIsDesktopModeForTesting(expectDesktopMode);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(expectDesktopMode);
         startActivityNormally();
 
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

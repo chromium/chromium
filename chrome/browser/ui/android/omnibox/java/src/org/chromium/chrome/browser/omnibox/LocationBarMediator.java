@@ -598,7 +598,7 @@ class LocationBarMediator
         // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
         // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
         // clear such focus if it exists.
-        if (OmniboxFeatures.isDesktopMode(mContext)) {
+        if (OmniboxFeatures.hasDesktopExperience(mContext)) {
             if (onNtp) {
                 showUrlBarCursorWithoutFocusAnimations();
             } else {
@@ -1910,7 +1910,7 @@ class LocationBarMediator
      */
     @EnsuresNonNullIf("mCurrentInput")
     private boolean isUrlBarFocusedOnDesktop() {
-        return mCurrentInput != null && OmniboxFeatures.isDesktopMode(mContext);
+        return mCurrentInput != null && OmniboxFeatures.hasDesktopExperience(mContext);
     }
 
     @VisibleForTesting
