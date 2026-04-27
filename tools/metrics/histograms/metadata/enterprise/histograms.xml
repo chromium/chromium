@@ -3152,6 +3152,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Policy.AppRestrictionsRegisterReceiverTime"
+    units="ms" expires_after="2027-04-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Wall-clock time spent in Context.registerReceiver() for the
+    AbstractAppRestrictionsProvider broadcast receiver on Android. Recorded once
+    per browser startup on a background thread, after the synchronous Binder IPC
+    into system_server returns. Used to quantify the latency that previously
+    caused UI-thread ANRs.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2026-08-23">
   <owner>asumaneev@google.com</owner>

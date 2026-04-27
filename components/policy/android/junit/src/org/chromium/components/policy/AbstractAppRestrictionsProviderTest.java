@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -157,17 +158,22 @@ public class AbstractAppRestrictionsProviderTest {
         DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());
         AbstractAppRestrictionsProvider provider =
                 spy(new DummyAppRestrictionsProvider(dummyContext));
-        Intent intent = new Intent("org.chromium.test.policy.Hello");
+        // The catch-up refresh() that runs after the async registerReceiver() call ends up in
+        // notifySettingsAvailable(), which dereferences the CombinedPolicyProvider.
+        provider.setManagerAndSource(mock(CombinedPolicyProvider.class), 0);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // If getRestrictionsChangeIntentAction returns null then we should not start a broadcast
         // receiver.
         provider.startListeningForPolicyChanges();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(0, dummyContext.getReceiverCount());
 
         // If it returns a string then we should.
         when(provider.getRestrictionChangeIntentAction())
                 .thenReturn("org.chromium.test.policy.Hello");
         provider.startListeningForPolicyChanges();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(1, dummyContext.getReceiverCount());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
@@ -183,16 +189,19 @@ public class AbstractAppRestrictionsProviderTest {
         DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());
         AbstractAppRestrictionsProvider provider =
                 spy(new DummyAppRestrictionsProvider(dummyContext));
-        Intent intent = new Intent("org.chromium.test.policy.Hello");
+        provider.setManagerAndSource(mock(CombinedPolicyProvider.class), 0);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // First try with null result from getRestrictionsChangeIntentAction, only test here is no
         // crash.
         provider.stopListening();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Now try starting and stopping listening properly.
         when(provider.getRestrictionChangeIntentAction())
                 .thenReturn("org.chromium.test.policy.Hello");
         provider.startListeningForPolicyChanges();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(1, dummyContext.getReceiverCount());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Ensure that neither RECEIVER_EXPORTED nor RECEIVER_NOT_EXPORTED flags are set,
@@ -201,6 +210,7 @@ public class AbstractAppRestrictionsProviderTest {
             Assert.assertEquals(0, dummyContext.getLastRegisteredReceiverFlags() & badMask);
         }
         provider.stopListening();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(0, dummyContext.getReceiverCount());
     }
 }
