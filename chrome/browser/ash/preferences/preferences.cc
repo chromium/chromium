@@ -191,7 +191,7 @@ void Preferences::RegisterProfilePrefs(
   // TODO(yusukes): Remove the runtime hack.
   if (base::SysInfo::IsRunningOnChromeOS()) {
     hardware_keyboard_id =
-        local_state.GetString(::prefs::kHardwareKeyboardLayout);
+        local_state.GetString(ash::prefs::kHardwareKeyboardLayout);
   } else {
     hardware_keyboard_id = "xkb:us::eng";  // only for testing.
   }

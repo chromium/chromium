@@ -2329,10 +2329,6 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
     "hardware.same_origin_tab_capture_allowed_by_origins";
 
 #if BUILDFLAG(IS_CHROMEOS)
-// The hardware keyboard layout of the device. This should look like
-// "xkb:us::eng".
-inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
-
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used
 // for for getting a cloudprint scoped token to allow printing in Guest mode,

@@ -2993,6 +2993,14 @@ inline constexpr char kLanguageShouldMergeInputMethods[] =
     "settings.language.merge_input_methods";
 
 //-----------------------------------------------------------------------------
+// Input related Prefs
+//-----------------------------------------------------------------------------
+
+// The hardware keyboard layout of the device. This should look like
+// "xkb:us::eng".
+inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
+
+//-----------------------------------------------------------------------------
 // Clock/Timezone related Prefs
 //-----------------------------------------------------------------------------
 

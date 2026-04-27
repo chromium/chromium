@@ -1296,7 +1296,8 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterStringPref(ash::prefs::kOwnerLocale, std::string());
-  registry->RegisterStringPref(prefs::kHardwareKeyboardLayout, std::string());
+  registry->RegisterStringPref(ash::prefs::kHardwareKeyboardLayout,
+                               std::string());
   registry->RegisterBooleanPref(
       password_manager::prefs::kPinAuthenticationAvailableOnChromeOS, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)

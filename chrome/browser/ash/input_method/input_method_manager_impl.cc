@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
@@ -784,7 +783,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
   manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
   PrefService* local_state = &manager_->local_state_.get();
-  local_state->SetString(::prefs::kHardwareKeyboardLayout,
+  local_state->SetString(ash::prefs::kHardwareKeyboardLayout,
                          base::JoinString(input_method_ids, ","));
 
   // This asks the file thread to save the prefs (i.e. doesn't block).

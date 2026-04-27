@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ash/input_method/input_method_delegate_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -20,7 +19,7 @@ InputMethodDelegateImpl::InputMethodDelegateImpl(PrefService* local_state)
 InputMethodDelegateImpl::~InputMethodDelegateImpl() = default;
 
 std::string InputMethodDelegateImpl::GetHardwareKeyboardLayouts() const {
-  return local_state_->GetString(prefs::kHardwareKeyboardLayout);
+  return local_state_->GetString(ash::prefs::kHardwareKeyboardLayout);
 }
 
 std::u16string InputMethodDelegateImpl::GetLocalizedString(
