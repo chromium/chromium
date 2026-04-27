@@ -64,6 +64,7 @@ const VIEWPORT_WIDTH_KEY = 'biw';
 
 const CHROME_TASK_PARAM_KEY = 'chrome_task_id';
 const DEBUG_PARAM_KEY = 'deb';
+const CHROME_HOST_PARAM_KEY = 'chrome_host';
 
 const AIOH_URL_IDENTIFIER = 'aioh';
 
@@ -115,13 +116,22 @@ function updateWebuiParams(aimUrl: Url) {
   const webuiUrl = new URL(window.location.href);
 
   const taskId = webuiUrl.searchParams.get(CHROME_TASK_PARAM_KEY);
+  const host = webuiUrl.searchParams.get(CHROME_HOST_PARAM_KEY);
 
   // Clear the existing params
   webuiUrl.search = '';
 
-  // Add all the params from the aim URL.
-  new URL(aimUrl).searchParams.forEach(
-      (value, key) => webuiUrl.searchParams.set(key, value));
+  // Preserve host if present in current URL.
+  if (host) {
+    webuiUrl.searchParams.set(CHROME_HOST_PARAM_KEY, host);
+  }
+
+  // Add all the params from the aim URL, except host.
+  new URL(aimUrl).searchParams.forEach((value, key) => {
+    if (key !== CHROME_HOST_PARAM_KEY) {
+      webuiUrl.searchParams.set(key, value);
+    }
+  });
 
   // Add the task ID back to the params if it was there to begin with.
   if (taskId) {
@@ -294,10 +304,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   private eventTracker_: EventTracker = new EventTracker();
   private commonSearchParams_: {[key: string]: string}|null = null;
   private postMessageHandler_: PostMessageHandler|null = null;
-  private forcedEmbeddedPageHost =
-      loadTimeData.getString('forcedEmbeddedPageHost');
   private signInDomains_: string[] =
       loadTimeData.getString('contextualTasksSignInDomains').split(',');
+  private host_: string|null = null;
   // Whether the composebox jump fix is enabled. This fix hides the composebox
   // until the server gives the embedded page gives the initial bounds for the
   // composebox.
@@ -354,6 +363,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     // Record the WebUI URL in case one of the events below fires and changes
     // it.
     const webUiUrlOnLoad = new URL(window.location.href);
+    this.host_ = webUiUrlOnLoad.searchParams.get(CHROME_HOST_PARAM_KEY);
+    if (!this.host_ && loadTimeData.valueExists('chrome_host')) {
+      this.host_ = loadTimeData.getString('chrome_host');
+    }
+    // Relying on C++ to provide the correct host via getUrlForTask
 
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_ = [
@@ -1208,8 +1222,9 @@ export class ContextualTasksAppElement extends CrLitElement {
             const newUrl = this.addCommonSearchParams(url);
             const isSigninDomain =
                 !!this.signInDomains_.find((domain) => domain === url.host);
-            if (this.forcedEmbeddedPageHost && !isSigninDomain) {
-              newUrl.host = this.forcedEmbeddedPageHost;
+
+            if (this.host_ && !isSigninDomain) {
+              newUrl.host = this.host_;
             }
             if (newUrl.href !== details.url) {
               return {redirectUrl: newUrl.href};

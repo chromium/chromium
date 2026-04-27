@@ -1047,6 +1047,14 @@ void ContextualTasksUI::AddInitialTaskStateToDataSource(
     task_id = base::Uuid::ParseLowercase(task_id_str);
   }
 
+  std::string host_value;
+  if (net::GetValueForKeyInQuery(url, contextual_tasks::kChromeHostParam,
+                                 &host_value)) {
+    if (contextual_tasks::ContextualTasksUiService::IsTrustedHost(host_value)) {
+      source->AddString(contextual_tasks::kChromeHostParam, host_value);
+    }
+  }
+
   std::optional<GURL> task_creation_url =
       ui_service_ ? ui_service_->GetCreationUrlForTask(task_id) : std::nullopt;
   bool show_ghost_loader = task_creation_url && task_creation_url->is_empty();

@@ -213,7 +213,9 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
   // First check if there's an initial URL.
   std::optional<GURL> initial_url = ui_service_->GetInitialUrlForTask(uuid);
   if (initial_url) {
-    std::move(callback).Run(initial_url.value());
+    std::move(callback).Run(
+        contextual_tasks::ContextualTasksUiService::CopyParamsFromWebUIUrl(
+            initial_url.value(), web_ui_controller_->GetWebUiUrl()));
     return;
   }
 

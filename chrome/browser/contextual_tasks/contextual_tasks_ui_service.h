@@ -56,6 +56,7 @@ class LensMediaLinkHandler;
 
 namespace contextual_tasks {
 inline constexpr char kTaskQueryParam[] = "chrome_task_id";
+inline constexpr char kChromeHostParam[] = "chrome_host";
 
 class ContextualTasksCookieSynchronizer;
 class ContextualTasksService;
@@ -254,6 +255,9 @@ class ContextualTasksUiService : public KeyedService {
   static GURL CopyParamsFromWebUIUrl(const GURL& base_url,
                                      const GURL& webui_url);
 
+  // Returns whether the provided host is trusted for overrides.
+  static bool IsTrustedHost(const std::string& host);
+
   // Called when the Lens overlay is shown/hidden. No-op if the active UI is not
   // in the side panel since the Lens button is always hidden in a tab.
   virtual void OnLensOverlayStateChanged(
@@ -406,6 +410,10 @@ class ContextualTasksUiService : public KeyedService {
   // Checks if the provided URL matches any of the allowed hosts.
   static bool IsAllowedHost(const GURL& url);
 
+  // Returns the host override for a given task if it differs from the default.
+  std::string GetHostForTask(const base::Uuid& task_id);
+
+ private:
   base::ObserverList<Observer> observers_;
 
   const raw_ptr<Profile> profile_;

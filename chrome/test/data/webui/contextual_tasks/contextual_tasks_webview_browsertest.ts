@@ -173,7 +173,7 @@ suite('ContextualTasksWebviewTest', function() {
   });
 
   test('webview replaces host when set', async () => {
-    loadTimeData.overrideValues({forcedEmbeddedPageHost: 'corp.google.com'});
+    loadTimeData.overrideValues({chrome_host: 'corp.google.com'});
 
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     proxy.handler.setIsShownInTab(true);

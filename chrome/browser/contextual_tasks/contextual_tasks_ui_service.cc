@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -63,6 +65,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -1224,11 +1227,63 @@ void ContextualTasksUiService::ShowUndoSnackbar(
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url(chrome::kChromeUIContextualTasksURL);
+
+  std::string host = GetHostForTask(task_id);
+  if (!host.empty()) {
+    url = net::AppendQueryParameter(url, kChromeHostParam, host);
+  }
+
   url = net::AppendQueryParameter(url, kTaskQueryParam,
                                   task_id.AsLowercaseString());
+
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
   return AppendAimEntryPointParams(url, entry_point);
+}
+
+std::string ContextualTasksUiService::GetHostForTask(
+    const base::Uuid& task_id) {
+  auto it = task_id_to_creation_url_.find(task_id);
+  if (it != task_id_to_creation_url_.end()) {
+    std::string host;
+    if (net::GetValueForKeyInQuery(it->second, kChromeHostParam, &host)) {
+      return host;
+    }
+
+    std::string_view creation_host = it->second.host();
+    GURL default_ai_url(kAiPageHost);
+    std::string_view default_host = default_ai_url.host();
+
+    std::string stripped_host =
+        url_formatter::StripWWW(std::string(creation_host));
+    std::string stripped_default_host =
+        url_formatter::StripWWW(std::string(default_host));
+
+    if (!stripped_host.empty() && stripped_host != stripped_default_host) {
+      return std::string(creation_host);
+    }
+  }
+
+  std::string forced_host = GetForcedEmbeddedPageHost();
+  if (!forced_host.empty()) {
+    return forced_host;
+  }
+
+  return "";
+}
+
+bool ContextualTasksUiService::IsTrustedHost(const std::string& host) {
+  if (base::EndsWith(host, ".corp.google.com") ||
+      base::EndsWith(host, ".c.googlers.com") ||
+      base::EndsWith(host, ".proxy.googlers.com")) {
+    return true;
+  }
+
+  if (host == "localhost" || host == "127.0.0.1" || host == "[::1]") {
+    return true;
+  }
+
+  return false;
 }
 
 void ContextualTasksUiService::SetInitialEntryPointForTask(
@@ -1297,6 +1352,7 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
 GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
     const base::Uuid& task_id) {
   GURL url = GetDefaultAiPageUrl();
+
   omnibox::ChromeAimEntryPoint entry_point =
       GetInitialEntryPointForTask(task_id);
   return AppendAimEntryPointParams(url, entry_point);
@@ -1615,16 +1671,41 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
 
 GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
                                                       const GURL& webui_url) {
-  // Get all of the params off of the original URL.
-  net::QueryIterator it(webui_url);
+  std::string host_value;
   GURL aim_url(base_url);
+
+  // Extract host if present in WebUI URL and prepend it to make it
+  // first.
+  if (net::GetValueForKeyInQuery(webui_url, kChromeHostParam, &host_value)) {
+    if (IsTrustedHost(host_value)) {
+      GURL::Replacements replacements;
+      std::string new_query = base::StrCat({kChromeHostParam, "=", host_value});
+      replacements.SetQueryStr(new_query);
+      aim_url = base_url.ReplaceComponents(replacements);
+
+      // The QueryIterator correctly iterates over duplicate keys, and
+      // GetUnescapedValue preserves their values. This ensures that duplicate
+      // parameters on base_url are not lost during the transfer.
+      net::QueryIterator base_it(base_url);
+      while (!base_it.IsAtEnd()) {
+        std::string key(base_it.GetKey());
+        if (key != kChromeHostParam) {
+          aim_url = net::AppendQueryParameter(aim_url, key,
+                                              base_it.GetUnescapedValue());
+        }
+        base_it.Advance();
+      }
+    }
+  }
+
+  // Now add all other params from the WebUI URL.
+  net::QueryIterator it(webui_url);
   while (!it.IsAtEnd()) {
-    if (it.GetKey() != kTaskQueryParam) {
-      // The QueryIterator does not decode the URL params, use the net util to
-      // extract the value for transfer to the result URL.
+    std::string key(it.GetKey());
+    if (key != kTaskQueryParam && key != kChromeHostParam) {
       std::string value;
-      net::GetValueForKeyInQuery(webui_url, it.GetKey(), &value);
-      aim_url = net::AppendOrReplaceQueryParameter(aim_url, it.GetKey(), value);
+      net::GetValueForKeyInQuery(webui_url, key, &value);
+      aim_url = net::AppendOrReplaceQueryParameter(aim_url, key, value);
     }
     it.Advance();
   }

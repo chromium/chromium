@@ -1031,6 +1031,71 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_EQ(source_value, "chrome.crn.cct");
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       GetContextualTaskUrlForTask_WithHostOverride) {
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get(),
+                                   /*cookie_synchronizer=*/nullptr);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL intercepted_url("https://gws-prod.corp.google.com/search?udm=50&q=test");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  ContextualTask task(task_id);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_, AssociateTabWithTask(_, _))
+      .Times(testing::AnyNumber());
+
+  // Simulate the interception to populate the map.
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+
+  // Get the URL and verify it contains the host parameter.
+  GURL url = service.GetContextualTaskUrlForTask(task_id);
+  std::string host_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, kChromeHostParam, &host_value));
+  EXPECT_EQ(host_value, "gws-prod.corp.google.com");
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       GetContextualTaskUrlForTask_WithDefaultHost_NoForcedHost) {
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get(),
+                                   /*cookie_synchronizer=*/nullptr);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL intercepted_url("https://google.com/search?udm=50&q=test");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  ContextualTask task(task_id);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_, AssociateTabWithTask(_, _))
+      .Times(testing::AnyNumber());
+
+  // Simulate the interception to populate the map.
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+
+  // Get the URL and verify it does NOT contain the host parameter.
+  GURL url = service.GetContextualTaskUrlForTask(task_id);
+  std::string host_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, kChromeHostParam, &host_value));
+}
+
 TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   GURL navigated_url(kSrpHomepage);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
@@ -1305,6 +1370,18 @@ TEST_F(ContextualTasksUiServiceTest,
 
   EXPECT_EQ(
       GURL("https://google.com/search?param1=a+query+with+spaces"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_HostOverrideFirst) {
+  GURL base_url("https://google.com/search?udm=50");
+  GURL webui_url(
+      "chrome://"
+      "contextual-tasks?param1=1&chrome_host=gws-prod.corp.google.com");
+
+  EXPECT_EQ(
+      GURL("https://google.com/"
+           "search?chrome_host=gws-prod.corp.google.com&udm=50&param1=1"),
       ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
 }
 
