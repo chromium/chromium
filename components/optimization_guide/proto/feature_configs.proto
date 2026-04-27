@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "FeatureConfigsProto";
+
+// Used in manifest.
+message SummarizerFeatureConfig {
+  string default_use_case = 1;
+  map<string, string> preference_use_cases = 2;
+  map<string, string> experimental_use_cases = 3;
+}
