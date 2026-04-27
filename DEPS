@@ -60,7 +60,7 @@ gclient_gn_args = [
 vars = {
   # The version of the NDK. Set here, to allow the autoroller to update this
   # value when updating the CIPD hash.
-  'android_ndk_version': Str('2@0537f5c8d977013e9123bc3c4101c046'),
+  'android_ndk_version': Str('2@30.0.14608247'),
 
   # Variable that can be used to support multiple build scenarios, like having
   # Chromium specific targets in a client project's GN file or sync dependencies
