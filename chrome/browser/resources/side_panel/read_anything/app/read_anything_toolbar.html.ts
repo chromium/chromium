@@ -105,7 +105,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     `)}
   ` : ''}
   ${this.textStyleOptions_.map((item, index) => html`
-    ${item.announceBlock ?? html``}
+    ${item.announceId ? html`
+      <div id="${item.announceId}" class="announce-block" aria-live="polite">
+      </div>
+    ` : ''}
     <cr-icon-button class="toolbar-button text-style-button"
         id="${item.id}"
         tabindex="-1"

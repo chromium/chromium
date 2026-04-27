@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {RelatedWebsiteSetsListItemElement} from './list_item.js';
 
 export function getHtml(this: RelatedWebsiteSetsListItemElement) {
+  // clang-format off
   return html`
   <cr-expand-button id="expandButton" class="cr-row"
       ?expanded="${this.expanded}"
@@ -15,7 +16,10 @@ export function getHtml(this: RelatedWebsiteSetsListItemElement) {
       <site-favicon class="favicon" domain="${this.primarySite}"
           url="${this.getIconImageUrl_(this.primarySite)}" aria-hidden="true">
       </site-favicon>
-      <div id="borderPart">${this.boldQuery_(this.primarySite)}</div>
+      <div id="borderPart">
+        ${this.getBoldedParts_(this.primarySite).map(item =>
+            item.isMatch ? html`<b>${item.text}</b>` : item.text)}
+      </div>
       <cr-icon class="icon" icon="cr20:domain"
           ?hidden="${this.isEnterpriseIconHidden_()}">
       </cr-icon>
@@ -29,8 +33,10 @@ export function getHtml(this: RelatedWebsiteSetsListItemElement) {
             aria-hidden="true">
         </site-favicon>
         <div class="cr-secondary-text">
-          ${this.boldQuery_(item.site)} - ${this.getSiteType_(item.type)}
+          ${this.getBoldedParts_(item.site).map(part =>
+              part.isMatch ? html`<b>${part.text}</b>` : part.text)} - ${this.getSiteType_(item.type)}
         </div>
       </div>`)}
   </cr-collapse>`;
+  // clang-format on
 }

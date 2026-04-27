@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
-import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
 
@@ -169,18 +169,18 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.$.textInput.focus();
   }
 
-  // Returns an html template for rendering the given text piece.
-  static renderTextPiece(piece: OmniboxTextPortion) {
-    let classes = '';
+  // Returns the CSS classes for rendering the given text piece.
+  static getTextPieceClasses(piece: OmniboxTextPortion): string {
+    const classes = [];
     switch (piece.color) {
       case OmniboxTextColor.kOmniboxTextDimmed:
-        classes = 'color-dim ';
+        classes.push('color-dim');
         break;
       case OmniboxTextColor.kOmniboxForegroundDisabled:
-        classes = 'color-foreground-disabled ';
+        classes.push('color-foreground-disabled');
         break;
       case OmniboxTextColor.kOmniboxSecurityChipDangerous:
-        classes = 'color-danger ';
+        classes.push('color-danger');
         break;
       case OmniboxTextColor.kUnspecified:
         console.error('Unexected kUnspecified for text color');
@@ -192,9 +192,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         assertNotReachedCase(piece.color);
     }
     if (piece.strikethrough) {
-      classes += 'strikethrough';
+      classes.push('strikethrough');
     }
-    return html`<span class='${classes}'>${piece.text}</span>`;
+    return classes.join(' ');
   }
 }
 

@@ -42,6 +42,7 @@ build_webui("build") {
     "history_toolbar.ts",
     "query_manager.ts",
     "router.ts",
+    "searched_label.html.ts",
     "searched_label.ts",
     "side_bar.html.ts",
     "side_bar.ts",

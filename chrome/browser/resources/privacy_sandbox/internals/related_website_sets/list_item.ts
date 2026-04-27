@@ -9,7 +9,7 @@ import './site_favicon.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './list_item.css.js';
@@ -99,17 +99,20 @@ export class RelatedWebsiteSetsListItemElement extends CrLitElement {
     return !this.managedByEnterprise;
   }
 
-  protected boldQuery_(url: string) {
+  protected getBoldedParts_(url: string):
+      Array<{text: string, isMatch: boolean}> {
     const domain = url.includes('://') ? url.split('://')[1]! : url;
     if (!this.query) {
-      return domain;
+      return [{text: domain, isMatch: false}];
     }
 
     const queryLower = this.query.toLowerCase();
     const parts = domain.split(new RegExp(`(${this.query})`, 'gi'));
 
-    return parts.map(part =>
-            part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
+    return parts.map(part => ({
+                       text: part,
+                       isMatch: part.toLowerCase() === queryLower,
+                     }));
   }
 
   protected getIconImageUrl_(site: string): string {

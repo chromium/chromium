@@ -13,9 +13,11 @@ export function getHtml(this: ReadonlyOmniboxElement) {
   // tab order, but should be able to get focus to forward it.
   return html`<!--_html_template_start_-->
 <div id="textContainerWrap" tabindex="-1">
+  <!-- custom formatting/long line to prevent whitespace below -->
   <div id="textContainer">${
     this.omniboxViewState.textPieces.map(
-      ReadonlyOmniboxElement.renderTextPiece)
+      item => html`<span
+          class="${ReadonlyOmniboxElement.getTextPieceClasses(item)}">${item.text}</span>`)
   }</div>
   <input id="textInput">
 </div>
