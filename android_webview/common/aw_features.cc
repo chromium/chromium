@@ -128,7 +128,7 @@ const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
     &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", true};
 
 // This enables to start main resource prefetch request from off the main thread
-// for WebView Prefetch API. See crbug.com/452406598, crbug.com//452389538 for
+// for WebView Prefetch API. See crbug.com/452406598, crbug.com/452389538 for
 // more details.
 BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
              base::FEATURE_DISABLED_BY_DEFAULT);
