@@ -420,25 +420,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return true;
   }
-
-  PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
-  PhysicalPaddingToLogical() const {
-    NOT_DESTROYED();
-    return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        StyleRef().GetWritingDirection(), *this,
-        &LayoutBoxModelObject::PaddingTop, &LayoutBoxModelObject::PaddingRight,
-        &LayoutBoxModelObject::PaddingBottom,
-        &LayoutBoxModelObject::PaddingLeft);
-  }
-
-  PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
-  PhysicalBorderToLogical() const {
-    NOT_DESTROYED();
-    return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        StyleRef().GetWritingDirection(), *this,
-        &LayoutBoxModelObject::BorderTop, &LayoutBoxModelObject::BorderRight,
-        &LayoutBoxModelObject::BorderBottom, &LayoutBoxModelObject::BorderLeft);
-  }
 };
 
 template <>
