@@ -142,6 +142,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="ErrorFederatedExpectedAccountNotPresent"/>
   <int value="22" label="ErrorFederatedTimeout"/>
   <int value="23" label="RequiresButtonClick"/>
+  <int value="24" label="ErrorPageChangedDuringFilling"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:AttemptLoginResult) -->

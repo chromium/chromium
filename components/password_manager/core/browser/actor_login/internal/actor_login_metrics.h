@@ -56,7 +56,8 @@ enum class AttemptLoginResult {
   kErrorFederatedExpectedAccountNotPresent = 21,
   kErrorFederatedTimeout = 22,
   kRequiresButtonClick = 23,
-  kMaxValue = kRequiresButtonClick,
+  kErrorPageChangedDuringFilling = 24,
+  kMaxValue = kErrorPageChangedDuringFilling,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:ActorLoginAttemptLoginResult)
 

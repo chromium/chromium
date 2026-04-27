@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace password_manager {
@@ -71,6 +72,10 @@ class ActorLoginDelegateImpl
   void OnLoginSuccessful(
       const password_manager::PasswordForm& pending_form) override;
 
+  // content::WebContentsObserver implementation:
+  void WebContentsDestroyed() override;
+  void PrimaryPageChanged(content::Page& page) override;
+
  private:
   friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
 
@@ -81,9 +86,6 @@ class ActorLoginDelegateImpl
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       PasswordDriverSupplierForPrimaryMainFrame driver_supplier);
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
 
   // Checks whether the currently ongoing task is in focus, either in
   // the tab or in its corresponding Glic UI instance.

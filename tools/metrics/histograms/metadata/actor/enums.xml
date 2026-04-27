@@ -119,6 +119,7 @@ chromium-metrics-reviews@google.com.
   <int value="917" label="LoginFederatedFrameNotActive"/>
   <int value="918" label="LoginFederatedExpectedAccountNotPresent"/>
   <int value="919" label="LoginFederatedTimeout"/>
+  <int value="920" label="LoginPasswordFillingPageChanged"/>
   <int value="1000" label="MediaControlNoMedia"/>
   <int value="1100" label="FormFillingAutofillUnavailable"/>
   <int value="1101" label="FormFillingNoSuggestionsAvailable"/>

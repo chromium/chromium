@@ -1620,4 +1620,44 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   std::move(captured_callback).Run(/*success=*/false);
 }
 
+TEST_F(ActorLoginDelegateImplTest,
+       PrimaryPageChangedDuringPasswordAttemptLogin) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  const Credential credential =
+      CreateTestCredential(kTestUsername, url, origin);
+  const autofill::FormData form_data = CreateSigninFormData(url);
+
+  std::vector<password_manager::PasswordForm> saved_forms;
+  saved_forms.push_back(CreateSavedPasswordForm(url, kTestUsername));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  ON_CALL(mock_driver_, GetLastCommittedOrigin())
+      .WillByDefault(ReturnRef(origin));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+  ON_CALL(mock_driver_, IsNestedWithinFencedFrame).WillByDefault(Return(false));
+
+  form_managers_.clear();
+  form_managers_.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  SetUpActorCredentialFillerDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers_)));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  delegate_->AttemptLogin(credential, false, mqls_logger(),
+                          base::TimeTicks::Now(), future.GetCallback(),
+                          /*action_sequence_delegate=*/nullptr);
+
+  // Trigger `PrimaryPageChanged` before the message loop runs.
+  delegate_->PrimaryPageChanged(delegate_->web_contents()->GetPrimaryPage());
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value(),
+            LoginStatusResult::kErrorPageChangedDuringFilling);
+}
+
 }  // namespace actor_login

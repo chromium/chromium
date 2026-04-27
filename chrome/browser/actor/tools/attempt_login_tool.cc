@@ -114,6 +114,8 @@ mojom::ActionResultCode AttemptLoginTool::LoginResultToActorResult(
     case actor_login::LoginStatusResult::kRequiresButtonClick:
       // TODO(crbug.com/479505793): Consider adding a more specific error code.
       return mojom::ActionResultCode::kArgumentsInvalid;
+    case actor_login::LoginStatusResult::kErrorPageChangedDuringFilling:
+      return mojom::ActionResultCode::kLoginPasswordFillingPageChanged;
   }
 }
 

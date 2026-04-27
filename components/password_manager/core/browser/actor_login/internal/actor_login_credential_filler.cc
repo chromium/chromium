@@ -538,6 +538,7 @@ void ActorLoginCredentialFiller::OnFillingDone() {
     case LoginStatusResult::kErrorFederatedExpectedAccountNotPresent:
     case LoginStatusResult::kErrorFederatedTimeout:
     case LoginStatusResult::kRequiresButtonClick:
+    case LoginStatusResult::kErrorPageChangedDuringFilling:
       NOTREACHED();
   }
 

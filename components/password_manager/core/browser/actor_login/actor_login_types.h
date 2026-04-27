@@ -154,6 +154,8 @@ enum class LoginStatusResult {
   kErrorDeviceReauthRequired,
   // Returned if the device re-authentication fails.
   kErrorDeviceReauthFailed,
+  // Returned if the page navigated away while filling was pending.
+  kErrorPageChangedDuringFilling,
 
   // Attempt login statuses using federated credentials.
   //

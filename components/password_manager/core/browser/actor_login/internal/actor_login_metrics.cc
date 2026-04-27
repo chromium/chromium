@@ -119,6 +119,10 @@ void RecordAttemptLoginResult(const LoginStatusResultOrError& result_or_error) {
       case LoginStatusResult::kRequiresButtonClick:
         RecordAttemptLoginResult(AttemptLoginResult::kRequiresButtonClick);
         break;
+      case LoginStatusResult::kErrorPageChangedDuringFilling:
+        RecordAttemptLoginResult(
+            AttemptLoginResult::kErrorPageChangedDuringFilling);
+        break;
     }
     return;
   }

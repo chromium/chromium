@@ -364,6 +364,9 @@ enum ActionResultCode {
   // The federated login request timed out.
   kLoginFederatedTimeout = 919,
 
+  // The primary page changed while password filling was in progress.
+  kLoginPasswordFillingPageChanged = 920,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

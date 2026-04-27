@@ -284,6 +284,14 @@ void ActorLoginDelegateImpl::WebContentsDestroyed() {
   client_ = nullptr;
 }
 
+void ActorLoginDelegateImpl::PrimaryPageChanged(content::Page& page) {
+  // If the page changed while trying to fill in passwords,
+  // terminate the operation.
+  if (credential_filler_) {
+    OnAttemptLoginCompleted(LoginStatusResult::kErrorPageChangedDuringFilling);
+  }
+}
+
 bool ActorLoginDelegateImpl::IsTaskInFocus() {
   // This `WebContents` comes from the `TabInterface` that
   // `ActorLoginService` is invoked with, so we know the `WebContents` is
