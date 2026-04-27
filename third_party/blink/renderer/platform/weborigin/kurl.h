@@ -244,6 +244,10 @@ class PLATFORM_EXPORT KURL {
     return parsed_.potentially_dangling_markup;
   }
 
+  void SetPotentiallyDanglingMarkup() {
+    parsed_.potentially_dangling_markup = true;
+  }
+
   // Returns a GURL with the same properties. This can be used in platform/ and
   // web/. However, in core/ and modules/, this should only be used to pass
   // a GURL to a layer that is expecting one instead of a KURL or a WebURL.
