@@ -1,1 +1,4 @@
 file://components/send_tab_to_self/OWNERS
+
+# Helped with initial development & has context from paint_preview/.
+ckitagawa@chromium.org
