@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -246,5 +247,43 @@ public class LongScreenshotsMediatorTest {
                         + "Expected Canvas error: Android limits may have changed "
                         + "on this platform.",
                 actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    @MediumTest
+    public void testGetScreenshot_NullFullBitmap() {
+        Assert.assertNull(mMediator.getScreenshot());
+    }
+
+    @Test
+    @MediumTest
+    public void testOnStatusChange_FailureCallsDoneCallback() {
+        Runnable doneCallback = mock(Runnable.class);
+        mMediator.capture(doneCallback);
+
+        verify(mManager).addBitmapGeneratorObserver(mBitmapGeneratorObserverCaptor.capture());
+        BitmapGeneratorObserver generatorObserver = mBitmapGeneratorObserverCaptor.getValue();
+
+        generatorObserver.onStatusChange(EntryStatus.GENERATION_ERROR);
+        verify(doneCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testOnEntry_FailureCallsDoneCallback() {
+        Runnable doneCallback = mock(Runnable.class);
+        mMediator.capture(doneCallback);
+
+        verify(mManager).addBitmapGeneratorObserver(mBitmapGeneratorObserverCaptor.capture());
+        BitmapGeneratorObserver generatorObserver = mBitmapGeneratorObserverCaptor.getValue();
+
+        when(mManager.generateFullpageEntry()).thenReturn(mLongScreenshotsEntry);
+        generatorObserver.onCompositorReady(new Size(100, 100), new Point(0, 0));
+
+        verify(mLongScreenshotsEntry).setListener(mEntryListenerCaptor.capture());
+        EntryListener entryListener = mEntryListenerCaptor.getValue();
+
+        entryListener.onResult(EntryStatus.GENERATION_ERROR);
+        verify(doneCallback).run();
     }
 }

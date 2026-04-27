@@ -10,14 +10,12 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.widget.Toast;
 
 /** Handles the long screenshot action in the Sharing Hub and launches the screenshot editor. */
 @NullMarked
@@ -122,11 +120,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 () -> {
                     mScreenshot = mMediator.getScreenshot();
                     if (mScreenshot == null) {
-                        Toast.makeText(
-                                        mActivity,
-                                        R.string.sharing_long_screenshot_unknown_error,
-                                        Toast.LENGTH_LONG)
-                                .show();
+                        LongScreenshotErrorUtils.showErrorMessage(mActivity);
                     } else {
                         super.handleScreenshot();
                     }

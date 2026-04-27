@@ -79,8 +79,11 @@ public class EntryManager {
         mBoundsManager = boundsManager;
 
         mGenerator = new BitmapGenerator(tab, mBoundsManager, createBitmapGeneratorCallback());
-        mGenerator.captureTab(inMemory);
+        // We need to set the status to CAPTURE_IN_PROGRESS before calling captureTab. captureTab
+        // will set the status based on its outcome, and setting the status to CAPTURE_IN_PROGRESS
+        // afterwards would overwrite the status, leading to race conditions in observers.
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
+        mGenerator.captureTab(inMemory);
     }
 
     public BitmapGenerator getBitmapGeneratorForTesting() {
