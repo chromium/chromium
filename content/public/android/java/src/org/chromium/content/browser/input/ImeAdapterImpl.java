@@ -825,8 +825,6 @@ public class ImeAdapterImpl
                         // internally for rendering the underline but are not reported to the IME
                         // to prevent unexpected behavior in the IME.
                         if (mAutocorrectManager != null
-                                && ContentFeatureMap.isEnabled(
-                                        ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
                                 && info.getType() == ImeTextSpanType.AUTOCORRECT) {
                             continue;
                         }
