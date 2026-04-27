@@ -99,8 +99,7 @@ void GlicKeyedServiceAndroid::SetUserEnabledActuationOnWeb(JNIEnv* env,
 
 void GlicKeyedServiceAndroid::OnGlobalShowHide() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  bool is_opened = service_->instance_coordinator().state() !=
-                   GlicInstanceCoordinator::State::kClosed;
+  bool is_opened = service_->IsWindowShowing();
   Java_GlicKeyedServiceImpl_onGlobalShowHide(env, java_obj_, is_opened);
 }
 

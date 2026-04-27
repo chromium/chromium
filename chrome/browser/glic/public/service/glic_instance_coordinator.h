@@ -113,36 +113,7 @@ class GlicInstanceCoordinator {
   // which is currently visible).
   virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;
 
-  // Returns the widget that backs the glic window.
-  virtual GlicWidget* GetGlicWidget() const = 0;
-
-  // Return the Browser to which the panel is attached, or null if detached.
-  virtual Browser* attached_browser() = 0;
-
-  // Possible states for the glic window. Public for testing.
-  //   * Closed (aka hidden, invisible)
-  //   * Waiting for glic to load (the open animation has finished, but the
-  //     glic window contents is not yet ready)
-  //   * Open (aka showing, visible)
-  //   * Detaching - the panel should not be considered open since the view
-  //     might not exist.
-  //   * Waiting for side panel - in the process of setting up side panel to
-  //   show.
-  enum class State {
-    kClosed,
-    kWaitingForGlicToLoad,
-    kOpen,
-    kDetaching,
-    kWaitingForSidePanelToShow,
-  };
-  virtual State state() const = 0;
-
   virtual Profile* profile() = 0;
-
-  virtual gfx::Rect GetInitialBounds(Browser* browser) = 0;
-
-  virtual void ShowDetachedForTesting() = 0;
-  virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
 
   using ActiveInstanceChangedCallback =
       base::RepeatingCallback<void(GlicInstance* new_instance)>;

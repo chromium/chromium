@@ -160,14 +160,7 @@ class GlicInstanceCoordinatorImpl
   void Reload(content::RenderFrameHost* render_frame_host) override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
 
-  GlicWidget* GetGlicWidget() const override;
-
-  Browser* attached_browser() override;
-  State state() const override;
   Profile* profile() override;
-  gfx::Rect GetInitialBounds(Browser* browser) override;
-  void ShowDetachedForTesting() override;
-  void SetPreviousPositionForTesting(gfx::Point position) override;
 
   base::CallbackListSubscription
   AddActiveInstanceChangedCallbackAndNotifyImmediately(

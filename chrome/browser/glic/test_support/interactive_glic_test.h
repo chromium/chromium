@@ -270,13 +270,8 @@ class InteractiveGlicTestMixin : public T {
       return WaitForGlic(instrument_mode);
     }
 
-    // NOTE: When the kGlicMultiInstance feature is enabled, the active tab is
-    // passed to the kGlicInstanceCoordinatorState observer so it observes the
-    // relevant GlicInstance.
-    tabs::TabInterface* active_tab = nullptr;
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-      active_tab = browser()->tab_strip_model()->GetActiveTab();
-    }
+    tabs::TabInterface* active_tab =
+        browser()->tab_strip_model()->GetActiveTab();
 
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
@@ -293,7 +288,7 @@ class InteractiveGlicTestMixin : public T {
                                                 kGlicHostElementId, 0),
                 Api::WaitForWebContentsReady(kGlicContentsElementId))),
             Api::WaitForState(internal::kGlicInstanceCoordinatorState,
-                              GlicInstanceCoordinator::State::kOpen),
+                              GlicPanelState::kOpen),
             Api::StopObservingState(internal::kGlicInstanceCoordinatorState)
             /*, WaitForElementVisible(kPathToGuestPanel)*/);
         break;
@@ -305,11 +300,8 @@ class InteractiveGlicTestMixin : public T {
                               std::move(active_tab)),
             Api::InAnyContext(Api::InstrumentNonTabWebView(kGlicHostElementId,
                                                            kGlicViewElementId)),
-            Api::WaitForState(
-                internal::kGlicInstanceCoordinatorState,
-                testing::Matcher<GlicInstanceCoordinator::State>(testing::AnyOf(
-                    GlicInstanceCoordinator::State::kWaitingForGlicToLoad,
-                    GlicInstanceCoordinator::State::kOpen))),
+            Api::WaitForState(internal::kGlicInstanceCoordinatorState,
+                              GlicPanelState::kOpen),
             Api::StopObservingState(internal::kGlicInstanceCoordinatorState));
         break;
       case GlicInstrumentMode::kNone:
@@ -715,12 +707,6 @@ class InteractiveGlicTestMixin : public T {
         mode, "CheckControllerWidgetMode");
   }
 
-  auto CheckIfAttachedToBrowser(Browser* new_browser) {
-    return Api::CheckResult(
-        [this] { return instance_coordinator().attached_browser(); },
-        new_browser, "attached to the other browser");
-  }
-
   auto CheckTabCount(int expected_count) {
     return Api::CheckResult(
         [this] { return browser()->tab_strip_model()->count(); },
@@ -776,13 +762,16 @@ class InteractiveGlicTestMixin : public T {
   }
 
   auto WaitForCanResizeEnabled(bool enabled) {
-    return Api::Steps(
-        Api::ObserveState(internal::kGlicInstanceCoordinatorResizeState,
-                          std::ref(instance_coordinator())),
-        Api::Log("WaitForCanResize: ", enabled ? "true" : "false"),
-        Api::WaitForState(internal::kGlicInstanceCoordinatorResizeState,
-                          enabled),
-        Api::StopObservingState(internal::kGlicInstanceCoordinatorResizeState));
+    std::string desired = enabled ? "true" : "false";
+    return WaitUntil(
+        [this]() -> std::string {
+          auto* widget = GetGlicWidget();
+          if (!widget) {
+            return "no widget";
+          }
+          return widget->widget_delegate()->CanResize() ? "true" : "false";
+        },
+        desired, "WaitForCanResizeEnabled");
   }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
@@ -941,10 +930,18 @@ class InteractiveGlicTestMixin : public T {
 
   template <typename... M>
   auto EnsureGlicWindowState(const std::string& desc, M&&... matchers) {
-    return Api::CheckResult([this]() { return instance_coordinator().state(); },
-                            testing::Matcher<GlicInstanceCoordinator::State>(
-                                testing::AnyOf(std::forward<M>(matchers)...)),
-                            desc);
+    return Api::CheckResult(
+        [this]() {
+          for (auto* instance : instance_coordinator().GetInstances()) {
+            if (instance && instance->IsShowing()) {
+              return GlicPanelState::kOpen;
+            }
+          }
+          return GlicPanelState::kClosed;
+        },
+        testing::Matcher<GlicPanelState>(
+            testing::AnyOf(std::forward<M>(matchers)...)),
+        desc);
   }
 
   void SetGlicPagePath(const std::string& glic_page_path) {

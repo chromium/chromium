@@ -76,6 +76,13 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
   }
   ~GlicInstanceCoordinatorUiTest() override = default;
 
+  void SetPreviousPosition(gfx::Point position) {
+    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                                 position.x());
+    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                                 position.y());
+  }
+
   auto SimulateGlicHotkey() {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() {
@@ -533,11 +540,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
   gfx::Point default_origin(expected_x, expected_y);
 
   // Check that with no saved position the default location is used.
-  gfx::Rect initial_bounds = instance_coordinator().GetInitialBounds(nullptr);
+  gfx::Rect initial_bounds =
+      GlicWidget::GetInitialBounds(nullptr, GlicWidget::GetInitialSize());
   EXPECT_EQ(initial_bounds.origin(), default_origin);
 
   // Initial bounds with browser are valid and not default location.
-  initial_bounds = instance_coordinator().GetInitialBounds(browser());
+  initial_bounds =
+      GlicWidget::GetInitialBounds(browser(), GlicWidget::GetInitialSize());
   EXPECT_NE(initial_bounds.origin(), default_origin);
 
   // Use default location if Glic button location results in an invalid widget
@@ -545,7 +554,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
   // right.
   browser()->window()->SetBounds(
       {{top_right.x() + 500, top_right.y() + 50}, {900, 900}});
-  initial_bounds = instance_coordinator().GetInitialBounds(browser());
+  initial_bounds =
+      GlicWidget::GetInitialBounds(browser(), GlicWidget::GetInitialSize());
   EXPECT_EQ(initial_bounds.origin(), default_origin);
 
   gfx::Rect screen_bounds =
@@ -582,8 +592,12 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
   };
 
   for (auto& t : test_points) {
-    instance_coordinator().SetPreviousPositionForTesting(t.test);
-    initial_bounds = instance_coordinator().GetInitialBounds(nullptr);
+    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                                 t.test.x());
+    browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                                 t.test.y());
+    initial_bounds =
+        GlicWidget::GetInitialBounds(nullptr, GlicWidget::GetInitialSize());
     EXPECT_EQ(initial_bounds.origin(), t.expected) << t.msg;
   }
 }
@@ -646,39 +660,32 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
                              1);
   };
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      work_area_bounds.origin());
+  SetPreviousPosition(work_area_bounds.origin());
   open_and_close(ChromeRelativePosition::kAboveLeft);
 
-  instance_coordinator().SetPreviousPositionForTesting(
+  SetPreviousPosition(
       {work_area_bounds.origin().x(), browser_bounds.origin().y()});
   open_and_close(ChromeRelativePosition::kCenterLeft);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      {work_area_bounds.origin().x(), browser_bounds.bottom()});
+  SetPreviousPosition({work_area_bounds.origin().x(), browser_bounds.bottom()});
   open_and_close(ChromeRelativePosition::kBelowLeft);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      {browser_bounds.x(), work_area_bounds.origin().y()});
+  SetPreviousPosition({browser_bounds.x(), work_area_bounds.origin().y()});
   open_and_close(ChromeRelativePosition::kAboveCenter);
 
-  instance_coordinator().SetPreviousPositionForTesting(browser_bounds.origin());
+  SetPreviousPosition(browser_bounds.origin());
   open_and_close(ChromeRelativePosition::kOverlap);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      browser_bounds.bottom_left());
+  SetPreviousPosition(browser_bounds.bottom_left());
   open_and_close(ChromeRelativePosition::kBelowCenter);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      {browser_bounds.right(), work_area_bounds.y()});
+  SetPreviousPosition({browser_bounds.right(), work_area_bounds.y()});
   open_and_close(ChromeRelativePosition::kAboveRight);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      browser_bounds.top_right());
+  SetPreviousPosition(browser_bounds.top_right());
   open_and_close(ChromeRelativePosition::kCenterRight);
 
-  instance_coordinator().SetPreviousPositionForTesting(
-      browser_bounds.bottom_right());
+  SetPreviousPosition(browser_bounds.bottom_right());
   open_and_close(ChromeRelativePosition::kBelowRight);
 
   RunTestSequence(OpenGlicFloatingWindow());
@@ -728,15 +735,21 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
   };
 
   gfx::Point test_origin = browser_bounds.top_right();
-  instance_coordinator().SetPreviousPositionForTesting(test_origin);
+  SetPreviousPosition(test_origin);
   open_and_close(PercentOverlap::k0);
 
   test_origin.Offset(-0.5 * glic_expected_size.width(), 0);
-  instance_coordinator().SetPreviousPositionForTesting(test_origin);
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                               test_origin.x());
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                               test_origin.y());
   open_and_close(PercentOverlap::k50);
 
   test_origin = browser_bounds.origin();
-  instance_coordinator().SetPreviousPositionForTesting(test_origin);
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
+                                               test_origin.x());
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
+                                               test_origin.y());
   open_and_close(PercentOverlap::k100);
 
   RunTestSequence(OpenGlicFloatingWindow());
@@ -816,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWithPreviousPostionUiTest,
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
   // Check that the saved initial bounds are used.
-  gfx::Rect initial_bounds = instance_coordinator().GetInitialBounds(nullptr);
+  gfx::Rect initial_bounds =
+      GlicWidget::GetInitialBounds(nullptr, GlicWidget::GetInitialSize());
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
 }
 

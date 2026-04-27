@@ -31,6 +31,12 @@ struct ScopedObservationTraits<glic::GlicInstanceCoordinator,
 
 namespace glic::test {
 
+// Possible states for the glic panel in tests.
+enum class GlicPanelState {
+  kClosed,
+  kOpen,
+};
+
 namespace internal {
 
 // Observes FRE controller for changes to dialog being shown.
@@ -49,7 +55,7 @@ DECLARE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
 // inferred by the IsShowing() method of the instance for the given tab.
 // Otherwise, it will return the state() from the controller.
 class GlicInstanceCoordinatorStateObserver
-    : public ui::test::PollingStateObserver<GlicInstanceCoordinator::State> {
+    : public ui::test::PollingStateObserver<GlicPanelState> {
  public:
   explicit GlicInstanceCoordinatorStateObserver(
       const GlicInstanceCoordinator& controller,
@@ -59,18 +65,6 @@ class GlicInstanceCoordinatorStateObserver
 
 DECLARE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorStateObserver,
                                kGlicInstanceCoordinatorState);
-
-// Observes `controller` for changes to animation state.
-class GlicInstanceCoordinatorResizeObserver
-    : public ui::test::PollingStateObserver<bool> {
- public:
-  explicit GlicInstanceCoordinatorResizeObserver(
-      GlicInstanceCoordinator& controller);
-  ~GlicInstanceCoordinatorResizeObserver() override;
-};
-
-DECLARE_STATE_IDENTIFIER_VALUE(GlicInstanceCoordinatorResizeObserver,
-                               kGlicInstanceCoordinatorResizeState);
 
 // Observers the glic app internal state.
 class GlicAppStateObserver

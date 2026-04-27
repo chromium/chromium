@@ -67,13 +67,7 @@ class MockGlicInstanceCoordinator
               Reload,
               (content::RenderFrameHost * render_frame_host),
               (override));
-  MOCK_METHOD(GlicWidget*, GetGlicWidget, (), (const, override));
-  MOCK_METHOD(Browser*, attached_browser, (), (override));
-  MOCK_METHOD(State, state, (), (const, override));
   MOCK_METHOD(Profile*, profile, (), (override));
-  MOCK_METHOD(gfx::Rect, GetInitialBounds, (Browser*), (override));
-  MOCK_METHOD(void, ShowDetachedForTesting, (), (override));
-  MOCK_METHOD(void, SetPreviousPositionForTesting, (gfx::Point), (override));
   MOCK_METHOD(base::CallbackListSubscription,
               AddActiveInstanceChangedCallbackAndNotifyImmediately,
               (ActiveInstanceChangedCallback callback),

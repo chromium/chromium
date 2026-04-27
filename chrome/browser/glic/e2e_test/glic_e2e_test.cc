@@ -248,8 +248,7 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
       InAnyContext(
           ObserveState(kGlicInstanceCoordinatorState,
                        std::ref(instance_coordinator()), active_tab()),
-          WaitForState(kGlicInstanceCoordinatorState,
-                       GlicInstanceCoordinator::State::kOpen),
+          WaitForState(kGlicInstanceCoordinatorState, GlicPanelState::kOpen),
           Steps(InstrumentNonTabWebView(kGlicHostElementId, kGlicViewElementId),
                 InstrumentInnerWebContents(kGlicContentsElementId,
                                            kGlicHostElementId, 0),
