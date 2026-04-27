@@ -5172,10 +5172,10 @@ You can manage this account’s settings by installing the Family Link app on yo
     Password must be at least 6 characters and include at least one letter or symbol
   </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Medium.">
-    Password must be at least 8 characters and include at least two of the following: uppercase letters, lowercase letters, numbers, or symbols
+    Must be at least 8 characters and have at least two of the following: uppercase letters, lowercase letters, numbers, or symbols. Must not have repeated characters or sequences of 4 or more.
   </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH" desc="The hint about password requirements when the LocalPinAndPassword policy is set to High.">
-    Password must be at least 12 characters and include uppercase and lowercase letters, numbers, and symbols
+    Must be at least 12 characters and have uppercase letters, lowercase letters, numbers, and symbols. Must not have repeated characters or sequences of 4 or more.
   </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR" desc="Error message shown when the user sets a password but the first entry does not match the second entry.">
     Passwords do not match
