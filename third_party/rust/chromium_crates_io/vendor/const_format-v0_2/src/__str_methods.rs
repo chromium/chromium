@@ -11,10 +11,8 @@ pub use str_splice::{DecomposedString, SplicedStr, StrSplceArgsConv, StrSpliceAr
 mod str_indexing;
 pub use str_indexing::{IndexValidity, StrIndexArgs, StrIndexArgsConv};
 
-#[cfg(feature = "rust_1_64")]
 mod str_split;
 
-#[cfg(feature = "rust_1_64")]
 pub use str_split::{SplitInput, SplitInputConv};
 
 mod pattern;

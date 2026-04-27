@@ -379,7 +379,7 @@ macro_rules! __concatc_inner {
             [(); STR_WRITER_NHPMWYD3NJA.error.capacity],
         > as __cf_osRcTFl4A::msg::ErrorAsType>::Type>::NEW;
 
-        const STR_NHPMWYD3NJA: &str = STR_WRITER_NHPMWYD3NJA.writer.unsize().as_str_alt();
+        const STR_NHPMWYD3NJA: &str = STR_WRITER_NHPMWYD3NJA.writer.unsize().as_str();
 
         STR_NHPMWYD3NJA
     }};
@@ -572,7 +572,7 @@ macro_rules! formatc {
 /// impl Array {
 ///     // Gets the part of the array that has been written to.
 ///     pub const fn as_bytes(&self) -> &[u8] {
-///         const_format::utils::slice_up_to_len_alt(&self.arr, self.len)
+///         const_format::utils::slice_up_to_len(&self.arr, self.len)
 ///     }
 ///
 ///     pub const fn borrow_mutably(&mut self) -> &mut Self {

@@ -1,0 +1,130 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "konst"
+  epoch = "0.2"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/__for_cmp_impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/alloc_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/doctests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/iter/collect_const.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/iter/iter_eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/iter/iterator_dsl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/bytes_fn_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/const_eq_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/const_ord_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/control_flow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/declare_cmp_fn_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/declare_generic_const.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/impl_cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/parse_any.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/parsing_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/parsing_polymorphism_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/polymorphism_macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/macros/unwrapping.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/manually_drop.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/maybe_uninit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/nonzero.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/nonzero/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/option.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/other.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/other/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/parsing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/parsing/get_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/parsing/non_parsing_methods.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/parsing/parse_errors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/parsing/primitive_parsing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/polymorphism.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/polymorphism/cmp_wrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/polymorphism/const_cmp_marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/primitive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/primitive/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/primitive/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/ptr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/range.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/range/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/slice/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/slice/slice_const_methods.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/slice/slice_iter_methods.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/string/split_terminator_items.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/string/splitting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/konst-v0_2/src/utils_mut.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_authors = "rodrimati1992 <rodrimatt1985@gmail.com>"
+  cargo_pkg_name = "konst"
+  cargo_pkg_description =
+      "Const equivalents of std functions, compile-time comparison, and parsing"
+  cargo_pkg_repository = "https://github.com/rodrimati1992/konst/"
+  cargo_pkg_version = "0.2.20"
+
+  allow_unsafe = true
+
+  deps = [ "//third_party/rust/konst_macro_rules/v0_2:lib" ]
+  features = [
+    "rust_1_51",
+    "rust_1_55",
+    "rust_1_56",
+    "rust_1_57",
+    "rust_1_61",
+    "rust_1_64",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

@@ -63,7 +63,7 @@
 ///
 /// const TEXT: &str = {
 ///     const PROM: &StrWriter<[u8]> = &unwrap!(make());
-///     PROM.as_str_alt()
+///     PROM.as_str()
 /// };
 ///
 /// const EXPECTED: &str = "\

@@ -94,7 +94,7 @@ use core::marker::PhantomData;
 ///
 /// impl<L: Num, R: Num> Mul<L, R> {
 ///     const __STR: &'static StrWriter<[u8]> = &compute_str(L::V, R::V);
-///     const STR: &'static str = Self::__STR.as_str_alt();
+///     const STR: &'static str = Self::__STR.as_str();
 /// }
 ///
 /// assert_eq!(Mul::<Two,Three>::STR, "2 * 3 == 6");
@@ -300,52 +300,25 @@ impl StrWriter {
         self.len = 0;
     }
 
-    /// Gets the written part of this `StrWriter` as a `&[u8]`
+    /// This is the same as `as_bytes`
     ///
-    /// The slice is guaranteed to be valid utf8, so this is mostly for convenience.
-    ///
-    /// ### Runtime
-    ///
-    /// If the "rust_1_64" feature is disabled,
-    /// this takes time proportional to `self.capacity() - self.len()`.
-    ///
-    /// If the "rust_1_64" feature is enabled, it takes constant time to run.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    ///
-    /// use const_format::{StrWriter, StrWriterMut};
-    ///
-    /// const fn slice() -> StrWriter<[u8; 64]> {
-    ///     let mut buffer = StrWriter::new([0; 64]);
-    ///     let mut writer = StrWriterMut::new(&mut buffer);
-    ///     writer.write_str("Hello, World!");
-    ///     buffer
-    /// }
-    ///
-    /// const SLICE: &[u8] = {
-    ///     const PROM: &'static StrWriter = &slice();
-    ///     PROM.as_bytes_alt()
-    /// };
-    ///
-    ///
-    /// assert_eq!(SLICE, "Hello, World!".as_bytes());
-    ///
-    /// ```
+    /// (this method only exists for backwards compatibility)
     #[inline(always)]
+    #[deprecated(since = "0.2.36", note = "redundant, same as `as_bytes`")]
     pub const fn as_bytes_alt(&self) -> &[u8] {
-        crate::utils::slice_up_to_len_alt(&self.buffer, self.len)
+        crate::utils::slice_up_to_len(&self.buffer, self.len)
+    }
+
+    /// This is the same as `as_str`
+    ///
+    /// (this method only exists for backwards compatibility)
+    #[inline(always)]
+    #[deprecated(since = "0.2.36", note = "redundant, same as `as_str`")]
+    pub const fn as_str_alt(&self) -> &str {
+        self.as_str()
     }
 
     /// Gets the written part of this `StrWriter` as a `&str`
-    ///
-    /// ### Runtime
-    ///
-    /// If the "rust_1_64" feature is disabled,
-    /// this takes time proportional to `self.capacity() - self.len()`.
-    ///
-    /// If the "rust_1_64" feature is enabled, it takes constant time to run.
     ///
     /// # Example
     ///
@@ -366,65 +339,38 @@ impl StrWriter {
     ///     writer
     /// };
     ///
-    /// const STR: &str = __STR.as_str_alt();
+    /// const STR: &str = __STR.as_str();
     ///
     /// fn main() {
     ///     assert_eq!(STR, "[3, 5, 8, D, 15, 22]");
     /// }
     /// ```
     #[inline(always)]
-    pub const fn as_str_alt(&self) -> &str {
+    pub const fn as_str(&self) -> &str {
         // All the methods that modify the buffer must ensure utf8 validity,
         // only methods from this module need to ensure this.
-        unsafe { core::str::from_utf8_unchecked(self.as_bytes_alt()) }
+        unsafe { core::str::from_utf8_unchecked(self.as_bytes()) }
     }
 
-    conditionally_const! {
-        feature = "rust_1_64";
-        /// Gets the written part of this `StrWriter` as a `&str`
-        ///
-        /// ### Constness
-        ///
-        /// This can be called in const contexts by enabling the "rust_1_64" feature.
-        ///
-        /// ### Alternative
-        ///
-        /// You can also use the [`as_str_alt`](Self::as_str_alt) method,
-        /// which is always available,
-        /// but takes linear time to run when the "rust_1_64" feature
-        /// is disabled.
-        ///
-        #[inline(always)]
-        pub fn as_str(&self) -> &str {
-            // All the methods that modify the buffer must ensure utf8 validity,
-            // only methods from this module need to ensure this.
-            unsafe { core::str::from_utf8_unchecked(self.as_bytes()) }
-        }
-
-        /// Gets the written part of this `StrWriter` as a `&[u8]`
-        ///
-        /// The slice is guaranteed to be valid utf8, so this is mostly for convenience.
-        ///
-        /// ### Constness
-        ///
-        /// This can be called in const contexts by enabling the "rust_1_64" feature.
-        ///
-        /// # Example
-        ///
-        /// ```rust
-        /// use const_format::StrWriter;
-        ///
-        /// let buffer: &mut StrWriter = &mut StrWriter::new([0; 64]);
-        ///
-        /// buffer.as_mut().write_str("Hello, World!");
-        ///
-        /// assert_eq!(buffer.as_bytes(), "Hello, World!".as_bytes());
-        ///
-        /// ```
-        #[inline(always)]
-        pub fn as_bytes(&self) -> &[u8] {
-            crate::utils::slice_up_to_len(&self.buffer, self.len)
-        }
+    /// Gets the written part of this `StrWriter` as a `&[u8]`
+    ///
+    /// The slice is guaranteed to be valid utf8, so this is mostly for convenience.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use const_format::StrWriter;
+    ///
+    /// let buffer: &mut StrWriter = &mut StrWriter::new([0; 64]);
+    ///
+    /// buffer.as_mut().write_str("Hello, World!");
+    ///
+    /// assert_eq!(buffer.as_bytes(), "Hello, World!".as_bytes());
+    ///
+    /// ```
+    #[inline(always)]
+    pub const fn as_bytes(&self) -> &[u8] {
+        crate::utils::slice_up_to_len(&self.buffer, self.len)
     }
 
     /// Borrows this `StrWriter<[u8]>` into a `StrWriterMut`,

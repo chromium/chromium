@@ -521,6 +521,12 @@ allow_unsafe = true
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
 
+[crate.konst]
+extra_kv = { allow_unsafe = true }
+
+[crate.konst_macro_rules]
+extra_kv = { allow_unsafe = true }
+
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
 

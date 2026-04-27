@@ -154,7 +154,7 @@ impl<'a> AsciiStr<'a> {
     /// assert_eq!(ascii_str!("hello").as_str(), "hello");
     /// ```
     #[inline]
-    pub fn as_str(self) -> &'a str {
+    pub const fn as_str(self) -> &'a str {
         unsafe { core::str::from_utf8_unchecked(self.0) }
     }
 }

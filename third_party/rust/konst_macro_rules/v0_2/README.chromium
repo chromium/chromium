@@ -1,0 +1,11 @@
+Name: konst_macro_rules
+URL: https://crates.io/crates/konst_macro_rules
+Version: 0.2.19
+Revision: 6463c1578d96c8b41f59a93496473be6212f6297
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Zlib
+License File: //third_party/rust/chromium_crates_io/vendor/konst_macro_rules-v0_2/LICENSE-ZLIB.md
+Shipped: no
+Security Critical: no
+
+Description: Implementation detail of the konst crate

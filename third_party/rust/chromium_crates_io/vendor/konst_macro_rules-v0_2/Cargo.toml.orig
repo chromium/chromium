@@ -1,0 +1,28 @@
+[package]
+name = "konst_macro_rules"
+version = "0.2.19"
+authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
+edition = "2018"
+license = "Zlib"
+description = "Implementation detail of the konst crate"
+documentation = "https://docs.rs/konst/"
+keywords = []
+categories = []
+repository = "https://github.com/rodrimati1992/konst/"
+include = [
+    "Cargo.toml", 
+    "src/**/*.rs", 
+    "LICENSE-ZLIB.md", 
+]
+
+[dependencies]
+
+[features]
+rust_1_51 = []
+rust_1_55 = []
+rust_1_56 = []
+rust_1_57 = []
+rust_1_61 = []
+deref_raw_in_fn = []
+nightly_mut_refs = []
+mut_refs = []

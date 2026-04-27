@@ -35,7 +35,7 @@ mod str_methods;
 ///
 /// const fn write_stuff(buffer: &mut StrWriter) -> Result<&[u8], Error> {
 ///     try_!(writec!(buffer, "Foo{},Bar{},Baz{},", 8u32, 13u32, 21u32));
-///     Ok(buffer.as_bytes_alt())
+///     Ok(buffer.as_bytes())
 /// }
 ///
 /// let mut buffer = StrWriter::new([0; 32]);
@@ -73,7 +73,7 @@ macro_rules! try_ {
 ///         unwrap!(writec!(writer, "foo bar baz"));
 ///         writer
 ///     };
-///     S.as_str_alt()
+///     S.as_str()
 /// };
 /// assert_eq!(TEXT, "foo bar baz")
 ///
@@ -191,7 +191,7 @@ macro_rules! unwrap_or_else {
 ///
 /// const TEXT: &str = {
 ///     const TEXT_: &StrWriter = &make_strwriter();
-///     TEXT_.as_str_alt()
+///     TEXT_.as_str()
 /// };
 ///
 /// assert_eq!(TEXT, "[0, 1],[0, 1],100,100,Unit,Unit");
@@ -222,15 +222,8 @@ macro_rules! coerce_to_fmt {
 /// but not inside of `const fn`s.
 ///
 /// **Deprecated:** This macro is deprecated because
-/// the [`StrWriter::as_str_alt`](crate::StrWriter::as_str_alt) method
+/// the [`StrWriter::as_str`](crate::StrWriter::as_str) method
 /// allows converting a`&'static StrWriter` to a `&'static str`.
-///
-/// # Runtime
-///
-/// If the "rust_1_64" feature is disabled,
-/// this takes time proportional to `$expr.capacity() - $expr.len()`.
-///
-/// If the "rust_1_64" feature is enabled, it takes constant time to run.
 ///
 /// # Example
 ///
@@ -260,38 +253,16 @@ macro_rules! coerce_to_fmt {
 ///
 #[cfg_attr(feature = "__docsrs", doc(cfg(feature = "fmt")))]
 #[cfg(feature = "fmt")]
-#[deprecated(since = "0.2.19", note = "Use `StrWriter::as_str_alt` instead")]
+#[deprecated(since = "0.2.19", note = "Use `StrWriter::as_str` instead")]
 #[macro_export]
 macro_rules! strwriter_as_str {
     ($expr:expr) => {
         unsafe {
             let writer: &'static $crate::StrWriter = $expr;
             #[allow(clippy::transmute_bytes_to_str)]
-            $crate::__priv_transmute_bytes_to_str!(writer.as_bytes_alt())
+            $crate::__priv_transmute_bytes_to_str!(writer.as_bytes())
         }
     };
-}
-
-#[cfg_attr(feature = "__docsrs", doc(cfg(feature = "fmt")))]
-#[cfg(feature = "fmt")]
-macro_rules! conditionally_const {
-    (
-        feature = $feature:literal;
-        $(
-            $( #[$meta:meta] )*
-            $vis:vis fn $fn_name:ident ($($params:tt)*) -> $ret:ty $block:block
-        )*
-    ) => (
-        $(
-            $(#[$meta])*
-            #[cfg(feature = $feature)]
-            $vis const fn $fn_name ($($params)*) -> $ret $block
-
-            $(#[$meta])*
-            #[cfg(not(feature = $feature))]
-            $vis fn $fn_name ($($params)*) -> $ret $block
-        )*
-    )
 }
 
 #[cfg_attr(feature = "__docsrs", doc(cfg(feature = "fmt")))]

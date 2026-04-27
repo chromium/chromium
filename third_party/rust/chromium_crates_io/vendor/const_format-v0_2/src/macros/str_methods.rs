@@ -622,8 +622,6 @@ macro_rules! str_get {
 /// [`inline_const_pat`]: https://doc.rust-lang.org/1.83.0/unstable-book/language-features/inline-const-pat.html
 /// [`str_split_pat`]: crate::str_split_pat
 #[macro_export]
-#[cfg(feature = "rust_1_64")]
-#[cfg_attr(feature = "__docsrs", doc(cfg(feature = "rust_1_64")))]
 macro_rules! str_split {
     ($string:expr, $splitter:expr $(,)?) => {{
         const ARGS_OSRCTFL4A: $crate::__str_methods::SplitInput =
@@ -663,8 +661,6 @@ macro_rules! str_split {
 ///
 /// [`inline_const_pat`]: https://doc.rust-lang.org/1.83.0/unstable-book/language-features/inline-const-pat.html
 #[macro_export]
-#[cfg(feature = "rust_1_64")]
-#[cfg_attr(feature = "__docsrs", doc(cfg(feature = "rust_1_64")))]
 macro_rules! str_split_pat {
     ($string:expr, $splitter:expr $(,)?) => {
         $crate::__const! {&'static [&'static $crate::pmr::str] => {

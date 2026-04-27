@@ -60,7 +60,7 @@ use core::marker::PhantomData;
 ///         
 ///         // Gets the part of the array that has been written to.
 ///         pub const fn as_bytes(&self) -> &[u8] {
-///             const_format::utils::slice_up_to_len_alt(&self.arr, self.len)
+///             const_format::utils::slice_up_to_len(&self.arr, self.len)
 ///         }
 ///    
 ///         pub const fn borrow_mutably(&mut self) -> &mut Self {

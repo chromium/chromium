@@ -16,7 +16,6 @@ pub const fn saturate_range(s: &[u8], range: &Range<usize>) -> Range<usize> {
 }
 
 #[doc(hidden)]
-#[cfg(feature = "rust_1_64")]
 #[repr(C)]
 pub union Dereference<'a, T: ?Sized> {
     pub ptr: *const T,
@@ -25,140 +24,44 @@ pub union Dereference<'a, T: ?Sized> {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-macro_rules! slice_up_to_len_alt_docs {
-    ($item:item) => {
-        /// A const equivalent of `&slice[..len]`.
-        ///
-        /// If `slice.len() < len`, this simply returns `slice` back.
-        ///
-        /// # Runtime
-        ///
-        /// If the "rust_1_64" feature is disabled,
-        /// thich takes linear time to remove the trailing elements,
-        /// proportional to `slice.len() - len`.
-        ///
-        /// If the "rust_1_64" feature is enabled, it takes constant time to run.
-        ///
-        /// # Example
-        ///
-        /// ```rust
-        /// use const_format::utils::slice_up_to_len_alt;
-        ///
-        /// const FIBB: &[u16] = &[3, 5, 8, 13, 21, 34, 55, 89];
-        ///
-        /// const TWO: &[u16] = slice_up_to_len_alt(FIBB, 2);
-        /// const FOUR: &[u16] = slice_up_to_len_alt(FIBB, 4);
-        /// const ALL: &[u16] = slice_up_to_len_alt(FIBB, usize::MAX);
-        ///
-        /// assert_eq!(TWO, &[3, 5]);
-        /// assert_eq!(FOUR, &[3, 5, 8, 13]);
-        /// assert_eq!(FIBB, ALL);
-        ///
-        /// ```
-        $item
-    };
-}
-
-slice_up_to_len_alt_docs! {
-    #[cfg(feature = "rust_1_64")]
-    #[inline(always)]
-    pub const fn slice_up_to_len_alt<T>(slice: &[T], len: usize) -> &[T] {
-        slice_up_to_len(slice, len)
-    }
-}
-slice_up_to_len_alt_docs! {
-    #[cfg(not(feature = "rust_1_64"))]
-    pub const fn slice_up_to_len_alt<T>(slice: &[T], len: usize) -> &[T] {
-        let mut rem = slice.len().saturating_add(1).saturating_sub(len);
-        let mut ret = slice;
-
-        if rem == 0 {
-            return slice;
-        }
-
-        macro_rules! slice_up_to_len_alt_impl{
-            (
-                $( ($len:expr, [$($ignored:tt)*]) )*
-            )=>{
-                $(
-                    while rem > $len {
-                        if let [next @ .., $($ignored)* ] = ret {
-                            ret = next;
-                            rem -= $len;
-                        }
-                    }
-                )*
-            }
-        }
-        slice_up_to_len_alt_impl!{
-            (36, [_, _, _, _, _, _,_, _, _, _, _, _,_, _, _, _, _, _,_, _, _, _, _, _,_, _, _, _, _, _,_, _, _, _, _, _,])
-            (6, [_, _, _, _, _, _])
-            (1, [_])
-        }
-        ret
-    }
+/// The same as [`slice_up_to_len`]
+///
+/// (this function only exists for backwards compatibility)
+#[deprecated(since = "0.2.36", note = "redundant, same as `slice_up_to_len`")]
+#[inline(always)]
+pub const fn slice_up_to_len_alt<T>(slice: &[T], len: usize) -> &[T] {
+    slice_up_to_len(slice, len)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-macro_rules! slice_up_to_len_docs {
-    ($item:item) => {
-        /// A conditionally-const equivalent of `&slice[..len]`.
-        ///
-        /// If `slice.len() < len`, this simply returns `slice` back.
-        ///
-        /// # Constness
-        ///
-        /// This function takes constant time,
-        /// and in order to be `const fn` it requires the "rust_1_64"
-        /// feature to be enabled.
-        ///
-        /// # Example
-        ///
-        /// ```rust
-        /// use const_format::utils::slice_up_to_len_alt;
-        ///
-        /// const FIBB: &[u16] = &[3, 5, 8, 13, 21, 34, 55, 89];
-        ///
-        /// const TWO: &[u16] = slice_up_to_len_alt(FIBB, 2);
-        /// const FOUR: &[u16] = slice_up_to_len_alt(FIBB, 4);
-        /// const ALL: &[u16] = slice_up_to_len_alt(FIBB, usize::MAX);
-        ///
-        /// assert_eq!(TWO, &[3, 5]);
-        /// assert_eq!(FOUR, &[3, 5, 8, 13]);
-        /// assert_eq!(FIBB, ALL);
-        ///
-        /// ```
-        $item
-    };
-}
-
-slice_up_to_len_docs! {
-    #[cfg(feature = "rust_1_64")]
-    #[inline]
-    pub const fn slice_up_to_len<T>(slice: &[T], len: usize) -> &[T] {
-        if len > slice.len() {
-            return slice;
-        }
-
-        // Doing this to get a slice up to length at compile-time
-        unsafe {
-            let raw_slice = core::ptr::slice_from_raw_parts(slice.as_ptr(), len);
-            Dereference { ptr: raw_slice }.reff
-        }
+/// A const equivalent of `&slice[..len]`.
+///
+/// If `slice.len() < len`, this simply returns `slice` back.
+///
+/// # Example
+///
+/// ```rust
+/// use const_format::utils::slice_up_to_len;
+///
+/// const FIBB: &[u16] = &[3, 5, 8, 13, 21, 34, 55, 89];
+///
+/// const TWO: &[u16] = slice_up_to_len(FIBB, 2);
+/// const FOUR: &[u16] = slice_up_to_len(FIBB, 4);
+/// const ALL: &[u16] = slice_up_to_len(FIBB, usize::MAX);
+///
+/// assert_eq!(TWO, &[3, 5]);
+/// assert_eq!(FOUR, &[3, 5, 8, 13]);
+/// assert_eq!(FIBB, ALL);
+///
+/// ```
+#[inline(always)]
+pub const fn slice_up_to_len<T>(slice: &[T], len: usize) -> &[T] {
+    if len > slice.len() {
+        return slice;
     }
-}
 
-slice_up_to_len_docs! {
-    #[cfg(not(feature = "rust_1_64"))]
-    #[inline]
-    pub fn slice_up_to_len<T>(slice: &[T], len: usize) -> &[T] {
-        if len > slice.len() {
-            return slice;
-        }
-
-        &slice[..len]
-    }
+    slice.split_at(len).0
 }
 
 ////////////////////////////////////////////////////////////////////////////////

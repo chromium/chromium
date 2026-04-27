@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.57.0"
+rust-version = "1.71.0"
 name = "const_format"
-version = "0.2.35"
+version = "0.2.36"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 build = false
 include = [
@@ -80,11 +80,7 @@ fmt = ["rust_1_83"]
 more_str_macros = ["rust_1_64"]
 nightly_const_generics = ["const_generics"]
 rust_1_51 = []
-rust_1_64 = [
-    "rust_1_51",
-    "konst",
-    "konst/rust_1_64",
-]
+rust_1_64 = ["rust_1_51"]
 rust_1_83 = ["rust_1_64"]
 
 [lib]
@@ -95,8 +91,8 @@ path = "src/lib.rs"
 version = "=0.2.34"
 
 [dependencies.konst]
-version = "0.2.13"
-optional = true
+version = "0.2.20"
+features = ["rust_1_64"]
 default-features = false
 
 [dev-dependencies.arrayvec]

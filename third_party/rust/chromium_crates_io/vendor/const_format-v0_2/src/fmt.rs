@@ -155,7 +155,7 @@
 //!
 //! const STRING: &str = {
 //!     const STR: &StrWriter = &build_string();
-//!     STR.as_str_alt()
+//!     STR.as_str()
 //! };
 //!
 //! // The formatter
@@ -234,7 +234,7 @@
 //!
 //! const STRING: &str = {
 //!     const S: &StrWriter = &build_string();
-//!     S.as_str_alt()
+//!     S.as_str()
 //! };
 //!
 //! assert_eq!(

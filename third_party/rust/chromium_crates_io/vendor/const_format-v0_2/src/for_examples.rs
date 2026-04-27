@@ -4,7 +4,7 @@
 //!
 //! This module is only exported with the "fmt" feature
 
-use crate::{impl_fmt, try_, Error, Formatter, PWrapper};
+use crate::{Error, Formatter, PWrapper};
 
 /// An example struct which implements const debug formatting.
 #[derive(Debug, Copy, Clone)]
