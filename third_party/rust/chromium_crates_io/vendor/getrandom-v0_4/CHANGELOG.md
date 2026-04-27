@@ -4,11 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-03-03
+
+### Changed
+- Bump `r-efi` dependency to v6 [#814]
+
+### Fixed
+- Read `errno` only when it is set [#810]
+- Check the return value of `ProcessPrng` on Windows [#811]
+
+[0.4.2]: https://github.com/rust-random/getrandom/compare/v0.4.1...v0.4.2
+[#810]: https://github.com/rust-random/getrandom/pull/810
+[#811]: https://github.com/rust-random/getrandom/pull/811
+[#814]: https://github.com/rust-random/getrandom/pull/814
+
 ## [0.4.1] - 2026-02-03
 
 ### Fixed
 - Documentation build on docs.rs [#801]
 
+[0.4.1]: https://github.com/rust-random/getrandom/compare/v0.4.0...v0.4.1
 [#801]: https://github.com/rust-random/getrandom/pull/801
 
 ## [0.4.0] - 2026-02-02
@@ -23,12 +38,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Use Edition 2024 and MSRV 1.85 [#749]
 
+[0.4.0]: https://github.com/rust-random/getrandom/compare/v0.3.4...v0.4.0
 [#739]: https://github.com/rust-random/getrandom/pull/739
 [#749]: https://github.com/rust-random/getrandom/pull/749
 [#751]: https://github.com/rust-random/getrandom/pull/751
 [#779]: https://github.com/rust-random/getrandom/pull/779
 [#786]: https://github.com/rust-random/getrandom/pull/786
 [#794]: https://github.com/rust-random/getrandom/pull/794
+[#797]: https://github.com/rust-random/getrandom/pull/797
 
 ## [0.3.4] - 2025-10-14
 
@@ -63,6 +80,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Removed
 - Unstable `rustc-dep-of-std` crate feature [#694]
 
+[0.3.4]: https://github.com/rust-random/getrandom/compare/v0.3.3...v0.3.4
 [#667]: https://github.com/rust-random/getrandom/pull/667
 [#671]: https://github.com/rust-random/getrandom/issues/671
 [#675]: https://github.com/rust-random/getrandom/pull/675
@@ -83,6 +101,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Fixed
 - Error handling in WASI p1 [#661]
 
+[0.3.3]: https://github.com/rust-random/getrandom/compare/v0.3.2...v0.3.3
 [#632]: https://github.com/rust-random/getrandom/pull/632
 [#634]: https://github.com/rust-random/getrandom/pull/634
 [#635]: https://github.com/rust-random/getrandom/pull/635
@@ -113,6 +132,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Removed
 - `Error::INTERNAL_START` and `Error::CUSTOM_START` associated constants [#614]
 
+[0.3.2]: https://github.com/rust-random/getrandom/compare/v0.3.1...v0.3.2
 [#570]: https://github.com/rust-random/getrandom/pull/570
 [#572]: https://github.com/rust-random/getrandom/pull/572
 [#591]: https://github.com/rust-random/getrandom/pull/591
@@ -134,6 +154,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Fixed
 - Build error on Android [#588]
 
+[0.3.1]: https://github.com/rust-random/getrandom/compare/v0.3.0...v0.3.1
 [#588]: https://github.com/rust-random/getrandom/pull/588
 
 ## [0.3.0] - 2025-01-25
@@ -178,6 +199,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Fixed
 - NetBSD fallback code based on `KERN_ARND` [#555]
 
+[0.3.0]: https://github.com/rust-random/getrandom/compare/v0.2.15...v0.3.0
 [#415]: https://github.com/rust-random/getrandom/pull/415
 [#440]: https://github.com/rust-random/getrandom/pull/440
 [#442]: https://github.com/rust-random/getrandom/pull/442
@@ -206,6 +228,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Use `doc_cfg` instead of `doc_auto_cfg` (partial backport of [#732]) [#768]
 - `BCryptGenRandom` signature [#778]
 
+[0.2.17]: https://github.com/rust-random/getrandom/compare/v0.2.16...v0.2.17
 [#732]: https://github.com/rust-random/getrandom/pull/732
 [#768]: https://github.com/rust-random/getrandom/pull/768
 [#778]: https://github.com/rust-random/getrandom/pull/778
@@ -214,6 +237,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Added
 - Cygwin support (backport of [#626]) [#654]
 
+[0.2.16]: https://github.com/rust-random/getrandom/compare/v0.2.15...v0.2.16
 [#654]: https://github.com/rust-random/getrandom/pull/654
 
 ## [0.2.15] - 2024-05-06
@@ -224,6 +248,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Use `libc::getrandom` on DragonflyBSD, FreeBSD, illumos, and Solaris [#411] [#416] [#417] [#420]
 - Unify `libc::getentropy`-based implementations [#418]
 
+[0.2.15]: https://github.com/rust-random/getrandom/compare/v0.2.14...v0.2.15
 [#410]: https://github.com/rust-random/getrandom/pull/410
 [#411]: https://github.com/rust-random/getrandom/pull/411
 [#416]: https://github.com/rust-random/getrandom/pull/416
@@ -235,6 +260,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Fixed
 - Enable `/dev/urandom` fallback for MUSL-based Linux targets [#408]
 
+[0.2.14]: https://github.com/rust-random/getrandom/compare/v0.2.13...v0.2.14
 [#408]: https://github.com/rust-random/getrandom/pull/408
 
 ## [0.2.13] - 2024-04-06
@@ -249,6 +275,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Do not catch `EPERM` error code on Android while checking availability of
   the `getrandom` syscall [#396]
 
+[0.2.13]: https://github.com/rust-random/getrandom/compare/v0.2.12...v0.2.13
 [#396]: https://github.com/rust-random/getrandom/pull/396
 
 ## [0.2.12] - 2024-01-09
@@ -262,6 +289,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Added
 - Document platform support policy [#387]
 
+[0.2.12]: https://github.com/rust-random/getrandom/compare/v0.2.11...v0.2.12
 [#385]: https://github.com/rust-random/getrandom/pull/385
 [#386]: https://github.com/rust-random/getrandom/pull/386
 [#387]: https://github.com/rust-random/getrandom/pull/387
@@ -275,6 +303,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Renamed `__getrandom_internal` to `__GETRANDOM_INTERNAL`  [#369]
 - Updated link to Hermit docs [#374]
 
+[0.2.11]: https://github.com/rust-random/getrandom/compare/v0.2.10...v0.2.11
 [#369]: https://github.com/rust-random/getrandom/pull/369
 [#370]: https://github.com/rust-random/getrandom/pull/370
 [#374]: https://github.com/rust-random/getrandom/pull/374
@@ -286,6 +315,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Changed
 - Use getentropy from libc on Emscripten targets [#362]
 
+[0.2.10]: https://github.com/rust-random/getrandom/compare/v0.2.9...v0.2.10
 [#359]: https://github.com/rust-random/getrandom/pull/359
 [#362]: https://github.com/rust-random/getrandom/pull/362
 
@@ -319,6 +349,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Move `__getrandom_custom` definition into a const block [#344]
 - Switch the custom backend to Rust ABI [#347]
 
+[0.2.9]: https://github.com/rust-random/getrandom/compare/v0.2.8...v0.2.9
 [#282]: https://github.com/rust-random/getrandom/pull/282
 [#291]: https://github.com/rust-random/getrandom/pull/291
 [#301]: https://github.com/rust-random/getrandom/pull/301
@@ -355,7 +386,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Fix link to `wasm-bindgen` [#278]
 - Document the varied implementations for underlying randomness sources [#276]
 
-[Web Cryptography API]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
+[0.2.8]: https://github.com/rust-random/getrandom/compare/v0.2.7...v0.2.8
 [#284]: https://github.com/rust-random/getrandom/pull/284
 [#295]: https://github.com/rust-random/getrandom/pull/295
 [#272]: https://github.com/rust-random/getrandom/pull/272
@@ -363,6 +394,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 [#280]: https://github.com/rust-random/getrandom/pull/280
 [#278]: https://github.com/rust-random/getrandom/pull/278
 [#276]: https://github.com/rust-random/getrandom/pull/276
+[Web Cryptography API]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
 
 ## [0.2.7] - 2022-06-14
 ### Changed
@@ -374,6 +406,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Documentation
 - Add comments explaining use of fallback mechanisms [#257] [#260]
 
+[0.2.7]: https://github.com/rust-random/getrandom/compare/v0.2.6...v0.2.7
 [#263]: https://github.com/rust-random/getrandom/pull/263
 [#260]: https://github.com/rust-random/getrandom/pull/260
 [#253]: https://github.com/rust-random/getrandom/pull/253
@@ -386,6 +419,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 ### Changed
 - Retry `open` when interrupted [#252]
 
+[0.2.6]: https://github.com/rust-random/getrandom/compare/v0.2.5...v0.2.6
 [#248]: https://github.com/rust-random/getrandom/pull/248
 [#252]: https://github.com/rust-random/getrandom/pull/252
 
@@ -397,6 +431,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Webpack warning caused by dynamic require [#234]
 - Error checking on iOS for `SecRandomCopyBytes` [#244]
 
+[0.2.5]: https://github.com/rust-random/getrandom/compare/v0.2.4...v0.2.5
 [#234]: https://github.com/rust-random/getrandom/pull/234
 [#244]: https://github.com/rust-random/getrandom/pull/244
 [#245]: https://github.com/rust-random/getrandom/pull/245
@@ -411,6 +446,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - SOLID targets (`*-kmc-solid_*`) support [#235]
 - Limited Hermit (`x86_64-unknown-hermit`) support [#236]
 
+[0.2.4]: https://github.com/rust-random/getrandom/compare/v0.2.3...v0.2.4
 [#220]: https://github.com/rust-random/getrandom/pull/220
 [#222]: https://github.com/rust-random/getrandom/pull/222
 [#233]: https://github.com/rust-random/getrandom/pull/233
@@ -423,6 +459,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Add support for getrandom syscall on DragonFly BSD. [#210]
 - Improve Node.js detection. [#215]
 
+[0.2.3]: https://github.com/rust-random/getrandom/compare/v0.2.2...v0.2.3
 [#205]: https://github.com/rust-random/getrandom/pull/205
 [#210]: https://github.com/rust-random/getrandom/pull/210
 [#215]: https://github.com/rust-random/getrandom/pull/215
@@ -432,6 +469,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Forward `rustc-dep-of-std` to dependencies. [#198]
 - Highlight feature-dependent functionality in documentation using the `doc_cfg` feature. [#200]
 
+[0.2.2]: https://github.com/rust-random/getrandom/compare/v0.2.1...v0.2.2
 [#198]: https://github.com/rust-random/getrandom/pull/198
 [#200]: https://github.com/rust-random/getrandom/pull/200
 
@@ -448,6 +486,7 @@ For more information, see the discussions in [#671], [#675], and [#730].
 - Direct `stdweb` support. [#178]
 - CloudABI support. [#184]
 
+[0.2.1]: https://github.com/rust-random/getrandom/compare/v0.2.0...v0.2.1
 [#165]: https://github.com/rust-random/getrandom/pull/165
 [#166]: https://github.com/rust-random/getrandom/pull/166
 [#167]: https://github.com/rust-random/getrandom/pull/167
@@ -473,6 +512,7 @@ The following (off by default) Cargo features have been added:
 - Update minimum supported Linux kernel to 2.6.32 [#153]
 - Update MSRV to 1.34 [#159]
 
+[0.2.0]: https://github.com/rust-random/getrandom/compare/v0.1.16...v0.2.0
 [#106]: https://github.com/rust-random/getrandom/pull/106
 [#107]: https://github.com/rust-random/getrandom/pull/107
 [#109]: https://github.com/rust-random/getrandom/pull/109
@@ -491,6 +531,7 @@ The following (off by default) Cargo features have been added:
 ### Fixed
 - Multithreaded WASM support. [#171]
 
+[0.1.16]: https://github.com/rust-random/getrandom/compare/v0.1.15...v0.1.16
 [#173]: https://github.com/rust-random/getrandom/pull/173
 [#171]: https://github.com/rust-random/getrandom/pull/171
 [#169]: https://github.com/rust-random/getrandom/pull/169
@@ -500,6 +541,7 @@ The following (off by default) Cargo features have been added:
 - Added support for Internet Explorer 11 [#139]
 - Fix Webpack require warning with `wasm-bindgen` [#137]
 
+[0.1.15]: https://github.com/rust-random/getrandom/compare/v0.1.14...v0.1.15
 [#137]: https://github.com/rust-random/getrandom/pull/137
 [#139]: https://github.com/rust-random/getrandom/pull/139
 
@@ -509,6 +551,7 @@ The following (off by default) Cargo features have been added:
 - Update `wasi` to v0.9. [#126]
 - Do not read errno value on DragonFlyBSD to fix compilation failure. [#129]
 
+[0.1.14]: https://github.com/rust-random/getrandom/compare/v0.1.13...v0.1.14
 [#125]: https://github.com/rust-random/getrandom/pull/125
 [#126]: https://github.com/rust-random/getrandom/pull/126
 [#129]: https://github.com/rust-random/getrandom/pull/129
@@ -527,6 +570,7 @@ system. [#104]
 - Bump `cfg-if` minimum version from 0.1.0 to 0.1.2. [#112]
 - Typos and bad doc links. [#117]
 
+[0.1.13]: https://github.com/rust-random/getrandom/compare/v0.1.12...v0.1.13
 [#86]: https://github.com/rust-random/getrandom/pull/86
 [#104]: https://github.com/rust-random/getrandom/pull/104
 [#112]: https://github.com/rust-random/getrandom/pull/112
@@ -537,6 +581,7 @@ system. [#104]
 ### Changed
 - Update wasi dependency from v0.5 to v0.7. [#100]
 
+[0.1.12]: https://github.com/rust-random/getrandom/compare/v0.1.11...v0.1.12
 [#100]: https://github.com/rust-random/getrandom/pull/100
 
 ## [0.1.11] - 2019-08-25
@@ -544,6 +589,7 @@ system. [#104]
 - Implement `std`-dependent traits for selected targets even if `std`
 feature is disabled. (backward compatibility with v0.1.8) [#96]
 
+[0.1.11]: https://github.com/rust-random/getrandom/compare/v0.1.10...v0.1.11
 [#96]: https://github.com/rust-random/getrandom/pull/96
 
 ## [0.1.10] - 2019-08-18 [YANKED]
@@ -554,6 +600,7 @@ disabled `dummy` feature. [#90]
 ### Fixed
 - Fix CSP error for `wasm-bindgen`. [#92]
 
+[0.1.10]: https://github.com/rust-random/getrandom/compare/v0.1.9...v0.1.10
 [#90]: https://github.com/rust-random/getrandom/pull/90
 [#92]: https://github.com/rust-random/getrandom/pull/92
 
@@ -568,6 +615,7 @@ This behaviour can be disabled by using the `dummy` feature. [#71]
 - Add support for UWP targets. [#69]
 - Add unstable `rustc-dep-of-std` feature. [#78]
 
+[0.1.9]: https://github.com/rust-random/getrandom/compare/v0.1.8...v0.1.9
 [#58]: https://github.com/rust-random/getrandom/pull/58
 [#64]: https://github.com/rust-random/getrandom/pull/64
 [#69]: https://github.com/rust-random/getrandom/pull/69
@@ -578,6 +626,7 @@ This behaviour can be disabled by using the `dummy` feature. [#71]
 ### Changed
 - Explicitly specify types to arguments of 'libc::syscall'. [#74]
 
+[0.1.8]: https://github.com/rust-random/getrandom/compare/v0.1.7...v0.1.8
 [#74]: https://github.com/rust-random/getrandom/pull/74
 
 ## [0.1.7] - 2019-07-29
@@ -597,6 +646,7 @@ initialization. [#51] [#52]
 ### Deprecated
 - `Error::UNKNOWN`, `Error::UNAVAILABLE`. [#54]
 
+[0.1.7]: https://github.com/rust-random/getrandom/compare/v0.1.6...v0.1.7
 [#51]: https://github.com/rust-random/getrandom/pull/51
 [#52]: https://github.com/rust-random/getrandom/pull/52
 [#54]: https://github.com/rust-random/getrandom/pull/54
@@ -608,6 +658,7 @@ initialization. [#51] [#52]
 ### Changed
 - Minor change of RDRAND AMD bug handling. [#48]
 
+[0.1.6]: https://github.com/rust-random/getrandom/compare/v0.1.5...v0.1.6
 [#48]: https://github.com/rust-random/getrandom/pull/48
 
 ## [0.1.5] - 2019-06-29
@@ -618,6 +669,7 @@ initialization. [#51] [#52]
 ### Changed
 - Try `getentropy` and then fallback to `/dev/random` on macOS. [#38]
 
+[0.1.5]: https://github.com/rust-random/getrandom/compare/v0.1.4...v0.1.5
 [#38]: https://github.com/rust-random/getrandom/issues/38
 [#43]: https://github.com/rust-random/getrandom/pull/43
 [#44]: https://github.com/rust-random/getrandom/issues/44
@@ -639,6 +691,7 @@ feature detection. [#30]
 - Increase consistency with libc implementation on FreeBSD. [#36]
 - Apply `rustfmt`. [#39]
 
+[0.1.4]: https://github.com/rust-random/getrandom/compare/v0.1.3...v0.1.4
 [#30]: https://github.com/rust-random/getrandom/pull/30
 [#13]: https://github.com/rust-random/getrandom/issues/13
 [#40]: https://github.com/rust-random/getrandom/pull/40
@@ -654,58 +707,24 @@ feature detection. [#30]
 - Update for `wasm32-unknown-wasi` being renamed to `wasm32-wasi`, and for
   WASI being categorized as an OS.
 
+[0.1.3]: https://github.com/rust-random/getrandom/compare/v0.1.2...v0.1.3
+
 ## [0.1.2] - 2019-04-06
 - Add support for `wasm32-unknown-wasi` target.
+
+[0.1.2]: https://github.com/rust-random/getrandom/compare/v0.1.1...v0.1.2
 
 ## [0.1.1] - 2019-04-05
 - Enable std functionality for CloudABI by default.
 
+[0.1.1]: https://github.com/rust-random/getrandom/compare/v0.1.0...v0.1.1
+
 ## [0.1.0] - 2019-03-23
 Publish initial implementation.
+
+[0.1.0]: https://github.com/rust-random/getrandom/compare/v0.0.0...v0.1.0
 
 ## [0.0.0] - 2019-01-19
 Publish an empty template library.
 
-[0.4.1]: https://github.com/rust-random/getrandom/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/rust-random/getrandom/compare/v0.3.4...v0.4.0
-[0.3.4]: https://github.com/rust-random/getrandom/compare/v0.3.3...v0.3.4
-[0.3.3]: https://github.com/rust-random/getrandom/compare/v0.3.2...v0.3.3
-[0.3.2]: https://github.com/rust-random/getrandom/compare/v0.3.1...v0.3.2
-[0.3.1]: https://github.com/rust-random/getrandom/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/rust-random/getrandom/compare/v0.2.15...v0.3.0
-[0.2.17]: https://github.com/rust-random/getrandom/compare/v0.2.16...v0.2.17
-[0.2.16]: https://github.com/rust-random/getrandom/compare/v0.2.15...v0.2.16
-[0.2.15]: https://github.com/rust-random/getrandom/compare/v0.2.14...v0.2.15
-[0.2.14]: https://github.com/rust-random/getrandom/compare/v0.2.13...v0.2.14
-[0.2.13]: https://github.com/rust-random/getrandom/compare/v0.2.12...v0.2.13
-[0.2.12]: https://github.com/rust-random/getrandom/compare/v0.2.11...v0.2.12
-[0.2.11]: https://github.com/rust-random/getrandom/compare/v0.2.10...v0.2.11
-[0.2.10]: https://github.com/rust-random/getrandom/compare/v0.2.9...v0.2.10
-[0.2.9]: https://github.com/rust-random/getrandom/compare/v0.2.8...v0.2.9
-[0.2.8]: https://github.com/rust-random/getrandom/compare/v0.2.7...v0.2.8
-[0.2.7]: https://github.com/rust-random/getrandom/compare/v0.2.6...v0.2.7
-[0.2.6]: https://github.com/rust-random/getrandom/compare/v0.2.5...v0.2.6
-[0.2.5]: https://github.com/rust-random/getrandom/compare/v0.2.4...v0.2.5
-[0.2.4]: https://github.com/rust-random/getrandom/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/rust-random/getrandom/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/rust-random/getrandom/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/rust-random/getrandom/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/rust-random/getrandom/compare/v0.1.16...v0.2.0
-[0.1.16]: https://github.com/rust-random/getrandom/compare/v0.1.15...v0.1.16
-[0.1.15]: https://github.com/rust-random/getrandom/compare/v0.1.14...v0.1.15
-[0.1.14]: https://github.com/rust-random/getrandom/compare/v0.1.13...v0.1.14
-[0.1.13]: https://github.com/rust-random/getrandom/compare/v0.1.12...v0.1.13
-[0.1.12]: https://github.com/rust-random/getrandom/compare/v0.1.11...v0.1.12
-[0.1.11]: https://github.com/rust-random/getrandom/compare/v0.1.10...v0.1.11
-[0.1.10]: https://github.com/rust-random/getrandom/compare/v0.1.9...v0.1.10
-[0.1.9]: https://github.com/rust-random/getrandom/compare/v0.1.8...v0.1.9
-[0.1.8]: https://github.com/rust-random/getrandom/compare/v0.1.7...v0.1.8
-[0.1.7]: https://github.com/rust-random/getrandom/compare/v0.1.6...v0.1.7
-[0.1.6]: https://github.com/rust-random/getrandom/compare/v0.1.5...v0.1.6
-[0.1.5]: https://github.com/rust-random/getrandom/compare/v0.1.4...v0.1.5
-[0.1.4]: https://github.com/rust-random/getrandom/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/rust-random/getrandom/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/rust-random/getrandom/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/rust-random/getrandom/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/rust-random/getrandom/compare/v0.0.0...v0.1.0
 [0.0.0]: https://github.com/rust-random/getrandom/releases/tag/v0.0.0

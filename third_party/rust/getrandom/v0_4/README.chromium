@@ -1,7 +1,7 @@
 Name: getrandom
 URL: https://crates.io/crates/getrandom
-Version: 0.4.1
-Revision: 314fd5ab3e6d9ef2ec90243894731865a725417d
+Version: 0.4.2
+Revision: 4d826731b20a09e69cca91c66aea57ab3cf00072
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/LICENSE-APACHE

@@ -1,6 +1,6 @@
 [package]
 name = "getrandom"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2024"
 rust-version = "1.85" # Sync tests.yml and README.md.
 authors = ["The Rand Project Developers"]
@@ -50,7 +50,7 @@ libc = { version = "0.2.154", default-features = false }
 
 # efi_rng
 [target.'cfg(all(target_os = "uefi", getrandom_backend = "efi_rng"))'.dependencies]
-r-efi = { version = "5.1", default-features = false }
+r-efi = { version = "6", default-features = false }
 
 # getentropy
 [target.'cfg(any(target_os = "macos", target_os = "openbsd", target_os = "vita", target_os = "emscripten"))'.dependencies]

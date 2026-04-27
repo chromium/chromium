@@ -49,9 +49,25 @@ const TRUE: BOOL = 1;
 #[inline]
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
     let result = unsafe { ProcessPrng(dest.as_mut_ptr().cast::<u8>(), dest.len()) };
-    // `ProcessPrng` is documented to always return TRUE. All potential errors are handled
-    // during loading of `BCryptPrimitive.dll`. See the "Process base PRNG" section
-    // in the aforementioned Windows RNG whitepaper for more information.
-    debug_assert!(result == TRUE);
-    Ok(())
+    // On Windows 10 and later, `ProcessPrng` is documented to always return
+    // TRUE. All potential errors are handled during loading of
+    // `BCryptPrimitive.dll`. See the "Process base PRNG" section in the
+    // aforementioned Windows RNG whitepaper for more information.
+    //
+    // The Zig project found that Windows 8 implements `ProcessPrng` in a way
+    // that may fail and return a value other than `TRUE`. Although recent
+    // versions of the Rust toolchain do not support Windows 8, we cannot rule
+    // out this backend being used in an executable that will run on Windows 8
+    // (e.g. a fork of this crate backported to have an MSRV lower than 1.76,
+    // or a fork of the Rust toolchain to support older Windows versions, or
+    // other build hacks).
+    //
+    // Further, Wine's implementation of `ProcessPrng` CAN fail, in every
+    // version through Wine 11.2, and this may be the case for any other Windows
+    // emulation layers.
+    if result == TRUE {
+        Ok(())
+    } else {
+        Err(Error::UNEXPECTED)
+    }
 }

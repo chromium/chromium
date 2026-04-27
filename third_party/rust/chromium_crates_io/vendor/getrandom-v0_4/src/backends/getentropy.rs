@@ -1,5 +1,9 @@
 //! Implementation using getentropy(2)
 //!
+//! When porting to a new target, ensure that its implementation follows the
+//! POSIX conventions from
+//! <https://pubs.opengroup.org/onlinepubs/9799919799/functions/getentropy.html>.
+//!
 //! Available since:
 //!   - macOS 10.12
 //!   - OpenBSD 5.6
@@ -17,11 +21,16 @@ mod utils;
 
 #[inline]
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
-    for chunk in dest.chunks_mut(256) {
+    // https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/limits.h.html
+    // says `GETENTROPY_MAX` is at least 256.
+    const GETENTROPY_MAX: usize = 256;
+
+    for chunk in dest.chunks_mut(GETENTROPY_MAX) {
         let ret = unsafe { libc::getentropy(chunk.as_mut_ptr().cast::<c_void>(), chunk.len()) };
-        if ret != 0 {
-            let errno = utils::get_errno();
-            return Err(Error::from_errno(errno));
+        match ret {
+            0 => continue,
+            -1 => return Err(Error::from_errno(utils::get_errno())),
+            _ => return Err(Error::UNEXPECTED),
         }
     }
     Ok(())

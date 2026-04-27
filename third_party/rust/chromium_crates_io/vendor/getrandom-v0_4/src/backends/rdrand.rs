@@ -2,9 +2,6 @@
 use crate::{Error, util::slice_as_uninit};
 use core::mem::{MaybeUninit, size_of};
 
-#[path = "../utils/lazy.rs"]
-mod lazy;
-
 #[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
 compile_error!("`rdrand` backend can be enabled only for x86 and x86-64 targets!");
 
@@ -19,8 +16,6 @@ cfg_if! {
         type Word = u32;
     }
 }
-
-static RDRAND_GOOD: lazy::LazyBool = lazy::LazyBool::new();
 
 // Recommendation from "Intel® Digital Random Number Generator (DRNG) Software
 // Implementation Guide" - Section 5.2.1 and "Intel® 64 and IA-32 Architectures
@@ -72,7 +67,9 @@ fn self_test() -> bool {
     fails <= 2
 }
 
-fn is_rdrand_good() -> bool {
+#[cold]
+#[inline(never)]
+fn init() -> bool {
     #[cfg(not(target_feature = "rdrand"))]
     {
         // SAFETY: All Rust x86 targets are new enough to have CPUID, and we
@@ -113,6 +110,15 @@ fn is_rdrand_good() -> bool {
 
     // SAFETY: We have already checked that rdrand is available.
     unsafe { self_test() }
+}
+
+fn is_rdrand_good() -> bool {
+    #[path = "../utils/lazy_bool.rs"]
+    mod lazy;
+
+    static RDRAND_GOOD: lazy::LazyBool = lazy::LazyBool::new();
+
+    RDRAND_GOOD.unsync_init(init)
 }
 
 #[target_feature(enable = "rdrand")]
@@ -162,7 +168,7 @@ fn rdrand_u64() -> Option<u64> {
 
 #[inline]
 pub fn inner_u32() -> Result<u32, Error> {
-    if !RDRAND_GOOD.unsync_init(is_rdrand_good) {
+    if !is_rdrand_good() {
         return Err(Error::NO_RDRAND);
     }
     // SAFETY: After this point, we know rdrand is supported.
@@ -171,7 +177,7 @@ pub fn inner_u32() -> Result<u32, Error> {
 
 #[inline]
 pub fn inner_u64() -> Result<u64, Error> {
-    if !RDRAND_GOOD.unsync_init(is_rdrand_good) {
+    if !is_rdrand_good() {
         return Err(Error::NO_RDRAND);
     }
     // SAFETY: After this point, we know rdrand is supported.
@@ -180,7 +186,7 @@ pub fn inner_u64() -> Result<u64, Error> {
 
 #[inline]
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
-    if !RDRAND_GOOD.unsync_init(is_rdrand_good) {
+    if !is_rdrand_good() {
         return Err(Error::NO_RDRAND);
     }
     // SAFETY: After this point, we know rdrand is supported.

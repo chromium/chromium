@@ -69,8 +69,9 @@ fn is_rndr_available() -> bool {
 
 #[cfg(not(target_feature = "rand"))]
 fn is_rndr_available() -> bool {
-    #[path = "../utils/lazy.rs"]
+    #[path = "../utils/lazy_bool.rs"]
     mod lazy;
+
     static RNDR_GOOD: lazy::LazyBool = lazy::LazyBool::new();
 
     cfg_if::cfg_if! {

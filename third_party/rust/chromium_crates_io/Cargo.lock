@@ -246,7 +246,7 @@ dependencies = [
  "fend-core",
  "font-types",
  "fs2",
- "getrandom 0.4.1",
+ "getrandom 0.4.2",
  "hex",
  "hmac-sha256",
  "hostname",
@@ -589,18 +589,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
  "libc",
- "r-efi",
+ "r-efi 5.3.0",
  "wasip2",
 ]
 
 [[package]]
 name = "getrandom"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
  "libc",
- "r-efi",
+ "r-efi 6.0.0",
  "wasip2",
  "wasip3",
 ]
@@ -1322,6 +1322,11 @@ dependencies = [
 [[package]]
 name = "r-efi"
 version = "5.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "r-efi"
+version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

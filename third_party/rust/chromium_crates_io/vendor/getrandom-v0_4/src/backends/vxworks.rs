@@ -38,9 +38,13 @@ pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
             .expect("chunk size is bounded by i32::MAX");
         let p: *mut libc::c_uchar = chunk.as_mut_ptr().cast();
         let ret = unsafe { libc::randABytes(p, chunk_len) };
-        if ret != 0 {
-            let errno = unsafe { libc::errnoGet() };
-            return Err(Error::from_errno(errno));
+        match ret {
+            0 => continue,
+            -1 => {
+                let errno = unsafe { libc::errnoGet() };
+                return Err(Error::from_errno(errno));
+            }
+            _ => return Err(Error::UNEXPECTED),
         }
     }
     Ok(())

@@ -4,8 +4,7 @@ use crate::Error;
 use core::{
     ffi::c_void,
     mem::{MaybeUninit, transmute},
-    ptr::NonNull,
-    sync::atomic::{AtomicPtr, Ordering},
+    ptr::{self, NonNull},
 };
 use use_file::utils;
 
@@ -17,18 +16,12 @@ type GetRandomFn = unsafe extern "C" fn(*mut c_void, libc::size_t, libc::c_uint)
 /// or not supported by kernel.
 const NOT_AVAILABLE: NonNull<c_void> = unsafe { NonNull::new_unchecked(usize::MAX as *mut c_void) };
 
-static GETRANDOM_FN: AtomicPtr<c_void> = AtomicPtr::new(core::ptr::null_mut());
-
 #[cold]
 #[inline(never)]
 fn init() -> NonNull<c_void> {
     // Use static linking to `libc::getrandom` on MUSL targets and `dlsym` everywhere else
     #[cfg(not(target_env = "musl"))]
-    let raw_ptr = {
-        static NAME: &[u8] = b"getrandom\0";
-        let name_ptr = NAME.as_ptr().cast::<libc::c_char>();
-        unsafe { libc::dlsym(libc::RTLD_DEFAULT, name_ptr) }
-    };
+    let raw_ptr = unsafe { libc::dlsym(libc::RTLD_DEFAULT, c"getrandom".as_ptr()) };
     #[cfg(target_env = "musl")]
     let raw_ptr = {
         let fptr: GetRandomFn = libc::getrandom;
@@ -37,10 +30,9 @@ fn init() -> NonNull<c_void> {
 
     let res_ptr = match NonNull::new(raw_ptr) {
         Some(fptr) => {
-            let getrandom_fn = unsafe { transmute::<NonNull<c_void>, GetRandomFn>(fptr) };
-            let dangling_ptr = NonNull::dangling().as_ptr();
+            let getrandom_fn = unsafe { transmute::<*mut c_void, GetRandomFn>(fptr.as_ptr()) };
             // Check that `getrandom` syscall is supported by kernel
-            let res = unsafe { getrandom_fn(dangling_ptr, 0, 0) };
+            let res = unsafe { getrandom_fn(ptr::dangling_mut(), 0, 0) };
             if cfg!(getrandom_test_linux_fallback) {
                 NOT_AVAILABLE
             } else if res.is_negative() {
@@ -65,7 +57,6 @@ fn init() -> NonNull<c_void> {
         panic!("Fallback is triggered with enabled `getrandom_test_linux_without_fallback`")
     }
 
-    GETRANDOM_FN.store(res_ptr.as_ptr(), Ordering::Release);
     res_ptr
 }
 
@@ -77,23 +68,17 @@ fn use_file_fallback(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
 
 #[inline]
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
-    // Despite being only a single atomic variable, we still cannot always use
-    // Ordering::Relaxed, as we need to make sure a successful call to `init`
-    // is "ordered before" any data read through the returned pointer (which
-    // occurs when the function is called). Our implementation mirrors that of
-    // the one in libstd, meaning that the use of non-Relaxed operations is
-    // probably unnecessary.
-    let raw_ptr = GETRANDOM_FN.load(Ordering::Acquire);
-    let fptr = match NonNull::new(raw_ptr) {
-        Some(p) => p,
-        None => init(),
-    };
+    #[path = "../utils/lazy_ptr.rs"]
+    mod lazy;
+
+    static GETRANDOM_FN: lazy::LazyPtr<c_void> = lazy::LazyPtr::new();
+    let fptr = GETRANDOM_FN.unsync_init(init);
 
     if fptr == NOT_AVAILABLE {
         use_file_fallback(dest)
     } else {
         // note: `transmute` is currently the only way to convert a pointer into a function reference
-        let getrandom_fn = unsafe { transmute::<NonNull<c_void>, GetRandomFn>(fptr) };
+        let getrandom_fn = unsafe { transmute::<*mut c_void, GetRandomFn>(fptr.as_ptr()) };
         utils::sys_fill_exact(dest, |buf| unsafe {
             getrandom_fn(buf.as_mut_ptr().cast(), buf.len(), 0)
         })

@@ -46,7 +46,8 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/sys_rng.rs",
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/util.rs",
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/get_errno.rs",
-    "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/lazy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/lazy_bool.rs",
+    "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/lazy_ptr.rs",
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/sanitizer.rs",
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/sys_fill_exact.rs",
   ]
@@ -58,7 +59,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "getrandom"
   cargo_pkg_description = "A small cross-platform library for retrieving random data from system source"
   cargo_pkg_repository = "https://github.com/rust-random/getrandom"
-  cargo_pkg_version = "0.4.1"
+  cargo_pkg_version = "0.4.2"
 
   allow_unsafe = true
 

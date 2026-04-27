@@ -8,8 +8,7 @@ use core::{
     cmp,
     ffi::c_void,
     mem::{self, MaybeUninit},
-    ptr,
-    sync::atomic::{AtomicPtr, Ordering},
+    ptr::{self, NonNull},
 };
 
 pub use crate::util::{inner_u32, inner_u64};
@@ -42,36 +41,29 @@ unsafe extern "C" fn polyfill_using_kern_arand(
 
 type GetRandomFn = unsafe extern "C" fn(*mut c_void, libc::size_t, libc::c_uint) -> libc::ssize_t;
 
-static GETRANDOM: AtomicPtr<c_void> = AtomicPtr::new(ptr::null_mut());
-
 #[cold]
 #[inline(never)]
-fn init() -> *mut c_void {
-    static NAME: &[u8] = b"getrandom\0";
-    let name_ptr = NAME.as_ptr().cast::<libc::c_char>();
-    let mut ptr = unsafe { libc::dlsym(libc::RTLD_DEFAULT, name_ptr) };
-    if ptr.is_null() || cfg!(getrandom_test_netbsd_fallback) {
-        // Verify `polyfill_using_kern_arand` has the right signature.
-        const POLYFILL: GetRandomFn = polyfill_using_kern_arand;
-        ptr = POLYFILL as *mut c_void;
+fn init() -> NonNull<c_void> {
+    let ptr = unsafe { libc::dlsym(libc::RTLD_DEFAULT, c"getrandom".as_ptr()) };
+    if !cfg!(getrandom_test_netbsd_fallback) {
+        if let Some(ptr) = NonNull::new(ptr) {
+            return ptr;
+        }
     }
-    GETRANDOM.store(ptr, Ordering::Release);
-    ptr
+    // Verify `polyfill_using_kern_arand` has the right signature.
+    const POLYFILL: GetRandomFn = polyfill_using_kern_arand;
+    unsafe { NonNull::new_unchecked(POLYFILL as *mut c_void) }
 }
 
 #[inline]
 pub fn fill_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
-    // Despite being only a single atomic variable, we still cannot always use
-    // Ordering::Relaxed, as we need to make sure a successful call to `init`
-    // is "ordered before" any data read through the returned pointer (which
-    // occurs when the function is called). Our implementation mirrors that of
-    // the one in libstd, meaning that the use of non-Relaxed operations is
-    // probably unnecessary.
-    let mut fptr = GETRANDOM.load(Ordering::Acquire);
-    if fptr.is_null() {
-        fptr = init();
-    }
-    let fptr = unsafe { mem::transmute::<*mut c_void, GetRandomFn>(fptr) };
+    #[path = "../utils/lazy_ptr.rs"]
+    mod lazy;
+
+    static GETRANDOM_FN: lazy::LazyPtr<c_void> = lazy::LazyPtr::new();
+
+    let fptr = GETRANDOM_FN.unsync_init(init);
+    let fptr = unsafe { mem::transmute::<*mut c_void, GetRandomFn>(fptr.as_ptr()) };
     utils::sys_fill_exact(dest, |buf| unsafe {
         fptr(buf.as_mut_ptr().cast::<c_void>(), buf.len(), 0)
     })
