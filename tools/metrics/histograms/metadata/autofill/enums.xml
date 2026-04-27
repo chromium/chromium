@@ -144,13 +144,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Suggestion Deleted"/>
 </enum>
 
-<enum name="AutofillAddressCountryVoteType">
-  <int value="0" label="Field satisfies LikelyAugmentedPhoneCountryCode()."/>
-  <int value="1" label="Field has also a PHONE_HOME_COUNTRY_CODE vote."/>
-  <int value="2" label="Field is a text field."/>
-  <int value="3" label="Field is a select field."/>
-</enum>
-
 <!-- LINT.IfChange(AutofillAddressOptInChange) -->
 
 <enum name="AutofillAddressOptInChange">

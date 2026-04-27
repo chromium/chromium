@@ -47,37 +47,6 @@ using one_time_tokens::OneTimeToken;
 
 namespace {
 
-void LogAddressCountryVoteInformationMetric(FieldTypeSet possible_types,
-                                            const AutofillField& field) {
-  // Values are persisted in UMA logs. Enum entries should not be renumbered or
-  // reused.
-  enum class AddressCountryVoteType {
-    kSatisfiesLikelyAugmentedPhoneCountryCode = 0,
-    kAlsoHasPhoneCountryCodeVote = 1,
-    kIsTextField = 2,
-    kIsSelectField = 3,
-    kMaxValue = kIsSelectField,
-  };
-  if (!possible_types.contains(ADDRESS_HOME_COUNTRY)) {
-    return;
-  }
-  if (LikelyAugmentedPhoneCountryCode(
-          field, /*new_augmented_cc_regex_experiment_enabled=*/true)) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Voting.AddressCountryVoteAnalysis",
-        AddressCountryVoteType::kSatisfiesLikelyAugmentedPhoneCountryCode);
-  }
-  if (possible_types.contains(PHONE_HOME_COUNTRY_CODE)) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Voting.AddressCountryVoteAnalysis",
-        AddressCountryVoteType::kAlsoHasPhoneCountryCodeVote);
-  }
-  base::UmaHistogramEnumeration("Autofill.Voting.AddressCountryVoteAnalysis",
-                                field.IsSelectElement()
-                                    ? AddressCountryVoteType::kIsSelectField
-                                    : AddressCountryVoteType::kIsTextField);
-}
-
 // Returns a vector that contains all `{date, format}` for which `str` contains
 // `date` in `format`.
 std::vector<std::pair<data_util::Date, std::u16string>>
@@ -496,9 +465,6 @@ PossibleTypes GetPossibleTypes(
   }
   if (fields_that_match_state.contains(field.global_id())) {
     pt.types.insert(ADDRESS_HOME_STATE);
-  }
-  if (pt.types.contains(ADDRESS_HOME_COUNTRY)) {
-    LogAddressCountryVoteInformationMetric(pt.types, field);
   }
 
   for (const CreditCard& card : credit_cards) {

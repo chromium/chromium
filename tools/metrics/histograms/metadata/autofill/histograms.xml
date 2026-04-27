@@ -9505,21 +9505,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="Autofill.VirtualCardEnrollmentSource"/>
 </histogram>
 
-<histogram name="Autofill.Voting.AddressCountryVoteAnalysis"
-    enum="AutofillAddressCountryVoteType" expires_after="2026-06-01">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Temporary metric added to log some information about fields for which we
-    vote for as ADDRESS_HOME_COUNTRY. Emitted once per possible type
-    computation. See `AutofillAddressCountryVoteType` for more details about the
-    logged information.
-
-    Note that the buckets are not mutually exclusive. A single vote might log
-    multiple buckets.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"
     units="ms" expires_after="2026-07-26">
   <owner>yigu@chromium.org</owner>
