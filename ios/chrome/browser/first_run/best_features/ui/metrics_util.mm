@@ -25,6 +25,8 @@ const char kActionOnBestFeaturesPasswordsInOtherAppsHistogram[] =
     "IOS.FirstRun.BestFeatures.PasswordsInOtherApps.Action";
 const char kActionOnBestFeaturesSharePasswordsHistogram[] =
     "IOS.FirstRun.BestFeatures.SharePasswords.Action";
+const char kActionOnBestFeaturesIncognitoBrowsingHistogram[] =
+    "IOS.FirstRun.BestFeatures.IncognitoBrowsing.Action";
 
 const char* BestFeaturesActionHistogramForItemType(
     BestFeaturesItemType item_type) {
@@ -46,5 +48,7 @@ const char* BestFeaturesActionHistogramForItemType(
       return kActionOnBestFeaturesPasswordsInOtherAppsHistogram;
     case kSharePasswordsWithFamily:
       return kActionOnBestFeaturesSharePasswordsHistogram;
+    case kIncognitoBrowsing:
+      return kActionOnBestFeaturesIncognitoBrowsingHistogram;
   }
 }

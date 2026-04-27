@@ -88,7 +88,6 @@
   switch (variation) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenBeforeDBPromo:
-    case kBestOfApp:
       itemTypes = {kLensSearch, kEnhancedSafeBrowsing, kLockedIncognitoTabs};
       break;
     case kGeneralScreenWithPasswordItemAfterDBPromo:
@@ -115,6 +114,9 @@
         itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
                      kAutofillPasswordsInOtherApps};
       }
+      break;
+    case kBestOfApp:
+      itemTypes = {kLensSearch, kEnhancedSafeBrowsing, kIncognitoBrowsing};
       break;
     case kDisabled:
     case kAddressBarPromoInsteadOfBestFeaturesScreen:

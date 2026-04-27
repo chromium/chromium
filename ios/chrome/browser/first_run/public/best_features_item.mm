@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -111,6 +112,7 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
             CustomSymbolWithConfiguration(kSafetyCheckSymbol, configuration),
             @[ [UIColor whiteColor] ]);
       case BestFeaturesItemType::kLockedIncognitoTabs:
+      case BestFeaturesItemType::kIncognitoBrowsing:
         return SymbolWithPalette(
             CustomSymbolWithConfiguration(kIncognitoSymbol, configuration),
             @[ [UIColor whiteColor] ]);
@@ -141,6 +143,7 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
     case BestFeaturesItemType::kEnhancedSafeBrowsing:
       return [UIColor colorNamed:kBlue500Color];
     case BestFeaturesItemType::kLockedIncognitoTabs:
+    case BestFeaturesItemType::kIncognitoBrowsing:
       return [UIColor colorNamed:kGrey400Color];
     case BestFeaturesItemType::kTabGroups:
       return [UIColor colorNamed:kGreen500Color];
@@ -204,6 +207,9 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
         @"Share" : l10n_util::GetNSString(
             IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1),
       };
+    case BestFeaturesItemType::kIncognitoBrowsing:
+      // Animation has no strings.
+      return nil;
   }
 }
 
@@ -214,6 +220,9 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
       case BestFeaturesItemType::kEnhancedSafeBrowsing:
         return @"enhanced_safe_browsing_promo";
       case BestFeaturesItemType::kLockedIncognitoTabs:
+      // TODO (crbug.com/421157197): Upload the correct animation file for
+      // kIncognitoBrowsing.
+      case BestFeaturesItemType::kIncognitoBrowsing:
         return @"locked_incognito_tabs";
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
         return @"save_passwords";
@@ -307,6 +316,9 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_3),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_4),
         ];
+      case BestFeaturesItemType::kIncognitoBrowsing:
+        // kIncognitoBrowsing does not have instructions.
+        return nil;
     }
 }
 
@@ -318,6 +330,7 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
+    case BestFeaturesItemType::kIncognitoBrowsing:
       return TabGroupsColorProvider(0xFFFFFF, 0xE8EAED);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0xF1F3F480);
@@ -336,6 +349,7 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
     case BestFeaturesItemType::kLockedIncognitoTabs:
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
     case BestFeaturesItemType::kTabGroups:
+    case BestFeaturesItemType::kIncognitoBrowsing:
       return TabGroupsColorProvider(0x5F6368, 0x5F6368);
     case BestFeaturesItemType::kPriceTrackingAndInsights:
       return PriceTrackingColorProvider(0x20212480);
@@ -367,6 +381,8 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
       return IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_TITLE;
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_TITLE;
+    case BestFeaturesItemType::kIncognitoBrowsing:
+      return IDS_IOS_BEST_OF_APP_BEST_FEATURES_BROWSE_IN_INCOGNITO_TITLE;
   }
 }
 
@@ -389,6 +405,8 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
       return IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_SUBTITLE;
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_SUBTITLE;
+    case BestFeaturesItemType::kIncognitoBrowsing:
+      return IDS_IOS_BEST_OF_APP_BEST_FEATURES_BROWSE_IN_INCOGNITO_SUBTITLE;
   }
 }
 
@@ -400,6 +418,7 @@ NSDictionary<NSString*, UIColor*>* SharePasswordsColorProvider() {
     case BestFeaturesItemType::kEnhancedSafeBrowsing:
       return IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_CAPTION;
     case BestFeaturesItemType::kLockedIncognitoTabs:
+    case BestFeaturesItemType::kIncognitoBrowsing:
       return IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_CAPTION;
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
       return IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_CAPTION;

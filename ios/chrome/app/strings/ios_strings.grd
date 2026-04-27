@@ -1068,6 +1068,12 @@
       <message name="IDS_IOS_BEST_FEATURES_TITLE" desc="Title for the Chrome iOS Best Features Promo">
         A safer, more powerful browser for you
       </message>
+      <message name="IDS_IOS_BEST_OF_APP_BEST_FEATURES_BROWSE_IN_INCOGNITO_SUBTITLE" desc="Subtitle of the Browse in Incognito promo for the Best of App Best Features promo">
+        Open Incognito tabs to browse the web more privately.
+      </message>
+      <message name="IDS_IOS_BEST_OF_APP_BEST_FEATURES_BROWSE_IN_INCOGNITO_TITLE" desc="Title of the Browse in Incognito promo for the Best of App Best Features promo">
+        Browse in Incognito
+      </message>
       <message name="IDS_IOS_BLOCK_POPUPS" desc="Title for the view and option in Settings for blocking pop-ups. [Length: 15em] [iOS only]">
         Block pop-ups
       </message>

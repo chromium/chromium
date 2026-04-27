@@ -197,6 +197,10 @@
     case kSharePasswordsWithFamily:
       enumValue = BestFeaturesMainScreenActionType::kSharePasswordsItemTapped;
       break;
+    case kIncognitoBrowsing:
+      enumValue =
+          BestFeaturesMainScreenActionType::kIncognitoBrowsingItemTapped;
+      break;
   }
   base::UmaHistogramEnumeration(kActionOnBestFeaturesMainScreenHistogram,
                                 enumValue);

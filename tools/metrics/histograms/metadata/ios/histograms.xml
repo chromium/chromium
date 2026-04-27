@@ -2209,6 +2209,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeatureName">
     <variant name="EnhancedSafeBrowsing" summary="Enhanced Safe Browsing"/>
+    <variant name="IncognitoBrowsing" summary="Incognito Browsing"/>
     <variant name="Lens"/>
     <variant name="LockedIncognitoTabs" summary="Locked Incognito Tabs"/>
     <variant name="PasswordsInOtherApps" summary="Passwords In Other Apps"/>

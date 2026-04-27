@@ -19,7 +19,8 @@ enum class BestFeaturesItemType {
   kPriceTrackingAndInsights = 5,
   kAutofillPasswordsInOtherApps = 6,
   kSharePasswordsWithFamily = 7,
-  kMaxValue = kSharePasswordsWithFamily,
+  kIncognitoBrowsing = 8,
+  kMaxValue = kIncognitoBrowsing,
 };
 // LINT.ThenChange(
 // /ios/chrome/browser/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType,

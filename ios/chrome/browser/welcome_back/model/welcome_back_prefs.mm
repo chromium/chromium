@@ -34,6 +34,8 @@ std::optional<BestFeaturesItemType> IntToBestFeaturesItemType(
         return BestFeaturesItemType::kAutofillPasswordsInOtherApps;
       case 7:
         return BestFeaturesItemType::kSharePasswordsWithFamily;
+      case 8:
+        return BestFeaturesItemType::kIncognitoBrowsing;
     }
   }
   return std::nullopt;

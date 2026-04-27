@@ -8,6 +8,7 @@ source_set("best_features_item") {
     "best_features_item.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",

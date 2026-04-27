@@ -33,7 +33,8 @@ enum class BestFeaturesMainScreenActionType {
   kPriceTrackingTapped = 6,
   kPasswordsInOtherAppsItemTapped = 7,
   kSharePasswordsItemTapped = 8,
-  kMaxValue = kSharePasswordsItemTapped,
+  kIncognitoBrowsingItemTapped = 9,
+  kMaxValue = kIncognitoBrowsingItemTapped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSBestFeaturesMainScreenActionType)
 
@@ -50,6 +51,7 @@ extern const char kActionOnBestFeaturesTabGroupsHistogram[];
 extern const char kActionOnBestFeaturesPriceTrackingHistogram[];
 extern const char kActionOnBestFeaturesPasswordsInOtherAppsHistogram[];
 extern const char kActionOnBestFeaturesSharePasswordsHistogram[];
+extern const char kActionOnBestFeaturesIncognitoBrowsingHistogram[];
 
 // Returns the name of the histogram for logging action on a Best Features
 // screen of type `item_type`.
