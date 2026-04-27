@@ -6,6 +6,7 @@ import("//ios/build/config.gni")
 
 source_set("webui") {
   deps = [
+    ":internal_constants",
     "//base",
     "//ios/web:resources",
     "//ios/web:resources_grit",
@@ -53,4 +54,12 @@ source_set("webui") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("internal_constants") {
+  visibility = [ ":webui" ]
+  sources = [
+    "web_ui_constants.h",
+    "web_ui_constants.mm",
+  ]
 }

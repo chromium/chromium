@@ -39,8 +39,11 @@ TEST_F(URLFetcherBlockAdapterTest, FetchTextResource) {
   NSData* expected_data = [NSData dataWithBytes:response.c_str()
                                          length:response.size()];
   web::URLFetcherBlockAdapterCompletion completion_handler =
-      ^(NSData* data, web::URLFetcherBlockAdapter* fetcher) {
+      ^(NSData* data, NSDictionary* headers,
+        web::URLFetcherBlockAdapter* fetcher) {
         EXPECT_NSEQ(expected_data, data);
+        EXPECT_EQ(1UL, headers.count);
+        EXPECT_NSEQ(@"text/html", headers[@"Content-type"]);
       };
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -66,7 +69,8 @@ TEST_F(URLFetcherBlockAdapterTest, FetchPNGResource) {
   NSData* expected_data = [NSData
       dataWithContentsOfFile:base::SysUTF8ToNSString(favicon_path.value())];
   web::URLFetcherBlockAdapterCompletion completion_handler =
-      ^(NSData* data, URLFetcherBlockAdapter* fetcher) {
+      ^(NSData* data, NSDictionary* headers,
+        web::URLFetcherBlockAdapter* fetcher) {
         EXPECT_NSEQ(expected_data, data);
       };
 

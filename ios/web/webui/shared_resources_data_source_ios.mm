@@ -12,6 +12,7 @@
 #import "ios/web/grit/ios_web_resources.h"
 #import "ios/web/grit/ios_web_resources_map.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/webui/web_ui_constants.h"
 #import "mojo/public/js/grit/mojo_bindings_resources.h"
 #import "mojo/public/js/grit/mojo_bindings_resources_map.h"
 #import "net/base/mime_util.h"
@@ -23,10 +24,6 @@
 namespace web {
 
 namespace {
-
-// Value duplicated from content/public/common/url_constants.h
-// TODO(stuartmorgan): Revisit how to share this in a more maintainable way.
-const char kWebUIResourcesHost[] = "resources";
 
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.

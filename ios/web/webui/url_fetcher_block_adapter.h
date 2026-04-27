@@ -24,7 +24,8 @@ namespace web {
 // Class for use of URLLoader from Objective-C with a completion handler block.
 class URLFetcherBlockAdapter;
 // Block type for URLFetcherBlockAdapter callbacks.
-typedef void (^URLFetcherBlockAdapterCompletion)(NSData*,
+typedef void (^URLFetcherBlockAdapterCompletion)(NSData* data,
+                                                 NSDictionary* headers,
                                                  URLFetcherBlockAdapter*);
 
 // Class to manage retrieval of WebUI resources.

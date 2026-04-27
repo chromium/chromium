@@ -325,4 +325,33 @@ using chrome_test_util::ForwardButton;
                       "This page is not available in incognito mode."];
 }
 
+// Tests that cross-origin requests between different WebUI pages are blocked.
+- (void)testWebUICrossOriginAccess {
+  // WebUI page must already exist before any request to it will succeed.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIChromeURLsURL)];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIChromeURLsURL)];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIVersionURL)];
+
+  NSString* fetchChromeUrlsScript =
+      @"(function() {"
+       "  var xhr = new XMLHttpRequest();"
+       "  xhr.open('GET', 'chrome://chrome-urls/', false);"
+       "  try {"
+       "    xhr.send(null);"
+       "    return xhr.status == 200;"
+       "  } catch (e) {"
+       "    return false;"
+       "  }"
+       "})()";
+  std::optional<bool> chromeUrlsResult =
+      [ChromeEarlGrey evaluateJavaScript:fetchChromeUrlsScript].GetIfBool();
+  GREYAssertTrue(chromeUrlsResult, @"Result type is not a boolean.");
+  GREYAssertFalse(chromeUrlsResult.value(),
+                  @"Should not be able to fetch chrome://chrome-urls/ from "
+                  @"chrome://version");
+}
+
 @end

@@ -48,8 +48,7 @@ class TestUI : public WebUIIOSController {
   // with test WebUI page.
   TestUI(WebUIIOS* web_ui, const std::string& host, int resource_id)
       : WebUIIOSController(web_ui, host) {
-    web::WebUIIOSDataSource* source =
-        web::WebUIIOSDataSource::Create(kTestWebUIURLHost);
+    web::WebUIIOSDataSource* source = web::WebUIIOSDataSource::Create(host);
 
     source->SetDefaultResource(resource_id);
 

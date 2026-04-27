@@ -24,6 +24,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/webui/shared_resources_data_source_ios.h"
 #import "ios/web/webui/url_data_source_ios_impl.h"
+#import "ios/web/webui/web_ui_constants.h"
 #import "net/base/io_buffer.h"
 #import "net/base/net_errors.h"
 #import "net/filter/source_stream.h"
@@ -45,14 +46,15 @@ namespace web {
 
 namespace {
 
+const char kAccessControlAllowOrigin[] = "Access-Control-Allow-Origin";
+const char kChromeURLAccessControlAllowOriginAll[] = "*";
+
 const char kContentSecurityPolicy[] = "Content-Security-Policy";
 const char kChromeURLContentSecurityPolicyHeaderBase[] =
     "script-src chrome://resources 'self'; ";
 
 const char kXFrameOptions[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeader[] = "DENY";
-
-const char kWebUIResourcesHost[] = "resources";
 
 // Returns whether `url` passes some sanity checks and is a valid GURL.
 bool CheckURLIsValid(const GURL& url) {
@@ -204,6 +206,12 @@ class URLRequestChromeJob : public net::URLRequestJob {
     add_content_security_policy_ = add_content_security_policy;
   }
 
+  void set_add_access_control_allow_origin_header(
+      bool add_access_control_allow_origin_header) {
+    add_access_control_allow_origin_header_ =
+        add_access_control_allow_origin_header;
+  }
+
   void set_content_security_policy_object_source(const std::string& data) {
     content_security_policy_object_source_ = data;
   }
@@ -247,6 +255,9 @@ class URLRequestChromeJob : public net::URLRequestJob {
   // If true, set a header in the response to prevent it from being cached.
   bool allow_caching_;
 
+  // If true, set the Access-Control-Allow-Origin header.
+  bool add_access_control_allow_origin_header_;
+
   // If true, set the Content Security Policy (CSP) header.
   bool add_content_security_policy_;
 
@@ -283,6 +294,7 @@ URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
                                          bool is_incognito)
     : net::URLRequestJob(request),
       allow_caching_(true),
+      add_access_control_allow_origin_header_(false),
       add_content_security_policy_(true),
       content_security_policy_object_source_("object-src 'none';"),
       content_security_policy_frame_source_("frame-src 'none';"),
@@ -352,6 +364,11 @@ void URLRequestChromeJob::GetResponseInfo(net::HttpResponseInfo* info) {
     base.append(content_security_policy_object_source_);
     base.append(content_security_policy_frame_source_);
     info->headers->AddHeader(kContentSecurityPolicy, base);
+  }
+
+  if (add_access_control_allow_origin_header_) {
+    info->headers->AddHeader(kAccessControlAllowOrigin,
+                             kChromeURLAccessControlAllowOriginAll);
   }
 
   if (deny_xframe_options_) {
@@ -565,12 +582,14 @@ bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
   pending_requests_.insert(std::make_pair(request_id, job));
 
   job->set_allow_caching(source->source()->AllowCaching());
-  job->set_add_content_security_policy(true);
+  // TODO(crbug.com/502503860): Implement Content-Security-Policy header.
+  job->set_add_content_security_policy(false);
+  job->set_add_access_control_allow_origin_header(true);
   job->set_content_security_policy_object_source(
       source->source()->GetContentSecurityPolicyObjectSrc());
   job->set_content_security_policy_frame_source("frame-src 'none';");
   job->set_deny_xframe_options(source->source()->ShouldDenyXFrameOptions());
-  job->set_send_content_type_header(false);
+  job->set_send_content_type_header(true);
 
   // Forward along the request to the data source.
   // URLRequestChromeJob should receive mime type before data. This
