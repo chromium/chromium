@@ -547,11 +547,11 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
 
   // If we don't have the token yet (e.g., privacy notice pending),
   // stash the query and wait for StartQueryFlow to push it through!
-  if (!overlay_tab_context_file_token_.has_value()) {
+  if (request_info->search_url_type != SearchUrlType::kAim &&
+      !overlay_tab_context_file_token_.has_value()) {
     pending_search_url_request_ = std::move(request_info);
     return;
   }
-
   // Standard searches skip QueryContextualizer processing pipeline.
   // We do not add the token to file_tokens here because
   // CreateSearchUrl will automatically add all uploaded context tokens from the
@@ -580,12 +580,18 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
 
   // AIM searches MUST go through QueryContextualizer gatekeeper.
   pending_search_url_request_ = std::move(request_info);
-
   if (query_contextualizer_) {
-    // We already have the token! So we don't need to force contextualization!
+    // Force contextualization of the active tab only if the overlay token was
+    // never fetched. This happens for flows that do not call StartQueryFlow /
+    // open the overlay like omnibox contextual suggestions.
+    std::vector<contextual_tasks::QueryContextualizer::TabId> force_tabs;
+    if (!overlay_tab_context_file_token_.has_value()) {
+      force_tabs.push_back(tab_interface()->GetHandle().raw_value());
+    }
     query_contextualizer_->Contextualize(
         /*task_id=*/std::nullopt, pending_search_url_request_->query_text,
-        /*tabs_to_recontextualize=*/{}, /*tabs_to_force_contextualize=*/{},
+        /*tabs_to_recontextualize=*/{},
+        /*tabs_to_force_contextualize=*/force_tabs,
         /*on_ineligible_callback=*/
         base::BindRepeating(&LensQueryFlowRouter::ShowContextualTasksErrorPage,
                             weak_factory_.GetWeakPtr()),
@@ -831,6 +837,11 @@ LensQueryFlowRouter::GetContextualSearchSessionHandle() const {
   }
 
   return controller->GetContextualSearchSessionHandleForPanel();
+}
+
+void LensQueryFlowRouter::SetQueryContextualizerForTesting(
+    std::unique_ptr<contextual_tasks::QueryContextualizer> contextualizer) {
+  query_contextualizer_ = std::move(contextualizer);
 }
 
 bool LensQueryFlowRouter::IsActiveTabContextEligible() const {
