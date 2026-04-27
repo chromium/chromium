@@ -28,8 +28,9 @@ class CORE_EXPORT CSSContainerRule final : public CSSConditionRule {
   String containerQuery() const;
   const FrozenArray<CSSContainerCondition>& conditions();
 
-  const AtomicString& Name() const;
-  const ContainerSelector& Selector() const;
+  // TODO(crbug.com/41491726): Returns a single container selector used by
+  // devtools to look up container candidates.
+  const ContainerSelector& SelectorForInspector() const;
   void SetConditionText(const ExecutionContext*, String);
 
   void Trace(Visitor*) const override;

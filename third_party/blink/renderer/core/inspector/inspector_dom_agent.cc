@@ -2175,7 +2175,7 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
         // Container rule origin no longer known at this point, match name from
         // all scopes.
         if (container == style_resolver.FindContainerForElement(
-                             element, container_rule->Selector(),
+                             element, container_rule->SelectorForInspector(),
                              nullptr /* selector_tree_scope */)) {
           return true;
         }

@@ -28,11 +28,7 @@ String CSSContainerRule::cssText() const {
   return result.ReleaseString();
 }
 
-const AtomicString& CSSContainerRule::Name() const {
-  return ContainerQuery().Selector().Name();
-}
-
-const ContainerSelector& CSSContainerRule::Selector() const {
+const ContainerSelector& CSSContainerRule::SelectorForInspector() const {
   return ContainerQuery().Selector();
 }
 

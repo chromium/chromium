@@ -3600,10 +3600,13 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   container_query_object->setRange(
       inspector_style_sheet->RuleHeaderSourceRange(rule));
 
-  if (!rule->Name().empty())
-    container_query_object->setName(rule->Name());
+  const ContainerSelector& selector = rule->SelectorForInspector();
+  const AtomicString& name = selector.Name();
+  if (!name.empty()) {
+    container_query_object->setName(name);
+  }
 
-  PhysicalAxes physical = rule->Selector().GetPhysicalAxes();
+  PhysicalAxes physical = selector.GetPhysicalAxes();
   if (physical != kPhysicalAxesNone) {
     protocol::DOM::PhysicalAxes physical_proto =
         protocol::DOM::PhysicalAxesEnum::Horizontal;
@@ -3616,7 +3619,7 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
     }
     container_query_object->setPhysicalAxes(physical_proto);
   }
-  LogicalAxes logical = rule->Selector().GetLogicalAxes();
+  LogicalAxes logical = selector.GetLogicalAxes();
   if (logical != kLogicalAxesNone) {
     protocol::DOM::LogicalAxes logical_proto =
         protocol::DOM::LogicalAxesEnum::Inline;
@@ -3629,10 +3632,10 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
     }
     container_query_object->setLogicalAxes(logical_proto);
   }
-  if (rule->Selector().SelectsScrollStateContainers()) {
+  if (selector.SelectsScrollStateContainers()) {
     container_query_object->setQueriesScrollState(true);
   }
-  if (rule->Selector().SelectsAnchoredContainers()) {
+  if (selector.SelectsAnchoredContainers()) {
     container_query_object->setQueriesAnchored(true);
   }
   return container_query_object;
