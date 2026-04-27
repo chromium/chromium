@@ -164,7 +164,14 @@ public class PdfContentProvider extends ContentProvider {
         synchronized (LOCK) {
             PdfFileInfo info = sPdfUriMap.get(uri);
             if (info != null) {
-                return info.pfd;
+                try {
+                    // Duplicate so each caller owns an independent descriptor; closing one
+                    // does not invalidate descriptors held by other callers.
+                    return info.pfd.dup();
+                } catch (IOException e) {
+                    throw new FileNotFoundException(
+                            "Failed to duplicate file descriptor: " + e.getMessage());
+                }
             }
         }
         throw new FileNotFoundException("Uri has expired or doesn't exist.");
