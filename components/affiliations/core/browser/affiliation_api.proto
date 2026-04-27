@@ -126,12 +126,27 @@ message BrandingInfo {
 // facet.
 message ChangePasswordInfo {
   // A URL to a change password form or flow.
+  // NOT set for PATTERNS_ON_MAIN_DOMAIN.
   optional string change_password_url = 1;
+
+  // A pattern that matches a URL and provides a change password URL for it.
+  message ChangePasswordPattern {
+    // RE2 regexp to match against the whole url.
+    // Note: The url must be for the same domain as this main domain facet or
+    // for a subdomain. This is assumed in the supplied regexp!
+    optional string url_pattern_re2 = 1;
+    // The fixed password changed url to go to if this pattern matches.
+    optional string change_password_url = 2;
+  }
+
+  // Only set if PATTERNS_ON_MAIN_DOMAIN
+  // Only set on main domain facets.
+  repeated ChangePasswordPattern patterns = 2;
 }
 
 // Request mask for LookupAffiliationRequest and assorted other
 // parameters that affect the response overall.
-// Next id: 12
+// Next id: 16
 message LookupAffiliationMask {
   // If true, branding info for all facets will be returned.
   optional bool branding_info = 1;
@@ -201,37 +216,44 @@ message LookupAffiliationMask {
   // populated. Optional field.
   optional bool is_on_internal_network = 9;
 
-  // Which dataset the client is hinting to receive.
-  enum RequestedDataset {
-    // Not specified. Same as DEFAULT_DATASET essentially.
-    REQUESTED_DATASET_UNSPECIFIED = 0;
-    // No specific dataset requested by the client. Likely the server responds
-    // with the current production dataset.
-    DEFAULT_DATASET = 1;
-    // A way for the client to specify that they want the experimental dataset.
-    // Please reach out to the Affilitions (go/pwm-eng) team before setting this
-    // value!
-    EXPERIMENTAL_DATASET = 2;
+  // If true, the favicon query parameters will be encrypted for any branding
+  // info (group as well as per-facet). See
+  // https://g3doc.corp.google.com/image/favicon_service/g3doc/customer-faq.md#encrypt-query
+  // for more details on query encryption. Can only be set if branding_info is
+  // true.
+  optional bool favicon_query_encryption = 12;
+
+  // If set, this parameter will be used in every favicon URL that is generated
+  // for any branding info (group as well as per-facet). Used by clients to
+  // randomize the resulting favicon URL and to avoid cache probing attacks on
+  // clients (see http://b/383975399). Can only be set if
+  // favicon_query_encryption and branding_info is true.
+  optional string favicon_user_specific_identifier = 13;
+
+  // This is for debugging the feature of chrome version dependent
+  // ChangePasswordInfos. The version format is Chrome's version as a string,
+  // e.g. "141", see major version in
+  // https://www.chromium.org/developers/version-numbers/. This is for debugging
+  // only and can go away or change its meaning at any time. Do not set this in
+  // production code when making requests.
+  optional string debug_chrome_version = 14;
+
+  // This enum is used in conjunction with change_password_info = true.
+  enum ChangePasswordFormat {
+    // Unset/Default for old clients. This defaults to the
+    // ONE_URL_PER_MAIN_DOMAIN behavior.
+    CHANGE_PASSWORD_FORMAT_UNSPECIFIED = 0;
+    // Old format: one URL per main domain.
+    ONE_URL_PER_MAIN_DOMAIN = 1;
+    // New format: change password URLs with patterns on main domain level.
+    PATTERNS_PER_MAIN_DOMAIN = 2;
   }
 
-  // A hint from the client for which dataset the server should return.
-  //
-  // Please do not set this unless the Affiliations team has told you to!
-  //
-  // Affiliation Service sometimes runs multiple datasets in parallel. The
-  // chosen dataset affects both the Affiliations and FacetGroups in the
-  // response.
-  //
-  // This is a simple way to coordinate experiments with clients because the
-  // proper Mendel way doesn't quite work (yet). See b/327142690 for overall
-  // progress towards client-side experiments and metrics.
-  //
-  // This field is optional and leaving it unspecified is usually the right
-  // choice. The server does not have to honor this field. There might not even
-  // be another dataset than the default one.
-  optional RequestedDataset dataset = 11;
+  // If set, determines which format of change password URLs to return.
+  // Used in conjunction with change_password_info = true.
+  optional ChangePasswordFormat change_password_format = 15;
 
-  reserved 3;
+  reserved 3, 11;
 }
 
 // Request message for AffiliationService.Lookup.
