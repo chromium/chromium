@@ -75,9 +75,8 @@
 
         let pixel = getPixel(5, 5);
         assert_array_equals(pixel, [0, 255, 0, 255], "Same origin feImage backdrop-filter should draw");
-        // TODO(https://crbug.com/501606085): Enable the cross-origin test.
-        // pixel = getPixel(5, 15);
-        // assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin feImage backdrop-filter should not draw");
+        pixel = getPixel(5, 15);
+        assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin feImage backdrop-filter should not draw");
       });
     }
   </script>
