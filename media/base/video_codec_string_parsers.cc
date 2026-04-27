@@ -163,45 +163,37 @@ std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   if (values.size() < 5) {
     return result;
   }
-  auto primaries = VideoColorSpace::GetPrimaryID(values[4]);
-  if (primaries == VideoColorSpace::PrimaryID::INVALID) {
+  result.color_space.primaries = VideoColorSpace::GetPrimaryID(values[4]);
+  if (result.color_space.primaries == VideoColorSpace::PrimaryID::INVALID) {
     DVLOG(3) << __func__ << " Invalid color primaries (" << values[4] << ")";
     return std::nullopt;
   }
 
   if (values.size() < 6) {
-    // Default missing transfer/matrix to BT709 (per REC709 initialization).
-    result.color_space = VideoColorSpace(
-        primaries, VideoColorSpace::TransferID::BT709,
-        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
-  auto transfer = VideoColorSpace::GetTransferID(values[5]);
-  if (transfer == VideoColorSpace::TransferID::INVALID) {
+  result.color_space.transfer = VideoColorSpace::GetTransferID(values[5]);
+  if (result.color_space.transfer == VideoColorSpace::TransferID::INVALID) {
     DVLOG(3) << __func__ << " Invalid transfer function (" << values[5] << ")";
     return std::nullopt;
   }
 
   if (values.size() < 7) {
-    result.color_space =
-        VideoColorSpace(primaries, transfer, VideoColorSpace::MatrixID::BT709,
-                        gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
-  auto matrix = VideoColorSpace::GetMatrixID(values[6]);
-  if (matrix == VideoColorSpace::MatrixID::INVALID) {
+  result.color_space.matrix = VideoColorSpace::GetMatrixID(values[6]);
+  if (result.color_space.matrix == VideoColorSpace::MatrixID::INVALID) {
     DVLOG(3) << __func__ << " Invalid matrix coefficients (" << values[6]
              << ")";
     return std::nullopt;
   }
-  if (matrix == VideoColorSpace::MatrixID::RGB && chroma_subsampling != 3) {
+  if (result.color_space.matrix == VideoColorSpace::MatrixID::RGB &&
+      chroma_subsampling != 3) {
     DVLOG(3) << __func__ << " Invalid combination of chroma_subsampling ("
              << ") and matrix coefficients (" << values[6] << ")";
   }
 
   if (values.size() < 8) {
-    result.color_space = VideoColorSpace(primaries, transfer, matrix,
-                                         gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
   const int video_full_range_flag = values[7];
@@ -210,9 +202,9 @@ std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
              << video_full_range_flag << ")";
     return std::nullopt;
   }
-  auto range = video_full_range_flag == 1 ? gfx::ColorSpace::RangeID::FULL
-                                          : gfx::ColorSpace::RangeID::LIMITED;
-  result.color_space = VideoColorSpace(primaries, transfer, matrix, range);
+  result.color_space.range = video_full_range_flag == 1
+                                 ? gfx::ColorSpace::RangeID::FULL
+                                 : gfx::ColorSpace::RangeID::LIMITED;
 
   return result;
 }
@@ -414,37 +406,31 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // fields in the Sequence Header, if color_description_present_flag is set to
   // 1, otherwise they SHOULD not be set, defaulting to the values below. The
   // videoFullRangeFlag is represented by a single digit.
-  auto primaries = VideoColorSpace::GetPrimaryID(values[6]);
+  result.color_space.primaries = VideoColorSpace::GetPrimaryID(values[6]);
   if (fields[6].size() != 2 ||
-      primaries == VideoColorSpace::PrimaryID::INVALID) {
+      result.color_space.primaries == VideoColorSpace::PrimaryID::INVALID) {
     DVLOG(3) << __func__ << " Invalid color primaries (" << fields[6] << ")";
     return std::nullopt;
   }
 
   if (values.size() <= 7) {
-    // Default missing transfer/matrix to BT709 (AV1 ISOBMFF spec default).
-    result.color_space = VideoColorSpace(
-        primaries, VideoColorSpace::TransferID::BT709,
-        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
 
-  auto transfer = VideoColorSpace::GetTransferID(values[7]);
+  result.color_space.transfer = VideoColorSpace::GetTransferID(values[7]);
   if (fields[7].size() != 2 ||
-      transfer == VideoColorSpace::TransferID::INVALID) {
+      result.color_space.transfer == VideoColorSpace::TransferID::INVALID) {
     DVLOG(3) << __func__ << " Invalid transfer function (" << fields[7] << ")";
     return std::nullopt;
   }
 
   if (values.size() <= 8) {
-    result.color_space =
-        VideoColorSpace(primaries, transfer, VideoColorSpace::MatrixID::BT709,
-                        gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
 
-  auto matrix = VideoColorSpace::GetMatrixID(values[8]);
-  if (fields[8].size() != 2 || matrix == VideoColorSpace::MatrixID::INVALID) {
+  result.color_space.matrix = VideoColorSpace::GetMatrixID(values[8]);
+  if (fields[8].size() != 2 ||
+      result.color_space.matrix == VideoColorSpace::MatrixID::INVALID) {
     // TODO(dalecurtis): AV1 allows a few matrices we don't support yet.
     // https://crbug.com/854290
     if (values[8] == 12 || values[8] == 13 || values[8] == 14) {
@@ -458,8 +444,6 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   }
 
   if (values.size() <= 9) {
-    result.color_space = VideoColorSpace(primaries, transfer, matrix,
-                                         gfx::ColorSpace::RangeID::LIMITED);
     return result;
   }
 
@@ -468,10 +452,9 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
     DVLOG(3) << __func__ << " Invalid full range flag (" << fields[9] << ")";
     return std::nullopt;
   }
-  gfx::ColorSpace::RangeID range = video_full_range_flag == 1
-                                       ? gfx::ColorSpace::RangeID::FULL
-                                       : gfx::ColorSpace::RangeID::LIMITED;
-  result.color_space = VideoColorSpace(primaries, transfer, matrix, range);
+  result.color_space.range = video_full_range_flag == 1
+                                 ? gfx::ColorSpace::RangeID::FULL
+                                 : gfx::ColorSpace::RangeID::LIMITED;
 
   return result;
 }

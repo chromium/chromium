@@ -15,27 +15,29 @@ struct StructTraits<media::mojom::VideoColorSpaceDataView,
                     media::VideoColorSpace> {
   static media::VideoColorSpace::PrimaryID primaries(
       const media::VideoColorSpace& input) {
-    return input.primaries();
+    return input.primaries;
   }
   static media::VideoColorSpace::TransferID transfer(
       const media::VideoColorSpace& input) {
-    return input.transfer();
+    return input.transfer;
   }
   static media::VideoColorSpace::MatrixID matrix(
       const media::VideoColorSpace& input) {
-    return input.matrix();
+    return input.matrix;
   }
   static gfx::ColorSpace::RangeID range(const media::VideoColorSpace& input) {
-    return input.range();
+    return input.range;
   }
 
   static bool Read(media::mojom::VideoColorSpaceDataView data,
                    media::VideoColorSpace* output) {
-    *output = media::VideoColorSpace(
-        static_cast<media::VideoColorSpace::PrimaryID>(data.primaries()),
-        static_cast<media::VideoColorSpace::TransferID>(data.transfer()),
-        static_cast<media::VideoColorSpace::MatrixID>(data.matrix()),
-        static_cast<gfx::ColorSpace::RangeID>(data.range()));
+    output->primaries =
+        static_cast<media::VideoColorSpace::PrimaryID>(data.primaries());
+    output->transfer =
+        static_cast<media::VideoColorSpace::TransferID>(data.transfer());
+    output->matrix =
+        static_cast<media::VideoColorSpace::MatrixID>(data.matrix());
+    output->range = static_cast<gfx::ColorSpace::RangeID>(data.range());
     return true;
   }
 };

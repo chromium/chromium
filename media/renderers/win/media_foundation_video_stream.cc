@@ -234,17 +234,17 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
   }
 
   MFVideoTransferFunction mf_transfer_function =
-      VideoTransferFunctionToMF(config.color_space_info().transfer());
+      VideoTransferFunctionToMF(config.color_space_info().transfer);
   RETURN_IF_FAILED(
       media_type->SetUINT32(MF_MT_TRANSFER_FUNCTION, mf_transfer_function));
 
   MFVideoPrimaries mf_video_primary =
-      VideoPrimariesToMF(config.color_space_info().primaries());
+      VideoPrimariesToMF(config.color_space_info().primaries);
   RETURN_IF_FAILED(
       media_type->SetUINT32(MF_MT_VIDEO_PRIMARIES, mf_video_primary));
 
   UINT32 video_nominal_range =
-      config.color_space_info().range() == gfx::ColorSpace::RangeID::FULL
+      config.color_space_info().range == gfx::ColorSpace::RangeID::FULL
           ? MFNominalRange_0_255
           : MFNominalRange_16_235;
   RETURN_IF_FAILED(

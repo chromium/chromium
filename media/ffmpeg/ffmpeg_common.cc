@@ -756,9 +756,10 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     // crbug.com/343014700.
     color_space = VideoColorSpace::REC709();
   } else if (codec_context->codec_id == AV_CODEC_ID_HEVC &&
-             !color_space.IsSpecified() &&
-             AVPixelFormatToVideoPixelFormat(codec_context->pix_fmt) ==
-                 PIXEL_FORMAT_I420) {
+             (color_space.primaries == VideoColorSpace::PrimaryID::INVALID ||
+              color_space.transfer == VideoColorSpace::TransferID::INVALID ||
+              color_space.matrix == VideoColorSpace::MatrixID::INVALID) &&
+             pixel_format == PIXEL_FORMAT_I420) {
     // Some HEVC SDR content encoded by the Adobe Premiere HW HEVC encoder has
     // invalid primaries but valid transfer and matrix, and some HEVC SDR
     // content encoded by web camera has invalid primaries and transfer, this
@@ -914,9 +915,8 @@ void VideoDecoderConfigToAVCodecContext(
   codec_context->profile = VideoCodecProfileToProfileID(config.profile());
   codec_context->coded_width = config.coded_size().width();
   codec_context->coded_height = config.coded_size().height();
-  if (config.color_space_info().range() == gfx::ColorSpace::RangeID::FULL) {
+  if (config.color_space_info().range == gfx::ColorSpace::RangeID::FULL)
     codec_context->color_range = AVCOL_RANGE_JPEG;
-  }
 
   CopyBufferFromConfig(config, codec_context);
   ApplyCodecContextSecuritySettings(codec_context);

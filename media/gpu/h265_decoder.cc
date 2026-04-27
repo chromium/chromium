@@ -620,7 +620,7 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     new_color_space = container_color_space_;
   }
 
-  if (new_color_space.matrix() == VideoColorSpace::MatrixID::RGB &&
+  if (new_color_space.matrix == VideoColorSpace::MatrixID::RGB &&
       new_chroma_sampling != VideoChromaSampling::k444) {
     // Some H.265 videos contain a VUI that specifies a color matrix of GBR,
     // when they are actually ordinary YUV. Default to BT.709 if the format is

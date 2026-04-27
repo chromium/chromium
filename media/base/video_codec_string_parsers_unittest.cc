@@ -29,8 +29,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
     EXPECT_EQ(VideoCodec::kVP9, result->codec);
     EXPECT_EQ(VP9PROFILE_PROFILE0, result->profile);
     EXPECT_EQ(10u, result->level);
-    EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-              result->color_space.transfer());
+    EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
     EXPECT_EQ(VideoChromaSampling::k420, result->subsampling);
     EXPECT_EQ(8u, result->bit_depth);
   }
@@ -73,7 +72,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
       EXPECT_EQ(VP9PROFILE_PROFILE0, result->profile);
       EXPECT_EQ(i, result->level);
       EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-                result->color_space.transfer());
+                result->color_space.transfer);
       num_valid_levels++;
     } else {
       EXPECT_FALSE(ParseNewStyleVp9CodecID(codec_string));
@@ -181,7 +180,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
     auto result = ParseNewStyleVp9CodecID(codec_string);
     ASSERT_TRUE(result) << "eotf=" << eotf;
     EXPECT_EQ(static_cast<VideoColorSpace::TransferID>(eotf),
-              result->color_space.transfer());
+              result->color_space.transfer);
   }
 
   // Verify 0 and 3 are reserved EOTF values.
@@ -191,7 +190,7 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
   // Verify a few matrix coefficients.
   EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.00.01.01.00"));
   EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.00.01.01.01"));
-  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.00.01.01.11"));
+  EXPECT_TRUE(ParseNewStyleVp9CodecID("vp09.02.10.10.00.01.01.10"));
   // Values 12 - 255 reserved.
   EXPECT_FALSE(ParseNewStyleVp9CodecID("vp09.02.10.10.00.01.01.12"));
 
@@ -218,8 +217,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
     EXPECT_EQ(VideoCodec::kAV1, result->codec);
     EXPECT_EQ(AV1PROFILE_PROFILE_MAIN, result->profile);
     EXPECT_EQ(4u, result->level);
-    EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-              result->color_space.transfer());
+    EXPECT_EQ(VideoColorSpace::TransferID::BT709, result->color_space.transfer);
     EXPECT_EQ(VideoChromaSampling::k420, result->subsampling);
     EXPECT_EQ(8u, result->bit_depth);
   }
@@ -268,7 +266,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
       EXPECT_EQ(AV1PROFILE_PROFILE_MAIN, result->profile);
       EXPECT_EQ(i, result->level);
       EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-                result->color_space.transfer());
+                result->color_space.transfer);
     } else {
       EXPECT_FALSE(ParseAv1CodecId(codec_string));
     }
@@ -285,7 +283,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
       EXPECT_EQ(AV1PROFILE_PROFILE_HIGH, result->profile);
       EXPECT_EQ(0u, result->level);
       EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-                result->color_space.transfer());
+                result->color_space.transfer);
     } else {
       EXPECT_FALSE(ParseAv1CodecId(codec_string));
     }
@@ -305,7 +303,7 @@ TEST(ParseAv1CodecId, VerifyRequiredValues) {
       EXPECT_EQ(AV1PROFILE_PROFILE_MAIN, result->profile);
       EXPECT_EQ(0u, result->level);
       EXPECT_EQ(VideoColorSpace::TransferID::BT709,
-                result->color_space.transfer());
+                result->color_space.transfer);
     } else {
       EXPECT_FALSE(ParseAv1CodecId(codec_string));
     }
@@ -441,15 +439,14 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01");
     ASSERT_TRUE(result);
-    EXPECT_EQ(VideoColorSpace::PrimaryID::BT709,
-              result->color_space.primaries());
+    EXPECT_EQ(VideoColorSpace::PrimaryID::BT709, result->color_space.primaries);
   }
   // BT2020
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.09");
     ASSERT_TRUE(result);
     EXPECT_EQ(VideoColorSpace::PrimaryID::BT2020,
-              result->color_space.primaries());
+              result->color_space.primaries);
   }
   // 0 is invalid.
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.00"));
@@ -467,7 +464,7 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
     auto result = ParseAv1CodecId(codec_string);
     ASSERT_TRUE(result) << "eotf=" << eotf;
     EXPECT_EQ(static_cast<VideoColorSpace::TransferID>(eotf),
-              result->color_space.transfer());
+              result->color_space.transfer);
   }
 
   // Verify 0 and 3 are reserved EOTF values.
@@ -483,12 +480,17 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00");
     ASSERT_TRUE(result);
-    EXPECT_EQ(VideoColorSpace::MatrixID::RGB, result->color_space.matrix());
+    EXPECT_EQ(VideoColorSpace::MatrixID::RGB, result->color_space.matrix);
   }
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.01");
     ASSERT_TRUE(result);
-    EXPECT_EQ(VideoColorSpace::MatrixID::BT709, result->color_space.matrix());
+    EXPECT_EQ(VideoColorSpace::MatrixID::BT709, result->color_space.matrix);
+  }
+  {
+    auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.10");
+    ASSERT_TRUE(result);
+    EXPECT_EQ(VideoColorSpace::MatrixID::BT2020_CL, result->color_space.matrix);
   }
 
   // Values 12 - 255 reserved. Though 12 at least is a valid value we should
@@ -504,12 +506,12 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.0");
     ASSERT_TRUE(result);
-    EXPECT_EQ(gfx::ColorSpace::RangeID::LIMITED, result->color_space.range());
+    EXPECT_EQ(gfx::ColorSpace::RangeID::LIMITED, result->color_space.range);
   }
   {
     auto result = ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.1");
     ASSERT_TRUE(result);
-    EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, result->color_space.range());
+    EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, result->color_space.range);
   }
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.2"));
 }

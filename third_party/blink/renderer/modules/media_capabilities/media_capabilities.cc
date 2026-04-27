@@ -544,19 +544,17 @@ void ParseDynamicRangeConfigurations(
     *hdr_metadata = gfx::HdrMetadataType::kNone;
   }
 
-  auto primaries = color_space->primaries();
-  auto transfer = color_space->transfer();
-
   if (video_config->hasColorGamut()) {
     switch (video_config->colorGamut().AsEnum()) {
       case V8ColorGamut::Enum::kSRGB:
-        primaries = media::VideoColorSpace::PrimaryID::BT709;
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT709;
         break;
       case V8ColorGamut::Enum::kP3:
-        primaries = media::VideoColorSpace::PrimaryID::SMPTEST431_2;
+        color_space->primaries =
+            media::VideoColorSpace::PrimaryID::SMPTEST431_2;
         break;
       case V8ColorGamut::Enum::kRec2020:
-        primaries = media::VideoColorSpace::PrimaryID::BT2020;
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
         break;
     }
   }
@@ -564,19 +562,17 @@ void ParseDynamicRangeConfigurations(
   if (video_config->hasTransferFunction()) {
     switch (video_config->transferFunction().AsEnum()) {
       case V8TransferFunction::Enum::kSRGB:
-        transfer = media::VideoColorSpace::TransferID::BT709;
+        color_space->transfer = media::VideoColorSpace::TransferID::BT709;
         break;
       case V8TransferFunction::Enum::kPq:
-        transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
+        color_space->transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
         break;
       case V8TransferFunction::Enum::kHlg:
-        transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
+        color_space->transfer =
+            media::VideoColorSpace::TransferID::ARIB_STD_B67;
         break;
     }
   }
-
-  *color_space = media::VideoColorSpace(
-      primaries, transfer, color_space->matrix(), color_space->range());
 }
 
 // Returns whether the audio codec associated with the audio configuration is
@@ -680,8 +676,8 @@ bool IsVideoConfigurationSupported(const String& mime_type,
   if (video_color_space.IsSpecified() &&
       codec_string_has_non_default_color_space) {
     // Per spec, report unsupported if color space information is mismatched.
-    if (video_color_space.transfer() != result->color_space.transfer() ||
-        video_color_space.primaries() != result->color_space.primaries()) {
+    if (video_color_space.transfer != result->color_space.transfer ||
+        video_color_space.primaries != result->color_space.primaries) {
       DLOG(ERROR) << "Mismatched color spaces between config and codec string.";
       return false;
     }
@@ -938,11 +934,9 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   // Fill in values for range, matrix since `VideoConfiguration` doesn't have
   // such concepts; these aren't used, but ensure VideoColorSpace.IsSpecified()
   // works as expected downstream.
-  media::VideoColorSpace video_color_space(
-      media::VideoColorSpace::PrimaryID::UNSPECIFIED,
-      media::VideoColorSpace::TransferID::UNSPECIFIED,
-      media::VideoColorSpace::MatrixID::BT709,
-      gfx::ColorSpace::RangeID::DERIVED);
+  media::VideoColorSpace video_color_space;
+  video_color_space.range = gfx::ColorSpace::RangeID::DERIVED;
+  video_color_space.matrix = media::VideoColorSpace::MatrixID::BT709;
 
   gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
   if (config->hasVideo()) {

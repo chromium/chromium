@@ -658,17 +658,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   EXPECT_EQ(VideoCodecProfile::H264PROFILE_MAIN,
             video_sample_entry.video_info.profile);
   EXPECT_EQ(
-      VideoColorSpace::JPEG().primaries(),
-      reader_sample_description.video_entries[0].video_color_space.primaries());
+      VideoColorSpace::JPEG().primaries,
+      reader_sample_description.video_entries[0].video_color_space.primaries);
   EXPECT_EQ(
-      VideoColorSpace::JPEG().transfer(),
-      reader_sample_description.video_entries[0].video_color_space.transfer());
+      VideoColorSpace::JPEG().transfer,
+      reader_sample_description.video_entries[0].video_color_space.transfer);
   EXPECT_EQ(
-      VideoColorSpace::JPEG().matrix(),
-      reader_sample_description.video_entries[0].video_color_space.matrix());
-  EXPECT_EQ(
-      VideoColorSpace::JPEG().range(),
-      reader_sample_description.video_entries[0].video_color_space.range());
+      VideoColorSpace::JPEG().matrix,
+      reader_sample_description.video_entries[0].video_color_space.matrix);
+  EXPECT_EQ(VideoColorSpace::JPEG().range,
+            reader_sample_description.video_entries[0].video_color_space.range);
 }
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
@@ -879,14 +878,13 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVPConfigurationRecord) {
   EXPECT_EQ(VP9PROFILE_MIN, vp_config_record.profile);
   EXPECT_EQ(0u, vp_config_record.level);
 
-  EXPECT_EQ(gfx::ColorSpace::RangeID::FULL,
-            vp_config_record.color_space.range());
+  EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, vp_config_record.color_space.range);
   EXPECT_EQ(VideoColorSpace::PrimaryID::BT470M,
-            vp_config_record.color_space.primaries());
+            vp_config_record.color_space.primaries);
   EXPECT_EQ(VideoColorSpace::TransferID::GAMMA28,
-            vp_config_record.color_space.transfer());
+            vp_config_record.color_space.transfer);
   EXPECT_EQ(VideoColorSpace::MatrixID::BT470BG,
-            vp_config_record.color_space.matrix());
+            vp_config_record.color_space.matrix);
 }
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4OpusAudioSampleEntry) {

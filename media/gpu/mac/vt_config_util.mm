@@ -152,9 +152,9 @@ void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,
   uint8_t matrix = 1;              // BT.709.
 
   if (color_space.IsSpecified()) {
-    primaries = static_cast<uint8_t>(color_space.primaries());
-    transfer = static_cast<uint8_t>(color_space.transfer());
-    matrix = static_cast<uint8_t>(color_space.matrix());
+    primaries = static_cast<uint8_t>(color_space.primaries);
+    transfer = static_cast<uint8_t>(color_space.transfer);
+    matrix = static_cast<uint8_t>(color_space.matrix);
   }
 
   if (codec_profile == media::VP9PROFILE_PROFILE2) {
@@ -211,26 +211,26 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
 
   // Set primaries.
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_ColorPrimaries,
-                     GetPrimaries(color_space.primaries()));
+                     GetPrimaries(color_space.primaries));
 
   // Set transfer function.
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_TransferFunction,
-                     GetTransferFunction(color_space.transfer()));
-  if (color_space.transfer() == VideoColorSpace::TransferID::GAMMA22) {
+                     GetTransferFunction(color_space.transfer));
+  if (color_space.transfer == VideoColorSpace::TransferID::GAMMA22) {
     SetDictionaryValue(extensions, kCMFormatDescriptionExtension_GammaLevel,
                        @2.2);
-  } else if (color_space.transfer() == VideoColorSpace::TransferID::GAMMA28) {
+  } else if (color_space.transfer == VideoColorSpace::TransferID::GAMMA28) {
     SetDictionaryValue(extensions, kCMFormatDescriptionExtension_GammaLevel,
                        @2.8);
   }
 
   // Set matrix.
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_YCbCrMatrix,
-                     GetMatrix(color_space.matrix()));
+                     GetMatrix(color_space.matrix));
 
   // Set full range flag.
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FullRangeVideo,
-                     @(color_space.range() == gfx::ColorSpace::RangeID::FULL));
+                     @(color_space.range == gfx::ColorSpace::RangeID::FULL));
 
   if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
     SetVp9CodecConfigurationBox(extensions, profile, color_space);
