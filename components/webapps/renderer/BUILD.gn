@@ -19,6 +19,5 @@ static_library("renderer") {
     "//services/service_manager/public/cpp",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common:headers",
-    "//third_party/blink/public/common:headers",
   ]
 }
