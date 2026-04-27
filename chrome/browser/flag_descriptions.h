@@ -6158,11 +6158,6 @@ inline constexpr char kWebFeedOnboardingName[] = "Web Feed Onboarding";
 inline constexpr char kWebFeedOnboardingDescription[] =
     "Helps the user understand how to use the web feed.";
 
-inline constexpr char kWebFeedSortName[] = "Web Feed Sort";
-inline constexpr char kWebFeedSortDescription[] =
-    "Allows users to sort their web content in the web feed. "
-    "Only works if Web Feed is also enabled.";
-
 inline constexpr char kWebSerialWiredDevicesAndroidName[] =
     "Web Serial API for Wired Devices";
 inline constexpr char kWebSerialWiredDevicesAndroidDescription[] =

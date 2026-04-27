@@ -528,8 +528,6 @@ public class FeedStream implements Stream {
             switch (fid) {
                 case FeedIdentifier.MAIN_FEED:
                     return StreamKind.FOR_YOU;
-                case FeedIdentifier.FOLLOWING_FEED:
-                    return StreamKind.FOLLOWING;
             }
             return StreamKind.UNKNOWN;
         }

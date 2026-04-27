@@ -15,9 +15,6 @@ SurfaceId StubFeedApi::CreateSurface(const StreamType& type,
                                      SingleWebFeedEntryPoint entry_point) {
   return {};
 }
-WebFeedSubscriptions& StubFeedApi::subscriptions() {
-  return web_feed_subscriptions_;
-}
 bool StubFeedApi::IsArticlesListVisible() {
   return {};
 }

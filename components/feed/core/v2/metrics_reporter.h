@@ -19,7 +19,6 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
-#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/types.h"
 
 class PrefService;
@@ -42,10 +41,6 @@ class MetricsReporter {
 
   class Delegate {
    public:
-    // Calls `callback` with the number of Web Feeds for which the user is
-    // subscribed.
-    virtual void SubscribedWebFeedCount(
-        base::OnceCallback<void(int)> callback) = 0;
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     virtual ContentOrder GetContentOrder(
         const StreamType& stream_type) const = 0;
@@ -146,18 +141,6 @@ class MetricsReporter {
   static void ActivityLoggingEnabled(bool response_has_logging_enabled);
   static void NoticeCardFulfilled(bool response_has_notice_card);
   static void NoticeCardFulfilledObsolete(bool response_has_notice_card);
-
-  // Web Feed events.
-  void OnFollowAttempt(bool followed_with_id,
-                       const WebFeedSubscriptions::FollowWebFeedResult& result);
-  void OnUnfollowAttempt(
-      const WebFeedSubscriptions::UnfollowWebFeedResult& status);
-  void RefreshRecommendedWebFeedsAttempted(WebFeedRefreshStatus status,
-                                           int recommended_web_feed_count);
-  void RefreshSubscribedWebFeedsAttempted(bool subscriptions_were_stale,
-                                          WebFeedRefreshStatus status,
-                                          int subscribed_web_feed_count);
-  void OnQueryAttempt(const WebFeedSubscriptions::QueryWebFeedResult& result);
 
   // Info card events.
   void OnInfoCardTrackViewStarted(const StreamType& stream_type,

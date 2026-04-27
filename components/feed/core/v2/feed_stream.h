@@ -44,7 +44,6 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
 #include "components/feed/core/v2/user_actions_collector.h"
-#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/feed/core/v2/xsurface_datastore.h"
 #include "components/offline_pages/task/task_queue.h"
@@ -59,7 +58,6 @@ class UnreadContentNotifier;
 }
 class FeedNetwork;
 class FeedStore;
-class WebFeedSubscriptionCoordinator;
 class ImageFetcher;
 class MetricsReporter;
 class RefreshTaskScheduler;
@@ -111,7 +109,6 @@ class FeedStream : public FeedApi,
 
   // FeedApi.
 
-  WebFeedSubscriptionCoordinator& subscriptions() override;
   std::string GetSessionId() const override;
 
   SurfaceId CreateSurface(const StreamType& type,
@@ -211,7 +208,6 @@ class FeedStream : public FeedApi,
   void OnTaskQueueIsIdle() override;
 
   // MetricsReporter::Delegate.
-  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
   void RegisterFeedUserSettingsFieldTrial(std::string_view group) override;
 
   // StreamModel::StoreObserver.
@@ -496,8 +492,6 @@ class FeedStream : public FeedApi,
   // Time of the last destroyed surface.
   base::TimeTicks surface_destroy_time_;
 
-  std::unique_ptr<WebFeedSubscriptionCoordinator>
-      web_feed_subscription_coordinator_;
 
   // Mutable state.
   RequestThrottler request_throttler_;

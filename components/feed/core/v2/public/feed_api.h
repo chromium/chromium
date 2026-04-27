@@ -17,7 +17,6 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
-#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "url/gurl.h"
 
 namespace feedui {
@@ -29,7 +28,6 @@ class DataOperation;
 
 namespace feed {
 class PersistentKeyValueStore;
-class WebFeedSubscriptions;
 struct LoggingParameters;
 class SurfaceRenderer;
 
@@ -42,7 +40,6 @@ class FeedApi {
   FeedApi(const FeedApi&) = delete;
   FeedApi& operator=(const FeedApi&) = delete;
 
-  virtual WebFeedSubscriptions& subscriptions() = 0;
 
   // Surfaces present feed content to users. When a surface is visible to users
   // and should be displaying feed content, it is attached to request to feed

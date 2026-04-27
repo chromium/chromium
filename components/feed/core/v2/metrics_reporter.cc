@@ -26,7 +26,6 @@
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
-#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/feed_feature_list.h"
 
 // Define a VVLOG macro for verbose logging. We want logging on release builds
@@ -158,17 +157,6 @@ std::string_view ContentOrderToString(ContentOrder content_order) {
   }
 }
 
-FeedSortType GetSortTypeFromContentOrder(ContentOrder content_order) {
-  switch (content_order) {
-    case ContentOrder::kUnspecified:
-      return FeedSortType::kUnspecifiedSortType;
-    case ContentOrder::kGrouped:
-      return FeedSortType::kGroupedByPublisher;
-    case ContentOrder::kReverseChron:
-      return FeedSortType::kSortedByLatest;
-  }
-}
-
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
     // TODO(crbug.com/40158714): Add a WebFeed-specific histogram for this.
@@ -285,20 +273,6 @@ UserSettingsOnStart GetUserSettingsOnStart(
       return UserSettingsOnStart::kSignedInWaaOffDpOn;
     return UserSettingsOnStart::kSignedInWaaOffDpOff;
   }
-}
-
-void ReportSubscriptionCountAtEngagementTime(const StreamType& stream_type,
-                                             int subscription_count) {
-  base::UmaHistogramSparse(
-      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
-                    "FollowCount.Engaged2"}),
-      subscription_count);
-}
-
-void ReportCombinedSubscriptionCountAtEngagementTime(int subscription_count) {
-  base::UmaHistogramSparse(
-      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
-      subscription_count);
 }
 
 bool IsGoodExplicitInteraction(FeedUserActionType action) {
@@ -467,28 +441,7 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
     data.engaged_reported = true;
     if (!combined_stats_.engaged_reported) {
       ReportCombinedEngagementTypeHistogram(FeedEngagementType::kFeedEngaged);
-      // Reports subscription count for the specific feed and for the combined
-      // histogram.
-      delegate_->SubscribedWebFeedCount(base::BindOnce(
-          [](const StreamType& st, int sc) {
-            ReportSubscriptionCountAtEngagementTime(st, sc);
-            ReportCombinedSubscriptionCountAtEngagementTime(sc);
-          },
-          stream_type));
-
       combined_stats_.engaged_reported = true;
-    } else {
-      // Reports subscription count for the specific feed only.
-      delegate_->SubscribedWebFeedCount(base::BindOnce(
-          &ReportSubscriptionCountAtEngagementTime, stream_type));
-    }
-
-    // Record sorting order for web feed when engaged.
-    if (stream_type.IsWebFeed()) {
-      FeedSortType sort_type =
-          GetSortTypeFromContentOrder(delegate_->GetContentOrder(stream_type));
-      base::UmaHistogramEnumeration(
-          "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged", sort_type);
     }
   }
 }
@@ -1001,11 +954,6 @@ void MetricsReporter::OnLoadStream(
           content_stats.card_count);
     }
   }
-  if (stream_type.IsWebFeed()) {
-    delegate_->SubscribedWebFeedCount(base::BindOnce(
-        &MetricsReporter::ReportFollowCountOnLoad, base::Unretained(this),
-        /*content_shown=*/content_stats.card_count != 0));
-  }
   LogContentStats(stream_type, content_stats);
 }
 
@@ -1160,91 +1108,6 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
   }
 }
 
-void MetricsReporter::OnFollowAttempt(
-    bool followed_with_id,
-    const WebFeedSubscriptions::FollowWebFeedResult& result) {
-  VVLOG << "OnFollowAttempt web_feed_id="
-        << result.web_feed_metadata.web_feed_id
-        << " status=" << result.request_status;
-
-  if (followed_with_id) {
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.FollowByIdResult",
-        result.request_status);
-  } else {
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.FollowUriResult",
-        result.request_status);
-  }
-  if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
-    base::UmaHistogramSparse(
-        "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow",
-        result.subscription_count);
-    base::UmaHistogramBoolean(
-        "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended",
-        result.web_feed_metadata.is_recommended);
-    if (result.change_reason) {
-      // Because WebFeedChangeReason_MAX is not an enum value, we can't use
-      // UmaHistogramEnumeration, but UmaHistogramExactLinear is equivalent.
-      base::UmaHistogramExactLinear(
-          "ContentSuggestions.Feed.WebFeed.NewFollow.ChangeReason",
-          static_cast<int>(result.change_reason),
-          feedwire::webfeed::WebFeedChangeReason_MAX + 1);
-    }
-  }
-}
-
-void MetricsReporter::OnUnfollowAttempt(
-    const WebFeedSubscriptions::UnfollowWebFeedResult& result) {
-  VVLOG << "OnUnfollowAttempt status=" << result.request_status;
-  base::UmaHistogramEnumeration(
-      "ContentSuggestions.Feed.WebFeed.UnfollowResult", result.request_status);
-
-  if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
-    base::UmaHistogramSparse(
-        "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow",
-        result.subscription_count);
-  }
-}
-
-void MetricsReporter::OnQueryAttempt(
-    const WebFeedSubscriptions::QueryWebFeedResult& result) {
-  VVLOG << "OnQueryAttempt status=" << result.request_status;
-  base::UmaHistogramEnumeration("ContentSuggestions.Feed.WebFeed.QueryResult",
-                                result.request_status);
-}
-
-void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
-    WebFeedRefreshStatus status,
-    int recommended_web_feed_count) {
-  VVLOG << "RefreshRecommendedWebFeedsAttempted status=" << status
-        << " count=" << recommended_web_feed_count;
-  base::UmaHistogramEnumeration(
-      "ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds", status);
-}
-
-void MetricsReporter::RefreshSubscribedWebFeedsAttempted(
-    bool subscriptions_were_stale,
-    WebFeedRefreshStatus status,
-    int subscribed_web_feed_count) {
-  VVLOG << "RefreshSubscribedWebFeedsAttempted status=" << status
-        << " count=" << subscribed_web_feed_count;
-  if (subscriptions_were_stale) {
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Stale", status);
-  } else {
-    base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Force", status);
-  }
-}
-
-void MetricsReporter::ReportFollowCountOnLoad(bool content_shown,
-                                              int subscription_count) {
-  base::UmaHistogramSparse(
-      base::StrCat({"ContentSuggestions.Feed.WebFeed.FollowCount.",
-                    content_shown ? "ContentShown" : "NoContentShown"}),
-      subscription_count);
-}
 
 void MetricsReporter::OnInfoCardTrackViewStarted(const StreamType& stream_type,
                                                  int info_card_type) {

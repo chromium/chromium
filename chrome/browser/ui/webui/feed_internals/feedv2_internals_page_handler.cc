@@ -19,7 +19,6 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
-#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -109,7 +108,8 @@ void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
 }
 
 void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
-  feed_stream_->subscriptions().RefreshRecommendedFeeds(base::DoNothing());
+  // TODO(crbug.com/407797637): Remove this function and the related button in
+  // chrome://snippets-internals.
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(

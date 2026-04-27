@@ -116,8 +116,6 @@ class LoadStreamTask : public offline_pages::Task {
   base::WeakPtr<LoadStreamTask> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  void CheckIfSubscriberComplete(bool is_web_feed_subscriber);
-  void ResumeAtStart();
   bool CheckPreconditions();
   void PassedPreconditions();
 
@@ -172,7 +170,6 @@ class LoadStreamTask : public offline_pages::Task {
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;
-  bool is_web_feed_subscriber_ = false;
   base::WeakPtrFactory<LoadStreamTask> weak_ptr_factory_{this};
 };
 

@@ -235,23 +235,6 @@ enum class ContentOrder : int {
   kMaxValue = kReverseChron,
 };
 
-// Values for the UMA
-// ContentSuggestions.Feed.WebFeed.SortType* histograms.
-// These values are persisted to logs. Entries should never be reused.
-// LINT.IfChange(FeedSortType)
-// TODO(crbug.com/40241876): should merge with ContentOrder.
-enum class FeedSortType : int {
-  // Sort Type unspecified.
-  kUnspecifiedSortType = 0,
-  // Content is grouped by publisher.
-  kGroupedByPublisher = 1,
-  // Content is ungrouped, and arranged in reverse chronological order.
-  kSortedByLatest = 2,
-
-  kMaxValue = kSortedByLatest,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:FeedSortType)
-
 // Values for the UMA ContentSuggestions.Feed.FeedSyncPromo histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

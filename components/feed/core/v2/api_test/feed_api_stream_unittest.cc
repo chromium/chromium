@@ -457,9 +457,6 @@ TEST_F(FeedStreamTestForAllStreamTypes,
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
   {
     WaitForIdleTaskQueue();
     auto metadata = stream_->GetMetadata();
@@ -476,7 +473,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
     EXPECT_EQ(1,
               network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
   } else {
-    EXPECT_EQ(1, network_.GetApiRequestCount<ListWebFeedsDiscoverApi>());
     EXPECT_EQ(1, network_.GetApiRequestCount<WebFeedListContentsDiscoverApi>());
   }
   EXPECT_EQ(
@@ -508,31 +504,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
   api_request_counts.erase(NetworkRequestType::kListWebFeeds);  // ignore
   EXPECT_EQ((std::map<NetworkRequestType, int>()), api_request_counts);
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-}
-
-TEST_F(FeedApiTest, FetchAfterStartup) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  // There should have been a fetch, even though there are no subscriptions.
-  ASSERT_TRUE(network_.query_request_sent);
-  ASSERT_EQ(1, network_.GetWebFeedListContentsCount());
-}
-
-TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsWithoutOnboarding) {
-  // Disable the onboarding feature.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedOnboarding);
-
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> no-subscriptions", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
@@ -786,9 +757,6 @@ TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
 }
 
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
   base::TimeDelta default_staleness_threshold =
       GetFeedConfig().GetStalenessThreshold(StreamType(StreamKind::kForYou),
                                             /*is_web_feed_subscriber=*/true);
@@ -879,9 +847,6 @@ TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired_NetworkExpiredAge) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
   // Fill the store with stream data that is just barely stale, and verify we
   // fetch new data over the network.
   store_->OverwriteStream(
@@ -889,8 +854,10 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0,
           kTestTimeEpoch -
+              // TODO(crbug.com/407797637): Remove hardcoded false once WebFeed
+              // is fully removed.
               GetFeedConfig().GetStalenessThreshold(
-                  GetStreamType(), /*is_web_feed_subscriber=*/true) -
+                  GetStreamType(), /*is_web_feed_subscriber=*/false) -
               base::Minutes(1)),
       base::DoNothing());
 
@@ -957,9 +924,6 @@ TEST_F(FeedApiTest, LoadStaleDataBecauseNetworkRequestFails) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFailsStoredDataIsExpired) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
   // Fill the store with stream data that is just barely expired.
   store_->OverwriteStream(
       GetStreamType(),
@@ -1039,20 +1003,6 @@ TEST_F(FeedApiTest, LoadStreamAfterEulaIsAccepted) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-}
-
-TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
-  // WebFeed stream is only fetched when there's a subscription.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-
-  stream_->OnAllHistoryDeleted();
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_NE(AccountInfo{}, network_.last_account_info);
 }
 
 TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {
@@ -1394,70 +1344,6 @@ TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromStore) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(std::vector<bool>({true}), observer.calls);
-}
-
-TEST_F(FeedApiTest, FollowForcesRefreshWhileSurfaceAttached_NotWorking) {
-  // Load the web feed stream.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-
-  // Follow a web feed.
-  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  WebFeedPageInformation page_info =
-      MakeWebFeedPageInformation("http://dogs.com");
-  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(
-      page_info, WebFeedChangeReason::WEB_PAGE_MENU, callback.Bind());
-
-  ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            callback.RunAndGetResult().request_status);
-
-  // Content should refresh, but this is not implemented yet.
-  // ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
-  ASSERT_EQ("", surface.DescribeUpdates());
-}
-
-// Verify that following a web feed triggers a refresh.
-// Also verify the unread content observer events.
-TEST_F(FeedApiTest, FollowForcesRefresh) {
-  TestUnreadContentObserver unread_observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kFollowing),
-                                    &unread_observer);
-
-  // Load the web feed stream and view it.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-
-  // Detach the surface.
-  surface.Detach();
-
-  // Follow a web feed.
-  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  WebFeedPageInformation page_info =
-      MakeWebFeedPageInformation("http://dogs.com");
-  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(
-      page_info, WebFeedChangeReason::WEB_PAGE_MENU, callback.Bind());
-
-  ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            callback.RunAndGetResult().request_status);
-
-  // Wait for model to unload and reattach surface. New content is loaded.
-  WaitForModelToAutoUnload();
-  surface.Attach(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
-  EXPECT_EQ(std::vector<bool>({false, true, false, true}),
-            unread_observer.calls);
 }
 
 TEST_F(FeedApiTest, ReportFeedViewedUpdatesObservers) {
@@ -1823,9 +1709,6 @@ TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
 }
 
 TEST_F(FeedApiTest, ClearAllWipesAllState) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
   // Trigger saving a consistency token, so it can be cleared later.
   network_.consistency_token = "token-11";
   stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
@@ -1846,10 +1729,6 @@ TEST_F(FeedApiTest, ClearAllWipesAllState) {
   ASSERT_EQ("loading -> [user@foo] 2 slices -> loading -> cant-refresh",
             surface.DescribeUpdates());
   EXPECT_EQ(R"("m": {
-}
-"recommendedIndex": {
-}
-"subs": {
 }
 )",
             DumpStoreState(true));
@@ -2837,80 +2716,6 @@ TEST_F(FeedApiTest, HasUnreadContentRemainsFalseIfFeedViewedBeforeRefresh) {
   EXPECT_EQ("loading -> [user@foo] 2 slices -> 3 slices",
             surface.DescribeUpdates());
   EXPECT_FALSE(stream_->HasUnreadContent(StreamType(StreamKind::kForYou)));
-}
-
-TEST_F(FeedApiTest,
-       LoadingForYouStreamTriggersWebFeedRefreshIfNoUnreadContent) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
-  // WebFeed stream is only fetched when there's a subscription.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-
-  // Both streams should be fetched.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ(2, network_.send_query_call_count);
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
-            metrics_reporter_->load_stream_status);
-
-  // Attach a Web Feed surface, and verify content is loaded from the store.
-  TestWebFeedSurface web_feed_surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices",
-            web_feed_surface.DescribeUpdates());
-  EXPECT_EQ(LoadStreamStatus::kLoadedFromStore,
-            metrics_reporter_->load_stream_status);
-}
-
-TEST_F(
-    FeedApiTest,
-    LoadingForYouStreamDoesNotTriggerWebFeedRefreshIfNoSubscriptionsWhithoutOnboarding) {
-  // With WebFeedOnboarding disabled, WebFeed should not fetch without
-  // subscriptions.
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({}, {kWebFeedOnboarding, kWebFeedKillSwitch});
-  // Only for-you feed is fetched on load.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
-            metrics_reporter_->load_stream_status);
-  EXPECT_EQ(LoadStreamStatus::kNotAWebFeedSubscriber,
-            metrics_reporter_->Stream(StreamType(StreamKind::kFollowing))
-                .background_refresh_status);
-}
-
-TEST_F(
-    FeedApiTest,
-    LoadForYouStreamDoesNotTriggerWebFeedRefreshContentIfIsAlreadyAvailable) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kWebFeedKillSwitch);
-
-  // WebFeed stream is only fetched when there's a subscription.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-
-  // Both streams should be fetched because there is no unread web-feed content.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ(2, network_.send_query_call_count);
-
-  // Detach and re-attach the surface. The for-you feed should be loaded again,
-  // but this time the web-feed is not refreshed.
-  surface.Detach();
-  UnloadModel(surface.GetStreamType());
-  surface.Attach(stream_.get());
-  WaitForIdleTaskQueue();
-  // Neither stream type should be refreshed.
-  ASSERT_EQ(2, network_.send_query_call_count);
 }
 
 TEST_F(FeedApiTest, WasUrlRecentlyNavigatedFromFeed) {
@@ -4310,8 +4115,7 @@ TEST_F(SignedOutViewDemotionTest, OldViewsAreDeleted) {
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,
-                         ::testing::Values(StreamType(StreamKind::kForYou),
-                                           StreamType(StreamKind::kFollowing)),
+                         ::testing::Values(StreamType(StreamKind::kForYou)),
                          ::testing::PrintToStringParamName());
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedNetworkEndpointTest,

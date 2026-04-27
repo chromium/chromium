@@ -77,8 +77,7 @@ std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
   };
   LoadStreamFromStoreTask load_task(
       LoadStreamFromStoreTask::LoadType::kFullLoad, nullptr, stream_type, store,
-      /*missed_last_refresh=*/false, /*is_web_feed_subscriber=*/true,
-      base::BindLambdaForTesting(complete));
+      /*missed_last_refresh=*/false, base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale, or which account.
   load_task.IgnoreStalenessForTesting();
   load_task.IgnoreAccountForTesting();
@@ -1067,18 +1066,12 @@ bool FeedApiTest::IsTaskQueueIdle() const {
 
 void FeedApiTest::WaitForIdleTaskQueue() {
   RunLoopUntil(
-      base::BindLambdaForTesting([&]() {
-        return IsTaskQueueIdle() &&
-               !stream_->subscriptions().is_loading_model_for_testing();
-      }),
+      base::BindLambdaForTesting([&]() { return IsTaskQueueIdle(); }),
       base::BindLambdaForTesting([&]() -> std::string {
         std::stringstream ss;
         if (!IsTaskQueueIdle()) {
           ss << "Task queue not idle. Queue state:\n"
              << stream_->GetTaskQueueForTesting().GetStateForTesting() << '\n';
-        }
-        if (stream_->subscriptions().is_loading_model_for_testing()) {
-          ss << "Subscription model still loading\n";
         }
 
         return ss.str();
@@ -1118,16 +1111,6 @@ std::string FeedApiTest::DumpStoreState(bool print_keys) {
   return ss.str();
 }
 
-void FeedApiTest::FollowWebFeed(const WebFeedPageInformation page_info) {
-  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  network_.InjectResponse(SuccessfulFollowResponse(page_info.url().GetHost()));
-  stream_->subscriptions().FollowWebFeed(
-      page_info, feedwire::webfeed::WebFeedChangeReason::WEB_PAGE_MENU,
-      callback.Bind());
-
-  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            callback.RunAndGetResult().request_status);
-}
 LoggingParameters FeedApiTest::CreateLoggingParameters() {
   LoggingParameters result;
   result.logging_enabled = true;

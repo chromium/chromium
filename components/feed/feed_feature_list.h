@@ -46,10 +46,6 @@ BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWebFeedOnboarding);
 
-// Feature that enables sorting by different heuristics in the web feed.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kWebFeedSort);
-
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsCormorantEnabledForLocale(std::string country);
 

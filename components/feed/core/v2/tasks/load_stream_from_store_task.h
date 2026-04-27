@@ -65,7 +65,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
                           const StreamType& stream_type,
                           FeedStore* store,
                           bool missed_last_refresh,
-                          bool is_web_feed_subscriber,
                           base::OnceCallback<void(Result)> callback);
   ~LoadStreamFromStoreTask() override;
   LoadStreamFromStoreTask(const LoadStreamFromStoreTask&) = delete;
@@ -94,7 +93,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   bool ignore_staleness_ = false;
   bool missed_last_refresh_ = false;
   bool ignore_account_ = false;
-  bool is_web_feed_subscriber_ = false;
   base::OnceCallback<void(Result)> result_callback_;
 
   // Data to be stuffed into the Result when the task is complete.

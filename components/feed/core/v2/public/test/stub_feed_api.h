@@ -10,7 +10,6 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/persistent_key_value_store.h"
-#include "components/feed/core/v2/public/test/stub_web_feed_subscriptions.h"
 
 namespace feed {
 
@@ -31,7 +30,6 @@ class StubPersistentKeyValueStore : public PersistentKeyValueStore {
 
 class StubFeedApi : public FeedApi {
  public:
-  WebFeedSubscriptions& subscriptions() override;
 
   SurfaceId CreateSurface(const StreamType& type,
                           SingleWebFeedEntryPoint entry_point) override;
@@ -130,7 +128,6 @@ class StubFeedApi : public FeedApi {
   void IncrementFollowedFromWebPageMenuCount() override {}
 
  private:
-  StubWebFeedSubscriptions web_feed_subscriptions_;
   StubPersistentKeyValueStore persistent_key_value_store_;
 };
 

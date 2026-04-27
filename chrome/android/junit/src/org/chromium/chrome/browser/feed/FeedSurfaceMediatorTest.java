@@ -45,7 +45,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -67,7 +66,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.WEB_FEED_SORT, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
+@EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

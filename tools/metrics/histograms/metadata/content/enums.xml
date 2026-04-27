@@ -255,16 +255,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedSignInUI) -->
 
-<!-- LINT.IfChange(FeedSortType) -->
-
-<enum name="FeedSortType">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="Grouped by publisher"/>
-  <int value="2" label="Sorted by latest"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/feed/core/v2/public/common_enums.h:FeedSortType) -->
-
 <!-- LINT.IfChange(FeedSyncPromo) -->
 
 <enum name="FeedSyncPromo">
@@ -543,59 +533,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Commit enforced site"/>
   <int value="3" label="Popup considered"/>
   <int value="4" label="Popup blocked"/>
-</enum>
-
-<enum name="WebFeedChangeReason">
-  <int value="0" label="Unspecified">Unknown change reason</int>
-  <int value="1" label="Web page menu">
-    The user tapped the Follow/Unfollow option from the three dot menu while on
-    a web page.
-  </int>
-  <int value="2" label="Web page accelerator">
-    The user tapped the Follow accelerator while visiting a site.
-  </int>
-  <int value="3" label="Management page">
-    The user tapped to Follow/Unfollow on the Follow Management page.
-  </int>
-  <int value="4" label="In feed recommendation">
-    The user tapped to Follow/Unfollow a recommendation embedded in feed
-    content.
-  </int>
-  <int value="5" label="Back of card unfollow">
-    The user tapped 'Unfollow' on the back of card menu.
-  </int>
-  <int value="6" label="Recommendation web page accelerator">
-    The user tapped a web page on a recommendation card.
-  </int>
-</enum>
-
-<enum name="WebFeedQueryRequestStatus">
-  <int value="0" label="Unknown status"/>
-  <int value="1" label="Success. The query succeeded."/>
-  <int value="2" label="Failed because the device is offline"/>
-  <int value="3" label="Failed for an unknown reason"/>
-  <int value="4" label="Failed due to pending ClearAll action"/>
-</enum>
-
-<enum name="WebFeedRefreshStatus">
-  <int value="0" label="Unknown status"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Failed due to a network error"/>
-  <int value="3" label="Failed because the request was throttled client-side"/>
-  <int value="4" label="Failed because there is a pending ClearAll operation"/>
-</enum>
-
-<enum name="WebFeedSubscriptionRequestStatus">
-  <int value="0" label="Unknown status"/>
-  <int value="1"
-      label="Success. The follow/unfollow succeeded. Also reported when
-             following an already-followed web feed, or unfollowing a web
-             feed which is not followed."/>
-  <int value="2" label="Failed because the device is offline"/>
-  <int value="3"
-      label="Failed because the user has reached the subscription limit"/>
-  <int value="4" label="Failed for an unknown reason"/>
-  <int value="5" label="Failed due to pending ClearAll action"/>
 </enum>
 
 </enums>

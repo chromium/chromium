@@ -30,7 +30,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -309,20 +308,9 @@ public class FeedSurfaceMediator
                 || mCurrentStream == null) {
             return;
         }
-        int spanCount =
-                shouldUseSingleSpan(isSmallLayoutWidth)
-                        ? SPAN_COUNT_SMALL_WIDTH
-                        : SPAN_COUNT_LARGE_WIDTH;
+        int spanCount = isSmallLayoutWidth ? SPAN_COUNT_SMALL_WIDTH : SPAN_COUNT_LARGE_WIDTH;
         boolean res = listLayoutHelper.setColumnCount(spanCount);
         assert res : "Failed to set column count on Feed";
-    }
-
-    private boolean shouldUseSingleSpan(boolean isSmallLayoutWidth) {
-        assumeNonNull(mCurrentStream);
-        boolean isFollowingFeedSortDisabled =
-                (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)
-                        && mCurrentStream.getStreamKind() == StreamKind.FOLLOWING);
-        return isFollowingFeedSortDisabled || isSmallLayoutWidth;
     }
 
     /** Clears any dependencies. */

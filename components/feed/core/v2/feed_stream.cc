@@ -59,7 +59,6 @@
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
 #include "components/feed/core/v2/types.h"
-#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
@@ -175,8 +174,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   signin_allowed_.Init(
       ::prefs::kSigninAllowed, profile_prefs,
       base::BindRepeating(&FeedStream::ClearAll, GetWeakPtr()));
-  web_feed_subscription_coordinator_ =
-      std::make_unique<WebFeedSubscriptionCoordinator>(this);
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
@@ -190,9 +187,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
 FeedStream::~FeedStream() = default;
 
-WebFeedSubscriptionCoordinator& FeedStream::subscriptions() {
-  return *web_feed_subscription_coordinator_;
-}
 
 FeedStream::Stream* FeedStream::FindStream(const StreamType& stream_type) {
   auto iter = streams_.find(stream_type);
@@ -303,8 +297,6 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   metrics_reporter_->OnMetadataInitialized(
       IsFeedEnabledByEnterprisePolicy(), IsArticlesListVisible(), IsSignedIn(),
       IsFeedEnabled(), metadata_);
-
-  web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
@@ -938,8 +930,6 @@ std::string FeedStream::DumpStateForDebugging() {
   print_refresh_schedule(RefreshTaskId::kRefreshForYouFeed);
   ss << "WebFeeds: ";
   print_refresh_schedule(RefreshTaskId::kRefreshWebFeed);
-  ss << "WebFeedSubscriptions:\n";
-  subscriptions().DumpStateForDebugging(ss);
   return ss.str();
 }
 
@@ -998,10 +988,6 @@ void FeedStream::OnTaskQueueIsIdle() {
     idle_callback_.Run();
 }
 
-void FeedStream::SubscribedWebFeedCount(
-    base::OnceCallback<void(int)> callback) {
-  subscriptions().SubscribedWebFeedCount(std::move(callback));
-}
 void FeedStream::RegisterFeedUserSettingsFieldTrial(std::string_view group) {
   delegate_->RegisterFeedUserSettingsFieldTrial(group);
 }
@@ -1418,7 +1404,6 @@ void FeedStream::FinishClearAll() {
       TriggerStreamLoad(item.second.type);
     }
   }
-  web_feed_subscription_coordinator_->ClearAllFinished();
 }
 
 void FeedStream::FinishClearStream(const StreamType& stream_type) {

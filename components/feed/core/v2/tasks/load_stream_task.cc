@@ -135,14 +135,6 @@ void LoadStreamTask::Run() {
   if (!CheckPreconditions())
     return;
 
-  if (options_.stream_type.IsWebFeed()) {
-    Suspend();
-    // Unretained is safe because `stream_` owns both this and
-    // `subscriptions()`.
-    stream_->subscriptions().IsWebFeedSubscriber(base::BindOnce(
-        &LoadStreamTask::CheckIfSubscriberComplete, base::Unretained(this)));
-    return;
-  }
 
   PassedPreconditions();
 }
@@ -179,25 +171,6 @@ bool LoadStreamTask::CheckPreconditions() {
   return true;
 }
 
-void LoadStreamTask::CheckIfSubscriberComplete(bool is_web_feed_subscriber) {
-  is_web_feed_subscriber_ = is_web_feed_subscriber;
-  if (!is_web_feed_subscriber &&
-      !base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
-    Done({LoadStreamStatus::kNotAWebFeedSubscriber,
-          feedwire::DiscoverLaunchResult::NOT_A_WEB_FEED_SUBSCRIBER});
-    return;
-  }
-
-  Resume(
-      base::BindOnce(&LoadStreamTask::ResumeAtStart, base::Unretained(this)));
-}
-
-void LoadStreamTask::ResumeAtStart() {
-  // When the task is resumed, we need to ensure the preconditions are still
-  // met.
-  if (CheckPreconditions())
-    PassedPreconditions();
-}
 
 void LoadStreamTask::PassedPreconditions() {
   if (options_.load_type != LoadType::kBackgroundRefresh)
@@ -219,7 +192,6 @@ void LoadStreamTask::PassedPreconditions() {
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
       load_from_store_type, &*stream_, options_.stream_type,
       &stream_->GetStore(), stream_->MissedLastRefresh(options_.stream_type),
-      is_web_feed_subscriber_,
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }

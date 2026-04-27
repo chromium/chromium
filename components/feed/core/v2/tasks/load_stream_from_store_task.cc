@@ -35,14 +35,12 @@ LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     const StreamType& stream_type,
     FeedStore* store,
     bool missed_last_refresh,
-    bool is_web_feed_subscriber,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
       feed_stream_(feed_stream),
       stream_type_(stream_type),
       store_(store),
       missed_last_refresh_(missed_last_refresh),
-      is_web_feed_subscriber_(is_web_feed_subscriber),
       result_callback_(std::move(callback)),
       update_request_(std::make_unique<StreamModelUpdateRequest>()) {}
 
@@ -87,8 +85,10 @@ void LoadStreamFromStoreTask::LoadStreamDone(
 
     const feedstore::Metadata& metadata = feed_stream_->GetMetadata();
 
+    // TODO(crbug.com/407797637): Remove hardcoded false once WebFeed is fully
+    // removed.
     if (ContentInvalidFromAge(metadata, result.stream_type, content_age_,
-                              is_web_feed_subscriber_)) {
+                              /*is_web_feed_subscriber=*/false)) {
       Complete(LoadStreamStatus::kDataInStoreIsExpired,
                feedwire::DiscoverCardReadCacheResult::STALE);
       return;
@@ -96,7 +96,8 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     if (content_age_.is_negative()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
     } else if (ShouldWaitForNewContent(metadata, result.stream_type,
-                                       content_age_, is_web_feed_subscriber_)) {
+                                       content_age_,
+                                       /*is_web_feed_subscriber=*/false)) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;
     } else if (missed_last_refresh_) {
       stale_reason_ = LoadStreamStatus::kDataInStoreStaleMissedLastRefresh;

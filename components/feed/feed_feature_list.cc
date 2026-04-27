@@ -31,8 +31,6 @@ BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
 
 BASE_FEATURE(kWebFeedOnboarding, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedSort, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsCormorantEnabledForLocale(std::string country) {
   return IsWebFeedEnabledForLocale(country);
 }
