@@ -18,6 +18,9 @@ void ForEachTabInterface(base::FunctionRef<bool(tabs::TabInterface*)> on_tab) {
         // during iteration.
         std::vector<base::WeakPtr<tabs::TabInterface>> tabs_weak;
         TabListInterface* tab_list = TabListInterface::From(browser);
+        if (!tab_list) {
+          return true;
+        }
         std::ranges::transform(tab_list->GetAllTabs(),
                                std::back_inserter(tabs_weak),
                                &tabs::TabInterface::GetWeakPtr);
