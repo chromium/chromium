@@ -228,6 +228,8 @@ NSString* const kArrowLeftToLineSquareSymbol = @"arrow.left.to.line.square";
 NSString* const kArrowRightToLineSquareSymbol = @"arrow.right.to.line.square";
 NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";
+NSString* const kArrowTrianglehead2ClockwiseRotate90Symbol =
+    @"arrow.trianglehead.2.clockwise.rotate.90";
 NSString* const kTabsSymbol = @"square.on.square";
 NSString* const kHighlighterSymbol = @"highlighter";
 NSString* const kSealFillSymbol = @"seal.fill";

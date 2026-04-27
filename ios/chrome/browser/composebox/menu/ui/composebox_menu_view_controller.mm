@@ -124,7 +124,7 @@ enum class ComposeboxMenuSectionIdentifier {
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
               image:DefaultSymbolWithPointSize(
-                        kClockArrowTriangleheadCounterclockwiseRotate90Symbol,
+                        kArrowTrianglehead2ClockwiseRotate90Symbol,
                         kSymbolActionPointSize)
                type:ComposeboxMenuItemType::kModelAuto];
   ComposeboxMenuItem* thinkingItem = [[ComposeboxMenuItem alloc]

@@ -113,8 +113,8 @@ extern NSString* const kTabGroupsSymbol;
 extern NSString* const kCropSymbol;
 extern NSString* const kArrowDownSymbol;
 extern NSString* const kArrowUpSymbol;
-extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol
-    API_AVAILABLE(ios(18.0));
+extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol;
+extern NSString* const kArrowTrianglehead2ClockwiseRotate90Symbol;
 extern NSString* const kGearshape2Symbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
