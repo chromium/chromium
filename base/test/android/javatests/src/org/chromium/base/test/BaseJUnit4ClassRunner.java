@@ -68,6 +68,33 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private static final int STATUS_CODE_TEST_DURATION = 1337;
     private static final String DURATION_BUNDLE_ID = "duration_ms";
 
+    private static List<ClassCleanupHook> sClassCleanupHooks;
+    private static List<AfterCleanupCheck> sAfterCleanupChecks;
+
+    private static List<ClassCleanupHook> getClassCleanupHooks() {
+        if (sClassCleanupHooks == null) {
+            sClassCleanupHooks = new ArrayList<>();
+            for (ClassCleanupHook hook :
+                    ServiceLoader.load(
+                            ClassCleanupHook.class, ClassCleanupHook.class.getClassLoader())) {
+                sClassCleanupHooks.add(hook);
+            }
+        }
+        return sClassCleanupHooks;
+    }
+
+    private static List<AfterCleanupCheck> getAfterCleanupChecks() {
+        if (sAfterCleanupChecks == null) {
+            sAfterCleanupChecks = new ArrayList<>();
+            for (AfterCleanupCheck check :
+                    ServiceLoader.load(
+                            AfterCleanupCheck.class, AfterCleanupCheck.class.getClassLoader())) {
+                sAfterCleanupChecks.add(check);
+            }
+        }
+        return sAfterCleanupChecks;
+    }
+
     /**
      * An interface for classes that have some code to run before (or after) the class is
      * instantiated. They run after {@Link BeforeClass} (or before @AfterClass) methods are called.
@@ -99,6 +126,17 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
          * @param testMethod the test method to be run.
          */
         void run(Context targetContext, FrameworkMethod testMethod);
+    }
+
+    /**
+     * An interface for classes to perform after class tear down without being a @ClassRule or added
+     * to the ClassRunner.
+     */
+    public interface ClassCleanupHook {
+        /**
+         * @param clazz The class that was just run.
+         */
+        void onAfterTestClass(Class<?> clazz);
     }
 
     /** An interface for classes that want to do checks after all other tear down is complete. */
@@ -548,13 +586,13 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
         boolean finishSuccess = ActivityFinisher.finishAll();
+        for (ClassCleanupHook hook : getClassCleanupHooks()) {
+            hook.onAfterTestClass(getTestClass().getJavaClass());
+        }
         if (afterClassPassed && finishSuccess) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
             if (!mAnyTestFailed) {
-                for (AfterCleanupCheck check :
-                        ServiceLoader.load(
-                                AfterCleanupCheck.class,
-                                AfterCleanupCheck.class.getClassLoader())) {
+                for (AfterCleanupCheck check : getAfterCleanupChecks()) {
                     check.onAfterTestClass(getTestClass().getJavaClass());
                 }
             }
