@@ -115,7 +115,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
 
   ~UserPolicySigninServiceTest() override {
     // Ensure that no helper leaked.
-    DCHECK_EQ(helper_created_count_, helper_created_count_);
+    DCHECK_EQ(helper_created_count_, helper_deleted_count_);
   }
 
   Profile* profile() { return browser()->profile(); }
