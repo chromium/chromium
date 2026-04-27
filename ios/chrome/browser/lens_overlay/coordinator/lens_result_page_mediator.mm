@@ -279,10 +279,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     _latestHttpHeaders = [httpHeaders copy];
   }
   NSMutableDictionary<NSString*, NSString*>* headers =
-      [_latestHttpHeaders mutableCopy] ?: [NSMutableDictionary dictionary];
-  // Add variation headers last, because they have precedence.
-  [headers addEntriesFromDictionary:web_navigation_util::VariationHeadersForURL(
-                                        URL, _isIncognito)];
+      [web_navigation_util::VariationHeadersForURL(URL, _isIncognito)
+          mutableCopy];
+  if (_latestHttpHeaders) {
+    // Add latest HTTP headers last, because they have precedence.
+    [headers addEntriesFromDictionary:_latestHttpHeaders];
+  }
   webParams.extra_headers = headers;
 
   _webState->GetNavigationManager()->LoadURLWithParams(webParams);
