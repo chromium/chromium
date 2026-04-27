@@ -2981,6 +2981,10 @@ export enum FeatureMode {
   UNSPECIFIED = 0,
   IMAGE_GENERATION = 1,
   ACTUATION = 2,
+  // Client feature mode to initiate actuation for Experimental Triggering.
+  EXPERIMENTAL_TRIGGERING = 3,
+  // Client feature mode to initiate actuation for Universal Cart.
+  UNIVERSAL_CART = 4,
 }
 
 ///////////////////////////////////////////////

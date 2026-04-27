@@ -1601,11 +1601,16 @@ enum InvocationSource {
 
 // @generate glic_api
 // Mode for specific feature behaviors.
+// Next version: 2
 [Stable, Extensible]
 enum FeatureMode {
   [Default] kUnspecified = 0,
   kImageGeneration = 1,
   kActuation = 2,
+  // Client feature mode to initiate actuation for Experimental Triggering.
+  [MinVersion=1] kExperimentalTriggering = 3,
+  // Client feature mode to initiate actuation for Universal Cart.
+  [MinVersion=1] kUniversalCart = 4,
 };
 
 // @generate glic_api
