@@ -20,6 +20,7 @@ if (current_toolchain == host_toolchain) {
   config("grpc_java_plugin_internal_config") {
     cflags = [
       "-Wno-implicit-fallthrough",
+
       # Remove when https://github.com/grpc/grpc-java/issues/12464 fixed.
       "-Wno-deprecated-declarations",
     ]
