@@ -70,6 +70,7 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                         delegate.setLastNavigatedUrl(url);
                         Intent targetIntent = new Intent(Intent.ACTION_VIEW);
                         targetIntent.setData(Uri.parse(url.getSpec()));
+                        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(targetIntent);
 
                         // New navigation committed, so we should clear the open in app info to
                         // prevent trying to open an app based on outdated info.
