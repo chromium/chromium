@@ -157,7 +157,9 @@ class MEDIA_EXPORT AUAudioInputStream
   base::TimeTicks GetCaptureTime(const AudioTimeStamp* input_time_stamp);
 
   // Issues the OnError() callback to the |sink_|.
-  void HandleError(OSStatus err, const base::Location& location = FROM_HERE);
+  void HandleError(OSStatus err,
+                   const char* message,
+                   const base::Location& location = FROM_HERE);
 
   // Helper methods to set and get atomic |input_callback_is_active_|.
   void SetInputCallbackIsActive(bool active);
@@ -181,8 +183,7 @@ class MEDIA_EXPORT AUAudioInputStream
   void ReportAndResetStats();
 
   // Logs a message both to the log callback and to the console.
-  void LogMessageEverywhere(const char* function_name,
-                            const std::string& message);
+  void SendLog(const std::string& message, OSStatus result = noErr);
 
   // Verifies that Open(), Start(), Stop() and Close() are all called on the
   // creating thread which is the main browser thread (CrBrowserMain) on Mac.
