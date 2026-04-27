@@ -115,6 +115,7 @@
   [_mediator disconnect];
   [self dismissActionSheetCoordinator];
   _mediator.consumer = nil;
+  _node = nullptr;
   _mediator.snackbarCommandsHandler = nil;
   _mediator = nil;
   _viewController.delegate = nil;

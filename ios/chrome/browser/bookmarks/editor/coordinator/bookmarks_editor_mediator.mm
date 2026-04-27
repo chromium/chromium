@@ -51,6 +51,10 @@
   raw_ptr<const bookmarks::BookmarkNode> _originalFolder;
   // Authentication service for this mediator.
   base::WeakPtr<AuthenticationService> _authenticationService;
+  // BookmarkNode to edit.
+  raw_ptr<const bookmarks::BookmarkNode> _bookmark;
+  // Parent of `_bookmark` if the user tap on "save".
+  raw_ptr<const bookmarks::BookmarkNode> _folder;
 }
 
 @synthesize UIDisabled = _UIDisabled;
@@ -106,6 +110,18 @@
 - (void)manuallyChangeFolder:(const bookmarks::BookmarkNode*)folder {
   _manuallyChangedTheFolder = YES;
   [self changeFolder:folder];
+}
+
+- (const bookmarks::BookmarkNode*)bookmark {
+  return _bookmark;
+}
+
+- (const bookmarks::BookmarkNode*)folder {
+  return _folder;
+}
+
+- (void)setFolder:(const bookmarks::BookmarkNode*)folder {
+  _folder = folder;
 }
 
 #pragma mark - BookmarksEditorMutator
