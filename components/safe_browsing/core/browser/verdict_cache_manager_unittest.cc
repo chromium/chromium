@@ -1305,7 +1305,7 @@ TEST_F(ArtificialHashRealTimeVerdictCacheManagerTest, TestCachePopulated) {
   ASSERT_TRUE(VerdictCacheManager::has_artificial_cached_url_);
 
   std::vector<FullHashStr> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(GURL(kArtificialHashRealTimeUnsafeUrl),
+  SBProtocolManagerUtil::UrlToFullHashes(GURL(kArtificialHashRealTimeUnsafeUrl),
                                          &full_hashes);
   ASSERT_EQ(full_hashes.size(), 1u);
   FullHashStr full_hash = full_hashes[0];

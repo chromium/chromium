@@ -78,8 +78,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFullHashRequest(
   for (const HashPrefixStr& prefix : request_prefixes) {
     for (const auto& response : response_map) {
       FullHashStr full_hash =
-          V4ProtocolManagerUtil::GetFullHash(response.first);
-      if (V4ProtocolManagerUtil::FullHashMatchesHashPrefix(full_hash, prefix)) {
+          SBProtocolManagerUtil::GetFullHash(response.first);
+      if (SBProtocolManagerUtil::FullHashMatchesHashPrefix(full_hash, prefix)) {
         ThreatMatch* match = find_full_hashes_response.add_matches();
         *match = response.second;
         auto it = delay_map.find(response.first);

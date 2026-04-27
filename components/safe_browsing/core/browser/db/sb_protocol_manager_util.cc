@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 
 #include <algorithm>
 #include <string_view>
@@ -94,11 +94,13 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
     base::StringAppendF(&url, "&key=%s",
                         base::EscapeQueryParamValue(api_key, true).c_str());
   }
-  if (reporting_level)
+  if (reporting_level) {
     url.append(
         base::StringPrintf("&ext=%d", static_cast<int>(*reporting_level)));
-  if (is_enhanced_protection)
+  }
+  if (is_enhanced_protection) {
     url.append(base::StringPrintf("&enh=%d", is_enhanced_protection));
+  }
   return url;
 }
 
@@ -234,7 +236,7 @@ ListIdentifier::ListIdentifier(const ListUpdateResponse& response)
                      response.threat_type()) {}
 
 // static
-base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
+base::TimeDelta SBProtocolManagerUtil::GetNextBackOffInterval(
     size_t* error_count,
     size_t* multiplier) {
   DCHECK(multiplier && error_count);
@@ -251,7 +253,7 @@ base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
 }
 
 // static
-void V4ProtocolManagerUtil::GetRequestUrlAndHeaders(
+void SBProtocolManagerUtil::GetRequestUrlAndHeaders(
     const std::string& request_base64,
     const std::string& method_name,
     const V4ProtocolConfig& config,
@@ -266,7 +268,7 @@ void V4ProtocolManagerUtil::GetRequestUrlAndHeaders(
 }
 
 // static
-std::string V4ProtocolManagerUtil::ComposeUrl(const std::string& prefix,
+std::string SBProtocolManagerUtil::ComposeUrl(const std::string& prefix,
                                               const std::string& method,
                                               const std::string& request_base64,
                                               const std::string& key_param) {
@@ -282,7 +284,7 @@ std::string V4ProtocolManagerUtil::ComposeUrl(const std::string& prefix,
 }
 
 // static
-void V4ProtocolManagerUtil::UpdateHeaders(net::HttpRequestHeaders* headers) {
+void SBProtocolManagerUtil::UpdateHeaders(net::HttpRequestHeaders* headers) {
   // NOTE(vakh): The following header informs the envelope server (which sits in
   // front of Google's stubby server) that the received GET request should be
   // interpreted as a POST.
@@ -290,7 +292,7 @@ void V4ProtocolManagerUtil::UpdateHeaders(net::HttpRequestHeaders* headers) {
 }
 
 // static
-void V4ProtocolManagerUtil::UrlToFullHashes(
+void SBProtocolManagerUtil::UrlToFullHashes(
     const GURL& url,
     std::vector<FullHashStr>* full_hashes) {
   std::string canon_host, canon_path, canon_query;
@@ -315,7 +317,7 @@ void V4ProtocolManagerUtil::UrlToFullHashes(
 }
 
 // static
-bool V4ProtocolManagerUtil::FullHashToHashPrefix(const FullHashStr& full_hash,
+bool SBProtocolManagerUtil::FullHashToHashPrefix(const FullHashStr& full_hash,
                                                  PrefixSize prefix_size,
                                                  HashPrefixStr* hash_prefix) {
   if (full_hash.size() < prefix_size) {
@@ -326,21 +328,21 @@ bool V4ProtocolManagerUtil::FullHashToHashPrefix(const FullHashStr& full_hash,
 }
 
 // static
-bool V4ProtocolManagerUtil::FullHashToSmallestHashPrefix(
+bool SBProtocolManagerUtil::FullHashToSmallestHashPrefix(
     const FullHashStr& full_hash,
     HashPrefixStr* hash_prefix) {
   return FullHashToHashPrefix(full_hash, kMinHashPrefixLength, hash_prefix);
 }
 
 // static
-bool V4ProtocolManagerUtil::FullHashMatchesHashPrefix(
+bool SBProtocolManagerUtil::FullHashMatchesHashPrefix(
     const FullHashStr& full_hash,
     const HashPrefixStr& hash_prefix) {
   return full_hash.compare(0, hash_prefix.length(), hash_prefix) == 0;
 }
 
 // static
-void V4ProtocolManagerUtil::GenerateHostsToCheck(
+void SBProtocolManagerUtil::GenerateHostsToCheck(
     const GURL& url,
     std::vector<std::string>* hosts) {
   std::string canon_host;
@@ -349,7 +351,7 @@ void V4ProtocolManagerUtil::GenerateHostsToCheck(
 }
 
 // static
-void V4ProtocolManagerUtil::GeneratePathsToCheck(
+void SBProtocolManagerUtil::GeneratePathsToCheck(
     const GURL& url,
     std::vector<std::string>* paths) {
   std::string canon_path;
@@ -359,7 +361,7 @@ void V4ProtocolManagerUtil::GeneratePathsToCheck(
 }
 
 // static
-void V4ProtocolManagerUtil::GeneratePatternsToCheck(
+void SBProtocolManagerUtil::GeneratePatternsToCheck(
     const GURL& url,
     std::vector<std::string>* urls) {
   std::string canon_host;
@@ -378,7 +380,7 @@ void V4ProtocolManagerUtil::GeneratePatternsToCheck(
 }
 
 // static
-FullHashStr V4ProtocolManagerUtil::GetFullHash(const GURL& url) {
+FullHashStr SBProtocolManagerUtil::GetFullHash(const GURL& url) {
   std::string host;
   std::string path;
   CanonicalizeUrl(url, &host, &path, nullptr);
@@ -387,15 +389,16 @@ FullHashStr V4ProtocolManagerUtil::GetFullHash(const GURL& url) {
 }
 
 // static
-void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
+void SBProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
                                             std::string* canonicalized_hostname,
                                             std::string* canonicalized_path,
                                             std::string* canonicalized_query) {
   DCHECK(url.is_valid());
 
   // We only canonicalize "normal" URLs.
-  if (!url.IsStandard())
+  if (!url.IsStandard()) {
     return;
+  }
 
   // Following canonicalization steps are excluded since url parsing takes care
   // of those :-
@@ -421,8 +424,9 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 3. In hostname, remove all leading and trailing dots.
   std::string_view host;
-  if (parsed.host.is_nonempty())
+  if (parsed.host.is_nonempty()) {
     host = url_unescaped_str_view.substr(parsed.host.begin, parsed.host.len);
+  }
 
   std::string_view host_without_end_dots =
       base::TrimString(host, ".", base::TrimPositions::TRIM_ALL);
@@ -433,8 +437,9 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 5. In path, replace runs of consecutive slashes with a single slash.
   std::string_view path;
-  if (parsed.path.is_nonempty())
+  if (parsed.path.is_nonempty()) {
     path = url_unescaped_str_view.substr(parsed.path.begin, parsed.path.len);
+  }
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;
@@ -471,7 +476,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 }
 
 // static
-std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(std::string_view str,
+std::string SBProtocolManagerUtil::RemoveConsecutiveChars(std::string_view str,
                                                           const char c) {
   std::string output;
   // Output is at most the length of the original string.
@@ -491,13 +496,14 @@ std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(std::string_view str,
 }
 
 // static
-void V4ProtocolManagerUtil::GenerateHostVariantsToCheck(
+void SBProtocolManagerUtil::GenerateHostVariantsToCheck(
     const std::string& host,
     std::vector<std::string>* hosts) {
   hosts->clear();
 
-  if (host.empty())
+  if (host.empty()) {
     return;
+  }
 
   // Per the Safe Browsing Protocol v2 spec, we try the host, and also up to 4
   // hostnames formed by starting with the last 5 components and successively
@@ -517,24 +523,26 @@ void V4ProtocolManagerUtil::GenerateHostVariantsToCheck(
   for (std::string::const_reverse_iterator i(host.rbegin());
        i != host.rend() && hosts->size() < kMaxHostsToCheck; ++i) {
     if (*i == '.') {
-      if (skipped_last_component)
+      if (skipped_last_component) {
         hosts->push_back(std::string(i.base(), host.end()));
-      else
+      } else {
         skipped_last_component = true;
+      }
     }
   }
   hosts->push_back(host);
 }
 
 // static
-void V4ProtocolManagerUtil::GeneratePathVariantsToCheck(
+void SBProtocolManagerUtil::GeneratePathVariantsToCheck(
     const std::string& path,
     const std::string& query,
     std::vector<std::string>* paths) {
   paths->clear();
 
-  if (path.empty())
+  if (path.empty()) {
     return;
+  }
 
   // Per the Safe Browsing Protocol v2 spec, we try the exact path with/without
   // the query parameters, and also up to 4 paths formed by starting at the root
@@ -544,19 +552,22 @@ void V4ProtocolManagerUtil::GeneratePathVariantsToCheck(
   const size_t kMaxPathsToCheck = 4;
   for (std::string::const_iterator i(path.begin());
        i != path.end() && paths->size() < kMaxPathsToCheck; ++i) {
-    if (*i == '/')
+    if (*i == '/') {
       paths->push_back(std::string(path.begin(), i + 1));
+    }
   }
 
-  if (!paths->empty() && paths->back() != path)
+  if (!paths->empty() && paths->back() != path) {
     paths->push_back(path);
+  }
 
-  if (!query.empty())
+  if (!query.empty()) {
     paths->push_back(path + "?" + query);
+  }
 }
 
 // static
-void V4ProtocolManagerUtil::SetClientInfoFromConfig(
+void SBProtocolManagerUtil::SetClientInfoFromConfig(
     ClientInfo* client_info,
     const V4ProtocolConfig& config) {
   DCHECK(client_info);
@@ -565,7 +576,7 @@ void V4ProtocolManagerUtil::SetClientInfoFromConfig(
 }
 
 // static
-void V4ProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
+void SBProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
     const std::unique_ptr<StoreStateMap>& store_state_map,
     std::vector<std::string>* list_client_states) {
   std::ranges::transform(*store_state_map,

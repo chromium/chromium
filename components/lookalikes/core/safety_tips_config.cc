@@ -11,7 +11,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
-using safe_browsing::V4ProtocolManagerUtil;
+using safe_browsing::SBProtocolManagerUtil;
 
 namespace lookalikes {
 
@@ -44,18 +44,18 @@ void UrlToSafetyTipPatterns(const GURL& url,
   std::string canon_host;
   std::string canon_path;
   std::string canon_query;
-  V4ProtocolManagerUtil::CanonicalizeUrl(url, &canon_host, &canon_path,
+  SBProtocolManagerUtil::CanonicalizeUrl(url, &canon_host, &canon_path,
                                          &canon_query);
 
   std::vector<std::string> hosts;
   if (url.HostIsIPAddress()) {
     hosts.push_back(url.GetHost());
   } else {
-    V4ProtocolManagerUtil::GenerateHostVariantsToCheck(canon_host, &hosts);
+    SBProtocolManagerUtil::GenerateHostVariantsToCheck(canon_host, &hosts);
   }
 
   std::vector<std::string> paths;
-  V4ProtocolManagerUtil::GeneratePathVariantsToCheck(canon_path, canon_query,
+  SBProtocolManagerUtil::GeneratePathVariantsToCheck(canon_path, canon_query,
                                                      &paths);
 
   for (const std::string& host : hosts) {

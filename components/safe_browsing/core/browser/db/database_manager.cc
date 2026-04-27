@@ -70,7 +70,7 @@ bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,
   api_checks_.insert(check.get());
 
   std::vector<std::string> list_client_states;
-  V4ProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
+  SBProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
       GetStoreStateMap(), &list_client_states);
 
   v4_get_hash_protocol_manager_->GetFullHashesWithApis(

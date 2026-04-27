@@ -255,12 +255,12 @@ class HashRealTimeServiceTest : public PlatformTest {
  protected:
   std::vector<FullHashStr> UrlToFullHashes(const GURL& url) {
     std::vector<FullHashStr> full_hashes;
-    V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+    SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
     return full_hashes;
   }
   FullHashStr UrlToSingleFullHash(const GURL& url) {
     std::vector<FullHashStr> full_hashes;
-    V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+    SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
     EXPECT_EQ(full_hashes.size(), 1u);
     return full_hashes[0];
   }

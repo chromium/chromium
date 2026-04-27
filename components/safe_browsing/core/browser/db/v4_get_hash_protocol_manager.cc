@@ -366,14 +366,14 @@ void V4GetHashProtocolManager::GetFullHashesWithApis(
   DCHECK(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme));
 
   std::vector<FullHashStr> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url.DeprecatedGetOriginAsURL(),
+  SBProtocolManagerUtil::UrlToFullHashes(url.DeprecatedGetOriginAsURL(),
                                          &full_hashes);
 
   FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes;
   for (const FullHashStr& full_hash : full_hashes) {
     HashPrefixStr prefix;
     bool result =
-        V4ProtocolManagerUtil::FullHashToSmallestHashPrefix(full_hash, &prefix);
+        SBProtocolManagerUtil::FullHashToSmallestHashPrefix(full_hash, &prefix);
     DCHECK(result);
     full_hash_to_store_and_hash_prefixes[full_hash].emplace_back(
         GetChromeUrlApiId(), prefix);
@@ -487,7 +487,7 @@ std::string V4GetHashProtocolManager::GetHashRequest(
 
   FindFullHashesRequest req;
 
-  V4ProtocolManagerUtil::SetClientInfoFromConfig(req.mutable_client(), config_);
+  SBProtocolManagerUtil::SetClientInfoFromConfig(req.mutable_client(), config_);
 
   for (const auto& client_state : list_client_states) {
     req.add_client_states(client_state);
@@ -519,13 +519,13 @@ void V4GetHashProtocolManager::GetHashUrlAndHeaders(
     const std::string& req_base64,
     GURL* gurl,
     net::HttpRequestHeaders* headers) const {
-  V4ProtocolManagerUtil::GetRequestUrlAndHeaders(req_base64, "fullHashes:find",
+  SBProtocolManagerUtil::GetRequestUrlAndHeaders(req_base64, "fullHashes:find",
                                                  config_, gurl, headers);
 }
 
 void V4GetHashProtocolManager::HandleGetHashError(const Time& now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
+  base::TimeDelta next = SBProtocolManagerUtil::GetNextBackOffInterval(
       &gethash_error_count_, &gethash_back_off_mult_);
   next_gethash_time_ = now + next;
 }
@@ -734,7 +734,7 @@ void V4GetHashProtocolManager::UpdateCache(
     chpi.negative_expiry = negative_cache_expire;
 
     for (const FullHashInfo& full_hash_info : full_hash_infos) {
-      if (V4ProtocolManagerUtil::FullHashMatchesHashPrefix(
+      if (SBProtocolManagerUtil::FullHashMatchesHashPrefix(
               full_hash_info.full_hash, prefix)) {
         chpi.full_hash_infos.push_back(full_hash_info);
       }

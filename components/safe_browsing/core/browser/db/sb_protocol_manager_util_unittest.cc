@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 
 #include <algorithm>
 #include <array>
@@ -20,15 +20,16 @@
 
 using base::Time;
 
+// TODO(crbug.com/362791941): Update v4-specific comments in this file.
 namespace safe_browsing {
 
-class V4ProtocolManagerUtilTest : public testing::Test {};
+class SBProtocolManagerUtilTest : public testing::Test {};
 
-TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
+TEST_F(SBProtocolManagerUtilTest, TestBackOffLogic) {
   size_t error_count = 0, back_off_multiplier = 1;
 
   // 1 error.
-  base::TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
+  base::TimeDelta next = SBProtocolManagerUtil::GetNextBackOffInterval(
       &error_count, &back_off_multiplier);
   EXPECT_EQ(1U, error_count);
   EXPECT_EQ(1U, back_off_multiplier);
@@ -36,7 +37,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(30), next);
 
   // 2 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(2U, error_count);
   EXPECT_EQ(2U, back_off_multiplier);
@@ -44,7 +45,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(60), next);
 
   // 3 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(3U, error_count);
   EXPECT_EQ(4U, back_off_multiplier);
@@ -52,7 +53,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(120), next);
 
   // 4 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(4U, error_count);
   EXPECT_EQ(8U, back_off_multiplier);
@@ -60,7 +61,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(240), next);
 
   // 5 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(5U, error_count);
   EXPECT_EQ(16U, back_off_multiplier);
@@ -68,7 +69,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(480), next);
 
   // 6 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(6U, error_count);
   EXPECT_EQ(32U, back_off_multiplier);
@@ -76,7 +77,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(960), next);
 
   // 7 errors.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(7U, error_count);
   EXPECT_EQ(64U, back_off_multiplier);
@@ -84,24 +85,24 @@ TEST_F(V4ProtocolManagerUtilTest, TestBackOffLogic) {
   EXPECT_GE(base::Minutes(1920), next);
 
   // 8 errors, reached max backoff.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(8U, error_count);
   EXPECT_EQ(128U, back_off_multiplier);
   EXPECT_EQ(base::Hours(24), next);
 
   // 9 errors, reached max backoff and multiplier capped.
-  next = V4ProtocolManagerUtil::GetNextBackOffInterval(&error_count,
+  next = SBProtocolManagerUtil::GetNextBackOffInterval(&error_count,
                                                        &back_off_multiplier);
   EXPECT_EQ(9U, error_count);
   EXPECT_EQ(128U, back_off_multiplier);
   EXPECT_EQ(base::Hours(24), next);
 }
 
-TEST_F(V4ProtocolManagerUtilTest, TestGetRequestUrlAndUpdateHeaders) {
+TEST_F(SBProtocolManagerUtilTest, TestGetRequestUrlAndUpdateHeaders) {
   net::HttpRequestHeaders headers;
   GURL gurl;
-  V4ProtocolManagerUtil::GetRequestUrlAndHeaders("request_base64", "someMethod",
+  SBProtocolManagerUtil::GetRequestUrlAndHeaders("request_base64", "someMethod",
                                                  GetTestV4ProtocolConfig(),
                                                  &gurl, &headers);
   std::string expectedUrl =
@@ -115,12 +116,12 @@ TEST_F(V4ProtocolManagerUtilTest, TestGetRequestUrlAndUpdateHeaders) {
 // Tests that we generate the required host/path combinations for testing
 // according to the Safe Browsing spec.
 // See: https://developers.google.com/safe-browsing/v4/urls-hashing
-TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
+TEST_F(SBProtocolManagerUtilTest, UrlParsing) {
   std::vector<std::string> hosts, paths;
 
   GURL url("http://a.b.c/1/2.html?param=1");
-  V4ProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
-  V4ProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
+  SBProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
+  SBProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
   EXPECT_EQ(hosts.size(), static_cast<size_t>(2));
   EXPECT_EQ(paths.size(), static_cast<size_t>(4));
   EXPECT_EQ(hosts[0], "b.c");
@@ -132,8 +133,8 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
   EXPECT_TRUE(std::ranges::contains(paths, "/"));
 
   url = GURL("http://a.b.c.d.e.f.g/1.html");
-  V4ProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
-  V4ProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
+  SBProtocolManagerUtil::GenerateHostsToCheck(url, &hosts);
+  SBProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
   EXPECT_EQ(hosts.size(), static_cast<size_t>(5));
   EXPECT_EQ(paths.size(), static_cast<size_t>(2));
   EXPECT_EQ(hosts[0], "f.g");
@@ -145,7 +146,7 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
   EXPECT_TRUE(std::ranges::contains(paths, "/"));
 
   url = GURL("http://a.b/saw-cgi/eBayISAPI.dll/");
-  V4ProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
+  SBProtocolManagerUtil::GeneratePathsToCheck(url, &paths);
   EXPECT_EQ(paths.size(), static_cast<size_t>(3));
   EXPECT_TRUE(std::ranges::contains(paths, "/saw-cgi/eBayISAPI.dll/"));
   EXPECT_TRUE(std::ranges::contains(paths, "/saw-cgi/"));
@@ -154,7 +155,7 @@ TEST_F(V4ProtocolManagerUtilTest, UrlParsing) {
 
 // Tests the url canonicalization according to the Safe Browsing spec.
 // See: https://developers.google.com/safe-browsing/v4/urls-hashing
-TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
+TEST_F(SBProtocolManagerUtilTest, CanonicalizeUrl) {
   struct TestCase {
     std::string_view input_url;
     std::string_view expected_canonicalized_hostname;
@@ -223,7 +224,7 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
     std::string canonicalized_hostname;
     std::string canonicalized_path;
     std::string canonicalized_query;
-    V4ProtocolManagerUtil::CanonicalizeUrl(url, &canonicalized_hostname,
+    SBProtocolManagerUtil::CanonicalizeUrl(url, &canonicalized_hostname,
                                            &canonicalized_path,
                                            &canonicalized_query);
 
@@ -233,7 +234,7 @@ TEST_F(V4ProtocolManagerUtilTest, CanonicalizeUrl) {
   }
 }
 
-TEST_F(V4ProtocolManagerUtilTest, TestFullHashToHashPrefix) {
+TEST_F(SBProtocolManagerUtilTest, TestFullHashToHashPrefix) {
   const std::string full_hash = "abcdefgh";
   std::vector<std::tuple<bool, std::string, PrefixSize, std::string>>
       test_cases = {
@@ -249,7 +250,7 @@ TEST_F(V4ProtocolManagerUtilTest, TestFullHashToHashPrefix) {
     const PrefixSize& prefix_size = std::get<2>(test_cases[i]);
     const auto& input_full_hash = std::get<3>(test_cases[i]);
     std::string prefix;
-    ASSERT_EQ(success, V4ProtocolManagerUtil::FullHashToHashPrefix(
+    ASSERT_EQ(success, SBProtocolManagerUtil::FullHashToHashPrefix(
                            input_full_hash, prefix_size, &prefix));
     if (success) {
       ASSERT_EQ(expected_prefix, prefix);

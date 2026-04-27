@@ -157,7 +157,7 @@ RealTimeUrlChecksAllowlist::IsInAllowlistInternal(const GURL& url) {
   }
 
   std::vector<FullHashStr> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+  SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   for (auto fh : full_hashes) {
     auto truncated_hash = fh.substr(0, kHashSizeInBytes);
     if (allowlist_patterns_.contains(truncated_hash)) {

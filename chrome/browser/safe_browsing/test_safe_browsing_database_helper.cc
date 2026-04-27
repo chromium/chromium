@@ -144,7 +144,7 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
     const GURL& url,
     const safe_browsing::ListIdentifier& list_id) {
   safe_browsing::FullHashStr full_hash =
-      safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
+      safe_browsing::SBProtocolManagerUtil::GetFullHash(url);
   while (!v4_db_factory_->IsReady()) {
     content::RunAllTasksUntilIdle();
   }

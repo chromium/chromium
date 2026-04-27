@@ -52,7 +52,7 @@ std::string GetAllowlistEntryKey(const GURL& url) {
     return url.GetHost();
   } else {
     std::string canon_host;
-    safe_browsing::V4ProtocolManagerUtil::CanonicalizeUrl(url, &canon_host,
+    safe_browsing::SBProtocolManagerUtil::CanonicalizeUrl(url, &canon_host,
                                                           nullptr, nullptr);
     return canon_host;
   }

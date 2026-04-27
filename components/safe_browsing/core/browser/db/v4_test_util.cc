@@ -198,7 +198,7 @@ std::string GetV4HashResponse(
 }
 
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id) {
-  return FullHashInfo(V4ProtocolManagerUtil::GetFullHash(url), list_id,
+  return FullHashInfo(SBProtocolManagerUtil::GetFullHash(url), list_id,
                       base::Time::Now() + base::Minutes(5));
 }
 

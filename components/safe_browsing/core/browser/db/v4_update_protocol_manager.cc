@@ -157,7 +157,7 @@ base::TimeDelta V4UpdateProtocolManager::GetNextUpdateInterval(bool back_off) {
 
   base::TimeDelta next = next_update_interval_;
   if (back_off) {
-    next = V4ProtocolManagerUtil::GetNextBackOffInterval(
+    next = SBProtocolManagerUtil::GetNextBackOffInterval(
         &update_error_count_, &update_back_off_mult_);
   }
 
@@ -217,7 +217,7 @@ std::string V4UpdateProtocolManager::GetBase64SerializedUpdateRequestProto() {
         GetReportingLevelProtoValue(extended_reporting_level_callback_.Run()));
   }
 
-  V4ProtocolManagerUtil::SetClientInfoFromConfig(request.mutable_client(),
+  SBProtocolManagerUtil::SetClientInfoFromConfig(request.mutable_client(),
                                                  config_);
 
   // Serialize and Base64 encode.
@@ -396,7 +396,7 @@ void V4UpdateProtocolManager::GetUpdateUrlAndHeaders(
     const std::string& req_base64,
     GURL* gurl,
     net::HttpRequestHeaders* headers) const {
-  V4ProtocolManagerUtil::GetRequestUrlAndHeaders(
+  SBProtocolManagerUtil::GetRequestUrlAndHeaders(
       req_base64, "threatListUpdates:fetch", config_, gurl, headers);
 }
 

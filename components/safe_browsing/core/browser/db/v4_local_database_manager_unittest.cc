@@ -49,7 +49,7 @@ typedef std::vector<FullHashInfo> FullHashInfos;
 // Utility function for populating hashes.
 FullHashStr HashForUrl(const GURL& url) {
   std::vector<FullHashStr> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+  SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   // ASSERT_GE(full_hashes.size(), 1u);
   return full_hashes[0];
 }

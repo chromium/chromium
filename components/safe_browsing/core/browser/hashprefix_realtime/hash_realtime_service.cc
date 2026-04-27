@@ -174,7 +174,7 @@ HashRealTimeService::SBThreatInfo HashRealTimeService::DetermineSBThreatInfo(
     const GURL& url,
     const std::vector<V5::FullHash>& result_full_hashes) {
   std::vector<std::string> url_full_hashes_vector;
-  V4ProtocolManagerUtil::UrlToFullHashes(url, &url_full_hashes_vector);
+  SBProtocolManagerUtil::UrlToFullHashes(url, &url_full_hashes_vector);
   std::set<std::string> url_full_hashes(url_full_hashes_vector.begin(),
                                         url_full_hashes_vector.end());
   SBThreatType sb_threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
@@ -230,7 +230,7 @@ bool HashRealTimeService::IsHashDetailMoreSevere(
 std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
     const GURL& url) const {
   std::vector<std::string> full_hashes;
-  V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+  SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   std::set<std::string> hash_prefixes;
   for (const auto& full_hash : full_hashes) {
     auto hash_prefix = hash_realtime_utils::GetHashPrefix(full_hash);

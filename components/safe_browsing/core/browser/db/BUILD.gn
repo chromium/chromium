@@ -180,7 +180,8 @@ source_set("v4_protocol_config") {
 
 source_set("v4_protocol_manager_util") {
   sources = [
-    "v4_protocol_manager_util.cc",
+    "sb_protocol_manager_util.cc",
+    "sb_protocol_manager_util.h",
     "v4_protocol_manager_util.h",
   ]
 
@@ -214,7 +215,7 @@ source_set("prefix_iterator") {
 if (is_android) {
   import("//build/config/android/rules.gni")
   java_cpp_enum("sb_threat_values") {
-    sources = [ "v4_protocol_manager_util.h" ]
+    sources = [ "sb_protocol_manager_util.h" ]
   }
 }
 
@@ -314,9 +315,9 @@ source_set("unit_tests_shared") {
   sources = [
     "allowlist_checker_client_unittest.cc",
     "database_manager_unittest.cc",
+    "sb_protocol_manager_util_unittest.cc",
     "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
-    "v4_protocol_manager_util_unittest.cc",
   ]
   deps = [
     ":allowlist_checker_client",

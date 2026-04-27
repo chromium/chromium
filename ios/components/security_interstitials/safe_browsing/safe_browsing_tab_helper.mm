@@ -62,7 +62,7 @@ GURL GetCanonicalizedUrl(const GURL& url) {
   std::string hostname;
   std::string path;
   std::string query;
-  safe_browsing::V4ProtocolManagerUtil::CanonicalizeUrl(url, &hostname, &path,
+  safe_browsing::SBProtocolManagerUtil::CanonicalizeUrl(url, &hostname, &path,
                                                         &query);
 
   GURL::Replacements replacements;
