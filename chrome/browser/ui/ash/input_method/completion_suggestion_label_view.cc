@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/ash/input_method/completion_suggestion_label_view.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/ash/input_method/colors.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -22,14 +25,14 @@ CompletionSuggestionLabelView::CompletionSuggestionLabelView() {
 }
 
 void CompletionSuggestionLabelView::SetPrefixAndPrediction(
-    const std::u16string& prefix,
-    const std::u16string& prediction) {
+    std::u16string_view prefix,
+    std::u16string_view prediction) {
   const gfx::FontList kSuggestionFont({kFontName}, gfx::Font::NORMAL, kFontSize,
                                       gfx::Font::Weight::NORMAL);
   // SetText clears the existing style only if the text to set is different from
   // the previous one.
   SetText(u"");
-  SetText(prefix + prediction);
+  SetText(base::StrCat({prefix, prediction}));
 
   // Create style range for prefix if it's not empty.
   if (!prefix.empty()) {

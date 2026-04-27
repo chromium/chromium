@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_INPUT_METHOD_COMPLETION_SUGGESTION_VIEW_H_
 #define CHROME_BROWSER_UI_ASH_INPUT_METHOD_COMPLETION_SUGGESTION_VIEW_H_
 
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/input_method/suggestion_details.h"
@@ -83,7 +85,7 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   // Views created in the class will be part of tree of |this|, so these
   // child views will be deleted when |this| is deleted.
 
-  void SetSuggestionText(const std::u16string& text,
+  void SetSuggestionText(std::u16string_view text,
                          const size_t confirmed_length);
 
   // The suggestion label renders the suggestion text.

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_INPUT_METHOD_COMPLETION_SUGGESTION_LABEL_VIEW_H_
 #define CHROME_BROWSER_UI_ASH_INPUT_METHOD_COMPLETION_SUGGESTION_LABEL_VIEW_H_
 
+#include <string_view>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/controls/styled_label.h"
@@ -41,8 +43,8 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionLabelView
   CompletionSuggestionLabelView();
 
   // Set the prefix and prediction parts of the label.
-  void SetPrefixAndPrediction(const std::u16string& prefix,
-                              const std::u16string& prediction);
+  void SetPrefixAndPrediction(std::u16string_view prefix,
+                              std::u16string_view prediction);
 
   // Get the width in pixels of the prefix part of the label.
   int GetPrefixWidthPx() const;

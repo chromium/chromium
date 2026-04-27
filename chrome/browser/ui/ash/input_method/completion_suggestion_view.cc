@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/input_method/completion_suggestion_view.h"
 
+#include <string_view>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -157,7 +159,7 @@ void CompletionSuggestionView::SetView(const SuggestionDetails& details) {
 }
 
 void CompletionSuggestionView::SetSuggestionText(
-    const std::u16string& text,
+    std::u16string_view text,
     const size_t confirmed_length) {
   suggestion_label_->SetPrefixAndPrediction(text.substr(0, confirmed_length),
                                             text.substr(confirmed_length));
