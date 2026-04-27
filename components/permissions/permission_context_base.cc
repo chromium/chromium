@@ -22,6 +22,7 @@
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -542,13 +543,33 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
     content::PermissionResult result,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  MaybeUpdateCachedHasDevicePermission(web_contents);
-
-  // If the site content setting is ASK/BLOCKED the device-level permission
-  // won't affect it.
+  // If the site content setting is ASK or DENIED, device-level permission has
+  // no effect on the current result. However, we still need to refresh the
+  // cached device permission state because a change (e.g. user toggling the
+  // OS-level permission) must invalidate cached state for *all* origins via
+  // the wildcard observer notification in MaybeUpdateCachedHasDevicePermission.
+  //
+  // Since this code is reached from navigation hot paths (e.g. on macOS, where
+  // the OS permission query can be expensive), post the refresh asynchronously
+  // in the non-GRANTED case so the hot path is not blocked, while still
+  // preserving the cross-origin observer-notification correctness.
   if (result.status != blink::mojom::PermissionStatus::GRANTED) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<PermissionContextBase> self,
+                          base::WeakPtr<content::WebContents> wc) {
+                         if (!self) {
+                           return;
+                         }
+                         self->MaybeUpdateCachedHasDevicePermission(wc.get());
+                       },
+                       weak_factory_.GetWeakPtr(),
+                       web_contents ? web_contents->GetWeakPtr()
+                                    : base::WeakPtr<content::WebContents>()));
     return result;
   }
+
+  MaybeUpdateCachedHasDevicePermission(web_contents);
 
   // If the device-level permission is granted, it has no effect on the result.
   if (last_has_device_permission_result_.has_value() &&
