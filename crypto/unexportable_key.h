@@ -25,17 +25,10 @@ namespace crypto {
 class StatefulKey;
 class StatefulUnexportableKeyProvider;
 
-// UnexportableSigningKey provides a hardware-backed signing oracle on platforms
-// that support it. Current support is:
-//   Windows: RSA_PKCS1_SHA256 via TPM 1.2+ and ECDSA_SHA256 via TPM 2.0.
-//   macOS and iOS: ECDSA_SHA256 via the Secure Enclave.
-//   Tests: ECDSA_SHA256 via ScopedMockUnexportableSigningKeyForTesting.
-//
-// See also //components/unexportable_keys for a higher-level key management
-// API.
-class CRYPTO_EXPORT UnexportableSigningKey {
+// UnexportableKey is the base class for all unexportable keys.
+class CRYPTO_EXPORT UnexportableKey {
  public:
-  virtual ~UnexportableSigningKey();
+  virtual ~UnexportableKey() = default;
 
   // Algorithm returns the algorithm of the key in this object.
   virtual SignatureVerifier::SignatureAlgorithm Algorithm() const = 0;
@@ -61,13 +54,6 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // wrapped key.
   virtual std::vector<uint8_t> GetWrappedKey() const = 0;
 
-  // SignSlowly returns a signature of |data|, or |nullopt| if an error occurs
-  // during signing.
-  //
-  // Note: this may take a second or more to run.
-  virtual std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) = 0;
-
   // Returns true if the underlying key is stored in "hardware". Something like
   // ARM TrustZone would count as hardware for these purposes. Ideally all
   // implementations of this class would return true here, because software
@@ -79,16 +65,36 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // Returns the underlying reference to a Keychain key owned by the current
   // instance.
   virtual SecKeyRef GetSecKeyRef() const = 0;
-#elif BUILDFLAG(IS_WIN)
-  // Will verify whether the key can be used to sign TLS 1.3 payloads as
-  // required by the spec. Specifically, it will verify whether RSA keys
-  // support the RSA-PSS algorithm with the expected salt lengths.
-  virtual bool SupportsTls13() = 0;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Typesafe downcast to `StatefulKey`. Returns nullptr if the key is not
   // stateful.
   virtual const StatefulKey* AsStatefulKey() const LIFETIME_BOUND;
+};
+
+// UnexportableSigningKey provides a hardware-backed signing oracle on platforms
+// that support it. Current support is:
+//   Windows: RSA_PKCS1_SHA256 via TPM 1.2+ and ECDSA_SHA256 via TPM 2.0.
+//   macOS and iOS: ECDSA_SHA256 via the Secure Enclave.
+//   Tests: ECDSA_SHA256 via ScopedMockUnexportableSigningKeyForTesting.
+//
+// See also //components/unexportable_keys for a higher-level key management
+// API.
+class CRYPTO_EXPORT UnexportableSigningKey : public UnexportableKey {
+ public:
+  // SignSlowly returns a signature of |data|, or |nullopt| if an error occurs
+  // during signing.
+  //
+  // Note: this may take a second or more to run.
+  virtual std::optional<std::vector<uint8_t>> SignSlowly(
+      base::span<const uint8_t> data) = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // Will verify whether the key can be used to sign TLS 1.3 payloads as
+  // required by the spec. Specifically, it will verify whether RSA keys
+  // support the RSA-PSS algorithm with the expected salt lengths.
+  virtual bool SupportsTls13() = 0;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // StatefulKey is an interface for keys that are backed by some permanent state,
