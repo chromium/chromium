@@ -87,6 +87,11 @@
         <option name="exclude-filter" value="org.chromium.net.impl.CronetLoggerTest#testCronetEngineInfoCreation" />
         <!-- b/496870046 -->
         <option name="exclude-filter" value="org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStreamTest" />
+        <!-- b/505681641 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetAdaptiveRequestContextTest#reportFallbackUsed_toasts" />
+        <!-- b/505681641 -->
+        <option name="exclude-filter" value="org.chromium.net.impl.CronetAdaptiveRequestContextTest#reportFallbackUsed_notifiesActiveStreams" />
+
         <!-- Seems to hang. See b/497624883 -->
         <option name="exclude-filter" value="org.chromium.net.impl.AdaptiveBidirectionalStreamTest#tlsConnectionFailsNoFallback_throwsConnectionTimeoutError" />
         <!-- Rename of the above, see https://crrev.com/c/7700792 -->
