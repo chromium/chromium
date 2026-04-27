@@ -102,6 +102,14 @@ DnsPlatformAndroidAttempt::DnsPlatformAndroidAttempt(
 DnsPlatformAndroidAttempt::~DnsPlatformAndroidAttempt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (fd_ >= 0) {
+    // Destructing `read_fd_watcher_` stops it from watching the file descriptor
+    // it tracks (see MessagePumpEpoll::FdWatchController::~FdWatchController).
+    // This is done by stopping all epoll events, in the underlying
+    // MessagePumpEpoll, associated with the fd being watched.
+    // This means that, unless we stop watching the fd now, when it's still
+    // valid, the epoll_ctl call within MessagePumpEpoll::StopEpollEvent will
+    // crash due to EBADF (since we are about to close it).
+    read_fd_watcher_.StopWatchingFileDescriptor();
     delegate_->Close(fd_);
   }
 }

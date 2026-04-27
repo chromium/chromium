@@ -292,6 +292,7 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
 // destroyed before the response is received (i.e., the file descriptor returned
 // by ::Query has not become ready). This should still end up in the file
 // descriptor being closed.
+// This is a regression test for https://crbug.com/450545129.
 TEST_F(DnsPlatformAndroidAttemptTest, DestroyedBeforeResponseClosesFd) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd =
@@ -308,7 +309,9 @@ TEST_F(DnsPlatformAndroidAttemptTest, DestroyedBeforeResponseClosesFd) {
           return fd.get();
         });
     EXPECT_CALL(delegate, Result(_, _, _)).Times(0);
-    EXPECT_CALL(delegate, Close(fd.get())).Times(1);
+    EXPECT_CALL(delegate, Close(fd.get())).WillOnce([&]() {
+      EXPECT_EQ(close(fd.release()), 0);
+    });
 
     {
       DnsPlatformAndroidAttempt executor(
