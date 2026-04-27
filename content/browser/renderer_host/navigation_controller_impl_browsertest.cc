@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12811,6 +12812,102 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // corrupted PageState. This works because ISNs of 0 are exempt from the
   // de-deduplication logic.
   EXPECT_NE(new_entry1->GetFrameEntry(root2), new_entry2->GetFrameEntry(root2));
+}
+
+// When restoring a NavigationEntry with a POST submission in the PageState,
+// all files to upload must be listed in the PageState's referenced files. This
+// test ensures that the POST submission is not sent and file access is not
+// granted if a file is missing from the referenced files list. See
+// https://crbug.com/499027750.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreSessionWithInvalidPageStateFileHandles) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Navigate to a page that submits a form, and submit it.
+  GURL url1(embedded_test_server()->GetURL("/form_that_posts_to_echoall.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.getElementById('form').submit();"));
+  form_post_observer.Wait();
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+
+  // Verify that we arrived at the expected location.
+  GURL url2(embedded_test_server()->GetURL("/echoall"));
+  EXPECT_EQ(url2, shell()->web_contents()->GetLastCommittedURL());
+
+  // Prepare a file to upload, which won't be in the list of referenced files.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  base::FilePath bad_file;
+  std::string bad_file_content("bad-file-content");
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &bad_file));
+  ASSERT_TRUE(base::WriteFile(bad_file, bad_file_content));
+
+  // Create a slightly corrupted PageState that has the actual file referenced
+  // in the HttpBody without being listed in the PageState's GetReferencedFiles.
+  // This should cause the PageState not to be restored.
+  blink::ExplodedPageState exploded_page_state;
+  ASSERT_TRUE(blink::DecodePageState(entry1->GetPageState().ToEncodedData(),
+                                     &exploded_page_state));
+  exploded_page_state.top.http_body.request_body->AppendFileRange(
+      bad_file, 0, bad_file_content.size(), base::Time());
+  std::string encoded_page_state;
+  blink::EncodePageState(exploded_page_state, &encoded_page_state);
+  blink::PageState page_state_with_file =
+      blink::PageState::CreateFromEncodedData(encoded_page_state);
+
+  // Simulate a session restore using the corrupted PageState.  The other values
+  // from the entry are preserved (simulated by cloning the entry), and the
+  // modified POST data is used. Note that SetHasPostData must be called to make
+  // the restored entry's method be `POST`, regardless of the modification.
+  NavigationEntryRestoreContextImpl context1;
+  std::unique_ptr<NavigationEntryImpl> restored_entry1 = entry1->Clone();
+  restored_entry1->SetPageState(page_state_with_file, &context1);
+  restored_entry1->SetHasPostData(true);
+
+  // Actually restore the entries in a new tab.
+  std::vector<std::unique_ptr<NavigationEntry>> restored_entries;
+  restored_entries.push_back(std::move(restored_entry1));
+  Shell* shell2 = Shell::CreateNewWindow(controller.GetBrowserContext(), GURL(),
+                                         nullptr, gfx::Size());
+  WebContentsImpl* web_contents2 =
+      static_cast<WebContentsImpl*>(shell2->web_contents());
+  NavigationControllerImpl& controller2 =
+      static_cast<NavigationControllerImpl&>(web_contents2->GetController());
+  controller2.Restore(restored_entries.size() - 1, RestoreType::kRestored,
+                      &restored_entries);
+  // Instead of using LoadIfNecessary, do a Reload without `check_for_repost` so
+  // that the POST submission is sent.
+  {
+    // Reload to send the POST submission.
+    TestNavigationObserver reload_observer(shell2->web_contents());
+    controller2.Reload(content::ReloadType::NORMAL,
+                       /*check_for_repost=*/false);
+    reload_observer.Wait();
+    EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+  }
+  NavigationEntryImpl* new_entry1 = controller2.GetEntryAtIndex(0);
+  EXPECT_EQ(new_entry1, controller2.GetLastCommittedEntry());
+
+  // Verify that the page correctly loaded.
+  FrameTreeNode* root2 = static_cast<WebContentsImpl*>(shell2->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root();
+  ASSERT_EQ(url2, root2->current_frame_host()->GetLastCommittedURL());
+
+  // Ensure no POST body was preserved.
+  std::string post_content_type;
+  EXPECT_EQ(new_entry1->GetFrameEntry(root2)->GetPostData(&post_content_type),
+            nullptr);
+
+  // Ensure that the file was not granted when navigating.
+  ChildProcessId root2_child_id =
+      root2->current_frame_host()->GetProcess()->GetID();
+  EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+      root2_child_id, bad_file));
 }
 
 // Tests the value of history.state after same-document replacement, in all

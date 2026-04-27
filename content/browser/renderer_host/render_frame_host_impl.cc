@@ -14082,28 +14082,13 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
 bool RenderFrameHostImpl::CanAccessFilesOfPageState(
     const blink::PageState& state) {
   // Ensure that all of the files in the PageState were actually listed in the
-  // GetReferencedFiles list, using a set to prune duplicates.
-  // See https://crbug.com/487383169.
-  std::vector<base::FilePath> all_files;
-  if (!blink::GetAllFilesInPageState(state.ToEncodedData(), &all_files)) {
-    // All files in the PageState weren't recovered due to parsing failures.
-    // The renderer should be killed instead of proceeding with a PageState that
-    // might still contain files that could be used without being validated.
+  // GetReferencedFiles list. See https://crbug.com/487383169.
+  if (!blink::VerifyReferencedFilesInPageState(state.ToEncodedData())) {
     return false;
-  }
-  std::vector<base::FilePath> referenced_files = state.GetReferencedFiles();
-  std::set<base::FilePath> referenced_file_set(referenced_files.begin(),
-                                               referenced_files.end());
-  for (const base::FilePath& file : all_files) {
-    if (!referenced_file_set.contains(file)) {
-      // Found a file that was not in the list to be validated, so the renderer
-      // should be killed.
-      return false;
-    }
   }
 
   return ChildProcessSecurityPolicyImpl::GetInstance()->CanReadAllFiles(
-      GetProcess()->GetID(), referenced_files);
+      GetProcess()->GetID(), state.GetReferencedFiles());
 }
 
 void RenderFrameHostImpl::GrantFileAccessFromPageState(

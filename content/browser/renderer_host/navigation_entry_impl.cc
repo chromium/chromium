@@ -611,8 +611,14 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state,
   // without recursively creating subframe entries. This ensures that the
   // renderer and future sessions will be able to handle the history item, even
   // if not all data can be preserved. See https://crbug.com/1196330.
+  // Also verify that all of the file paths in the PageState are correctly
+  // listed in its referenced files list, because only that list was validated.
+  // TODO(crbug.com/40275611): Also extract the files needed for each frame
+  // while validating them against the referenced files list, so that each frame
+  // can have its own list of referenced files below.
   blink::ExplodedPageState exploded_state;
-  if (!blink::DecodePageState(state.ToEncodedData(), &exploded_state)) {
+  if (!blink::DecodePageState(state.ToEncodedData(), &exploded_state) ||
+      !blink::VerifyReferencedFilesInPageState(exploded_state)) {
     // Replace frame_entry with a clone to avoid sharing with any other
     // NavigationEntries, because the item sequence number will be gone.
     frame_tree_->frame_entry = frame_tree_->frame_entry->Clone();

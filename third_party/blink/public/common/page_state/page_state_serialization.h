@@ -96,12 +96,12 @@ BLINK_COMMON_EXPORT void LegacyEncodePageStateForTesting(
     int version,
     std::string* encoded);
 
-// Similar to `PageState::GetReferencedFiles`, but returns all FilePaths within
-// the entire PageState by traversing its frame tree. Used to validate that the
-// list returned by `GetReferencedFiles` is complete.
-BLINK_COMMON_EXPORT bool GetAllFilesInPageState(
-    const std::string& encoded,
-    std::vector<base::FilePath>* files);
+// Recursively verifies that all FilePaths within the given PageState's frame
+// tree are correctly listed within its list of referenced files.
+BLINK_COMMON_EXPORT bool VerifyReferencedFilesInPageState(
+    const std::string& encoded);
+BLINK_COMMON_EXPORT bool VerifyReferencedFilesInPageState(
+    const ExplodedPageState& exploded);
 
 #if BUILDFLAG(IS_ANDROID)
 BLINK_COMMON_EXPORT bool DecodePageStateWithDeviceScaleFactorForTesting(

@@ -1067,8 +1067,7 @@ void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,
   *encoded = obj.GetAsString();
 }
 
-bool GetAllFilesInPageState(const std::string& encoded,
-                            std::vector<base::FilePath>* files) {
+bool VerifyReferencedFilesInPageState(const std::string& encoded) {
   ExplodedPageState exploded;
   if (!DecodePageState(encoded, &exploded)) {
     // If the PageState can't be decoded at all, then there are no usable files
@@ -1076,11 +1075,16 @@ bool GetAllFilesInPageState(const std::string& encoded,
     return true;
   }
 
+  return VerifyReferencedFilesInPageState(exploded);
+}
+
+bool VerifyReferencedFilesInPageState(const ExplodedPageState& exploded) {
   // TODO(crbug.com/40241973): Refactor to avoid sending PageState objects to
   // the browser process, so that this use of RecursivelyAppendReferencedFiles
-  // is not needed.
-  std::vector<std::optional<std::u16string>> referenced_files;
-  if (!RecursivelyAppendReferencedFiles(exploded.top, &referenced_files)) {
+  // is not needed. This may also depend on persistently storing per-frame
+  // referenced file lists.
+  std::vector<std::optional<std::u16string>> all_files;
+  if (!RecursivelyAppendReferencedFiles(exploded.top, &all_files)) {
     // If the PageState can be decoded but this function failed due to an issue
     // parsing the DocumentState, it is important to return false to indicate
     // that the PageState is not safe to use. Some files could otherwise be
@@ -1088,11 +1092,17 @@ bool GetAllFilesInPageState(const std::string& encoded,
     return false;
   }
 
-  // Copy all of the files found into the output parameter.
-  files->reserve(referenced_files.size());
-  for (const auto& file : referenced_files) {
-    if (file) {
-      files->push_back(base::FilePath::FromUTF16Unsafe(*file));
+  // Convert the referenced files list to a set to confirm that `all_files` is a
+  // subset of `referenced_files`.
+  // TODO(crbug.com/499019935): Check if all_files and exploded.referenced_files
+  // are equal, rather than the former being a subset of the latter.
+  std::set<std::optional<std::u16string>> referenced_file_set(
+      exploded.referenced_files.begin(), exploded.referenced_files.end());
+  for (const std::optional<std::u16string>& file : all_files) {
+    if (file && !referenced_file_set.contains(file)) {
+      // Found a file that was not in the list to be validated, so the renderer
+      // should be killed.
+      return false;
     }
   }
   return true;
