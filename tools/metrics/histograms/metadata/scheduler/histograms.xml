@@ -159,6 +159,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.MessagePumpDefault.BusyLoop.PredictionAccuracy"
+    enum="BusyLoopPredictionAccuracy" expires_after="2027-04-24">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the accuracy of the busy-loop heuristic on the default message pump.
+
+    * True Positive: Heuristic predicted to busy loop and a task arrived within
+    the max busy loop duration.
+
+    * False Positive: Heuristic predicted to busy loop but no task arrived
+    within the max busy loop duration.
+
+    * True Negative: Heuristic predicted not to busy loop and no task arrived
+    within the max busy loop duration.
+
+    * False Negative: Heuristic predicted not to busy loop but a task arrived
+    within the max busy loop duration.
+
+    Subsampled with probability 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.MessagePumpDefault.BusyLoop.TargetDuration"
     units="microseconds" expires_after="2027-04-10">
   <owner>anandrv@google.com</owner>

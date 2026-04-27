@@ -27,6 +27,24 @@
 
 namespace base {
 
+namespace {
+enum class BusyLoopPredictionAccuracy {
+  // Heuristic predicted busy loop, but no task arrived within the max busy
+  // loop duration.
+  kFalsePositive,
+  // Heuristic predicted busy loop, and a task arrived within the max busy loop
+  // duration.
+  kTruePositive,
+  // Heuristic predicted no busy loop, but a task arrived within the max busy
+  // loop duration.
+  kFalseNegative,
+  // Heuristic predicted no busy loop, and no task arrived within the max busy
+  // loop duration.
+  kTrueNegative,
+  kMaxValue = kTrueNegative,
+};
+}  // namespace
+
 MessagePumpDefault::MessagePumpDefault()
     : keep_running_(true),
       event_(WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -65,8 +83,10 @@ void MessagePumpDefault::Run(Delegate* delegate) {
       before = base::TimeTicks::Now();
     }
 
-    if (ShouldBusyLoop()) {
-      bool signaled = BusyWaitOnEvent(before, next_work_info.remaining_delay());
+    bool should_busy_loop = ShouldBusyLoop();
+    bool signaled = false;
+    if (should_busy_loop) {
+      signaled = BusyWaitOnEvent(before, next_work_info.remaining_delay());
       if (!signaled) {
         next_work_info.recent_now = base::TimeTicks::Now();
         event_.TimedWait(next_work_info.remaining_delay());
@@ -76,7 +96,21 @@ void MessagePumpDefault::Run(Delegate* delegate) {
     }
 
     if (may_busy_loop) {
-      RecordWaitTime(base::TimeTicks::Now() - before);
+      base::TimeDelta wait_time = base::TimeTicks::Now() - before;
+      RecordWaitTime(wait_time);
+
+      if (base::ShouldRecordSubsampledMetric(0.001)) {
+        BusyLoopPredictionAccuracy heuristic_result =
+            should_busy_loop
+                ? (signaled ? BusyLoopPredictionAccuracy::kTruePositive
+                            : BusyLoopPredictionAccuracy::kFalsePositive)
+                : (wait_time > max_busy_loop_time_
+                       ? BusyLoopPredictionAccuracy::kTrueNegative
+                       : BusyLoopPredictionAccuracy::kFalseNegative);
+        UMA_HISTOGRAM_ENUMERATION(
+            "Scheduling.MessagePumpDefault.BusyLoop.PredictionAccuracy",
+            heuristic_result);
+      }
     }
     // Since event_ is auto-reset, we don't need to do anything special here
     // other than service each delegate method.
