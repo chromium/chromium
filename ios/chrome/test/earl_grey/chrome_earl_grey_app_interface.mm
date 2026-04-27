@@ -158,6 +158,34 @@ NSString* GetIdForWebState(web::WebState* web_state) {
       web_state->GetUniqueIdentifier().ToSessionID().id()));
 }
 
+// Returns the first child of `root` of type `BrowserViewController`.
+// TODO(crbug.com/505357710): once the tests have been refactored to not
+// depend on BrowserViewController, remove this function.
+UIViewController* FindBrowserViewController(UIViewController* root) {
+  if (!root) {
+    return nil;
+  }
+
+  Class bvc_class = NSClassFromString(@"BrowserViewController");
+  NSMutableArray<UIViewController*>* queue =
+      [[NSMutableArray alloc] initWithObjects:root, nil];
+
+  while (queue.count > 0) {
+    UIViewController* current = queue.firstObject;
+    [queue removeObjectAtIndex:0];
+
+    if ([current isKindOfClass:bvc_class]) {
+      return current;
+    }
+
+    for (UIViewController* child in current.childViewControllers) {
+      [queue addObject:child];
+    }
+  }
+
+  return nil;
+}
+
 }  // namespace
 
 @implementation JavaScriptExecutionResult
@@ -1499,9 +1527,9 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 #pragma mark - Keyboard Command Utilities
 
 + (NSInteger)registeredKeyCommandCount {
-  UIViewController* browserViewController =
-      chrome_test_util::GetForegroundActiveScene()
-          .browserProviderInterface.mainBrowserProvider.viewController;
+  UIViewController* browserViewController = FindBrowserViewController(
+      chrome_test_util::GetForegroundActiveScene().window.rootViewController);
+
   // The BVC delegates its key commands to its next responder,
   // KeyCommandsProvider.
   return browserViewController.nextResponder.keyCommands.count;
