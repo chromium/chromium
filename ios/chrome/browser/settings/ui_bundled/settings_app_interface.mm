@@ -81,9 +81,9 @@
 
 + (BOOL)settingsRegisteredKeyboardCommands {
   SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
-  UIViewController* viewController =
-      sceneState.browserProviderInterface.mainBrowserProvider.viewController;
-  return viewController.presentedViewController.keyCommands != nil;
+  UIViewController* presentedViewController =
+      sceneState.window.rootViewController.presentedViewController;
+  return presentedViewController.keyCommands != nil;
 }
 
 + (void)overrideSearchEngineWithURL:(NSString*)searchEngineURL {
