@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -35,7 +34,6 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -61,9 +59,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   ProfileDataRemover(Profile* profile,
                      ClearedTypes cleared_types,
                      base::OnceClosure callback)
-      : profile_(profile),
-        cleared_types_(cleared_types),
-        callback_(std::move(callback)),
+      : callback_(std::move(callback)),
         origin_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         remover_(profile->GetBrowsingDataRemover()) {
     remover_->AddObserver(this);
@@ -112,25 +108,11 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
 
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
     remover_->RemoveObserver(this);
-
-    if (cleared_types_ == ClearedTypes::kAllData) {
-      // All the Profile data has been wiped. Clear the last signed in username
-      // as well, so that the next signin doesn't trigger the account
-      // change dialog.
-      profile_->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
-      profile_->GetPrefs()->ClearPref(
-          prefs::kGoogleServicesLastSyncingUsername);
-      profile_->GetPrefs()->ClearPref(
-          prefs::kGoogleServicesLastSignedInUsername);
-    }
-
     origin_runner_->PostTask(FROM_HERE, std::move(callback_));
     origin_runner_->DeleteSoon(FROM_HERE, this);
   }
 
  private:
-  raw_ptr<Profile> profile_;
-  ClearedTypes cleared_types_;
   base::OnceClosure callback_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
   raw_ptr<content::BrowsingDataRemover> remover_;
