@@ -275,7 +275,8 @@ public class ExtensionTestUtils {
                 extensionIcon,
                 isPinned,
                 siteAccessToggle,
-                sitePermissionsButton);
+                sitePermissionsButton,
+                /* isEnterprise= */ false);
     }
 
     /**
@@ -311,7 +312,8 @@ public class ExtensionTestUtils {
                 extensionIcon,
                 isPinned,
                 siteAccessToggle,
-                sitePermissionsButton);
+                sitePermissionsButton,
+                /* isEnterprise= */ false);
     }
 
     /** Helper to create a {@link ExtensionsMenuTypes.MenuEntryState}. */
@@ -321,7 +323,8 @@ public class ExtensionTestUtils {
             @Nullable Bitmap extensionIcon,
             boolean isPinned,
             ExtensionsMenuTypes.ControlState siteAccessToggle,
-            ExtensionsMenuTypes.ControlState sitePermissionsButton) {
+            ExtensionsMenuTypes.ControlState sitePermissionsButton,
+            boolean isEnterprise) {
         ExtensionsMenuTypes.ControlState actionButton =
                 new ExtensionsMenuTypes.ControlState(
                         ExtensionsMenuTypes.ControlState.Status.DISABLED,
@@ -343,7 +346,8 @@ public class ExtensionTestUtils {
                 actionButton,
                 contextMenuButton,
                 siteAccessToggle,
-                sitePermissionsButton);
+                sitePermissionsButton,
+                isEnterprise);
     }
 
     /** Helper to create a simple icon with the given color. */

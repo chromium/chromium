@@ -810,7 +810,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState));
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
@@ -840,7 +841,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState);
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -869,7 +871,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState);
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -911,7 +914,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState));
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Open extensions menu by simulating the native callback triggering onReady.
@@ -962,7 +966,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState));
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
 
         // Open extensions menu.
@@ -991,7 +996,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState);
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -1023,7 +1029,8 @@ public class ExtensionsMenuMediatorTest {
                         ICON_RED,
                         /* isPinned= */ false,
                         toggleState,
-                        sitePermissionsButtonState);
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ false);
         when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntry);
         mBridgeCaptor.getValue().onActionUpdated(0);
 
@@ -1344,6 +1351,53 @@ public class ExtensionsMenuMediatorTest {
                         EXTENSIONS_MENU_BRIDGE_POINTER,
                         "id_a",
                         ExtensionsMenuTypes.UserSiteAccess.ON_SITE);
+    }
+
+    /**
+     * Tests that an extension marked as enterprise (installed by policy) is correctly identified
+     * and represented in the menu item property model.
+     */
+    @Test
+    public void testEnterpriseExtension() {
+        // Create a MenuEntryState with isEnterprise = true.
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ControlState sitePermissionsButtonState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.MenuEntryState enterpriseEntry =
+                ExtensionTestUtils.createMenuEntry(
+                        "id_enterprise",
+                        "Enterprise Extension",
+                        ICON_RED,
+                        /* isPinned= */ false,
+                        toggleState,
+                        sitePermissionsButtonState,
+                        /* isEnterprise= */ true);
+
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(enterpriseEntry);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open the menu.
+        mBridgeCaptor.getValue().onReady();
+
+        // Verify the PropertyModel reflects the enterprise state.
+        PropertyModel model = mActionModels.get(0).model;
+        assertTrue(
+                "PropertyModel IS_ENTERPRISE should be true",
+                model.get(ExtensionsMenuItemProperties.IS_ENTERPRISE));
     }
 
     /** Helper to assert that the item at the given index has the correct information. */

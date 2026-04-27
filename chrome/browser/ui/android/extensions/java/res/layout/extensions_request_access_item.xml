@@ -17,8 +17,8 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/extension_icon"
         android:scaleType="fitCenter"
-        android:layout_width="@dimen/extensions_menu_icon_size"
-        android:layout_height="@dimen/extensions_menu_icon_size"
+        android:layout_width="@dimen/extensions_menu_extension_icon_size"
+        android:layout_height="@dimen/extensions_menu_extension_icon_size"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

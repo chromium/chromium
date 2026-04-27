@@ -66,8 +66,7 @@ public class ExtensionsMenuTypes {
         public final ControlState contextMenuButton;
         public final ControlState siteAccessToggle;
         public final ControlState sitePermissionsButton;
-
-        // TODO(crbug.com/471016915): add is enterprise boolean.
+        public final boolean isEnterprise;
 
         @CalledByNative
         public MenuEntryState(
@@ -75,12 +74,14 @@ public class ExtensionsMenuTypes {
                 ControlState actionButton,
                 ControlState contextMenuButton,
                 ControlState siteAccessToggle,
-                ControlState sitePermissionsButton) {
+                ControlState sitePermissionsButton,
+                boolean isEnterprise) {
             this.id = id;
             this.actionButton = actionButton;
             this.contextMenuButton = contextMenuButton;
             this.siteAccessToggle = siteAccessToggle;
             this.sitePermissionsButton = sitePermissionsButton;
+            this.isEnterprise = isEnterprise;
         }
     }
 

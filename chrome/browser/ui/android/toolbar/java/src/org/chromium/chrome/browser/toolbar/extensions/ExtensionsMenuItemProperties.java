@@ -58,6 +58,8 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey IS_ENTERPRISE = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 EXTENSION_ID,
@@ -73,6 +75,7 @@ public class ExtensionsMenuItemProperties {
                 SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME,
                 SITE_PERMISSIONS_BUTTON_ON_CLICK,
                 SITE_PERMISSIONS_BUTTON_STATUS,
-                SITE_PERMISSIONS_BUTTON_TEXT
+                SITE_PERMISSIONS_BUTTON_TEXT,
+                IS_ENTERPRISE
             };
 }

@@ -132,7 +132,8 @@ ScopedJavaLocalRef<jobject> ExtensionsMenuDelegateAndroid::GetMenuEntry(
       env, id, CreateJavaControlState(env, state.action_button),
       CreateJavaControlState(env, state.context_menu_button),
       CreateJavaControlState(env, state.site_access_toggle),
-      CreateJavaControlState(env, state.site_permissions_button));
+      CreateJavaControlState(env, state.site_permissions_button),
+      state.is_enterprise);
 }
 
 int ExtensionsMenuDelegateAndroid::GetOptionalSection(JNIEnv* env) {

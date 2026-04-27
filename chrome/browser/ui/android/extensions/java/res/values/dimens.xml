@@ -13,7 +13,8 @@ found in the LICENSE file.
     <dimen name="extensions_menu_header_vertical_padding">10dp</dimen>
     <dimen name="extensions_menu_toggle_vertical_padding">8dp</dimen>
     <dimen name="extensions_menu_header_spacing">12dp</dimen>
-    <dimen name="extensions_menu_icon_size">20dp </dimen>
+    <dimen name="extensions_menu_extension_icon_size">20dp </dimen>
+    <dimen name="extensions_menu_site_permissions_icon_size">20dp </dimen>
     <dimen name="extensions_menu_request_access_padding">12dp</dimen>
     <dimen name="extensions_menu_request_access_corner_radius">12dp</dimen>
     <dimen name="extensions_menu_header_icon_size">24dp</dimen>

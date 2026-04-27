@@ -471,6 +471,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         itemModel.set(
                 ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT,
                 itemState.sitePermissionsButton.text);
+        itemModel.set(ExtensionsMenuItemProperties.IS_ENTERPRISE, itemState.isEnterprise);
     }
 
     /**
