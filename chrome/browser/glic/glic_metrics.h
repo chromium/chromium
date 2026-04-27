@@ -445,6 +445,9 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when kGlicTabContextEnabled changes.
   void OnTabContextEnabledPrefChanged();
 
+  // Records the time from startup until Glic was enabled for the profile.
+  void RecordStartupEnablement();
+
   // Returns the area in the display a given center point is.
   DisplayPosition GetDisplayPositionOfPoint(
       std::optional<display::Display> display,
@@ -516,6 +519,10 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Whether Glic is enabled and FRE has been completed. Tracked to trigger
   // metric(s) on change.
   bool is_enabled_ = false;
+
+  // Whether we have already recorded the metric that tracks how long it took
+  // for Glic to be enabled since startup.
+  bool recorded_startup_enablement_ = false;
 
   std::vector<base::CallbackListSubscription> subscriptions_;
 

@@ -34,6 +34,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -140,6 +141,7 @@ class GlicMetricsTestBase : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    startup_metric_utils::GetBrowser().ResetSessionForTesting();
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
     raw_ptr<TestingProfileManager> testing_profile_manager =
@@ -148,10 +150,11 @@ class GlicMetricsTestBase : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
         testing_profile_manager->profile_manager());
+    startup_metric_utils::GetBrowser().RecordWebContentsStartTime(
+        base::TimeTicks::Now());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     profile_ = testing_profile_manager->CreateTestingProfile("profile");
-    ForceSigninAndGlicCapability(profile_);
   }
 
   void TearDown() override {
@@ -761,9 +764,50 @@ TEST_F(GlicMetricsTest, ImpressionIncompleteFreNotPermittedByPolicy) {
 // subscribers are notified. The following tests turn the feature flags on
 // before setup happens, so that glic is enabled from the start.
 class GlicMetricsFeaturesEnabledTest : public GlicMetricsTestBase {
+ public:
+  void SetUp() override {
+    GlicMetricsTestBase::SetUp();
+    glic_test_env_.SetupProfile(profile());
+  }
+
+  GlicMetrics* metrics() {
+    return static_cast<GlicMetrics*>(
+        &GlicKeyedService::Get(profile())
+             ->instance_metrics_backwards_compatibility());
+  }
+
  private:
   GlicUnitTestEnvironment glic_test_env_;
 };
+
+TEST_F(GlicMetricsFeaturesEnabledTest, TimeToEnabledFromStartupRecorded) {
+  // Glic is enabled by default in SetUp().
+  histogram_tester().ExpectTotalCount(
+      "Glic.ProfileEnablement.TimeToEnabledFromStartup", 1);
+}
+
+TEST_F(GlicMetricsFeaturesEnabledTest, TimeToEnabledFromStartupDelayed) {
+  // Disable glic capability.
+  SetGlicCapability(profile(), false);
+
+  // Create new GlicMetrics that starts with glic disabled.
+  // We use a manual instance here to avoid interference with the one in
+  // GlicKeyedService which might already have recorded something.
+  auto enabling = std::make_unique<GlicEnabling>(
+      profile(), &profile_manager()->GetProfileAttributesStorage());
+  base::HistogramTester delayed_histogram_tester;
+  auto manual_metrics =
+      std::make_unique<GlicMetrics>(profile(), enabling.get());
+
+  delayed_histogram_tester.ExpectTotalCount(
+      "Glic.ProfileEnablement.TimeToEnabledFromStartup", 0);
+
+  // Enable glic capability.
+  SetGlicCapability(profile(), true);
+
+  delayed_histogram_tester.ExpectTotalCount(
+      "Glic.ProfileEnablement.TimeToEnabledFromStartup", 1);
+}
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionBeforeFre) {
   profile()->GetPrefs()->SetInteger(

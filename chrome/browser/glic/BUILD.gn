@@ -396,6 +396,7 @@ source_set("impl") {
     "//components/skills:features",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
+    "//components/startup_metric_utils",
     "//components/url_formatter",
     "//components/variations/service",
     "//components/webui/chrome_urls",
@@ -526,6 +527,7 @@ source_set("unit_tests") {
     sources += [
       "common/glic_panel_hotkey_delegate_unittest.cc",
       "common/local_hotkey_manager_unittest.cc",
+      "glic_metrics_provider_unittest.cc",
       "glic_metrics_unittest.cc",
       "glic_selection_observer_unittest.cc",
       "host/context/glic_page_features_manager_unittest.cc",
@@ -534,6 +536,7 @@ source_set("unit_tests") {
       "host/context/glic_tab_data_unittest.cc",
       "host/glic_cookie_synchronizer_unittest.cc",
       "host/guest_util_unittest.cc",
+      "public/glic_enabling_metrics_unittest.cc",
       "public/glic_enabling_unittest.cc",
       "service/glic_instance_helper_unittest.cc",
       "service/metrics/glic_instance_coordinator_metrics_unittest.cc",

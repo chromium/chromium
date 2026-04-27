@@ -57,6 +57,14 @@ GlicButtonController::GlicButtonController(
 GlicButtonController::~GlicButtonController() = default;
 
 void GlicButtonController::UpdateButton() {
+  // Attempt to record startup metrics when the button controller is first
+  // created, no-op if startup metrics have already been measured.
+  // Note that this will not record metrics for profiles that are not eligible
+  // for Glic (i.e. GlicEnabling::IsProfileEligible() is false), as they will
+  // never have a GlicButtonController created. Recording metrics for those
+  // cases is handled by GlicProfileManager instead.
+  glic_keyed_service_->enabling().MaybeRecordStartupMetrics();
+
   const bool is_enabled_for_profile =
       GlicEnabling::IsEnabledForProfile(profile_);
   const bool is_pinned_to_tabstrip =

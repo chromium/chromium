@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -178,6 +179,8 @@ class GlicButtonControllerTest : public testing::Test {
     mock_browser_window_interface_ =
         std::make_unique<MockBrowserWindowInterface>();
 
+    histograms_ = std::make_unique<base::HistogramTester>();
+
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, *mock_browser_window_interface_,
         &mock_tab_strip_glic_controller_delegate_,
@@ -218,6 +221,8 @@ class GlicButtonControllerTest : public testing::Test {
     return &mock_toolbar_glic_controller_delegate_;
   }
 
+  base::HistogramTester& histograms() { return *histograms_; }
+
   Profile* profile() { return profile_; }
   MockGlicKeyedService* glic_keyed_service() {
     return mock_glic_service_.get();
@@ -243,6 +248,7 @@ class GlicButtonControllerTest : public testing::Test {
   GlicProfileManager glic_profile_manager_;
   MockGlicButtonControllerDelegate mock_tab_strip_glic_controller_delegate_;
   MockGlicButtonControllerDelegate mock_toolbar_glic_controller_delegate_;
+  std::unique_ptr<base::HistogramTester> histograms_;
   std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_service_;
   std::unique_ptr<GlicButtonController> glic_button_controller_;
@@ -312,6 +318,20 @@ TEST_F(GlicButtonControllerTest, FREStateChanged) {
   glic_keyed_service()->SimulateFREShown(false);
   EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
   EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
+}
+
+TEST_F(GlicButtonControllerTest, RecordStartupMetrics) {
+  // Initial state: IsEnabled() is false because of lack sign in.
+  histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
+                                  false, 1);
+
+  // Updating the 'PinnedToTabstrip' pref triggers a second call to
+  // MaybeRecordStartupMetrics.
+  profile()->GetPrefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
+
+  // Startup metrics should not have been logged again.
+  histograms().ExpectUniqueSample("Glic.ProfileEnablement.IsEnabled.Startup",
+                                  false, 1);
 }
 
 }  // namespace glic

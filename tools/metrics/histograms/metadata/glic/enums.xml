@@ -650,6 +650,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_keyed_service.h:GlicPrewarmingFreSource) -->
 
+<enum name="GlicProfileEnablementReason">
+  <int value="0" label="Feature disabled"/>
+  <int value="1" label="Not regular profile"/>
+  <int value="2" label="Not rolled out"/>
+  <int value="3" label="Primary account not capable"/>
+  <int value="4" label="Disallowed by chrome policy"/>
+  <int value="5" label="Disallowed by remote admin"/>
+  <int value="6" label="Disallowed by remote other"/>
+</enum>
+
 <!-- LINT.IfChange(GlicRequestEvent) -->
 
 <enum name="GlicRequestEvent">

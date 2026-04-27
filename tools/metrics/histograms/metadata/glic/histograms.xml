@@ -70,6 +70,13 @@ chromium-metrics-reviews@google.com.
   <variant name="OnOpen" summary="the glic panel is opened."/>
 </variants>
 
+<variants name="ProfileEnablementSuffix">
+  <variant name="Startup"
+      summary="recorded early in startup when the first window is opened."/>
+  <variant name="SteadyState"
+      summary="recorded periodically to provide a steady-state view."/>
+</variants>
+
 <variants name="Visibility">
   <variant name="Nonvisible"
       summary="the instance was not visible (e.g., pre-warmed) when the
@@ -1886,6 +1893,70 @@ chromium-metrics-reviews@google.com.
     <variant name="Should"/>
     <variant name="ShouldNot"/>
   </token>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.DisabledReason.{Suffix}"
+    enum="GlicProfileEnablementReason" expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records reasons why glic might be disabled for the profile. Multiple reasons
+    may be recorded if multiple conditions apply. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.EligibleForLive.{Suffix}"
+    enum="Boolean" expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records whether the profile is eligible for live features. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.IsConsented.{Suffix}" enum="Boolean"
+    expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records whether the user has consented to use glic (accepted the FRE) for
+    the profile. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.IsEnabled.{Suffix}" enum="Boolean"
+    expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records whether glic is enabled for the profile. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.IsPrimaryAccountFullySignedIn.{Suffix}"
+    enum="Boolean" expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records whether the primary account is fully signed in (not paused). This is
+    {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
+<histogram name="Glic.ProfileEnablement.TimeToEnabledFromStartup" units="ms"
+    expires_after="2026-07-26">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records the time from browser startup until glic becomes enabled for a
+    profile. This is recorded at most once per profile per session, the first
+    time IsEnabledForProfile returns true.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Response.Attached" enum="Boolean"

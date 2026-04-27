@@ -93,6 +93,9 @@ GlicProfileManager::GlicProfileManager()
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {
     profile_manager->AddObserver(this);
+    for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+      profile_observations_.AddObservation(profile);
+    }
   }
 }
 
@@ -328,6 +331,11 @@ bool GlicProfileManager::IsShowing() const {
   return last_active_glic_->IsWindowOrFreShowing();
 }
 
+void GlicProfileManager::OnProfileAdded(Profile* profile) {
+  GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(profile);
+  profile_observations_.AddObservation(profile);
+}
+
 void GlicProfileManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
   GlicKeyedService* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
@@ -335,6 +343,20 @@ void GlicProfileManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
     return;
   }
   glic_keyed_service->Shutdown();
+}
+
+void GlicProfileManager::OnOffTheRecordProfileCreated(Profile* profile) {
+  // Guest and System profiles are managed by their own "backing" parent
+  // profiles. The creation of these parent profiles is already captured by
+  // `OnProfileAdded`. Thus, avoid logging again here.
+  if (profile->IsGuestSession() || profile->IsSystemProfile()) {
+    return;
+  }
+  GlicEnabling::RecordProfileIneligibilityMetricsAtStartup(profile);
+}
+
+void GlicProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observations_.RemoveObservation(profile);
 }
 
 void GlicProfileManager::OnMemoryPressure(base::MemoryPressureLevel level) {
