@@ -99,12 +99,9 @@ bool WebTestPermissionManager::PermissionDescription::operator==(
   }
 
   if (permission_type == blink::PermissionType::STORAGE_ACCESS_GRANT) {
-    const net::SchemefulSite requesting_site(origin);
-    const net::SchemefulSite other_requesting_site(other.origin);
-    const net::SchemefulSite embedding_site(embedding_origin);
-    const net::SchemefulSite other_embedding_site(other.embedding_origin);
-    return requesting_site == other_requesting_site &&
-           embedding_site == other_embedding_site;
+    return net::SchemefulSite::IsSameSite(origin, other.origin) &&
+           net::SchemefulSite::IsSameSite(embedding_origin,
+                                          other.embedding_origin);
   }
 
   return origin == other.origin && embedding_origin == other.embedding_origin;
@@ -118,13 +115,10 @@ bool WebTestPermissionManager::PermissionDescription::operator==(
 
   if (blink::PermissionDescriptorToPermissionType(permission_descriptor) ==
       blink::PermissionType::STORAGE_ACCESS_GRANT) {
-    const net::SchemefulSite requesting_site(origin);
-    const net::SchemefulSite other_requesting_site(
-        other->requesting_origin_delegation);
-    const net::SchemefulSite embedding_site(embedding_origin);
-    const net::SchemefulSite other_embedding_site(other->embedding_origin);
-    return requesting_site == other_requesting_site &&
-           embedding_site == other_embedding_site;
+    return net::SchemefulSite::IsSameSite(
+               origin, other->requesting_origin_delegation) &&
+           net::SchemefulSite::IsSameSite(embedding_origin,
+                                          other->embedding_origin);
   }
 
   return origin == other->requesting_origin_delegation &&
@@ -213,9 +207,7 @@ WebTestPermissionManager::GetPermissionStatusForRequestPermission(
   // TODO(crbug.com/40278136): maybe it should also work when querying
   // permissions.
   if (permission_type == blink::PermissionType::STORAGE_ACCESS_GRANT &&
-      (requesting_origin == embedding_origin ||
-       net::SchemefulSite(requesting_origin) ==
-           net::SchemefulSite(embedding_origin))) {
+      net::SchemefulSite::IsSameSite(requesting_origin, embedding_origin)) {
     return blink::mojom::PermissionStatus::GRANTED;
   }
 
