@@ -67,6 +67,7 @@ const TAG_DT = 'DT';
 const TAG_DD = 'DD';
 const TAG_FIGURE = 'FIGURE';
 const TAG_LABEL = 'LABEL';
+const TAG_AREA = 'AREA';
 
 // Tags with annotated role.
 const TAG_HEADER = 'HEADER';
@@ -187,6 +188,7 @@ const ATTR_KEY_ONMOUSEENTER = 'onmouseenter';
 const ATTR_KEY_ONKEYDOWN = 'onkeydown';
 const ATTR_KEY_ONKEYUP = 'onkeyup';
 const ATTR_KEY_ONKEYPRESS = 'onkeypress';
+const ATTR_KEY_HREF = 'href';
 
 // Attribute and style values.
 const ATTR_VALUE_TRUE = 'true';
@@ -1005,8 +1007,15 @@ function getNodeInteractionInfo(
   // HTMLElement.tabIndex defaults to -1 for non-focusable elements.
   // We also check for contenteditable which makes elements focusable even
   // without tabIndex.
+  // For anchors and area elements, they must have an href to be implicitly
+  // focusable.
+  const isAnchorOrArea = tagName === TAG_A || tagName === TAG_AREA;
+  const isImplicitlyFocusable = isAnchorOrArea ?
+      element.hasAttribute(ATTR_KEY_HREF) :
+      element.tabIndex >= 0;
+
   if (!isDisabled && style?.visibility === ATTR_VISIBILITY_VISIBLE &&
-      (element.tabIndex >= 0 || element.hasAttribute(ATTR_KEY_TABINDEX) ||
+      (isImplicitlyFocusable || element.hasAttribute(ATTR_KEY_TABINDEX) ||
        element.isContentEditable)) {
     interactionInfo.isFocusable = true;
   }

@@ -4959,6 +4959,53 @@ TEST_P(PageContextWrapperTest,
           optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_FALSE));
 }
 
+// Tests that anchor tags are correctly evaluated for focusability
+// based on the presence of the href attribute.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_NodeInteraction_AnchorFocus) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Anchor Focus Test",
+      RawHtml("<a href='http://foo.com' id='link_a'>Anchor With Href</a>"
+              "<a id='no_href_a'>Anchor Without Href</a>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+  const auto& root = page_context->annotated_page_content().root_node();
+
+  ASSERT_EQ(2, root.children_nodes_size());
+
+  // Verify anchor with href is focusable.
+  const auto& link_a = root.children_nodes(0);
+  EXPECT_TRUE(link_a.content_attributes().has_interaction_info());
+  EXPECT_TRUE(link_a.content_attributes().interaction_info().is_focusable());
+
+  // Verify anchor without href is not focusable.
+  const auto& no_href_a = root.children_nodes(1);
+  EXPECT_FALSE(
+      no_href_a.content_attributes().interaction_info().is_focusable());
+}
+
 // Tests extraction and mapping of elements that are functionally or visually
 // disabled, ensuring appropriate disabled reasons are captured.
 TEST_P(PageContextWrapperTest,
