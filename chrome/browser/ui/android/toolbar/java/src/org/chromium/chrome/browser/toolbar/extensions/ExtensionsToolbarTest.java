@@ -365,21 +365,8 @@ public class ExtensionsToolbarTest {
                 .check(matches(not(isActivated())))
                 .check(matches(not(isSelected())));
 
-        // Close the extensions menu.
-        androidx.test.espresso.Espresso.pressBack();
-
         // Pin the extension.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
-
-        // Open the extensions menu again.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
-
-        // Find the context menu button for the pinned extension again.
-        contextMenuButton =
-                onView(
-                        allOf(
-                                withId(R.id.extensions_menu_item_context_menu),
-                                hasSibling(hasDescendant(withText(extensionName)))));
 
         // Verify the button now has activate state.
         contextMenuButton

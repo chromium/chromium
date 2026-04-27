@@ -257,7 +257,6 @@ void ExtensionsMenuDelegateAndroid::OnHostAccessRequestsCleared() {
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int index) {
-  // TODO(crbug.com/473213114)
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ExtensionsMenuBridge_onHostAccessRequestRemoved(env, java_object_,
                                                        extension_id);
@@ -270,7 +269,8 @@ void ExtensionsMenuDelegateAndroid::OnShowHostAccessRequestsInToolbarChanged(
 }
 
 void ExtensionsMenuDelegateAndroid::OnToolbarPinnedActionsChanged() {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onPinnedActionsChanged(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::OnUserPermissionsSettingsChanged() {

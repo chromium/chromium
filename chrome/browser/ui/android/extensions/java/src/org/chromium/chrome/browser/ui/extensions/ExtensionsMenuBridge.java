@@ -219,6 +219,12 @@ public class ExtensionsMenuBridge implements Destroyable {
         mObserver.onActionUpdated(actionIndex);
     }
 
+    /** Callback from native indicating the list of pinned actions changed. */
+    @CalledByNative
+    public void onPinnedActionsChanged() {
+        mObserver.onPinnedActionsChanged();
+    }
+
     /**
      * Callback from native indicating that the menu data is ready. This will not be called if the
      * menu data is ready at the menu bridge initialization.
@@ -267,6 +273,9 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Called when an extension has been updated on actionIndex. */
         void onActionUpdated(int actionIndex);
+
+        /** Called when the pinned actions in the model are changed. */
+        void onPinnedActionsChanged();
 
         /** Called when the menu data is ready to be consumed. */
         void onReady();

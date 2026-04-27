@@ -318,6 +318,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         updateSitePermissionsPage(entry.id);
     }
 
+    /** Called when the list of pinned actions changed. */
+    @Override
+    public void onPinnedActionsChanged() {
+        updateMenuEntries();
+    }
+
     /** Called when a host access request has been added. */
     @Override
     public void onHostAccessRequestAdded(String extensionId) {
