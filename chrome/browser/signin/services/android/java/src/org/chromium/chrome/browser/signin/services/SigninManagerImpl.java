@@ -283,7 +283,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     public void signin(
             CoreAccountInfo coreAccountInfo,
             @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback) {
+            SignInCallback callback) {
         signinInternal(SignInState.createForSignin(accessPoint, coreAccountInfo, callback));
     }
 
@@ -377,9 +377,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                         mSignInState.getAccessPoint(),
                         () -> {
                             Log.d(TAG, "Sign-in native prefs written.");
-                            if (signInCallback != null) {
-                                signInCallback.onPrefsCommitted();
-                            }
+                            signInCallback.onPrefsCommitted();
                         });
 
         if (primaryAccountError != PrimaryAccountError.NO_ERROR) {
@@ -394,9 +392,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         // Should be called after setting the primary account.
         maybeUpdateLegacyPrimaryAccountEmail();
 
-        if (mSignInState.mCallback != null) {
-            mSignInState.mCallback.onSignInComplete();
-        }
+        mSignInState.mCallback.onSignInComplete();
 
         Log.i(TAG, "Signin completed.");
         mSignInState = null;
@@ -447,9 +443,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
 
     @Override
     public void signOut(
-            @SignoutReason int signoutSource,
-            @Nullable Runnable signOutCallback,
-            boolean forceWipeUserData) {
+            @SignoutReason int signoutSource, Runnable signOutCallback, boolean forceWipeUserData) {
         // Only one signOut at a time!
         assert mSignOutState == null;
 
@@ -510,9 +504,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 signInState.getAccessPoint(),
                 SigninAccessPoint.MAX_VALUE);
 
-        if (signInState.mCallback != null) {
-            signInState.mCallback.onSignInAborted();
-        }
+        signInState.mCallback.onSignInAborted();
 
         stopApplyingCloudPolicy();
 
@@ -535,7 +527,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         Runnable signOutCallback = mSignOutState.mSignOutCallback;
         mSignOutState = null;
 
-        if (signOutCallback != null) signOutCallback.run();
+        signOutCallback.run();
         notifyCallbacksWaitingForOperation();
 
         for (SignInStateObserver observer : mSignInStateObservers) {
@@ -630,7 +622,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     private static class SignInState {
         private final @SigninAccessPoint Integer mAccessPoint;
         private final CoreAccountInfo mCoreAccountInfo;
-        final @Nullable SignInCallback mCallback;
+        final SignInCallback mCallback;
 
         /**
          * State for the sign-in flow that doesn't enable sync.
@@ -642,14 +634,14 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         static SignInState createForSignin(
                 @SigninAccessPoint int accessPoint,
                 CoreAccountInfo coreAccountInfo,
-                @Nullable SignInCallback callback) {
+                SignInCallback callback) {
             return new SignInState(accessPoint, coreAccountInfo, callback);
         }
 
         private SignInState(
                 @SigninAccessPoint Integer accessPoint,
                 CoreAccountInfo coreAccountInfo,
-                @Nullable SignInCallback callback) {
+                SignInCallback callback) {
             assert coreAccountInfo != null : "CoreAccountInfo must be set and valid to progress.";
             mAccessPoint = accessPoint;
             mCoreAccountInfo = coreAccountInfo;
@@ -676,7 +668,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             int WIPE_ALL_PROFILE_DATA = 1;
         }
 
-        final @Nullable Runnable mSignOutCallback;
+        final Runnable mSignOutCallback;
         final @DataWipeAction int mDataWipeAction;
 
         /**
@@ -684,7 +676,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
          * @param dataWipeAction Flag to wipe user data as requested by the user and enforced for
          *     managed users.
          */
-        SignOutState(@Nullable Runnable signOutCallback, @DataWipeAction int dataWipeAction) {
+        SignOutState(Runnable signOutCallback, @DataWipeAction int dataWipeAction) {
             this.mSignOutCallback = signOutCallback;
             this.mDataWipeAction = dataWipeAction;
         }

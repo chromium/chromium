@@ -217,7 +217,9 @@ public class SigninManagerImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSigninManager.signin(
-                            TestAccounts.ACCOUNT1, SigninAccessPoint.WEB_SIGNIN, null);
+                            TestAccounts.ACCOUNT1,
+                            SigninAccessPoint.WEB_SIGNIN,
+                            new SigninManager.SignInCallback() {});
                     mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
                     assertEquals(0, callCount.get());
                 });
@@ -234,7 +236,9 @@ public class SigninManagerImplTest {
                 () -> {
                     assertTrue(mSigninManager.isSigninAllowed());
                     mSigninManager.signin(
-                            TestAccounts.ACCOUNT1, SigninAccessPoint.START_PAGE, null);
+                            TestAccounts.ACCOUNT1,
+                            SigninAccessPoint.START_PAGE,
+                            new SigninManager.SignInCallback() {});
                 });
 
         verify(mSignInStateObserver, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(3))
@@ -322,7 +326,8 @@ public class SigninManagerImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Trigger the sign out flow and force wipe user data.
-                    mSigninManager.signOut(SignoutReason.TEST, null, /* forceWipeUserData= */ true);
+                    mSigninManager.signOut(
+                            SignoutReason.TEST, () -> {}, /* forceWipeUserData= */ true);
                     mSigninManager.runAfterOperationInProgress(
                             () -> {
                                 // Sign-out should only clear the profile when the user is syncing

@@ -8,7 +8,6 @@ import androidx.annotation.MainThread;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -49,13 +48,13 @@ public interface SigninManager {
          * Invoked after sign-in is completed successfully. Sign-in preferences may not be committed
          * yet.
          */
-        void onSignInComplete();
+        default void onSignInComplete() {}
 
         /** Invoked after sign-in preferences are committed. */
         default void onPrefsCommitted() {}
 
         /** Invoked if the sign-in processes does not complete for any reason. */
-        void onSignInAborted();
+        default void onSignInAborted() {}
     }
 
     /** Extracts the domain name of a given account's email. */
@@ -108,7 +107,7 @@ public interface SigninManager {
     void signin(
             CoreAccountInfo coreAccountInfo,
             @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback);
+            SignInCallback callback);
 
     /**
      * This method is used in existing native tests to test the old sync consent flow. New tests
@@ -136,7 +135,7 @@ public interface SigninManager {
 
     /** Invokes signOut with no callback. */
     default void signOut(@SignoutReason int signoutSource) {
-        signOut(signoutSource, null, false);
+        signOut(signoutSource, () -> {}, false);
     }
 
     /**
@@ -149,9 +148,7 @@ public interface SigninManager {
      * @param forceWipeUserData Whether user selected to wipe all device data.
      */
     void signOut(
-            @SignoutReason int signoutSource,
-            @Nullable Runnable signOutCallback,
-            boolean forceWipeUserData);
+            @SignoutReason int signoutSource, Runnable signOutCallback, boolean forceWipeUserData);
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or
