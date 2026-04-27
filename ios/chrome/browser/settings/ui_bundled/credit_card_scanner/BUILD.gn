@@ -11,6 +11,7 @@ source_set("credit_card_scanner") {
     "credit_card_scanner_consumer.h",
     "credit_card_scanner_coordinator.h",
     "credit_card_scanner_coordinator.mm",
+    "credit_card_scanner_coordinator_delegate.h",
     "credit_card_scanner_image_processor.h",
     "credit_card_scanner_image_processor.mm",
     "credit_card_scanner_mediator.h",

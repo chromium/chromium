@@ -19,6 +19,9 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -155,6 +158,11 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OnViewDisappeared) {
 
 // Tests that starting the coordinator for a scan-and-save flow presents the
 // ScannedCardBottomSheetViewController and executes the completion block.
+@interface SaveCardBottomSheetCoordinator (Testing)
+- (void)creditCardScannerCoordinatorDidFinish:
+    (CreditCardScannerCoordinator*)coordinator;
+@end
+
 TEST_F(SaveCardBottomSheetCoordinatorTest,
        ScanAndSaveFlowPresentsScannedCardBottomSheet) {
   web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
@@ -180,30 +188,32 @@ TEST_F(SaveCardBottomSheetCoordinatorTest,
       initWithBaseViewController:mock_base_view_controller
                          browser:browser_.get()];
 
-  OCMExpect(
-      [mock_base_view_controller
-          presentViewController:[OCMArg checkWithBlock:^BOOL(
-                                            id viewController) {
-            if ([viewController isKindOfClass:[UINavigationController class]]) {
-              UINavigationController* navigationController =
-                  (UINavigationController*)viewController;
-              return [navigationController.viewControllers.firstObject
-                  isKindOfClass:[PaymentsScanSaveAndFillEditViewController
-                                    class]];
-            }
-            return NO;
-          }]
-                       animated:YES
-                     completion:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        void (^completionBlock)(void);
-        [invocation getArgument:&completionBlock atIndex:4];
-        if (completionBlock) {
-          completionBlock();
-        }
-      });
+  OCMExpect([mock_base_view_controller
+      presentViewController:[OCMArg checkWithBlock:^BOOL(id viewController) {
+        return [viewController
+            isKindOfClass:[CreditCardScannerViewController class]];
+      }]
+                   animated:YES
+                 completion:[OCMArg any]]);
 
   [coordinator_ start];
+
+  EXPECT_OCMOCK_VERIFY(mock_base_view_controller);
+
+  OCMExpect([mock_base_view_controller
+      presentViewController:[OCMArg checkWithBlock:^BOOL(id viewController) {
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
+          UINavigationController* navigationController =
+              (UINavigationController*)viewController;
+          return [navigationController.viewControllers.firstObject
+              isKindOfClass:[PaymentsScanSaveAndFillEditViewController class]];
+        }
+        return NO;
+      }]
+                   animated:YES
+                 completion:[OCMArg any]]);
+
+  [coordinator_ creditCardScannerCoordinatorDidFinish:nil];
 
   EXPECT_OCMOCK_VERIFY(mock_base_view_controller);
 }

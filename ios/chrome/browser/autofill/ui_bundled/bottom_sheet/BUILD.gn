@@ -221,6 +221,7 @@ source_set("save_card_bottom_sheet_coordinator_unittest") {
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/scan_save_and_fill/ui:edit_ui",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

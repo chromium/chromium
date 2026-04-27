@@ -66,8 +66,14 @@
 
 - (void)stop {
   [super stop];
-  [_creditCardScannerViewController dismissViewControllerAnimated:YES
-                                                       completion:nil];
+  __weak id<CreditCardScannerCoordinatorDelegate> delegate = self.delegate;
+  __weak __typeof(self) weakSelf = self;
+  [_creditCardScannerViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [delegate
+                               creditCardScannerCoordinatorDidFinish:weakSelf];
+                         }];
   _creditCardScannerViewController.delegate = nil;
   _creditCardScannerViewController = nil;
   [_creditCardScannerMediator disconnect];
