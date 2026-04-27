@@ -797,7 +797,7 @@ void OverlayProcessorWebView::TakeOverlayCandidates(
 
 void OverlayProcessorWebView::ScheduleOverlays(
     viz::DisplayResourceProvider* resource_provider) {
-  DCHECK(!resource_provider_ || resource_provider_ == resource_provider_);
+  DCHECK(!resource_provider_ || resource_provider_ == resource_provider);
   resource_provider_ = resource_provider;
 
   DCHECK(gpu_thread_sequence_ || overlay_candidates_.empty());
