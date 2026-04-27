@@ -401,6 +401,14 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
     UIScrollView* scrollView =
         static_cast<UIScrollView*>(otherGestureRecognizer.view);
+
+    // If the scroll view is not part of the assistant content, pause it.
+    BOOL inAssistantContent = [scrollView isDescendantOfView:self.view];
+    if (!inAssistantContent) {
+      [self pauseScrollView:scrollView];
+      return YES;
+    }
+
     if ([self.delegate
             respondsToSelector:@selector(assistantContainer:
                                       shouldPauseScrollView:forGesture:)]) {
