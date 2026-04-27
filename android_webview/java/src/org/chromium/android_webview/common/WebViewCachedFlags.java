@@ -110,6 +110,23 @@ public class WebViewCachedFlags {
     public static void init(SharedPreferences prefs) {
         synchronized (sLock) {
             assert sInstance == null : "Cannot call WebViewCachedFlags.init more than once.";
+            initInternal(prefs);
+        }
+    }
+
+    /**
+     * Initializes the singleton instance and reads the cached values from prefs. This method must
+     * be called before get(). This method allows reinitialization for testing purposes. Must be
+     * used for testing only.
+     *
+     * @param prefs the SharedPreferences from which to initialize the caches.
+     */
+    public static void initForTesting(SharedPreferences prefs) {
+        initInternal(prefs);
+    }
+
+    private static void initInternal(SharedPreferences prefs) {
+        synchronized (sLock) {
             sInstance =
                     new WebViewCachedFlags(
                             prefs,

@@ -17,12 +17,14 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.components.variations.StudyOuterClass.Study;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment.FeatureAssociation;
@@ -99,6 +101,7 @@ public class VariationsTest extends AwParameterizedTest {
                     FeatureAssociation.newBuilder()
                             .addEnableFeature(AwFeatures.WEBVIEW_TEST_FEATURE)
                             .build();
+            WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
             createAndLoadSeedFile(features);
 
             // The seed should be loaded during browser process startup.
@@ -126,6 +129,7 @@ public class VariationsTest extends AwParameterizedTest {
         try {
             HistogramWatcher histogramExpectation =
                     HistogramWatcher.newSingleRecordWatcher(seedFreshnessHistogramName, 0);
+            WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
             createAndLoadSeedFile(FeatureAssociation.getDefaultInstance());
 
             // The seed should be loaded during browser process startup.
