@@ -1036,7 +1036,9 @@ base::expected<void, std::string> CreateOrUpdateLayers(
   // Apply layer updates
   for (auto& wire : updates) {
     cc::LayerImpl* layer = layers.LayerById(wire->id);
-    CHECK(layer);
+    if (!layer) {
+      return base::unexpected("Layer ID not found after synchronization");
+    }
     RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
 
