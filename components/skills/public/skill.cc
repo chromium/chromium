@@ -13,6 +13,7 @@ Skill::Skill(const std::string& id,
              const std::string& icon,
              const std::string& prompt,
              const std::string& description,
+             const std::string& curated_by,
              const GURL& image_url,
              const sync_pb::SkillSource& source)
     : id(id),
@@ -20,6 +21,7 @@ Skill::Skill(const std::string& id,
       icon(icon),
       prompt(prompt),
       description(description),
+      curated_by(curated_by),
       image_url(image_url),
       source(source) {}
 

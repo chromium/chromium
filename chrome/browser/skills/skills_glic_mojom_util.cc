@@ -50,10 +50,14 @@ glic::mojom::SkillPreviewPtr SkillToGlicMojomSkillPreview(
   if (!skill->image_url.is_empty()) {
     image_url = skill->image_url;
   }
+  std::optional<std::string> curated_by;
+  if (!skill->curated_by.empty()) {
+    curated_by = skill->curated_by;
+  }
   return glic::mojom::SkillPreview::New(
       skill->id, skill->name, skill->icon,
       SyncPbToGlicMojomSkillSource(skill->source), skill->description,
-      image_url);
+      curated_by, image_url);
 }
 
 }  // namespace skills

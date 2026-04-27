@@ -36,6 +36,9 @@ struct Skill {
   // The description of the skill.
   std::string description;
 
+  // The name of the curator for this skill, if any.
+  std::string curated_by;
+
   // The image URL associated with the skill.
   GURL image_url;
 
@@ -54,6 +57,7 @@ struct Skill {
         const std::string& icon,
         const std::string& prompt,
         const std::string& description = "",
+        const std::string& curated_by = "",
         const GURL& image_url = GURL(),
         const sync_pb::SkillSource& source =
             sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED);

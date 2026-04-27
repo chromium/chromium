@@ -32,6 +32,7 @@ SkillCategoryToSkillMap Translate1PSkills(const SkillProtoList& skills_list) {
     translated_skill.icon = skill.icon();
     translated_skill.prompt = skill.prompt();
     translated_skill.description = skill.description();
+    translated_skill.curated_by = skill.curated_by();
     translated_skill.image_url = GURL(skill.image_url());
     translated_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
     translated_map[skill.category()].push_back(std::move(translated_skill));

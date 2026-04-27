@@ -68,6 +68,12 @@ struct StructTraits<skills::mojom::SkillDataView, skills::Skill> {
   static const std::string& description(const skills::Skill& skill) {
     return skill.description;
   }
+  static std::optional<std::string> curated_by(const skills::Skill& skill) {
+    if (skill.curated_by.empty()) {
+      return std::nullopt;
+    }
+    return skill.curated_by;
+  }
   static std::optional<GURL> image_url(const skills::Skill& skill) {
     if (skill.image_url.is_empty()) {
       return std::nullopt;

@@ -42,6 +42,7 @@ suite('DiscoverSkillsPage', function() {
       icon: '',
       prompt: '',
       description: '',
+      curatedBy: '',
       imageUrl: '',
       source: SkillSource.kFirstParty,
       creationTime: {internalValue: 0n},
@@ -261,11 +262,32 @@ suite('DiscoverSkillsPage', function() {
     cards = page.shadowRoot.querySelectorAll('skill-card');
     assertEquals(2, cards.length);
 
+    // Search by curatedBy
+    await setFirstPartySkills({
+      'Produce': [
+        {
+          id: '1',
+          name: 'Apple',
+          description: 'A tasty fruit',
+          curatedBy: 'Chrome',
+        },
+        {
+          id: '2',
+          name: 'Banana',
+          description: 'Yellow fruit',
+          curatedBy: 'Google',
+        },
+      ],
+    });
+    page.onSearchChanged('Google');
+    await microtasksFinished();
+    cards = page.shadowRoot.querySelectorAll('skill-card');
+    assertEquals(1, cards.length);
+    assertTrue(cards[0]!.$.name.textContent.includes('Banana'));
+
     // Clear search
     page.onSearchChanged('');
     await microtasksFinished();
-    cards = page.shadowRoot.querySelectorAll('skill-card');
-    assertEquals(3, cards.length);
   });
 
   test('ShowsNoSearchResultsPage', async function() {

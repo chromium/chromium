@@ -802,6 +802,8 @@ struct SkillPreview {
   SkillSource source;
   // The description of the skill.
   string description;
+  // The name of the curator for this skill, if any.
+  string? curated_by;
   // The image URL to use when rendering this skill.
   url.mojom.Url? image_url;
 };

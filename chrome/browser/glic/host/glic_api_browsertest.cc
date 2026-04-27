@@ -4028,11 +4028,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
-      /*image_url=*/GURL("https://example.com")));
+      /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
   skills_batch_1.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_2",
-      /*image_url=*/GURL("https://example.com")));
+      /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
   GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_1));
   ContinueJsTest();
 
@@ -4040,7 +4040,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills,
   skills_batch_2.push_back(mojom::SkillPreview::New(
       "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
       mojom::SkillSource::kFirstParty, "contextual_skill_description_3",
-      /*image_url=*/GURL("https://example.com")));
+      /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
   GetHost()->NotifyContextualSkillsChanged(std::move(skills_batch_2));
   ContinueJsTest();
 }
