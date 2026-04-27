@@ -265,6 +265,12 @@ pub fn pack_mojom_type(ty: &MojomType) -> MojomWireType {
         MojomType::UInt32 => MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable },
         MojomType::UInt64 => MojomWireType::Leaf { leaf_type: PackedLeafType::UInt64, is_nullable },
         MojomType::Handle => MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, is_nullable },
+        MojomType::PendingReceiver => {
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingReceiver, is_nullable }
+        }
+        MojomType::PendingRemote => {
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, is_nullable }
+        }
         MojomType::Float32 => {
             MojomWireType::Leaf { leaf_type: PackedLeafType::Float32, is_nullable }
         }

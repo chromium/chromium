@@ -53,6 +53,11 @@ fn parse_leaf_element(
                 Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, value))
             }
         }
+        // TODO(crbug.com/493274453): The code for parsing Handle, PendingReceiver, and
+        // PendingRemote is very similar and could be unified. However, there are
+        // discrepancies (like the extra version field for remotes) and it's unclear what
+        // complications associated remotes/receivers will add. We should revisit this when
+        // we have the full picture.
         PackedLeafType::Handle => {
             // On the wire, handles are represented as a 32-bit index into the
             // message's attached handle array, which is part of `data`.
@@ -72,6 +77,53 @@ fn parse_leaf_element(
                 .take_handle(idx)
                 .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx))?;
             let handle_val = MojomValue::Handle(handle);
+
+            if is_nullable {
+                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
+            } else {
+                return Ok(handle_val);
+            }
+        }
+        PackedLeafType::PendingReceiver => {
+            let idx_u32 = parse_u32(data)?;
+            let idx: usize = idx_u32.try_into().unwrap();
+
+            if idx_u32 == 0xffffffff {
+                if is_nullable {
+                    return Ok(MojomValue::Nullable(None));
+                } else {
+                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx));
+                }
+            };
+
+            let handle = data
+                .take_handle(idx)
+                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx))?;
+            let handle_val = MojomValue::PendingReceiver(handle.into());
+
+            if is_nullable {
+                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
+            } else {
+                return Ok(handle_val);
+            }
+        }
+        PackedLeafType::PendingRemote => {
+            let idx_u32 = parse_u32(data)?;
+            let _version = parse_u32(data)?;
+            let idx: usize = idx_u32.try_into().unwrap();
+
+            if idx_u32 == 0xffffffff {
+                if is_nullable {
+                    return Ok(MojomValue::Nullable(None));
+                } else {
+                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx));
+                }
+            };
+
+            let handle = data
+                .take_handle(idx)
+                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx))?;
+            let handle_val = MojomValue::PendingRemote(handle.into());
 
             if is_nullable {
                 return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
@@ -658,9 +710,13 @@ pub fn parse_single_value_for_testing(
         MojomWireType::Leaf { leaf_type, is_nullable: false } => {
             parse_leaf_element(&mut data, leaf_type, false)
         }
-        MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, is_nullable } => {
-            parse_leaf_element(&mut data, &PackedLeafType::Handle, *is_nullable)
-        }
+        MojomWireType::Leaf {
+            leaf_type:
+                leaf_type @ (PackedLeafType::Handle
+                | PackedLeafType::PendingReceiver
+                | PackedLeafType::PendingRemote),
+            is_nullable,
+        } => parse_leaf_element(&mut data, leaf_type, *is_nullable),
         MojomWireType::Pointer { nested_data_type, is_nullable: false } => match nested_data_type {
             PackedStructuredType::Struct {
                 packed_field_names,

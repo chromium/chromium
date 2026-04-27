@@ -15,6 +15,7 @@ use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+pub use system::message_pipe::MessageEndpoint;
 pub use system::mojo_types::UntypedHandle;
 
 // TODO (crbug.com/496912351): For a more optimized version, we could look into
@@ -40,6 +41,8 @@ pub enum MojomType {
     Float64,
     String,
     Handle,
+    PendingReceiver,
+    PendingRemote,
     Enum { is_valid: Predicate<i32> },
     Union { variants: BTreeMap<i32, MojomType> },
     // `field_names` is only for debugging; it should have the same
@@ -77,6 +80,8 @@ pub enum MojomValue {
     String(String),
     Enum(i32),
     Handle(UntypedHandle),
+    PendingReceiver(MessageEndpoint),
+    PendingRemote(MessageEndpoint),
     Union(i32, Box<MojomValue>),
     Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
@@ -192,6 +197,8 @@ pub enum PackedLeafType {
     Float64,
     Enum { is_valid: Predicate<i32> },
     Handle,
+    PendingReceiver,
+    PendingRemote,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -242,19 +249,23 @@ impl MojomWireType {
                 PackedLeafType::Int32 | PackedLeafType::UInt32 | PackedLeafType::Float32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 | PackedLeafType::Float64 => 8,
                 PackedLeafType::Enum { .. } => 4,
-                PackedLeafType::Handle => 4,
+                PackedLeafType::Handle | PackedLeafType::PendingReceiver => 4,
+                PackedLeafType::PendingRemote => 8,
             },
             MojomWireType::Pointer { .. } => 8,
+
             MojomWireType::Union { .. } => 16,
         }
     }
 
     /// The alignment requirement for leaf data and pointers is equal to the
     /// value's size in bytes. The alignment requirement for structured data
-    /// is always 8 bytes.
+    /// is 8 bytes. PendingRemote is an exception to this, the alignment is
+    // 4 bytes.
     pub fn alignment(&self) -> usize {
         match self {
             MojomWireType::Union { .. } => 8,
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. } => 4,
             _ => self.size(),
         }
     }
@@ -271,6 +282,8 @@ impl MojomWireType {
         match self {
             // Handles aren't primitives; they have their own nullability semantics
             MojomWireType::Leaf { leaf_type: PackedLeafType::Handle, .. } => false,
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingReceiver, .. } => false,
+            MojomWireType::Leaf { leaf_type: PackedLeafType::PendingRemote, .. } => false,
             MojomWireType::Leaf { is_nullable, .. } => *is_nullable,
             _ => false,
         }

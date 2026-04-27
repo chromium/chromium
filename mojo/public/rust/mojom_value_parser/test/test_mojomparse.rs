@@ -22,10 +22,13 @@
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
     "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
+    "//mojo/public/rust/bindings";
 }
 
 use rust_gtest_interop::prelude::*;
 
+use bindings::receiver::PendingReceiver;
+use bindings::remote::PendingRemote;
 use mojom_value_parser_core::*;
 use ordered_float::OrderedFloat;
 use parser_unittests_rust::parser_unittests::*;
@@ -2600,4 +2603,50 @@ fn test_nested_enums() {
 
     expect_true!(StructWithNestedEnum_Type::try_from(0).is_err());
     expect_true!(StructWithNestedEnum_Type::try_from(3).is_err());
+}
+
+static WITH_PENDING_TYPES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "WithPendingTypes",
+    base_type: wrap_struct_fields_type(vec![
+        ("rec".to_string(), MojomType::PendingReceiver),
+        ("rem".to_string(), MojomType::PendingRemote),
+        ("rec2".to_string(), MojomType::PendingReceiver),
+        ("rem2".to_string(), MojomType::PendingRemote),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("rec".to_string(), struct_leaf!(0, PackedLeafType::PendingReceiver)),
+            ("rem".to_string(), struct_leaf!(1, PackedLeafType::PendingRemote)),
+            ("rec2".to_string(), struct_leaf!(2, PackedLeafType::PendingReceiver)),
+            ("rem2".to_string(), struct_leaf!(3, PackedLeafType::PendingRemote)),
+        ],
+        4,
+    ),
+});
+
+fn with_pending_types_mojom(
+    rec: UntypedHandle,
+    rem: UntypedHandle,
+    rec2: UntypedHandle,
+    rem2: UntypedHandle,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("rec".to_string(), MojomValue::PendingReceiver(rec.into())),
+        ("rem".to_string(), MojomValue::PendingRemote(rem.into())),
+        ("rec2".to_string(), MojomValue::PendingReceiver(rec2.into())),
+        ("rem2".to_string(), MojomValue::PendingRemote(rem2.into())),
+    ])
+}
+
+#[gtest(RustTestMojomParsingAttr, TestPendingTypes)]
+fn test_pending_types() {
+    WITH_PENDING_TYPES_TY.validate_mojomparse_handles(
+        WithPendingTypes {
+            rec: PendingReceiver::new(dummy_handle().into()),
+            rem: PendingRemote::new(dummy_handle().into()),
+            rec2: PendingReceiver::new(dummy_handle().into()),
+            rem2: PendingRemote::new(dummy_handle().into()),
+        },
+        || with_pending_types_mojom(dummy_handle(), dummy_handle(), dummy_handle(), dummy_handle()),
+    );
 }

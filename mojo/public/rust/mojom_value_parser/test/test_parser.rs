@@ -25,7 +25,11 @@ chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
     "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
     "//mojo/public/rust/mojom_value_parser:validation_parser";
+    "//mojo/public/rust/bindings";
 }
+
+use bindings::receiver::PendingReceiver;
+use bindings::remote::PendingRemote;
 
 use mojom_value_parser_core::*;
 use ordered_float::OrderedFloat;
@@ -1276,6 +1280,25 @@ fn test_handle_parsing() -> anyhow::Result<()> {
         ),
         6,
     )?;
+
+    validate_parsing_with_handles(
+        WithPendingTypes {
+            rec: PendingReceiver::new(dummy_handle().into()),
+            rem: PendingRemote::new(dummy_handle().into()),
+            rec2: PendingReceiver::new(dummy_handle().into()),
+            rem2: PendingRemote::new(dummy_handle().into()),
+        },
+        "[u4]32 [u4]0 [u4]0 [u4]1 [u4]0 [u4]2 [u4]3 [u4]0",
+        4,
+    )?;
+
+    validate_parsing_failure_with_handles::<WithPendingTypes>(
+        "[u4]32 [u4]0 [u4]0 [u4]1 [u4]0 [u4]2 [u4]3 [u4]0",
+        3,
+    )?;
+
+    // Fails because remote needs 8 bytes but we only provide 4 after the receiver
+    validate_parsing_failure_with_handles::<WithPendingTypes>("[u4]20 [u4]0 [u4]0 [u4]1", 2)?;
 
     Ok(())
 }

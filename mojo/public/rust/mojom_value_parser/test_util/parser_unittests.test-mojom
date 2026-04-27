@@ -275,3 +275,12 @@ struct NestedHandles {
   WithHandles wh;
   handle h3;
 };
+
+interface DummyInterface {};
+
+struct WithPendingTypes {
+  pending_receiver<DummyInterface> rec;
+  pending_remote<DummyInterface> rem;
+  pending_receiver<DummyInterface> rec2;
+  pending_remote<DummyInterface> rem2;
+};

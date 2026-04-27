@@ -17,7 +17,7 @@ pub use mojo_ffi::{MojoError, MojoResult, UntypedHandle};
 // a handle's type, we could do the check here and change these to `TryFrom`.
 macro_rules! declare_typed_handle {
     ($name:ident) => {
-        #[derive(Debug, PartialEq, Eq)]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         pub struct $name {
             handle: $crate::mojo_types::UntypedHandle,
         }

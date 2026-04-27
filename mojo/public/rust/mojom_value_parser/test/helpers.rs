@@ -41,7 +41,9 @@ pub(crate) fn equivalent_value(v1: &MojomValue, v2: &MojomValue) -> bool {
         | (MojomValue::Float64(_), MojomValue::Float64(_))
         | (MojomValue::String(_), MojomValue::String(_))
         | (MojomValue::Enum(_), MojomValue::Enum(_)) => v1 == v2,
-        (MojomValue::Handle(_), MojomValue::Handle(_)) => true,
+        (MojomValue::Handle(_), MojomValue::Handle(_))
+        | (MojomValue::PendingReceiver(_), MojomValue::PendingReceiver(_))
+        | (MojomValue::PendingRemote(_), MojomValue::PendingRemote(_)) => true,
         (MojomValue::Nullable(None), MojomValue::Nullable(None)) => true,
         (MojomValue::Union(disc1, boxed1), MojomValue::Union(disc2, boxed2)) => {
             disc1 == disc2 && equivalent_value(boxed1, boxed2)

@@ -178,6 +178,11 @@ fn deparse_leaf_value(
         (MojomValue::Float32(value), PackedLeafType::Float32) => data.extend(value.to_le_bytes()),
         (MojomValue::Float64(value), PackedLeafType::Float64) => data.extend(value.to_le_bytes()),
         (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
+        // TODO(crbug.com/493274453): The code for deparsing Handle, PendingReceiver, and
+        // PendingRemote is very similar and could be unified. However, there are
+        // discrepancies (like the extra version field for remotes) and it's unclear what
+        // complications associated remotes/receivers will add. We should revisit this when
+        // we have the full picture.
         (MojomValue::Handle(handle), PackedLeafType::Handle) => {
             // Handles are represented on the wire as a 32-bit index into the
             // attached handles array. So instead of writing the value directly
@@ -185,6 +190,18 @@ fn deparse_leaf_value(
             let handle_idx = u32::try_from(data.handles.len()).unwrap();
             data.handles.push(handle);
             data.extend(handle_idx.to_le_bytes())
+        }
+        (MojomValue::PendingReceiver(handle), PackedLeafType::PendingReceiver) => {
+            let handle_idx = u32::try_from(data.handles.len()).unwrap();
+            data.handles.push(handle.into());
+            data.extend(handle_idx.to_le_bytes())
+        }
+        (MojomValue::PendingRemote(handle), PackedLeafType::PendingRemote) => {
+            let handle_idx = u32::try_from(data.handles.len()).unwrap();
+            data.handles.push(handle.into());
+            data.extend(handle_idx.to_le_bytes());
+            // PendingRemote has a version field (4 bytes), which we set to 0 for now.
+            data.extend(0u32.to_le_bytes());
         }
         (value, _) => wrong_type!(leaf_type, value),
     }
@@ -414,8 +431,16 @@ where
                         let num_bytes = wire_type.size();
                         let leaf_value = take_field_at_ordinal(&mut field_values, ordinal)?;
                         // Null handles are indicated with all `f`s, everything else is all `0`s.
-                        let none_indicator_byte =
-                            if leaf_type == &PackedLeafType::Handle { 0xff } else { 0x00 };
+                        let none_indicator_byte = if matches!(
+                            leaf_type,
+                            PackedLeafType::Handle
+                                | PackedLeafType::PendingReceiver
+                                | PackedLeafType::PendingRemote
+                        ) {
+                            0xff
+                        } else {
+                            0x00
+                        };
                         let leaf_value = write_or_extract_nullable!(
                             data,
                             leaf_value,

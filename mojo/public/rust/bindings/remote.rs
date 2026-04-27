@@ -27,7 +27,10 @@
 chromium::import! {
   "//mojo/public/rust/system";
   "//base:sequenced_task_runner";
+  "//mojo/public/rust/mojom_value_parser";
+  "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
 }
+use mojom_value_parser_core::{MojomType, MojomValue};
 
 use std::collections::HashMap;
 use std::marker::PhantomData;
@@ -290,3 +293,40 @@ where
 // We deliberately do not implement `From` and `Into` for
 // `Remote/PendingRemote` pairs, because binding and unbinding are
 // stateful operations that should be done explicitly.
+
+impl<T: DynMojomInterface + ?Sized> std::fmt::Debug for PendingRemote<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PendingRemote").field("endpoint", &self.endpoint).finish()
+    }
+}
+
+impl<T: DynMojomInterface + ?Sized> PartialEq for PendingRemote<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.endpoint == other.endpoint
+    }
+}
+
+impl<T: DynMojomInterface + ?Sized> Eq for PendingRemote<T> {}
+
+impl<T: DynMojomInterface + ?Sized> From<PendingRemote<T>> for MojomValue {
+    fn from(val: PendingRemote<T>) -> MojomValue {
+        MojomValue::PendingRemote(val.into_endpoint())
+    }
+}
+
+impl<T: DynMojomInterface + ?Sized> TryFrom<MojomValue> for PendingRemote<T> {
+    type Error = anyhow::Error;
+
+    fn try_from(value: MojomValue) -> Result<Self, Self::Error> {
+        match value {
+            MojomValue::PendingRemote(handle) => Ok(PendingRemote::new(handle)),
+            _ => anyhow::bail!("Expected PendingRemote, got {:?}", value),
+        }
+    }
+}
+
+impl<T: DynMojomInterface + ?Sized + 'static> mojom_value_parser::MojomParse for PendingRemote<T> {
+    fn mojom_type() -> MojomType {
+        MojomType::PendingRemote
+    }
+}
