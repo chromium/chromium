@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
@@ -82,7 +83,7 @@ bool HasUserNavigationBeyondInitial(content::WebContents& web_contents) {
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
     GlicSharingManager* sharing_manager,
-    GlicInstance* glic_instance,
+    GlicInstanceImpl* glic_instance,
     ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),
       glic_instance_(glic_instance),
@@ -108,7 +109,7 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const mojom::TabData* focused_tab_data) {
-  if (!glic_instance_->IsShowing()) {
+  if (!glic_instance_->HasActiveEmbedder()) {
     return;
   }
 
@@ -154,7 +155,7 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const std::vector<content::WebContents*>& pinned_tab_data) {
-  if (!glic_instance_->IsShowing()) {
+  if (!glic_instance_->HasActiveEmbedder()) {
     return;
   }
   if (pinned_tab_data.size() >

@@ -204,8 +204,8 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     }
   }
 
-  // Only bind if the previous instance was active.
-  if (glic_embedder && glic_embedder->IsShowing()) {
+  // Only bind if the previous instance was showing or backgrounded.
+  if (glic_embedder && glic_embedder->IsShowingOrBackgrounded()) {
     SidePanelShowOptions side_panel_options{*target_tab};
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
@@ -221,7 +221,7 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
 }
 
 void GlicInstanceImpl::NotifyStateChange() {
-  instance_metrics_.OnVisibilityChanged(IsShowing());
+  instance_metrics_.OnVisibilityChanged(HasActiveEmbedder());
   state_change_callback_list_.Notify(IsShowing());
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceVisibilityChanged(this, IsShowing());
@@ -317,6 +317,15 @@ void GlicInstanceImpl::OnSelectionAreasChanged(int count) {
 }
 
 bool GlicInstanceImpl::IsShowing() const {
+  for (const auto& [key, entry] : embedders_) {
+    if (entry.embedder && entry.embedder->IsShowing()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool GlicInstanceImpl::HasActiveEmbedder() const {
   return active_embedder_key_.has_value();
 }
 
@@ -1120,7 +1129,7 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
     return;
   }
   auto* embedder = GetEmbedderForTab(tab);
-  if (embedder && embedder->IsShowing()) {
+  if (embedder && embedder->IsShowingOrBackgrounded()) {
     // Ensure that the side panel in this tab becomes the active embedder.
     Show(ShowOptions::ForSidePanel(*tab));
   }

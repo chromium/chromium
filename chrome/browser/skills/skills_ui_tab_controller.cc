@@ -186,11 +186,6 @@ glic::GlicKeyedService* SkillsUiTabController::GetGlicService() {
 
 void SkillsUiTabController::ShowGlicPanel() {
   if (auto* service = GetGlicService()) {
-    if (auto* instance = service->GetInstanceForTab(&tab_.get())) {
-      if (instance->IsShowing()) {
-        return;
-      }
-    }
     service->ToggleUI(tab_->GetBrowserWindowInterface(),
                       /*prevent_close=*/true,
                       glic::mojom::InvocationSource::kSkills);

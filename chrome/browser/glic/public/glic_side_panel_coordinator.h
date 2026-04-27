@@ -43,6 +43,12 @@ class GlicSidePanelCoordinator {
   // is currently visible if `tab` is already foregrounded.
   static bool IsGlicSidePanelActive(tabs::TabInterface* tab);
 
+  // Returns true if the Glic side panel is currently showing for `tab`.
+  static bool IsShowing(tabs::TabInterface* tab);
+
+  // Returns true if the Glic side panel is visible or backgrounded for `tab`.
+  static bool IsShowingOrBackgrounded(tabs::TabInterface* tab);
+
   static GlicSidePanelCoordinator* GetForTab(tabs::TabInterface* tab);
 
   // The current state of the Glic side panel.

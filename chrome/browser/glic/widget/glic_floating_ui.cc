@@ -317,6 +317,10 @@ bool GlicFloatingUi::IsShowing() const {
   return glic_widget_ != nullptr;
 }
 
+bool GlicFloatingUi::IsShowingOrBackgrounded() const {
+  return IsShowing();
+}
+
 void GlicFloatingUi::Show(const ShowOptions& options) {
   FloatingPanelCanAttachChanged(source_tab_.Get() != nullptr);
   instance_metrics_->OnShowInFloaty(options);

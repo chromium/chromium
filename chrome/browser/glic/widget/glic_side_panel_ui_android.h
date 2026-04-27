@@ -64,6 +64,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
+  bool IsShowingOrBackgrounded() const override;
   void ClosePanel() override;
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}

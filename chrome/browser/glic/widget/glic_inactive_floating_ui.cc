@@ -41,6 +41,10 @@ bool GlicInactiveFloatingUi::IsShowing() const {
   return false;
 }
 
+bool GlicInactiveFloatingUi::IsShowingOrBackgrounded() const {
+  return IsShowing();
+}
+
 void GlicInactiveFloatingUi::Close(const CloseOptions& options) {
   // TODO: implement close.
   NOTIMPLEMENTED();

@@ -63,12 +63,11 @@ void GlicInactiveSidePanelUi::Show(const ShowOptions& options) {
 }
 
 bool GlicInactiveSidePanelUi::IsShowing() const {
-  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (!glic_side_panel_coordinator) {
-    return false;
-  }
-  return glic_side_panel_coordinator->state() !=
-         GlicSidePanelCoordinator::State::kClosed;
+  return GlicSidePanelCoordinator::IsShowing(tab_.get());
+}
+
+bool GlicInactiveSidePanelUi::IsShowingOrBackgrounded() const {
+  return GlicSidePanelCoordinator::IsShowingOrBackgrounded(tab_.get());
 }
 
 void GlicInactiveSidePanelUi::Close(const CloseOptions& options) {

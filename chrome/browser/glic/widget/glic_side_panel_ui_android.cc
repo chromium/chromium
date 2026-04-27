@@ -165,12 +165,11 @@ void GlicSidePanelUi::CaptureScreenshot(
 }
 
 bool GlicSidePanelUi::IsShowing() const {
-  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (!glic_side_panel_coordinator) {
-    return false;
-  }
-  return glic_side_panel_coordinator->state() !=
-         GlicSidePanelCoordinator::State::kClosed;
+  return GlicSidePanelCoordinator::IsShowing(tab_.get());
+}
+
+bool GlicSidePanelUi::IsShowingOrBackgrounded() const {
+  return GlicSidePanelCoordinator::IsShowingOrBackgrounded(tab_.get());
 }
 
 void GlicSidePanelUi::ClosePanel() {

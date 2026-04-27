@@ -33,4 +33,17 @@ bool GlicSidePanelCoordinator::IsGlicSidePanelActive(tabs::TabInterface* tab) {
   return false;
 }
 
+// static
+bool GlicSidePanelCoordinator::IsShowing(tabs::TabInterface* tab) {
+  auto* coordinator = GetForTab(tab);
+  return coordinator && coordinator->state() == State::kShown;
+}
+
+// static
+bool GlicSidePanelCoordinator::IsShowingOrBackgrounded(
+    tabs::TabInterface* tab) {
+  auto* coordinator = GetForTab(tab);
+  return coordinator && coordinator->state() != State::kClosed;
+}
+
 }  // namespace glic

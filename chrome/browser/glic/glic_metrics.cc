@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -108,7 +109,9 @@ class DelegateMultiInstanceImpl : public BaseDelegate {
   gfx::Size GetWindowSize() const override {
     return glic_instance_->GetPanelSize();
   }
-  bool IsWindowShowing() const override { return glic_instance_->IsShowing(); }
+  bool IsWindowShowing() const override {
+    return static_cast<GlicInstanceImpl*>(glic_instance_)->HasActiveEmbedder();
+  }
   bool IsWindowAttached() const override {
     return glic_instance_->IsAttached();
   }

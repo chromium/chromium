@@ -61,10 +61,13 @@ class GlicUiEmbedder {
   // active embedder.
   virtual void Show(const ShowOptions& options) = 0;
 
-  // Returns true if the embedder is currently showing.
-  // Note: For side panels, "showing" can mean it's currently visible, or it
-  // will be automatically shown when its tab is activated.
+  // Returns true if the embedder is strictly visible.
   virtual bool IsShowing() const = 0;
+
+  // Returns true if the embedder is visible or backgrounded (but not closed).
+  // Note: For side panels, this can mean it's currently visible, or it
+  // will be automatically shown when its tab is activated.
+  virtual bool IsShowingOrBackgrounded() const = 0;
 
   // Close the glic UI (keeps webclient alive for now)
   virtual void Close(const CloseOptions& options) = 0;

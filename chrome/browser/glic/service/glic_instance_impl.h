@@ -140,6 +140,7 @@ class GlicInstanceImpl : public GlicInstance,
   gfx::Size GetPanelSize() override;
   bool IsActive() override;
 
+  bool HasActiveEmbedder() const;
   bool IsDetached();
   bool IsActuating() const;
   bool IsLiveMode();
