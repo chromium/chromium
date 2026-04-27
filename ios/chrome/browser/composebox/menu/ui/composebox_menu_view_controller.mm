@@ -16,8 +16,8 @@
 
 namespace {
 
-// The height of the attachments stack view.
-const CGFloat kAttachmentStackViewHeight = 80.0f;
+// The height of the attachments group.
+const CGFloat kAttachmentGroupHeight = 80.0f;
 
 // Insets for the safe area (top, left, bottom, right).
 const UIEdgeInsets kSafeAreaInsets = {20.0, 15.0, 20.0, 15.0};
@@ -28,15 +28,20 @@ const CGFloat kAttachmentItemFractionalWidth = 0.25f;
 // Trailing inset for the attachment item.
 const CGFloat kAttachmentItemTrailingInset = 6.0f;
 
+// Insets for the model and tools sections.
+const NSDirectionalEdgeInsets kListSectionInsets = {0, 15.0, 20.0, 15.0};
+
 // Insets for the attachments section.
-const NSDirectionalEdgeInsets kAttachmentsSectionInsets = {20.0, 15.0, 20.0,
-                                                           15.0};
+const NSDirectionalEdgeInsets kAttachmentSectionInsets = {20.0, 0, 20.0, 0};
 
 // Leading constant for the header label.
 const CGFloat kHeaderLabelLeadingPadding = 15.0f;
 
 // Vertical constant for the header label.
 const CGFloat kHeaderLabelVerticalPadding = 10.0f;
+
+// Font size for the header label.
+const CGFloat kHeaderLabelFontSize = 16.0f;
 
 // Composebox menu section identifier.
 enum class ComposeboxMenuSectionIdentifier {
@@ -189,16 +194,15 @@ enum class ComposeboxMenuSectionIdentifier {
     NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
                                    fractionalWidthDimension:1.0]
-               heightDimension:
-                   [NSCollectionLayoutDimension
-                       absoluteDimension:kAttachmentStackViewHeight]];
+               heightDimension:[NSCollectionLayoutDimension
+                                   absoluteDimension:kAttachmentGroupHeight]];
     NSCollectionLayoutGroup* group =
         [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
                                                       subitems:@[ item ]];
 
     NSCollectionLayoutSection* section =
         [NSCollectionLayoutSection sectionWithGroup:group];
-    section.contentInsets = kAttachmentsSectionInsets;
+    section.contentInsets = kAttachmentSectionInsets;
     section.orthogonalScrollingBehavior =
         UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
     return section;
@@ -210,6 +214,7 @@ enum class ComposeboxMenuSectionIdentifier {
     NSCollectionLayoutSection* section = [NSCollectionLayoutSection
         sectionWithListConfiguration:listConfig
                    layoutEnvironment:layoutEnvironment];
+    section.contentInsets = kListSectionInsets;
     return section;
   }
 }
@@ -395,7 +400,8 @@ enum class ComposeboxMenuSectionIdentifier {
 - (void)configureHeaderView:(UICollectionReusableView*)view
                 atIndexPath:(NSIndexPath*)indexPath {
   UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont systemFontOfSize:16.0 weight:UIFontWeightBold];
+  label.font = [UIFont systemFontOfSize:kHeaderLabelFontSize
+                                 weight:UIFontWeightBold];
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.text = _sections[indexPath.section].title;
