@@ -347,7 +347,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   base::RecordAction(base::UserMetricsAction(
       "MobileBookmarksFolderEditorOpenedFolderChooser"));
-  std::set<const BookmarkNode*> hiddenNodes;
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> hiddenNodes;
   if (_folder) {
     hiddenNodes.insert(_folder);
   }

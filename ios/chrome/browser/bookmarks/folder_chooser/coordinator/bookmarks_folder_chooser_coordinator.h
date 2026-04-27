@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -39,8 +40,10 @@ class BookmarkNode;
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
                          hiddenNodes:
-                             (const std::set<const bookmarks::BookmarkNode*>&)
+                             (const std::set<
+                                 raw_ptr<const bookmarks::BookmarkNode>>&)
                                  hiddenNodes;
+
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.
 // `selectedFolder` will be the folder with check mark in the UI.
@@ -49,8 +52,10 @@ class BookmarkNode;
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
-                   hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
-                                   hiddenNodes NS_DESIGNATED_INITIALIZER;
+                   hiddenNodes:
+                       (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)
+                           hiddenNodes NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
@@ -59,7 +64,7 @@ class BookmarkNode;
 // The current nodes (bookmarks or folders) that are considered for a move.
 // Will be available right before this coordinator sends a confirm selection
 // signal through it's delegate.
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes;
 // Puts a blue check mark beside a folder it in the UI.
 // If unset no blue check mark is shown.
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;

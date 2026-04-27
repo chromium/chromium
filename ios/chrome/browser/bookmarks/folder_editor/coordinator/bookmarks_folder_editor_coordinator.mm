@@ -166,12 +166,13 @@
 
 #pragma mark - BookmarksFolderEditorViewControllerDelegate
 
-- (void)showBookmarksFolderChooserWithParentFolder:
-            (const bookmarks::BookmarkNode*)parent
-                                       hiddenNodes:
-                                           (const std::set<
-                                               const bookmarks::BookmarkNode*>&)
-                                               hiddenNodes {
+- (void)
+    showBookmarksFolderChooserWithParentFolder:
+        (const bookmarks::BookmarkNode*)parent
+                                   hiddenNodes:
+                                       (const std::set<raw_ptr<
+                                            const bookmarks::BookmarkNode>>&)
+                                           hiddenNodes {
   if (_folderChooserCoordinator || _viewController.UIDisabled) {
     // This can occur if the user tap on the button while the previous folder
     // chooser is being dismissed.

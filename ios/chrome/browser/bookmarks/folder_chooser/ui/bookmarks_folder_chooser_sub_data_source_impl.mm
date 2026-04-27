@@ -71,13 +71,13 @@ using bookmarks::BookmarkNode;
   NOTREACHED(base::NotFatalUntil::M152);
 }
 
-- (std::vector<const BookmarkNode*>)visibleFolderNodes {
+- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)visibleFolderNodes {
   return bookmark_utils_ios::VisibleNonDescendantNodes(
       [_parentDataSource editedNodes], _bookmarkModel, _type);
 }
 
-- (std::vector<const bookmarks::BookmarkNode*>)visibleFolderNodesForQuery:
-    (const bookmarks::QueryFields&)query {
+- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)
+    visibleFolderNodesForQuery:(const bookmarks::QueryFields&)query {
   std::vector<std::u16string> words = bookmarks::ParseBookmarkQuery(query);
   return bookmark_utils_ios::VisibleNonDescendantNodes(
       [_parentDataSource editedNodes], _bookmarkModel, _type, words);
