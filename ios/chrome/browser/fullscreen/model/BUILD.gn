@@ -28,6 +28,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/common:timing",
     "//testing/gtest",
   ]
 }

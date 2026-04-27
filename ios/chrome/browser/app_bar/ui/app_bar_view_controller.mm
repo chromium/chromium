@@ -105,10 +105,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }  // namespace
 
 @interface AppBarViewController () <UIContextMenuInteractionDelegate>
-
-// The alpha for the titles of the buttons.
-@property(nonatomic, assign) CGFloat buttonsTitleAlpha;
-
 @end
 
 @implementation AppBarViewController {
@@ -148,18 +144,23 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSLayoutConstraint* _stackViewBottomConstraint;
   // Container view for the Tab Grid button's custom preview.
   UIView* _tabGridPreviewContainer;
+  // The alpha for the titles of the buttons.
+  CGFloat _buttonsTitleAlpha;
 }
 
 #pragma mark - Accessors & Mutators
 
-- (void)setButtonsTitleAlpha:(CGFloat)buttonsTitleAlpha {
-  if (buttonsTitleAlpha == self.buttonsTitleAlpha) {
+- (void)setButtonsTitleAlpha:(CGFloat)buttonsTitleAlpha
+           animationDuration:(NSTimeInterval)duration {
+  if (buttonsTitleAlpha == _buttonsTitleAlpha) {
     return;
   }
   _buttonsTitleAlpha = buttonsTitleAlpha;
-  [_assistantButton setNeedsUpdateConfiguration];
-  [_openNewTabButton setNeedsUpdateConfiguration];
-  [_tabGridButton setNeedsUpdateConfiguration];
+  [self setNeedsUpdateConfiguration:_assistantButton
+                  animationDuration:duration];
+  [self setNeedsUpdateConfiguration:_openNewTabButton
+                  animationDuration:duration];
+  [self setNeedsUpdateConfiguration:_tabGridButton animationDuration:duration];
 }
 
 #pragma mark - Public
@@ -189,7 +190,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view insertSubview:_backgroundView atIndex:0];
 
-  self.buttonsTitleAlpha = 1;
+  _buttonsTitleAlpha = 1;
 
   _assistantButton = [self createAssistantButton];
   _openNewTabButton = [self createOpenNewTabButton];
@@ -347,19 +348,21 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   // The App Bar and the button titles should be fully visible in landscape
   // orientation.
-  self.buttonsTitleAlpha =
+  CGFloat targetAlpha =
       AppBarPositionForView(self.view) == AppBarPosition::kBottom ? progress
                                                                   : 1.0;
+  [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
-  if (AppBarPositionForView(self.view) != AppBarPosition::kBottom) {
-    return;
-  }
-
-  [self updateForFullscreenProgress:agent->bottom_progress()];
+  CGFloat targetAlpha =
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+          ? agent->bottom_progress()
+          : 1.0;
+  [self setButtonsTitleAlpha:targetAlpha
+           animationDuration:agent->animation_duration().InSecondsF()];
 }
 
 #pragma mark - Private
@@ -639,7 +642,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   };
 
   // Text fades on highlight/disabled AND scroll.
-  CGFloat textAlpha = highlightAlpha * self.buttonsTitleAlpha;
+  CGFloat textAlpha = highlightAlpha * _buttonsTitleAlpha;
 
   config.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
@@ -874,6 +877,25 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                     label.textColor = labelColor;
                   }
                   completion:nil];
+}
+
+// Calls the button's setNeedsUpdateConfiguration, either immediately or in an
+// animation block.
+- (void)setNeedsUpdateConfiguration:(UIButton*)button
+                  animationDuration:(NSTimeInterval)duration {
+  if (duration > 0) {
+    // Cross-fade to the new color along with the current animation.
+    [UIView transitionWithView:button
+                      duration:duration
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      [button setNeedsUpdateConfiguration];
+                    }
+                    completion:nil];
+  } else {
+    // Update the color immediately.
+    [button setNeedsUpdateConfiguration];
+  }
 }
 
 #pragma mark - Actions

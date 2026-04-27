@@ -101,6 +101,10 @@
         (kAppBarHeight - kAppBarHeightFullscreen) * agent->bottom_progress();
     agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
     [self updateLayout];
+    // If this is inside an animation, layout immediately.
+    if (!agent->animation_duration().is_zero()) {
+      [self.view layoutIfNeeded];
+    }
   }
 }
 
@@ -118,6 +122,7 @@
   _fullscreenProgress = progress;
 }
 
+// Updates the layout based on the current orientation and fullscreen progress.
 - (void)updateLayout {
   UIWindowScene* windowScene = self.view.window.windowScene;
   if (!windowScene) {
@@ -150,7 +155,6 @@
           : 1.0;
   self.view.transform = CGAffineTransformMakeRotation(angle);
   self.view.fullscreenProgress = fullscreenProgress;
-  [_appBar updateForFullscreenProgress:fullscreenProgress];
   [_appBar updateForAngle:-angle];
 }
 

@@ -9,6 +9,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
+#import "base/time/time.h"
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -64,6 +65,11 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   CGFloat top_progress() const { return top_progress_; }
   CGFloat bottom_progress() const { return bottom_progress_; }
 
+  // Returns the duration of the current animation, if this is called inside of
+  // an animation block while animating in or out of Fullscreen. Otherwise
+  // returns zero.
+  base::TimeDelta animation_duration() const { return animation_duration_; }
+
   // Incrementally changes the fullscreen progress based on a drag or scroll.
   void IncrementalScroll(CGFloat amount, PassKey);
 
@@ -108,7 +114,8 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
                                   bool animated);
 
   // Notifies all observers of an updated state.
-  void NotifyObserversOfUpdatedState();
+  void NotifyObserversOfUpdatedState(
+      base::TimeDelta duration = base::TimeDelta());
 
   // Handles animation completion.
   void AnimationDidComplete(FullscreenTransition transition, bool finished);
@@ -142,6 +149,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // True if the agent is currently broadcasting WillUpdateState. Used to
   // ensure AddObscuredInset() is only called a the correct time.
   bool updating_insets_ = false;
+
+  // The animation duration for the current transition.
+  base::TimeDelta animation_duration_ = base::TimeDelta();
 
   base::WeakPtrFactory<FullscreenBrowserAgent> weak_ptr_factory_{this};
 };

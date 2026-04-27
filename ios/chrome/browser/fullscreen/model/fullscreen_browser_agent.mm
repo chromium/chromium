@@ -107,9 +107,10 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   bottom_progress_ = bottom_progress;
 
   if (animated) {
+    base::TimeDelta duration = base::Seconds(kMaterialDuration1);
     auto update_state = base::CallbackToBlock(
         base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), duration));
     auto completion_block = base::CallbackToBlock(
         base::BindOnce(&FullscreenBrowserAgent::AnimationDidComplete,
                        weak_ptr_factory_.GetWeakPtr(), transition));
@@ -122,7 +123,9 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
   }
 }
 
-void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
+void FullscreenBrowserAgent::NotifyObserversOfUpdatedState(
+    base::TimeDelta duration) {
+  animation_duration_ = duration;
   CHECK(!updating_insets_);
   updating_insets_ = true;
   UIEdgeInsets old_insets = insets_;
@@ -137,6 +140,7 @@ void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
       observer.DidUpdateState(this);
     }
   }
+  animation_duration_ = base::TimeDelta();
 }
 
 void FullscreenBrowserAgent::AnimationDidComplete(
