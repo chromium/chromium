@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/profile_launch_observer.h"
@@ -198,9 +197,8 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
     // Guest is not available unless a there is already a guest browser open
     // (for example, launching a new browser after clicking on a downloaded file
     // in Guest mode).
-    auto* collection = ProfileBrowserCollection::GetForProfile(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
-    return collection && collection->GetSize() > 0;
+    return chrome::GetBrowserCount(
+               profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) > 0;
   }
 
   return true;
@@ -1189,8 +1187,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
     // background page of apps. Tracked at http://crbug.com/40301548
-    if (ProfileBrowserCollection::GetForProfile(privacy_safe_profile)
-            ->GetSize() != 0) {
+    if (chrome::GetBrowserCount(privacy_safe_profile) != 0) {
       return true;
     }
   }
@@ -1210,8 +1207,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // chrome to shut down.
     // TODO(jackhou): Do this properly once keep-alive is handled by the
     // background page of apps. Tracked at http://crbug.com/40301548
-    if (ProfileBrowserCollection::GetForProfile(privacy_safe_profile)
-            ->GetSize() != 0) {
+    if (chrome::GetBrowserCount(privacy_safe_profile) != 0) {
       return true;
     }
   }

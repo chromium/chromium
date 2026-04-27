@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -327,16 +326,13 @@ bool WebAppNavigationBrowserTest::ExpectLinkClickNotCapturedIntoAppBrowser(
   content::WebContents* initial_tab =
       browser->tab_strip_model()->GetActiveWebContents();
   int num_tabs = browser->tab_strip_model()->count();
-  size_t num_browsers =
-      ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize();
+  size_t num_browsers = chrome::GetBrowserCount(browser->profile());
 
   ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(),
                    target_url, LinkTarget::SELF, rel);
 
   EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
-  EXPECT_EQ(
-      num_browsers,
-      ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize());
+  EXPECT_EQ(num_browsers, chrome::GetBrowserCount(browser->profile()));
   EXPECT_EQ(browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   EXPECT_EQ(initial_tab, browser->tab_strip_model()->GetActiveWebContents());

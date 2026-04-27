@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -119,6 +118,7 @@ class ProfileWindowBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, CountForNullBrowser) {
+  EXPECT_EQ(size_t{0}, chrome::GetBrowserCount(nullptr));
   EXPECT_EQ(0, chrome::GetOffTheRecordBrowsersActiveForProfile(nullptr));
 }
 

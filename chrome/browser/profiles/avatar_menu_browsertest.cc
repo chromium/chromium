@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(profile);
   observer.Wait();
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
+  EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
 
   std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
   ASSERT_TRUE(active_profile_index.has_value());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
   menu()->EditProfile(*active_profile_index);
 
   // A new browser is opened.
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 1U);
+  EXPECT_EQ(chrome::GetBrowserCount(profile), 1U);
   BrowserWindowInterface* new_browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(profile);
   observer.Wait();
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
+  EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
 
   std::optional<size_t> active_profile_index = menu()->GetActiveProfileIndex();
   ASSERT_TRUE(active_profile_index.has_value());
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
   menu()->EditProfile(*active_profile_index);
 
   // Browser shouldn't be opened since `profile` is locked.
-  EXPECT_EQ(ProfileBrowserCollection::GetForProfile(profile)->GetSize(), 0U);
+  EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
 
   // The browser test doesn't shut down correctly if `keep_alive` is released
   // while there are no browser windows. Create browser to work around this

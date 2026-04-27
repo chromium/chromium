@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -174,9 +173,8 @@ void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
     std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
   DCHECK(IsRegisteredAsEphemeral(
       &profile_manager_->GetProfileAttributesStorage(), profile_dir));
-  DCHECK_EQ(0u, ProfileBrowserCollection::GetForProfile(
-                    profile_manager_->GetProfileByPath(profile_dir))
-                    ->GetSize());
+  DCHECK_EQ(0u, chrome::GetBrowserCount(
+                    profile_manager_->GetProfileByPath(profile_dir)));
   std::optional<base::FilePath> new_active_profile_dir =
       profile_manager_->FindLastActiveProfile(base::BindRepeating(
           [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {

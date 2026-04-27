@@ -16,10 +16,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -592,9 +592,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // There should be one browser to start with.
   unsigned int expected_browsers = 1;
   const int expected_tabs = 1;
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
 
   const GURL example_url(
@@ -633,9 +631,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // Check that the number of browsers and tabs is correct.
   expected_browsers++;
 
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
   EXPECT_EQ(expected_tabs, app_browser->GetTabStripModel()->count());
 }
@@ -655,9 +651,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // There should be one browser to start with.
   unsigned int expected_browsers = 1;
   const int expected_tabs = 1;
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
 
   const GURL example_url(
@@ -698,9 +692,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // Check that the number of browsers and tabs is correct.
   expected_browsers++;
 
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
   EXPECT_EQ(expected_tabs, app_browser->GetTabStripModel()->count());
 }
@@ -718,9 +710,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_CommandLineTab) {
   // There should be one browser to start with.
   const unsigned int expected_browsers = 1;
   int expected_tabs = 1;
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
 
   const GURL example_url(
@@ -757,9 +747,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_CommandLineTab) {
   // Check that the number of browsers and tabs is correct.
   expected_tabs++;
 
-  EXPECT_EQ(
-      expected_browsers,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
 }
 #endif
