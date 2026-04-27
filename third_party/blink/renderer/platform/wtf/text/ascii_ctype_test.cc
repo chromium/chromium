@@ -8,7 +8,7 @@
 
 namespace blink {
 
-TEST(AsciiCTypeTest, ASCIICaseFoldTable) {
+TEST(AsciiCTypeTest, AsciiCaseFoldTable) {
   LChar symbol = 0xff;
   while (symbol--) {
     EXPECT_EQ(ToAsciiLower<LChar>(symbol), kAsciiCaseFoldTable[symbol]);
