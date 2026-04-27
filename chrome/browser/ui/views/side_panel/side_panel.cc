@@ -969,6 +969,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
   } else {
     animation_controller->Cancel(animation_group_);
     SetVisible(should_be_open);
+    open_starting_point_ = should_be_open ? 1.0 : 0.0;
   }
 }
 
