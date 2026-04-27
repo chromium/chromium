@@ -5,6 +5,7 @@
 #import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
@@ -79,6 +80,14 @@ constexpr size_t kMinEligibleFeatures = 2;
       lastSessionEndTime
           ? base::Time::Now() - base::Time::FromNSDate(lastSessionEndTime)
           : base::TimeDelta();
+
+  if (lastSessionEndTime) {
+    // Log the number of days since active. An exact linear histogram with a
+    // max of 50 provides good distribution around the 28-day threshold.
+    int daysSinceActive = timeSinceActive.InDays();
+    base::UmaHistogramExactLinear("IOS.WelcomeBack.DaysSinceActive",
+                                  daysSinceActive, 49);
+  }
 
   // Mark Autofill feature as used if the Credential Provider Extension is
   // enabled on startup.

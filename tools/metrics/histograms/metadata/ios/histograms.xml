@@ -7764,6 +7764,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.WelcomeBack.DaysSinceActive" units="days"
+    expires_after="2027-04-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the number of days since the user was last active in the app,
+    calculated on cold start. Recorded once per cold start if there is a valid
+    previous session end time. Uses 1-day buckets up to 50 days.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WelcomeBack.DetailScreen.Impression"
     enum="IOSBestFeaturesItemType" expires_after="2026-08-02">
   <owner>cheickcisse@google.com</owner>
