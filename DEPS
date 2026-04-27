@@ -3738,7 +3738,7 @@ deps = {
 
   'src/components/record_replay/internal': {
       'url': Var('chrome_git') + '/chrome/components/record_replay.git' + '@' +
-        '74b009c6749e7afba2f8c3c756ac1c1fb9e8a4d9',
+        'b43833e23c646f43723603d081ffad92968fece2',
       'condition': 'checkout_src_internal',
   },
 
