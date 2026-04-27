@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+
+test(function() {
+  const div = document.createElement('div');
+  div.contentEditable = 'true';
+  div.style.whiteSpace = 'pre-wrap';
+  document.body.appendChild(div);
+  div.focus();
+
+  document.execCommand('insertText', false, 'foo\r\nbar');
+
+  assert_false(div.textContent.includes('\r'),
+      'textContent should not contain carriage return');
+
+  div.remove();
+}, 'insertText with CRLF should not insert \\r into DOM');
+
+test(function() {
+  // Insert with LF to get baseline.
+  const div1 = document.createElement('div');
+  div1.contentEditable = 'true';
+  document.body.appendChild(div1);
+  div1.focus();
+  document.execCommand('insertText', false, 'foo\nbar');
+  const lfHTML = div1.innerHTML;
+  div1.remove();
+
+  // Insert with CRLF — should produce identical result.
+  const div2 = document.createElement('div');
+  div2.contentEditable = 'true';
+  document.body.appendChild(div2);
+  div2.focus();
+  document.execCommand('insertText', false, 'foo\r\nbar');
+  const crlfHTML = div2.innerHTML;
+  div2.remove();
+
+  assert_equals(crlfHTML, lfHTML,
+      'CRLF and LF should produce identical innerHTML');
+}, 'insertText CRLF produces same DOM as LF');
+
+test(function() {
+  const div = document.createElement('div');
+  div.contentEditable = 'true';
+  div.style.whiteSpace = 'pre-wrap';
+  document.body.appendChild(div);
+  div.focus();
+
+  document.execCommand('insertText', false, 'foo\rbar');
+
+  assert_false(div.textContent.includes('\r'),
+      'textContent should not contain carriage return');
+
+  div.remove();
+}, 'insertText with standalone CR should not insert \\r');
+</script>
+</body>
+</html>

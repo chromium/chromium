@@ -4012,6 +4012,13 @@
       status: "stable",
     },
     {
+      // Normalizes CRLF and standalone CR to LF in execCommand("insertText")
+      // for consistent newline handling in contenteditable elements.
+      // See https://crbug.com/41289410
+      name: "NormalizeLineEndingsInInsertText",
+      status: "stable",
+    },
+    {
       // Converts mid-word U+00A0 (NBSP) to a regular space on paste and drop.
       // This will be shipped in M148, and it can be removed in M150.
       // See https://issues.chromium.org/issues/444065314.

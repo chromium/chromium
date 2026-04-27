@@ -184,4 +184,89 @@ TEST_F(TypingCommandTest, FirstTypedCharactersInContentEditable) {
   EXPECT_EQ(1u, chrome_client->didUserChangeContentEditableContentCount);
 }
 
+// Tests that insertText with CRLF (\r\n) produces the same DOM
+// as with LF (\n).
+TEST_F(TypingCommandTest, InsertTextCrLfMatchesLf) {
+  // First: insert with LF to establish baseline.
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "foo\nbar",
+                            ASSERT_NO_EXCEPTION);
+  std::string lf_result = GetSelectionTextFromBody();
+
+  // Second: insert with CRLF — should produce identical result.
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "foo\r\nbar",
+                            ASSERT_NO_EXCEPTION);
+  std::string crlf_result = GetSelectionTextFromBody();
+
+  EXPECT_EQ(lf_result, crlf_result);
+}
+
+TEST_F(TypingCommandTest, InsertTextCrLfNoCarriageReturnInDom) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable style='white-space:pre-wrap'>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "foo\r\nbar",
+                            ASSERT_NO_EXCEPTION);
+
+  // The \r should not appear in the resulting DOM.
+  std::string result = GetSelectionTextFromBody();
+  EXPECT_EQ(result.find('\r'), std::string::npos);
+}
+
+TEST_F(TypingCommandTest, InsertTextStandaloneCrNoCarriageReturnInDom) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable style='white-space:pre-wrap'>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "foo\rbar",
+                            ASSERT_NO_EXCEPTION);
+
+  // Standalone \r should also be normalized; no \r in the DOM.
+  std::string result = GetSelectionTextFromBody();
+  EXPECT_EQ(result.find('\r'), std::string::npos);
+}
+
+TEST_F(TypingCommandTest, InsertTextMixedLineEndingsMatchLf) {
+  // Baseline with all LF.
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "a\nb\nc",
+                            ASSERT_NO_EXCEPTION);
+  std::string lf_result = GetSelectionTextFromBody();
+
+  // Mixed CRLF and LF — should produce identical result.
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+  GetDocument().execCommand("insertText", false, "a\r\nb\nc",
+                            ASSERT_NO_EXCEPTION);
+  std::string mixed_result = GetSelectionTextFromBody();
+
+  EXPECT_EQ(lf_result, mixed_result);
+}
+
+// Ensure undo works correctly after CRLF normalization
+TEST_F(TypingCommandTest, InsertTextCrLfUndo) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|</div>"),
+      SetSelectionOptions());
+
+  GetDocument().execCommand("insertText", false, "foo\r\nbar",
+                            ASSERT_NO_EXCEPTION);
+  // Verify text was inserted
+  EXPECT_NE(GetSelectionTextFromBody().find("foo"), std::string::npos);
+  EXPECT_NE(GetSelectionTextFromBody().find("bar"), std::string::npos);
+
+  // Undo should remove the inserted text
+  GetDocument().execCommand("undo", false, "", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ("<div contenteditable>|</div>", GetSelectionTextFromBody());
+}
+
 }  // namespace blink

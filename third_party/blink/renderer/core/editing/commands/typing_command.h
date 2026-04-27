@@ -93,6 +93,9 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   static void CloseTyping(LocalFrame*);
   static void CloseTypingIfNeeded(LocalFrame*);
 
+  // Normalizes CRLF and standalone CR to LF for consistent newline handling.
+  static String NormalizeTextForInsertion(const String&);
+
   static TypingCommand* LastTypingCommandIfStillOpenForTyping(LocalFrame*);
   static void UpdateSelectionIfDifferentFromCurrentSelection(TypingCommand*,
                                                              LocalFrame*);

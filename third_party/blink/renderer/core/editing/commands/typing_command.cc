@@ -60,6 +60,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 
 namespace blink {
 
@@ -193,6 +195,15 @@ Position AfterBlockIfBeforeAnonymousPlaceholder(const Position& position) {
 
 }  // anonymous namespace
 
+// static
+String TypingCommand::NormalizeTextForInsertion(const String& text) {
+  // Normalize CRLF and standalone CR to LF for consistent newline handling.
+  // See https://infra.spec.whatwg.org/#normalize-newlines
+  return RuntimeEnabledFeatures::NormalizeLineEndingsInInsertTextEnabled()
+             ? NormalizeLineEndingsToLF(text)
+             : text;
+}
+
 TypingCommand::TypingCommand(Document& document,
                              CommandType command_type,
                              const String& text_to_insert,
@@ -202,7 +213,7 @@ TypingCommand::TypingCommand(Document& document,
                              DataTransfer* data_transfer)
     : CompositeEditCommand(document, data_transfer),
       command_type_(command_type),
-      text_to_insert_(text_to_insert),
+      text_to_insert_(NormalizeTextForInsertion(text_to_insert)),
       open_for_more_typing_(true),
       select_inserted_text_(options & kSelectInsertedText),
       smart_delete_(options & kSmartDelete),
@@ -461,8 +472,9 @@ void TypingCommand::InsertText(
     last_typing_command->password_echo_behavior_ = password_echo_behavior;
 
     EventQueueScope event_queue_scope;
-    last_typing_command->InsertTextInternal(
-        new_text, options & kSelectInsertedText, editing_state);
+    last_typing_command->InsertTextInternal(NormalizeTextForInsertion(new_text),
+                                            options & kSelectInsertedText,
+                                            editing_state);
     return;
   }
 
