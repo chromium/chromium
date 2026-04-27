@@ -201,6 +201,7 @@ void CastStreamingSession::ReceiverSessionClient::PreloadVideoBuffer(
 }
 
 CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() {
+  weak_factory_.InvalidateWeakPtrs();
   client_ = nullptr;
   // Teardown of the `receiver_session_` may trigger callbacks into `this`,
   // so destroy it explicitly here, so that callbacks execute while all other
@@ -428,6 +429,8 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
     playback_command_dispatcher_->OnRemotingSessionEnded();
   }
 
+  start_session_cb_.Reset();
+
   preloaded_audio_buffer_ = std::nullopt;
   preloaded_video_buffer_ = std::nullopt;
 
@@ -517,6 +520,7 @@ void CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed() {
 }
 
 void CastStreamingSession::ReceiverSessionClient::EndSession() {
+  start_session_cb_.Reset();
   if (client_) {
     CastStreamingSession::Client* client = client_;
     client_ = nullptr;
