@@ -1927,7 +1927,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
       <ph name="LIST_ITEM" />Se utilizzi una rete pubblica, <ph name="BEGIN_STRONG" />è più sicuro visitare questo sito in un secondo momento<ph name="END_STRONG" />. Con una rete affidabile, come il Wi-Fi di casa o del lavoro, corri meno rischi.
     <ph name="END_LIST" />
 
-    Puoi anche contattare il proprietario del sito e suggerire di eseguire l'upgrade a HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
+    Puoi anche contattare il proprietario del sito e suggerire di fare l'upgrade a HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4030383055268325496">&amp;Annulla aggiunta</translation>
 <translation id="4030545038933060179">Quando l'opzione è attiva, un elenco di argomenti viene visualizzato qui in base alla tua cronologia di navigazione recente</translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
@@ -4156,7 +4156,7 @@ Ulteriori dettagli:
 <translation id="7469935732330206581">Modulo non sicuro</translation>
 <translation id="7470854469646445678">Specifica il motivo della copia (obbligatorio)</translation>
 <translation id="7471007961486718967">Specifica il motivo del trasferimento (obbligatorio)</translation>
-<translation id="7473033553872550521">Puoi anche contattare il proprietario del sito e suggerire di eseguire l'upgrade a HTTPS. <ph name="LEARN_MORE" /></translation>
+<translation id="7473033553872550521">Puoi anche contattare il proprietario del sito e suggerire di fare l'upgrade a HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">No, grazie</translation>
 <translation id="7475618719385705713">Questa pagina è bloccata</translation>
 <translation id="7481312909269577407">Avanti</translation>
