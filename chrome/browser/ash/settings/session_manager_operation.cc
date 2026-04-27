@@ -147,8 +147,9 @@ void SessionManagerOperation::StorePublicKey(base::OnceClosure callback,
 }
 
 void SessionManagerOperation::RetrieveDeviceSettings() {
-  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE, login_manager::POLICY_DOMAIN_CHROME,
+      kEmptyAccountId);
   session_manager_client()->RetrievePolicy(
       descriptor,
       base::BindOnce(&SessionManagerOperation::ValidateDeviceSettings,
@@ -157,8 +158,9 @@ void SessionManagerOperation::RetrieveDeviceSettings() {
 
 void SessionManagerOperation::BlockingRetrieveDeviceSettings() {
   std::string policy_blob;
-  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE, login_manager::POLICY_DOMAIN_CHROME,
+      kEmptyAccountId);
   RetrievePolicyResponseType response =
       session_manager_client()->BlockingRetrievePolicy(descriptor,
                                                        &policy_blob);

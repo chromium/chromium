@@ -17,13 +17,25 @@ constexpr char kEmptyAccountId[] = "";
 using SessionManagerPolicyUtilTest = ::testing::Test;
 
 TEST_F(SessionManagerPolicyUtilTest, MakeChromePolicyDescriptor) {
-  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, kEmptyAccountId);
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT,
+      login_manager::POLICY_DOMAIN_CHROME, kEmptyAccountId);
 
   EXPECT_EQ(descriptor.account_type(),
             login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT);
   EXPECT_EQ(descriptor.account_id(), kEmptyAccountId);
   EXPECT_EQ(descriptor.domain(), login_manager::POLICY_DOMAIN_CHROME);
+}
+
+TEST_F(SessionManagerPolicyUtilTest, MakeExtensionInstallPolicyDescriptor) {
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_USER,
+      login_manager::POLICY_DOMAIN_EXTENSION_INSTALL, kEmptyAccountId);
+
+  EXPECT_EQ(descriptor.account_type(), login_manager::ACCOUNT_TYPE_USER);
+  EXPECT_EQ(descriptor.account_id(), kEmptyAccountId);
+  EXPECT_EQ(descriptor.domain(),
+            login_manager::POLICY_DOMAIN_EXTENSION_INSTALL);
 }
 
 }  // namespace ash

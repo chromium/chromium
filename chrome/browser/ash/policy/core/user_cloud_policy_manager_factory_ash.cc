@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -36,6 +37,7 @@
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/known_user.h"
@@ -231,7 +233,18 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   std::unique_ptr<UserCloudPolicyStoreAsh> store =
       std::make_unique<UserCloudPolicyStoreAsh>(
           ash::CryptohomeMiscClient::Get(), ash::SessionManagerClient::Get(),
-          background_task_runner, account_id, policy_key_dir);
+          background_task_runner, account_id, policy_key_dir,
+          dm_protocol::GetChromeUserPolicyType());
+
+  std::unique_ptr<UserCloudPolicyStoreAsh> extension_install_store =
+      base::FeatureList::IsEnabled(
+          features::kEnableExtensionInstallPolicyFetching)
+          ? std::make_unique<UserCloudPolicyStoreAsh>(
+                ash::CryptohomeMiscClient::Get(),
+                ash::SessionManagerClient::Get(), background_task_runner,
+                account_id, policy_key_dir,
+                dm_protocol::kChromeExtensionInstallUserCloudPolicyType)
+          : nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -248,10 +261,10 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // TODO(crbug.com/452305191): Create the right store for ChromeOS.
   std::unique_ptr<UserCloudPolicyManagerAsh> manager =
       std::make_unique<UserCloudPolicyManagerAsh>(
-          profile, std::move(store),
-          /*extension_install_store=*/nullptr, std::move(external_data_manager),
-          component_policy_cache_dir, enforcement_type,
-          g_browser_process->local_state(), policy_refresh_timeout,
+          profile, std::move(store), std::move(extension_install_store),
+          std::move(external_data_manager), component_policy_cache_dir,
+          enforcement_type, g_browser_process->local_state(),
+          policy_refresh_timeout,
           base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
           base::SingleThreadTaskRunner::GetCurrentDefault());
 

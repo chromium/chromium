@@ -39,7 +39,8 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
       ash::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
-      const base::FilePath& user_policy_key_dir);
+      const base::FilePath& user_policy_key_dir,
+      const std::string& policy_type);
 
   UserCloudPolicyStoreAsh(const UserCloudPolicyStoreAsh&) = delete;
   UserCloudPolicyStoreAsh& operator=(const UserCloudPolicyStoreAsh&) = delete;
@@ -61,12 +62,14 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
 
  private:
   // Starts validation of |policy| before storing it.
+  template <typename PayloadProto>
   void ValidatePolicyForStore(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
   // Completion handler for policy validation on the Store() path.
   // Starts a store operation if the validation succeeded.
-  void OnPolicyToStoreValidated(UserCloudPolicyValidator* validator);
+  template <typename PayloadProto>
+  void OnPolicyToStoreValidated(CloudPolicyValidator<PayloadProto>* validator);
 
   // Called back from SessionManagerClient for policy store operations.
   void OnPolicyStored(bool success);
@@ -80,11 +83,14 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   void ValidateRetrievedPolicy(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
+  template <typename PayloadProto>
   // Completion handler for policy validation on the Load() path. Installs the
   // policy and publishes it if validation succeeded.
-  void OnRetrievedPolicyValidated(UserCloudPolicyValidator* validator);
+  void OnRetrievedPolicyValidated(
+      CloudPolicyValidator<PayloadProto>* validator);
 
-  std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
+  template <typename PayloadProto>
+  std::unique_ptr<CloudPolicyValidator<PayloadProto>> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
   raw_ptr<ash::SessionManagerClient> session_manager_client_;

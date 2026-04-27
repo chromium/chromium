@@ -121,6 +121,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void StoreDevicePolicy(const std::string& policy_blob,
                          chromeos::VoidDBusMethodCallback callback) override;
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
+                          login_manager::PolicyDomain domain,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override;
   void StoreDeviceLocalAccountPolicy(

@@ -30,8 +30,7 @@ enum PolicyDomain {
   // ID.
   POLICY_DOMAIN_SIGNIN_EXTENSIONS,
 
-  // The component ID for the extension install policies is equal to the
-  // extension ID.
+  // The component ID for the extension install policies is always empty.
   POLICY_DOMAIN_EXTENSION_INSTALL,
 
   // Must be the last entry.

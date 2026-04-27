@@ -465,18 +465,18 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   void StoreDevicePolicy(const std::string& policy_blob,
                          chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor =
-        ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_DEVICE,
-                                        kEmptyAccountId);
+    login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+        login_manager::ACCOUNT_TYPE_DEVICE, login_manager::POLICY_DOMAIN_CHROME,
+        kEmptyAccountId);
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
+                          login_manager::PolicyDomain domain,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor =
-        ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_USER,
-                                        cryptohome_id.account_id());
+    login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+        login_manager::ACCOUNT_TYPE_USER, domain, cryptohome_id.account_id());
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 
@@ -484,9 +484,9 @@ class SessionManagerClientImpl : public SessionManagerClient {
       const std::string& account_name,
       const std::string& policy_blob,
       chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor =
-        ash::MakeChromePolicyDescriptor(
-            login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_name);
+    login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+        login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT,
+        login_manager::POLICY_DOMAIN_CHROME, account_name);
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 

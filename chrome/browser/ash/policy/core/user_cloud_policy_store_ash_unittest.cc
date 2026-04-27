@@ -86,10 +86,11 @@ class FakeSessionManagerClient : public ash::FakeSessionManagerClient {
 
   // SessionManagerClient override:
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
+                          login_manager::PolicyDomain domain,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override {
     ash::FakeSessionManagerClient::StorePolicyForUser(
-        cryptohome_id, policy_blob,
+        cryptohome_id, domain, policy_blob,
         base::BindOnce(&FakeSessionManagerClient::OnStorePolicyForUser,
                        weak_ptr_factory_.GetWeakPtr(), cryptohome_id,
                        std::move(callback)));
@@ -136,7 +137,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
     store_ = std::make_unique<UserCloudPolicyStoreAsh>(
         &cryptohome_misc_client_, session_manager_client_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), account_id_,
-        user_policy_dir());
+        user_policy_dir(), dm_protocol::GetChromeUserPolicyType());
     store_->AddObserver(&observer_);
 
     // Set the verification key to be used for testing by the

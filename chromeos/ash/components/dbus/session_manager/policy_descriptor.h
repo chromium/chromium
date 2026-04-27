@@ -14,8 +14,9 @@ namespace ash {
 
 // Creates a PolicyDescriptor object to store/retrieve Chrome policy.
 COMPONENT_EXPORT(SESSION_MANAGER)
-login_manager::PolicyDescriptor MakeChromePolicyDescriptor(
+login_manager::PolicyDescriptor MakePolicyDescriptor(
     login_manager::PolicyAccountType account_type,
+    login_manager::PolicyDomain domain,
     const std::string& account_id);
 
 }  // namespace ash

@@ -50,8 +50,9 @@ void DeviceLocalAccountPolicyStore::Load() {
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
-  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT,
+      login_manager::POLICY_DOMAIN_CHROME, account_id_);
   session_manager_client_->RetrievePolicy(
       descriptor,
       base::BindOnce(&DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob,
@@ -85,8 +86,9 @@ void DeviceLocalAccountPolicyStore::LoadImmediately() {
   weak_factory_.InvalidateWeakPtrs();
 
   std::string policy_blob;
-  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
+  login_manager::PolicyDescriptor descriptor = ash::MakePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT,
+      login_manager::POLICY_DOMAIN_CHROME, account_id_);
   RetrievePolicyResponseType response =
       session_manager_client_->BlockingRetrievePolicy(descriptor, &policy_blob);
   ValidateLoadedPolicyBlob(false /*validate_in_background*/, response,

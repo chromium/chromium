@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
@@ -348,6 +349,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // callback.
   virtual void StorePolicyForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
+      login_manager::PolicyDomain domain,
       const std::string& policy_blob,
       chromeos::VoidDBusMethodCallback callback) = 0;
 
