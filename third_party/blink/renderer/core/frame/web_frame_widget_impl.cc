@@ -1810,13 +1810,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // VisualProperties waterfall, instead of coming to each WebFrameWidgetImpl
   // independently.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  ui::mojom::blink::WindowShowState old_show_state = window_show_state_;
-  bool old_resizable = resizable_;
-#endif
   SetDisplayMode(visual_properties.display_mode);
-  SetWindowShowState(visual_properties.window_show_state);
-  SetResizable(visual_properties.resizable);
 
   if (ForMainFrame()) {
     SetAutoResizeMode(
@@ -1870,16 +1864,8 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         });
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (ForMainFrame()) {
-    if (old_show_state != window_show_state_) {
-      OnWindowShowStateChanged(old_show_state, window_show_state_);
-    }
-    if (old_resizable != resizable_) {
-      OnResizableChanged(resizable_);
-    }
-  }
-#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  SetWindowShowState(visual_properties.window_show_state);
+  SetResizable(visual_properties.resizable);
 
   // All non-top-level Widgets (child local-root frames, GuestViews,
   // etc.) propagate and consume the page scale factor as "external", meaning
@@ -2966,10 +2952,16 @@ void WebFrameWidgetImpl::SetWindowShowState(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  ui::mojom::blink::WindowShowState old_state = window_show_state_;
+#endif
   window_show_state_ = state;
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->MediaQueryAffectingValueChangedForLocalSubtree(
       MediaValueChange::kOther);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  OnWindowShowStateChanged(old_state, window_show_state_);
+#endif
 }
 
 void WebFrameWidgetImpl::SetResizable(bool resizable) {
@@ -2981,6 +2973,9 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->MediaQueryAffectingValueChangedForLocalSubtree(
       MediaValueChange::kOther);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  OnResizableChanged(resizable_);
+#endif
 }
 
 void WebFrameWidgetImpl::SetViewportSegments(
@@ -5540,7 +5535,8 @@ void WebFrameWidgetImpl::OnWindowShowStateChanged(
 
 void WebFrameWidgetImpl::OnResizableChanged(bool new_resizable) {
   if (!RuntimeEnabledFeatures::
-          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+          DesktopPWAsAdditionalWindowingControlsEnabled() ||
+      !ForMainFrame()) {
     return;
   }
 
@@ -5582,6 +5578,9 @@ void WebFrameWidgetImpl::WasRestored() {
 
 void WebFrameWidgetImpl::HandleWindowShowStateChangeCallbackWith(
     WindowShowStateChangeType type) {
+  if (!ForMainFrame()) {
+    return;
+  }
   if (main_data().window_show_state_change_callback.has_value() &&
       main_data().window_show_state_change_callback->requested_action == type) {
     std::move(main_data().window_show_state_change_callback->callback)
