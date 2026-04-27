@@ -22,11 +22,13 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -347,6 +349,81 @@ TEST_F(MultiWindowResizeControllerTest, Three) {
   EXPECT_FALSE(WindowState::Get(w3.get())->is_dragged());
 
   generator->PressLeftButton();
+}
+
+TEST_F(MultiWindowResizeControllerTest, ReentrantResetDuringLayoutAttached) {
+  // WorkspaceWindowResizer::LayoutAttachedWindows() calls
+  // attached_windows_[i]->SetBounds() in a loop with no WeakPtr guard on
+  // |this|. MultiWindowResizeController observes every attached window and
+  // several of its observer callbacks (OnWindowVisibilityChanged,
+  // OnWindowDestroying, OnWindowPropertyChanged, OnPostWindowStateTypeChange)
+  // call ResetResizer(), which synchronously deletes the
+  // WorkspaceWindowResizer.
+  //
+  // This test installs an aura::WindowObserver that hides the third window
+  // (other_windows[0]) synchronously inside the second window's SetBounds()
+  // notification, simulating any code path that mutates an observed window
+  // during the LayoutAttachedWindows loop. Without a WeakPtr guard the next
+  // loop iteration dereferences |this| after free.
+
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> w1(
+      CreateTestWindowInShell({.delegate = &delegate1, .bounds = {100, 100}}));
+  delegate1.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
+      {.delegate = &delegate2, .bounds = {100, 0, 100, 100}, .window_id = -2}));
+  delegate2.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate3;
+  std::unique_ptr<aura::Window> w3(CreateTestWindowInShell(
+      {.delegate = &delegate3, .bounds = {200, 0, 100, 100}, .window_id = -3}));
+  delegate3.set_window_component(HTRIGHT);
+
+  // Observer that hides |w3| the first time |w2|'s bounds change. This
+  // simulates any synchronous reaction to the attached-window SetBounds()
+  // (e.g. an exo surface destroying itself, a window-state transition, or a
+  // property change on a non-resizable other_window) that causes
+  // MultiWindowResizeController::ResetResizer() to run while
+  // LayoutAttachedWindows() is on the stack.
+  class HideOnBoundsChange : public aura::WindowObserver {
+   public:
+    explicit HideOnBoundsChange(aura::Window* victim) : victim_(victim) {}
+    void OnWindowBoundsChanged(aura::Window* window,
+                               const gfx::Rect& old_bounds,
+                               const gfx::Rect& new_bounds,
+                               ui::PropertyChangeReason reason) override {
+      if (fired_) {
+        return;
+      }
+      fired_ = true;
+      // Triggers MultiWindowResizeController::OnWindowVisibilityChanged ->
+      // ResetResizer() -> window_resizer_.reset() -> ~WorkspaceWindowResizer.
+      victim_->Hide();
+    }
+    bool fired_ = false;
+    raw_ptr<aura::Window> victim_;
+  };
+
+  HideOnBoundsChange hide_observer(w3.get());
+  w2->AddObserver(&hide_observer);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(w1->bounds().CenterPoint());
+  ShowNow();
+  ASSERT_TRUE(resize_widget());
+
+  // Start the drag. This constructs WorkspaceWindowResizer with
+  // attached_windows_ = {w2, w3} and makes the controller observe w3.
+  gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
+  generator->MoveMouseTo(bounds.x() + 1, bounds.y() + 1);
+  generator->PressLeftButton();
+  ASSERT_TRUE(HasTarget(w3.get()));
+
+  // Drag: Drag() -> LayoutAttachedWindows() -> w2->SetBounds() ->
+  // HideOnBoundsChange hides w3 -> ResetResizer() frees |this| mid-loop.
+  // The implemented CHECK should cause the process to crash here safely.
+  EXPECT_CHECK_DEATH(generator->MoveMouseTo(bounds.x() + 11, bounds.y() + 10));
+  w2->RemoveObserver(&hide_observer);
 }
 
 // Tests that clicking outside of the resize handle dismisses it.
