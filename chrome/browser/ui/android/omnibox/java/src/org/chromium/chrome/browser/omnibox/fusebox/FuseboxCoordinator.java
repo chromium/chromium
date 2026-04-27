@@ -192,7 +192,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                                         mContext, BrandedColorScheme.APP_DEFAULT),
                                 () -> popupView,
                                 dynamicRectProvider)
-                        .setFocusable(true)
+                        // Allows the soft keyboard to show underneath the popup.
+                        .setFocusable(false)
                         .addOnDismissListener(this::onContextPopupDismissed)
                         .setOutsideTouchable(true)
                         .setAnimateFromAnchor(true)
