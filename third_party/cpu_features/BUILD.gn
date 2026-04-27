@@ -23,6 +23,8 @@ source_set("cpuinfo") {
     "src/src/equals.inl",
     "src/src/filesystem.c",
     "src/src/hwcaps.c",
+    "src/src/hwcaps_freebsd_or_openbsd.c",
+    "src/src/hwcaps_linux_or_android.c",
     "src/src/stack_line_reader.c",
     "src/src/string_view.c",
   ]
@@ -37,7 +39,13 @@ source_set("cpuinfo") {
   } else if (current_cpu == "arm") {
     sources += [ "src/src/impl_arm_linux_or_android.c" ]
   } else if (current_cpu == "arm64") {
-    sources += [ "src/src/impl_aarch64_linux_or_android.c" ]
+    sources += [
+      "src/src/impl_aarch64_cpuid.c",
+      "src/src/impl_aarch64_freebsd_or_openbsd.c",
+      "src/src/impl_aarch64_linux_or_android.c",
+      "src/src/impl_aarch64_macos_or_iphone.c",
+      "src/src/impl_aarch64_windows.c",
+    ]
   } else if (current_cpu == "mips") {
     sources += [ "src/src/impl_mips_linux_or_android.c" ]
   } else if (current_cpu == "ppc") {
