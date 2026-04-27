@@ -770,11 +770,6 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   ShowOptions mutable_options = options;
   mutable_options.focus_on_show = source_instance.HasFocus();
   mutable_options.reinitialize_if_already_active = true;
-  if (auto* side_panel_options = std::get_if<SidePanelShowOptions>(
-          &mutable_options.embedder_options)) {
-    // TODO(b/499283891): Remove this after the animation bug is fixed.
-    side_panel_options->suppress_opening_animation = true;
-  }
 
   GlicInstanceImpl* target_instance = nullptr;
   if (!info->conversation_id.empty()) {
