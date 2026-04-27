@@ -260,16 +260,6 @@ std::unique_ptr<views::View> CreateSimpleInstallDialogView(
     const GURL& start_url,
     bool is_maskable);
 
-// Creates a detailed install dialog view that contains
-// a carousel.
-std::unique_ptr<views::View> CreateDetailedInstallDialogView(
-    gfx::ImageSkia icon_image,
-    const std::u16string& title,
-    const GURL& start_url,
-    bool is_maskable,
-    base::WeakPtr<WebAppScreenshotFetcher> fetcher,
-    const std::u16string& description);
-
 // Creates a view for the DIY install dialog that contains the
 // input dialog.
 std::unique_ptr<views::View> CreateDiyInstallDialogView(

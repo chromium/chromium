@@ -501,32 +501,4 @@ void ShowWebAppDetailedInstallDialog(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-// Creates a view for the detailed install dialog that contains
-// WebAppIconNameAndOriginView and ImageCarouselView.
-std::unique_ptr<views::View> CreateDetailedInstallDialogView(
-    gfx::ImageSkia icon_image,
-    const std::u16string& title,
-    const GURL& start_url,
-    bool is_maskable,
-    base::WeakPtr<WebAppScreenshotFetcher> fetcher,
-    const std::u16string& description) {
-  auto detailed_view = std::make_unique<views::BoxLayoutView>();
-  detailed_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  detailed_view->SetBetweenChildSpacing(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL));
-
-  detailed_view->AddChildView(WebAppIconNameAndOriginView::Create(
-      icon_image, title, start_url, is_maskable));
-
-  auto* description_label =
-      detailed_view->AddChildView(std::make_unique<views::Label>(description));
-  description_label->SetMultiLine(true);
-  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_label->SetTextStyle(views::style::STYLE_SECONDARY);
-
-  detailed_view->AddChildView(std::make_unique<ImageCarouselView>(fetcher));
-  return detailed_view;
-}
-
 }  // namespace web_app
