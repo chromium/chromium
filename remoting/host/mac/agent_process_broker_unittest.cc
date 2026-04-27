@@ -87,8 +87,7 @@ class TestAgentProcess : public mojom::AgentProcess,
   void BindRemotingHostControl(
       mojo::PendingReceiver<mojom::RemotingHostControl> receiver) override;
   void BindChromotingHostServices(
-      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      int32_t peer_pid) override;
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) override;
 
  private:
   void WriteAgentState(std::string_view state);
@@ -121,8 +120,7 @@ void TestAgentProcess::BindRemotingHostControl(
 }
 
 void TestAgentProcess::BindChromotingHostServices(
-    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    int32_t peer_pid) {
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) {
   WriteAgentState(kAgentStateChromotingHostServicesBound);
 }
 

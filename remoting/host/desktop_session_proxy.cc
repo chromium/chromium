@@ -163,7 +163,7 @@ DesktopSessionProxy::CreateRemoteWebAuthnStateChangeNotifier() {
       base::BindRepeating(&DesktopSessionProxy::SignalWebAuthnExtension, this));
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void DesktopSessionProxy::OnSessionServicesClientConnected(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -291,8 +291,7 @@ void DesktopSessionProxy::OnAssociatedInterfaceRequest(
 }
 
 bool DesktopSessionProxy::AttachToDesktop(
-    mojo::ScopedMessagePipeHandle desktop_pipe,
-    int session_id) {
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!desktop_channel_);
 
@@ -313,8 +312,6 @@ bool DesktopSessionProxy::AttachToDesktop(
   desktop_session_agent_.reset();
   desktop_channel_->GetRemoteAssociatedInterface(&desktop_session_agent_);
 
-  desktop_session_id_ = session_id;
-
   return true;
 }
 
@@ -326,7 +323,6 @@ void DesktopSessionProxy::DetachFromDesktop() {
   desktop_session_control_.reset();
   desktop_session_event_handler_.reset();
   desktop_session_state_handler_.reset();
-  desktop_session_id_ = UINT32_MAX;
 
   current_url_forwarder_state_ = mojom::UrlForwarderState::kUnknown;
   // We don't reset |is_url_forwarder_set_up_callback_| here since the request
@@ -365,7 +361,7 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
   }
 
   if (client_session_events_) {
-    client_session_events_->OnDesktopAttached(desktop_session_id_);
+    client_session_events_->OnDesktopAttached();
   }
 }
 

@@ -99,15 +99,9 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
 
   ~FakeDesktopEnvironment() override;
 
-  // Sets frame generator to be used for protocol::FakeDesktopCapturer created
-  // by FakeDesktopEnvironment.
   void set_frame_generator(
       protocol::FakeDesktopCapturer::FrameGenerator frame_generator) {
     frame_generator_ = std::move(frame_generator);
-  }
-
-  void set_desktop_session_id(std::uint32_t desktop_session_id) {
-    desktop_session_id_ = desktop_session_id;
   }
 
   const DesktopEnvironmentOptions& options() const;
@@ -132,7 +126,6 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
       override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
-  std::uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -149,7 +142,6 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_thread_;
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
-  std::uint32_t desktop_session_id_ = UINT32_MAX;
 
   base::WeakPtr<FakeInputInjector> last_input_injector_;
   base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor_;
@@ -179,10 +171,6 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
     frame_generator_ = std::move(frame_generator);
   }
 
-  void set_desktop_session_id(std::uint32_t desktop_session_id) {
-    desktop_session_id_ = desktop_session_id;
-  }
-
   // Sets the capabilities that the FakeDesktopEnvironment will claim to
   // support. Useful for testing functionality that is triggered after
   // negotiating a capability with a client.
@@ -204,7 +192,6 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> capture_thread_;
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
-  std::uint32_t desktop_session_id_ = UINT32_MAX;
   std::string capabilities_;
 
   base::WeakPtr<FakeDesktopEnvironment> last_desktop_environment_;

@@ -696,7 +696,7 @@ void DesktopSessionWin::ConnectDesktopChannel(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   if (!daemon_process()->OnDesktopSessionAgentAttached(
-          id(), session_id_, std::move(desktop_pipe))) {
+          id(), std::move(desktop_pipe))) {
     CrashDesktopProcess(FROM_HERE);
   }
 }

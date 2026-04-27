@@ -167,7 +167,7 @@ void AgentProcessBroker::BindChromotingHostServices(
   }
   AgentProcess& process = active_iter->second;
   process.remoting_host_control_remote->BindChromotingHostServices(
-      std::move(receiver), connection_info->pid);
+      std::move(receiver));
   HOST_LOG << process.GetAgentProcessLogString(base::StringPrintf(
       "bound ChromotingHostServices for peer PID %d", connection_info->pid));
 }

@@ -62,6 +62,9 @@ class DesktopSessionWin : public DesktopSession,
   DesktopSessionWin(const DesktopSessionWin&) = delete;
   DesktopSessionWin& operator=(const DesktopSessionWin&) = delete;
 
+  // Returns the Windows Session ID, which is different from id().
+  uint32_t windows_session_id() const { return session_id_; }
+
  protected:
   // Passes the owning |daemon_process|, a unique identifier of the desktop
   // session |id| and the interface for monitoring session attach/detach events.
@@ -149,7 +152,7 @@ class DesktopSessionWin : public DesktopSession,
 
   // The id of the current desktop session being remoted or UINT32_MAX if no
   // session exists.
-  int session_id_ = UINT32_MAX;
+  uint32_t session_id_ = UINT32_MAX;
 };
 
 }  // namespace remoting

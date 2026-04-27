@@ -387,7 +387,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   EXPECT_CALL(client_session_control_, SetDisableInputs(_)).Times(0);
 
   // Most tests will only call this once but reattach will call multiple times.
-  EXPECT_CALL(client_session_events_, OnDesktopAttached(_))
+  EXPECT_CALL(client_session_events_, OnDesktopAttached())
       .Times(AnyNumber())
       .WillRepeatedly(InvokeWithoutArgs(
           this, &IpcDesktopEnvironmentTest::QuitSetupRunLoop));
@@ -578,7 +578,7 @@ void IpcDesktopEnvironmentTest::ConnectDesktopChannel(
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   // Instruct DesktopSessionProxy to connect to the network-to-desktop pipe.
   desktop_environment_factory_->OnDesktopSessionAgentAttached(
-      terminal_id_, /*session_id=*/0, std::move(desktop_pipe));
+      terminal_id_, std::move(desktop_pipe));
 }
 
 void IpcDesktopEnvironmentTest::RunMainLoopUntilDone() {

@@ -19,11 +19,6 @@ class ClientSessionDetails {
   // Returns a ClientSessionControl interface pointer used to interact with the
   // current session.
   virtual ClientSessionControl* session_control() = 0;
-
-  // Returns the id of the current desktop session being remoted.  If no session
-  // exists, UINT32_MAX is returned.
-  // Note: The return value should never be cached as it can change.
-  virtual uint32_t desktop_session_id() const = 0;
 };
 
 }  // namespace remoting

@@ -158,13 +158,9 @@ class TestClientSessionDetails : public ClientSessionDetails {
   ~TestClientSessionDetails() override;
 
   // ClientSessionDetails interface.
-  uint32_t desktop_session_id() const override { return desktop_session_id_; }
   ClientSessionControl* session_control() override { return nullptr; }
 
-  void set_desktop_session_id(uint32_t new_id) { desktop_session_id_ = new_id; }
-
  private:
-  uint32_t desktop_session_id_ = UINT32_MAX;
 };
 
 TestClientSessionDetails::TestClientSessionDetails() = default;

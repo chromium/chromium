@@ -181,6 +181,14 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     OnError();
     return;
   }
+  ULONG peer_session_id;
+  if (!GetNamedPipeClientSessionId(pending_named_pipe_handle_.Get(),
+                                   &peer_session_id)) {
+    PLOG(ERROR) << "Failed to get peer session ID";
+    OnError();
+    return;
+  }
+  info->session_id = peer_session_id;
   if (options_.include_peer_process_info) {
     info->process = base::Process::OpenWithAccess(
         info->pid, PROCESS_QUERY_LIMITED_INFORMATION);

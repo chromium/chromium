@@ -51,10 +51,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 using ::remoting::protocol::MockClientStub;
 using ::remoting::protocol::MockConnectionToClientEventHandler;
 using ::remoting::protocol::MockHostStub;
@@ -278,42 +274,11 @@ class ChromotingHostTest : public testing::Test {
     host_->per_session_policies_validator_ = validator;
   }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   mojo::Remote<mojom::ChromotingHostServices> BindChromotingHostServices() {
     mojo::Remote<mojom::ChromotingHostServices> remote;
-    // ChromotingHost::BindSessionServices calls ProcessIdToSessionId() on the
-    // IPC client's PID. The PID we know that always works is the current
-    // process' PID.
-    auto current_pid = base::GetCurrentProcId();
-    host_->BindChromotingHostServices(remote.BindNewPipeAndPassReceiver(),
-                                      current_pid);
+    host_->BindChromotingHostServices(remote.BindNewPipeAndPassReceiver());
     return remote;
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // Simulates the IPC client's session ID for the session ID check in
-  // ChromotingHost::BindSessionServices.
-  //
-  // |is_remote_desktop_session_id|: True if the simulated session ID should be
-  // exactly the session ID of the fake desktop environment. If false, the
-  // simulated session ID is guaranteed to be different from the desktop
-  // environment's session ID.
-  void SimulateIpcClientSessionId(bool is_remote_desktop_session_id) {
-    // ChromotingHost::BindSessionServices calls ProcessIdToSessionId() on the
-    // IPC client's PID. The PID we know that always works is the current
-    // process' PID.
-    auto current_pid = base::GetCurrentProcId();
-    DWORD current_session_id;
-    bool success = ProcessIdToSessionId(current_pid, &current_session_id);
-    ASSERT_TRUE(success);
-    // The IPC client's session ID is exactly the current process' session ID
-    // at this point, so we change the fake desktop environment's session ID
-    // here.
-    if (is_remote_desktop_session_id) {
-      desktop_environment_factory_->set_desktop_session_id(current_session_id);
-    } else {
-      desktop_environment_factory_->set_desktop_session_id(current_session_id +
-                                                           1);
-    }
   }
 #endif
 
@@ -645,6 +610,7 @@ TEST_F(ChromotingHostTest, ExtraSessionPoliciesValidator) {
   SimulateClientConnection(0, /* authenticate= */ true, /* reject= */ true);
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(ChromotingHostTest, BindSessionServicesWithNoConnectedSession_Rejected) {
   StartHost();
 
@@ -655,13 +621,12 @@ TEST_F(ChromotingHostTest, BindSessionServicesWithNoConnectedSession_Rejected) {
   host_->BindSessionServices(std::move(receiver));
   wait_for_disconnect_run_loop.Run();
 }
+#endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST_F(ChromotingHostTest, BindSessionServicesWithConnectedSession_Accepted) {
   StartHost();
   auto host_services_remote = BindChromotingHostServices();
-#if BUILDFLAG(IS_WIN)
-  SimulateIpcClientSessionId(/* is_remote_desktop_session_id= */ true);
-#endif
   auto future = ExpectClientConnected(0);
   SimulateClientConnection(0, true, false);
   future->Get();
@@ -682,25 +647,6 @@ TEST_F(ChromotingHostTest, BindSessionServicesWithConnectedSession_Accepted) {
   // doesn't have the peer PID context.
   host_services_remote->BindSessionServices(std::move(receiver));
   wait_for_version_run_loop.Run();
-}
-
-#if BUILDFLAG(IS_WIN)
-TEST_F(ChromotingHostTest, BindSessionServicesWithWrongSession_Rejected) {
-  StartHost();
-  auto host_services_remote = BindChromotingHostServices();
-  SimulateIpcClientSessionId(/* is_remote_desktop_session_id= */ false);
-  auto future = ExpectClientConnected(0);
-  SimulateClientConnection(0, true, false);
-  future->Get();
-
-  mojo::Remote<mojom::ChromotingSessionServices> remote;
-  auto receiver = remote.BindNewPipeAndPassReceiver();
-  base::RunLoop wait_for_disconnect_run_loop;
-  remote.set_disconnect_handler(wait_for_disconnect_run_loop.QuitClosure());
-  // Note that we can't just call host_->BindSessionServices(), since that
-  // doesn't have the peer PID context.
-  host_services_remote->BindSessionServices(std::move(receiver));
-  wait_for_disconnect_run_loop.Run();
 }
 #endif
 

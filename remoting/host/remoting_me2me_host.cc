@@ -435,10 +435,9 @@ class HostProcess : public ConfigWatcher::Delegate,
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   void BindChromotingHostServices(
-      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      int peer_pid) override;
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) override;
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1313,14 +1312,13 @@ void HostProcess::InitializePairingRegistry(
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 void HostProcess::BindChromotingHostServices(
-    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    int peer_pid) {
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) {
   if (context_->ui_task_runner()->BelongsToCurrentThread()) {
     context_->network_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&HostProcess::BindChromotingHostServices,
-                                  this, std::move(receiver), peer_pid));
+                                  this, std::move(receiver)));
     return;
   }
   // This IPC is handled on the UI thread and bounced over to the network thread
@@ -1330,7 +1328,7 @@ void HostProcess::BindChromotingHostServices(
     LOG(ERROR) << "Binding rejected. Host has not started.";
     return;
   }
-  host_->BindChromotingHostServices(std::move(receiver), peer_pid);
+  host_->BindChromotingHostServices(std::move(receiver));
 }
 #endif
 

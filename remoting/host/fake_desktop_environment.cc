@@ -164,10 +164,6 @@ void FakeDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
   capabilities_ = capabilities;
 }
 
-std::uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
-  return desktop_session_id_;
-}
-
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 FakeDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return nullptr;
@@ -192,7 +188,6 @@ void FakeDesktopEnvironmentFactory::Create(
   std::unique_ptr<FakeDesktopEnvironment> result(
       new FakeDesktopEnvironment(capture_thread_, options));
   result->set_frame_generator(frame_generator_);
-  result->set_desktop_session_id(desktop_session_id_);
   result->SetCapabilities(capabilities_);
   last_desktop_environment_ = result->weak_factory_.GetWeakPtr();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

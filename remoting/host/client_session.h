@@ -191,7 +191,8 @@ class ClientSession : public protocol::HostStub,
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
   // ClientSessionEvents interface.
-  void OnDesktopAttached(std::uint32_t session_id) override;
+  void OnDesktopAttached() override;
+
   void OnDesktopDetached() override;
   void OnSecurityKeyConnection(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
@@ -200,7 +201,6 @@ class ClientSession : public protocol::HostStub,
       override;
 
   // ClientSessionDetails interface.
-  std::uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
   // CursorVisibilityNotifier::EventHandler interface

@@ -17,12 +17,15 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/host_event_logger.h"
@@ -307,6 +310,29 @@ void DaemonProcess::Stop(int exit_code) {
 
 bool DaemonProcess::WasTerminalIdAllocated(int terminal_id) {
   return terminal_id < next_terminal_id_;
+}
+
+void DaemonProcess::StartChromotingHostServices() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  DCHECK(!host_services_server_);
+
+  host_services_server_ =
+      std::make_unique<ChromotingHostServicesServer>(base::BindRepeating(
+          &DaemonProcess::BindChromotingHostServices, base::Unretained(this)));
+  host_services_server_->StartServer();
+  HOST_LOG << "ChromotingHostServices IPC server has been started.";
+}
+
+void DaemonProcess::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (!connection_info) {
+    LOG(WARNING) << "Binding rejected because no connection info was provided.";
+    return;
+  }
+  host_services_receivers_.Add(this, std::move(receiver),
+                               std::move(connection_info));
 }
 
 void DaemonProcess::OnClientAccessDenied(const std::string& signaling_id) {

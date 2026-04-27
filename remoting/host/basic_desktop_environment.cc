@@ -145,10 +145,6 @@ std::string BasicDesktopEnvironment::GetCapabilities() const {
 void BasicDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
 }
 
-std::uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
-  return UINT32_MAX;
-}
-
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -116,8 +117,12 @@ class DaemonProcessWin : public DaemonProcess {
   // DaemonProcess overrides.
   bool OnDesktopSessionAgentAttached(
       int terminal_id,
-      int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
+
+  // mojom::ChromotingHostServices implementation.
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
 
   // If event logging has been configured, creates an ETW trace consumer which
   // listens for logged events from our host processes.  Tracing stops when
@@ -139,7 +144,6 @@ class DaemonProcessWin : public DaemonProcess {
   void SendHostConfigToNetworkProcess(
       const std::string& serialized_config) override;
   void SendTerminalDisconnected(int terminal_id) override;
-  void StartChromotingHostServices() override;
 
   // Initializes the pairing registry on the host side.
   bool InitializePairingRegistry();
@@ -148,10 +152,6 @@ class DaemonProcessWin : public DaemonProcess {
   bool OpenPairingRegistry();
 
  private:
-  void BindChromotingHostServices(
-      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
-
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
   // never shut down cleanly.
@@ -166,8 +166,6 @@ class DaemonProcessWin : public DaemonProcess {
   base::win::RegKey pairing_registry_unprivileged_key_;
 
   std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
-
-  std::unique_ptr<ChromotingHostServicesServer> ipc_server_;
 
   base::SequenceBound<MinidumpHandler> minidump_handler_;
 
@@ -226,11 +224,10 @@ void DaemonProcessWin::OnWorkerProcessStopped() {
 
 bool DaemonProcessWin::OnDesktopSessionAgentAttached(
     int terminal_id,
-    int session_id,
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   if (desktop_session_connection_events_) {
     desktop_session_connection_events_->OnDesktopSessionAgentAttached(
-        terminal_id, session_id, std::move(desktop_pipe));
+        terminal_id, std::move(desktop_pipe));
   }
 
   return true;
@@ -303,17 +300,6 @@ void DaemonProcessWin::SendTerminalDisconnected(int terminal_id) {
   if (desktop_session_connection_events_) {
     desktop_session_connection_events_->OnTerminalDisconnected(terminal_id);
   }
-}
-
-void DaemonProcessWin::StartChromotingHostServices() {
-  DCHECK(caller_task_runner()->BelongsToCurrentThread());
-  DCHECK(!ipc_server_);
-
-  ipc_server_ = std::make_unique<ChromotingHostServicesServer>(
-      base::BindRepeating(&DaemonProcessWin::BindChromotingHostServices,
-                          base::Unretained(this)));
-  ipc_server_->StartServer();
-  HOST_LOG << "ChromotingHostServices IPC server has been started.";
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
@@ -451,15 +437,30 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   return true;
 }
 
-void DaemonProcessWin::BindChromotingHostServices(
-    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
-  if (!remoting_host_control_.is_bound()) {
+void DaemonProcessWin::BindSessionServices(
+    mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  if (!desktop_session_connection_events_.is_bound()) {
     LOG(ERROR) << "Binding rejected. Network process is not ready.";
     return;
   }
-  remoting_host_control_->BindChromotingHostServices(std::move(receiver),
-                                                     connection_info->pid);
+
+  uint32_t peer_session_id =
+      host_services_receivers().current_context()->session_id;
+  auto& sessions = desktop_sessions();
+  auto it =
+      std::ranges::find_if(sessions, [peer_session_id](DesktopSession* s) {
+        return static_cast<DesktopSessionWin*>(s)->windows_session_id() ==
+               peer_session_id;
+      });
+
+  if (it != sessions.end()) {
+    desktop_session_connection_events_->OnSessionServicesClientConnected(
+        (*it)->id(), std::move(receiver));
+  } else {
+    LOG(WARNING) << "No desktop session found for Windows session ID "
+                 << peer_session_id;
+  }
 }
 
 void DaemonProcessWin::ConfigureCrashReporting() {

@@ -18,10 +18,10 @@ class ClientSessionEvents {
  public:
   virtual ~ClientSessionEvents() = default;
 
-  // Called when the desktop session agent is attached to the given session ID.
+  // Called when the desktop session agent is attached.
   // This method is only called on platforms that use a multi-process
   // architecture (i.e. ones where the desktop being remoted can change).
-  virtual void OnDesktopAttached(uint32_t session_id) = 0;
+  virtual void OnDesktopAttached() = 0;
 
   // Called when the desktop session agent is detached from the previous desktop
   // session. This method is only called on platforms that use a multi-process

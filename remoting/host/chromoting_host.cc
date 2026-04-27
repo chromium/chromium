@@ -157,15 +157,18 @@ void ChromotingHost::StartChromotingHostServices() {
 void ChromotingHost::BindChromotingHostServicesForServer(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
     std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info) {
-  BindChromotingHostServices(std::move(receiver), connection_info->pid);
+  BindChromotingHostServices(std::move(receiver));
 }
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ChromotingHost::BindChromotingHostServices(
-    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
-    base::ProcessId peer_pid) {
-  receivers_.Add(this, std::move(receiver), peer_pid);
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  receivers_.Add(this, std::move(receiver));
 }
+#endif
 
 void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {
   extensions_.push_back(std::move(extension));
@@ -297,6 +300,7 @@ std::optional<ErrorCode> ChromotingHost::OnSessionPoliciesReceived(
   return per_session_policies_validator_.Run(policies);
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ChromotingHost::BindSessionServices(
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -307,24 +311,11 @@ void ChromotingHost::BindSessionServices(
                  << "No connected remote desktop client was found.";
     return;
   }
-#if BUILDFLAG(IS_WIN)
-  DWORD peer_session_id;
-  if (!ProcessIdToSessionId(receivers_.current_context(), &peer_session_id)) {
-    PLOG(ERROR) << "Session services bind request rejected: "
-                   "ProcessIdToSessionId failed";
-    return;
-  }
-  if (connected_client->desktop_session_id() != peer_session_id) {
-    LOG(WARNING)
-        << "Session services bind request rejected: "
-        << "Remote desktop client is not connected to the current session.";
-    return;
-  }
-#endif
   connected_client->OnSessionServicesClientConnected(std::move(receiver));
   VLOG(1) << "Session services bound for receiver ID: "
           << receivers_.current_receiver();
 }
+#endif
 
 void ChromotingHost::OnIncomingSession(
     protocol::Session* session,

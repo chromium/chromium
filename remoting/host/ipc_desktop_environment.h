@@ -79,7 +79,6 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
-  std::uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -125,10 +124,9 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   void SetRequiredUsername(std::string_view username) override;
   void OnDesktopSessionAgentAttached(
       int terminal_id,
-      int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) override;
   void OnTerminalDisconnected(int terminal_id) override;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void OnSessionServicesClientConnected(
       int terminal_id,
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)

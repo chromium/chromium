@@ -59,12 +59,10 @@ class DesktopSessionConnector : public mojom::DesktopSessionConnectionEvents {
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
   // Notifies the network process that |terminal_id| is now attached to
-  // a desktop integration process. |session_id| is the id of the desktop
-  // session being attached. |desktop_pipe| is the client end of the pipe opened
-  // by the desktop process.
+  // a desktop integration process. |desktop_pipe| is the client end of the pipe
+  // opened by the desktop process.
   virtual void OnDesktopSessionAgentAttached(
       int terminal_id,
-      int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) = 0;
 
   // Notifies the network process that the daemon has disconnected the desktop

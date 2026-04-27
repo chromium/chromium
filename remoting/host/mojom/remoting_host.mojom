@@ -35,11 +35,8 @@ interface RemotingHostControl {
   // responsible for brokering all mojo IPCs, but it doesn't affect where the
   // receivers and remotes are bound. Please see comments on the
   // ChromotingHostServices interface.
-  // TODO: yuweih - Update Windows host to use
-  // DesktopSessionConnectionEvents::OnSessionServicesClientConnected.
-  [EnableIf=is_win|is_mac]
-  BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver,
-                             int32 peer_pid);
+  [EnableIf=is_mac]
+  BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver);
 };
 
 // Provides a set of methods to allow the Daemon process to notify the network
@@ -53,18 +50,17 @@ interface DesktopSessionConnectionEvents {
   OnTerminalDisconnected(int32 terminal_id);
 
   // Notifies the network process that |terminal_id| is now attached to
-  // a desktop integration process. |session_id| is the id of the desktop
-  // session attached. |desktop_pipe| is the client end of the message pipe
-  // which will be used for IPC communication between the desktop process and
-  // the network process.
+  // a desktop integration process. |desktop_pipe| is the client end of the
+  // message pipe which will be used for IPC communication between the desktop
+  // process and the network process.
   [EnableIf=is_win|is_linux]
-  OnDesktopSessionAgentAttached(int32 terminal_id, int32 session_id,
+  OnDesktopSessionAgentAttached(int32 terminal_id,
                                 handle<message_pipe> desktop_pipe);
 
   // Requests the network process to bind a pending receiver of
   // ChromotingSessionServices coming from a user-launched process for the
   // desktop session identified by |terminal_id|.
-  [EnableIf=is_linux]
+  [EnableIf=is_win|is_linux]
   OnSessionServicesClientConnected(
       int32 terminal_id,
       pending_receiver<ChromotingSessionServices> receiver);

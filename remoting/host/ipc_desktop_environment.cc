@@ -128,10 +128,6 @@ void IpcDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
   return desktop_session_proxy_->SetCapabilities(capabilities);
 }
 
-std::uint32_t IpcDesktopEnvironment::GetDesktopSessionId() const {
-  return desktop_session_proxy_->desktop_session_id();
-}
-
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return desktop_session_proxy_->CreateRemoteWebAuthnStateChangeNotifier();
@@ -293,15 +289,13 @@ void IpcDesktopEnvironmentFactory::SetRequiredUsername(
 
 void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     int terminal_id,
-    int session_id,
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   if (!network_task_runner_->BelongsToCurrentThread()) {
     network_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached,
-            base::Unretained(this), terminal_id, session_id,
-            std::move(desktop_pipe)));
+            base::Unretained(this), terminal_id, std::move(desktop_pipe)));
     return;
   }
 
@@ -314,7 +308,7 @@ void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
       return;
     }
     proxy->DetachFromDesktop();
-    proxy->AttachToDesktop(std::move(desktop_pipe), session_id);
+    proxy->AttachToDesktop(std::move(desktop_pipe));
   }
 }
 
@@ -341,7 +335,7 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
   }
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void IpcDesktopEnvironmentFactory::OnSessionServicesClientConnected(
     int terminal_id,
     mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) {

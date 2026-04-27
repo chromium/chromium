@@ -319,7 +319,7 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::ConnectDesktopChannel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!daemon_process()->OnDesktopSessionAgentAttached(
-          id(), /*session_id=*/0, std::move(desktop_pipe))) {
+          id(), std::move(desktop_pipe))) {
     CrashDesktopProcess(FROM_HERE);
   }
 }

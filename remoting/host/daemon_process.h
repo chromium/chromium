@@ -17,12 +17,14 @@
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
@@ -30,8 +32,13 @@ namespace base {
 class Location;
 }  // namespace base
 
+namespace named_mojo_ipc_server {
+struct ConnectionInfo;
+}
+
 namespace remoting {
 
+class ChromotingHostServicesServer;
 class DesktopSession;
 class HostEventLogger;
 class ScreenResolution;
@@ -42,7 +49,8 @@ class ScreenResolution;
 class DaemonProcess : public ConfigWatcher::Delegate,
                       public WorkerProcessIpcDelegate,
                       public HostStatusObserver,
-                      public mojom::DesktopSessionManager {
+                      public mojom::DesktopSessionManager,
+                      public mojom::ChromotingHostServices {
  public:
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
   using DesktopSessionList =
@@ -90,12 +98,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                            const ScreenResolution& resolution) override;
 
   // Called when a desktop integration process attaches to |terminal_id|.
-  // |session_id| is the id of the desktop session being attached.
   // |desktop_pipe| specifies the client end of the desktop pipe. Returns true
   // on success, false otherwise.
   virtual bool OnDesktopSessionAgentAttached(
       int terminal_id,
-      int session_id,
       mojo::ScopedMessagePipeHandle desktop_pipe) = 0;
 
   // Requests the network process to crash.
@@ -120,6 +126,17 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // Returns true if |terminal_id| is in the range of allocated IDs. I.e. it is
   // less or equal to the highest ID we have seen so far.
   bool WasTerminalIdAllocated(int terminal_id);
+
+  void StartChromotingHostServices();
+
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> connection_info);
+
+  // mojom::ChromotingHostServices implementation.
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override = 0;
 
   // HostStatusObserver overrides.
   void OnClientAccessDenied(const std::string& signaling_id) override;
@@ -154,8 +171,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // session from the associated desktop environment.
   virtual void SendTerminalDisconnected(int terminal_id) = 0;
 
-  virtual void StartChromotingHostServices() = 0;
-
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;
   }
@@ -168,6 +183,12 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   friend class DaemonProcessTest;
   const DesktopSessionList& desktop_sessions() const {
     return desktop_sessions_;
+  }
+
+  mojo::ReceiverSet<mojom::ChromotingHostServices,
+                    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>>&
+  host_services_receivers() {
+    return host_services_receivers_;
   }
 
  private:
@@ -203,6 +224,12 @@ class DaemonProcess : public ConfigWatcher::Delegate,
       this};
 
   scoped_refptr<HostStatusMonitor> status_monitor_;
+
+  mojo::ReceiverSet<mojom::ChromotingHostServices,
+                    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo>>
+      host_services_receivers_;
+
+  std::unique_ptr<ChromotingHostServicesServer> host_services_server_;
 };
 
 }  // namespace remoting

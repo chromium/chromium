@@ -108,7 +108,6 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));
-  MOCK_METHOD(std::uint32_t, GetDesktopSessionId, (), (const, override));
 };
 
 class MockClientSessionControl : public ClientSessionControl {
@@ -149,7 +148,6 @@ class MockClientSessionDetails : public ClientSessionDetails {
   ~MockClientSessionDetails() override;
 
   MOCK_METHOD(ClientSessionControl*, session_control, (), (override));
-  MOCK_METHOD(std::uint32_t, desktop_session_id, (), (const, override));
 };
 
 class MockClientSessionEvents : public ClientSessionEvents {
@@ -157,7 +155,7 @@ class MockClientSessionEvents : public ClientSessionEvents {
   MockClientSessionEvents();
   ~MockClientSessionEvents() override;
 
-  MOCK_METHOD(void, OnDesktopAttached, (std::uint32_t session_id), (override));
+  MOCK_METHOD(void, OnDesktopAttached, (), (override));
   MOCK_METHOD(void, OnDesktopDetached, (), (override));
   MOCK_METHOD(void,
               OnSecurityKeyConnection,

@@ -107,7 +107,7 @@ class DesktopSessionProxy
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator();
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier();
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void OnSessionServicesClientConnected(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
 #endif
@@ -122,8 +122,7 @@ class DesktopSessionProxy
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // Connects to the desktop session agent.
-  bool AttachToDesktop(mojo::ScopedMessagePipeHandle desktop_pipe,
-                       int session_id);
+  bool AttachToDesktop(mojo::ScopedMessagePipeHandle desktop_pipe);
 
   // Closes the connection to the desktop session agent and cleans up
   // the associated resources.
@@ -204,7 +203,6 @@ class DesktopSessionProxy
       const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback);
 
   std::string_view client_jid() const;
-  uint32_t desktop_session_id() const { return desktop_session_id_; }
 
  private:
   friend class base::RefCountedDeleteOnSequence<DesktopSessionProxy>;
@@ -300,9 +298,6 @@ class DesktopSessionProxy
   bool is_desktop_session_connected_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   DesktopEnvironmentOptions options_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Stores the session id for the proxied desktop process.
-  uint32_t desktop_session_id_ = UINT32_MAX;
 
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
