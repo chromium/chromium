@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `wasip2-1.0.3+wasi-0.2.9` crate.
+// `wit-bindgen-0.57.1` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.

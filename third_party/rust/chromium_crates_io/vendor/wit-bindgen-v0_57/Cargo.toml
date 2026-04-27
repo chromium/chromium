@@ -6,25 +6,27 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `wasip2-1.0.3+wasi-0.2.9` crate.
+# `wit-bindgen-0.57.1` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
-name = "wasip2"
-version = "1.0.3+wasi-0.2.9"
+name = "wit-bindgen"
+version = "0.57.1"
 
 [package.metadata.gnrt]
 is_placeholder = true
 
 [features]
-"alloc" = []
+"async" = []
+"async-spawn" = []
 "bitflags" = []
-"core" = []
 "default" = []
+"futures-stream" = []
+"inter-task-wakeup" = []
+"macro-string" = []
+"macros" = []
+"realloc" = []
 "rustc-dep-of-std" = []
 "std" = []
 
-[dependencies.wit-bindgen]
-version = "^0.57.1"
-default_features = false
