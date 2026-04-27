@@ -627,6 +627,11 @@ def main(argv,
       '-proc:none',
   ]
 
+  # Apply -Xlint:unchecked to Chromium-owned code only. Third-party code
+  # (chromium_code = false) is exempt.
+  if options.chromium_code:
+    javac_args += ['-Xlint:unchecked']
+
   if extra_javac_args:
     javac_args.extend(extra_javac_args)
 
