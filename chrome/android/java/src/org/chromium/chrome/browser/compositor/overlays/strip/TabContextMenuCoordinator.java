@@ -574,8 +574,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
                         : getRegularTabGroups(tabs, groupToNotBeIncluded);
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-                || potentialGroups.isEmpty()) {
+        if (potentialGroups.isEmpty()) {
             String title =
                     mActivity
                             .getResources()

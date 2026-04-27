@@ -664,8 +664,6 @@ public abstract class ChromeFeatureList {
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String STOP_APP_INDEXING_REPORT = "StopAppIndexingReport";
     public static final String SUBMENUS_IN_APP_MENU = "SubmenusInAppMenu";
-    public static final String SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP =
-            "SubmenusTabContextMenuLffTabStrip";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
             "SuppressToolbarCapturesAtGestureEnd";

@@ -6072,12 +6072,6 @@ inline constexpr char kSubmenusInAppMenuDescription[] =
     "Enables displaying submenus in the app menu, using drilldown or flyout "
     "depending on conditions.";
 
-inline constexpr char kSubmenusTabContextMenuLffTabStripName[] =
-    "Submenus in LFF Tab Context Menu on LFF Tab Strip";
-inline constexpr char kSubmenusTabContextMenuLffTabStripDescription[] =
-    "Enables submenus (for moving tabs to groups or windows) in the tab "
-    "context menu on LFF tab strip";
-
 inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";

@@ -273,7 +273,6 @@ BASE_DECLARE_FEATURE(kShowTabListAnimations);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kSubmenusInAppMenu);
-BASE_DECLARE_FEATURE(kSubmenusTabContextMenuLffTabStrip);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);

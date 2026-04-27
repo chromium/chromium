@@ -2535,7 +2535,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Context Menu")
-    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testBottomSheet_constructedWithoutDestroyHide() {
         var tabs = initializeTest_ForTab();
         MockTabModel tabModel = new MockTabModel(mProfile, null);

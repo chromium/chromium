@@ -5305,11 +5305,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"submenus-in-app-menu", flag_descriptions::kSubmenusInAppMenuName,
      flag_descriptions::kSubmenusInAppMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSubmenusInAppMenu)},
-    {"submenus-tab-context-menu-lff-tab-strip",
-     flag_descriptions::kSubmenusTabContextMenuLffTabStripName,
-     flag_descriptions::kSubmenusTabContextMenuLffTabStripDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSubmenusTabContextMenuLffTabStrip)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

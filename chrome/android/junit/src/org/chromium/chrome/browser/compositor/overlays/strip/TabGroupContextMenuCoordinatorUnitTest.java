@@ -15,7 +15,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP;
 import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD;
@@ -113,7 +112,6 @@ import java.util.function.BiConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
 })
 public class TabGroupContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
@@ -269,7 +267,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
@@ -298,7 +295,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_Incognito() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
@@ -315,7 +311,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_Incognito_multipleWindows_IncognitoOnlyWindows() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
@@ -339,7 +334,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_Incognito_multipleWindows_MixedIncognitoWindows() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
@@ -364,7 +358,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems_DataShareDisabled() {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
@@ -429,7 +422,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testCollaborationMenuItems_Owner() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
@@ -450,7 +442,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testCollaborationMenuItems_Member() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
@@ -657,7 +648,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveToNewWindow() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
@@ -682,7 +672,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveToWindow() {
         MultiWindowUtils.setInstanceCountForTesting(2);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
@@ -704,7 +693,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveToWindowItemHidden_WhenOnlyOneWindowAndAllTabsMoving() {
         // Set instance count to 1.
         MultiWindowUtils.setInstanceCountForTesting(1);
@@ -826,7 +814,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_moveGroupItems_accessibilityOn() {
         setUpReorderingMocks();
 
@@ -851,7 +838,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft() {
         setUpReorderingMocks();
 
@@ -865,7 +851,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupRight() {
         setUpReorderingMocks();
 
@@ -879,7 +864,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_moveGroupItems_accessibilityOn_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         setUpReorderingMocks();
@@ -904,7 +888,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         setUpReorderingMocks();
@@ -919,7 +902,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupRight_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         setUpReorderingMocks();
@@ -934,7 +916,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_firstGroup() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
@@ -954,7 +935,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_firstGroup_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
@@ -976,7 +956,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupRight_lastGroup() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
@@ -997,7 +976,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupRight_lastGroup_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
@@ -1020,7 +998,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_moveGroupItems_incognito() {
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         setUpReorderingMocks();
@@ -1066,7 +1043,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_itemToLeftIsPinned() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         setUpReorderingMocks();
@@ -1088,7 +1064,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_pinnedTabExistsFurtherLeft() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
@@ -1118,7 +1093,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveToWindow_NonEmptyCustomWindowTitle() {
         final InstanceInfo emptyTitleInstance =
                 new InstanceInfo(
@@ -1155,7 +1129,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveToWindow_EmptyCustomWindowTitle() {
         final InstanceInfo emptyTitleInstance =
                 new InstanceInfo(
@@ -1213,7 +1186,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMenuWidthAndVisibility_SubMenu() {
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
         MultiWindowUtils.setInstanceCountForTesting(2);
@@ -1260,7 +1232,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Group Context Menu")
-    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMenuRestoration_NavigateBack() {
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
         MultiWindowUtils.setInstanceCountForTesting(2);

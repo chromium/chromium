@@ -27,7 +27,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -460,11 +459,9 @@ public abstract class TabOverflowMenuCoordinator<T>
             @PluralsRes int pluralsRes,
             @IdRes int menuId,
             boolean allowMoveToNewWindow) {
-        // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
         @PersistedInstanceType int instanceType = getActiveInstanceTypeForProfileType(isIncognito);
         List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(instanceType);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-                || activeInstances.size() <= 1) {
+        if (activeInstances.size() <= 1) {
             return new ListItemBuilder()
                     .withTitle(
                             mActivity
