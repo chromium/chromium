@@ -47,11 +47,11 @@ const int kPlusButtonIdentifier = -1;
   /// Current most visited tiles items being displayed.
   NSArray<MostVisitedItem*>* _items;
   /// Data source for favicons of each site.
-  id<ContentSuggestionsImageDataSource> _imageDataSource;
+  __weak id<ContentSuggestionsImageDataSource> _imageDataSource;
   /// The layout guide center for the first cell in the collection.
   LayoutGuideCenter* _layoutGuideCenter;
   /// Command handler for each tile.
-  id<MostVisitedTilesCommands> _mostVisitedTilesHandler;
+  __weak id<MostVisitedTilesCommands> _mostVisitedTilesHandler;
   /// Data source object powering the display of the collection view.
   UICollectionViewDiffableDataSource* _diffableDataSource;
 }
