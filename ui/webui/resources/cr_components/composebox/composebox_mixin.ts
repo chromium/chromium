@@ -627,7 +627,8 @@ export const ComposeboxEmbedderMixin =
             case ProcessFilesError.FILE_TOO_LARGE:
               metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
               this.errorMessage =
-                  this.i18n('composeboxFileUploadInvalidTooLarge');
+                  this.i18n('composeboxFileUploadInvalidTooLarge',
+                            Math.floor(this.maxFileSize / (1000 * 1000)));
               break;
             case ProcessFilesError.INVALID_TYPE:
               this.errorMessage = this.i18n('composeFileTypesAllowedError');

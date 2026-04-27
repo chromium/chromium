@@ -8616,7 +8616,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Can't upload. File appears to be empty.
       </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE" desc="The text to display when a file upload exceeds the allowed size">
-        Can't upload. File exceeds maximum supported size.
+        Can't upload. File exceeds maximum supported size of <ph name="MAX_FILE_SIZE">$1<ex>100</ex></ph> MB.
       </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR" desc="The text to display when an file upload image can't be processed.">
         Can't upload. Failed to process image file.
