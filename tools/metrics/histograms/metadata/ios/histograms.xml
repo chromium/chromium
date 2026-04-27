@@ -4523,8 +4523,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.OverscrollAction" enum="IOSNTPOverscrollAction"
-    expires_after="2026-06-07">
-  <owner>guiperez@google.com</owner>
+    expires_after="2027-06-07">
+  <owner>scottyoder@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     The type of overscroll action that occurs on the NTP. This is recorded each
@@ -5583,8 +5583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.ClientManagerAccessFailure"
-    enum="PushNotificationClientManagerFailurePoint" expires_after="2026-05-03">
-  <owner>bwwilliams@google.com</owner>
+    enum="PushNotificationClientManagerFailurePoint" expires_after="2027-05-03">
   <owner>scottyoder@google.com</owner>
   <owner>treib@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
