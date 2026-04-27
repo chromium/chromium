@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preload_serving_metrics_capsule.h"
+#include "net/http/http_no_vary_search_data.h"
 
 namespace content {
 
@@ -98,6 +99,7 @@ struct CONTENT_EXPORT PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics final {
   PrefetchPotentialCandidateCollectResult collect_result;
   PrefetchKey prefetch_key_navigated;
   PrefetchKey prefetch_key_ahead_of_prerender;
+  std::optional<net::HttpNoVarySearchData> prefetch_nvs_hint_ahead_of_prerender;
 };
 
 // Debug information of prefetch ahead of prerender at prefetch matching.

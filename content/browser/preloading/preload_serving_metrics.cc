@@ -4,12 +4,15 @@
 
 #include "content/browser/preloading/preload_serving_metrics.h"
 
+#include <sstream>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
+#include "net/http/http_no_vary_search_data.h"
 
 namespace content {
 
@@ -406,11 +409,18 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
               "PreloadServingMetrics", "non_urls_same",
               debug_metrics.prefetch_key_navigated.NonUrlPartIsSame(
                   debug_metrics.prefetch_key_ahead_of_prerender));
-          // Temporarily disable `DumpWithoutCrashing` as we collected data.
-          // Reenable it when we need it.
-          //
-          // Removal is managed by https://crbug.com/479983093.
-          // base::debug::DumpWithoutCrashing();
+          SCOPED_CRASH_KEY_STRING256(
+              "PreloadServingMetrics", "prefetch_url",
+              debug_metrics.prefetch_key_ahead_of_prerender.url().spec());
+          std::string nvs_string;
+          if (debug_metrics.prefetch_nvs_hint_ahead_of_prerender.has_value()) {
+            std::ostringstream oss;
+            oss << debug_metrics.prefetch_nvs_hint_ahead_of_prerender.value();
+            nvs_string = oss.str();
+          }
+          SCOPED_CRASH_KEY_STRING256("PreloadServingMetrics", "nvs_hint",
+                                     nvs_string);
+          base::debug::DumpWithoutCrashing();
         }
       }
     }

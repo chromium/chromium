@@ -927,6 +927,9 @@ void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
         navigated_key_;
     metrics->prefetch_ahead_of_prerender_debug_metrics
         ->prefetch_key_ahead_of_prerender = prefetch_container->key();
+    metrics->prefetch_ahead_of_prerender_debug_metrics
+        ->prefetch_nvs_hint_ahead_of_prerender =
+        prefetch_container->GetNoVarySearchHint();
   }();
 
   prefetch_match_metrics_->prerender_debug_metrics = std::move(metrics);
