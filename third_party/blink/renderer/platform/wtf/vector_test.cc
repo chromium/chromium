@@ -859,8 +859,8 @@ TEST(VectorTest, MutationDuringIteration) {
   auto it = vector.begin();
   EXPECT_EQ(*it, 1);
   vector.push_back(4);
-  EXPECT_DEATH([[maybe_unused]] int val = *it,
-               "Vector modified while being iterated.");
+  EXPECT_DEATH_IF_SUPPORTED([[maybe_unused]] int val = *it,
+                            "Vector modified while being iterated.");
 }
 
 TEST(VectorTest, NoMutationDuringIteration) {
@@ -885,8 +885,8 @@ TEST(VectorTest, EraseDuringIteration) {
   auto it = vector.begin();
   EXPECT_EQ(*it, 1);
   vector.EraseAt(1);
-  EXPECT_DEATH([[maybe_unused]] int val = *it,
-               "Vector modified while being iterated.");
+  EXPECT_DEATH_IF_SUPPORTED([[maybe_unused]] int val = *it,
+                            "Vector modified while being iterated.");
 }
 #endif
 
