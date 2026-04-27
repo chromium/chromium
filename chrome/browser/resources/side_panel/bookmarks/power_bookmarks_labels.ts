@@ -9,46 +9,44 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './power_bookmarks_labels.html.js';
+import {getHtml} from './power_bookmarks_labels.html.js';
 import type {Label} from './power_bookmarks_service.js';
 
-export class PowerBookmarksLabelsElement extends PolymerElement {
+export class PowerBookmarksLabelsElement extends CrLitElement {
   static get is() {
     return 'power-bookmarks-labels';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
+      disabled: {type: Boolean},
       labels: {
         type: Array,
-        computed: 'computeLabels(trackedProductInfos.*)',
         notify: true,
       },
-      trackedProductInfos: {
-        type: Object,
-        value: () => {
-          return {};
-        },
-      },
+      trackedProductInfos: {type: Object},
     };
   }
 
-  declare disabled: boolean;
-  declare labels: Label[];
-  declare trackedProductInfos: {[key: string]: BookmarkProductInfo};
+  accessor disabled: boolean = false;
+  accessor labels: Label[] = [];
+  accessor trackedProductInfos: {[key: string]: BookmarkProductInfo} = {};
 
-  private computeLabels() {
+  override willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties as PropertyValues<this>);
+    if (changedProperties.has('trackedProductInfos')) {
+      this.labels = this.computeLabels();
+    }
+  }
+
+  private computeLabels(): Label[] {
     const labels: Label[] = [];
     const hasTrackedProducts =
         Object.keys(this.trackedProductInfos)
@@ -68,14 +66,17 @@ export class PowerBookmarksLabelsElement extends PolymerElement {
     return labels;
   }
 
-  private getLabelIcon(label: Label): string {
+  protected getLabelIcon(label: Label): string {
     return label.active ? 'bookmarks:check' : label.icon;
   }
 
-  private onLabelClick(event: DomRepeatEvent<Label>) {
+  protected onLabelClick(event: Event) {
     event.preventDefault();
     event.stopPropagation();
-    this.set(`labels.${event.model.index}.active`, !event.model.item.active);
+    const index = Number((event.currentTarget as HTMLElement).dataset['index']);
+    const labels = [...this.labels];
+    labels[index] = {...labels[index], active: !labels[index].active};
+    this.labels = labels;
   }
 }
 

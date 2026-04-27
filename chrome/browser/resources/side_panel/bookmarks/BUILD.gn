@@ -21,7 +21,6 @@ build_webui("build") {
     "commerce/shopping_list.ts",
     "power_bookmarks_context_menu.ts",
     "power_bookmarks_edit_dialog.ts",
-    "power_bookmarks_labels.ts",
     "power_bookmarks_list.ts",
   ]
 
@@ -33,6 +32,8 @@ build_webui("build") {
     "power_bookmark_row_item.html.ts",
     "power_bookmark_row_item.ts",
     "power_bookmarks_drag_manager.ts",
+    "power_bookmarks_labels.html.ts",
+    "power_bookmarks_labels.ts",
     "power_bookmarks_service.ts",
     "power_bookmarks_utils.ts",
   ]

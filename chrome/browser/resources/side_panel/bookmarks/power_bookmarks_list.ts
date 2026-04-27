@@ -382,10 +382,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.bookmarksService_.startListening();
     this.priceTrackingProxy_.getAllPriceTrackedBookmarkProductInfo().then(
         res => {
-          res.productInfos.forEach(
-              product => this.set(
-                  `trackedProductInfos_.${product.bookmarkId.toString()}`,
-                  product));
+          const newTrackedProductInfos = {...this.trackedProductInfos_};
+          res.productInfos.forEach(product => {
+            newTrackedProductInfos[product.bookmarkId.toString()] = product;
+          });
+          this.trackedProductInfos_ = newTrackedProductInfos;
         });
     this.priceTrackingProxy_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
@@ -551,7 +552,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
       this.shoppingCollectionFolderId_ = '';
     }
     this.updatedElementIds_ = [bookmark.parentId];
-    this.set(`trackedProductInfos_.${bookmark.id}`, null);
+    const newTrackedProductInfos = {...this.trackedProductInfos_};
+    delete newTrackedProductInfos[bookmark.id];
+    this.trackedProductInfos_ = newTrackedProductInfos;
     this.availableProductInfos_.delete(bookmark.id);
     if (this.selectedBookmarks_[bookmark.id]) {
       this.set(`selectedBookmarks_.${bookmark.id}`, false);
@@ -688,11 +691,16 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private onBookmarkPriceTracked_(product: BookmarkProductInfo) {
-    this.set(`trackedProductInfos_.${product.bookmarkId.toString()}`, product);
+    this.trackedProductInfos_ = {
+      ...this.trackedProductInfos_,
+      [product.bookmarkId.toString()]: product,
+    };
   }
 
   private onBookmarkPriceUntracked_(product: BookmarkProductInfo) {
-    this.set(`trackedProductInfos_.${product.bookmarkId.toString()}`, null);
+    const newTrackedProductInfos = {...this.trackedProductInfos_};
+    delete newTrackedProductInfos[product.bookmarkId.toString()];
+    this.trackedProductInfos_ = newTrackedProductInfos;
   }
 
   private bookmarkIsShowing_(bookmark: BookmarksTreeNode): boolean {
