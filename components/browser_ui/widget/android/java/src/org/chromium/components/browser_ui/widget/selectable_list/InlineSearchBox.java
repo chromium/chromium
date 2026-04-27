@@ -96,7 +96,7 @@ public class InlineSearchBox {
         mInlineSearchBoxContainer.setPaddingRelative(paddingStart, 0, 0, 0);
 
         int height = Math.round(40 * resources.getDisplayMetrics().density);
-        int marginBottom = Math.round(8 * resources.getDisplayMetrics().density);
+        int marginBottom = Math.round(2 * resources.getDisplayMetrics().density);
         ViewGroup.MarginLayoutParams params =
                 new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         params.bottomMargin = marginBottom;
