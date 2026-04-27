@@ -4875,6 +4875,8 @@ data/accessibility/html/insert-before-expected-blink.txt
 data/accessibility/html/insert-before-with-whitespace-expected-blink.txt
 data/accessibility/html/insert-before-with-whitespace.html
 data/accessibility/html/insert-before.html
+data/accessibility/html/install-expected-blink.txt
+data/accessibility/html/install.html
 data/accessibility/html/interactive-controls-with-labels-expected-android-assist-data.txt
 data/accessibility/html/interactive-controls-with-labels-expected-android-external.txt
 data/accessibility/html/interactive-controls-with-labels-expected-android.txt

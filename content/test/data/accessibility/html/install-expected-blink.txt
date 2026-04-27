@@ -1,0 +1,10 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer
+++++++button focusable name='Install'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++image
+++++++++++genericContainer ignored
+++++++++++++staticText name='Install'
+++++++++++++++inlineTextBox name='Install'
