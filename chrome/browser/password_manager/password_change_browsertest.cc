@@ -76,6 +76,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -369,6 +370,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     autofill::LocalFrameToken frame_token(rfh->GetFrameToken().value());
     autofill::FormData form;
     form.set_url(GURL("https://www.foo.com"));
+    form.set_main_frame_origin(url::Origin::Create(form.url()));
     form.set_renderer_id(autofill::test::MakeFormRendererId());
     autofill::FormFieldData field = {autofill::test::CreateTestFormField(
         "some_label", "some_name", "some_value",
