@@ -146,6 +146,9 @@ class TabAndroid : public tabs::TabInterface,
   // it.
   bool IsUserInteractable() const;
 
+  // Return whether the tab is currently being used for offscreen rendering.
+  bool IsOffscreenRendering() const;
+
   sync_sessions::SyncedTabDelegate* GetSyncedTabDelegate() const;
 
   // Whether this tab is an incognito tab. Prefer

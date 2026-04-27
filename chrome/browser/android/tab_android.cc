@@ -263,6 +263,11 @@ bool TabAndroid::IsUserInteractable() const {
   return Java_TabImpl_isUserInteractable(env, GetJavaObject(env));
 }
 
+bool TabAndroid::IsOffscreenRendering() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_isOffscreenRendering(env, GetJavaObject(env));
+}
+
 sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
   return synced_tab_delegate_.get();
 }

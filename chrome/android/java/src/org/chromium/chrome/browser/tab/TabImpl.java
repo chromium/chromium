@@ -2982,6 +2982,11 @@ class TabImpl implements Tab {
         return mIsOffscreenRenderingSupplier;
     }
 
+    @CalledByNative
+    public boolean isOffscreenRendering() {
+        return mIsOffscreenRenderingSupplier.get();
+    }
+
     @Override
     public void startOffscreenRendering() {
         assert !mIsOffscreenRenderingSupplier.get();

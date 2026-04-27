@@ -12,6 +12,10 @@
 
 class TabAndroid;
 
+namespace ui {
+class WindowAndroid;
+}
+
 namespace content {
 class WebContents;
 }
@@ -93,6 +97,7 @@ class TabBottomSheetBridge {
   base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
   const raw_ref<tabs::TabInterface> tab_;
   TabBottomSheetClientType client_type_;
+  raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
 };
 
 }  // namespace context_sharing
