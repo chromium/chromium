@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 }
 
 // TODO(crbug.com/500937645): Re-enable the test
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
 #define MAYBE_DragAndDropDisabled DISABLED_DragAndDropDisabled
 #else
 #define MAYBE_DragAndDropDisabled DragAndDropDisabled
