@@ -2717,6 +2717,24 @@
             ]
         }
     ],
+    "AutofillEnableDownstreamCardAwarenessIph": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableDownstreamCardAwarenessIph"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableImportOfUnchangedValuesForCountryAndState": [
         {
             "platforms": [
