@@ -6,6 +6,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -711,6 +712,120 @@ class DialogAndAria : public DomScenarioDomainSpecification {
   }
 };
 
+class CarouselAndAria : public DomScenarioDomainSpecification {
+ public:
+  fuzztest::Domain<QualifiedName> AnyTag() override { return AnyHtmlTag(); }
+  fuzztest::Domain<std::pair<QualifiedName, std::string>>
+  AnyAttributeNameValuePair() override {
+    return fuzztest::OneOf(
+        AnyAriaAttributeNameValuePair(),
+        AttributeNameValuePairDomain(
+            html_names::kTabindexAttr,
+            AnyValueForHtmlAttribute(html_names::kTabindexAttr)));
+  }
+  fuzztest::Domain<std::string> AnyStyles() override {
+    return AnyCssDeclaration();
+  }
+  fuzztest::Domain<std::string> AnyText() override {
+    return fuzztest::PrintableAsciiString();
+  }
+  static constexpr int kNumNodes = 9;
+  int GetMaxDomNodes() override { return kNumNodes; }
+  int GetMaxAttributesPerNode() override { return 3; }
+  fuzztest::Domain<QualifiedName> GetRootElementTag() override {
+    return fuzztest::Just<QualifiedName>(
+        html_names::TagToQualifiedName(html_names::HTMLTag::kBody));
+  }
+  bool AllowReparenting() override { return false; }
+  fuzztest::Domain<std::string> AnyStylesheet() override {
+    return fuzztest::OneOf(
+        fuzztest::Just(
+            std::string("#id_0::scroll-marker-group { display: flex; } "
+                        "#id_0 > *::scroll-marker { content: ' '; }")),
+        fuzztest::Just(
+            std::string("#id_0::scroll-marker-group { display: flex; } "
+                        "#id_0 > *::scroll-marker { content: counter(item); } "
+                        "#id_0 > *::scroll-marker:target-current "
+                        "{ background: highlight; } "
+                        "#id_0::scroll-button(inline-start) { content: '<'; } "
+                        "#id_0::scroll-button(inline-end) { content: '>'; }")),
+        fuzztest::Just(std::string(
+            "#id_0::scroll-marker-group { display: flex; } "
+            "#id_0 > *::scroll-marker { content: ' '; } "
+            "#id_0 > *::scroll-marker:target-before { opacity: 0.5; } "
+            "#id_0 > *::scroll-marker:target-after { opacity: 0.5; }")));
+  }
+  std::optional<PredefinedNodesConfig> GetPredefinedNodes() override {
+    auto tag = [](html_names::HTMLTag t) {
+      return html_names::TagToQualifiedName(t);
+    };
+    auto nodes = std::vector<NodeSpecification>{
+        // Scroll container (parent: root) index 0.
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // Carousel items (parent: container) indices 1-6.
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        {.tag = tag(html_names::HTMLTag::kDiv),
+         .initial_state = {.parent_index = 0}},
+        // Heading for the carousel (parent: root) index 7.
+        {.tag = tag(html_names::HTMLTag::kH2),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+        // Navigation label (parent: root) index 8.
+        {.tag = tag(html_names::HTMLTag::kNav),
+         .initial_state = {.parent_index = kIndexOfRootElement}},
+    };
+    auto carousel_overflow =
+        fuzztest::ElementOf<std::string>({"auto", "scroll", "hidden"});
+    auto carousel_marker_group = fuzztest::ElementOf<std::string>(
+        {"before", "after", "tabs", "links", "before tabs", "before links",
+         "after tabs", "after links"});
+    auto carousel_snap_type = fuzztest::ElementOf<std::string>(
+        {"x mandatory", "x proximity", "inline mandatory", "inline proximity"});
+    auto container_styles = fuzztest::Map(
+        [](const std::string& overflow, const std::string& marker_group,
+           const std::string& snap_type, const std::string& display) {
+          return base::StrCat(
+              {"overflow: ", overflow, "; scroll-marker-group: ", marker_group,
+               "; scroll-snap-type: ", snap_type, "; display: ", display, ";"});
+        },
+        carousel_overflow, carousel_marker_group, carousel_snap_type,
+        fuzztest::Map(
+            [](CSSValueID val) { return std::string(GetCSSValueName(val)); },
+            fuzztest::ElementOf<CSSValueID>(
+                {CSSValueID::kGrid, CSSValueID::kFlex, CSSValueID::kBlock})));
+    auto item_styles = fuzztest::Map(
+        [](const std::string& snap_align, const std::string& target_group) {
+          return base::StrCat({"scroll-snap-align: ", snap_align,
+                               "; scroll-target-group: ", target_group, ";"});
+        },
+        AnyCSSScrollSnapAlignValue(), AnyCSSScrollTargetGroupValue());
+    auto make_states_domain = [&]() {
+      return fuzztest::Map(
+          [](NodeState container, std::vector<NodeState> rest) {
+            rest.insert(rest.begin(), std::move(container));
+            return rest;
+          },
+          AnyNodeState(this, kNumNodes, AnyAttributeNameValuePair(),
+                       container_styles),
+          fuzztest::VectorOf(AnyNodeState(this, kNumNodes,
+                                          AnyAttributeNameValuePair(),
+                                          item_styles))
+              .WithSize(kNumNodes - 1));
+    };
+    return PredefinedNodesConfig{std::move(nodes), make_states_domain(),
+                                 make_states_domain()};
+  }
+};
+
 class AccessibilityDomScenarioRunner : public DomScenarioRunner {
  public:
   AccessibilityDomScenarioRunner() = default;
@@ -726,6 +841,7 @@ class AccessibilityDomScenarioRunner : public DomScenarioRunner {
   void SelectAndAria(const DomScenario& input) { RunTest(input); }
   void CustomizableSelectAndAria(const DomScenario& input) { RunTest(input); }
   void DialogAndAria(const DomScenario& input) { RunTest(input); }
+  void CarouselAndAria(const DomScenario& input) { RunTest(input); }
 
  protected:
   // Observer hooks to add accessibility tree printing.
@@ -784,5 +900,8 @@ FUZZ_TEST_F(AccessibilityDomScenarioRunner, CustomizableSelectAndAria)
 
 FUZZ_TEST_F(AccessibilityDomScenarioRunner, DialogAndAria)
     .WithDomains(BuildDomScenarios<DialogAndAria>());
+
+FUZZ_TEST_F(AccessibilityDomScenarioRunner, CarouselAndAria)
+    .WithDomains(BuildDomScenarios<CarouselAndAria>());
 
 }  // namespace blink
