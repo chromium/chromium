@@ -8,16 +8,43 @@
 #include <stdint.h>
 
 #include <limits>
+#include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/icu_test_util.h"
+#include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
 
 namespace base {
 namespace {
+
+class NumberFormatWorkerThread : public base::SimpleThread {
+ public:
+  NumberFormatWorkerThread(base::WaitableEvent* event,
+                           int digits,
+                           int iterations)
+      : SimpleThread("NumberFormatWorkerThread"),
+        event_(event),
+        digits_(digits),
+        iterations_(iterations) {}
+
+  void Run() override {
+    event_->Wait();
+    for (int i = 0; i < iterations_; ++i) {
+      FormatDouble(1.2345678, digits_);
+    }
+  }
+
+ private:
+  const raw_ptr<base::WaitableEvent> event_;
+  const int digits_;
+  const int iterations_;
+};
 
 TEST(NumberFormattingTest, FormatNumber) {
   static const struct {
@@ -177,6 +204,28 @@ TEST(NumberFormattingTest, FormatPercent) {
     EXPECT_EQ(UTF8ToUTF16(i.expected_arabic), FormatPercent(i.number));
     i18n::SetICUDefaultLocale("ar-EG");
     EXPECT_EQ(UTF8ToUTF16(i.expected_arabic_egypt), FormatPercent(i.number));
+  }
+}
+
+// Regression test for crbug.com/506477192. Ensure that concurrent calls to
+// FormatDouble with different fractional digits don't cause a data race in
+// the shared ICU number formatter.
+TEST(NumberFormattingTest, FormatDoubleRace) {
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+  std::vector<std::unique_ptr<NumberFormatWorkerThread>> threads;
+
+  for (int i = 0; i < 20; ++i) {
+    threads
+        .emplace_back(
+            std::make_unique<NumberFormatWorkerThread>(&event, i % 5, 1000))
+        ->Start();
+  }
+
+  event.Signal();
+
+  for (auto& t : threads) {
+    t->Join();
   }
 }
 
