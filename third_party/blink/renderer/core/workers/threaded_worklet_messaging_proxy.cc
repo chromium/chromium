@@ -176,8 +176,14 @@ void ThreadedWorkletMessagingProxy::FetchAndInvokeScript(
     scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
     WorkletPendingTasks* pending_tasks) {
   DCHECK(IsMainThread());
+  WorkerThread* worker_thread = GetWorkerThread();
+  if (!worker_thread) {
+    // Worker thread has been terminated or not initialized.
+    pending_tasks->Abort(nullptr);
+    return;
+  }
   PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+      *worker_thread->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
       CrossThreadBindOnce(
           &ThreadedWorkletObjectProxy::FetchAndInvokeScript,
           CrossThreadUnretained(worklet_object_proxy_.get()), module_url_record,
@@ -185,7 +191,7 @@ void ThreadedWorkletMessagingProxy::FetchAndInvokeScript(
           WrapCrossThreadPersistent(&outside_resource_timing_notifier),
           std::move(outside_settings_task_runner),
           WrapCrossThreadPersistent(pending_tasks),
-          CrossThreadUnretained(GetWorkerThread())));
+          CrossThreadUnretained(worker_thread)));
 }
 
 void ThreadedWorkletMessagingProxy::WorkletObjectDestroyed() {
