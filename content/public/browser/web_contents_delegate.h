@@ -770,6 +770,11 @@ class CONTENT_EXPORT WebContentsDelegate {
       const base::UnguessableToken& guid,
       RenderFrameHost* render_frame_host) {}
 
+  // Returns true if the OS currently prevents the creation of a Document
+  // Picture-in-Picture window. This is used as a synchronous pre-check to block
+  // window creation (e.g. when Android is in an app fullscreen state).
+  virtual bool IsDocumentPictureInPictureBlockedBySystem() const;
+
   // Notifies the Picture-in-Picture controller that there is a new player
   // entering Picture-in-Picture.
   // Returns the result of the enter request.

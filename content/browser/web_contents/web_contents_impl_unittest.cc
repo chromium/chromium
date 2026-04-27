@@ -2140,6 +2140,32 @@ TEST_F(WebContentsImplTest,
   EXPECT_FALSE(view->is_showing());
 }
 
+class BlockedDocPipDelegate : public WebContentsDelegate {
+ public:
+  bool IsDocumentPictureInPictureBlockedBySystem() const override {
+    return true;
+  }
+};
+
+TEST_F(WebContentsImplTest, CreateNewWindowBlockedBySystem) {
+  BlockedDocPipDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  mojom::CreateNewWindowParams params;
+  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+
+  FrameTree* result =
+      static_cast<WebContentsImpl*>(contents())
+          ->CreateNewWindow(contents()->GetPrimaryMainFrame(), params,
+                            /*is_new_browsing_instance=*/false,
+                            /*has_user_gesture=*/false,
+                            /*session_storage_namespace=*/nullptr);
+
+  EXPECT_EQ(nullptr, result);
+
+  contents()->SetDelegate(nullptr);
+}
+
 namespace {
 
 void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,

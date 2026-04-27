@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -150,6 +151,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock DisplayAndroidManager mDisplayAndroidManager;
     @Mock AppTask mAppTask;
     @Mock PopupCreator mPopupCreator;
+    @Mock MultiWindowUtils mMultiWindowUtils;
 
     @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
@@ -165,6 +167,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Before
     public void setup() {
+        MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
@@ -185,6 +188,17 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(TEST_LOCAL_BOUNDS).when(mDisplayAndroid).getLocalBounds();
 
         doReturn(mDisplayAndroid).when(mDisplayAndroidManager).getDisplayMatching(any());
+    }
+
+    @Test
+    public void testIsDocumentPictureInPictureBlockedBySystem() {
+        // Test in app fullscreen (not multi-window mode) -> Blocked.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        assertTrue(mTabWebContentsDelegateAndroid.isDocumentPictureInPictureBlockedBySystem());
+
+        // Test in multi-window mode -> Not blocked.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
+        assertFalse(mTabWebContentsDelegateAndroid.isDocumentPictureInPictureBlockedBySystem());
     }
 
     @Test

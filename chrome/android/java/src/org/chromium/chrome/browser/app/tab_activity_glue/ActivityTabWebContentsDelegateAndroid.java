@@ -638,6 +638,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 : false;
     }
 
+    @Override
+    protected boolean isDocumentPictureInPictureBlockedBySystem() {
+        // Document PiP requires launching a new movable task with PiP bounds.
+        // This is blocked by the OS (throws InfeasibleActivityOptionsException)
+        // if the current activity is in app fullscreen (i.e. not in multi-window mode).
+        // TODO(b/504784078): Once the fullscreen limitation is resolved, we should update this
+        // check.
+        return mActivity == null || !MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+    }
+
     /**
      * Checks if Document Picture-in-Picture is enabled. This is true if we both have the permission
      * to enter Picture-in-Picture mode and the Android API to go into pinned mode is supported.

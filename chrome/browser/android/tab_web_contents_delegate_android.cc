@@ -566,6 +566,18 @@ bool TabWebContentsDelegateAndroid::ShouldEnableEmbeddedMediaExperience()
       env, obj);
 }
 
+bool TabWebContentsDelegateAndroid::IsDocumentPictureInPictureBlockedBySystem()
+    const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+
+  return Java_TabWebContentsDelegateAndroidImpl_isDocumentPictureInPictureBlockedBySystem(
+      env, obj);
+}
+
 bool TabWebContentsDelegateAndroid::IsPictureInPictureEnabled() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

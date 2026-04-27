@@ -65,6 +65,14 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     }
 
     /**
+     * @return true if the OS currently prevents the creation of a Document Picture-in-Picture
+     *     window.
+     */
+    protected boolean isDocumentPictureInPictureBlockedBySystem() {
+        return false;
+    }
+
+    /**
      * @return web preferences for enabling Picture-in-Picture.
      */
     protected boolean isPictureInPictureEnabled() {

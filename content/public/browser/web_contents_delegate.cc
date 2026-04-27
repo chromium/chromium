@@ -402,6 +402,10 @@ bool WebContentsDelegate::OnlyExpandTopControlsAtPageTop() {
   return false;
 }
 
+bool WebContentsDelegate::IsDocumentPictureInPictureBlockedBySystem() const {
+  return false;
+}
+
 PictureInPictureResult WebContentsDelegate::EnterPictureInPicture(
     WebContents* web_contents) {
   return PictureInPictureResult::kNotSupported;

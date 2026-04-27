@@ -399,6 +399,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.shouldEnableEmbeddedMediaExperience();
     }
 
+    @CalledByNative
+    @Override
+    protected boolean isDocumentPictureInPictureBlockedBySystem() {
+        return mDelegate.isDocumentPictureInPictureBlockedBySystem();
+    }
+
     /**
      * @return web preferences for enabling Picture-in-Picture.
      */
