@@ -24017,7 +24017,8 @@
                     },
                     "enable_features": [
                         "UseCaseLongerInputWindow"
-                    ]
+                    ],
+                    "disable_benchmarking": true
                 }
             ]
         }
