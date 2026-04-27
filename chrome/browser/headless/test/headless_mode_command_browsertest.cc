@@ -300,16 +300,9 @@ INSTANTIATE_TEST_SUITE_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     testing::Bool());
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HeadlessDumpDomWithSubResourceTimeout \
-  DISABLED_HeadlessDumpDomWithSubResourceTimeout
-#else
-#define MAYBE_HeadlessDumpDomWithSubResourceTimeout \
-  HeadlessDumpDomWithSubResourceTimeout
-#endif
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
-    MAYBE_HeadlessDumpDomWithSubResourceTimeout) {
+    HeadlessDumpDomWithSubResourceTimeout) {
   std::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
 
   capture_stdout_.StopCapture();
