@@ -673,8 +673,14 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
   CHECK_EQ(audio_data->channel_count, 1) << "Multi-channel audio not supported";
   const bool mix_to_mono = audio_buffer->numberOfChannels() > 1u;
   if (audio_data->sample_rate != audio_buffer->sampleRate() || mix_to_mono) {
-    bus = AudioBus::CreateBySampleRateConverting(bus.get(), mix_to_mono,
-                                                 audio_data->sample_rate);
+    bus = AudioBus::TryCreateBySampleRateConverting(bus.get(), mix_to_mono,
+                                                    audio_data->sample_rate);
+    if (!bus) {
+      Reject(DOMException::Create(
+          "Failed to convert audio data (not enough memory).",
+          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+      return;
+    }
     VLOG(1) << "Converted to " << bus->NumberOfChannels() << " channels, "
             << bus->SampleRate() << "Hz, len:" << bus->length();
   }
