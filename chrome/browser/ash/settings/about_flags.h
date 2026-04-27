@@ -67,6 +67,8 @@ class ReadOnlyFlagsStorage : public ::flags_ui::FlagsStorage {
       const std::string& internal_entry_name) const override;
   void SetStringFlag(const std::string& internal_entry_name,
                      const std::string& string_value) override;
+  base::DictValue GetCustomizedFlags() const override;
+  void SetCustomizedFlags(const base::DictValue& customized_flags) override;
 
  private:
   std::set<std::string> flags_;

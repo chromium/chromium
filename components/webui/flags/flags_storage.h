@@ -8,6 +8,8 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
+
 namespace flags_ui {
 
 // Base class for flags storage implementations.  Enables the about_flags
@@ -41,6 +43,11 @@ class FlagsStorage {
   // formed.
   virtual void SetStringFlag(const std::string& internal_entry_name,
                              const std::string& string_value) = 0;
+
+  // Retrieves all customized flags (origin list and string flags).
+  virtual base::DictValue GetCustomizedFlags() const = 0;
+  // Sets all customized flags.
+  virtual void SetCustomizedFlags(const base::DictValue& customized_flags) = 0;
 
   // Lands pending changes to disk immediately.
   virtual void CommitPendingWrites() = 0;

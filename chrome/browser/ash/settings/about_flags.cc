@@ -150,6 +150,17 @@ std::string ReadOnlyFlagsStorage::GetStringFlag(
 void ReadOnlyFlagsStorage::SetStringFlag(const std::string& internal_entry_name,
                                          const std::string& string_value) {}
 
+base::DictValue ReadOnlyFlagsStorage::GetCustomizedFlags() const {
+  base::DictValue customized_flags;
+  for (const auto& [name, value] : origin_list_flags_) {
+    customized_flags.Set(name, value);
+  }
+  return customized_flags;
+}
+
+void ReadOnlyFlagsStorage::SetCustomizedFlags(
+    const base::DictValue& customized_flags) {}
+
 FeatureFlagsUpdate::FeatureFlagsUpdate(
     const ::flags_ui::FlagsStorage& flags_storage,
     PrefService* profile_prefs) {

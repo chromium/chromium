@@ -40,6 +40,8 @@ class PrefServiceFlagsStorage : public FlagsStorage {
       const std::string& internal_entry_name) const override;
   void SetStringFlag(const std::string& internal_entry_name,
                      const std::string& string_value) override;
+  base::DictValue GetCustomizedFlags() const override;
+  void SetCustomizedFlags(const base::DictValue& customized_flags) override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

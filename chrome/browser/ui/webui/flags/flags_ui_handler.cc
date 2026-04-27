@@ -73,6 +73,12 @@ void FlagsUIHandler::RegisterMessages() {
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "exportFlags", base::BindRepeating(&FlagsUIHandler::HandleExportFlags,
+                                         base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "importFlags", base::BindRepeating(&FlagsUIHandler::HandleImportFlags,
+                                         base::Unretained(this)));
 }
 
 void FlagsUIHandler::Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
@@ -225,4 +231,52 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue& args) {
 void FlagsUIHandler::HandleResetAllFlags(const base::ListValue& args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
+}
+
+void FlagsUIHandler::HandleExportFlags(const base::ListValue& args) {
+  DCHECK(flags_storage_);
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+
+  base::DictValue results;
+  base::ListValue enabled_flags;
+  for (const std::string& flag : flags_storage_->GetFlags()) {
+    enabled_flags.Append(flag);
+  }
+  results.Set("enabled_flags", std::move(enabled_flags));
+  results.Set("customized_flags", flags_storage_->GetCustomizedFlags());
+
+  ResolveJavascriptCallback(callback_id, results);
+}
+
+void FlagsUIHandler::HandleImportFlags(const base::ListValue& args) {
+  DCHECK(flags_storage_);
+  AllowJavascript();
+  CHECK_EQ(2u, args.size());
+  const base::Value& callback_id = args[0];
+  const base::DictValue& data = args[1].GetDict();
+
+  // Apply imported data.
+  if (const base::ListValue* enabled_flags_list =
+          data.FindList("enabled_flags")) {
+    std::set<std::string> enabled_flags = flags_storage_->GetFlags();
+    for (const auto& flag : *enabled_flags_list) {
+      if (flag.is_string()) {
+        enabled_flags.insert(flag.GetString());
+      }
+    }
+    flags_storage_->SetFlags(enabled_flags);
+  }
+
+  if (const base::DictValue* customized_flags =
+          data.FindDict("customized_flags")) {
+    base::DictValue merged_customized_flags =
+        flags_storage_->GetCustomizedFlags();
+    merged_customized_flags.Merge(customized_flags->Clone());
+    flags_storage_->SetCustomizedFlags(merged_customized_flags);
+  }
+
+  flags_storage_->CommitPendingWrites();
+
+  ResolveJavascriptCallback(callback_id, base::Value(true));
 }

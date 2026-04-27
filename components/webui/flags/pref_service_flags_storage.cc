@@ -72,6 +72,15 @@ void PrefServiceFlagsStorage::SetStringFlag(
   SetOriginListFlag(internal_entry_name, string_value);
 }
 
+base::DictValue PrefServiceFlagsStorage::GetCustomizedFlags() const {
+  return prefs_->GetDict(prefs::kAboutFlagsOriginLists).Clone();
+}
+
+void PrefServiceFlagsStorage::SetCustomizedFlags(
+    const base::DictValue& customized_flags) {
+  prefs_->SetDict(prefs::kAboutFlagsOriginLists, customized_flags.Clone());
+}
+
 void PrefServiceFlagsStorage::CommitPendingWrites() {
   prefs_->CommitPendingWrite();
 }
