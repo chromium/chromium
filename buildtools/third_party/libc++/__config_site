@@ -107,10 +107,7 @@
 // Disable header include for parallel algorithms.
 #define _LIBCPP_HAS_NO_INCOMPLETE_PSTL
 
-// This could be the current LLVM release for us, but values
-// >= 7 currently don't work:
-// https://github.com/llvm/llvm-project/pull/166074#discussion_r3088933481
-// So let's use the upstream default of 2.
-#define _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION 2
+// TODO(thakis): If upstream adds a "latest" magic number, switch to that.
+#define _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION 999
 
 #endif // _LIBCPP_CONFIG_SITE
