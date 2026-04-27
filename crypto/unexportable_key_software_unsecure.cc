@@ -49,10 +49,6 @@ class SoftwareKey : public UnexportableSigningKey {
     return sign::Sign(GetSignatureKind(), key_, data);
   }
 
-  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
-    return nullptr;
-  }
-
 #if BUILDFLAG(IS_APPLE)
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
 #elif BUILDFLAG(IS_WIN)

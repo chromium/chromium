@@ -451,10 +451,6 @@ class ECDSAKey : public UnexportableSigningKey {
 
   bool SupportsTls13() override { return true; }
 
-  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
-    return nullptr;
-  }
-
  private:
   const ProviderType provider_type_;
   ScopedNCryptKey key_;
@@ -506,10 +502,6 @@ class RSAKey : public UnexportableSigningKey {
     }
 
     return is_compatible_with_tls13.value();
-  }
-
-  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey() override {
-    return nullptr;
   }
 
  private:

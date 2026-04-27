@@ -117,12 +117,7 @@ ServiceErrorOr<size_t> DeleteSigningKeysSlowly(
       CHECK_DEREF(CHECK_DEREF(key_provider).AsStatefulUnexportableKeyProvider())
           .DeleteSigningKeysSlowly(base::ToVector(
               signing_keys,
-              [](auto& signing_key) {
-                auto* stateful_key =
-                    signing_key->key().AsStatefulUnexportableSigningKey();
-                CHECK(stateful_key);
-                return stateful_key;
-              })),
+              [](auto& signing_key) { return &signing_key->key(); })),
       ServiceError::kCryptoApiFailed);
 }
 

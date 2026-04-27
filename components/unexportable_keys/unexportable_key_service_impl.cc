@@ -305,8 +305,7 @@ ServiceErrorOr<std::string> UnexportableKeyServiceImpl::GetKeyTag(
     return base::unexpected(ServiceError::kKeyNotFound);
   }
 
-  crypto::StatefulUnexportableSigningKey* stateful_key =
-      it->second->key().AsStatefulUnexportableSigningKey();
+  const crypto::StatefulKey* stateful_key = it->second->key().AsStatefulKey();
   if (!stateful_key) {
     return base::unexpected(ServiceError::kOperationNotSupported);
   }
@@ -320,8 +319,7 @@ ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
     return base::unexpected(ServiceError::kKeyNotFound);
   }
 
-  crypto::StatefulUnexportableSigningKey* stateful_key =
-      it->second->key().AsStatefulUnexportableSigningKey();
+  const crypto::StatefulKey* stateful_key = it->second->key().AsStatefulKey();
   if (!stateful_key) {
     return base::unexpected(ServiceError::kOperationNotSupported);
   }
@@ -333,8 +331,7 @@ UnexportableKeyServiceImpl::WrappedKeyAndTag
 UnexportableKeyServiceImpl::GetWrappedKeyAndTag(
     const RefCountedUnexportableSigningKey& key) {
   std::string tag;
-  if (crypto::StatefulUnexportableSigningKey* stateful_key =
-          key.key().AsStatefulUnexportableSigningKey()) {
+  if (const crypto::StatefulKey* stateful_key = key.key().AsStatefulKey()) {
     tag = stateful_key->GetKeyTag();
   }
 

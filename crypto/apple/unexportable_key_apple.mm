@@ -25,6 +25,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -257,7 +258,8 @@ std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
 
 // UnexportableSigningKeyApple is an implementation of the
 // UnexportableSigningKey interface on top of Apple's Secure Enclave.
-class UnexportableSigningKeyApple : public StatefulUnexportableSigningKey {
+class UnexportableSigningKeyApple : public UnexportableSigningKey,
+                                    public StatefulKey {
  public:
   explicit UnexportableSigningKeyApple(CFDictionaryRef key_attributes)
       : UnexportableSigningKeyApple(
@@ -327,12 +329,11 @@ class UnexportableSigningKeyApple : public StatefulUnexportableSigningKey {
 
   SecKeyRef GetSecKeyRef() const override { return key_.get(); }
 
-  StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
-      LIFETIME_BOUND override {
+  const StatefulKey* AsStatefulKey() const LIFETIME_BOUND override {
     return this;
   }
 
-  // StatefulUnexportableSigningKey:
+  // StatefulKey:
   std::string GetKeyTag() const override { return application_tag_; }
 
   base::Time GetCreationTime() const override { return creation_time_; }
@@ -589,7 +590,7 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteWrappedKeysSlowly(
 }
 
 std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
-    base::span<const StatefulUnexportableSigningKey* const> signing_keys) {
+    base::span<const UnexportableSigningKey* const> signing_keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -611,7 +612,11 @@ std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
 
   const auto keys_and_tags_to_delete =
       ToFlatHashSet(signing_keys, [](const auto* key) {
-        return std::pair{key->GetWrappedKey(), key->GetKeyTag()};
+        // NOTE: The keys passed to this method should always be instances of
+        // `UnexportableSigningKeyApple`, which are guaranteed to be stateful.
+        // Thus we can confidently `CHECK` here.
+        return std::pair{key->GetWrappedKey(),
+                         CHECK_DEREF(key->AsStatefulKey()).GetKeyTag()};
       });
 
   std::erase_if(keys, [&](const auto& key) {

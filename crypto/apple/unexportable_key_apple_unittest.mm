@@ -234,8 +234,7 @@ TEST_F(UnexportableKeyMacTest, GetKeyTag) {
   ASSERT_TRUE(provider_);
   auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key);
-  EXPECT_EQ(key->AsStatefulUnexportableSigningKey()->GetKeyTag(),
-            kTestApplicationTag);
+  EXPECT_EQ(key->AsStatefulKey()->GetKeyTag(), kTestApplicationTag);
 }
 
 TEST_F(UnexportableKeyMacTest, GetCreationTime) {
@@ -244,8 +243,7 @@ TEST_F(UnexportableKeyMacTest, GetCreationTime) {
   ASSERT_TRUE(key);
 
   // Check that the time returned is the one set in the fake keychain.
-  EXPECT_EQ(key->AsStatefulUnexportableSigningKey()->GetCreationTime(),
-            base::Time::UnixEpoch());
+  EXPECT_EQ(key->AsStatefulKey()->GetCreationTime(), base::Time::UnixEpoch());
 }
 
 TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {
@@ -429,13 +427,10 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_KeyObjects) {
   auto key2 = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
   ASSERT_TRUE(key2);
 
-  auto* stateful_key1 = key1->AsStatefulUnexportableSigningKey();
-  ASSERT_TRUE(stateful_key1);
-
   // Delete key1 using the new overload.
   std::optional<size_t> count =
       provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
-          {stateful_key1});
+          {key1.get()});
   ASSERT_TRUE(count.has_value());
   EXPECT_EQ(count.value(), 1u);
 
@@ -469,7 +464,7 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_PrecisionCollision) {
   // Delete using the Tag A key object.
   std::optional<size_t> count =
       provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeysSlowly(
-          {key_a->AsStatefulUnexportableSigningKey()});
+          {key_a.get()});
   ASSERT_TRUE(count.has_value());
   EXPECT_EQ(count.value(), 1u);
 
@@ -504,7 +499,7 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeysSlowly_TagMismatch) {
   // It should find 0 matching items because the tags don't match.
   std::optional<size_t> count =
       provider_other->AsStatefulUnexportableKeyProvider()
-          ->DeleteSigningKeysSlowly({key->AsStatefulUnexportableSigningKey()});
+          ->DeleteSigningKeysSlowly({key.get()});
   ASSERT_TRUE(count.has_value());
   EXPECT_EQ(count.value(), 0u);
 

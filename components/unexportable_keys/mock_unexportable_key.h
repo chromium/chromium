@@ -10,7 +10,8 @@
 
 namespace unexportable_keys {
 
-class MockUnexportableKey : public crypto::StatefulUnexportableSigningKey {
+class MockUnexportableKey : public crypto::UnexportableSigningKey,
+                            public crypto::StatefulKey {
  public:
   MockUnexportableKey();
   ~MockUnexportableKey() override;
@@ -35,11 +36,8 @@ class MockUnexportableKey : public crypto::StatefulUnexportableSigningKey {
 #elif BUILDFLAG(IS_WIN)
   MOCK_METHOD(bool, SupportsTls13, (), (override));
 #endif  // BUILDFLAG(IS_APPLE)
-  MOCK_METHOD(crypto::StatefulUnexportableSigningKey*,
-              AsStatefulUnexportableSigningKey,
-              (),
-              (override));
-  // crypto::StatefulUnexportableSigningKey:
+  MOCK_METHOD(const crypto::StatefulKey*, AsStatefulKey, (), (const, override));
+  // crypto::StatefulKey:
   MOCK_METHOD(std::string, GetKeyTag, (), (const, override));
   MOCK_METHOD(base::Time, GetCreationTime, (), (const, override));
 };

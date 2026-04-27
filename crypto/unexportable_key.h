@@ -22,7 +22,7 @@
 
 namespace crypto {
 
-class StatefulUnexportableSigningKey;
+class StatefulKey;
 class StatefulUnexportableKeyProvider;
 
 // UnexportableSigningKey provides a hardware-backed signing oracle on platforms
@@ -86,17 +86,17 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   virtual bool SupportsTls13() = 0;
 #endif  // BUILDFLAG(IS_APPLE)
 
-  // Typesafe downcast to `StatefulUnexportableSigningKey`. Returns nullptr if
-  // the key is not stateful.
-  virtual StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
-      LIFETIME_BOUND = 0;
+  // Typesafe downcast to `StatefulKey`. Returns nullptr if the key is not
+  // stateful.
+  virtual const StatefulKey* AsStatefulKey() const LIFETIME_BOUND;
 };
 
-// StatefulUnexportableSigningKey is an interface for keys that are backed by
-// some permanent state, such as the keychain on macOS.
-class CRYPTO_EXPORT StatefulUnexportableSigningKey
-    : public UnexportableSigningKey {
+// StatefulKey is an interface for keys that are backed by some permanent state,
+// such as the keychain on macOS.
+class CRYPTO_EXPORT StatefulKey {
  public:
+  virtual ~StatefulKey() = default;
+
   // Returns the tag of the stateful key stored by the platform. For example,
   // on macOS, this is the application tag set when creating the key.
   virtual std::string GetKeyTag() const = 0;
@@ -221,7 +221,7 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   // `Config::application_tag`. That is, only matching keys where the
   // application tag starts with the `Config::application_tag` will be deleted.
   virtual std::optional<size_t> DeleteSigningKeysSlowly(
-      base::span<const StatefulUnexportableSigningKey* const> signing_keys) = 0;
+      base::span<const UnexportableSigningKey* const> signing_keys) = 0;
 
   // `DeleteAllSigningKeysSlowly()` deletes all state associated with all
   // signing keys matching `UnexportableKeyProvider::Config`.

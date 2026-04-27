@@ -42,9 +42,6 @@ class ECSigningKey : public crypto::UnexportableSigningKey {
   bool SupportsTls13() override { return true; }
 #endif  // BUILDFLAG(IS_MAC)
 
-  crypto::StatefulUnexportableSigningKey* AsStatefulUnexportableSigningKey()
-      override;
-
  private:
   crypto::keypair::PrivateKey key_;
 };
@@ -78,11 +75,6 @@ SecKeyRef ECSigningKey::GetSecKeyRef() const {
   NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_MAC)
-
-crypto::StatefulUnexportableSigningKey*
-ECSigningKey::AsStatefulUnexportableSigningKey() {
-  return nullptr;
-}
 
 }  // namespace
 

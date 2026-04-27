@@ -27,6 +27,10 @@ bool UnexportableSigningKey::IsHardwareBacked() const {
   return false;
 }
 
+const StatefulKey* UnexportableSigningKey::AsStatefulKey() const {
+  return nullptr;
+}
+
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
     UnexportableKeyProvider::Config config) {
   if (g_mock_provider) {
