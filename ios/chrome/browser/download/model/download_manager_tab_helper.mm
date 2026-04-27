@@ -421,7 +421,7 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
           settings.has_value() ? std::move(settings.value())
                                : enterprise_connectors::AnalysisSettings(),
           enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
-          web_state_->GetWeakPtr());
+          *web_state_);
   auto files_request_handler_delegate = std::make_unique<
       enterprise_connectors::FilesRequestHandlerIOS>(
       profile, task_->GetResponsePath(),

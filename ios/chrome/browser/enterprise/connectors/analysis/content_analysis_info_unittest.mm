@@ -84,7 +84,7 @@ TEST_F(ContentAnalysisInfoTest, SetupCloudBinaryUploadRequest) {
       ContentAnalysisRequest::NORMAL_DOWNLOAD;
   // Passing settings from test utils.
   ContentAnalysisInfo info(GURL(kTestDomain), std::move(settings), reason,
-                           web_state()->GetWeakPtr());
+                           *web_state());
   FakeBinaryUploadRequest request(
       test::NormalDlpAndMalwareSettings()->cloud_or_local_settings);
 

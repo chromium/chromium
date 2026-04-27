@@ -24,7 +24,7 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
       const GURL& url,
       AnalysisSettings settings,
       ContentAnalysisRequest::Reason reason,
-      base::WeakPtr<web::WebState> web_state);
+      const web::WebState& web_state);
   ~ContentAnalysisInfo() override;
 
   // ContentAnalysisInfoBase override:
