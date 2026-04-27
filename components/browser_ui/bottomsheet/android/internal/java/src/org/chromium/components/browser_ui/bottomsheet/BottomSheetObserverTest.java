@@ -33,6 +33,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.ExecutionException;
@@ -126,6 +128,20 @@ public class BottomSheetObserverTest {
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            InsetObserver insetObserver =
+                                    new InsetObserver(
+                                            new ImmutableWeakReference<>(
+                                                    sTestRule
+                                                            .getActivity()
+                                                            .getWindow()
+                                                            .getDecorView()),
+                                            new ImmutableWeakReference<>(
+                                                    sTestRule
+                                                            .getActivity()
+                                                            .getApplicationContext()),
+                                            /* enableKeyboardOverlayMode= */ false,
+                                            /* enableExtraEdgeToEdgeLogging= */ false);
+
                             mScrimManager =
                                     new ScrimManager(
                                             sTestRule.getActivity(), rootView, ScrimClient.NONE);
@@ -138,7 +154,8 @@ public class BottomSheetObserverTest {
                                     () -> rootView,
                                     false,
                                     () -> 0,
-                                    /* desktopWindowStateManager= */ null);
+                                    /* desktopWindowStateManager= */ null,
+                                    insetObserver);
                         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);

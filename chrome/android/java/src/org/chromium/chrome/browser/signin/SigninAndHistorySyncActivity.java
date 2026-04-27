@@ -416,7 +416,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,
                         () -> 0,
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        getInsetObserver());
         BackPressHandler bottomSheetBackPressHandler =
                 bottomSheetController.getBottomSheetBackPressHandler();
         BackPressHelper.create(this, getOnBackPressedDispatcher(), bottomSheetBackPressHandler);

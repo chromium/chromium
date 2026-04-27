@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheet.ShadowLayerView;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.ColorUtils;
 
 /** Unit tests for {@link BottomSheet}. */
@@ -48,6 +49,7 @@ public class BottomSheetUnitTest {
     @Mock private ShadowLayerView mShadowLayerView;
     @Mock private BottomSheetContent mSheetContent;
     @Mock private TouchRestrictingFrameLayout mToolbarHolder;
+    @Mock private InsetObserver mInsetObserver;
 
     private BottomSheet mBottomSheet;
     private ViewGroup mSheetContainer;
@@ -86,7 +88,8 @@ public class BottomSheetUnitTest {
                 /* alwaysFullWidth= */ false,
                 /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
                 /* appHeaderHeight= */ 0,
-                /* bottomMargin= */ 0);
+                /* bottomMargin= */ 0,
+                mInsetObserver);
 
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
         mBottomSheet.setShadowLayerForTesting(mShadowLayerView);

@@ -8,6 +8,7 @@ android_library("java") {
   testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetTestHelper.java" ]
   deps = [
+    "//base:base_java_test_support",
     "//base:callback_java",
     "//chrome/browser/keyboard_accessory/android/internal:java",
     "//components/browser_ui/bottomsheet/android:factory_java",
@@ -16,6 +17,7 @@ android_library("java") {
     "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
   ]
   visibility = [

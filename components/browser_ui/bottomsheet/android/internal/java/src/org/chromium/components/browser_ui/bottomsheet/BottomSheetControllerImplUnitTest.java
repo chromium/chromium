@@ -39,6 +39,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.function.Supplier;
 
@@ -56,6 +57,7 @@ public class BottomSheetControllerImplUnitTest {
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private BottomSheet mBottomSheet;
     @Mock private BottomSheetContent mSheetContent;
+    @Mock private InsetObserver mInsetObserver;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private BottomSheetControllerImpl mController;
@@ -83,7 +85,8 @@ public class BottomSheetControllerImplUnitTest {
                         mRootSupplier,
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
-                        mDesktopWindowStateManager);
+                        mDesktopWindowStateManager,
+                        mInsetObserver);
     }
 
     @Test
@@ -103,7 +106,8 @@ public class BottomSheetControllerImplUnitTest {
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
                         APP_HEADER_HEIGHT,
-                        0);
+                        0,
+                        mInsetObserver);
     }
 
     @Test
@@ -204,7 +208,8 @@ public class BottomSheetControllerImplUnitTest {
                         nullRootSupplier,
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
-                        mDesktopWindowStateManager);
+                        mDesktopWindowStateManager,
+                        mInsetObserver);
 
         // Requesting to show content should fail gracefully instead of crashing.
         boolean result =

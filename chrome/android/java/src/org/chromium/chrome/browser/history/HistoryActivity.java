@@ -99,7 +99,8 @@ public class HistoryActivity extends SnackbarActivity {
                         getWindowAndroid().getKeyboardDelegate(),
                         SupplierUtils.of(sheetContainer),
                         SupplierUtils.of(0),
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        getWindowAndroid().getInsetObserver());
 
         // HistoryActivity needs its own container for bottom sheet. Add it as a child of the
         // layout enclosing the history list layout so they'll be siblings. HistoryPage doesn't

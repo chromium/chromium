@@ -94,7 +94,8 @@ public class BookmarkActivity extends SnackbarActivity {
                         getWindowAndroid().getKeyboardDelegate(),
                         () -> sheetContainer,
                         () -> getEdgeToEdgeInset(),
-                        /* desktopWindowStateManager= */ null);
+                        /* desktopWindowStateManager= */ null,
+                        getWindowAndroid().getInsetObserver());
 
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkManagerCoordinator =

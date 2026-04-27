@@ -47,6 +47,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
@@ -194,6 +195,10 @@ class BottomSheet extends FrameLayout
 
     /** The supplier of the bottom inset when edge to edge is enabled. */
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
+
+    /** Observer for inset changes. */
+    @SuppressWarnings("unused")
+    private InsetObserver mInsetObserver;
 
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
@@ -345,6 +350,7 @@ class BottomSheet extends FrameLayout
      * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
      * @param appHeaderHeight The app header height, in px.
      * @param bottomMargin The extra margin to add to the bottom of sheet container.
+     * @param insetObserver An observer for inset changes.
      */
     @Initializer
     public void init(
@@ -353,9 +359,11 @@ class BottomSheet extends FrameLayout
             boolean alwaysFullWidth,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             int appHeaderHeight,
-            int bottomMargin) {
+            int bottomMargin,
+            InsetObserver insetObserver) {
         mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+        mInsetObserver = insetObserver;
         mSheetContainer = (ViewGroup) getParent();
         mKeyboardCurtain = findViewById(R.id.keyboard_curtain);
         mSheetBackground = findViewById(R.id.background);

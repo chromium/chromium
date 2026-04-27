@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -133,6 +134,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      * @param alwaysFullWidth Whether bottom sheet is full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of bottom inset when e2e is on.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
+     * @param insetObserver The {@link InsetObserver} for inset changes.
      */
     public BottomSheetControllerImpl(
             final Supplier<@Nullable ScrimManager> scrimManagerSupplier,
@@ -141,7 +143,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
             Supplier<ViewGroup> root,
             boolean alwaysFullWidth,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            InsetObserver insetObserver) {
         mScrimManagerSupplier = scrimManagerSupplier;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(this::onSuppressionTokensChanged);
@@ -155,7 +158,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
         mSheetInitializer =
                 () -> {
-                    initializeSheet(window, keyboardDelegate, root);
+                    initializeSheet(window, keyboardDelegate, root, insetObserver);
                 };
 
         mBackPressHandler =
@@ -206,11 +209,13 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param insetObserver The {@link InsetObserver} for inset changes.
      */
     private void initializeSheet(
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
-            Supplier<ViewGroup> root) {
+            Supplier<ViewGroup> root,
+            InsetObserver insetObserver) {
         mBottomSheetContainer = root.get();
         if (mBottomSheetContainer == null) {
             return;
@@ -228,7 +233,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                 mAlwaysFullWidth,
                 mEdgeToEdgeBottomInsetSupplier,
                 mAppHeaderHeight,
-                mBottomControlsOffset);
+                mBottomControlsOffset,
+                insetObserver);
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue =

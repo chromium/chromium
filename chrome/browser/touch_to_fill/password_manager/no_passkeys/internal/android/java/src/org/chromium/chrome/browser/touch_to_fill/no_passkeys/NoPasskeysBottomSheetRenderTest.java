@@ -40,6 +40,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -82,6 +83,7 @@ public class NoPasskeysBottomSheetRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
+    @Mock private InsetObserver mInsetObserver;
 
     private BottomSheetController mBottomSheetController;
     private NoPasskeysBottomSheetCoordinator mCoordinator;
@@ -141,6 +143,7 @@ public class NoPasskeysBottomSheetRenderTest {
                 () -> scrimManager,
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),
-                () -> activityContentView);
+                () -> activityContentView,
+                mInsetObserver);
     }
 }

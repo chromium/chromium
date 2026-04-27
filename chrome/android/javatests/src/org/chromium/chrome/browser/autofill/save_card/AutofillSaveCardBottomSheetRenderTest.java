@@ -18,6 +18,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -62,6 +64,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Mock private InsetObserver mInsetObserver;
+
     private Activity mActivity;
     private BottomSheetController mBottomSheetController;
     private AutofillSaveCardBottomSheetContent mSaveCardBottomSheetContent;
@@ -85,7 +89,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                                     () -> scrimManager,
                                     mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
-                                    () -> activityContentView);
+                                    () -> activityContentView,
+                                    mInsetObserver);
                 });
     }
 

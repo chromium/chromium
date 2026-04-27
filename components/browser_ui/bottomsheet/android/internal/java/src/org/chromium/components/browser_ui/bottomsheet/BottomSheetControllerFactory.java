@@ -14,6 +14,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.function.Supplier;
 
@@ -28,7 +29,7 @@ public class BottomSheetControllerFactory {
      * @param root The view that should contain the sheet.
      * @param edgeToEdgeBottomInsetSupplier Supplier of bottom inset when e2e is on.
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
-     * @return A new instance of the {@link BottomSheetController}.
+     * @param insetObserver The {@link InsetObserver} for inset changes.
      */
     public static ManagedBottomSheetController createBottomSheetController(
             final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
@@ -36,7 +37,8 @@ public class BottomSheetControllerFactory {
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            InsetObserver insetObserver) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
                 window,
@@ -44,7 +46,8 @@ public class BottomSheetControllerFactory {
                 root,
                 /* alwaysFullWidth= */ false,
                 edgeToEdgeBottomInsetSupplier,
-                desktopWindowStateManager);
+                desktopWindowStateManager,
+                insetObserver);
     }
 
     /**
@@ -54,13 +57,14 @@ public class BottomSheetControllerFactory {
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
-     * @return A new instance of the {@link BottomSheetController}.
+     * @param insetObserver The {@link InsetObserver} for inset changes.
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
             final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
-            Supplier<ViewGroup> root) {
+            Supplier<ViewGroup> root,
+            InsetObserver insetObserver) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
                 window,
@@ -68,7 +72,8 @@ public class BottomSheetControllerFactory {
                 root,
                 /* alwaysFullWidth= */ true,
                 () -> 0,
-                /* desktopWindowStateManager= */ null);
+                /* desktopWindowStateManager= */ null,
+                insetObserver);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the
