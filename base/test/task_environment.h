@@ -589,7 +589,6 @@ class TaskEnvironmentWithMainThreadPriorities : public TaskEnvironment {
   CreateBaseTaskPrioritySettings();
 
   static constexpr QueuePriority GetDefaultQueuePriority();
-  static constexpr ThreadType TaskPriorityToThreadType(QueuePriority priority);
   static constexpr QueuePriority BaseTaskPriorityToQueuePriority(
       TaskPriority task_priority);
 
