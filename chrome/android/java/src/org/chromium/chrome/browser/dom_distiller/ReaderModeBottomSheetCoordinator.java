@@ -222,7 +222,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public boolean canBeSuppressed(BottomSheetContent nextContent) {
-            return nextContent.getPriority() == ContentPriority.HIGH;
+            return nextContent.getPriority() <= ContentPriority.HIGH;
         }
 
         @Override

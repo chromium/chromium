@@ -143,6 +143,6 @@ abstract class MenuSheetContent implements BottomSheetContent {
     @Override
     public boolean canBeSuppressed(BottomSheetContent nextContent) {
         // Always immediately hide if a higher-priority sheet content wants to show.
-        return nextContent.getPriority() == ContentPriority.HIGH;
+        return nextContent.getPriority() <= ContentPriority.HIGH;
     }
 }
