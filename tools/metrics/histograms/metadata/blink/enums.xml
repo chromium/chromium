@@ -7141,8 +7141,8 @@ Called by update_permissions_policy_enum.py.-->
 <!-- LINT.IfChange(FedCmRpMode) -->
 
 <enum name="FedCmRpMode">
-  <int value="0" label="Passive"/>
-  <int value="1" label="Active"/>
+  <int value="0" label="Active"/>
+  <int value="1" label="Passive"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/federated_auth_request.mojom:RpMode) -->
