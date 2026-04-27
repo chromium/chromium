@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/view_class_properties.h"
@@ -29,6 +30,10 @@ NewTabButton::NewTabButton(BrowserWindowInterface* browser,
   SetPreferredSize(gfx::Size(button_size, button_size));
 
   SetIconSize(icon_size);
+
+  // Paint to a layer so that the ink drop is rendered correctly.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
   CHECK(browser_);
   CHECK(browser_->GetActions());
