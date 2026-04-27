@@ -83,6 +83,10 @@ class PassthroughTouchEventQueueTest : public testing::Test,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_event_count_;
+    if (destroy_queue_on_ack_) {
+      ResetQueue();
+      return;
+    }
     if (followup_touch_event_) {
       std::unique_ptr<WebTouchEvent> followup_touch_event =
           std::move(followup_touch_event_);
@@ -358,6 +362,9 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     queue_->OnHasTouchEventHandlers(true);
   }
 
+  void ResetQueue() { queue_.reset(); }
+
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<PassthroughTouchEventQueue> queue_;
   size_t acked_event_count_;
@@ -367,6 +374,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   SyntheticWebTouchEvent touch_event_;
   int event_id_for_scroll_ = -1;
   bool will_start_scrolling_on_touch_move_ack_ = false;
+  bool destroy_queue_on_ack_ = false;
   std::unique_ptr<WebTouchEvent> followup_touch_event_;
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   double slop_length_dips_;
@@ -2061,6 +2069,16 @@ TEST_F(PassthroughTouchEventQueueTest, TouchMoveGSUAckSentAsync) {
             WebInputEvent::DispatchType::kEventNonBlocking);
   EXPECT_EQ(sent_event().GetType(), WebInputEvent::Type::kTouchMove);
   EXPECT_EQ(2U, GetAndResetSentEventCount());
+}
+
+TEST_F(PassthroughTouchEventQueueTest, SynchronousDestructionDuringAck) {
+  PressTouchPoint(1, 1);
+  EXPECT_EQ(1U, queued_event_count());
+
+  destroy_queue_on_ack_ = true;
+  SendTouchEventAck(blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_EQ(nullptr, queue_);
 }
 
 }  // namespace input

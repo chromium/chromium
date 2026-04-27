@@ -61,6 +61,9 @@ void MockInputDispositionHandler::OnTouchEventAck(
     input_router_->SendGestureEvent(*gesture_followup_event_,
                                     dispatch_callback.callback);
   }
+  if (on_touch_event_ack_closure_) {
+    std::move(on_touch_event_ack_closure_).Run();
+  }
 }
 
 void MockInputDispositionHandler::OnGestureEventAck(
