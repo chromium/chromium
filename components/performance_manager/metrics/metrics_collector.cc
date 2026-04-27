@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "content/public/common/process_type.h"
 
 namespace performance_manager {
@@ -58,29 +57,16 @@ void OnRendererDestroyed(const ProcessNode* process_node,
 
 }  // namespace
 
-class UkmCollectionStateHolder
-    : public NodeAttachedDataImpl<UkmCollectionStateHolder> {
- public:
-  explicit UkmCollectionStateHolder(const PageNode* unused_page_node) {}
-  ~UkmCollectionStateHolder() override = default;
-  MetricsCollector::UkmCollectionState ukm_collection_state;
-};
-
 MetricsCollector::MetricsCollector() = default;
 
 MetricsCollector::~MetricsCollector() = default;
 
 void MetricsCollector::OnPassedToGraph(Graph* graph) {
-  RegisterObservers(graph);
+  graph->AddProcessNodeObserver(this);
 }
 
 void MetricsCollector::OnTakenFromGraph(Graph* graph) {
-  UnregisterObservers(graph);
-}
-
-void MetricsCollector::OnUkmSourceIdChanged(const PageNode* page_node) {
-  ukm::SourceId ukm_source_id = page_node->GetUkmSourceID();
-  UpdateUkmSourceIdForPage(page_node, ukm_source_id);
+  graph->RemoveProcessNodeObserver(this);
 }
 
 void MetricsCollector::OnProcessLifetimeChange(
@@ -102,28 +88,6 @@ void MetricsCollector::OnBeforeProcessNodeRemoved(
   }
 }
 
-// static
-MetricsCollector::UkmCollectionState* MetricsCollector::GetUkmCollectionState(
-    const PageNode* page_node) {
-  auto* holder = UkmCollectionStateHolder::GetOrCreate(page_node);
-  return &holder->ukm_collection_state;
-}
-
-void MetricsCollector::RegisterObservers(Graph* graph) {
-  graph->AddPageNodeObserver(this);
-  graph->AddProcessNodeObserver(this);
-}
-
-void MetricsCollector::UnregisterObservers(Graph* graph) {
-  graph->RemovePageNodeObserver(this);
-  graph->RemoveProcessNodeObserver(this);
-}
-
-void MetricsCollector::UpdateUkmSourceIdForPage(const PageNode* page_node,
-                                                ukm::SourceId ukm_source_id) {
-  auto* state = GetUkmCollectionState(page_node);
-  state->ukm_source_id = ukm_source_id;
-}
 
 void MetricsCollector::OnProcessDestroyed(const ProcessNode* process_node) {
   const base::TimeTicks now = base::TimeTicks::Now();
