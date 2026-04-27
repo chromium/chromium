@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key_pair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -191,22 +192,30 @@ void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
-                                           const WebCryptoKey& private_key) {
-  if (!resolver_)
+void CryptoResultImpl::CompleteWithKeyForGenerateKey(const WebCryptoKey& key) {
+  if (!resolver_) {
     return;
+  }
+
+  auto* result = MakeGarbageCollected<CryptoKey>(key);
+  CHECK_EQ(type_, ResolverType::kTyped);
+  resolver_->DowncastTo<V8UnionCryptoKeyOrCryptoKeyPair>()->Resolve(result);
+  ClearResolver();
+}
+
+void CryptoResultImpl::CompleteWithKeyPairForGenerateKey(
+    const WebCryptoKey& public_key,
+    const WebCryptoKey& private_key) {
+  if (!resolver_) {
+    return;
+  }
 
   auto* result = CryptoKeyPair::Create();
   result->setPublicKey(MakeGarbageCollected<CryptoKey>(public_key));
   result->setPrivateKey(MakeGarbageCollected<CryptoKey>(private_key));
 
-  if (type_ == ResolverType::kTyped) {
-    resolver_->DowncastTo<CryptoKeyPair>()->Resolve(result);
-  } else {
-    ScriptState* script_state = resolver_->GetScriptState();
-    ScriptState::Scope scope(script_state);
-    resolver_->DowncastTo<IDLAny>()->Resolve(result->ToV8(script_state));
-  }
+  CHECK_EQ(type_, ResolverType::kTyped);
+  resolver_->DowncastTo<V8UnionCryptoKeyOrCryptoKeyPair>()->Resolve(result);
   ClearResolver();
 }
 

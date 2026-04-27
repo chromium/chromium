@@ -89,8 +89,9 @@ class BLINK_PLATFORM_EXPORT WebCryptoResult {
   void CompleteWithJson(std::string_view);
   void CompleteWithBoolean(bool);
   void CompleteWithKey(const WebCryptoKey&);
-  void CompleteWithKeyPair(const WebCryptoKey& public_key,
-                           const WebCryptoKey& private_key);
+  void CompleteWithKeyForGenerateKey(const WebCryptoKey&);
+  void CompleteWithKeyPairForGenerateKey(const WebCryptoKey& public_key,
+                                         const WebCryptoKey& private_key);
   void CompleteWithEncapsulatedKey(const WebCryptoKey& shared_key,
                                    base::span<const uint8_t> ciphertext);
   void CompleteWithEncapsulatedBits(base::span<const uint8_t> shared_key,

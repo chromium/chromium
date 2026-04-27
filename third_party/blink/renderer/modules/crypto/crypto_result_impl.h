@@ -82,8 +82,10 @@ class MODULES_EXPORT CryptoResultImpl final
   void CompleteWithJson(std::string_view utf8_data) override;
   void CompleteWithBoolean(bool) override;
   void CompleteWithKey(const WebCryptoKey&) override;
-  void CompleteWithKeyPair(const WebCryptoKey& public_key,
-                           const WebCryptoKey& private_key) override;
+  void CompleteWithKeyForGenerateKey(const WebCryptoKey&) override;
+  void CompleteWithKeyPairForGenerateKey(
+      const WebCryptoKey& public_key,
+      const WebCryptoKey& private_key) override;
   void CompleteWithEncapsulatedKey(
       const WebCryptoKey& shared_key,
       base::span<const uint8_t> ciphertext) override;

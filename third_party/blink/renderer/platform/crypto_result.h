@@ -60,8 +60,10 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual void CompleteWithJson(std::string_view utf8_data) = 0;
   virtual void CompleteWithBoolean(bool) = 0;
   virtual void CompleteWithKey(const WebCryptoKey&) = 0;
-  virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,
-                                   const WebCryptoKey& private_key) = 0;
+  virtual void CompleteWithKeyForGenerateKey(const WebCryptoKey&) = 0;
+  virtual void CompleteWithKeyPairForGenerateKey(
+      const WebCryptoKey& public_key,
+      const WebCryptoKey& private_key) = 0;
   virtual void CompleteWithEncapsulatedKey(
       const WebCryptoKey& shared_key,
       base::span<const uint8_t> ciphertext) = 0;

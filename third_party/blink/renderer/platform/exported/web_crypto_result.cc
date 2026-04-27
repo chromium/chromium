@@ -68,12 +68,21 @@ void WebCryptoResult::CompleteWithKey(const WebCryptoKey& key) {
   Reset();
 }
 
-void WebCryptoResult::CompleteWithKeyPair(const WebCryptoKey& public_key,
-                                          const WebCryptoKey& private_key) {
+void WebCryptoResult::CompleteWithKeyForGenerateKey(const WebCryptoKey& key) {
+  DCHECK(!key.IsNull());
+  if (!Cancelled()) {
+    impl_->CompleteWithKeyForGenerateKey(key);
+  }
+  Reset();
+}
+
+void WebCryptoResult::CompleteWithKeyPairForGenerateKey(
+    const WebCryptoKey& public_key,
+    const WebCryptoKey& private_key) {
   DCHECK(!public_key.IsNull());
   DCHECK(!private_key.IsNull());
   if (!Cancelled())
-    impl_->CompleteWithKeyPair(public_key, private_key);
+    impl_->CompleteWithKeyPairForGenerateKey(public_key, private_key);
   Reset();
 }
 

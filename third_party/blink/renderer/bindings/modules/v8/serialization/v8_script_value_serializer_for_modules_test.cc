@@ -31,12 +31,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key_pair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -276,25 +278,9 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidRTCCertificate) {
 // A bunch of voodoo which allows the asynchronous WebCrypto operations to be
 // called synchronously, with the resulting JavaScript values extracted.
 
-using CryptoKeyPair = std::pair<CryptoKey*, CryptoKey*>;
-
 template <typename T>
-T ConvertCryptoResult(v8::Isolate*, const ScriptValue&);
-template <>
-CryptoKey* ConvertCryptoResult<CryptoKey*>(v8::Isolate* isolate,
-                                           const ScriptValue& value) {
-  return V8CryptoKey::ToWrappable(isolate, value.V8Value());
-}
-template <>
-CryptoKeyPair ConvertCryptoResult<CryptoKeyPair>(v8::Isolate* isolate,
-                                                 const ScriptValue& value) {
-  Dictionary dictionary(isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
-  v8::Local<v8::Value> private_key, public_key;
-  EXPECT_TRUE(dictionary.Get("publicKey", public_key));
-  EXPECT_TRUE(dictionary.Get("privateKey", private_key));
-  return std::make_pair(V8CryptoKey::ToWrappable(isolate, public_key),
-                        V8CryptoKey::ToWrappable(isolate, private_key));
-}
+T ConvertCryptoResult(v8::Isolate* isolate, const ScriptValue& value);
+
 template <>
 DOMException* ConvertCryptoResult<DOMException*>(v8::Isolate* isolate,
                                                  const ScriptValue& value) {
@@ -337,6 +323,12 @@ class WebCryptoResultAdapter
     requires(std::is_same_v<I, DOMArrayBuffer>)
   void React(ScriptState* script_state, DOMArrayBuffer* buffer) {
     function_.Run(base::ToVector(buffer->ByteSpan()));
+  }
+  template <typename I = IDLType>
+    requires(std::is_same_v<I, V8UnionCryptoKeyOrCryptoKeyPair>)
+  void React(ScriptState* script_state,
+             V8UnionCryptoKeyOrCryptoKeyPair* crypto_union) {
+    function_.Run(crypto_union);
   }
 
  private:
@@ -384,19 +376,13 @@ T SubtleCryptoSync(V8TestingScope& scope, PMF func, Args&&... args) {
   return result;
 }
 
-CryptoKey* SyncGenerateKey(V8TestingScope& scope,
-                           const WebCryptoAlgorithm& algorithm,
-                           bool extractable,
-                           WebCryptoKeyUsageMask usages) {
-  return SubtleCryptoSync<CryptoKey*, IDLAny>(scope, &WebCrypto::GenerateKey,
-                                              algorithm, extractable, usages);
-}
-
-CryptoKeyPair SyncGenerateKeyPair(V8TestingScope& scope,
-                                  const WebCryptoAlgorithm& algorithm,
-                                  bool extractable,
-                                  WebCryptoKeyUsageMask usages) {
-  return SubtleCryptoSync<CryptoKeyPair, IDLAny>(
+V8UnionCryptoKeyOrCryptoKeyPair* SyncGenerateKey(
+    V8TestingScope& scope,
+    const WebCryptoAlgorithm& algorithm,
+    bool extractable,
+    WebCryptoKeyUsageMask usages) {
+  return SubtleCryptoSync<V8UnionCryptoKeyOrCryptoKeyPair*,
+                          V8UnionCryptoKeyOrCryptoKeyPair>(
       scope, &WebCrypto::GenerateKey, algorithm, extractable, usages);
 }
 
@@ -470,7 +456,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdAesCbc, std::move(params));
   CryptoKey* key =
       SyncGenerateKey(scope, algorithm, true,
-                      kWebCryptoKeyUsageEncrypt | kWebCryptoKeyUsageDecrypt);
+                      kWebCryptoKeyUsageEncrypt | kWebCryptoKeyUsageDecrypt)
+          ->GetAsCryptoKey();
 
   // Round trip it and check the visible attributes.
   v8::Local<v8::Value> wrapper =
@@ -545,7 +532,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
                                             std::move(generate_key_params));
   CryptoKey* key =
       SyncGenerateKey(scope, generate_key_algorithm, true,
-                      kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
+                      kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify)
+          ->GetAsCryptoKey();
 
   // Round trip it and check the visible attributes.
   v8::Local<v8::Value> wrapper =
@@ -618,11 +606,12 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
       new WebCryptoRsaHashedKeyGenParams(hash, 1024, {1, 0, 1}));
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdRsaPss,
                                             std::move(generate_key_params));
-  CryptoKey* public_key;
-  CryptoKey* private_key;
-  std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
-                          kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
+  CryptoKeyPair* key_pair =
+      SyncGenerateKey(scope, generate_key_algorithm, true,
+                      kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify)
+          ->GetAsCryptoKeyPair();
+  CryptoKey* public_key = key_pair->publicKey();
+  CryptoKey* private_key = key_pair->privateKey();
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
@@ -713,11 +702,12 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
       new WebCryptoEcKeyGenParams(kWebCryptoNamedCurveP256));
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdEcdsa,
                                             std::move(generate_key_params));
-  CryptoKey* public_key;
-  CryptoKey* private_key;
-  std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
-                          kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
+  CryptoKeyPair* key_pair =
+      SyncGenerateKey(scope, generate_key_algorithm, true,
+                      kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify)
+          ->GetAsCryptoKeyPair();
+  CryptoKey* public_key = key_pair->publicKey();
+  CryptoKey* private_key = key_pair->privateKey();
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
@@ -798,11 +788,12 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
   // Generate an Ed25519 key pair.
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdEd25519,
                                             nullptr);
-  CryptoKey* public_key;
-  CryptoKey* private_key;
-  std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
-                          kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
+  CryptoKeyPair* key_pair =
+      SyncGenerateKey(scope, generate_key_algorithm, true,
+                      kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify)
+          ->GetAsCryptoKeyPair();
+  CryptoKey* public_key = key_pair->publicKey();
+  CryptoKey* private_key = key_pair->privateKey();
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =
@@ -878,9 +869,12 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
   // Generate an X25519 key pair.
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdX25519,
                                             nullptr);
-  auto [public_key, private_key] = SyncGenerateKeyPair(
-      scope, generate_key_algorithm, true,
-      kWebCryptoKeyUsageDeriveKey | kWebCryptoKeyUsageDeriveBits);
+  CryptoKeyPair* key_pair = SyncGenerateKey(scope, generate_key_algorithm, true,
+                                            kWebCryptoKeyUsageDeriveKey |
+                                                kWebCryptoKeyUsageDeriveBits)
+                                ->GetAsCryptoKeyPair();
+  CryptoKey* public_key = key_pair->publicKey();
+  CryptoKey* private_key = key_pair->privateKey();
 
   // Round trip the private key and check the visible attributes.
   v8::Local<v8::Value> wrapper =

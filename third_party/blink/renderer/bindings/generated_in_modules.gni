@@ -3343,6 +3343,8 @@ generated_typedef_sources_in_modules = [
 ]
 
 generated_union_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.cc",

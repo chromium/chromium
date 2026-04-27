@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_json_web_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_jsonwebkey.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -357,7 +358,7 @@ ScriptPromise<IDLAny> SubtleCrypto::digest(
   return resolver->Promise();
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::generateKey(
+ScriptPromise<V8UnionCryptoKeyOrCryptoKeyPair> SubtleCrypto::generateKey(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     bool extractable,
@@ -381,8 +382,8 @@ ScriptPromise<IDLAny> SubtleCrypto::generateKey(
     return EmptyPromise();
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<V8UnionCryptoKeyOrCryptoKeyPair>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 
