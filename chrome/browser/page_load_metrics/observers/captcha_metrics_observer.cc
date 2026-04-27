@@ -5,37 +5,41 @@
 #include "chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/page_load_metrics/observers/captcha_provider_manager.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
-
 using page_load_metrics::CaptchaProviderManager;
+using CaptchaFrameAgentContext =
+    CaptchaMetricsObserver::CaptchaFrameAgentContext;
 
 namespace {
 
-bool IsActorActingOnWebContents(content::WebContents* web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto* actor_service =
-      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
-  if (!actor_service) {
-    return false;
-  }
+bool IsDevToolsAgentAttached(content::WebContents* web_contents) {
+  auto devtools_host = content::DevToolsAgentHost::GetForTab(web_contents);
+  return devtools_host && devtools_host->IsAttached();
+}
 
-  const auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
-#else
-  return false;
-#endif
+CaptchaFrameAgentContext GetCaptchaFrameAgentContext(
+    content::WebContents* web_contents) {
+  bool glic_agent_active = actor::HaveActiveTaskForContents(web_contents);
+  bool devtools_agent_active = IsDevToolsAgentAttached(web_contents);
+  if (glic_agent_active && devtools_agent_active) {
+    return CaptchaFrameAgentContext::kMultipleAgentsActiveOnTab;
+  }
+  if (glic_agent_active) {
+    return CaptchaFrameAgentContext::kGlicAgentActiveOnTab;
+  }
+  if (devtools_agent_active) {
+    return CaptchaFrameAgentContext::kDevToolsAgentActiveOnTab;
+  }
+  return CaptchaFrameAgentContext::kNoAgentActiveOnTab;
 }
 
 // Keep the histogram names in sync with the "CaptchaProvider" variant defined
@@ -97,9 +101,7 @@ void CaptchaMetricsObserver::OnDidFinishSubFrameNavigation(
           navigation_handle->GetURL());
   if (captcha_provider.has_value()) {
     const CaptchaFrameAgentContext agent_context =
-        IsActorActingOnWebContents(GetDelegate().GetWebContents())
-            ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
-            : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
+        GetCaptchaFrameAgentContext(GetDelegate().GetWebContents());
     std::string base_histogram_name = "PageLoad.Clients.CaptchaFrameLoad";
     base::UmaHistogramEnumeration(base_histogram_name, agent_context);
     std::string provider_specific_histogram_name =
@@ -126,9 +128,7 @@ void CaptchaMetricsObserver::FrameReceivedUserActivation(
           render_frame_host->GetLastCommittedURL());
   if (captcha_provider.has_value()) {
     const CaptchaFrameAgentContext agent_context =
-        IsActorActingOnWebContents(GetDelegate().GetWebContents())
-            ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
-            : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
+        GetCaptchaFrameAgentContext(GetDelegate().GetWebContents());
     std::string base_histogram_name = "PageLoad.Clients.CaptchaFrameActivation";
     base::UmaHistogramEnumeration(base_histogram_name, agent_context);
     std::string provider_specific_histogram_name =

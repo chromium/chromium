@@ -7018,6 +7018,8 @@ test("unit_tests") {
     "//chrome/browser:primitives",
     "//chrome/browser/accessibility:unit_tests",
     "//chrome/browser/accessibility_annotator:unit_tests",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/actor:unit_tests",
     "//chrome/browser/actor/ui:unit_tests",
     "//chrome/browser/ai",

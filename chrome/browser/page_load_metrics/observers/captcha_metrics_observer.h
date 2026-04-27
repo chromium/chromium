@@ -19,7 +19,9 @@ class CaptchaMetricsObserver
     kUnknown = 0,
     kNoAgentActiveOnTab = 1,
     kGlicAgentActiveOnTab = 2,
-    kMaxValue = kGlicAgentActiveOnTab,
+    kDevToolsAgentActiveOnTab = 3,
+    kMultipleAgentsActiveOnTab = 4,
+    kMaxValue = kMultipleAgentsActiveOnTab,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:CaptchaFrameAgentContext)
 
