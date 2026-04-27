@@ -92,3 +92,14 @@ TEST_F(ComposeboxStringsTest, TestServerStringsMapping) {
   EXPECT_NSEQ([strings toolsSectionHeader], @"Server Tools Header");
   EXPECT_NSEQ([strings modelSectionHeader], @"Server Model Header");
 }
+
+TEST_F(ComposeboxStringsTest, TestHeaderFallbacks) {
+  ComposeboxStrings* strings = [ComposeboxStrings localFallbackStrings];
+
+  EXPECT_NSEQ(
+      [strings toolsSectionHeader],
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE));
+  EXPECT_NSEQ(
+      [strings modelSectionHeader],
+      l10n_util::GetNSStringF(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3"));
+}

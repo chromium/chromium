@@ -135,8 +135,8 @@ enum class ComposeboxMenuSectionIdentifier {
                type:ComposeboxMenuItemType::kModelThinking];
 
   ComposeboxMenuSection* toolsSection = [[ComposeboxMenuSection alloc]
-      initWithTitle:@"Tools"  // TODO (crbug.com/504976247): Add the translated
-                              // string.
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE)
               items:@[ aimItem, createImageItem, deepSearchItem, canvasItem ]];
 
   ComposeboxMenuSection* modelsSection = [[ComposeboxMenuSection alloc]

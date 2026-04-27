@@ -126,6 +126,13 @@
   return l10n_util::GetNSStringF(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE, u"3");
 }
 
+- (NSString*)toolsSectionHeader {
+  if (_toolsSectionHeader.length > 0) {
+    return _toolsSectionHeader;
+  }
+  return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE);
+}
+
 #pragma mark - Private
 
 // Returns the server strings for the given tool, if available.

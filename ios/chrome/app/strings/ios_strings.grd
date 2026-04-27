@@ -1739,6 +1739,9 @@
         =1 {Add up to 1 tab}
         other {Add up to {COUNT} tabs}}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE" desc="Title for the tools section in the composebox section [iOS only].">
+        Tools
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO" desc="Title for the contextual menu option where the system automatically selects the optimal model per query. [iOS only].">
         Auto
       </message>
