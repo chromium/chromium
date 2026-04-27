@@ -36,11 +36,6 @@ class Project {
   virtual std::string_view GetRawSpanIncludePath() const = 0;
   virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;
   virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;
-  virtual raw_ptr_plugin::FilterFile PathsToExclude() const = 0;
-  virtual bool IsExcludedFromProject(
-      const clang::Decl& Node,
-      clang::ast_matchers::internal::ASTMatchFinder* Finder,
-      clang::ast_matchers::internal::BoundNodesTreeBuilder* Builder,
-      const raw_ptr_plugin::FilterFile* excluded_paths) const = 0;
+  virtual bool IsExcludedFromProject(const clang::Decl& Node) const = 0;
 };
 #endif  // TOOLS_CLANG_SPANIFY_PROJECT_H_

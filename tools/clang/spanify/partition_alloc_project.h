@@ -78,20 +78,9 @@ class PartitionAllocProject : public Project {
     return kFuncMappingTable;
   }
 
-  raw_ptr_plugin::FilterFile PathsToExclude() const override {
-    return raw_ptr_plugin::FilterFile({});
-  }
-
-  bool IsExcludedFromProject(
-      const clang::Decl& Node,
-      clang::ast_matchers::internal::ASTMatchFinder* Finder,
-      clang::ast_matchers::internal::BoundNodesTreeBuilder* Builder,
-      const raw_ptr_plugin::FilterFile* excluded_paths) const override {
-    using clang::ast_matchers::decl;
-    auto matcher = decl(
-        // Exclude if in a third-party location
-        raw_ptr_plugin::isInThirdPartyLocation());
-    return matcher.matches(Node, Finder, Builder);
+  bool IsExcludedFromProject(const clang::Decl& Node) const override {
+    // No known dependencies of partition_alloc to exclude at this time.
+    return false;
   }
 
  private:

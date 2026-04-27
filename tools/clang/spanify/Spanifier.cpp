@@ -3122,13 +3122,8 @@ AST_MATCHER_P(clang::Expr,
   return InnerMatcher.matches(Node, Finder, Builder);
 }
 
-AST_MATCHER_P(clang::Decl,
-              isExcludedFromProject,
-              const raw_ptr_plugin::FilterFile*,
-              excluded_paths) {
-  using namespace clang::ast_matchers;
-  return GetProject()->IsExcludedFromProject(Node, Finder, Builder,
-                                             excluded_paths);
+AST_MATCHER(clang::Decl, isExcludedFromProject) {
+  return GetProject()->IsExcludedFromProject(Node);
 }
 
 class Spanifier {
@@ -3144,7 +3139,7 @@ class Spanifier {
         raw_ptr_plugin::isInExternCContext(),
 
         // 2. Project-Specific Exclusions
-        isExcludedFromProject(&paths_to_exclude_));
+        isExcludedFromProject());
 
     // Standard exclusions include `raw_ptr` and `span`.
     auto exclusions = anyOf(
@@ -3863,7 +3858,6 @@ class Spanifier {
     match_callbacks_.push_back(std::move(match_callback));
   }
 
-  raw_ptr_plugin::FilterFile paths_to_exclude_ = GetProject()->PathsToExclude();
   MatchFinder& match_finder_;
   std::vector<std::unique_ptr<MatchCallback>> match_callbacks_;
 };

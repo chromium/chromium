@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "RawPtrHelpers.h"
+#include "Util.h"
+#include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclBase.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -19,6 +21,8 @@
 class DawnProject : public Project {
  public:
   constexpr DawnProject() = default;
+
+ private:
   std::string_view GetSpanIncludePath() const override { return "<span>"; }
   std::string_view GetSpanRelativePath(
       const clang::ast_matchers::MatchFinder::MatchResult& result)
@@ -59,25 +63,15 @@ class DawnProject : public Project {
     return kFuncMappingTable;
   }
 
-  raw_ptr_plugin::FilterFile PathsToExclude() const override {
-    return raw_ptr_plugin::FilterFile({});
-  }
+  bool IsExcludedFromProject(const clang::Decl& Node) const override {
+    const clang::SourceManager& source_manager =
+        Node.getASTContext().getSourceManager();
 
-  bool IsExcludedFromProject(
-      const clang::Decl& Node,
-      clang::ast_matchers::internal::ASTMatchFinder* Finder,
-      clang::ast_matchers::internal::BoundNodesTreeBuilder* Builder,
-      const raw_ptr_plugin::FilterFile* excluded_paths) const override {
-    const raw_ptr_plugin::FilterFile paths_to_include(
-        {"third_party/dawn/src/"});
-    using clang::ast_matchers::allOf;
-    using clang::ast_matchers::decl;
-    using clang::ast_matchers::unless;
-    auto matcher =
-        decl(allOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                   unless(raw_ptr_plugin::isInLocationListedInFilterFile(
-                       &paths_to_include))));
-    return matcher.matches(Node, Finder, Builder);
+    std::string filename = raw_ptr_plugin::GetFilename(
+        source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
+        raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
+
+    return filename.find("third_party/dawn/third_party") != std::string::npos;
   }
 };
 

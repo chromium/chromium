@@ -8,6 +8,7 @@
 #include <string>
 
 #include "RawPtrHelpers.h"
+#include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "project.h"
@@ -15,6 +16,8 @@
 class SkiaProject : public Project {
  public:
   constexpr SkiaProject() = default;
+
+ private:
   std::string_view GetSpanIncludePath() const override {
     return "include/core/SkSpan.h";
   }
@@ -56,15 +59,15 @@ class SkiaProject : public Project {
     static const std::vector<FuncMapping> kFuncMappingTable = {};
     return kFuncMappingTable;
   }
-  raw_ptr_plugin::FilterFile PathsToExclude() const override {
-    return raw_ptr_plugin::FilterFile({});
-  }
-  bool IsExcludedFromProject(
-      const clang::Decl& Node,
-      clang::ast_matchers::internal::ASTMatchFinder* Finder,
-      clang::ast_matchers::internal::BoundNodesTreeBuilder* Builder,
-      const raw_ptr_plugin::FilterFile* excluded_paths) const override {
-    return false;
+  bool IsExcludedFromProject(const clang::Decl& Node) const override {
+    const clang::SourceManager& source_manager =
+        Node.getASTContext().getSourceManager();
+
+    std::string filename = raw_ptr_plugin::GetFilename(
+        source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
+        raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
+
+    return filename.find("third_party/skia/third_party") != std::string::npos;
   }
 };
 

@@ -6,8 +6,11 @@
 #define TOOLS_CLANG_SPANIFY_CHROME_PROJECT_H_
 
 #include <string>
+#include <vector>
 
 #include "RawPtrHelpers.h"
+#include "SeparateRepositoryPaths.h"
+#include "SpanifyManualPathsToIgnore.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "project.h"
@@ -15,6 +18,8 @@
 class ChromeProject : public Project {
  public:
   constexpr ChromeProject() = default;
+
+ private:
   std::string_view GetSpanIncludePath() const override {
     return "base/containers/span.h";
   }
@@ -61,28 +66,30 @@ class ChromeProject : public Project {
     };
     return kFuncMappingTable;
   }
-  raw_ptr_plugin::FilterFile PathsToExclude() const override {
-    std::vector<std::string> paths_to_exclude_lines;
-    paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                  kSpanifyManualPathsToIgnoreChrome.begin(),
-                                  kSpanifyManualPathsToIgnoreChrome.end());
 
-    paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                  kSeparateRepositoryPaths.begin(),
-                                  kSeparateRepositoryPaths.end());
-    return raw_ptr_plugin::FilterFile(paths_to_exclude_lines);
-  }
-  bool IsExcludedFromProject(
-      const clang::Decl& Node,
-      clang::ast_matchers::internal::ASTMatchFinder* Finder,
-      clang::ast_matchers::internal::BoundNodesTreeBuilder* Builder,
-      const raw_ptr_plugin::FilterFile* excluded_paths) const override {
-    using clang::ast_matchers::anyOf;
-    using clang::ast_matchers::decl;
-    auto matcher = decl(
-        anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-              raw_ptr_plugin::isInLocationListedInFilterFile(excluded_paths)));
-    return matcher.matches(Node, Finder, Builder);
+  bool IsExcludedFromProject(const clang::Decl& Node) const override {
+    static const raw_ptr_plugin::FilterFile excluded_paths([] {
+      std::vector<std::string> paths_to_exclude_lines;
+      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                    kSpanifyManualPathsToIgnoreChrome.begin(),
+                                    kSpanifyManualPathsToIgnoreChrome.end());
+
+      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                    kSeparateRepositoryPaths.begin(),
+                                    kSeparateRepositoryPaths.end());
+      return paths_to_exclude_lines;
+    }());
+
+    const clang::SourceManager& source_manager =
+        Node.getASTContext().getSourceManager();
+
+    if (raw_ptr_plugin::isNodeInThirdPartyLocation(Node, source_manager)) {
+      return true;
+    }
+
+    return excluded_paths.ContainsSubstringOf(raw_ptr_plugin::GetFilename(
+        source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
+        raw_ptr_plugin::FilenameLocationType::kSpellingLoc));
   }
 };
 
