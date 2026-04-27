@@ -1006,25 +1006,6 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
-# Temporary builder for checking structured test ids.
-try_.builder(
-    name = "android-structured-test-ids-16-x64-rel-fyi",
-    mirrors = [
-        "ci/android-structured-test-ids-16-x64-rel-fyi",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-structured-test-ids-16-x64-rel-fyi",
-            "release_try_builder",
-        ],
-    ),
-    contact_team_email = "chrome-browser-infra-team@google.com",
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
 try_.builder(
     name = "android-webview-12-x64-dbg",
     mirrors = [
