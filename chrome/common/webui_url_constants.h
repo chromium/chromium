@@ -141,6 +141,8 @@ inline constexpr char kChromeUIDownloadsURL[] = "chrome://downloads/";
 inline constexpr char kChromeUIDrivePickerHostHost[] = "drive-picker-host";
 inline constexpr char kChromeUIDrivePickerHostURL[] =
     "chrome://drive-picker-host/";
+inline constexpr char kChromeUIDrivePickerHostUntrustedURL[] =
+    "chrome-untrusted://drive-picker-host/";
 inline constexpr char kChromeUIEDUCoexistenceLoginURLV2[] =
     "chrome://chrome-signin/edu-coexistence";
 inline constexpr char kChromeUIExtensionIconHost[] = "extension-icon";

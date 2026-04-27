@@ -31,6 +31,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -71,6 +72,8 @@ void RegisterChromeUntrustedWebUIConfigs() {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if !BUILDFLAG(IS_ANDROID)
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<DrivePickerUntrustedHostUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<NtpMicrosoftAuthUntrustedUIConfig>());
 #endif  // !BUILDFLAG(IS_ANDROID)

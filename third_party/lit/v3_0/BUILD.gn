@@ -49,6 +49,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
     "//chrome/browser/resources/drive_picker_host:build_ts",
+    "//chrome/browser/resources/drive_picker_host/untrusted:build_ts",
     "//chrome/browser/resources/extensions:build_ts",
     "//chrome/browser/resources/extensions_zero_state_promo:build_ts",
     "//chrome/browser/resources/family_link_user_internals:build_ts",

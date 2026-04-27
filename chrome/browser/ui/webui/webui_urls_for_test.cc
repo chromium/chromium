@@ -277,6 +277,7 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
       "chrome-untrusted://ai-overlay-dialog",
       "chrome-untrusted://compose",
       "chrome-untrusted://data-sharing",
+      "chrome-untrusted://drive-picker-host",
       "chrome-untrusted://lens",
       "chrome-untrusted://lens-overlay",
       "chrome-untrusted://ntp-microsoft-auth",

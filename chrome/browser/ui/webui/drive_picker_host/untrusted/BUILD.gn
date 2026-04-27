@@ -7,39 +7,36 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(!is_android)
 
 mojom("mojo_bindings") {
-  sources = [ "drive_picker_host.mojom" ]
+  sources = [ "drive_picker_host_untrusted.mojom" ]
   webui_module_path = "/"
 }
 
-source_set("drive_picker_host") {
+source_set("untrusted") {
   sources = [
-    "drive_picker_host_ui.cc",
-    "drive_picker_host_ui.h",
+    "drive_picker_host_untrusted_ui.cc",
+    "drive_picker_host_untrusted_ui.h",
   ]
 
   public_deps = [
     ":mojo_bindings",
-    "untrusted",
-    "//chrome/browser/ui/webui/top_chrome",
     "//content/public/browser",
+    "//ui/webui",
   ]
 
   deps = [
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources/drive_picker_host:resources",
+    "//chrome/browser/resources/drive_picker_host/untrusted:resources",
     "//chrome/common",
     "//components/omnibox/common",
-    "//ui/webui",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "drive_picker_host_ui_unittest.cc" ]
+  sources = [ "drive_picker_host_untrusted_ui_unittest.cc" ]
 
   deps = [
-    ":drive_picker_host",
-    "untrusted:unit_tests",
+    ":untrusted",
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//components/omnibox/common",
