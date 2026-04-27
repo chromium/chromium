@@ -58,8 +58,6 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
@@ -147,52 +145,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 }
             };
 
-    private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
-            new EntityEditorCoordinator.Delegate() {
-                @Override
-                public void onDelete(EntityInstance entityInstance) {
-                    EntityDataManager entityDataManager =
-                            EntityDataManagerFactory.getForProfile(getProfile());
-                    if (entityDataManager == null) {
-                        return;
-                    }
-                    entityDataManager.removeEntityInstance(entityInstance.getGUID());
-                }
-
-                @Override
-                public void onDone(
-                        EntityInstance entityInstance,
-                        int descriptionStringId,
-                        int acceptButtonStringId) {
-                    EntityDataManager entityDataManager =
-                            EntityDataManagerFactory.getForProfile(getProfile());
-                    if (entityDataManager == null) {
-                        return;
-                    }
-                    entityDataManager.addOrUpdateEntityInstance(
-                            entityInstance,
-                            descriptionStringId,
-                            acceptButtonStringId,
-                            () -> onLocalSaveFallback());
-                }
-
-                @Override
-                public void onOpenGoogleWallet(boolean isPrivateEntity) {
-                    Context context = getContext();
-                    if (context == null) {
-                        return;
-                    }
-
-                    if (isPrivateEntity) {
-                        GoogleWalletLauncher.openGoogleWalletPrivatePassHelpCenterPage(context);
-                    } else {
-                        GoogleWalletLauncher.openGoogleWallet(context, context.getPackageManager());
-                    }
-                }
-            };
+    private final FormsAiDelegate mFormsAiDelegate = new FormsAiDelegate(this);
 
     private static @Nullable EditorObserverForTest sObserverForTest;
-    static final int DEFAULT_SNACKBAR_DURATION = 10000;
     static final String PREF_NEW_PROFILE = "new_profile";
     static final String SAVE_AND_FILL_ADDRESSES = "save_and_fill_addresses";
     static final String DISABLED_SETTINGS_INFO = "disabled_settings_info";
@@ -567,7 +522,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     private void showEntityEditor(EntityInstance entityInstance) {
         mEntityEditor =
                 new EntityEditorCoordinator(
-                        getActivity(), mEntityEditorDelegate, getProfile(), entityInstance);
+                        getActivity(),
+                        mFormsAiDelegate.getEntityEditorDelegate(),
+                        getProfile(),
+                        entityInstance);
         mEntityEditor.showEditorDialog();
     }
 
@@ -617,7 +575,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     }
 
     void onOpenGoogleWalletForTesting(boolean isPrivateEntity) {
-        mEntityEditorDelegate.onOpenGoogleWallet(isPrivateEntity);
+        mFormsAiDelegate.getEntityEditorDelegate().onOpenGoogleWallet(isPrivateEntity);
     }
 
     @Override
@@ -651,40 +609,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
         }
-    }
-
-    private void onLocalSaveFallback() {
-        if (!(getActivity() instanceof SnackbarManager.SnackbarManageable manageable)) {
-            return;
-        }
-
-        @Nullable SnackbarManager snackbarManager = manageable.getSnackbarManager();
-        if (snackbarManager == null) {
-            return;
-        }
-
-        final String snackbarMessage =
-                getActivity()
-                        .getString(
-                                R.string
-                                        .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_title);
-        Snackbar snackBar =
-                Snackbar.make(
-                        snackbarMessage,
-                        /* controller= */ null,
-                        Snackbar.TYPE_ACTION,
-                        Snackbar.UMA_AUTOFILL_AI_LOCAL_SAVE_FALLBACK);
-        final String snackbarButton =
-                getActivity()
-                        .getString(
-                                R.string
-                                        .autofill_ai_save_or_update_entity_failed_wallet_save_dialog_confirmation_button_label);
-        snackBar.setAction(snackbarButton, /* actionData= */ null);
-        // Wrap the message text if it doesn't fit on a single line. The action text will not wrap
-        // though.
-        snackBar.setDefaultLines(false);
-        snackBar.setDuration(DEFAULT_SNACKBAR_DURATION);
-        snackbarManager.showSnackbar(snackBar);
     }
 
     private @Nullable AutofillAddress getAutofillAddress(
