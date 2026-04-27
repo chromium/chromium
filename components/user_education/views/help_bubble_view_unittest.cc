@@ -17,6 +17,7 @@
 #include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view_info.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,18 +81,19 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
     return widget_->GetClientAreaBoundsInScreen();
   }
 
-  HelpBubbleView* CreateHelpBubbleView(
+  HelpBubbleViewInfo CreateHelpBubbleView(
       HelpBubbleParams params,
       std::optional<gfx::Rect> bounds = std::nullopt,
       std::optional<views::View*> view = std::nullopt) {
     internal::HelpBubbleAnchorParams anchor_params;
     anchor_params.view = view.value_or(view_);
     anchor_params.rect = bounds;
-    return new HelpBubbleView(&test_delegate_, anchor_params,
-                              std::move(params));
+    return HelpBubbleView::Create(&test_delegate_, anchor_params,
+                                  std::move(params));
   }
 
-  HelpBubbleView* CreateHelpBubbleView(base::RepeatingClosure button_callback) {
+  HelpBubbleViewInfo CreateHelpBubbleView(
+      base::RepeatingClosure button_callback) {
     HelpBubbleParams params;
     params.body_text = u"To X, do Y";
     params.arrow = HelpBubbleArrow::kTopRight;
@@ -105,6 +107,10 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
     }
 
     return CreateHelpBubbleView(std::move(params));
+  }
+
+  static HelpBubbleView* GetBubbleView(const HelpBubbleViewInfo& info) {
+    return views::AsViewClass<HelpBubbleView>(info.bubble_view);
   }
 
   test::TestHelpBubbleDelegate test_delegate_;
@@ -127,9 +133,9 @@ TEST_F(HelpBubbleViewTest, DefaultMaxWidth) {
   button2.text = u"button2";
   params.buttons.emplace_back(std::move(button2));
 
-  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
-  EXPECT_EQ(HelpBubbleView::kMaxWidthDip, bubble->GetPreferredSize().width());
-  bubble->GetWidget()->Close();
+  const auto info = CreateHelpBubbleView(std::move(params));
+  EXPECT_EQ(HelpBubbleView::kMaxWidthDip,
+            info.bubble_view->GetPreferredSize().width());
 }
 
 TEST_F(HelpBubbleViewTest, ExpandedMaxWidth) {
@@ -147,39 +153,35 @@ TEST_F(HelpBubbleViewTest, ExpandedMaxWidth) {
   button2.text = u"button2";
   params.buttons.emplace_back(std::move(button2));
 
-  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
-  EXPECT_GT(bubble->GetPreferredSize().width(), HelpBubbleView::kMaxWidthDip);
-  bubble->GetWidget()->Close();
+  const auto info = CreateHelpBubbleView(std::move(params));
+  EXPECT_GT(info.bubble_view->GetPreferredSize().width(),
+            HelpBubbleView::kMaxWidthDip);
 }
 
 TEST_F(HelpBubbleViewTest, CallButtonCallback_Mouse) {
   UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, mock_callback);
 
-  HelpBubbleView* const bubble = CreateHelpBubbleView(mock_callback.Get());
+  const auto info = CreateHelpBubbleView(mock_callback.Get());
 
   // Simulate clicks on dismiss button.
   EXPECT_CALL_IN_SCOPE(
       mock_callback, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          bubble->GetDefaultButtonForTesting(),
+          GetBubbleView(info)->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kMouse));
-
-  bubble->GetWidget()->Close();
 }
 
 TEST_F(HelpBubbleViewTest, CallButtonCallback_Keyboard) {
   UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, mock_callback);
 
-  HelpBubbleView* const bubble = CreateHelpBubbleView(mock_callback.Get());
+  const auto info = CreateHelpBubbleView(mock_callback.Get());
 
   // Simulate clicks on dismiss button.
   EXPECT_CALL_IN_SCOPE(
       mock_callback, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          bubble->GetDefaultButtonForTesting(),
+          GetBubbleView(info)->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
-
-  bubble->GetWidget()->Close();
 }
 
 TEST_F(HelpBubbleViewTest, StableButtonOrder) {
@@ -206,9 +208,10 @@ TEST_F(HelpBubbleViewTest, StableButtonOrder) {
   button3.is_default = false;
   params.buttons.push_back(std::move(button3));
 
-  auto* bubble = new HelpBubbleView(
+  const auto info = HelpBubbleView::Create(
       &test_delegate_, internal::HelpBubbleAnchorParams{view_.get()},
       std::move(params));
+  auto* const bubble = GetBubbleView(info);
   EXPECT_EQ(kButton1Text, bubble->GetNonDefaultButtonForTesting(0)->GetText());
   EXPECT_EQ(kButton2Text, bubble->GetDefaultButtonForTesting()->GetText());
   EXPECT_EQ(kButton3Text, bubble->GetNonDefaultButtonForTesting(1)->GetText());
@@ -223,8 +226,8 @@ TEST_F(HelpBubbleViewTest, AnchorToRect) {
   gfx::Rect anchor_bounds = widget_bounds;
   anchor_bounds.Inset(50);
 
-  HelpBubbleView* const bubble =
-      CreateHelpBubbleView(std::move(params), anchor_bounds);
+  const auto info = CreateHelpBubbleView(std::move(params), anchor_bounds);
+  auto* const bubble = GetBubbleView(info);
 
   // CreateHelpBubbleView() will trigger an asynchronous autosize task.
   views::test::RunScheduledLayout(bubble->GetWidget());
@@ -250,8 +253,8 @@ TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
   gfx::Rect anchor_bounds = widget_bounds;
   anchor_bounds.Inset(50);
 
-  HelpBubbleView* const bubble =
-      CreateHelpBubbleView(std::move(params), anchor_bounds);
+  const auto info = CreateHelpBubbleView(std::move(params), anchor_bounds);
+  auto* const bubble = GetBubbleView(info);
 
   // CreateHelpBubbleView() will trigger an asynchronous autosize task.
   views::test::RunScheduledLayout(bubble->GetWidget());
@@ -328,9 +331,9 @@ class HelpBubbleViewsTest : public HelpBubbleViewTest {
   std::unique_ptr<HelpBubbleViews> CreateHelpBubble(
       HelpBubbleParams params,
       ui::TrackedElement* element) {
-    HelpBubbleView* const bubble_view =
-        CreateHelpBubbleView(std::move(params), element->GetScreenBounds());
-    return base::WrapUnique(new HelpBubbleViews(bubble_view, element));
+    return base::WrapUnique(new HelpBubbleViews(
+        CreateHelpBubbleView(std::move(params), element->GetScreenBounds()),
+        element));
   }
 
   void SetUp() override {

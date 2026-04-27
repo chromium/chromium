@@ -322,7 +322,8 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
-  EXPECT_TRUE(help_bubble->Close());
+  EXPECT_TRUE(
+      help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
   EXPECT_CALL(test_handler_->mock(), HideHelpBubble).Times(0);
 
   EXPECT_FALSE(help_bubble->is_open());
@@ -413,7 +414,8 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
-  EXPECT_TRUE(help_bubble->Close());
+  EXPECT_TRUE(
+      help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 
   EXPECT_FALSE(help_bubble->is_open());
 }
@@ -443,7 +445,8 @@ TEST_F(HelpBubbleHandlerTest, FocusHelpBubble) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
-  EXPECT_TRUE(help_bubble->Close());
+  EXPECT_TRUE(
+      help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated) {
@@ -478,7 +481,8 @@ TEST_F(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated) {
   EXPECT_CALL(
       test_handler_->mock(),
       ExternalHelpBubbleUpdated(element->identifier().GetName(), false));
-  EXPECT_TRUE(help_bubble->Close());
+  EXPECT_TRUE(
+      help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenVisibilityChanges) {
@@ -513,6 +517,7 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenVisibilityChanges) {
 }
 
 TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
+  UNCALLED_MOCK_CALLBACK(HelpBubble::ClosingCallback, closing);
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
 
   tracked_element_handler()->TrackedElementVisibilityChanged(
@@ -528,12 +533,15 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
-  auto subscription = help_bubble->AddOnCloseCallback(closed.Get());
+  auto subscription1 = help_bubble->AddOnClosingCallback(closing.Get());
+  auto subscription2 = help_bubble->AddOnClosedCallback(closed.Get());
   EXPECT_TRUE(
       test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
-  EXPECT_CALL_IN_SCOPE(
-      closed, Run,
+  EXPECT_CALLS_IN_SCOPE_2(
+      closing,
+      Run(help_bubble.get(), HelpBubble::CloseReason::kProgrammaticallyClosed),
+      closed, Run(HelpBubble::CloseReason::kProgrammaticallyClosed),
       handler()->HelpBubbleClosed(
           kHelpBubbleHandlerTestElementIdentifier.GetName(),
           help_bubble::mojom::HelpBubbleClosedReason::kPageChanged));
@@ -556,6 +564,7 @@ TEST_F(HelpBubbleHandlerTest, DestroyHandlerCleansUpElement) {
 // Asserts that closing the HelpBubble handle to a bubble instance destroys
 // the bubble.
 TEST_F(HelpBubbleHandlerTest, DestroyBubbleWrapperClosesHelpBubble) {
+  UNCALLED_MOCK_CALLBACK(HelpBubble::ClosingCallback, closing);
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
 
   tracked_element_handler()->TrackedElementVisibilityChanged(
@@ -571,12 +580,16 @@ TEST_F(HelpBubbleHandlerTest, DestroyBubbleWrapperClosesHelpBubble) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
-  auto subscription = help_bubble->AddOnCloseCallback(closed.Get());
+  auto subscription1 = help_bubble->AddOnClosingCallback(closing.Get());
+  auto subscription2 = help_bubble->AddOnClosedCallback(closed.Get());
 
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
-  EXPECT_CALL_IN_SCOPE(closed, Run, help_bubble.reset());
+  EXPECT_CALLS_IN_SCOPE_2(
+      closing,
+      Run(help_bubble.get(), HelpBubble::CloseReason::kBubbleDestroyed), closed,
+      Run(HelpBubble::CloseReason::kBubbleDestroyed), help_bubble.reset());
 }
 
 TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedByUserCallsDismiss) {
@@ -882,7 +895,9 @@ TEST_F(HelpBubbleHandlerTest,
   EXPECT_TRUE(help_bubble->is_open());
 
   EXPECT_CALL(test_handler_->mock(), HideHelpBubble(testing::_));
-  EXPECT_CALL_IN_SCOPE(element_hidden, Run, help_bubble->Close());
+  EXPECT_CALL_IN_SCOPE(
+      element_hidden, Run,
+      help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 }  // namespace user_education

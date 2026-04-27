@@ -155,7 +155,10 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto CloseHelpBubble() {
-    return Do(base::BindLambdaForTesting([this]() { help_bubble_->Close(); }));
+    return Do(base::BindLambdaForTesting([this]() {
+      help_bubble_->Close(
+          user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
+    }));
   }
 
   auto CheckHandlerHasHelpBubble(ElementSpecifier anchor,

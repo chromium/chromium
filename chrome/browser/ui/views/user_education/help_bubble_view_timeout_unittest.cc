@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_view_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -19,14 +20,7 @@ using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleButtonParams;
 using user_education::HelpBubbleParams;
 using user_education::HelpBubbleView;
-
-namespace {
-class TestHelpBubbleView : public HelpBubbleView {
- public:
-  using HelpBubbleView::HelpBubbleView;
-  using HelpBubbleView::OnWidgetActivationChanged;
-};
-}  // namespace
+using user_education::HelpBubbleViewInfo;
 
 // Testing timeouts can be flaky on some platforms without the full browser view
 // and its message pump, so we do these tests here rather than in the
@@ -46,10 +40,16 @@ class HelpBubbleViewTimeoutTest : public TestWithBrowserView {
     return params;
   }
 
-  TestHelpBubbleView* CreateHelpBubbleView(HelpBubbleParams params) {
-    return new TestHelpBubbleView(GetHelpBubbleDelegate(),
+  [[nodiscard]] HelpBubbleViewInfo CreateHelpBubbleView(
+      HelpBubbleParams params) {
+    return HelpBubbleView::Create(GetHelpBubbleDelegate(),
                                   {browser_view()->contents_container()},
                                   std::move(params));
+  }
+
+  void SimulateActivation(const HelpBubbleViewInfo& info, bool active) {
+    static_cast<HelpBubbleView*>(info.bubble_view)
+        ->OnWidgetActivationChanged(info.widget.get(), active);
   }
 };
 
@@ -61,10 +61,10 @@ class MockWidgetObserver : public views::WidgetObserver {
 TEST_F(HelpBubbleViewTimeoutTest, DismissOnTimeout) {
   HelpBubbleParams params = GetBubbleParams();
   params.timeout = base::Seconds(30);
-  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
+  auto info = CreateHelpBubbleView(std::move(params));
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(1);
-  bubble->GetWidget()->AddObserver(&dismiss_observer);
+  info.widget->AddObserver(&dismiss_observer);
   task_environment()->FastForwardBy(base::Minutes(1));
   task_environment()->RunUntilIdle();
 }
@@ -75,15 +75,15 @@ TEST_F(HelpBubbleViewTimeoutTest, NoAutoDismissWithoutTimeout) {
   HelpBubbleButtonParams button_params;
   button_params.text = u"button";
   params.buttons.push_back(std::move(button_params));
-  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
+  auto info = CreateHelpBubbleView(std::move(params));
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(0);
-  bubble->GetWidget()->AddObserver(&dismiss_observer);
+  info.widget->AddObserver(&dismiss_observer);
   task_environment()->FastForwardBy(base::Minutes(1));
   task_environment()->RunUntilIdle();
   // WidgetObserver checks if it is in an observer list in its destructor.
   // Need to remove it from widget manually.
-  bubble->GetWidget()->RemoveObserver(&dismiss_observer);
+  info.widget->RemoveObserver(&dismiss_observer);
 }
 
 TEST_F(HelpBubbleViewTimeoutTest, TimeoutCallback) {
@@ -93,10 +93,10 @@ TEST_F(HelpBubbleViewTimeoutTest, TimeoutCallback) {
   params.timeout = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
 
-  CreateHelpBubbleView(std::move(params));
+  auto bubble = CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(1);
-  task_environment()->FastForwardBy(base::Seconds(10));
+  task_environment()->FastForwardBy(base::Seconds(11));
 }
 
 TEST_F(HelpBubbleViewTimeoutTest, NoTimeoutIfSetToZero) {
@@ -106,7 +106,7 @@ TEST_F(HelpBubbleViewTimeoutTest, NoTimeoutIfSetToZero) {
   params.timeout = base::TimeDelta();
   params.timeout_callback = timeout_callback.Get();
 
-  CreateHelpBubbleView(std::move(params));
+  auto bubble = CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
 
@@ -121,7 +121,7 @@ TEST_F(HelpBubbleViewTimeoutTest, RespectsProvidedTimeoutBeforeActivate) {
   params.timeout = base::Seconds(20);
   params.timeout_callback = timeout_callback.Get();
 
-  CreateHelpBubbleView(std::move(params));
+  auto bubble = CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
   task_environment()->FastForwardBy(base::Seconds(19));
@@ -139,19 +139,19 @@ TEST_F(HelpBubbleViewTimeoutTest, RespectsProvidedTimeoutAfterActivate) {
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
 
-  TestHelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
+  auto info = CreateHelpBubbleView(std::move(params));
 
   task_environment()->FastForwardBy(base::Seconds(9));
 
   // Simulate bubble activation. We won't actually activate the bubble since
   // bubble visibility and activation don't work well in this mock environment.
-  bubble->OnWidgetActivationChanged(bubble->GetWidget(), true);
+  SimulateActivation(info, true);
 
   // The bubble should not time out since it is active.
   task_environment()->FastForwardBy(base::Seconds(4));
 
   // Deactivating the widget should restart the timer.
-  bubble->OnWidgetActivationChanged(bubble->GetWidget(), false);
+  SimulateActivation(info, false);
 
   // Wait most of the timeout, but not all of it.
   task_environment()->FastForwardBy(base::Seconds(9));

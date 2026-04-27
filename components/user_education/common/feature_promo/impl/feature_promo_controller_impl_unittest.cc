@@ -200,8 +200,9 @@ TEST_F(FeaturePromoControllerQueueTest, QueueTwoPromosTogetherBothAreEligible) {
                                              promo_context());
   });
 
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest,
@@ -226,7 +227,9 @@ TEST_F(FeaturePromoControllerQueueTest,
                              { anchor_element().Show(); });
 
   // The second promo can show right away.
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run,
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest,
@@ -300,8 +303,9 @@ TEST_F(FeaturePromoControllerQueueTest, QueueMidThenLowPriority) {
     promo_controller().MaybeShowStartupPromo(std::move(params2),
                                              promo_context());
   });
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
@@ -323,8 +327,9 @@ TEST_F(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
     promo_controller().MaybeShowStartupPromo(std::move(params),
                                              promo_context());
   });
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
@@ -344,8 +349,9 @@ TEST_F(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
     promo_controller().MaybeShowStartupPromo(std::move(params2),
                                              promo_context());
   });
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
@@ -367,8 +373,9 @@ TEST_F(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
     promo_controller().MaybeShowStartupPromo(std::move(params),
                                              promo_context());
   });
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest, DemoOverridesOtherPromos) {
@@ -417,8 +424,9 @@ TEST_F(FeaturePromoControllerQueueTest, ShowHighThenQueueLowPriority) {
   });
 
   promo_controller().MaybeShowStartupPromo(std::move(params2), promo_context());
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
-                             GetHelpBubble()->Close());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result2, Run(FeaturePromoResult::Success()),
+      GetHelpBubble()->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
 }
 
 TEST_F(FeaturePromoControllerQueueTest, ShowLowThenQueueHighPriority) {
