@@ -241,8 +241,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 1.3: Bug fix for privacy notice on composebox camouflage.
 // Version 2.0: M146 respin launch candidate.
 // Version 2.1: Enables stratus dark mode colors.
+// Version 2.2: Added UI fixes for NLM.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.1"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.2"};
 
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,
