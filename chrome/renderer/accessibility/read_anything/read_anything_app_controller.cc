@@ -1474,8 +1474,12 @@ ui::AXNodeID ReadAnythingAppController::RootId() const {
   ui::AXSerializableTree* tree = model_.GetActiveTree();
   // Fail gracefully if RootId() is ever called with an invalid active tree.
   DUMP_WILL_BE_CHECK(tree);
+  if (!tree) {
+    return ui::kInvalidAXNodeID;
+  }
+
   DUMP_WILL_BE_CHECK(tree->root());
-  if (!tree || !tree->root()) {
+  if (!tree->root()) {
     return ui::kInvalidAXNodeID;
   }
   return tree->root()->id();
