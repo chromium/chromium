@@ -4,10 +4,12 @@
 
 import '//bookmarks-side-panel.top-chrome/shared/sp_list_item_badge.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import '//resources/cr_elements/icons.html.js';
 import './icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -66,10 +68,14 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
       shoppingCollectionFolderId: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
-      isSelected: {type: Boolean},
       selectedBookmarks: {type: Array},
       renamingId: {type: String},
       hasActiveDrag: {type: Boolean},
+      isExpandable: {type: Boolean},
+      expanded: {
+        type: Boolean,
+        notify: true,
+      },
     };
   }
 
@@ -95,10 +101,11 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
   accessor shoppingCollectionFolderId: string = '';
   accessor trailingIconTooltip: string = '';
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
-  accessor isSelected: boolean = false;
   accessor selectedBookmarks: BookmarksTreeNode[] = [];
   accessor renamingId: string = '';
   accessor hasActiveDrag: boolean = false;
+  accessor isExpandable: boolean = false;
+  accessor expanded: boolean = false;
 
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();
@@ -188,6 +195,10 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
       bookmark: this.bookmark,
       checked: (event.target as CrCheckboxElement).checked,
     });
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{ value: boolean }>) {
+    this.expanded = e.detail.value;
   }
 
   protected onInputKeydown_(event: KeyboardEvent) {

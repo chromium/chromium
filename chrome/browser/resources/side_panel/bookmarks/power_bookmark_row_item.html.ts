@@ -14,7 +14,6 @@ return html`<!--_html_template_start_-->
     aria-level="${this.depth + 1}"
     .size="${this.listItemSize}"
     .url="${this.getUrl_()}"
-    ?selected="${this.isSelected}"
     .imageUrls="${this.getBookmarkImageUrls_()}"
     .count="${this.bookmark.children?.length}"
     .title="${this.bookmark.title}"
@@ -26,6 +25,17 @@ return html`<!--_html_template_start_-->
     @auxclick="${this.onAuxclick_}"
     @contextmenu="${this.onContextmenu_}"
     ?force-hover="${this.getBookmarkForceHover_()}">
+
+  ${this.isExpandable ? html`
+    <cr-expand-button slot="prefix" id="expandButton"
+        no-hover
+        .expanded="${this.expanded}"
+        aria-expanded="${this.expanded}"
+        tab-index="-1"
+        collapse-icon="cr:expand-more"
+        expand-icon="cr:chevron-right"
+        @expanded-changed="${this.onExpandedChanged_}">
+    </cr-expand-button>` : ''}
 
   ${this.hasCheckbox ? html`
     <cr-checkbox id="checkbox" slot="prefix"

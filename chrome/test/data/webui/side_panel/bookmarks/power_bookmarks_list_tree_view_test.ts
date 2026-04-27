@@ -7,7 +7,6 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
@@ -275,18 +274,21 @@ suite('TreeView', () => {
     const folderElement = getPowerBookmarksRowElement(powerBookmarksList, '5');
     assertTrue(!!folderElement);
 
+    const folderItem = getPowerBookmarksRowItemElement(powerBookmarksList, '5');
+    assertTrue(!!folderItem);
+
     let expandButton =
-        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
+        folderItem.shadowRoot.querySelector<HTMLElement>(
             '#expandButton');
     // Assert that the expand button is present for folders
     assertTrue(!!expandButton);
 
-    const singleBookmarkElement =
-        getPowerBookmarksRowElement(powerBookmarksList, '3');
-    assertTrue(!!singleBookmarkElement);
+    const singleBookmarkItem =
+        getPowerBookmarksRowItemElement(powerBookmarksList, '3');
+    assertTrue(!!singleBookmarkItem);
 
     expandButton =
-        singleBookmarkElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
+        singleBookmarkItem.shadowRoot.querySelector<HTMLElement>(
             '#expandButton');
     // Assert that the expand button is not present for single bookmarks
     assertFalse(!!expandButton);
@@ -367,8 +369,10 @@ suite('TreeView', () => {
     const folderElement = getPowerBookmarksRowElement(powerBookmarksList, '5');
     assertTrue(!!folderElement);
 
+    const bookmarkRowItem = getPowerBookmarksRowItemElement(powerBookmarksList, '5');
+    assertTrue(!!bookmarkRowItem);
     const expandButton =
-        folderElement.shadowRoot.querySelector<PowerBookmarkRowElement>(
+        bookmarkRowItem.shadowRoot.querySelector<HTMLElement>(
             '#expandButton');
     assertTrue(!!expandButton);
 
@@ -392,8 +396,8 @@ suite('TreeView', () => {
     assertEquals(loadTimeData.getString('tooltipMore'), dotsIcon.title);
 
     const bookmarkDiv =
-        nestedBookmarkElement.shadowRoot.querySelector<HTMLElement>(
-            '#bookmark');
+        rowItem.shadowRoot.querySelector<HTMLElement>(
+            '#crUrlListItem');
     assertTrue(!!bookmarkDiv);
 
     // Check if the depth is correctly applied to the style
@@ -401,7 +405,7 @@ suite('TreeView', () => {
     const expectedMargin =
         nestedBookmarkElement.depth * NESTED_BOOKMARKS_MARGIN_PER_DEPTH +
         NESTED_BOOKMARKS_BASE_MARGIN;
-    assertEquals(`${expectedMargin}px`, computedStyle.marginLeft);
+    assertEquals(`${expectedMargin}px`, computedStyle.paddingInlineStart);
 
     expandButton.click();
     await microtasksFinished();
@@ -583,8 +587,10 @@ suite('TreeView', () => {
     assertTrue(!!folder6, 'Folder 6 should exist');
 
     // Expand Folder 5 and Folder 6 to reveal their children.
-    folder5.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
-    folder6.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
+    const folderItem5 = getPowerBookmarksRowItemElement(powerBookmarksList, '5')!;
+    folderItem5.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
+    const folderItem6 = getPowerBookmarksRowItemElement(powerBookmarksList, '6')!;
+    folderItem6.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
     await flushTasks();
 
     assertTrue(

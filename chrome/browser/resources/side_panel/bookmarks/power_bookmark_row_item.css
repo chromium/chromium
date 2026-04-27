@@ -14,7 +14,7 @@
 }
 
 cr-url-list-item[size=compact] {
-  margin-inline-start: 10px;
+  padding-inline-start: calc(var(--depth) * var(--margin-per-depth));
   --cr-url-list-item-padding: 6px;
   width: inherit;
 }
@@ -51,4 +51,13 @@ cr-input.stroked:hover {
 .bookmark-icon {
   height: 20px;
   width: 20px;
+}
+
+cr-expand-button {
+  --cr-icon-button-margin-start: 8px;
+}
+
+:host(.bookmark) cr-url-list-item {
+  padding-inline-start: calc(var(--depth) * var(--margin-per-depth) +
+      var(--base-margin));
 }
