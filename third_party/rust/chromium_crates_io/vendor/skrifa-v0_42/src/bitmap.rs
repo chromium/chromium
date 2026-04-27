@@ -1,5 +1,7 @@
 //! Bitmap strikes and glyphs.
 
+use alloc::vec::Vec;
+
 use super::{instance::Size, metrics::GlyphMetrics, MetadataProvider};
 use crate::prelude::LocationRef;
 use raw::{
@@ -370,6 +372,129 @@ pub struct MaskData<'a> {
     pub data: &'a [u8],
 }
 
+/// Error type returned by [`MaskData::decode`] and [`MaskData::decode_to_slice`].
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum MaskDataDecodeError {
+    /// The width and height product overflows `usize`.
+    SizeOverflow,
+    /// The data buffer is too small for the given dimensions and bit depth.
+    InvalidDimensions,
+}
+
+impl MaskData<'_> {
+    /// Decodes the raw packed bitmap data into 8-bit-per-pixel values,
+    /// writing the result into the provided buffer.
+    ///
+    /// The buffer must be at least `width * height` bytes long. Each pixel
+    /// value is scaled to the 0–255 range.
+    pub fn decode_to_slice(
+        &self,
+        width: u32,
+        height: u32,
+        dst: &mut [u8],
+    ) -> Result<(), MaskDataDecodeError> {
+        let w = width as usize;
+        let h = height as usize;
+        let total_pixels = w.checked_mul(h).ok_or(MaskDataDecodeError::SizeOverflow)?;
+        if total_pixels == 0 {
+            return Ok(());
+        }
+        let bits = self.bpp as usize;
+        if dst.len() < total_pixels {
+            return Err(MaskDataDecodeError::InvalidDimensions);
+        }
+        let dst = &mut dst[..total_pixels];
+        if !self.is_packed {
+            // Byte-aligned: each row is padded to a byte boundary.
+            let row_bytes = (w * bits).div_ceil(8);
+            let expected_data_len = row_bytes
+                .checked_mul(h)
+                .ok_or(MaskDataDecodeError::SizeOverflow)?;
+            if self.data.len() < expected_data_len {
+                return Err(MaskDataDecodeError::InvalidDimensions);
+            }
+            let mut dst_idx = 0;
+            match self.bpp {
+                1 => {
+                    for row in self.data.chunks(row_bytes) {
+                        for x in 0..w {
+                            dst[dst_idx] = ((row[x >> 3] >> (!x & 7)) & 1) * 255;
+                            dst_idx += 1;
+                        }
+                    }
+                }
+                2 => {
+                    for row in self.data.chunks(row_bytes) {
+                        for x in 0..w {
+                            dst[dst_idx] = ((row[x >> 2] >> (!(x * 2) & 6)) & 3) * 85;
+                            dst_idx += 1;
+                        }
+                    }
+                }
+                4 => {
+                    for row in self.data.chunks(row_bytes) {
+                        for x in 0..w {
+                            dst[dst_idx] = ((row[x >> 1] >> (!(x * 4) & 4)) & 15) * 17;
+                            dst_idx += 1;
+                        }
+                    }
+                }
+                8 => {
+                    for row in self.data.chunks(row_bytes) {
+                        dst[dst_idx..dst_idx + w].copy_from_slice(&row[..w]);
+                        dst_idx += w;
+                    }
+                }
+                _ => return Err(MaskDataDecodeError::InvalidDimensions),
+            }
+        } else {
+            // Bit-aligned: pixels are tightly packed with no row padding.
+            let total_bits = total_pixels
+                .checked_mul(bits)
+                .ok_or(MaskDataDecodeError::SizeOverflow)?;
+            let expected_data_len = total_bits.div_ceil(8);
+            if self.data.len() < expected_data_len {
+                return Err(MaskDataDecodeError::InvalidDimensions);
+            }
+            match self.bpp {
+                1 => {
+                    for (x, pixel) in dst.iter_mut().enumerate() {
+                        *pixel = ((self.data[x >> 3] >> (!x & 7)) & 1) * 255;
+                    }
+                }
+                2 => {
+                    for (x, pixel) in dst.iter_mut().enumerate() {
+                        *pixel = ((self.data[x >> 2] >> (!(x * 2) & 6)) & 3) * 85;
+                    }
+                }
+                4 => {
+                    for (x, pixel) in dst.iter_mut().enumerate() {
+                        *pixel = ((self.data[x >> 1] >> (!(x * 4) & 4)) & 15) * 17;
+                    }
+                }
+                8 => {
+                    dst.copy_from_slice(&self.data[..total_pixels]);
+                }
+                _ => return Err(MaskDataDecodeError::InvalidDimensions),
+            }
+        }
+        Ok(())
+    }
+
+    /// Decodes the raw packed bitmap data into 8-bit-per-pixel values.
+    ///
+    /// Returns a `Vec<u8>` of `width * height` bytes, with each pixel
+    /// value scaled to the 0–255 range.
+    pub fn decode(&self, width: u32, height: u32) -> Result<Vec<u8>, MaskDataDecodeError> {
+        let w = width as usize;
+        let h = height as usize;
+        let total_pixels = w.checked_mul(h).ok_or(MaskDataDecodeError::SizeOverflow)?;
+        let mut dst = vec![0u8; total_pixels];
+        self.decode_to_slice(width, height, &mut dst)?;
+        Ok(dst)
+    }
+}
+
 /// The format (or table) containing the data backing a set of bitmap strikes.
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum BitmapFormat {
@@ -380,7 +505,7 @@ pub enum BitmapFormat {
 
 #[cfg(test)]
 mod tests {
-    use crate::bitmap::{BitmapData, StrikesKind};
+    use crate::bitmap::{BitmapData, MaskData, MaskDataDecodeError, StrikesKind};
     use crate::prelude::Size;
     use crate::{GlyphId, MetadataProvider};
     use raw::FontRef;
@@ -478,5 +603,196 @@ mod tests {
         assert_eq!(g0.inner_bearing_x, 4.0);
         assert_eq!(g0.inner_bearing_y, -27.0);
         assert!(matches!(g0.data, BitmapData::Png(_)))
+    }
+
+    #[test]
+    fn decode_1bpp_non_packed() {
+        // 4×2 image, 1 bpp, byte-aligned (each row padded to 1 byte).
+        // Row 0: pixels [1,0,1,0] → 0b1010_0000 = 0xA0
+        // Row 1: pixels [0,1,0,1] → 0b0101_0000 = 0x50
+        let mask = MaskData {
+            bpp: 1,
+            is_packed: false,
+            data: &[0xA0, 0x50],
+        };
+        let decoded = mask.decode(4, 2).unwrap();
+        assert_eq!(decoded, [255, 0, 255, 0, 0, 255, 0, 255],);
+    }
+
+    #[test]
+    fn decode_2bpp_non_packed() {
+        // 4×1 image, 2 bpp, byte-aligned.
+        // Pixels [3, 2, 1, 0] → 0b11_10_01_00 = 0xE4
+        // Scaled by 85: [255, 170, 85, 0]
+        let mask = MaskData {
+            bpp: 2,
+            is_packed: false,
+            data: &[0xE4],
+        };
+        let decoded = mask.decode(4, 1).unwrap();
+        assert_eq!(decoded, [255, 170, 85, 0]);
+    }
+
+    #[test]
+    fn decode_4bpp_non_packed() {
+        // 3×2 image, 4 bpp, byte-aligned.
+        // row_bytes = ceil(3*4 / 8) = 2
+        // Row 0: pixels [15, 8, 4]
+        //   byte 0: (15 << 4) | 8 = 0xF8
+        //   byte 1: (4  << 4) | 0 = 0x40  (low nibble is padding)
+        // Row 1: pixels [0, 5, 10]
+        //   byte 0: (0  << 4) | 5 = 0x05
+        //   byte 1: (10 << 4) | 0 = 0xA0
+        // Scaled by 17: [255, 136, 68, 0, 85, 170]
+        let mask = MaskData {
+            bpp: 4,
+            is_packed: false,
+            data: &[0xF8, 0x40, 0x05, 0xA0],
+        };
+        let decoded = mask.decode(3, 2).unwrap();
+        assert_eq!(decoded, [255, 136, 68, 0, 85, 170]);
+    }
+
+    #[test]
+    fn decode_8bpp_non_packed() {
+        // 3×2 image, 8 bpp, byte-aligned (trivial copy).
+        let mask = MaskData {
+            bpp: 8,
+            is_packed: false,
+            data: &[10, 20, 30, 40, 50, 60],
+        };
+        let decoded = mask.decode(3, 2).unwrap();
+        assert_eq!(decoded, [10, 20, 30, 40, 50, 60]);
+    }
+
+    #[test]
+    fn decode_1bpp_packed() {
+        // 3×3 image, 1 bpp, bit-aligned (packed, no row padding).
+        // 9 pixels packed into 2 bytes, MSB first.
+        // Pixels: [1,0,1, 0,1,0, 1,1,0]
+        // Bits:    1 0 1 0 1 0 1 1 | 0 x x x x x x x
+        // Byte 0: 0b10101011 = 0xAB
+        // Byte 1: 0b00000000 = 0x00 (only MSB used)
+        let mask = MaskData {
+            bpp: 1,
+            is_packed: true,
+            data: &[0xAB, 0x00],
+        };
+        let decoded = mask.decode(3, 3).unwrap();
+        assert_eq!(decoded, [255, 0, 255, 0, 255, 0, 255, 255, 0],);
+    }
+
+    #[test]
+    fn decode_2bpp_packed() {
+        // 5×2 image, 2 bpp, bit-aligned (packed, no row padding).
+        // 10 pixels × 2 bits = 20 bits = 3 bytes (last 4 bits unused).
+        // Pixels: [3, 2, 1, 0, 3,  0, 1, 2, 3, 0]
+        // Byte 0: 0b11_10_01_00 = 0xE4  (pixels 0–3)
+        // Byte 1: 0b11_00_01_10 = 0xC6  (pixels 4–7)
+        // Byte 2: 0b11_00_0000 = 0xC0   (pixels 8–9, rest padding)
+        // Scaled by 85: [255, 170, 85, 0, 255, 0, 85, 170, 255, 0]
+        let mask = MaskData {
+            bpp: 2,
+            is_packed: true,
+            data: &[0xE4, 0xC6, 0xC0],
+        };
+        let decoded = mask.decode(5, 2).unwrap();
+        assert_eq!(decoded, [255, 170, 85, 0, 255, 0, 85, 170, 255, 0]);
+    }
+
+    #[test]
+    fn decode_4bpp_packed() {
+        // 3×2 image, 4 bpp, bit-aligned (packed, no row padding).
+        // 6 pixels × 4 bits = 24 bits = 3 bytes exactly.
+        // Pixels: [15, 0, 8, 4, 10, 5]
+        // Byte 0: (15 << 4) | 0  = 0xF0
+        // Byte 1: (8  << 4) | 4  = 0x84
+        // Byte 2: (10 << 4) | 5  = 0xA5
+        // Scaled by 17: [255, 0, 136, 68, 170, 85]
+        let mask = MaskData {
+            bpp: 4,
+            is_packed: true,
+            data: &[0xF0, 0x84, 0xA5],
+        };
+        let decoded = mask.decode(3, 2).unwrap();
+        assert_eq!(decoded, [255, 0, 136, 68, 170, 85]);
+    }
+
+    #[test]
+    fn decode_8bpp_packed() {
+        // 3×2 image, 8 bpp, bit-aligned (packed, trivial copy).
+        // Each pixel is one byte, so packed and non-packed are equivalent.
+        let mask = MaskData {
+            bpp: 8,
+            is_packed: true,
+            data: &[100, 200, 50, 0, 128, 255],
+        };
+        let decoded = mask.decode(3, 2).unwrap();
+        assert_eq!(decoded, [100, 200, 50, 0, 128, 255]);
+    }
+
+    #[test]
+    fn decode_error_cases() {
+        // Zero dimensions return Ok with empty output.
+        let mask = MaskData {
+            bpp: 8,
+            is_packed: false,
+            data: &[],
+        };
+        assert!(mask.decode(0, 0).unwrap().is_empty());
+        assert!(mask.decode(0, 5).unwrap().is_empty());
+        assert!(mask.decode(5, 0).unwrap().is_empty());
+
+        // Data too short for non-packed.
+        let mask = MaskData {
+            bpp: 8,
+            is_packed: false,
+            data: &[1, 2, 3],
+        };
+        assert_eq!(
+            mask.decode(4, 2),
+            Err(MaskDataDecodeError::InvalidDimensions)
+        );
+
+        // Data too short for packed (9 pixels at 1 bpp needs 2 bytes).
+        let mask = MaskData {
+            bpp: 1,
+            is_packed: true,
+            data: &[0xFF],
+        };
+        assert_eq!(
+            mask.decode(3, 3),
+            Err(MaskDataDecodeError::InvalidDimensions)
+        );
+    }
+
+    #[test]
+    fn decode_to_slice_basic_and_errors() {
+        let mask = MaskData {
+            bpp: 8,
+            is_packed: false,
+            data: &[10, 20, 30, 40, 50, 60],
+        };
+
+        // Successful decode into a provided buffer.
+        let mut buf = [0u8; 6];
+        mask.decode_to_slice(3, 2, &mut buf).unwrap();
+        assert_eq!(buf, [10, 20, 30, 40, 50, 60]);
+
+        // Output buffer too small.
+        let mut small_buf = [0u8; 4];
+        assert_eq!(
+            mask.decode_to_slice(3, 2, &mut small_buf),
+            Err(MaskDataDecodeError::InvalidDimensions)
+        );
+
+        // Zero dimensions succeed with empty buffer.
+        let empty = MaskData {
+            bpp: 8,
+            is_packed: false,
+            data: &[],
+        };
+        let mut empty_buf = [0u8; 0];
+        empty.decode_to_slice(0, 0, &mut empty_buf).unwrap();
     }
 }

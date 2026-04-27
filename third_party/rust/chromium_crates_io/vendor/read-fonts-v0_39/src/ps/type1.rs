@@ -87,15 +87,17 @@ impl Type1Font {
                         font.weight = parser.read_string();
                     }
                 }
-                Token::Name(b"ItalicAngle") => font.italic_angle = parser.read_int()? as i32,
+                Token::Name(b"ItalicAngle") => {
+                    font.italic_angle = parser.read_num_as_int().unwrap_or(0)
+                }
                 Token::Name(b"IsFixedPitch") => {
                     font.is_fixed_pitch = parser.next() == Some(Token::Raw(b"true"))
                 }
                 Token::Name(b"UnderlinePosition") => {
-                    font.underline_position = parser.read_int()? as i32
+                    font.underline_position = parser.read_num_as_int().unwrap_or(0);
                 }
                 Token::Name(b"UnderlineThickness") => {
-                    font.underline_thickness = parser.read_int()? as i32
+                    font.underline_thickness = parser.read_num_as_int().unwrap_or(0);
                 }
                 Token::Name(b"FontBBox") => {
                     if let Some([x_min, y_min, x_max, y_max]) = parser.read_font_bbox() {
@@ -963,6 +965,17 @@ impl<'a> Parser<'a> {
         })
     }
 
+    fn read_num_as_int(&mut self) -> Option<i32> {
+        match self.next()? {
+            Token::Int(n) => Some(n as i32),
+            // Note, FT calls PS_Conv_ToInt for fields that might contain
+            // fractional bits but just ignores everything after the
+            // initial integer, so we do the same
+            Token::Raw(bytes) => decode_int_prefix(bytes, 0).map(|n| n.0 as i32),
+            _ => None,
+        }
+    }
+
     fn read_string(&mut self) -> Option<String> {
         use alloc::borrow::ToOwned;
         let bytes = match self.next()? {
@@ -1631,6 +1644,16 @@ mod tests {
                 Token::Int(252),
             ],
         );
+    }
+
+    #[test]
+    fn parse_num_to_int() {
+        let mut parser =
+            Parser::new(b"102 102.1 102.4 102.5 102.9 -102.1 -102.5 -102.9 8#146 16#66");
+        for _ in 0..10 {
+            assert_eq!(parser.read_num_as_int().unwrap().abs(), 102);
+        }
+        assert!(parser.next().is_none());
     }
 
     #[test]
