@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.enterprise.util;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_CONTROLS_SEARCH_WITH;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID;
 
 import androidx.annotation.VisibleForTesting;
@@ -13,8 +14,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 
 /** Provides access to the enterprise data protection utility methods. */
 @NullMarked
@@ -172,6 +175,32 @@ public class DataProtectionBridge {
                 .verifyGenericCopyImageActionIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
+    /**
+     * Checks if the user is allowed to use the "Search for..." context menu item in the given
+     * WebContents based on DataControlsRules policies. Returns true if search is allowed, false
+     * otherwise.
+     */
+    public static boolean isSearchWithAllowed(@Nullable WebContents webContents) {
+        if (!ChromeFeatureList.isEnabled(DATA_CONTROLS_SEARCH_WITH)) {
+            return true;
+        }
+        return DataProtectionBridgeJni.get().isSearchWithAllowed(webContents);
+    }
+
+    /**
+     * Checks if the user is allowed to use the "Search for..." context menu item in the given
+     * WebContents based on DataControlsRules policies. If the action is allowed (or reported/warned
+     * and bypassed), `callback` will be run.
+     */
+    public static void shouldAllowSearchWith(
+            int textLength, @Nullable WebContents webContents, Runnable callback) {
+        if (!ChromeFeatureList.isEnabled(DATA_CONTROLS_SEARCH_WITH)) {
+            callback.run();
+            return;
+        }
+        DataProtectionBridgeJni.get().shouldAllowSearchWith(textLength, webContents, callback);
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
@@ -209,5 +238,12 @@ public class DataProtectionBridge {
                 String imageUri,
                 RenderFrameHost renderFrameHost,
                 @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
+
+        boolean isSearchWithAllowed(@Nullable WebContents webContents);
+
+        void shouldAllowSearchWith(
+                int textLength,
+                @Nullable WebContents webContents,
+                @JniType("base::OnceClosure") Runnable callback);
     }
 }

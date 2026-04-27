@@ -404,6 +404,7 @@ public abstract class ChromeFeatureList {
     public static final String CROSS_DEVICE_TASK_HANDOFF = "CrossDeviceTaskHandoff";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
+    public static final String DATA_CONTROLS_SEARCH_WITH = "DataControlsSearchWith";
     public static final String DATA_SHARING = "DataSharing";
     public static final String DATA_SHARING_ENABLE_UPDATE_CHROME_UI =
             "DataSharingEnableUpdateChromeUI";

@@ -32,13 +32,18 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/enterprise/util/EnterpriseInfoImplTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/enterprise/util/DataProtectionBridgeUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/enterprise/util/EnterpriseInfoImplTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

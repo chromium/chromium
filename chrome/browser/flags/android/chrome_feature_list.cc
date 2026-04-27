@@ -163,6 +163,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &contextual_tasks::kContextualTasks,
     &credential_management::features::kCredentialManagementThirdPartyWebApiRequestForwarding,
+    &data_controls::kDataControlsSearchWith,
     &data_controls::kEnableClipboardDataControlsAndroid,
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,
     &data_sharing::features::kDataSharingFeature,

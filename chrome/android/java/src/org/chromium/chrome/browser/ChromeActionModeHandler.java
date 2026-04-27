@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -125,8 +126,8 @@ public class ChromeActionModeHandler {
     @VisibleForTesting
     static class ChromeActionModeCallback extends ActionModeCallback {
         /**
-         * Android Intent size limitations prevent sending over a megabyte of data. Limit
-         * query lengths to 100kB because other things may be added to the Intent.
+         * Android Intent size limitations prevent sending over a megabyte of data. Limit query
+         * lengths to 100kB because other things may be added to the Intent.
          */
         private static final int MAX_SHARE_QUERY_LENGTH_CHARS = 100000;
 
@@ -173,7 +174,9 @@ public class ChromeActionModeHandler {
                             | ActionModeCallbackHelper.MENU_ITEM_SHARE;
             // Disable options that expose additional Chrome functionality prior to the FRE being
             // completed (i.e. creation of a new tab).
-            if (FirstRunStatus.getFirstRunFlowComplete() && mShowWebSearch) {
+            if (FirstRunStatus.getFirstRunFlowComplete()
+                    && mShowWebSearch
+                    && DataProtectionBridge.isSearchWithAllowed(mTab.getWebContents())) {
                 allowedActionModes |= ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH;
             }
             mHelper.setAllowedMenuItems(allowedActionModes);

@@ -51,6 +51,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/TabbedModeTabDelegateFactory.java",
   "java/src/org/chromium/chrome/browser/UndoRefocusHelper.java",
   "java/src/org/chromium/chrome/browser/WarmupManager.java",
+  "java/src/org/chromium/chrome/browser/WebSearchDelegate.java",
   "java/src/org/chromium/chrome/browser/ZoomController.java",
   "java/src/org/chromium/chrome/browser/about_settings/AboutChromePreferenceOSVersion.java",
   "java/src/org/chromium/chrome/browser/about_settings/AboutChromeSettings.java",

@@ -1,3 +1,4 @@
 file://chrome/browser/enterprise/OWNERS
 
 per-file DataProtectionBridge.java=clhager@google.com
+per-file DataProtectionBridgeUnitTest.java=clhager@google.com
