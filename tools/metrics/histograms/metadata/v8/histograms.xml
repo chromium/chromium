@@ -1333,22 +1333,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.MemoryHeapSampleCodeSpaceCommitted" units="KB"
-    expires_after="M77">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    The size of committed memory in the code space after each GC in KB.
-  </summary>
-</histogram>
-
-<histogram name="V8.MemoryHeapSampleMaximumCommitted" units="KB"
-    expires_after="M77">
-  <owner>hpayer@chromium.org</owner>
-  <summary>
-    The maximum size of committed memory used by V8 after each GC in KB.
-  </summary>
-</histogram>
-
 <histogram name="V8.MemoryHeapSampleTotalCommitted{V8SpecialApps}" units="KB"
     expires_after="2023-08-27">
   <owner>hpayer@chromium.org</owner>
