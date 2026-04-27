@@ -126,7 +126,9 @@ EventMetricsTestCreator::CreateScrollEventMetrics(ui::EventType type,
       type, ui::ScrollInputType::kTouchscreen, is_inertial, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
           base::Nanoseconds(1),
-      &test_tick_clock_);
+      &test_tick_clock_,
+      /* scroll_begin_arrival_timestamp= */ params.timestamp -
+          base::Nanoseconds(1));
   if (params.caused_frame_update.has_value()) {
     event->set_caused_frame_update(*params.caused_frame_update);
   }
@@ -150,7 +152,9 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
       is_inertial, scroll_update_type, params.delta, params.timestamp,
       /* arrived_in_browser_main_timestamp= */ params.timestamp +
           base::Nanoseconds(1),
-      &test_tick_clock_, params.trace_id);
+      &test_tick_clock_, params.trace_id,
+      /* scroll_begin_arrival_timestamp= */ params.timestamp -
+          base::Nanoseconds(1));
   if (params.predicted_delta.has_value()) {
     event->set_predicted_delta(*params.predicted_delta);
   }

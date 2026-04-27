@@ -594,9 +594,9 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(
-            last_injected_gesture_was_begin_
-                ? ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT
-                : ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+            scroll_tracker_.has_seen_scroll_update_after_begin()
+                ? ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT
+                : ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
             original_timestamp);
       } else {
         // If we're injecting a GSU in response to a GSU (touch drags of the
@@ -614,26 +614,25 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       metrics = cc::ScrollUpdateEventMetrics::CreateFromExisting(
           gesture_event->GetTypeAsUiEventType(),
           ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
-          last_injected_gesture_was_begin_
-              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
-              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          scroll_tracker_.has_seen_scroll_update_after_begin()
+              ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
+              : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
           params.scroll_delta.y(),
           cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-          original_metrics);
+          original_metrics, scroll_tracker_.scroll_begin_arrival_timestamp());
+      scroll_tracker_.OnScrollUpdate();
     } else {
       metrics = cc::ScrollEventMetrics::CreateFromExisting(
           gesture_event->GetTypeAsUiEventType(),
           ui::ScrollInputType::kScrollbar, /*is_inertial=*/false,
           cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
-          original_metrics);
-    }
-
-    if (params.type == WebInputEvent::Type::kGestureScrollBegin) {
-      gesture_event->data.scroll_begin.scrollable_area_element_id =
-          params.scrollable_area_element_id.GetInternalValue();
-      last_injected_gesture_was_begin_ = true;
-    } else {
-      last_injected_gesture_was_begin_ = false;
+          original_metrics, scroll_tracker_.scroll_begin_arrival_timestamp());
+      if (gesture_event->GetType() ==
+          WebInputEvent::Type::kGestureScrollBegin) {
+        gesture_event->data.scroll_begin.scrollable_area_element_id =
+            params.scrollable_area_element_id.GetInternalValue();
+        scroll_tracker_.OnScrollBegin(metrics.get());
+      }
     }
 
     {

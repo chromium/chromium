@@ -109,7 +109,8 @@ class ScrollPredictorTest : public testing::Test {
         std::move(event_with_callback),
         WebInputEvent::GetStaticTimeStampForTests() +
             base::Milliseconds(time_delta_in_milliseconds),
-        frame_interval, nullptr /* next_event */);
+        frame_interval, nullptr /* next_event */,
+        nullptr /* next_event_metrics */);
 
     event = event_with_callback->event().Clone();
   }

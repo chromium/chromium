@@ -85,7 +85,11 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
     std::unique_ptr<EventWithCallback> event_with_callback,
     base::TimeTicks frame_time,
     base::TimeDelta frame_interval,
-    const WebInputEvent* next_event) {
+    const WebInputEvent* next_event,
+    const cc::EventMetrics* next_event_metrics) {
+  // If `next_event` is null, `next_event_metrics` must also be null.
+  DCHECK(next_event != nullptr || next_event_metrics == nullptr);
+
   if (!should_resample_scroll_events_)
     return event_with_callback;
 
@@ -117,8 +121,10 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
         event_with_callback->coalesced_scroll_and_pinch())
       return event_with_callback;
 
-    for (auto& coalesced_event : original_events)
-      UpdatePrediction(coalesced_event.event_->Event(), frame_time);
+    for (auto& coalesced_event : original_events) {
+      UpdatePrediction(coalesced_event.event_->Event(),
+                       coalesced_event.metrics_.get(), frame_time);
+    }
 
     // Update the predictor with the next event in the queue (the first to
     // arrive after the `sample_time` cutoff). This improves prediction accuracy
@@ -127,7 +133,7 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
     if (next_event) {
       DCHECK(next_event->GetType() ==
              WebInputEvent::Type::kGestureScrollUpdate);
-      UpdatePredictionForEventAfterSampleTime(*next_event);
+      UpdatePredictionForEventAfterSampleTime(*next_event, next_event_metrics);
     }
 
     if (should_resample_scroll_events_) {
@@ -203,7 +209,8 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*arrived_in_browser_main_timestamp=*/gesture_event.TimeStamp(),
           /*blocking_touch_dispatched_to_renderer=*/gesture_event.TimeStamp(),
           /*trace_id=*/
-          base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()));
+          base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()),
+          last_scroll_begin_arrival_timestamp_);
   if (!is_scroll_inertial) {
     metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
   }
@@ -269,6 +276,7 @@ void ScrollPredictor::Reset() {
   last_inertial_phase_ = WebGestureEvent::InertialPhaseState::kUnknownMomentum;
   metrics_handler_.Reset();
   fling_metrics_handler_.Reset();
+  last_scroll_begin_arrival_timestamp_ = base::TimeTicks();
 }
 
 base::TimeDelta ScrollPredictor::ResampleLatency(
@@ -277,7 +285,8 @@ base::TimeDelta ScrollPredictor::ResampleLatency(
 }
 
 void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
-    const WebInputEvent& event) {
+    const WebInputEvent& event,
+    const cc::EventMetrics* metrics) {
   CHECK(event.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   const WebGestureEvent& gesture_event =
       static_cast<const WebGestureEvent&>(event);
@@ -299,10 +308,17 @@ void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
     predictor_->Update(data);
     synthetic_predictor_->Update(data);
     last_prediction_update_timestamp_ = gesture_event.TimeStamp();
+    if (metrics) {
+      if (const cc::ScrollEventMetrics* scroll_metrics = metrics->AsScroll()) {
+        last_scroll_begin_arrival_timestamp_ =
+            scroll_metrics->scroll_begin_arrival_timestamp();
+      }
+    }
   }
 }
 
 void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
+                                       const cc::EventMetrics* metrics,
                                        base::TimeTicks frame_time) {
   DCHECK(event.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   const WebGestureEvent& gesture_event =
@@ -337,6 +353,12 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
     predictor_->Update(data);
     synthetic_predictor_->Update(data);
     last_prediction_update_timestamp_ = gesture_event.TimeStamp();
+    if (metrics) {
+      if (const cc::ScrollEventMetrics* scroll_metrics = metrics->AsScroll()) {
+        last_scroll_begin_arrival_timestamp_ =
+            scroll_metrics->scroll_begin_arrival_timestamp();
+      }
+    }
   }
 
   GetMetricsHandler(gesture_event.data.scroll_update.inertial_phase)

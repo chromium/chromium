@@ -82,7 +82,8 @@ class ScrollJankDroppedFrameTrackerTest : public testing::Test {
         /*is_inertial=*/false,
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         /*delta=*/10.0f, frame.first_input_ts, base::TimeTicks(), &tick_clock,
-        /*trace_id=*/std::nullopt);
+        /*trace_id=*/std::nullopt,
+        /*scroll_begin_arrival_timestamp=*/MillisSinceEpoch(1));
     scroll_jank_dropped_frame_tracker_->ReportLatestPresentationData(
         *event, frame.last_input_ts, frame.presentation_ts, kVsyncInterval);
   }

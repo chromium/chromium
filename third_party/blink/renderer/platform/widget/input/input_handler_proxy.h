@@ -15,6 +15,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
+#include "cc/metrics/scroll_sequence_tracker.h"
 #include "cc/paint/element_id.h"
 #include "components/viz/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -295,8 +296,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Helper functions for handling more complicated input events.
   EventDisposition HandleMouseWheel(const blink::WebMouseWheelEvent& event);
-  EventDisposition HandleGestureScrollBegin(
-      const blink::WebGestureEvent& event);
+  EventDisposition HandleGestureScrollBegin(const blink::WebGestureEvent& event,
+                                            cc::EventMetrics* metrics);
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
       cc::EventMetrics* metrics,
@@ -443,12 +444,13 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // of that method.
   bool has_seen_first_gesture_scroll_update_after_begin_;
 
-  // Whether the last injected scroll gesture was a GestureScrollBegin. Used to
-  // determine which GestureScrollUpdate is the first in a gesture sequence for
-  // latency classification. This is separate from
-  // |is_first_gesture_scroll_update_| and is used to determine which type of
-  // latency component should be added for injected GestureScrollUpdates.
-  bool last_injected_gesture_was_begin_;
+  // Tracks the current injected scroll sequence for metrics purposes. Among
+  // other things, it determines whether a scroll-update is the first one in an
+  // injected scroll sequence or not. This is separate from
+  // `has_seen_first_gesture_scroll_update_after_begin_` and is used to
+  // determine which type of latency component should be added for injected
+  // GestureScrollUpdates.
+  cc::ScrollSequenceTracker injected_scroll_tracker_;
 
   raw_ptr<const base::TickClock> tick_clock_;
 

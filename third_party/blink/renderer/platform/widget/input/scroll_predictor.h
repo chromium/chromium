@@ -43,7 +43,8 @@ class PLATFORM_EXPORT ScrollPredictor {
       std::unique_ptr<EventWithCallback> event_with_callback,
       base::TimeTicks frame_time,
       base::TimeDelta frame_interval,
-      const WebInputEvent* next_event);
+      const WebInputEvent* next_event,
+      const cc::EventMetrics* next_event_metrics);
 
   // Resamples the current GestureScrollUpdate events at the given `frame_time`.
   std::unique_ptr<EventWithCallback> GenerateSyntheticScrollUpdate(
@@ -55,7 +56,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   bool HasPrediction(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval) const;
 
-  void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event);
+  void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event,
+                                               const cc::EventMetrics* metrics);
 
   base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
 
@@ -68,7 +70,9 @@ class PLATFORM_EXPORT ScrollPredictor {
   void Reset();
 
   // Update the prediction with GestureScrollUpdate deltaX and deltaY
-  void UpdatePrediction(const WebInputEvent& event, base::TimeTicks frame_time);
+  void UpdatePrediction(const WebInputEvent& event,
+                        const cc::EventMetrics* metrics,
+                        base::TimeTicks frame_time);
 
   // Apply resampled deltaX/deltaY to gesture events.
   void ResampleEvent(base::TimeTicks frame_time,
@@ -135,6 +139,10 @@ class PLATFORM_EXPORT ScrollPredictor {
   // generation.
   WebGestureEvent::InertialPhaseState last_inertial_phase_ =
       WebGestureEvent::InertialPhaseState::kUnknownMomentum;
+
+  // The timestamp of when the scroll begin event which started the last scroll
+  // update's scroll arrived in the renderer compositor.
+  base::TimeTicks last_scroll_begin_arrival_timestamp_;
 };
 
 }  // namespace blink

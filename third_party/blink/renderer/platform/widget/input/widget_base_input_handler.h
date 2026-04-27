@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/metrics/scroll_sequence_tracker.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-blink.h"
@@ -119,10 +120,10 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
   // Indicates if the next sequence of Char events should be suppressed or not.
   bool suppress_next_char_events_ = false;
 
-  // Whether the last injected scroll gesture was a GestureScrollBegin. Used to
-  // determine which GestureScrollUpdate is the first in a gesture sequence for
-  // latency classification.
-  bool last_injected_gesture_was_begin_ = false;
+  // Tracks the current scroll sequence for metrics purposes. Among other
+  // things, it determines whether a scroll-update is the first one in a scroll
+  // sequence or not.
+  cc::ScrollSequenceTracker scroll_tracker_;
 
   const bool supports_buffered_touch_ = false;
 

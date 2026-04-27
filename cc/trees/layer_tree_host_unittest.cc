@@ -9705,6 +9705,8 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
   void SimulateEventOnMain() {
     base::SimpleTestTickClock tick_clock;
     tick_clock.Advance(base::Microseconds(10));
+    base::TimeTicks scroll_begin_arrival_timestamp = tick_clock.NowTicks();
+    tick_clock.Advance(base::Microseconds(10));
     base::TimeTicks event_time = tick_clock.NowTicks();
     tick_clock.Advance(base::Microseconds(10));
     base::TimeTicks arrived_in_browser_main_timestamp = tick_clock.NowTicks();
@@ -9714,8 +9716,11 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
             ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kWheel,
             /*is_inertial=*/false,
             ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-            /*delta=*/10.0f, event_time, arrived_in_browser_main_timestamp,
-            &tick_clock, std::nullopt);
+            /*delta=*/10.0f, /*timestamp=*/event_time,
+            /*arrived_in_browser_main_timestamp=*/
+            arrived_in_browser_main_timestamp,
+            /*tick_clock=*/&tick_clock, /*trace_id=*/std::nullopt,
+            /*scroll_begin_arrival_timestamp=*/scroll_begin_arrival_timestamp);
     DCHECK_NE(metrics, nullptr);
     {
       tick_clock.Advance(base::Microseconds(10));

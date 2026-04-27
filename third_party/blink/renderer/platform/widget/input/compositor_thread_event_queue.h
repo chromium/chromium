@@ -49,6 +49,8 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
 
   const WebInputEvent* FirstOriginalEvent() const;
 
+  const cc::EventMetrics* FirstMetrics() const;
+
   bool empty() const { return queue_.empty(); }
 
   size_t size() const { return queue_.size(); }

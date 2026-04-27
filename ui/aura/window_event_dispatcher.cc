@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/custom_metrics_recorder.h"
@@ -1114,19 +1115,21 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
       metrics = cc::ScrollUpdateEventMetrics::CreateForBrowser(
           ui::EventType::kGestureScrollUpdate, input_type,
           /*is_inertial=*/false,
-          has_seen_gesture_scroll_update_after_begin_
+          scroll_tracker_.has_seen_scroll_update_after_begin()
               ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
           gesture->details().scroll_y(), gesture->time_stamp(),
-          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
-      has_seen_gesture_scroll_update_after_begin_ = true;
+          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()),
+          scroll_tracker_.scroll_begin_arrival_timestamp());
+      scroll_tracker_.OnScrollUpdate();
     } else if (gesture->IsScrollGestureEvent()) {
       metrics = cc::ScrollEventMetrics::CreateForBrowser(
           gesture->type(), input_type,
           /*is_inertial=*/false, gesture->time_stamp(),
-          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
+          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()),
+          scroll_tracker_.scroll_begin_arrival_timestamp());
       if (gesture->type() == ui::EventType::kGestureScrollBegin) {
-        has_seen_gesture_scroll_update_after_begin_ = false;
+        scroll_tracker_.OnScrollBegin(metrics.get());
       }
     } else {
       DCHECK(gesture->IsPinchEvent());

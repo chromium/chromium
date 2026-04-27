@@ -293,10 +293,14 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
     const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(3);
     AdvanceNowByMs(10);
-    return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
+    auto metrics = SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
         ui::EventType::kGestureScrollBegin, input_type,
         /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-        &test_tick_clock_));
+        &test_tick_clock_,
+        /*scroll_begin_arrival_timestamp=*/base::TimeTicks()));
+    scroll_begin_arrival_timestamp_ =
+        metrics->AsScroll()->scroll_begin_arrival_timestamp();
+    return metrics;
   }
 
   std::unique_ptr<EventMetrics> CreateScrollEndEventMetrics(
@@ -308,7 +312,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     std::unique_ptr<EventMetrics> metrics =
         SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
             ui::EventType::kGestureScrollEnd, input_type, is_inertial,
-            event_time, arrived_in_browser_main_timestamp, &test_tick_clock_));
+            event_time, arrived_in_browser_main_timestamp, &test_tick_clock_,
+            scroll_begin_arrival_timestamp_));
     metrics->set_caused_frame_update(false);
     return metrics;
   }
@@ -325,7 +330,8 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     auto scroll_update = ScrollUpdateEventMetrics::CreateForTesting(
         ui::EventType::kGestureScrollUpdate, input_type, is_inertial,
         scroll_update_type, /*delta=*/10.0f, event_time,
-        arrived_in_browser_main_timestamp, &test_tick_clock_, trace_id);
+        arrived_in_browser_main_timestamp, &test_tick_clock_, trace_id,
+        scroll_begin_arrival_timestamp_);
     scroll_update->set_did_scroll(true);
     return SetupEventMetrics(std::move(scroll_update));
   }
@@ -375,6 +381,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   FrameSequenceTrackerCollection tracker_collection_;
   TestCompositorFrameReportingController reporting_controller_;
   ::base::test::TracingEnvironment tracing_environment_;
+  base::TimeTicks scroll_begin_arrival_timestamp_;
 };
 
 TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {

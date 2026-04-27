@@ -53,6 +53,7 @@
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/animation_test_common.h"
+#include "cc/test/event_metrics_test_creator.h"
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -13816,6 +13817,7 @@ TEST_P(LayerTreeHostImplTest,
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
   DrawFrame();
 
+  base::TimeTicks scroll_begin_arrival_timestamp = base::TimeTicks::Now();
   GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
                  ui::ScrollInputType::kTouchscreen)
@@ -13833,14 +13835,17 @@ TEST_P(LayerTreeHostImplTest,
     // Add an `EventMetrics` object that will be accepted by
     // `AverageLagTrackingManager::CollectScrollEventsFromFrame()`.
     EventMetrics::List events_metrics;
+    base::TimeTicks now = base::TimeTicks::Now();
     events_metrics.push_back(ScrollUpdateEventMetrics::Create(
         ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
         /*is_inertial=*/false,
         i == 0 ? ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
                : ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-        /*delta=*/10.0f, base::TimeTicks::Now(),
-        base::TimeTicks::Now() + base::Milliseconds(1), base::TimeTicks(),
-        /*trace_id*/ base::IdType64<class ui::LatencyInfo>(123)));
+        /*delta=*/10.0f, /*timestamp=*/now,
+        /*arrived_in_browser_main_timestamp=*/now + base::Milliseconds(1),
+        /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks(),
+        /*trace_id=*/base::IdType64<class ui::LatencyInfo>(123),
+        scroll_begin_arrival_timestamp));
     host_impl_->active_tree()->AppendEventsMetricsFromMainThread(
         std::move(events_metrics));
 
@@ -17845,6 +17850,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
       scroll_state.get(), ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(true, status.raster_inducing);
 
+  base::TimeTicks scroll_begin_arrival_timestamp = base::TimeTicks::Now();
   GetInputHandler().RecordScrollBegin(
       ui::ScrollInputType::kTouchscreen,
       ScrollBeginThreadState::kRasterInducingScroll);
@@ -17853,13 +17859,16 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
     GetInputHandler().ScrollUpdate(UpdateState(
         gfx::Point(), gfx::Vector2d(0, 10), ui::ScrollInputType::kTouchscreen));
 
+    base::TimeTicks now = base::TimeTicks::Now();
     std::unique_ptr<EventMetrics> metrics = ScrollUpdateEventMetrics::Create(
         ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
         /*is_inertial=*/false,
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-        /*delta=*/10.0f, base::TimeTicks::Now(),
-        base::TimeTicks::Now() + base::Milliseconds(1), base::TimeTicks(),
-        /*trace_id*/ base::IdType64<class ui::LatencyInfo>(123));
+        /*delta=*/10.0f, /*timestamp=*/now,
+        /*arrived_in_browser_main_timestamp=*/now + base::Milliseconds(1),
+        /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks(),
+        /*trace_id=*/base::IdType64<class ui::LatencyInfo>(123),
+        scroll_begin_arrival_timestamp);
 
     // Associate metrics with the scoped metrics monitor by registering a done
     // callback.
@@ -18558,6 +18567,7 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
     host_impl_->WillBeginImplFrame(args);
 
     base::SimpleTestTickClock tick_clock;
+    tick_clock.Advance(base::Milliseconds(18));
     auto metrics_array = std::to_array<std::unique_ptr<EventMetrics>>(
         {EventMetrics::CreateForTesting(
              ui::EventType::kTouchMoved,
@@ -18575,7 +18585,9 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(14),
              &tick_clock,
-             /* trace_id= */ std::nullopt),
+             /* trace_id= */ std::nullopt,
+             /* scroll_begin_arrival_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(10)),
          EventMetrics::CreateForTesting(
              ui::EventType::kTouchReleased,
              /* timestamp= */ base::TimeTicks() + base::Milliseconds(15),
@@ -18590,7 +18602,9 @@ TEST_P(LayerTreeHostImplEventMetricPreservationTest, PreserveMetrics) {
              /* timestamp= */ base::TimeTicks() + base::Milliseconds(17),
              /* arrived_in_browser_main_timestamp= */ base::TimeTicks() +
                  base::Milliseconds(18),
-             &tick_clock)});
+             &tick_clock,
+             /* scroll_begin_arrival_timestamp= */ base::TimeTicks() +
+                 base::Milliseconds(10))});
     switch (GetParam().should_preserve) {
       case PreservationTestCase::Preserve::kAllMetrics:
         std::transform(metrics_array.cbegin(), metrics_array.cend(),

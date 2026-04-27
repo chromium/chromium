@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/metrics/scroll_sequence_tracker.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -376,11 +377,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // coverage for input suppression: crbug.com/987626
   bool allow_pre_commit_input_ = false;
 
-  // Specifies weather the renderer has received a scroll-update event after the
-  // last scroll-begin or not, It is used to determine whether a scroll-update
-  // is the first one in a scroll sequence or not. This variable is only used on
-  // the input handling thread (i.e. on the compositor thread if it exists).
-  bool has_seen_first_gesture_scroll_update_after_begin_ = false;
+  // Tracks the current scroll sequence for metrics purposes. Among other
+  // things, it determines whether a scroll-update is the first one in a scroll
+  // sequence or not. This variable is only used on the input handling thread
+  // (i.e. on the compositor thread if it exists).
+  cc::ScrollSequenceTracker scroll_tracker_;
 
   // Timer for count dropped events.
   std::unique_ptr<base::OneShotTimer> dropped_event_counts_timer_;

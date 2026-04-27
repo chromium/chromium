@@ -20,6 +20,7 @@
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
@@ -272,7 +273,6 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       scroll_sequence_ignored_(false),
       current_overscroll_params_(nullptr),
       has_seen_first_gesture_scroll_update_after_begin_(false),
-      last_injected_gesture_was_begin_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)),
       cursor_control_handler_(std::make_unique<CursorControlHandler>()),
@@ -433,7 +433,8 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
             scroll_predictor_->ResampleScrollEvents(
                 std::move(event_with_callback),
                 current_begin_frame_args_.frame_time,
-                current_begin_frame_args_.interval, nullptr /* next_event */);
+                current_begin_frame_args_.interval, nullptr /* next_event */,
+                nullptr /* next_event_metrics */);
         compositor_event_queue_->Queue(std::move(event_to_dispatch));
       } else {
         compositor_event_queue_->Queue(std::move(event_with_callback));
@@ -777,7 +778,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     // gesture was a GSB, then this GSU is the first scroll update - mark
     // the LatencyInfo as such.
     scrollbar_latency_info.AddLatencyNumberWithTimestamp(
-        last_injected_gesture_was_begin_
+        !injected_scroll_tracker_.has_seen_scroll_update_after_begin()
             ? ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT
             : ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
         original_timestamp);
@@ -785,23 +786,26 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
         synthetic_gesture_event->GetTypeAsUiEventType(),
         synthetic_gesture_event->GetScrollInputType(),
         /*is_inertial=*/false,
-        last_injected_gesture_was_begin_
+        !injected_scroll_tracker_.has_seen_scroll_update_after_begin()
             ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
             : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         synthetic_gesture_event->data.scroll_update.delta_y,
         cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
-        original_metrics);
+        original_metrics,
+        injected_scroll_tracker_.scroll_begin_arrival_timestamp());
+    injected_scroll_tracker_.OnScrollUpdate();
   } else {
     metrics = cc::ScrollEventMetrics::CreateFromExisting(
         synthetic_gesture_event->GetTypeAsUiEventType(),
         synthetic_gesture_event->GetScrollInputType(),
         /*is_inertial=*/false,
         cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
-        original_metrics);
+        original_metrics,
+        injected_scroll_tracker_.scroll_begin_arrival_timestamp());
+    if (type == WebInputEvent::Type::kGestureScrollBegin) {
+      injected_scroll_tracker_.OnScrollBegin(metrics.get());
+    }
   }
-
-  last_injected_gesture_was_begin_ =
-      type == WebInputEvent::Type::kGestureScrollBegin;
 
   auto gesture_event_with_callback_update = std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(
@@ -872,7 +876,8 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
 
     case WebInputEvent::Type::kGestureScrollBegin:
       return HandleGestureScrollBegin(
-          static_cast<const WebGestureEvent&>(event));
+          static_cast<const WebGestureEvent&>(event),
+          event_with_callback->metrics());
 
     case WebInputEvent::Type::kGestureScrollUpdate:
       return HandleGestureScrollUpdate(
@@ -1164,7 +1169,8 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
-    const WebGestureEvent& gesture_event) {
+    const WebGestureEvent& gesture_event,
+    cc::EventMetrics* metrics) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleGestureScrollBegin");
   handling_fling_ = false;
 
@@ -1820,7 +1826,8 @@ void InputHandlerProxy::GenerateSyntheticScrollPredictionFromFutureEvent(
 
   if (compositor_event_queue_->FirstOriginalEvent()) {
     scroll_predictor_->UpdatePredictionForEventAfterSampleTime(
-        *compositor_event_queue_->FirstOriginalEvent());
+        *compositor_event_queue_->FirstOriginalEvent(),
+        compositor_event_queue_->FirstMetrics());
   }
 
   bool synthetic_event_dispatched =
@@ -1844,15 +1851,17 @@ void InputHandlerProxy::ProcessQueuedEventsUpToSampleTime(
   while (HasQueuedEventsReadyForDispatch(/*frame_aligned=*/true, sample_time)) {
     auto event_with_callback = compositor_event_queue_->Pop();
     const WebInputEvent* next_event = nullptr;
-    // Provide the next event to the predictor ONLY if it\'s a GSU.
+    const cc::EventMetrics* next_event_metrics = nullptr;
+    // Provide the next event to the predictor ONLY if it's a GSU.
     if (compositor_event_queue_->PeekType() ==
         WebGestureEvent::Type::kGestureScrollUpdate) {
       next_event = compositor_event_queue_->FirstOriginalEvent();
+      next_event_metrics = compositor_event_queue_->FirstMetrics();
     }
 
     auto event_to_dispatch = scroll_predictor_->ResampleScrollEvents(
         std::move(event_with_callback), args.frame_time, args.interval,
-        next_event);
+        next_event, next_event_metrics);
     DispatchSingleInputEvent(std::move(event_to_dispatch));
   }
 }

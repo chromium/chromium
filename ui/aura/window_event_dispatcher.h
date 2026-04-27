@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "cc/metrics/events_metrics_manager.h"
+#include "cc/metrics/scroll_sequence_tracker.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/capture_delegate.h"
 #include "ui/aura/env_observer.h"
@@ -318,10 +319,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // pointer moves are released and there is no held move event.
   base::OnceClosure did_dispatch_held_move_event_callback_;
 
-  // Determines whether a scroll-update has been seen after the last
-  // scroll-begin. Used to determine whether a scroll-update is the first one in
-  // a scroll sequence or not.
-  bool has_seen_gesture_scroll_update_after_begin_ = false;
+  // Tracks the current scroll sequence for metrics purposes. Among other
+  // things, it determines whether a scroll-update is the first one in a scroll
+  // sequence or not.
+  cc::ScrollSequenceTracker scroll_tracker_;
 
   // Tracks metrics for the event currently being dispatched. For nested events,
   // e.g. mouse drag events during dragging, the new event concludes the

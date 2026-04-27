@@ -327,4 +327,8 @@ const WebInputEvent* CompositorThreadEventQueue::FirstOriginalEvent() const {
   return empty() ? nullptr : queue_.front()->first_original_event();
 }
 
+const cc::EventMetrics* CompositorThreadEventQueue::FirstMetrics() const {
+  return empty() ? nullptr : queue_.front()->metrics();
+}
+
 }  // namespace blink
