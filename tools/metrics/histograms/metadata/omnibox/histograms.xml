@@ -483,6 +483,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram name="Omnibox.AimEligibility.CountryCodeEmpty" enum="Boolean"
+    expires_after="2026-10-04">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logs whether the country code returned by variations service was empty.
+    Logged every time the country code is requested by the AIM eligibility
+    service.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestDebounced{RequestSource}"
     enum="Boolean" expires_after="2026-08-05">

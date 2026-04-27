@@ -36,15 +36,15 @@ ChromeAimEligibilityService::ChromeAimEligibilityService(
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 
-std::string ChromeAimEligibilityService::GetCountryCode() const {
-  return base::ToLowerASCII(variations::GetCurrentCountryCode(
-      g_browser_process->variations_service()));
-}
-
 std::string ChromeAimEligibilityService::GetLocaleImpl() const {
   return g_browser_process
              ? g_browser_process->GetFeatures()
                    ->application_locale_storage()
                    ->Get(ApplicationLocaleStorage::LocaleFormat::kBCP47)
              : "";
+}
+
+variations::VariationsService*
+ChromeAimEligibilityService::GetVariationsService() const {
+  return g_browser_process ? g_browser_process->variations_service() : nullptr;
 }

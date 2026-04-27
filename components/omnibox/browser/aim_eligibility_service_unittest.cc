@@ -69,8 +69,11 @@ class MockAimEligibilityServiceForInterception : public AimEligibilityService {
                               std::move(configuration)) {}
   ~MockAimEligibilityServiceForInterception() override = default;
 
-  MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
   MOCK_METHOD(std::string, GetLocaleImpl, (), (const, override));
+
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
 
   void SetAimEligibilityResponse(omnibox::AimEligibilityResponse response) {
     AimEligibilityServiceFriend::UpdateMostRecentResponse(this, response);

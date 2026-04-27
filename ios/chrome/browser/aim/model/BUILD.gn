@@ -13,6 +13,7 @@ source_set("aim_availability") {
     "//components/contextual_tasks/public:feature_list",
     "//components/omnibox/browser",
     "//components/search",
+    "//components/variations/service",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",

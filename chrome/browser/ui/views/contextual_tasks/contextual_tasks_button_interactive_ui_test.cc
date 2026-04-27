@@ -77,6 +77,10 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
     return callbacks_.Add(std::move(callback));
   }
 
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+
  private:
   bool is_cobrowse_eligible_ = true;
   base::RepeatingClosureList callbacks_;
