@@ -31,8 +31,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:text="@string/payments_required_field_message"/>
 
@@ -78,8 +76,6 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-                android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-                android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:text="@string/autofill_credit_card_editor_expiration_date" />
 
@@ -132,8 +128,6 @@ found in the LICENSE file.
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-                    android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
-                    android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
                     android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                     android:text="@string/autofill_credit_card_editor_security_code" />
 
