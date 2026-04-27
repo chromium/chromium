@@ -249,7 +249,8 @@ void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
 }
 
 void AnimationTrigger::PerformActivate() {
-  for (auto [animation, behaviors] : animation_behavior_map_) {
+  auto map_copy = animation_behavior_map_;
+  for (auto [animation, behaviors] : map_copy) {
     if (HasPausedCSSPlayState(animation) ||
         (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;
@@ -259,7 +260,8 @@ void AnimationTrigger::PerformActivate() {
 }
 
 void AnimationTrigger::PerformDeactivate() {
-  for (auto [animation, behaviors] : animation_behavior_map_) {
+  auto map_copy = animation_behavior_map_;
+  for (auto [animation, behaviors] : map_copy) {
     if (HasPausedCSSPlayState(animation) ||
         (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;
