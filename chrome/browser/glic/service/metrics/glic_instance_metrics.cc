@@ -1127,6 +1127,7 @@ void GlicInstanceMetrics::RecordSkillsWebClientEvent(
     case kClickedMoreFromMenu:
     case kClickedManageSkillFromMenu:
     case kClickedSkillFromMenu:
+    case kClickedBrowseSkillsFromMenu:
       break;
     // --- SkillBuilder Metrics ---
     case kSkillBuilderClickedPromoChip:
