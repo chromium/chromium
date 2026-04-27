@@ -2135,7 +2135,7 @@ bool IsFullscreenNextIAEnabled() {
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
   self.footerFullscreenProgress = progress;
 
-  if (IsFullscreenNextIAEnabled()) {
+  if (IsChromeNextIaEnabled()) {
     [self updateNextIASecondaryToolbarForFullscreenProgress:progress];
     return;
   }
