@@ -3,15 +3,15 @@
 <link rel="author" href="mailto:masonf@chromium.org">
 
 <div class=example>
-  <button class=invoker><span class=before>::before</span><span>Button</span><span class=after>::after</span></button>
-  <button class=interestbutton>::interest-button</button>
+  <button class=invoker>
+    <span class=before>::before</span><span class=content>Button</span><span class=interestbutton>::interest-button</span><span class=after>::after</span></button>
 </div>
 <div class=example>
-  <a href=# class=invoker><span class=before>::before</span><span>Link</span><button class=interestbutton>::interest-button</button><span class=after>::after</span></a>
+  <a href=# class=invoker><span class=before>::before</span><span class=content>Link</span><span class=interestbutton>::interest-button</span><span class=after>::after</span></a>
 </div>
 <div class=example>
   <img src="/images/blue.png" usemap="#map1" width=40 height=40>
-  <span class=before>::before</span><map id="map1"><area href="/" shape="default" class=invoker></map><button class=interestbutton>::interest-button</button><span class=after>::after</span>
+  <span class=before>::before</span><map id="map1"><area href="/" shape="default" class=invoker></map><span class=interestbutton>::interest-button</span><span class=after>::after</span>
 </div>
 
 <div id=target></div>
@@ -19,47 +19,42 @@
 <style>
   .before {
     content: "::before";
-    border: 1px solid green;
+    border: 1px solid lime;
   }
   /* UA stylesheet for ::interest-button: */
   .interestbutton {
-    user-select: none;
-    color: buttontext;
     display: inline-block;
+    box-sizing: border-box;
+    border: 1px solid currentColor;
+    border-radius: 0.5em;
+    color: inherit;
+    background-color: transparent;
+    padding-block: 0.25em;
+    padding-inline: 0.5em;
+    min-block-size: max(24px, 1lh);
+    min-inline-size: 24px;
     text-align: center;
-    cursor: default;
-    background-color: buttonface;
     margin-inline-start: 0.5em;
-    padding-block: 1px;
-    padding-inline: 6px;
-    border-width: 1px;
-    border-radius: 5px;
-    border-style: outset;
-    border-color: buttonborder;
+    user-select: none;
+  }
+
+  .interestbutton:hover {
+    background-color: color-mix(in lab, currentColor 10%, transparent);
+  }
+  .interestbutton:active {
+    background-color: color-mix(in lab, currentColor 20%, transparent);
   }
   .after {
     content: "::after";
-    border: 1px solid green;
+    border: 1px solid lime;
   }
   /* Test convenience: */
   .example {
-    display:block;
     width: 400px;
     height: 50px;
   }
-  .invoker>span {
+  .content {
     border: 1px solid black;
-  }
-  .interestbutton {
-    font-family: arial;
-    font-size: 13px;
   }
 </style>
 
-<script>
-  // Fix up parser moving out the button
-  const interestButton = document.querySelector('button.invoker');
-  const movedButton = document.querySelector('button.invoker + button.interestbutton');
-  const afterSpan = interestButton.querySelector('.after');
-  interestButton.insertBefore(movedButton, afterSpan);
-</script>

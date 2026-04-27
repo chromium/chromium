@@ -1553,19 +1553,28 @@ button[interestfor] {
 }
 
 [interestfor]::interest-button {
-  user-select: none;
-  color: buttontext;
+  content: "?";
   display: inline-block;
+  box-sizing: border-box;
+  border: 1px solid currentColor;
+  border-radius: 0.5em;
+  color: inherit;
+  background-color: transparent;
+  padding-block: 0.25em;
+  padding-inline: 0.5em;
+  min-block-size: max(24px, 1lh);
+  min-inline-size: 24px;
   text-align: center;
-  cursor: default;
-  background-color: buttonface;
   margin-inline-start: 0.5em;
-  padding-block: 1px;
-  padding-inline: 6px;
-  border-width: 1px;
-  border-radius: 5px;
-  border-style: outset;
-  border-color: buttonborder;
+  user-select: none;
+  cursor: help;
+}
+
+[interestfor]::interest-button:hover {
+  background-color: color-mix(in lab, currentColor 10%, transparent);
+}
+[interestfor]::interest-button:active {
+  background-color: color-mix(in lab, currentColor 20%, transparent);
 }
 
 html:focus-visible, body:focus-visible {

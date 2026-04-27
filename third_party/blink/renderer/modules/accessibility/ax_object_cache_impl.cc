@@ -1375,6 +1375,11 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     if (node.GetPseudoId() == kPseudoIdExpandIcon) {
       return false;
     }
+    // ::interest-button is decorative and redundant with the interest invoker
+    // element.
+    if (node.GetPseudoId() == kPseudoIdInterestButton) {
+      return false;
+    }
     // Scroll control pseudo-elements are always relevant when they have a
     // layout object (which is checked above).
     if (node.IsScrollControlPseudoElement()) {
