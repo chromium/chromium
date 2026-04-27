@@ -161,11 +161,7 @@ public final class AndroidFontLookupImplTest {
         whenFetchFontsWith(FONT_QUERY_2).thenReturn(result);
         whenFetchFontsWith(FONT_QUERY_3).thenReturn(result);
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
-        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
@@ -192,11 +188,7 @@ public final class AndroidFontLookupImplTest {
                         new FontFamilyResult(
                                 FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED, null));
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
-        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
@@ -221,11 +213,7 @@ public final class AndroidFontLookupImplTest {
                 new AndroidFontLookupImpl(
                         mMockContext, mMockFontsContractWrapper, ImmutableMap.of());
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM);
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
-        watcher.pollInstrumentationThreadUntilSatisfied();
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))

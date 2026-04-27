@@ -57,9 +57,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
 
-    static final String FETCH_ALL_FONT_FILES_HISTOGRAM =
-            "Android.FontLookup.FetchAllFontFiles.Time";
-
     @VisibleForTesting
     static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
 
@@ -160,7 +157,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     /** Fetches all available font files from the {@link #mExpectedFonts} array. */
     @Override
     public void fetchAllFontFiles(FetchAllFontFiles_Response callback) {
-        long startTimeMs = SystemClock.elapsedRealtime();
         Core core = CoreImpl.getInstance();
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
@@ -175,9 +171,6 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                             result.put(font, file);
                         }
                     }
-                    RecordHistogram.recordTimesHistogram(
-                            FETCH_ALL_FONT_FILES_HISTOGRAM,
-                            SystemClock.elapsedRealtime() - startTimeMs);
                     executor.execute(() -> callback.call(result));
                 });
     }

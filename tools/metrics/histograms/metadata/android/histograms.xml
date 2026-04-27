@@ -2424,16 +2424,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.FontLookup.FetchAllFontFiles.Time" units="ms"
-    expires_after="2025-03-09">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records the time taken to fetch all available font files from the GMS Core
-    Android downloadable font provider.
-  </summary>
-</histogram>
-
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
     expires_after="2023-08-08">
   <owner>twellington@chromium.org</owner>
