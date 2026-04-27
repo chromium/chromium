@@ -60,8 +60,13 @@ static inline void YieldProcessor() {
 #elif defined(ARCH_CPU_PPC64_FAMILY)
   __asm__ __volatile__("or 31,31,31");
 #elif defined(ARCH_CPU_RISCV64)
-  // There is no equivalent of a yield processor instruction in RISC-V.
-  NOTREACHED();
+  // Zihintpause extension provides a pause instruction but that extension
+  // is not included in the current rv64gc baseline. However, the pause
+  // instruction is encoded as a hint. Thus on CPUs without Zihintpause
+  // extension, the pause instruction is treated like a nop.
+  // Manually encode the instruction to support older toolchains.
+  // See also https://sourceware.org/pipermail/libc-alpha/2024-June/157737.html
+  __asm__ __volatile__(".insn i 0x0f, 0, x0, x0, 0x010");
 #else
 #error "Unsupported architecture for YieldProcessor()"
 #endif  // ARCH
