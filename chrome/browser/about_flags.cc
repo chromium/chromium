@@ -3745,6 +3745,16 @@ const FeatureEntry::FeatureVariation kGlicButtonAltLabelVariations[] = {
     {"B", kGlicButtonAltLabelVariant1, nullptr},
     {"C", kGlicButtonAltLabelVariant2, nullptr}};
 
+const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_LeftOfProfile[] = {
+    {"glic-toolbar-button-location", "LeftOfProfileChip"}};
+const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_RightOfOmnibox[] = {
+    {"glic-toolbar-button-location", "RightOfOmnibox"}};
+
+const FeatureEntry::FeatureVariation kGlicToolbarButtonLocationVariations[] = {
+    {"Left of Profile", kGlicToolbarButtonLocation_LeftOfProfile, nullptr},
+    {"Right of Omnibox", kGlicToolbarButtonLocation_RightOfOmnibox, nullptr},
+};
+
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
     {"glic-guest-url-preset-type", "0"}};
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeStaging[] = {
@@ -10656,6 +10666,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicHorizontalTabToolbarButtonName,
      flag_descriptions::kGlicHorizontalTabToolbarButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicHorizontalTabToolbarButton)},
+
+    {"glic-toolbar-button-location",
+     flag_descriptions::kGlicToolbarButtonLocationName,
+     flag_descriptions::kGlicToolbarButtonLocationDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicToolbarButtonLocation,
+                                    kGlicToolbarButtonLocationVariations,
+                                    "GlicToolbarButtonLocation")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"skills", flag_descriptions::kSkillsEnabledName,

@@ -328,6 +328,8 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void NewTabButtonPressed(const ui::Event& event);
 
+  void InitGlicContainer();
+
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
 
