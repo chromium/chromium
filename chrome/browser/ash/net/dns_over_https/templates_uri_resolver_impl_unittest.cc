@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -240,13 +241,14 @@ class TemplatesUriResolverImplTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
+    local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsMode,
                                                 SecureDnsConfig::kModeOff);
-    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
+    local_state_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsTemplates,
                                                 "");
     local_state_.registry()->RegisterStringPref(
-        prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
-    local_state_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
+        ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
+    local_state_.registry()->RegisterStringPref(ash::prefs::kDnsOverHttpsSalt,
+                                                "");
 
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(
@@ -302,18 +304,19 @@ class TemplatesUriResolverImplTest : public testing::Test {
   }
 
   void SetUpDOHSecureModeWithSalt(std::string salt) {
-    local_state()->Set(prefs::kDnsOverHttpsMode,
+    local_state()->Set(::prefs::kDnsOverHttpsMode,
                        base::Value(SecureDnsConfig::kModeSecure));
-    local_state()->Set(prefs::kDnsOverHttpsSalt, base::Value(salt));
+    local_state()->Set(ash::prefs::kDnsOverHttpsSalt, base::Value(salt));
   }
 
   void SetUpDOHTemplatesWithIdentifiers(std::string_view identifier) {
-    local_state()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+    local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                        base::Value(identifier));
   }
 
   void SetUpDOHGoogleDnsTemplate() {
-    local_state()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+    local_state()->Set(::prefs::kDnsOverHttpsTemplates,
+                       base::Value(kGoogleDns));
   }
 
   std::string GetDisplayTemplates() {
@@ -359,8 +362,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiers) {
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
-  // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
   EXPECT_FALSE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
@@ -384,8 +387,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
-  // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
   doh_template_uri_resolver_->Update(*local_state(), *user);
 
@@ -394,7 +397,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithThreeUnknownIdentifiers) {
 }
 
 // Tests that only user indentifiers are replaced in
-// `prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not affiliated.
+// `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not
+// affiliated.
 TEST_F(TemplatesUriResolverImplTest,
        TemplatesWithUnknownIdentifiersUnaffiliated) {
   const auto* user = SetUpUnaffiliatedUser();
@@ -413,7 +417,8 @@ TEST_F(TemplatesUriResolverImplTest,
 }
 
 // Tests that only user indentifiers are replaced in
-// `prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not affiliated.
+// `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` if the user is not
+// affiliated.
 TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersUnaffiliated) {
   const auto* user = SetUpUnaffiliatedUser();
   ASSERT_TRUE(user);
@@ -482,8 +487,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithIdentifiersNoSalt) {
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
-  // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
 }
@@ -505,8 +510,8 @@ TEST_F(TemplatesUriResolverImplTest, TemplatesWithUnknownIdentifiersNoSalt) {
   EXPECT_TRUE(doh_template_uri_resolver_->GetDohWithIdentifiersActive());
 
   // `prefs::kDnsOverHttpsTemplates` should apply when
-  // `prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
-  local_state()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  // `ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers` is cleared.
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   doh_template_uri_resolver_->Update(*local_state(), *user);
   EXPECT_EQ(GetEffectiveTemplates(), kGoogleDns);
 }

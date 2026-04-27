@@ -1512,9 +1512,9 @@ TEST_F(ManagementUIHandlerTests,
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
       prefs::kDnsOverHttpsMode, base::Value(SecureDnsConfig::kModeSecure));
   TestingBrowserProcess::GetGlobal()->local_state()->Set(
-      prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
+      ash::prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
   TestingBrowserProcess::GetGlobal()->local_state()->Set(
-      prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+      ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
       base::Value("www.test-dns.com"));
 
   base::RunLoop().RunUntilIdle();

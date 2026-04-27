@@ -32,6 +32,10 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif
+
 using base::RunLoop;
 using content::BrowserTaskEnvironment;
 using error_page::DnsProbeStatus;
@@ -334,9 +338,9 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // In a real user session, the pref
-  // prefs::kDnsOverHttpsEffectiveTemplatesChromeOS is set by
+  // ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS is set by
   // ash::SecureDnsManager.
-  local_state()->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+  local_state()->SetString(ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                            kDohTemplateGet + " " + kDohTemplatePost);
 #endif
   ConfigureTest({}, {});

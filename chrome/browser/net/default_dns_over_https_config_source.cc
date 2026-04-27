@@ -12,6 +12,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif
+
 DefaultDnsOverHttpsConfigSource::DefaultDnsOverHttpsConfigSource(
     PrefService* local_state,
     bool set_up_pref_defaults) {
@@ -39,8 +43,8 @@ void DefaultDnsOverHttpsConfigSource::RegisterPrefs(
   registry->RegisterBooleanPref(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
                                 false);
 #if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterStringPref(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                               std::string());
+  registry->RegisterStringPref(
+      ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, std::string());
 #endif
 }
 

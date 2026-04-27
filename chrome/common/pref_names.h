@@ -2236,36 +2236,6 @@ inline constexpr char kDnsOverHttpsTemplates[] = "dns_over_https.templates";
 inline constexpr char kDnsOverHttpsAutomaticModeFallbackToDoh[] =
     "dns_over_https.automatic_mode_fallback_to_doh";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// String containing a space-separated list of DNS over HTTPS URI templates,
-// with placeholders for user and device identifiers, to use in secure mode or
-// automatic mode. If no templates are specified in automatic mode, we will
-// attempt discovery of DoH servers associated with the configured insecure
-// resolvers. This is very similar to kDnsOverHttpsTemplates except that on
-// ChromeOS it supports additional placeholder variables which are used to
-// transport identity information to the DNS provider. This is ignored on all
-// other platforms than ChromeOS. On ChromeOS if it exists it will override
-// kDnsOverHttpsTemplates, otherwise kDnsOverHttpsTemplates will be used. This
-// pref is controlled by an enterprise policy.
-inline constexpr char kDnsOverHttpsTemplatesWithIdentifiers[] =
-    "dns_over_https.templates_with_identifiers";
-// String containing a salt value. This is used together with
-// kDnsOverHttpsTemplatesWithIdentifiers, only. The value will be used as a salt
-// to a hash applied to the various identity variables to prevent dictionary
-// attacks. This pref is controlled by an enterprise policy.
-inline constexpr char kDnsOverHttpsSalt[] = "dns_over_https.salt";
-// String containing a space-separated list of effective DNS over HTTPS URI
-// templates. If `kDnsOverHttpsTemplatesWithIdentifiers` is set, this string is
-// the result of evaluating `kDnsOverHttpsTemplatesWithIdentifiers` against real
-// user and device data; the identity placeholders are replaced with the
-// hex-encoded hashed value of the user and device identifier. When
-// `kDnsOverHttpsTemplatesWithIdentifiers` is empty or not set,
-// `kDnsOverHttpsEffectiveTemplates` is equal to `kDnsOverHttpsTemplates`.
-// This pref is set at runtime by ash::SecureDnsManager.
-inline constexpr char kDnsOverHttpsEffectiveTemplatesChromeOS[] =
-    "dns_over_https.effective_templates_with_identifiers";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Boolean that specifies whether additional DNS query types (e.g. HTTPS) may be
 // queried alongside the traditional A and AAAA queries.
 inline constexpr char kAdditionalDnsQueryTypesEnabled[] =

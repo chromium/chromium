@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace {
@@ -466,9 +467,10 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiers) {
   EXPECT_TRUE(errors().empty());
 
   std::string templates, templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplates, &templates));
   EXPECT_EQ(templates, "");
   EXPECT_EQ(templates_with_identifiers, test_policy_value);
@@ -494,9 +496,10 @@ TEST_F(SecureDnsPolicyHandlerTest, BothPoliciesSet) {
   EXPECT_TRUE(errors().empty());
 
   std::string templates, templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
   EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplates, &templates));
   EXPECT_EQ(templates, test_policy_value);
   EXPECT_EQ(templates_with_identifiers, test_policy_identifiers_value);
@@ -528,9 +531,10 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersInvalid) {
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsSalt), expected_error3);
 
   std::string templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
   EXPECT_TRUE(templates_with_identifiers.empty());
   EXPECT_TRUE(salt.empty());
 }
@@ -549,9 +553,10 @@ TEST_F(SecureDnsPolicyHandlerTest, NoSalt) {
   EXPECT_TRUE(errors().empty());
 
   std::string templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
   EXPECT_EQ(templates_with_identifiers, test_policy_identifiers_value);
   EXPECT_EQ(salt, "");
 }
@@ -575,9 +580,10 @@ TEST_F(SecureDnsPolicyHandlerTest, NoTemplatesWithIdentifiers) {
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsSalt), expected_error2);
 
   std::string templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
 
   EXPECT_TRUE(templates_with_identifiers.empty());
   EXPECT_TRUE(salt.empty());
@@ -602,9 +608,10 @@ TEST_F(SecureDnsPolicyHandlerTest, TemplatesWithIdentifiersEmpty) {
   EXPECT_EQ(errors().GetErrorMessages(key::kDnsOverHttpsSalt), expected_error2);
 
   std::string templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
 
   EXPECT_TRUE(templates_with_identifiers.empty());
   EXPECT_TRUE(salt.empty());
@@ -627,9 +634,10 @@ TEST_F(SecureDnsPolicyHandlerTest, NoMode) {
       expected_error);
 
   std::string templates_with_identifiers, salt;
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                                &templates_with_identifiers));
-  EXPECT_TRUE(prefs().GetString(prefs::kDnsOverHttpsSalt, &salt));
+  EXPECT_TRUE(
+      prefs().GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                        &templates_with_identifiers));
+  EXPECT_TRUE(prefs().GetString(ash::prefs::kDnsOverHttpsSalt, &salt));
 
   EXPECT_EQ(templates_with_identifiers, test_policy_identifiers_value);
   EXPECT_EQ(salt, kDohSalt);

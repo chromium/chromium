@@ -189,7 +189,7 @@ class SecureDnsManagerTest : public testing::Test {
     local_state_.registry()->RegisterBooleanPref(
         ::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, false);
     local_state_.registry()->RegisterStringPref(
-        ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
+        ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
     local_state_.registry()->RegisterListPref(
         prefs::kDnsOverHttpsExcludedDomains, base::ListValue());
     local_state_.registry()->RegisterListPref(
@@ -291,7 +291,7 @@ TEST_F(SecureDnsManagerTest, SetModeOff) {
 
   EXPECT_TRUE(providers.empty());
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
@@ -307,7 +307,7 @@ TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
 
   EXPECT_TRUE(providers.empty());
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
   EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
@@ -344,7 +344,7 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
   EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
   EXPECT_EQ(providers.size(), 2u);
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kMultipleTemplates);
 
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
@@ -379,7 +379,7 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
   EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
   EXPECT_EQ(providers.size(), 2u);
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kMultipleTemplates);
 
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
@@ -404,7 +404,7 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   EXPECT_FALSE(it->second.empty());
   EXPECT_EQ(providers.size(), 2u);
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kMultipleTemplates);
 }
 
@@ -430,16 +430,16 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
                                 base::Value(SecureDnsConfig::kModeAutomatic));
   local_state()->Set(::prefs::kDnsOverHttpsTemplates,
                      base::Value(kMultipleTemplates));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kMultipleTemplates));
-  local_state()->Set(::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+  local_state()->Set(ash::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
 
   auto providers = GetDOHProviders();
 
   EXPECT_THAT(providers, SizeIs(1));
   EXPECT_THAT(providers, Contains(Key(effectiveTemplate)));
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             effectiveTemplate);
 
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
@@ -451,9 +451,9 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
 TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
   local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
                                 base::Value(SecureDnsConfig::kModeAutomatic));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value("https://dns.google/dns-query{?dns}"));
-  local_state()->Set(::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+  local_state()->Set(ash::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
 
   auto providers = GetDOHProviders();
 
@@ -461,7 +461,7 @@ TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
                   ->network_metadata_store()
                   ->secure_dns_templates_with_identifiers_active());
 
-  local_state()->ClearPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   providers = GetDOHProviders();
 
   EXPECT_FALSE(NetworkHandler::Get()
@@ -480,17 +480,17 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
 
   local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
                                 base::Value(SecureDnsConfig::kModeAutomatic));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kUriTemplateWithIdentifiers));
   local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto providers = GetDOHProviders();
 
   // Verify that the value of kDnsOverHttpsEffectiveTemplatesChromeOS pref is
-  // ::prefs::kDnsOverHttpsTemplatesWithIdentifiers with the hex encoded hashed
-  // value of the user identifier.
+  // ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers with the hex encoded
+  // hashed value of the user identifier.
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kEffectiveUriTemplateWithIdentifiers);
 
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(),
@@ -498,7 +498,7 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
   EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
             SecureDnsConfig::kModeAutomatic);
 
-  local_state()->ClearPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  local_state()->ClearPref(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
   providers = GetDOHProviders();
 
@@ -506,7 +506,7 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
   // prefs::kDnsOverHttpsTemplates since the URI template with identifiers pref
   // was cleared.
   EXPECT_EQ(local_state()->GetString(
-                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+                ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
             kGoogleDns);
 
   EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
@@ -543,7 +543,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
 
   local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
                                 base::Value(SecureDnsConfig::kModeAutomatic));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kUriTemplateWithEmail));
   // Each pref update above will trigger an update request for the URI
   // templates.
@@ -560,7 +560,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
   EXPECT_EQ(actual_uri_template_update_count,
             expected_uri_template_update_count);
 
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kUriTemplateWithIp));
   EXPECT_EQ(actual_uri_template_update_count,
             ++expected_uri_template_update_count);
@@ -637,9 +637,9 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
 
   local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
                                 base::Value(SecureDnsConfig::kModeAutomatic));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kTemplateUri1));
-  local_state()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  local_state()->Set(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      base::Value(kTemplateUri2));
   // Verify that every pref update above will trigger an update request for the
   // DoH providers.

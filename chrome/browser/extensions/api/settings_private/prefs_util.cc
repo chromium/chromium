@@ -394,8 +394,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh] =
       settings_api::PrefType::kBoolean;
 #if BUILDFLAG(IS_CHROMEOS)
-  (*s_allowlist)[::prefs::kDnsOverHttpsSalt] = settings_api::PrefType::kString;
-  (*s_allowlist)[::prefs::kDnsOverHttpsTemplatesWithIdentifiers] =
+  (*s_allowlist)[ash::prefs::kDnsOverHttpsSalt] =
+      settings_api::PrefType::kString;
+  (*s_allowlist)[ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers] =
       settings_api::PrefType::kString;
 #endif
 

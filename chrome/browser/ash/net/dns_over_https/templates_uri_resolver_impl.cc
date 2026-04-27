@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -326,19 +327,19 @@ void TemplatesUriResolverImpl::Update(const PrefService& local_state,
                                       const user_manager::User& user) {
   doh_with_identifiers_active_ = false;
 
-  const std::string& mode = local_state.GetString(prefs::kDnsOverHttpsMode);
+  const std::string& mode = local_state.GetString(::prefs::kDnsOverHttpsMode);
   if (mode == SecureDnsConfig::kModeOff) {
     return;
   }
 
-  effective_templates_ = local_state.GetString(prefs::kDnsOverHttpsTemplates);
+  effective_templates_ = local_state.GetString(::prefs::kDnsOverHttpsTemplates);
   // In ChromeOS only, the DnsOverHttpsTemplatesWithIdentifiers policy will
   // overwrite the DnsOverHttpsTemplates policy. For privacy reasons, the
   // replacement only happens if the is a salt specified which will be used to
   // hash the identifiers in the template URI.
   std::string templates_with_identifiers =
-      local_state.GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
-  std::string salt = local_state.GetString(prefs::kDnsOverHttpsSalt);
+      local_state.GetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  std::string salt = local_state.GetString(ash::prefs::kDnsOverHttpsSalt);
 
   if (!salt.empty() &&
       (salt.size() < kMinSaltSize || salt.size() > kMaxSaltSize)) {

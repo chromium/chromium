@@ -22,6 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #endif
 
 namespace {
@@ -218,14 +219,14 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // A templates not specified error means that the pref should be set blank.
   if (IsTemplatesPolicyNotSpecified(is_templates_with_identifiers_policy_valid_,
                                     mode_str)) {
-    prefs->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+    prefs->SetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      std::string());
-    prefs->SetString(prefs::kDnsOverHttpsSalt, std::string());
+    prefs->SetString(ash::prefs::kDnsOverHttpsSalt, std::string());
 
   } else if (is_templates_with_identifiers_policy_valid_) {
-    prefs->SetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+    prefs->SetString(ash::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                      templates_with_identifiers->GetString());
-    prefs->SetString(prefs::kDnsOverHttpsSalt,
+    prefs->SetString(ash::prefs::kDnsOverHttpsSalt,
                      salt ? salt->GetString() : std::string());
   }
 #endif
