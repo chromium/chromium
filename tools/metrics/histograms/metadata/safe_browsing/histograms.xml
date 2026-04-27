@@ -2254,7 +2254,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.IOS.TotalDelay2{UserCategory}" units="ms"
-    expires_after="2026-05-31">
+    expires_after="2027-05-31">
   <owner>danieltwhite@google.com</owner>
   <owner>joemerramos@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
