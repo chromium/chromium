@@ -414,12 +414,26 @@ bool SendMouseMoveNotifyWhenDone(int x,
     event_type = NSEventTypeOtherMouseDragged;
   }
 
-  // Moves must be sent directly to the window as they won't be relayed by the
-  // OS.
+  // In production, mouse entered/exited/move events are sent to the owner of
+  // the NSTrackingArea that they are in. Unlike other mouse events, they bypass
+  // the NSApplication event loop.
+  //
+  // This test utility simulates that by sending the mouse move
+  // to the target NSView directly.
+  // TODO(crbug.com/503006742): mouse enter and exit events are not generated
+  // for subviews. Fix it.
   NSEvent* event = MakeMouseEvent(event_type, window);
   if (window_hint && event_type == NSEventTypeMouseMoved) {
     if (window) {
-      [window.contentView mouseMoved:event];
+      NSPoint point_in_window = [event locationInWindow];
+      // `target_view` might be the contentView or a subview (e.g. a
+      // WebView's native view). hitTest: will find that target.
+      NSView* target_view = [window.contentView hitTest:point_in_window];
+      if (target_view) {
+        [target_view mouseMoved:event];
+      } else {
+        [window.contentView mouseMoved:event];
+      }
     }
   } else {
     [[NSApplication sharedApplication] postEvent:event atStart:NO];
