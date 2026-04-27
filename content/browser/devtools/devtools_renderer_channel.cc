@@ -187,8 +187,6 @@ void DevToolsRendererChannel::ChildTargetCreated(
     case blink::mojom::DevToolsExecutionContextType::kDedicatedWorker: {
       // WorkerDevToolsAgentHost for dedicated workers is already created in the
       // browser process.
-      CHECK(content::DevToolsAgentHost::GetForId(
-          devtools_worker_token.ToString()));
       DedicatedWorkerDevToolsAgentHost* dedicated_worker_agent_host =
           WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
               devtools_worker_token);
