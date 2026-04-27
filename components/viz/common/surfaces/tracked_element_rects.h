@@ -13,6 +13,7 @@
 #include "base/token.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace viz {
@@ -34,13 +35,18 @@ enum class TrackedElementFeature : int32_t {
 // New struct to hold the tracked element clipped/visible bounds and other data.
 struct VIZ_COMMON_EXPORT TrackedElementRect {
   TrackedElementRect() = default;
-  TrackedElementRect(TrackedElementId id,
-                     gfx::Rect visible_bounds,
-                     bool should_add_to_compositor_frame_metadata = false)
+  TrackedElementRect(
+      TrackedElementId id,
+      gfx::Rect visible_bounds,
+      bool should_add_to_compositor_frame_metadata = false,
+      std::optional<blink::FrameToken> frame_token = std::nullopt,
+      std::optional<blink::LocalFrameToken> parent_frame_token = std::nullopt)
       : id(id),
         visible_bounds(visible_bounds),
         should_add_to_compositor_frame_metadata(
-            should_add_to_compositor_frame_metadata) {}
+            should_add_to_compositor_frame_metadata),
+        frame_token(frame_token),
+        parent_frame_token(parent_frame_token) {}
 
   // The id of the element being tracked.
   TrackedElementId id;
@@ -52,6 +58,11 @@ struct VIZ_COMMON_EXPORT TrackedElementRect {
   // Whether the element should be added to the compositor frame metadata. If
   // false, the element will be added to the render frame metadata.
   bool should_add_to_compositor_frame_metadata = false;
+
+  // The frame token of the frame containing the element being tracked.
+  std::optional<blink::FrameToken> frame_token;
+  // The local frame token of the parent frame.
+  std::optional<blink::LocalFrameToken> parent_frame_token;
 
   friend bool operator==(const TrackedElementRect&,
                          const TrackedElementRect&) = default;

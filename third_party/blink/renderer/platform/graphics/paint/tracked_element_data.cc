@@ -15,6 +15,14 @@ String TrackedElementRect::ToString() const {
   sb.Append(id.value().ToString().c_str());
   sb.Append(", bounds: ");
   sb.Append(bounds.ToString().c_str());
+  if (frame_token.has_value()) {
+    sb.Append(", frame_token: ");
+    sb.Append(frame_token->ToString().c_str());
+  }
+  if (parent_frame_token.has_value()) {
+    sb.Append(", parent_frame_token: ");
+    sb.Append(parent_frame_token->ToString().c_str());
+  }
   sb.Append(" }");
   return sb.ToString();
 }

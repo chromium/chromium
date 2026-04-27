@@ -245,7 +245,10 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
+      traits_public_deps = [
+        "//components/viz/common",
+        "//third_party/blink/public/mojom/tokens:tokens_traits",
+      ]
     },
     {
       types = [
@@ -562,7 +565,10 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
+      traits_public_deps = [
+        "//components/viz/common",
+        "//third_party/blink/public/mojom/tokens:tokens_traits",
+      ]
     },
     {
       types = [

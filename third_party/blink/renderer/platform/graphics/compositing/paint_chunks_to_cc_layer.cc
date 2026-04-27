@@ -1586,7 +1586,8 @@ void LayerPropertiesUpdater::UpdateTrackedElementRects(
           chunk_to_layer_mapper_.MapVisualRect(element_rect.bounds);
       viz::TrackedElementRect rect_data(
           element_rect.id.value(), rect,
-          element_rect.should_add_to_compositor_frame_metadata);
+          element_rect.should_add_to_compositor_frame_metadata,
+          element_rect.frame_token, element_rect.parent_frame_token);
       tracked_element_rects_[feature].push_back(std::move(rect_data));
     }
   }

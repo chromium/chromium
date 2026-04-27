@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/map_traits_absl.h"
 #include "services/viz/public/mojom/compositing/tracked_element_rects.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -30,10 +31,22 @@ struct StructTraits<viz::mojom::TrackedElementRectDataView,
     return data.visible_bounds;
   }
 
+  static std::optional<blink::FrameToken> frame_token(
+      const viz::TrackedElementRect& data) {
+    return data.frame_token;
+  }
+
+  static std::optional<blink::LocalFrameToken> parent_frame_token(
+      const viz::TrackedElementRect& data) {
+    return data.parent_frame_token;
+  }
+
   static bool Read(viz::mojom::TrackedElementRectDataView data,
                    viz::TrackedElementRect* out) {
     if (!data.ReadTrackedElementId(&out->id) ||
-        !data.ReadVisibleBounds(&out->visible_bounds)) {
+        !data.ReadVisibleBounds(&out->visible_bounds) ||
+        !data.ReadFrameToken(&out->frame_token) ||
+        !data.ReadParentFrameToken(&out->parent_frame_token)) {
       return false;
     }
     return true;

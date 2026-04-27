@@ -5,8 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_TRACKED_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_TRACKED_ELEMENT_DATA_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/tracked_element_id.h"
@@ -45,11 +49,15 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
   explicit TrackedElementSubRect(
       TrackedElementId id,
       bool should_add_to_compositor_frame_metadata = false,
-      std::optional<SubRect> sub_rect = std::nullopt)
+      std::optional<SubRect> sub_rect = std::nullopt,
+      std::optional<FrameToken> frame_token = std::nullopt,
+      std::optional<LocalFrameToken> parent_frame_token = std::nullopt)
       : id(id),
         should_add_to_compositor_frame_metadata(
             should_add_to_compositor_frame_metadata),
-        sub_rect(sub_rect) {}
+        sub_rect(sub_rect),
+        frame_token(frame_token),
+        parent_frame_token(parent_frame_token) {}
 
   TrackedElementId id;
   // Whether the element should be added to the compositor frame metadata. If
@@ -58,13 +66,18 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
   // The sub-rectangle of the element to track, or nullopt if the entire
   // element is being tracked.
   std::optional<SubRect> sub_rect;
+  // The frame token of the frame containing the element being tracked.
+  std::optional<FrameToken> frame_token;
+  // The local frame token of the parent frame.
+  std::optional<LocalFrameToken> parent_frame_token;
 
   // Comparison operators for use with WTF::HashSet and other containers.
   bool operator==(const TrackedElementSubRect& other) const {
     return id == other.id &&
            should_add_to_compositor_frame_metadata ==
                other.should_add_to_compositor_frame_metadata &&
-           sub_rect == other.sub_rect;
+           sub_rect == other.sub_rect && frame_token == other.frame_token &&
+           parent_frame_token == other.parent_frame_token;
   }
   bool operator!=(const TrackedElementSubRect& other) const {
     return !(*this == other);
@@ -84,13 +97,18 @@ using TrackedElementSubRects =
 // optional metadata that may be set by the tracking feature.
 struct PLATFORM_EXPORT TrackedElementRect {
   TrackedElementRect() = default;
-  TrackedElementRect(TrackedElementId id,
-                     gfx::Rect bounds,
-                     bool should_add_to_compositor_frame_metadata = false)
+  TrackedElementRect(
+      TrackedElementId id,
+      gfx::Rect bounds,
+      bool should_add_to_compositor_frame_metadata = false,
+      std::optional<FrameToken> frame_token = std::nullopt,
+      std::optional<LocalFrameToken> parent_frame_token = std::nullopt)
       : id(id),
         bounds(bounds),
         should_add_to_compositor_frame_metadata(
-            should_add_to_compositor_frame_metadata) {}
+            should_add_to_compositor_frame_metadata),
+        frame_token(frame_token),
+        parent_frame_token(parent_frame_token) {}
 
   // The id of the element being tracked.
   TrackedElementId id;
@@ -99,6 +117,10 @@ struct PLATFORM_EXPORT TrackedElementRect {
   // Whether the element should be added to the compositor frame metadata. If
   // false, the element will be added to the render frame metadata.
   bool should_add_to_compositor_frame_metadata;
+  // The frame token of the frame containing the element being tracked.
+  std::optional<FrameToken> frame_token;
+  // The local frame token of the parent frame.
+  std::optional<LocalFrameToken> parent_frame_token;
 
   // Comparison operators for use with WTF::HashSet and other containers.
   bool operator==(const TrackedElementRect& other) const = default;

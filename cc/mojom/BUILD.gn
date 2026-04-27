@@ -17,6 +17,7 @@ component("shared_mojom_traits") {
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]
+  deps = [ "//services/viz/public/mojom" ]
 }
 
 mojom("mojom") {

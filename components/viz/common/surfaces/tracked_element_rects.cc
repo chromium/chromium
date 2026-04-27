@@ -17,8 +17,13 @@
 namespace viz {
 
 std::string TrackedElementRect::ToString() const {
-  return base::StrCat({"{id: ", id.ToString(),
-                       ", visible_bounds: ", visible_bounds.ToString(), "}"});
+  return base::StrCat(
+      {"{id: ", id.ToString(), ", visible_bounds: ", visible_bounds.ToString(),
+       ", frame_token: ",
+       frame_token.has_value() ? frame_token->ToString() : "null",
+       ", parent_frame_token: ",
+       parent_frame_token.has_value() ? parent_frame_token->ToString() : "null",
+       "}"});
 }
 
 std::string TrackedElementRectsToString(const TrackedElementRects& bounds) {

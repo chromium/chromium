@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "mojo/public/mojom/base/token.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Represents the data associated with a tracked element. This includes the
@@ -19,6 +20,12 @@ struct TrackedElementRect {
   // Screen-space rectangle representing the visible bounds of the tracked
   // element.
   gfx.mojom.Rect visible_bounds;
+
+  // The frame token of the frame containing the element being tracked.
+  blink.mojom.FrameToken? frame_token;
+
+  // The local frame token of the parent frame.
+  blink.mojom.LocalFrameToken? parent_frame_token;
 };
 
 // TrackedElementRects are used to map a "feature" to the list of tracked
