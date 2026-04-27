@@ -58,8 +58,9 @@ void VisitedLinkDatabase::FillVisitedLinkRow(sql::Statement& s,
                                              VisitedLinkRow& i) {
   i.id = s.ColumnInt64(0);
   i.link_url_id = s.ColumnInt64(1);
-  i.top_level_url = GURL(s.ColumnStringView(2));
-  i.frame_url = GURL(s.ColumnStringView(3));
+  // Use Swap to avoid the expensive GURL copy-assignment operator.
+  GURL(s.ColumnStringView(2)).Swap(&i.top_level_url);
+  GURL(s.ColumnStringView(3)).Swap(&i.frame_url);
   i.visit_count = s.ColumnInt(4);
 }
 
