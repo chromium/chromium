@@ -112,6 +112,7 @@ class MockPage : public mojom::Page {
               (const base::UnguessableToken& file_token),
               (override));
   MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
+  MOCK_METHOD(void, SetInNlm, (bool in_nlm), (override));
 
   mojo::Receiver<mojom::Page> receiver_{this};
 };

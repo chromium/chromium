@@ -150,7 +150,6 @@ std::string GetEncodedHandshakeMessage() {
   message.SerializeToArray(&serialized_message[0], size);
   return base::Base64Encode(serialized_message);
 }
-
 }  // namespace
 
 void AddDefaultZeroStateStrings(content::WebUIDataSource* source) {
@@ -348,6 +347,12 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::kContextualTasksNextboxAttachmentFileTypes.Get());
   source->AddBoolean("lensSendRawFileMediaTypesEnabled",
                      lens::features::IsLensSendRawFileMediaTypesEnabled());
+
+  source->AddString("nlmUrlParam",
+                    contextual_tasks::GetContextualTasksNlmUrlParam());
+  source->AddBoolean("enableCustomNlmUi",
+                     contextual_tasks::IsCustomNlmUiEnabled());
+
   source->AddInteger(
       "composeboxFileMaxSize",
       contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());
@@ -602,6 +607,12 @@ void ContextualTasksUI::SetAimUrl(const GURL& url) {
 void ContextualTasksUI::UpdateModelModeFromUrl(const GURL& url) {
   if (composebox_handler_) {
     composebox_handler_->UpdateModelFromUrl(url);
+  }
+}
+
+void ContextualTasksUI::SetInNlm(bool in_nlm) {
+  if (page_) {
+    page_->SetInNlm(in_nlm);
   }
 }
 
@@ -1170,6 +1181,14 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_ai_page = ui_service_->IsAiUrl(url);
   task_info_delegate_->SetIsAiPage(is_ai_page);
   task_info_delegate_->SetAimUrl(url);
+
+  bool in_nlm = false;
+  std::string value;
+  if (net::GetValueForKeyInQuery(
+          url, contextual_tasks::GetContextualTasksNlmUrlParam(), &value)) {
+    in_nlm = true;
+  }
+  task_info_delegate_->SetInNlm(in_nlm);
 
   if (base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksUpdateModelOnNavigation)) {

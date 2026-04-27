@@ -81,6 +81,7 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   }
 
   void SetIsAiPage(bool is_ai_page) override {}
+  void SetInNlm(bool in_nlm) override {}
 
   content::WebContents* GetWebUIWebContents() override { return nullptr; }
 

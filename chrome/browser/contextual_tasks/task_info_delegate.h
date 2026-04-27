@@ -33,6 +33,7 @@ class TaskInfoDelegate {
   virtual BrowserWindowInterface* GetBrowser() = 0;
   virtual content::WebContents* GetWebUIWebContents() = 0;
   virtual void OnZeroStateChange(bool is_zero_state) = 0;
+  virtual void SetInNlm(bool in_nlm) = 0;
 
   // Called to prepare for a task change.
   virtual void PrepareForTaskChange() = 0;

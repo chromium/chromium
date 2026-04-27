@@ -83,6 +83,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      inNlm: {
+        type: Boolean,
+        reflect: true,
+      },
       enableNativeZeroStateSuggestions: {type: Boolean},
       isZeroState: {
         type: Boolean,
@@ -139,6 +143,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   accessor enableNativeZeroStateSuggestions: boolean = false;
+  accessor inNlm: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
@@ -337,7 +342,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected shouldShowSuggestions_() {
-    return this.isZeroState;
+    return this.isZeroState && !this.inNlm;
   }
 
   protected isDropdownNeeded_() {

@@ -40,6 +40,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'removeInjectedInput',
       'setShowReopenTabs',
       'onSidePanelPinStateChanged',
+      'setInNlm',
     ]);
   }
 
@@ -88,6 +89,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   onZeroStateChange() {
     this.methodCalled('onZeroStateChange');
+  }
+
+  setInNlm(inNlm: boolean) {
+    this.methodCalled('setInNlm', inNlm);
   }
 
   onAiPageStatusChanged(isAiPage: boolean) {
