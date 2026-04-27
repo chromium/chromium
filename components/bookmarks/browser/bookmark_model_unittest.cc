@@ -173,6 +173,32 @@ class TestBookmarkClientWithUndo : public TestBookmarkClient {
   std::unique_ptr<BookmarkNode> last_removed_node_;
 };
 
+// TestBookmarkClient that has harded-coded sync tokens.
+class TestBookmarkClientWithFixedSyncMetadata : public TestBookmarkClient {
+ public:
+  TestBookmarkClientWithFixedSyncMetadata(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      std::string local_or_syncable_bookmark_sync_metadata,
+      std::string account_bookmark_sync_metadata)
+      : TestBookmarkClient(os_crypt_async),
+        local_or_syncable_bookmark_sync_metadata_(
+            local_or_syncable_bookmark_sync_metadata),
+        account_bookmark_sync_metadata_(account_bookmark_sync_metadata) {}
+  ~TestBookmarkClientWithFixedSyncMetadata() override = default;
+
+  std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override {
+    return local_or_syncable_bookmark_sync_metadata_;
+  }
+
+  std::string EncodeAccountBookmarkSyncMetadata() override {
+    return account_bookmark_sync_metadata_;
+  }
+
+ private:
+  std::string local_or_syncable_bookmark_sync_metadata_;
+  std::string account_bookmark_sync_metadata_;
+};
+
 // Helper to get a mutable bookmark node.
 BookmarkNode* AsMutable(const BookmarkNode* node) {
   return const_cast<BookmarkNode*>(node);
@@ -303,9 +329,7 @@ class BookmarkModelTest : public testing::Test {
     model_->AddObserver(&mock_observer_);
   }
 
-  ~BookmarkModelTest() override {
-    model_->RemoveObserver(&mock_observer_);
-  }
+  ~BookmarkModelTest() override { model_->RemoveObserver(&mock_observer_); }
 
   BookmarkModelTest(const BookmarkModelTest&) = delete;
   BookmarkModelTest& operator=(const BookmarkModelTest&) = delete;
@@ -3157,7 +3181,7 @@ class BookmarkModelStorageWithSecondayFileTest
     return GetParam() == BookmarkEncryptionStage::kWriteBothReadPreferEncrypted;
   }
 
- private:
+ protected:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_ =
       os_crypt_async::GetTestOSCryptAsyncForTesting();
   base::test::ScopedFeatureList feature_list_;
@@ -3286,6 +3310,77 @@ TEST_P(BookmarkModelStorageWithSecondayFileTest,
   // Reload the model and verify that the secondary files is recreated.
   base::HistogramTester histogram_tester;
   model = CreateBookmarkModel();
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  histogram_tester.ExpectUniqueSample(
+      GetPrimaryHistogramName(
+          "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable"),
+      metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      GetSecondaryHistogramName(
+          "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable"),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName),
+      model->client());
+
+  histogram_tester.ExpectUniqueSample(
+      GetPrimaryHistogramName("Bookmarks.BookmarksFileLoadResult.Account"),
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      GetSecondaryHistogramName("Bookmarks.BookmarksFileLoadResult.Account"),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kAccountBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName),
+      model->client());
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"ImportantFile.WriteDuration",
+                    GetSecondaryBookmarkStorageHistogramSuffix()}),
+      /*expected_count=*/2);
+}
+
+TEST_P(BookmarkModelStorageWithSecondayFileTest,
+       SecondaryBookmarksFileIsCreatedOnLoadWithMetadataIfMissing) {
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  // First create the local-or-syncable and account bookmarks primary files with
+  // some sync metadata and delete any secondary files.
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto client = std::make_unique<TestBookmarkClientWithFixedSyncMetadata>(
+      os_crypt_async_.get(), "local_or_syncable_metadata1",
+      "account_metadata1");
+  auto model = std::make_unique<BookmarkModel>(std::move(client));
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+  model->AddURL(model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
+  task_environment.FastForwardUntilNoTasksRemain();
+  model->CreateAccountPermanentFolders();
+  task_environment.FastForwardUntilNoTasksRemain();
+  // Delete the secondary files.
+  ASSERT_TRUE(base::DeleteFile(
+      tmp_dir.GetPath().Append(GetLocalOrSyncableSecondaryFilename())));
+  ASSERT_TRUE(base::DeleteFile(
+      tmp_dir.GetPath().Append(GetAccountSecondaryFilename())));
+
+  // Reload the model, force a different sync metadata for the next encoding,
+  // verify that the secondary files are recreated and match the primary files.
+  base::HistogramTester histogram_tester;
+  client = std::make_unique<TestBookmarkClientWithFixedSyncMetadata>(
+      os_crypt_async_.get(), "local_or_syncable_metadata2",
+      "account_metadata2");
+  model = std::make_unique<BookmarkModel>(std::move(client));
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   task_environment.FastForwardUntilNoTasksRemain();

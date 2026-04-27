@@ -357,6 +357,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of the serialization that occurred when
     {ImportantFileWriter} saves bookmarks to disk.
+
+    JSON error can't occur for immediate file writer as they receive a json
+    string to save instead of the bookmark model.
   </summary>
 </histogram>
 

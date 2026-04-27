@@ -105,12 +105,18 @@ class BookmarkStorage
   // If there is a pending write, performs it immediately.
   void SaveNowIfScheduledForTesting();
 
-  // Saves the bookmarks to the clear text or encrypted file right away based on
-  // `encryption_type`.
+  // Saves the given `json_content` to the clear text or encrypted file right
+  // away based on `encryption_type`. The 'json_content' should be a clear text
+  // JSON string coming from a bookmarks file that was properly loaded. It will
+  // be encrypted if `encryption_type` is StorageFileEncryptionType::kEncrypted.
   //
   // The other file will not be touched. This write operation is scheduled on
   // the backend task runner.
-  void SaveToSingleFileNow(StorageFileEncryptionType encryption_type);
+  //
+  // This function will be a no-op if ScheduleSave() has been called at least
+  // once.
+  void SaveSingleFileIfNoPreviousSave(StorageFileEncryptionType encryption_type,
+                                      std::string json_content);
 
   base::WeakPtr<BookmarkStorage> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -164,6 +170,10 @@ class BookmarkStorage
 
   // Used to track the frequency of saves starting from the first save.
   base::TimeTicks last_scheduled_save_;
+
+  // Used to track whether the ScheduleSave() function has been called at least
+  // once.
+  bool was_scheduled_save_ever_called_ = false;
 
   base::WeakPtrFactory<BookmarkStorage> weak_factory_{this};
 };

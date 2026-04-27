@@ -307,11 +307,12 @@ void BookmarkModel::ContinueLoadWithEncryptor(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path, account_file_path,
       encrypted_account_file_path, client_->GetLoadManagedNodeCallback(),
-      base::BindOnce(&BookmarkStorage::SaveToSingleFileNow,
+      base::BindOnce(&BookmarkStorage::SaveSingleFileIfNoPreviousSave,
                      local_or_syncable_store_->AsWeakPtr()),
-      account_store_ ? base::BindOnce(&BookmarkStorage::SaveToSingleFileNow,
-                                      account_store_->AsWeakPtr())
-                     : base::DoNothing(),
+      account_store_
+          ? base::BindOnce(&BookmarkStorage::SaveSingleFileIfNoPreviousSave,
+                           account_store_->AsWeakPtr())
+          : base::DoNothing(),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 
