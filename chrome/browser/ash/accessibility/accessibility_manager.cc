@@ -66,7 +66,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

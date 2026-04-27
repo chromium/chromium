@@ -46,12 +46,19 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
-  "+chrome/common/pref_names.h",
   "+chrome/common/url_constants.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  "accessibility_manager\\.(cc|h)": [
+    "+services/accessibility/buildflags.h",
+    "+services/accessibility/public/mojom/assistive_technology_type.mojom.h",
+  ],
+  "speech_monitor\\.(cc|h)": [
+    "+content/public/browser/tts_controller.h",
+  ],
+
   # Testing
   ".*_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
@@ -65,11 +72,10 @@ specific_include_rules = {
     "+ui/message_center/message_center.h",
     "+ui/views",
   ],
-  "speech_monitor\\.(cc|h)": [
-    "+content/public/browser/tts_controller.h",
+  "accessibility_test_utils\\.cc": [
+    "+chrome/common/pref_names.h",
   ],
-  "accessibility_manager\\.(cc|h)": [
-    "+services/accessibility/buildflags.h",
-    "+services/accessibility/public/mojom/assistive_technology_type.mojom.h",
+  "sticky_keys_browsertest\\.cc": [
+    "+chrome/common/pref_names.h",
   ],
 }
