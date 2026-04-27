@@ -9,11 +9,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -359,5 +361,230 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(() -> readAloudTabSupplier.set(null));
 
         CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testSheetEventsCallback_onBottomSheetOpened() {
+        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ false);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.setSheetExpanded(true);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> verify(mockDelegate, atLeastOnce()).onBottomSheetOpened(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testSheetEventsCallback_onBottomSheetClosed_NativeClose() {
+        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToCloseBottomSheet(/* animate= */ false);
+                });
+
+        verify(mockDelegate).onBottomSheetClosed();
+    }
+
+    @Test
+    @SmallTest
+    public void testSheetEventsCallback_onBottomSheetClosed_Suppressed() {
+        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
+
+        verify(mockDelegate).onBottomSheetSuppressed();
+
+        tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetPeekView_BeforeShow() {
+        View peekView = new View(mActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.setPeekView(peekView);
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        CriteriaHelper.pollUiThread(() -> mCoBrowseViews.hasPeekView());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetPeekView_AfterShow() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        View peekView = new View(mActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.setPeekView(peekView);
+                });
+
+        CriteriaHelper.pollUiThread(() -> mCoBrowseViews.hasPeekView());
+    }
+
+    @Test
+    @SmallTest
+    public void testRemovePeekView() {
+        View peekView = new View(mActivity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.setPeekView(peekView);
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+        CriteriaHelper.pollUiThread(() -> mCoBrowseViews.hasPeekView());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.removePeekView(peekView);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mCoBrowseViews.hasPeekView());
+    }
+
+    @Test
+    @SmallTest
+    public void testDetachNativeInterfaceDelegate() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mDelegate);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.detachNativeInterfaceDelegate(mDelegate);
+                });
+
+        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), null);
+    }
+
+    @Test
+    @SmallTest
+    public void testTryToCloseBottomSheet_WhenSuppressed() {
+        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToCloseBottomSheet(/* animate= */ false);
+                });
+
+        verify(mockDelegate).onBottomSheetClosed();
+
+        tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+    }
+
+    @Test
+    @SmallTest
+    public void testTryToShowBottomSheet_WhenAlreadyShowing() {
+        NativeInterfaceDelegate mockDelegate1 = mock(NativeInterfaceDelegate.class);
+        NativeInterfaceDelegate mockDelegate2 = mock(NativeInterfaceDelegate.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate1,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        CoBrowseViews coBrowseViews2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new CoBrowseViews(
+                                        mActivity,
+                                        TabBottomSheetClientType.UNKNOWN,
+                                        null,
+                                        null,
+                                        Color.WHITE));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate2,
+                            coBrowseViews2,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        verify(mockDelegate1).onBottomSheetClosed();
+        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mockDelegate2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    coBrowseViews2.destroy();
+                });
     }
 }
