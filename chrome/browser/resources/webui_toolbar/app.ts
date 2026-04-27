@@ -8,6 +8,7 @@ import './location_bar.js';
 import './split_tabs_button.js';
 import './home_button.js';
 import './pinned_toolbar_actions.js';
+import './avatar_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -60,6 +61,7 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#split-tabs', id: 'kToolbarSplitTabsToolbarButtonElementId'},
   {selector: '#location-bar', id: 'kLocationBarElementId'},
   {selector: '#home', id: 'kToolbarHomeButtonElementId'},
+  {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
 ];
 
 export class ToolbarAppElement extends CrLitElement {
@@ -84,6 +86,7 @@ export class ToolbarAppElement extends CrLitElement {
       navigationControlsState_: {type: Object},
       isBackForwardButtonEnabled_: {type: Boolean},
       isPinnedToolbarActionsEnabled_: {type: Boolean},
+      isAvatarButtonEnabled_: {type: Boolean},
     };
   }
 
@@ -99,6 +102,8 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableBackForwardButtons');
   protected accessor isPinnedToolbarActionsEnabled_: boolean =
       loadTimeData.getBoolean('enablePinnedToolbarActions');
+  protected accessor isAvatarButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableAvatarButton');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
       // While this will be overwritten anyways, this matches the default value
@@ -236,7 +241,7 @@ export class ToolbarAppElement extends CrLitElement {
     }
 
     const waitSelectors =
-        ['#back', '#forward', '#reload', '#split-tabs', '#home'];
+        ['#back', '#forward', '#reload', '#split-tabs', '#home', '#avatar'];
     const promises =
         waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
             .filter(el => !!el)

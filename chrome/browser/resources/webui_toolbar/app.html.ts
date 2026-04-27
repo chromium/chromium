@@ -38,6 +38,11 @@ ${this.isBackForwardButtonEnabled_ ? html`
                    !this.navigationControlsState_.splitTabsControlState.isCurrentTabSplit}">
     </split-tabs-button>
   ` : ''}
+  ${this.isAvatarButtonEnabled_ ? html`
+    <avatar-button id="avatar"
+        .state="${null}">
+    </avatar-button>
+  ` : ''}
   ${this.isLocationBarEnabled_ ? html`
     <location-bar id="location-bar"
         .locationBarState="${this.navigationControlsState_.locationBarState}">
