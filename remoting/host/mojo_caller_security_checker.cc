@@ -64,13 +64,26 @@ bool IsTrustedMojoEndpoint(
   return IsProcessTrusted(caller.audit_token, kAllowedIdentifiers);
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-  // TODO: yuweih - see if it's possible to move away from PID-based security
-  // checks, which might be susceptible of PID reuse attacks.
   static base::NoDestructor<base::FilePath> current_process_image_path(
       GetProcessImagePath(base::GetCurrentProcId()));
-  base::FilePath caller_process_image_path = GetProcessImagePath(caller.pid);
+
+  base::FilePath caller_process_image_path;
+#if BUILDFLAG(IS_WIN)
+  if (!caller.process.IsValid()) {
+    LOG(ERROR) << "caller.process is invalid for PID " << caller.pid
+               << ". Was include_peer_process_info set to true?";
+    return false;
+  }
+  caller_process_image_path = GetProcessImagePath(caller.process);
+#else
+  // TODO: yuweih - see if it's possible to move away from PID-based security
+  // checks for Linux, which might be susceptible to PID reuse attacks.
+  caller_process_image_path = GetProcessImagePath(caller.pid);
+#endif
+
   if (caller_process_image_path.empty()) {
-    LOG(ERROR) << "Cannot resolve process image path for PID " << caller.pid;
+    LOG(ERROR) << "Cannot resolve process image path for caller with PID "
+               << caller.pid;
     return false;
   }
   if (caller_process_image_path == *current_process_image_path) {

@@ -59,16 +59,24 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
   }
   return process_image_path;
 #elif BUILDFLAG(IS_WIN)
-  base::win::ScopedHandle process_handle(
-      OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid));
-  if (!process_handle.is_valid()) {
+  base::Process process =
+      base::Process::OpenWithAccess(pid, PROCESS_QUERY_LIMITED_INFORMATION);
+  if (!process.IsValid()) {
     PLOG(ERROR) << "OpenProcess failed";
     return base::FilePath();
   }
+  return GetProcessImagePath(process);
+#else
+  NOTIMPLEMENTED();
+  return base::FilePath();
+#endif
+}
+
+base::FilePath GetProcessImagePath(const base::Process& process) {
+#if BUILDFLAG(IS_WIN)
   std::array<wchar_t, MAX_PATH + 1> buffer;
   DWORD size = buffer.size();
-  if (!QueryFullProcessImageName(process_handle.Get(), 0, buffer.data(),
-                                 &size)) {
+  if (!QueryFullProcessImageName(process.Handle(), 0, buffer.data(), &size)) {
     PLOG(ERROR) << "QueryFullProcessImageName failed";
     return base::FilePath();
   }
@@ -76,8 +84,7 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
   DCHECK_LT(size, buffer.size());
   return base::FilePath(base::FilePath::StringViewType(buffer.data(), size));
 #else
-  NOTIMPLEMENTED();
-  return base::FilePath();
+  return GetProcessImagePath(process.Pid());
 #endif
 }
 
