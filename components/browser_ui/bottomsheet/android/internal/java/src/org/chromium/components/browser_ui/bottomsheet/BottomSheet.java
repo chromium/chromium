@@ -34,6 +34,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
@@ -113,6 +114,12 @@ class BottomSheet extends FrameLayout
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
 
+    /**
+     * The view that is used to the area below the bottom sheet contents that is normally obscured
+     * by the keyboard.
+     */
+    private View mKeyboardCurtain;
+
     /** The view that contains the sheet background color. */
     private View mSheetBackground;
 
@@ -182,6 +189,8 @@ class BottomSheet extends FrameLayout
 
     /** Whether or not always use the full width of the container. */
     private boolean mAlwaysFullWidth;
+
+    private @MonotonicNonNull Window mWindow;
 
     /** The supplier of the bottom inset when edge to edge is enabled. */
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
@@ -345,8 +354,10 @@ class BottomSheet extends FrameLayout
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             int appHeaderHeight,
             int bottomMargin) {
+        mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
+        mKeyboardCurtain = findViewById(R.id.keyboard_curtain);
         mSheetBackground = findViewById(R.id.background);
         mShadowLayer = findViewById(R.id.shadow_layer);
         onAppHeaderHeightChanged(appHeaderHeight);
@@ -1450,12 +1461,24 @@ class BottomSheet extends FrameLayout
             if (params.height != newHeight) {
                 params.height = newHeight;
                 mBottomSheetContentContainer.setLayoutParams(params);
-                notifyContainerSizeChanged();
             }
         } else if (params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             mBottomSheetContentContainer.setLayoutParams(params);
-            notifyContainerSizeChanged();
+        }
+
+        updateCurtainHeight();
+    }
+
+    private void updateCurtainHeight() {
+        assert mWindow != null;
+        @Px int maxWindowHeight = mWindow.getDecorView().getHeight();
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mKeyboardCurtain.getLayoutParams();
+        if (params.height != maxWindowHeight) {
+            params.height = maxWindowHeight;
+            mKeyboardCurtain.setTranslationY(maxWindowHeight);
+            mKeyboardCurtain.setLayoutParams(params);
         }
     }
 
@@ -1537,7 +1560,7 @@ class BottomSheet extends FrameLayout
         if (mSheetContent.hasSolidBackgroundColor()) {
             int overrideColor = mSheetContent.getSheetBackgroundColorOverride();
             if (overrideColor != Color.TRANSPARENT) {
-                udpateSheetBgColorTint(overrideColor);
+                updateSheetBgColorTint(overrideColor);
                 return;
             }
         }
@@ -1552,7 +1575,7 @@ class BottomSheet extends FrameLayout
         boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
         if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
             int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNonModal : colorModal;
-            udpateSheetBgColorTint(newColor);
+            updateSheetBgColorTint(newColor);
             return;
         }
 
@@ -1561,13 +1584,15 @@ class BottomSheet extends FrameLayout
         int newColor =
                 ColorUtils.overlayColor(
                         /* baseColor= */ colorNonModal, /* overlayColor= */ colorModal, colorRatio);
-        udpateSheetBgColorTint(newColor);
+        updateSheetBgColorTint(newColor);
     }
 
-    private void udpateSheetBgColorTint(@ColorInt int newColor) {
+    private void updateSheetBgColorTint(@ColorInt int newColor) {
         if (mSheetBgColor == newColor) return;
         mSheetBgColor = newColor;
-        mSheetBackground.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
+        ColorStateList tint = ColorStateList.valueOf(mSheetBgColor);
+        mSheetBackground.setBackgroundTintList(tint);
+        mKeyboardCurtain.setBackgroundTintList(tint);
     }
 
     @VisibleForTesting
@@ -1598,12 +1623,6 @@ class BottomSheet extends FrameLayout
                             .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
         }
         mShadowLayer.setShadowLength(size);
-    }
-
-    private void notifyContainerSizeChanged() {
-        for (BottomSheetObserver obs : mObservers) {
-            obs.onContainerSizeChanged(mContainerWidth, mBottomSheetContentContainer.getHeight());
-        }
     }
 
     private void ensureContentIsWrapped(boolean animate) {

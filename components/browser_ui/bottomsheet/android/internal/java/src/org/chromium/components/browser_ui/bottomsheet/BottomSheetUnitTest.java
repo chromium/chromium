@@ -5,11 +5,8 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
@@ -19,14 +16,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,19 +40,17 @@ import org.chromium.ui.util.ColorUtils;
 public class BottomSheetUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     private static final int SHEET_CONTAINER_HEIGHT = 200;
+    private static final int SHEET_CONTAINER_WIDTH = 1080;
     private static final int SHEET_PEEK_HEIGHT = 60;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ViewGroup mSheetContainer;
     @Mock private View mSheetBackground;
     @Mock private ShadowLayerView mShadowLayerView;
-    @Mock private MarginLayoutParams mSheetLayoutParams;
     @Mock private BottomSheetContent mSheetContent;
     @Mock private TouchRestrictingFrameLayout mToolbarHolder;
 
-    @Captor ArgumentCaptor<MarginLayoutParams> mMarginCaptor;
-
     private BottomSheet mBottomSheet;
+    private ViewGroup mSheetContainer;
     private Activity mActivity;
 
     @Before
@@ -65,13 +59,35 @@ public class BottomSheetUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mBottomSheet =
                 (BottomSheet) LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet, null);
-        when(mSheetContainer.getLayoutParams()).thenReturn(mSheetLayoutParams);
-        when(mSheetContainer.getHeight()).thenReturn(SHEET_CONTAINER_HEIGHT);
-        when(mSheetContainer.getParent()).thenReturn(mSheetContainer);
+
+        FrameLayout sheetContainerParent = new FrameLayout(mActivity);
+        mSheetContainer = new FrameLayout(mActivity);
+        mSheetContainer.setLayoutParams(
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, SHEET_CONTAINER_HEIGHT));
+
+        sheetContainerParent.addView(mSheetContainer);
+        mSheetContainer.addView(mBottomSheet);
+
+        // Measure and layout the container so it has a size.
+        mSheetContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_HEIGHT, View.MeasureSpec.EXACTLY));
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);
         mBottomSheet.setToolbarHolderForTesting(mToolbarHolder);
         mBottomSheet.setBottomSheetContentContainerForTesting(
                 mBottomSheet.findViewById(R.id.bottom_sheet_content));
+
+        mBottomSheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ null,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0);
+
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
         mBottomSheet.setShadowLayerForTesting(mShadowLayerView);
     }
@@ -86,34 +102,41 @@ public class BottomSheetUnitTest {
     public void testAppHeaderHeightChanged_SwitchToDesktopWindow() {
         // Simulate switching to desktop windowing mode.
         mBottomSheet.onAppHeaderHeightChanged(APP_HEADER_HEIGHT);
-        verify(mSheetContainer).setLayoutParams(mMarginCaptor.capture());
+        MarginLayoutParams params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
         assertEquals(
                 "Sheet container's top margin should be updated to account for app header height.",
                 APP_HEADER_HEIGHT,
-                mMarginCaptor.getValue().topMargin);
+                params.topMargin);
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
     public void testAppHeaderHeightChanged_SwitchOutOfDesktopWindow() {
         // Sheet container in desktop window will use top margin = APP_HEADER_HEIGHT.
-        mSheetLayoutParams.topMargin = APP_HEADER_HEIGHT;
+        MarginLayoutParams params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        params.topMargin = APP_HEADER_HEIGHT;
+        mSheetContainer.setLayoutParams(params);
+
         // Simulate switching out of desktop windowing mode.
         mBottomSheet.onAppHeaderHeightChanged(0);
-        verify(mSheetContainer).setLayoutParams(mMarginCaptor.capture());
-        assertEquals(
-                "Sheet container's top margin should be reset.",
-                0,
-                mMarginCaptor.getValue().topMargin);
+
+        params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        assertEquals("Sheet container's top margin should be reset.", 0, params.topMargin);
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
     public void testAppHeaderHeightChanged_SameAsContainerTopMargin() {
-        mSheetLayoutParams.topMargin = APP_HEADER_HEIGHT;
+        MarginLayoutParams params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        params.topMargin = APP_HEADER_HEIGHT;
+        mSheetContainer.setLayoutParams(params);
+
         mBottomSheet.onAppHeaderHeightChanged(APP_HEADER_HEIGHT);
-        // Avoid LayoutParams update when there's no change in the top margin.
-        verify(mSheetContainer, never()).setLayoutParams(any());
+
+        assertEquals(
+                "Sheet container's top margin should be unchanged.",
+                APP_HEADER_HEIGHT,
+                ((MarginLayoutParams) mSheetContainer.getLayoutParams()).topMargin);
     }
 
     @Test
@@ -320,6 +343,21 @@ public class BottomSheetUnitTest {
                 "Sheet bg color should be the override color.",
                 SemanticColorUtils.getColorSurface(mActivity),
                 mBottomSheet.getSheetBackgroundColor());
+    }
+
+    @Test
+    public void testKeyboardCurtainColor_BackgroundColorOverride() {
+        final int overrideColor = Color.CYAN;
+        doReturn(true).when(mSheetContent).hasSolidBackgroundColor();
+        doReturn(overrideColor).when(mSheetContent).getSheetBackgroundColorOverride();
+
+        mBottomSheet.showContent(mSheetContent);
+
+        View curtain = mBottomSheet.findViewById(R.id.keyboard_curtain);
+        assertEquals(
+                "Keyboard curtain bg color should be the override color.",
+                ColorStateList.valueOf(overrideColor),
+                curtain.getBackgroundTintList());
     }
 
     @Test
