@@ -181,6 +181,17 @@ class CheckMultiversionCratesTests(unittest.TestCase):
         self.assertTrue("[crate.foo.extra_kv]" in msg)
         self.assertTrue("multiversion_cleanup_bug = " in msg)
 
+    def testPlaceholderCratesAreIgnored(self):
+        placeholder_crate_id = crate_utils.GetPlaceholderCrateIdForTesting()
+        placeholder_crate_name = crate_utils.ConvertCrateIdToCrateName(
+            placeholder_crate_id)
+        crate_ids = set([
+            placeholder_crate_id,
+            f"{placeholder_crate_name}@999.0.0",
+        ])
+        gnrt_config = {}
+        self.assertEqual("", CheckMultiversionCrates(crate_ids, gnrt_config))
+
 
 class CheckNonapplicableGnrtConfigEntriesTests(unittest.TestCase):
 

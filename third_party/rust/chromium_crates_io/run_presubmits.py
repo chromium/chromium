@@ -258,6 +258,7 @@ def CheckMultiversionCrates(crate_ids, gnrt_config):
     # Group `crate_id`s by their `crate_name`.
     crate_name_to_list_of_crate_ids = dict()
     for crate_id in crate_ids:
+        if crate_utils.IsPlaceholderCrate(crate_id): continue
         crate_name = crate_utils.ConvertCrateIdToCrateName(crate_id)
         if crate_name not in crate_name_to_list_of_crate_ids:
             crate_name_to_list_of_crate_ids[crate_name] = []
