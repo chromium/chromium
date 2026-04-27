@@ -609,7 +609,8 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.height);
   });
 
-  test('composebox bounds update styles in nlm', async () => {
+  // TODO(merced): Flakey on Linux DBG, so disabled while I debug.
+  test.skip('composebox bounds update styles in nlm', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 

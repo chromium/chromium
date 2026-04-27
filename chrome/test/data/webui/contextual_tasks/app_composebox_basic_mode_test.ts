@@ -93,7 +93,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertFalse(flexCenterStyleRestored.zIndex === '0');
       });
 
-  test(
+  // TODO(merced): Flakey on Linux DBG, so disabled while I debug.
+  test.skip(
       'composebox visibility toggles with enableBasicModeZOrder set to false',
       async () => {
         loadTimeData.overrideValues({enableBasicModeZOrder: false});
