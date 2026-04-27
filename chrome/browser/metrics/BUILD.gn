@@ -274,6 +274,7 @@ source_set("impl") {
     "//chrome/browser/site_isolation",
     "//chrome/browser/skills",
     "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/tracing",

@@ -211,6 +211,7 @@ source_set("impl") {
     "//chrome/browser/lifetime",
     "//chrome/browser/metrics",
     "//chrome/browser/prefs",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/webdata_services",
     "//components/application_locale_storage",

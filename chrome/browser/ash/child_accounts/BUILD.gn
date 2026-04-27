@@ -84,6 +84,7 @@ static_library("child_accounts") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/supervised_user",
     "//chrome/common:constants",  # included for chrome/common/pref_names.h
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",

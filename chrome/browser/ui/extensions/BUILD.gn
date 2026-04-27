@@ -164,6 +164,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/signin",
+      "//chrome/browser/supervised_user",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

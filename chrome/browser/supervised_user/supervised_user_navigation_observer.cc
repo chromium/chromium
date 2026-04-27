@@ -24,7 +24,6 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/browser/tab_contents/tab_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/content/browser/history_context_helper.h"

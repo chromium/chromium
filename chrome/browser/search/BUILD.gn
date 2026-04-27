@@ -18,6 +18,7 @@ source_set("search") {
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/supervised_user",
     "//chrome/common",
     "//components/google/core/common",
     "//components/search",

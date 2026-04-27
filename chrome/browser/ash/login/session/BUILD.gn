@@ -83,6 +83,7 @@ static_library("session") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/signin",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/trusted_vault",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/webui/ash/shimless_rma_dialog",

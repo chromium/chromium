@@ -108,6 +108,7 @@ source_set("sync") {
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/ui/sync",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/webauthn",

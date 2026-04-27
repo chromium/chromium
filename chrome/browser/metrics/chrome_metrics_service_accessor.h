@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
@@ -36,6 +35,10 @@ class ChromeCameraAppUIDelegate;
 
 namespace browser_sync {
 class ChromeSyncClient;
+}
+
+namespace supervised_user {
+class MetricsServiceAccessorDelegateImpl;
 }
 
 class ChromeDomainReliabilityDelegate;

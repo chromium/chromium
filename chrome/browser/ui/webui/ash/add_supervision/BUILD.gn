@@ -57,6 +57,7 @@ static_library("add_supervision") {
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/resources/chromeos/supervision:resources_grit",
     "//chrome/browser/signin",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//components/constrained_window",
     "//components/google/core/common",

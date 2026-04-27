@@ -8,12 +8,101 @@ import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 source_set("supervised_user") {
-  sources = []
-  public_deps = []
+  public = [
+    "child_accounts/child_account_service_factory.h",
+    "child_accounts/list_family_members_service_factory.h",
+    "chrome_supervised_user_service_platform_delegate_base.h",
+    "chrome_supervised_user_web_content_handler_base.h",
+    "classify_url_navigation_throttle.h",
+    "family_link_settings_service_factory.h",
+    "metrics_service_accessor_delegate.h",
+    "supervised_user_browser_utils.h",
+    "supervised_user_google_auth_navigation_throttle.h",
+    "supervised_user_interstitial_tab_closer.h",
+    "supervised_user_metrics_service_factory.h",
+    "supervised_user_navigation_observer.h",
+    "supervised_user_service_factory.h",
+    "supervised_user_url_filtering_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/common:supervised_user_commands_mojom",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
+    "//components/supervised_user/core/browser:synthetic_field_trial_delegate",
+    "//components/supervised_user/core/common",
+    "//content/public/browser",
+    "//url",
+  ]
 
   if (enable_extensions_core) {
-    sources += [ "supervised_user_extensions_metrics_recorder.h" ]
+    public += [ "supervised_user_extensions_metrics_recorder.h" ]
     public_deps += [ "//extensions/browser" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "child_accounts/child_account_service_factory.cc",
+    "child_accounts/list_family_members_service_factory.cc",
+    "chrome_supervised_user_service_platform_delegate_base.cc",
+    "chrome_supervised_user_web_content_handler_base.cc",
+    "classify_url_navigation_throttle.cc",
+    "family_link_settings_service_factory.cc",
+    "metrics_service_accessor_delegate.cc",
+    "supervised_user_browser_utils.cc",
+    "supervised_user_google_auth_navigation_throttle.cc",
+    "supervised_user_interstitial_tab_closer.cc",
+    "supervised_user_metrics_service_factory.cc",
+    "supervised_user_navigation_observer.cc",
+    "supervised_user_service_factory.cc",
+    "supervised_user_url_filtering_service_factory.cc",
+  ]
+
+  public_deps = [
+    ":supervised_user",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/favicon",
+    "//chrome/browser/history",
+    "//chrome/browser/metrics",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/browser_window",
+    "//components/history/content/browser",
+    "//components/infobars/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:synthetic_field_trial_delegate",
+    "//components/supervised_user/core/common",
+    "//components/user_manager:common",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//components/supervised_user/core/browser/android",
+      "//ui/android",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/profiles" ]
   }
 }
 
@@ -220,6 +309,7 @@ static_library("test_support") {
   public_deps = [ "//chrome/browser/signin" ]
 
   deps = [
+    ":supervised_user",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",

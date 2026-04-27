@@ -316,34 +316,6 @@ static_library("browser") {
     "shell_integration.cc",
     "startup_data.cc",
     "startup_data.h",
-    "supervised_user/child_accounts/child_account_service_factory.cc",
-    "supervised_user/child_accounts/child_account_service_factory.h",
-    "supervised_user/child_accounts/list_family_members_service_factory.cc",
-    "supervised_user/child_accounts/list_family_members_service_factory.h",
-    "supervised_user/chrome_supervised_user_service_platform_delegate_base.cc",
-    "supervised_user/chrome_supervised_user_service_platform_delegate_base.h",
-    "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
-    "supervised_user/chrome_supervised_user_web_content_handler_base.h",
-    "supervised_user/classify_url_navigation_throttle.cc",
-    "supervised_user/classify_url_navigation_throttle.h",
-    "supervised_user/family_link_settings_service_factory.cc",
-    "supervised_user/family_link_settings_service_factory.h",
-    "supervised_user/metrics_service_accessor_delegate.cc",
-    "supervised_user/metrics_service_accessor_delegate.h",
-    "supervised_user/supervised_user_browser_utils.cc",
-    "supervised_user/supervised_user_browser_utils.h",
-    "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
-    "supervised_user/supervised_user_google_auth_navigation_throttle.h",
-    "supervised_user/supervised_user_interstitial_tab_closer.cc",
-    "supervised_user/supervised_user_interstitial_tab_closer.h",
-    "supervised_user/supervised_user_metrics_service_factory.cc",
-    "supervised_user/supervised_user_metrics_service_factory.h",
-    "supervised_user/supervised_user_navigation_observer.cc",
-    "supervised_user/supervised_user_navigation_observer.h",
-    "supervised_user/supervised_user_service_factory.cc",
-    "supervised_user/supervised_user_service_factory.h",
-    "supervised_user/supervised_user_url_filtering_service_factory.cc",
-    "supervised_user/supervised_user_url_filtering_service_factory.h",
     "unexpire_flags.cc",
     "unexpire_flags.h",
     "universal_web_contents_observers.cc",
@@ -677,6 +649,12 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove this circular dependency when
     # chrome/browser/notifications is modularized.
     "//chrome/browser/push_messaging:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # c/b/metrics/chrome_metrics_service_accessor.h
+    # c/b/ui/browser_finder.h
+    "//chrome/browser/supervised_user:impl",
   ]
 
   public_deps = [
@@ -1032,6 +1010,8 @@ static_library("browser") {
     "//chrome/browser/strike_database",
     "//chrome/browser/subresource_filter",
     "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/supervised_user",
+    "//chrome/browser/supervised_user:impl",
     "//chrome/browser/sync",
     "//chrome/browser/tab_contents:impl",
     "//chrome/browser/tab_group_sync",
