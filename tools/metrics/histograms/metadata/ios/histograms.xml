@@ -4557,6 +4557,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records copy event in the omnibox with the type of copy.</summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.MobileFusebox.TabPicker.PickedWebStateIsRealized"
+    enum="Boolean" expires_after="2027-04-01">
+  <owner>stkhapugin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs whether a web state was already realized or needed to be forced
+    realized when the user picks it in the composebox tab picker. Logged when
+    the user taps on a tab item in the picker.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.NumberOfLines" units="count"
     expires_after="2027-01-22">
   <owner>christianxu@google.com</owner>

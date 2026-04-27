@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -125,6 +126,13 @@
       WebStateSearchCriteria{
           .identifier = itemID.tabSwitcherItem.identifier,
           .pinned_state = WebStateSearchCriteria::PinnedState::kNonPinned});
+
+  if (webState) {
+    base::UmaHistogramBoolean(
+        "IOS.Omnibox.MobileFusebox.TabPicker.PickedWebStateIsRealized",
+        webState->IsRealized());
+  }
+
   // If the tab's APC is cached avoid updating the snapshot.
   BOOL cached = webState && _validAPCwebStatesIDs.contains(base::NumberToString(
                                 webState->GetUniqueIdentifier().identifier()));
