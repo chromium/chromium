@@ -1226,7 +1226,9 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _leadingStackView.hidden = !_visible;
   _locationBarContainer.hidden = !_visible;
   _trailingStackView.hidden = !_visible;
-  _separator.hidden = !(!_tabGroupIndicatorView.hidden || [self hasOmnibox]);
+  BOOL tabGroupIndicatorVisible =
+      _tabGroupIndicatorView && !_tabGroupIndicatorView.hidden;
+  _separator.hidden = !(tabGroupIndicatorVisible || [self hasOmnibox]);
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
