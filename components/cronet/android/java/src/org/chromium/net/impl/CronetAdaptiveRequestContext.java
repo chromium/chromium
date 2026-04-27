@@ -63,13 +63,11 @@ class CronetAdaptiveRequestContext {
     @VisibleForTesting
     public static final String FAST_IDEMPOTENT_PATHS_FLAG_NAME = "Cronet_fast_idempotent_paths";
 
-    // The persistent property that controls whether a toast messages can appear when adaptive
+    // Flag that controls whether a toast messages can appear when adaptive
     // network selection is used.
-    // Set with: adb shell setprop persist.cronet.adaptive_dev true
-    // Clear with: adb shell setprop persist.cronet.adaptive_dev '""'
     @VisibleForTesting
-    public static final String ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME =
-            "persist.cronet.adaptive_dev";
+    public static final String ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME =
+            "Cronet_adaptive_network_dev_toast";
 
     /**
      * The time we wait until we start the backup stream. This value is 3x the initial retransmit
@@ -201,8 +199,8 @@ class CronetAdaptiveRequestContext {
                 mEnableAdaptiveNetworkForAll = false;
             }
 
-            if (!AndroidOsSystemProperties.get(ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME, "")
-                    .isEmpty()) {
+            if (flags.containsKey(ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME)
+                    && flags.get(ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME).getBoolValue()) {
                 mToastHandler = new Handler(Looper.getMainLooper());
                 maybeShowInitialDevToast();
             }

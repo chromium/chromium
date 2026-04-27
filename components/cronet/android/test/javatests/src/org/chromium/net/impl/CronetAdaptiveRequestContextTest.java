@@ -41,7 +41,6 @@ import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -384,59 +383,55 @@ public class CronetAdaptiveRequestContextTest {
     @Test
     @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetAdaptiveRequestContext.ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME,
+                        value = true)
+            })
     public void reportFallbackUsed_toasts() {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
-        try (var overrides =
-                new AndroidOsSystemProperties.WithOverridesForTesting(
-                        Map.of(
-                                CronetAdaptiveRequestContext
-                                        .ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME,
-                                "true"))) {
+        Context context = mTestRule.getTestFramework().getContext();
+        CronetAdaptiveRequestContext contextForTest =
+                new CronetAdaptiveRequestContext(context, mTestLogger, mFakeClock);
+        contextForTest.setConnectivityManagerWrapperForTest(mMockConnectivityManagerWrapper);
 
-            Context context = mTestRule.getTestFramework().getContext();
-            CronetAdaptiveRequestContext contextForTest =
-                    new CronetAdaptiveRequestContext(context, mTestLogger, mFakeClock);
-            contextForTest.setConnectivityManagerWrapperForTest(mMockConnectivityManagerWrapper);
+        CronetAdaptiveRequestContext spyContext = spy(contextForTest);
+        String url = "https://example.com/path";
 
-            CronetAdaptiveRequestContext spyContext = spy(contextForTest);
-            String url = "https://example.com/path";
+        spyContext.reportFallbackUsed(URI.create(url), 12345L);
+        verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: N");
 
-            spyContext.reportFallbackUsed(URI.create(url), 12345L);
-            verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: N");
-
-            spyContext.reportFallbackUsed(URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
-            verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: Y");
-        }
+        spyContext.reportFallbackUsed(URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: Y");
     }
 
     @Test
     @SmallTest
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @Flags(
+            boolFlags = {
+                @BoolFlag(
+                        name = CronetAdaptiveRequestContext.ADAPTIVE_NETWORK_DEV_TOAST_FLAG_NAME,
+                        value = true)
+            })
     public void maybeShowInitialDevToast_toasts() throws Exception {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
-        try (var overrides =
-                new AndroidOsSystemProperties.WithOverridesForTesting(
-                        Map.of(
-                                CronetAdaptiveRequestContext
-                                        .ADAPTIVE_NETWORK_DEV_TOAST_PROPERTY_NAME,
-                                "true"))) {
+        Context context = mTestRule.getTestFramework().getContext();
+        CronetAdaptiveRequestContext contextForTest =
+                new CronetAdaptiveRequestContext(context, mTestLogger, mFakeClock);
+        contextForTest.setConnectivityManagerWrapperForTest(mMockConnectivityManagerWrapper);
 
-            Context context = mTestRule.getTestFramework().getContext();
-            CronetAdaptiveRequestContext contextForTest =
-                    new CronetAdaptiveRequestContext(context, mTestLogger, mFakeClock);
-            contextForTest.setConnectivityManagerWrapperForTest(mMockConnectivityManagerWrapper);
+        // Reset sToastShown to trigger it again via spy.
+        CronetAdaptiveRequestContext.sToastShown = false;
 
-            // Reset sToastShown to trigger it again via spy.
-            CronetAdaptiveRequestContext.sToastShown = false;
+        CronetAdaptiveRequestContext spyContext = spy(contextForTest);
+        spyContext.maybeShowInitialDevToast();
 
-            CronetAdaptiveRequestContext spyContext = spy(contextForTest);
-            spyContext.maybeShowInitialDevToast();
-
-            verify(spyContext)
-                    .showDevToast("CRONET[org.chromium.net.tests]: CANS enabled: N, for all: N");
-        }
+        verify(spyContext)
+                .showDevToast("CRONET[org.chromium.net.tests]: CANS enabled: N, for all: N");
     }
 
     @Test
