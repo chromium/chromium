@@ -112,7 +112,6 @@ using tab_groups::VersioningMessageController;
   self.mediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:browser
              scenario:kMenuScenarioHistogramToolbarMenu];
-  self.mediator.commandDispatcher = browser->GetCommandDispatcher();
 
   if (IsFullscreenRefactoringEnabled()) {
     _fullscreenBrowserAgentObserverBridge =

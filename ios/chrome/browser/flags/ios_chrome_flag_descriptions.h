@@ -1078,9 +1078,6 @@ extern const char kTabGroupColorOnSurfaceDescription[];
 extern const char kTabGroupInOverflowMenuName[];
 extern const char kTabGroupInOverflowMenuDescription[];
 
-extern const char kTabGroupInTabIconContextMenuName[];
-extern const char kTabGroupInTabIconContextMenuDescription[];
-
 extern const char kTabGroupIndicatorName[];
 extern const char kTabGroupIndicatorDescription[];
 

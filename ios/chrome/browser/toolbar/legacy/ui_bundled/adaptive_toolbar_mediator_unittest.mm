@@ -92,7 +92,6 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         /*enabled_features=*/
         {
             data_sharing::features::kDataSharingFeature,
-            kTabGroupInTabIconContextMenu,
         },
         /*disable_features=*/{});
 
@@ -493,17 +492,13 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElements) {
   UIMenu* tab_grid_menu =
       [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeTabGrid];
 
-  ASSERT_EQ(4U, tab_grid_menu.children.count);
+  ASSERT_EQ(3U, tab_grid_menu.children.count);
 
-  ASSERT_TRUE([tab_grid_menu.children[3] isKindOfClass:[UIAction class]]);
-  UIAction* close_tab = (UIAction*)tab_grid_menu.children[3];
+  ASSERT_TRUE([tab_grid_menu.children[2] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[2];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
               close_tab.title);
   EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
-
-  ASSERT_TRUE([tab_grid_menu.children[2] isKindOfClass:[UIMenuElement class]]);
-  UIMenuElement* menuElement = (UIMenuElement*)tab_grid_menu.children[2];
-  ASSERT_TRUE([menuElement isKindOfClass:[UIMenuElement class]]);
 
   ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
   UIAction* action = (UIAction*)tab_grid_menu.children[1];

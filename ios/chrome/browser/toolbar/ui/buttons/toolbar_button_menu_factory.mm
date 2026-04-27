@@ -234,13 +234,6 @@
   UIAction* closeCurrentTabAction = [_actionFactory actionToCloseCurrentTab];
   [staticActions addObject:closeCurrentTabAction];
 
-  if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
-    UIMenuElement* tabGroupActionsMenu = [self createMenuElementForTabGroups];
-    if (tabGroupActionsMenu) {
-      [staticActions addObject:tabGroupActionsMenu];
-    }
-  }
-
   // From an incognito tab, the `openNewTabAction` should open a non-incognito
   // tab. From a non-incognito tab, it should open an incognito tab.
   UIAction* openNewTabAction =
@@ -286,45 +279,6 @@
     }
   }
   return nil;
-}
-
-// Returns the UIMenuElement for the content of the Add/Move Tab to Group Menu.
-- (UIMenuElement*)createMenuElementForTabGroups {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(_webStateList);
-
-  int activeIndex = _webStateList->active_index();
-  if (activeIndex == WebStateList::kInvalidIndex) {
-    return nil;
-  }
-
-  std::set<const TabGroup*> allGroups = _webStateList->GetGroups();
-  const TabGroup* currentGroup =
-      _webStateList->GetGroupOfWebStateAt(activeIndex);
-
-  __weak __typeof(self) weakSelf = self;
-  /// If the current tab is in a group, display the "Move Tab to Group" menu.
-  /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
-  /// any Tab Groups, the "Add Tab to Group" menu will just be an "Add Tab to
-  /// New Group" button.
-  if (currentGroup) {
-    return [_actionFactory menuToMoveTabToGroupWithGroups:allGroups
-        currentGroup:currentGroup
-        moveBlock:^(const TabGroup* destinationGroup) {
-          [weakSelf.delegate moveCurrentTabToGroup:destinationGroup];
-        }
-        removeBlock:^{
-          [weakSelf.delegate removeCurrentTabFromGroup];
-        }];
-  } else {
-    return [_actionFactory
-        menuToAddTabToGroupWithGroups:allGroups
-                         numberOfTabs:1
-                                block:^(const TabGroup* destinationGroup) {
-                                  [weakSelf.delegate
-                                      addCurrentTabToGroup:destinationGroup];
-                                }];
-  }
 }
 
 // Helper for `-menuForNavigationButton:`. Returns YES if incognito NTP title

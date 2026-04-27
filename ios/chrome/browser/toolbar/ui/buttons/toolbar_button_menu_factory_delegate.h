@@ -8,7 +8,6 @@
 namespace web {
 class NavigationItem;
 }  // namespace web
-class TabGroup;
 
 // Delegate protocol for receivers of toolbar button context menus.
 @protocol ToolbarButtonMenuFactoryDelegate <NSObject>
@@ -24,15 +23,6 @@ class TabGroup;
 
 // Adds a new tab to the current tab group.
 - (void)addNewTabInCurrentTabGroup;
-
-// Adds the current tab which is not in a tab group to `destinationGroup`.
-- (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup;
-
-// Removes the current tab from its tab group.
-- (void)removeCurrentTabFromGroup;
-
-// Moves the current tab which is already in a tab group to `destinationGroup`.
-- (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup;
 
 @end
 

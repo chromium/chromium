@@ -487,41 +487,6 @@
   [self updateConsumer];
 }
 
-- (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(GetGroupForActiveWebState(self.currentWebStateList));
-  int tabIndex = self.currentWebStateList->active_index();
-  self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
-  [self updateConsumer];
-}
-
-- (void)removeCurrentTabFromGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(GetGroupForActiveWebState(self.currentWebStateList));
-  int tabIndex = self.currentWebStateList->active_index();
-  self.currentWebStateList->RemoveFromGroups({tabIndex});
-  [self updateConsumer];
-}
-
-- (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
-  CHECK(!GetGroupForActiveWebState(self.currentWebStateList));
-  int tabIndex = self.currentWebStateList->active_index();
-  if (destinationGroup) {
-    self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
-  } else {
-    web::WebState* currentWebState =
-        self.currentWebStateList->GetActiveWebState();
-    if (!currentWebState) {
-      return;
-    }
-    std::set<web::WebStateID> identifiers = {
-        currentWebState->GetUniqueIdentifier()};
-    [self createNewTabGroupWithTabs:identifiers];
-  }
-  [self updateConsumer];
-}
-
 - (void)navigateToPageForItem:(web::NavigationItem*)item {
   // App bar does not have web navigation functionality in its button menus.
   NOTREACHED();

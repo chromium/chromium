@@ -1770,12 +1770,6 @@ const char kTabGroupInOverflowMenuName[] =
 const char kTabGroupInOverflowMenuDescription[] =
     "When enabled, a Tab Group button will appear in the overflow menu.";
 
-const char kTabGroupInTabIconContextMenuName[] =
-    "Enable the Tab Group button in the tab grid icon context menu";
-const char kTabGroupInTabIconContextMenuDescription[] =
-    "When enabled, a Tab Group button will appear in the tab grid icon context "
-    "menu.";
-
 const char kTabGroupIndicatorName[] = "Tab Group Indicator";
 const char kTabGroupIndicatorDescription[] =
     "When enabled, displays a tab group indicator next to the omnibox.";

@@ -16,7 +16,6 @@ class NavigationItem;
 @class TabGridState;
 class TemplateURLService;
 @protocol ToolbarButtonMenuFactoryDelegate;
-@class ToolbarMediator;
 class WebStateList;
 
 // Factory that provides context menus for toolbar buttons.

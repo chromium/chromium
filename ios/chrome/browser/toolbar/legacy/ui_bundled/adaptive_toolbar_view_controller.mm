@@ -588,13 +588,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   UIMenu* emptyMenu = [UIMenu menuWithChildren:@[]];
   button.menu = emptyMenu;
 
-  // Fix the order of the Tab Grid button menu to ensure the menu and child
-  // menus are displayed in the correct visual order.
-  if (buttonType == AdaptiveToolbarButtonTypeTabGrid) {
-    button.preferredMenuElementOrder =
-        UIContextMenuConfigurationElementOrderFixed;
-  }
-
   [button removeActionForIdentifier:kContextMenuActionIdentifier
                    forControlEvents:UIControlEventMenuActionTriggered];
 
