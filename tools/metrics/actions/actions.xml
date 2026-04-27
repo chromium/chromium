@@ -32902,12 +32902,25 @@ should be able to be added at any place in this file.
     <variant name=".CloseAllTabs"
         summary="User closed all tabs via the tab context menu on tab strip
                  on Android."/>
+    <variant name=".CloseOtherTabs"
+        summary="User closed other tabs via the tab context menu on tab strip
+                 on Android."/>
+    <variant name=".CloseOtherTabs.MultiTab"
+        summary="User closed other tabs via the tab context menu on tab strip
+                 on Android while having selected more than one tab."/>
     <variant name=".CloseTab"
         summary="User closed a tab via the tab context menu on tab strip on
                  Android."/>
     <variant name=".CloseTab.MultiTab"
         summary="User closed multiple tabs via the tab context menu on tab
                  strip on Android."/>
+    <variant name=".CloseTabsToTheRight"
+        summary="User closed tabs to the right via the tab context menu on
+                 tab strip on Android."/>
+    <variant name=".CloseTabsToTheRight.MultiTab"
+        summary="User closed tabs to the right via the tab context menu on
+                 tab strip on Android while having more than one tab
+                 selected."/>
     <variant name=".DuplicateTab"
         summary="User duplicated a tab via the tab context menu on tab strip
                  on Android."/>

@@ -206,6 +206,8 @@ found in the LICENSE file.
     <item type="id" name="duplicate_tab_menu_id" />
     <item type="id" name="glic_menu_id" />
     <item type="id" name="open_in_app_menu_id" />
+    <item type="id" name="close_tabs_to_the_right_menu_id" />
+    <item type="id" name="close_other_tabs_menu_id" />
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />

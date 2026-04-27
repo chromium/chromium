@@ -370,6 +370,40 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build(),
                                 /* allowDialog= */ true);
+            } else if (menuId == R.id.close_other_tabs_menu_id) {
+                List<Tab> otherTabs = new ArrayList<>();
+                for (Tab tab : tabModel) {
+                    if (!tabIds.contains(tab.getId())) {
+                        otherTabs.add(tab);
+                    }
+                }
+                tabModel.getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.closeTabs(otherTabs)
+                                        .hideTabGroups(true)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                        .build(),
+                                /* allowDialog= */ true);
+            } else if (menuId == R.id.close_tabs_to_the_right_menu_id) {
+                List<Tab> otherTabs = new ArrayList<>();
+                boolean foundPivot = false;
+                for (Tab tab : tabModel) {
+                    if (tabIds.contains(tab.getId())) {
+                        foundPivot = true;
+                        // New pivot is to the right of the old pivot. Clear previously accumulated
+                        // tabs.
+                        otherTabs.clear();
+                    } else if (foundPivot) {
+                        otherTabs.add(tab);
+                    }
+                }
+                tabModel.getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.closeTabs(otherTabs)
+                                        .hideTabGroups(true)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                        .build(),
+                                /* allowDialog= */ true);
             }
         };
     }
@@ -450,6 +484,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 : idx < tabModel.getCount() - 1;
     }
 
+    private boolean canCloseTabsToTheRight(AnchorInfo anchorInfo) {
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
+        TabModel tabModel = getTabModel();
+        Tab lastTab = tabModel.getTabAt(tabModel.getCount() - 1);
+        return lastTab != null && !tabIds.contains(lastTab.getId());
+    }
+
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
@@ -476,6 +517,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         itemList.add(createCloseItem(isIncognito));
         itemList.add(createCloseAllTabsItem(isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            if (tabs.size() > 1) {
+                itemList.add(createCloseOtherTabsItem(isIncognito));
+            }
+            if (canCloseTabsToTheRight(anchorInfo)) {
+                itemList.add(createCloseTabsToTheRightItem(isIncognito));
+            }
+        }
     }
 
     private void buildMenuActionItemsForMultipleTabs(
@@ -498,6 +547,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
         }
         itemList.add(createCloseItem(isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            if (tabs.size() > anchorInfo.getAllTabIds().size()) {
+                itemList.add(createCloseOtherTabsItem(isIncognito));
+            }
+            if (canCloseTabsToTheRight(anchorInfo)) {
+                itemList.add(createCloseTabsToTheRightItem(isIncognito));
+            }
+        }
     }
 
     private static ListItem buildListItem(
@@ -618,6 +675,25 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .build();
     }
 
+    private ListItem createCloseTabsToTheRightItem(boolean isIncognito) {
+        String title =
+                mActivity.getResources().getString(R.string.close_tabs_to_the_right_menu_item);
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.close_tabs_to_the_right_menu_id)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
+    private ListItem createCloseOtherTabsItem(boolean isIncognito) {
+        String title = mActivity.getResources().getString(R.string.close_other_tabs_menu_item);
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.close_other_tabs_menu_id)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
     private ListItem createPinUnpinTabItem(List<Tab> tabs, boolean isIncognito) {
         boolean showUnpin = true;
         for (Tab tab : tabs) {
@@ -712,6 +788,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("CloseAllTabs", /* isMultipleTabs= */ false);
         } else if (menuId == R.id.close_all_incognito_tabs_menu_id) {
             recordUserAction("CloseAllIncognitoTabs", /* isMultipleTabs= */ false);
+        } else if (menuId == R.id.close_other_tabs_menu_id) {
+            recordUserAction("CloseOtherTabs", isMultipleTabs);
+        } else if (menuId == R.id.close_tabs_to_the_right_menu_id) {
+            recordUserAction("CloseTabsToTheRight", isMultipleTabs);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }
