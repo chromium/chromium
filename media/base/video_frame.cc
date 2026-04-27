@@ -1208,10 +1208,8 @@ gfx::ColorSpace VideoFrame::ColorSpace() const {
 }
 
 void VideoFrame::set_color_space(const gfx::ColorSpace& color_space) {
-  // Check color spaces are same for video frames created from shared image
-  // from WrapSharedImage codepaths.
-  if (HasSharedImage() && !HasMappableSharedImage() &&
-      color_space != shared_image()->color_space()) {
+  // Check color spaces are same for video frames created from shared image.
+  if (HasSharedImage() && color_space != shared_image()->color_space()) {
     SCOPED_CRASH_KEY_STRING256("video_frame", "si_color_space",
                                shared_image()->color_space().ToString());
     SCOPED_CRASH_KEY_STRING256("video_frame", "color_space",

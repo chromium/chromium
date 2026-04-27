@@ -1156,6 +1156,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   gpu_frame->set_timestamp(src_frame->timestamp());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
+  if (base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
+    // `color_space` respects the ColorSpace set on `mapped_gpu_frame` over
+    // ConvertAndScale. It uses a default ColorSpace if the `src_frame`
+    // ColorSpace is Invalid.
+    gpu_frame->set_color_space(color_space);
+  }
 
   // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
   // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped
@@ -1176,10 +1182,6 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   if (!status.is_ok()) {
     return status;
   }
-
-  // |mapped_gpu_frame| has the color space respecting the color conversion in
-  // ConvertAndScale().
-  gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 
   return gpu_frame;
 }
