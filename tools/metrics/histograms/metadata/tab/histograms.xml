@@ -2371,7 +2371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RecentlyClosed.EntriesShownInPage.{RecentlyClosedType}"
-    units="entries shown" expires_after="2026-06-08">
+    units="entries shown" expires_after="2026-10-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2384,7 +2384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RecentlyClosed.HistoricalSaverCloseType"
-    enum="HistoricalSaverCloseType" expires_after="2026-06-08">
+    enum="HistoricalSaverCloseType" expires_after="2026-10-04">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -3587,18 +3587,6 @@ chromium-metrics-reviews@google.com.
     Records when a tab is marked as not ready for cleanup because it could
     possibly be an archived tab. This enum tracks the case specifically for tab
     thumbnail cleanup.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" enum="Boolean"
-    expires_after="2026-06-08">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@chromium.org</owner>
-  <summary>
-    [Android] boolean value indicating whether a tab that was added to the
-    TabModel would have been added at the correct position if
-    TabGroupModelFilter had not interved to move it so it respected group
-    position. Recorded each time a tab is added to the TabModel.
   </summary>
 </histogram>
 
