@@ -2,12 +2,18 @@
       #addSite {
         margin-inline-start: var(--cr-button-edge-spacing);
       }
+      h3 {
+        font-size: inherit;
+        margin: 0;
+        padding-bottom: 12px;
+        padding-top: 32px;
+      }
     </style>
     <div id="category">
       <div class="cr-row first">
-        <h2 id="listHeader" class="flex secondary" tabIndex="-1">
+        <h3 id="listHeader" class="flex secondary" tabIndex="-1">
           [[categoryHeader]]
-        </h2>
+        </h3>
         <cr-button id="addSite" class="header-aligned-button"
             hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteClick_"
             aria-label$="[[getAddButtonLabel_()]]">
