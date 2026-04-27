@@ -89,12 +89,10 @@ class AffiliationServiceImpl : public AffiliationService {
   // Shutdowns the service by deleting its backend.
   void Shutdown() override;
 
-  // Prefetches change password URLs and saves them to |change_password_urls_|
-  // map. Creates a unique fetcher and appends it to |pending_fetches_|
-  // along with |urls| and |callback|. When prefetch is finished or a fetcher
-  // gets destroyed as a result of Clear() a callback is run.
-  void PrefetchChangePasswordURL(const GURL& url,
-                                 base::OnceClosure callback) override;
+  // Fetches change password URLs and saves them to |change_password_urls_|
+  // map. Creates a unique fetcher. When fetch is finished a callback is run.
+  void FetchChangePasswordURL(const GURL& url,
+                              base::OnceCallback<void(GURL)> callback) override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
@@ -149,7 +147,7 @@ class AffiliationServiceImpl : public AffiliationService {
                                   std::forward<Args>(args)...));
   }
 
-  void OnFetchFinished(const FetchInfo& fetch_info,
+  void OnFetchFinished(FetchInfo fetch_info,
                        AffiliationFetcherInterface::FetchResult fetch_result);
 
   void OnPSLExtensionsLoaded(

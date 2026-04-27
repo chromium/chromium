@@ -192,16 +192,16 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
 
   base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL("https://test.com/password/")));
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(settings_service(), IsSettingEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -230,8 +230,6 @@ TEST_F(ChromePasswordChangeServiceTest, NoChangePasswordUrl) {
 
   base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL()));
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(settings_service(), IsSettingEnabled)
@@ -257,10 +255,10 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentCountry) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL("https://test.com/password/")));
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -278,10 +276,10 @@ TEST_F(ChromePasswordChangeServiceTest, DifferentLanguage) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL("https://test.com/password/")));
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -386,16 +384,16 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
 
   base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillRepeatedly(testing::Return(GURL("https://test.com/password/")));
   EXPECT_CALL(mock_optimization_service(), ShouldModelExecutionBeAllowedForUser)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(settings_service(), IsSettingEnabled)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillRepeatedly(testing::Return(true));
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChangeAvailability",
       PasswordChangeAvailability::kAvailable, 1);
@@ -414,10 +412,7 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeThrottledAfterFailure) {
 
   AdvanceClock(base::Days(14) + base::Seconds(1));
 
-  EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
-      .WillOnce(testing::Return(GURL("https://test.com/password/")));
-  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
-      CreateTestForm(url, /*is_signup_form=*/false)));
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(form));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "PasswordManager.PasswordChangeAvailability"),
               testing::ElementsAre(

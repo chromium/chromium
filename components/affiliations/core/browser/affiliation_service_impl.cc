@@ -107,7 +107,7 @@ const char kGetChangePasswordURLMetricName[] =
 struct AffiliationServiceImpl::FetchInfo {
   FetchInfo(FacetURI facet,
             const base::flat_set<std::string>& psl_extension_list,
-            base::OnceClosure result_callback)
+            base::OnceCallback<void(GURL)> result_callback)
       : requested_facet(std::move(facet)),
         top_level_domain(
             GetFacetForTopLevelDomain(requested_facet, psl_extension_list)),
@@ -124,10 +124,10 @@ struct AffiliationServiceImpl::FetchInfo {
       // If a fetch is not possible, |AffiliationFetcherManager::Fetch| can
       // invoke its callback immediately. Posting a task here instead or
       // directly running it will prevent the caller of
-      // |PrefetchChangePasswordURL| from unexpectedly receiving the result of
-      // the callback during the execution of |PrefetchChangePasswordURL|.
+      // |FetchChangePasswordURL| from unexpectedly receiving the result of
+      // the callback during the execution of |FetchChangePasswordURL|.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback));
+          FROM_HERE, base::BindOnce(std::move(callback), GURL()));
     }
   }
 
@@ -160,9 +160,9 @@ struct AffiliationServiceImpl::FetchInfo {
 
   FacetURI requested_facet;
   FacetURI top_level_domain;
-  // Callback is passed in PrefetchChangePasswordURLs and is run to indicate the
-  // prefetch has finished or got canceled.
-  base::OnceClosure callback;
+  // Callback is passed in FetchChangePasswordURL and is run to indicate the
+  // fetch has finished or got canceled.
+  base::OnceCallback<void(GURL)> callback;
 };
 
 // TODO(crbug.com/40789139): Create the backend task runner in Init and stop
@@ -196,13 +196,13 @@ void AffiliationServiceImpl::Shutdown() {
   }
 }
 
-void AffiliationServiceImpl::PrefetchChangePasswordURL(
+void AffiliationServiceImpl::FetchChangePasswordURL(
     const GURL& url,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(GURL)> callback) {
   FacetURI facet_uri = ConvertGURLToFacet(url);
-  if (!facet_uri.is_valid() || change_password_urls_.contains(facet_uri)) {
+  if (!facet_uri.is_valid()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
+        FROM_HERE, base::BindOnce(std::move(callback), GURL()));
     return;
   }
 
@@ -233,13 +233,18 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
 }
 
 void AffiliationServiceImpl::OnFetchFinished(
-    const FetchInfo& fetch_info,
+    FetchInfo fetch_info,
     AffiliationFetcherInterface::FetchResult fetch_result) {
-  // Handle the successful case only. On failure the fetch will be discarded
-  // without retries.
+  GURL change_password_url;
   if (fetch_result.IsSuccessful()) {
-    change_password_urls_[fetch_info.requested_facet] =
+    ChangePasswordUrlMatch match =
         fetch_info.GetChangePasswordURL(fetch_result.data.value());
+    change_password_url = match.change_password_url;
+    change_password_urls_[fetch_info.requested_facet] = match;
+  }
+
+  if (fetch_info.callback) {
+    std::move(fetch_info.callback).Run(change_password_url);
   }
 }
 

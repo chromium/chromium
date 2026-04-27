@@ -723,8 +723,8 @@ TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
       .WillOnce(Return(&mock_affiliation_service));
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(mock_affiliation_service,
-              PrefetchChangePasswordURL(form.url, testing::_))
-      .WillOnce(base::test::RunOnceClosure<1>());
+              FetchChangePasswordURL(form.url, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(GURL()));
 
   ExpectPasswords({});
   EXPECT_CALL(client(), GetProfilePasswordStore())
@@ -754,9 +754,9 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   EXPECT_CALL(client(), GetAffiliationService)
       .WillOnce(Return(&mock_affiliation_service));
   const PasswordForm form = CreateTestForm();
-  base::OnceClosure change_pwd_url_fetch_callback;
+  base::OnceCallback<void(GURL)> change_pwd_url_fetch_callback;
   EXPECT_CALL(mock_affiliation_service,
-              PrefetchChangePasswordURL(form.url, testing::_))
+              FetchChangePasswordURL(form.url, testing::_))
       .WillOnce(MoveArg<1>(&change_pwd_url_fetch_callback));
 
   ExpectPasswords({});
@@ -777,14 +777,18 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   MockPasswordChangeService mock_password_change_service;
   EXPECT_CALL(client(), GetPasswordChangeService())
       .WillRepeatedly(Return(&mock_password_change_service));
-  EXPECT_CALL(mock_password_change_service, IsPasswordChangeSupported(form))
+  PasswordForm expected_form = form;
+  expected_form.change_password_url = GURL("https://example.com/change");
+  EXPECT_CALL(mock_password_change_service,
+              IsPasswordChangeSupported(expected_form))
       .WillOnce(Return(true));
   EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                             password_manager::CreateLeakType(
                                 IsSaved(false), IsReused(false),
                                 IsSyncing(false), HasChangePasswordUrl(true)),
-                            form, /* in_account_store = */ false)));
-  std::move(change_pwd_url_fetch_callback).Run();
+                            expected_form, /* in_account_store = */ false)));
+  std::move(change_pwd_url_fetch_callback)
+      .Run(GURL("https://example.com/change"));
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
@@ -871,8 +875,8 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(client(), GetAffiliationService)
       .WillOnce(Return(&mock_affiliation_service));
   EXPECT_CALL(mock_affiliation_service,
-              PrefetchChangePasswordURL(form.url, testing::_))
-      .WillOnce(base::test::RunOnceClosure<1>());
+              FetchChangePasswordURL(form.url, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(GURL()));
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(Return(profile_store()));
 

@@ -29,10 +29,11 @@ class AffiliationService : public KeyedService {
   using GroupsCallback =
       base::OnceCallback<void(const std::vector<GroupedFacets>&)>;
 
-  // Prefetches change password URLs for sites requested. Receives a callback to
-  // run when the prefetch finishes.
-  virtual void PrefetchChangePasswordURL(const GURL& urls,
-                                         base::OnceClosure callback) = 0;
+  // Fetches change password URLs for sites requested. Receives a callback to
+  // run when the fetch finishes.
+  virtual void FetchChangePasswordURL(
+      const GURL& url,
+      base::OnceCallback<void(GURL)> callback) = 0;
 
   // Returns a URL with change password form for a site requested.
   virtual GURL GetChangePasswordURL(const GURL& url) const = 0;

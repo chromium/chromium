@@ -193,7 +193,7 @@ TEST_P(WellKnownChangePasswordStateTest, NoSupport_Redirect) {
 TEST_P(WellKnownChangePasswordStateTest,
        NoAwaitForPrefetchResultIfWellKnownChangePasswordSupported) {
   affiliations::MockAffiliationService mock_affiliation_service;
-  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURL);
+  EXPECT_CALL(mock_affiliation_service, FetchChangePasswordURL);
   state()->PrefetchChangePasswordURL(&mock_affiliation_service,
                                      GURL("https://example.com"));
 
@@ -211,7 +211,7 @@ TEST_P(WellKnownChangePasswordStateTest,
 
 TEST_P(WellKnownChangePasswordStateTest, TimeoutTriggersOnProcessingFinished) {
   affiliations::MockAffiliationService mock_affiliation_service;
-  EXPECT_CALL(mock_affiliation_service, PrefetchChangePasswordURL);
+  EXPECT_CALL(mock_affiliation_service, FetchChangePasswordURL);
   state()->PrefetchChangePasswordURL(&mock_affiliation_service,
                                      GURL("https://example.com"));
 

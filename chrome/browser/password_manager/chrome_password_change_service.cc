@@ -346,8 +346,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     return PasswordChangeAvailability::kAvailable;
   }
 
-  const bool has_change_url =
-      affiliation_service_->GetChangePasswordURL(form.url).is_valid();
+  const bool has_change_url = form.change_password_url.is_valid();
   base::UmaHistogramBoolean(kHasPasswordChangeUrlHistogram, has_change_url);
   if (logger) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_URL_AVAILABLE,

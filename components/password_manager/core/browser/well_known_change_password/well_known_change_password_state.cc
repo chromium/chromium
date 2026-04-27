@@ -110,7 +110,7 @@ void WellKnownChangePasswordState::PrefetchChangePasswordURL(
     const GURL& url) {
   prefetch_timer_.Start(FROM_HERE, kPrefetchTimeout, this,
                         &WellKnownChangePasswordState::ContinueProcessing);
-  affiliation_service->PrefetchChangePasswordURL(
+  affiliation_service->FetchChangePasswordURL(
       url,
       base::BindOnce(
           &WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback,
@@ -130,7 +130,7 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
-void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback() {
+void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback(GURL) {
   if (prefetch_timer_.IsRunning()) {
     prefetch_timer_.Stop();
     ContinueProcessing();
