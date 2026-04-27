@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
@@ -17,7 +16,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -110,7 +108,6 @@ class MODULES_EXPORT ClipboardItem final
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
 
-  void CaptureTelemetry(ExecutionContext* context, const String& type);
   void ReadRepresentationFromClipboardReader(const String& format);
   void ResolveFormatData(const String& mime_type, Blob* blob);
   bool HasClipboardChangedSinceClipboardRead();
@@ -125,7 +122,6 @@ class MODULES_EXPORT ClipboardItem final
   Vector<String> mime_types_;
   // The vector of custom MIME types that have a "web " prefix.
   Vector<String> custom_format_types_;
-
   // Use std::optional to distinguish "not yet set" from any valid sequence
   // number (0 is a valid clipboard sequence number).
   std::optional<absl::uint128> sequence_number_;
@@ -133,10 +129,6 @@ class MODULES_EXPORT ClipboardItem final
   AccessMode access_mode_ = AccessMode::kEager;
   // Whether HTML data should be sanitized when reading lazily.
   bool sanitize_html_for_lazy_read_ = true;
-  // Tracks the last `getType()` call time per MIME type for telemetry.
-  HashMap<String, base::TimeTicks> last_get_type_calls_;
-  // The time this `ClipboardItem` was created, used for telemetry.
-  base::TimeTicks creation_time_;
 };
 
 }  // namespace blink

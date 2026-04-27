@@ -401,11 +401,7 @@ void ClipboardPromise::ResolveRead() {
           ToResolvedPromise<V8UnionBlobOrString>(script_state, item.second);
       items.emplace_back(item.first, promise);
     }
-    clipboard_items = {
-        RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()
-            ? MakeGarbageCollected<ClipboardItem>(
-                  items, GetSystemClipboard()->SequenceNumber())
-            : MakeGarbageCollected<ClipboardItem>(items)};
+    clipboard_items = {MakeGarbageCollected<ClipboardItem>(items)};
   }
   script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
       clipboard_items);
