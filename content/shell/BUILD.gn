@@ -1094,9 +1094,9 @@ if (is_android) {
     script = "//content/shell/tools/aaudio_freezer_integration_test.py"
     data_deps = [
       ":content_shell",
-      "//testing:test_scripts_shared",
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
+      "//testing:test_scripts_shared",
       "//tools/android/forwarder2",
     ]
   }
