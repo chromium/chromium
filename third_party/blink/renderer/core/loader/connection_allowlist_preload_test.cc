@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -104,7 +105,7 @@ class ConnectionAllowlistPreloadTest : public testing::Test,
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
-// Bug: crbug.com/496821778 — LinkRelAttribute does not normalize leading
+// LinkRelAttribute does not normalize leading
 // ASCII whitespace, so "\tdns-prefetch" is not recognized as dns-prefetch.
 // Per the HTML spec, rel tokens are split on ASCII whitespace, meaning
 // "\tdns-prefetch" should be parsed as the single token "dns-prefetch".
@@ -116,8 +117,7 @@ class ConnectionAllowlistPreloadTest : public testing::Test,
 // recognized and emitted even when Connection-Allowlist is active. The
 // renderer should emit the hint to the browser; blocking is handled by
 // the browser/network service layer.
-TEST_F(ConnectionAllowlistPreloadTest,
-       DISABLED_WhitespaceInRelAttributeNormalized) {
+TEST_F(ConnectionAllowlistPreloadTest, WhitespaceInRelAttributeNormalized) {
   // Part 1: Verify "\tdns-prefetch" IS recognized WITHOUT an allowlist.
   {
     auto dummy_page_holder =
