@@ -594,11 +594,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private shouldShowWalletBranding_(): boolean {
-    if (!this.saveToWalletFromSettingsEnabled_) {
+    if (!this.saveToWalletFromSettingsEnabled_ || !this.entityInstance) {
       return false;
     }
 
-    return !!this.entityInstance?.type.supportsWalletStorage;
+    // Wallet entities are non-editable in settings.
+    return !this.entityInstance.guid &&
+        this.entityInstance.type.supportsWalletStorage;
   }
 
   /**
