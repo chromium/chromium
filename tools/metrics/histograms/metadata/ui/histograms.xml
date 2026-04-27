@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.Interaction"
-    enum="DefaultBrowserUserInteraction" expires_after="2026-09-20">
+    enum="DefaultBrowserUserInteraction" expires_after="2027-04-27">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="DefaultBrowser.{DefaultBrowserEntrypointType}.{DefaultBrowserSetterType}.Shown"
-    units="count" expires_after="2026-10-04">
+    units="count" expires_after="2027-04-27">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DefaultBrowser.{DefaultBrowserSetterType}.Result"
-    enum="BooleanSuccess" expires_after="2026-07-01">
+    enum="BooleanSuccess" expires_after="2027-04-27">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DefaultBrowser.{DefaultBrowserStateValidator}Result"
-    enum="DefaultBrowserStateValidationResult" expires_after="2026-11-25">
+    enum="DefaultBrowserStateValidationResult" expires_after="2027-04-27">
   <owner>alsan@chromium.org</owner>
   <owner>atharvmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
