@@ -26,18 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanAttached">
-  <int value="0" label="Detached"/>
-  <int value="1" label="Attached"/>
-</enum>
-
-<enum name="BootlockboxAvailability">
-  <int value="0" label="Available"/>
-  <int value="1" label="Write Locked"/>
-  <int value="2" label="Need Power Wash"/>
-  <int value="3" label="Unknown"/>
-</enum>
-
 <enum name="CertificateFetchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed"/>
@@ -485,32 +473,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="24" label="METADATA_GENERATION_ID_OUT_OF_RANGE"/>
   <int value="25" label="METADATA_LAST_RECORD_DIGEST_IS_CORRUPT"/>
   <int value="26" label="MISSING_GENERATION_ID"/>
-</enum>
-
-<enum name="DetachableBasePairResult">
-  <int value="0" label="UnknownError"/>
-  <int value="1" label="ChallengePassed"/>
-  <int value="2" label="ChallengeFailed"/>
-  <int value="3" label="NeedInjectEntropy"/>
-</enum>
-
-<enum name="DetachableBasePendingRWUpdate">
-  <int value="0" label="CommunicationError"/>
-  <int value="1" label="NoUpdate"/>
-  <int value="2" label="CriticalUpdate"/>
-  <int value="3" label="NonCriticalUpdate"/>
-</enum>
-
-<enum name="DetachableBaseROUpdateResult">
-  <int value="1" label="Succeeded"/>
-  <int value="2" label="TransferFailed"/>
-</enum>
-
-<enum name="DetachableBaseRWUpdateResult">
-  <int value="1" label="Succeeded"/>
-  <int value="2" label="TransferFailed"/>
-  <int value="3" label="InvalidKey"/>
-  <int value="4" label="RollbackDisallowed"/>
 </enum>
 
 <enum name="DlcService.InstallResult">
@@ -2111,12 +2073,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="409" label="TPM_CC_ECC_Encrypt"/>
   <int value="410" label="TPM_CC_ECC_Decrypt"/>
   <int value="536903681" label="TPM_CCE_PolicyFidoSigned"/>
-</enum>
-
-<enum name="TPMFirmwareUpdateResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Success after retry"/>
-  <int value="2" label="Failure but still booting"/>
 </enum>
 
 <enum name="TpmManagerSecretStatus">
