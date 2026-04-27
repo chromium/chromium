@@ -454,7 +454,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       download::NavigationMonitorFactory::GetForKey(profile->GetProfileKey()));
   history::WebContentsTopSitesObserver::CreateForWebContents(
       web_contents, TopSitesFactory::GetForProfile(profile).get());
-  {
+  if (!profile->IsOffTheRecord()) {
     auto* history_tab_helper =
         HistoryTabHelper::GetOrCreateForWebContents(web_contents);
     HistoryClustersTabHelper::CreateForWebContents(web_contents,
