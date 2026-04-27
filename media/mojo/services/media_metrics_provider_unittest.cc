@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/media_metrics_provider.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -15,9 +17,9 @@
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "media/cdm/clear_key_cdm_common.h"
-#include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/watch_time_recorder.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -448,5 +450,16 @@ INSTANTIATE_TEST_SUITE_P(
 #undef EXPECT_UKM
 #undef EXPECT_NO_UKM
 #undef EXPECT_HAS_UKM
+
+TEST_F(MediaMetricsProviderTest, DoubleInitializeReportsBadMessage) {
+  Initialize(true, false, true, kTestOrigin, mojom::MediaURLScheme::kHttp);
+
+  mojo::test::BadMessageObserver observer;
+  provider_->Initialize(true, mojom::MediaURLScheme::kHttp,
+                        mojom::MediaStreamType::kNone);
+
+  EXPECT_EQ(observer.WaitForBadMessage(),
+            "Initialize() was not called correctly.");
+}
 
 }  // namespace media

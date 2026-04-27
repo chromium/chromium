@@ -145,6 +145,7 @@ void MojoRendererService::SetCdm(
 void MojoRendererService::SetLatencyHint(
     std::optional<base::TimeDelta> latency_hint) {
   if (latency_hint.has_value() && latency_hint->is_negative()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage("Latency hint should be non-negative");
     return;
   }

@@ -290,6 +290,7 @@ void MediaMetricsProvider::Initialize(
     mojom::MediaURLScheme url_scheme,
     mojom::MediaStreamType media_stream_type) {
   if (IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(kInvalidInitialize);
     return;
   }
@@ -396,6 +397,7 @@ void MediaMetricsProvider::AcquireWatchTimeRecorder(
     mojom::PlaybackPropertiesPtr properties,
     mojo::PendingReceiver<mojom::WatchTimeRecorder> receiver) {
   if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(kInvalidInitialize);
     return;
   }
@@ -409,6 +411,7 @@ void MediaMetricsProvider::AcquireWatchTimeRecorder(
 void MediaMetricsProvider::AcquireVideoDecodeStatsRecorder(
     mojo::PendingReceiver<mojom::VideoDecodeStatsRecorder> receiver) {
   if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(kInvalidInitialize);
     return;
   }

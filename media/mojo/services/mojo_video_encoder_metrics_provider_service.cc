@@ -121,9 +121,6 @@ class MojoVideoEncoderMetricsProviderService::EncoderMetricsHandler {
   void ReportUMA() const {
     const std::string_view use_case_str = UseCaseStr();
     if (use_case_str.empty()) {
-      mojo::ReportBadMessage(base::StrCat(
-          {"Unknown use case",
-           base::NumberToString(static_cast<int>(encoder_use_case_))}));
       return;
     }
     const std::string uma_prefix =
@@ -196,6 +193,7 @@ void MojoVideoEncoderMetricsProviderService::SetEncodedFrameCount(
     uint64_t num_encoded_frames) {
   auto it = encoders_.find(encoder_id);
   if (it == encoders_.end()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(base::StrCat(
         {"Unknown encoder id: ", base::NumberToString(encoder_id)}));
     return;
@@ -212,6 +210,7 @@ void MojoVideoEncoderMetricsProviderService::SetError(
   }
   auto it = encoders_.find(encoder_id);
   if (it == encoders_.end()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(base::StrCat(
         {"Unknown encoder id: ", base::NumberToString(encoder_id)}));
     return;
@@ -221,6 +220,7 @@ void MojoVideoEncoderMetricsProviderService::SetError(
 
 void MojoVideoEncoderMetricsProviderService::Complete(uint64_t encoder_id) {
   if (encoders_.erase(encoder_id) == 0u) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage(base::StrCat(
         {"Unknown encoder id: ", base::NumberToString(encoder_id)}));
   }

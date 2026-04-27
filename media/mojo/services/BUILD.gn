@@ -289,6 +289,7 @@ source_set("unit_tests") {
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/core/embedder",
+    "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/service_manager/public/cpp",

@@ -63,7 +63,8 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   void DeinitializeDecoder(StreamType stream_type) final;
 
  private:
-  void OnReadDone(StreamType stream_type,
+  void OnReadDone(mojo::ReportBadMessageCallback bad_message_callback,
+                  StreamType stream_type,
                   DecryptCallback callback,
                   scoped_refptr<DecoderBuffer> buffer);
 

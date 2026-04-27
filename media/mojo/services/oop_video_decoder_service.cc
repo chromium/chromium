@@ -93,6 +93,7 @@ void OOPVideoDecoderService::Construct(
     const gfx::ColorSpace& target_color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_decoder_client_receiver_.is_bound()) {
+    CHECK(mojo::IsInMessageDispatch());
     mojo::ReportBadMessage("Construct() already called");
     return;
   }
@@ -128,10 +129,12 @@ void OOPVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   // The client of the OOPVideoDecoderService is the OOPVideoDecoder which lives
   // in the GPU process and is therefore up the trust gradient. The
   // OOPVideoDecoder doesn't call Initialize() with a cdm id (it calls
-  // Initialize() with a cdm context instead). Thus, it's appropriate to crash
-  // here via a NOTREACHED().
+  // Initialize() with a cdm context instead). Thus, it's appropriate to report
+  // a bad message.
   if (cdm && !cdm->is_cdm_context()) {
-    NOTREACHED();
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage("OOPVideoDecoder only supports CdmContext");
+    return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -250,8 +253,9 @@ void OOPVideoDecoderService::OnOverlayInfoChanged(
   // The client of the OOPVideoDecoderService is the OOPVideoDecoder which lives
   // in the GPU process and is therefore up the trust gradient. The
   // OOPVideoDecoder doesn't call OnOverlayInfoChanged(). Thus, it's appropriate
-  // to crash here via a NOTREACHED().
-  NOTREACHED();
+  // to report a bad message.
+  CHECK(mojo::IsInMessageDispatch());
+  mojo::ReportBadMessage("OnOverlayInfoChanged() is not supported");
 }
 
 void OOPVideoDecoderService::OnVideoFrameDecoded(

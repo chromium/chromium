@@ -84,8 +84,9 @@ void MojoAudioDecoderService::Initialize(
       cdm_context_ref_ =
           mojo_cdm_service_context_->GetCdmContextRef(cdm_id.value());
     } else if (cdm_id != cdm_id_) {
-      // TODO(xhwang): Replace with mojo::ReportBadMessage().
-      NOTREACHED() << "The caller should not switch CDM";
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("The caller should not switch CDM");
+      return;
     }
   }
 
