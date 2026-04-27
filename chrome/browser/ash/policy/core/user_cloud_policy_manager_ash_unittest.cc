@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -164,7 +165,10 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
 
     // The initialization path that blocks on the initial policy fetch requires
     // a signin Profile to use its URLRequestContext.
@@ -363,6 +367,13 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     Mock::VerifyAndClearExpectations(&observer_);
     EXPECT_TRUE(manager_->policies().Equals(expected_bundle_));
   }
+
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   // Required by the refresh scheduler that's created by the manager and
   // for the cleanup of URLRequestContextGetter in the |signin_profile_|.

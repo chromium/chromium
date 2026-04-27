@@ -946,7 +946,10 @@ class DeviceStatusCollectorTestBase : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
     reporting_user_tracker_ = std::make_unique<ReportingUserTracker>(
         user_manager::UserManager::Get());
   }

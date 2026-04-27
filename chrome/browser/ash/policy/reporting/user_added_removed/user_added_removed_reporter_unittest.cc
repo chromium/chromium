@@ -18,10 +18,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -90,7 +92,10 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
     mock_queue_ = std::make_unique<::reporting::MockReportQueueStrict>();
   }
 
@@ -150,6 +155,13 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;

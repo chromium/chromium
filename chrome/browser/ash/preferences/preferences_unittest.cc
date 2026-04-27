@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -168,7 +170,10 @@ class PreferencesTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
@@ -236,8 +241,16 @@ class PreferencesTest : public testing::Test {
     prefs_->SetInputMethodListForTesting();
   }
 
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
+
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;

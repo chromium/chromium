@@ -27,3 +27,9 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+}

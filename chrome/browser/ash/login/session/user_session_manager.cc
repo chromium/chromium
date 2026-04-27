@@ -468,12 +468,6 @@ bool IsNewProfile(Profile* profile) {
          profile->IsNewProfile();
 }
 
-policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetMinimumVersionPolicyHandler();
-}
-
 void OnPrepareTpmDeviceFinished() {
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-End", false);
 }
@@ -689,10 +683,12 @@ void UserSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
 UserSessionManager::UserSessionManager(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       delegate_(nullptr),
       network_connection_tracker_(nullptr),
       authenticator_(nullptr),
@@ -1870,8 +1866,8 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
         service->SetAlwaysOnVpnManager(always_on_vpn_manager_->GetWeakPtr());
       }
 
-      xdr_manager_ =
-          std::make_unique<XdrManager>(g_browser_process->policy_service());
+      xdr_manager_ = std::make_unique<XdrManager>(
+          browser_policy_connector_ash_->GetPolicyService());
     }
 
     // Save sync password hash and salt to profile prefs if they are available.
@@ -2223,20 +2219,17 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
 
   MaybeShowHelpAppReleaseNotesNotification(profile);
 
-  g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetTPMAutoUpdateModePolicyHandler()
+  browser_policy_connector_ash_->GetTPMAutoUpdateModePolicyHandler()
       ->ShowTPMAutoUpdateNotificationIfNeeded();
 
-  GetMinimumVersionPolicyHandler()->MaybeShowNotificationOnLogin();
+  browser_policy_connector_ash_->GetMinimumVersionPolicyHandler()
+      ->MaybeShowNotificationOnLogin();
 
   policy::DeviceCommandQueryGeolocationJob::
       ShowLocationReportedNotificationIfNeeded();
 
   // Show a notification about ADB sideloading policy change if applicable.
-  g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetAdbSideloadingAllowanceModePolicyHandler()
+  browser_policy_connector_ash_->GetAdbSideloadingAllowanceModePolicyHandler()
       ->ShowAdbSideloadingPolicyChangeNotificationIfNeeded();
 }
 

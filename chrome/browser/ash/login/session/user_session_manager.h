@@ -53,6 +53,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace user_manager {
 class User;
 class KnownUser;
@@ -155,13 +159,14 @@ class UserSessionManager
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
 
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage` and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   UserSessionManager(
       PrefService* local_state,
       ApplicationLocaleStorage* application_locale_storage,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
   UserSessionManager(const UserSessionManager&) = delete;
   UserSessionManager& operator=(const UserSessionManager&) = delete;
   ~UserSessionManager() override;
@@ -542,6 +547,8 @@ class UserSessionManager
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 

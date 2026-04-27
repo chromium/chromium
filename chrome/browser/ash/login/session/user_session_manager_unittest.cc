@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/language/core/browser/pref_names.h"
@@ -70,7 +72,10 @@ class UserSessionManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -121,6 +126,13 @@ class UserSessionManagerTest : public testing::Test {
     fake_user_manager_->LoginUser(account_id);
     return profile;
   }
+
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   // Allows UserSessionManager to request the NetworkConnectionTracker in its
   // constructor.
@@ -248,7 +260,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_WithoutProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  profile->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
+  scoped_stub_install_attributes_.Get()->SetDemoMode();
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   profile->GetPrefs()->SetString(language::prefs::kApplicationLocale, "fr-CA");
@@ -268,7 +280,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  profile->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
+  scoped_stub_install_attributes_.Get()->SetDemoMode();
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   g_browser_process->SetApplicationLocale("fr");

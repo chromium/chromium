@@ -30,7 +30,8 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "smb_kerberos_credentials_updater_unittest\\.cc": [
+  ".*unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
     "+chrome/browser/ash/login/session/user_session_manager.h",
     "+chrome/browser/global_features.h",
   ],

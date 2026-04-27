@@ -13,9 +13,11 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -59,7 +61,10 @@ class LoginLogoutTestHelper {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
   }
 
   void Shutdown() {
@@ -170,6 +175,13 @@ class LoginLogoutTestHelper {
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  // CrosSettings is needed because otherwise TestingProfile automatically
+  // creates ScopedCrosSettingsTestHelper, which conflicts with
+  // ScopedStubInstallAttributes.
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

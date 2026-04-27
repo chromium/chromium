@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
@@ -73,7 +74,10 @@ class UserSessionActivityReporterTest : public ::testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash());
   }
 
   void TearDown() override {
@@ -133,6 +137,9 @@ class UserSessionActivityReporterTest : public ::testing::Test {
   void OnUnlocked(UserSessionActivityReporter* reporter) {
     reporter->OnUnlocked();
   }
+
+  // NOTE: InstallAttributes is required to construct BrowserPolicyConnectorAsh.
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

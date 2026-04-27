@@ -27,6 +27,7 @@ include_rules = [
 
 specific_include_rules = {
   "preferences_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
     "+chrome/browser/global_features.h"
   ]
 }

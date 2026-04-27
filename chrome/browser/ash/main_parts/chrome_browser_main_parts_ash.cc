@@ -948,7 +948,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   user_session_manager_ = std::make_unique<UserSessionManager>(
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
-      g_browser_process->shared_url_loader_factory());
+      g_browser_process->shared_url_loader_factory(),
+      g_browser_process->platform_part()->browser_policy_connector_ash());
 
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
       user_manager::UserManager::Get());
