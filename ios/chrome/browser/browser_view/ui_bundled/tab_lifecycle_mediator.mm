@@ -42,7 +42,6 @@
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -264,10 +263,8 @@
     BWGTabHelper->SetBwgCommandsHandler(BWGCommandsHandler);
 
     if (IsAskGeminiChipEnabled()) {
-      id<LocationBarBadgeCommands> locationBarBadgeCommandsHandler =
-          HandlerForProtocol(_commandDispatcher, LocationBarBadgeCommands);
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(
-          locationBarBadgeCommandsHandler);
+          id<LocationBarBadgeCommands>(_commandDispatcher));
     }
 
     if (IsGeminiImageRemixToolEnabled()) {
