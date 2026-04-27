@@ -34,9 +34,6 @@ namespace leveldb_proto {
 
 namespace {
 
-// Covers 8MB block cache,
-const int kMaxApproxMemoryUseMB = 16;
-
 bool PrefixStopCallback(const std::string& prefix, const std::string& key) {
   return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE);
 }
@@ -59,14 +56,7 @@ Enums::KeyIteratorAction LevelDB::ComputeIteratorAction(
   return Enums::kSkipAndContinue;
 }
 
-LevelDB::LevelDB(const char* client_name) {
-  // Used in lieu of UMA_HISTOGRAM_ENUMERATION because the histogram name is
-  // not a constant.
-  approx_memtable_mem_histogram_ = base::LinearHistogram::FactoryGet(
-      std::string("LevelDB.ApproximateMemTableMemoryUse.") + client_name, 1,
-      kMaxApproxMemoryUseMB * 1048576, kMaxApproxMemoryUseMB * 4,
-      base::Histogram::kUmaTargetedHistogramFlag);
-}
+LevelDB::LevelDB(const char* client_name) {}
 
 LevelDB::~LevelDB() {
   DFAKE_SCOPED_LOCK(thread_checker_);
@@ -104,18 +94,6 @@ leveldb::Status LevelDB::Init(const base::FilePath& database_dir,
   }
 
   if (status.ok()) {
-    if (!in_mem) {
-      // Record the approximate memory usage of this DB right after init.
-      // This should just be the size of the MemTable since we haven't done any
-      // reads/writes and the block cache should be empty.
-      uint64_t approx_mem = 0;
-      std::string usage_string;
-      if (GetApproximateMemoryUse(&approx_mem)) {
-        approx_memtable_mem_histogram_->Add(
-            approx_mem -
-            leveldb_chrome::GetSharedBrowserBlockCache()->TotalCharge());
-      }
-    }
     // Don't log warnings when result is InvalidArgument and create_if_missing
     // is false, as this means the DB file doesn't exist and the client didn't
     // ask to create a new one.
@@ -335,12 +313,6 @@ leveldb::Status LevelDB::Destroy() {
   if (!status.ok())
     LOG(WARNING) << "Unable to destroy " << path << ": " << status.ToString();
   return status;
-}
-
-bool LevelDB::GetApproximateMemoryUse(uint64_t* approx_mem) {
-  std::string usage_string;
-  return (db_->GetProperty("leveldb.approximate-memory-usage", &usage_string) &&
-          base::StringToUint64(usage_string, approx_mem));
 }
 
 }  // namespace leveldb_proto

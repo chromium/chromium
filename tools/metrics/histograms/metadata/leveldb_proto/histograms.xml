@@ -121,18 +121,6 @@ chromium-metrics-reviews@google.com.
       summary="Database for Webrtc video stats."/>
 </variants>
 
-<histogram name="LevelDB.ApproximateMemTableMemoryUse.{LevelDBClient}"
-    units="bytes" expires_after="2024-07-21">
-  <owner>nyquist@chromium.org</owner>
-  <owner>salg@google.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The approximate MemTable memory use of a LevelDB in bytes. Recorded right
-    after initializing an on-disk database.
-  </summary>
-  <token key="LevelDBClient" variants="LevelDBClient"/>
-</histogram>
-
 <histogram name="ProtoDB.LoadEntriesSuccess.{LevelDBClient}"
     enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>nyquist@chromium.org</owner>

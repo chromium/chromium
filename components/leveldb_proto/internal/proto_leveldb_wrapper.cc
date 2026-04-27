@@ -410,13 +410,6 @@ void ProtoLevelDBWrapper::SetMetricsId(const std::string& id) {
   metrics_id_ = id;
 }
 
-bool ProtoLevelDBWrapper::GetApproximateMemoryUse(uint64_t* approx_mem_use) {
-  if (!db_)
-    return false;
-
-  return db_->GetApproximateMemoryUse(approx_mem_use);
-}
-
 const scoped_refptr<base::SequencedTaskRunner>&
 ProtoLevelDBWrapper::task_runner() {
   return task_runner_;

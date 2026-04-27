@@ -127,10 +127,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   // directory.
   virtual leveldb::Status Destroy();
 
-  // Returns true if we successfully read the approximate memory usage property
-  // from the LevelDB.
-  bool GetApproximateMemoryUse(uint64_t* approx_mem);
-
  private:
   DFAKE_MUTEX(thread_checker_);
 
@@ -140,7 +136,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   std::unique_ptr<leveldb::DB> db_;
   base::FilePath database_dir_;
   leveldb_env::Options open_options_;
-  raw_ptr<base::HistogramBase> approx_memtable_mem_histogram_;
 };
 
 }  // namespace leveldb_proto

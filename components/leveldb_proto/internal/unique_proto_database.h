@@ -96,8 +96,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) UniqueProtoDatabase {
                             const std::string& target_prefix,
                             Callbacks::UpdateCallback callback);
 
-  bool GetApproximateMemoryUse(uint64_t* approx_mem_use);
-
   // Sets the identifier used by the underlying LevelDB wrapper to record
   // metrics.
   void SetMetricsId(const std::string& id);

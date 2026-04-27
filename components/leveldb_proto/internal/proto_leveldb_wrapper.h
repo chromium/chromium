@@ -141,8 +141,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
 
   void SetMetricsId(const std::string& id);
 
-  bool GetApproximateMemoryUse(uint64_t* approx_mem_use);
-
   const scoped_refptr<base::SequencedTaskRunner>& task_runner();
 
  private:

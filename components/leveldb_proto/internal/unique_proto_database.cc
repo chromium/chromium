@@ -164,10 +164,6 @@ void UniqueProtoDatabase::RemoveKeysForTesting(
   db_wrapper_->RemoveKeys(key_filter, target_prefix, std::move(callback));
 }
 
-bool UniqueProtoDatabase::GetApproximateMemoryUse(uint64_t* approx_mem_use) {
-  return db_wrapper_->GetApproximateMemoryUse(approx_mem_use);
-}
-
 void UniqueProtoDatabase::SetMetricsId(const std::string& id) {
   db_wrapper_->SetMetricsId(id);
 }
