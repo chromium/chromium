@@ -141,10 +141,11 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       result_index = offsets_.size() - 2;
     }
 
+    float range = offsets_[result_index + 1] - offsets_[result_index];
     // Use offsets to calculate for intra-keyframe progress.
-    float local_progress =
-        (progress - offsets_[result_index]) /
-        (offsets_[result_index + 1] - offsets_[result_index]);
+    float local_progress = range == 0
+                               ? offsets_[result_index + 1]
+                               : (progress - offsets_[result_index]) / range;
     // Adjust for that keyframe's timing function
     // TODO(crbug.com/347958668): Correct limit direction for phase and
     // direction in order to make the correct evaluation at the boundary of a
@@ -689,14 +690,17 @@ std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
       break;
     }
 
+    // Skip keyframe pairs at the same offset. Keyframes at the same offsets
+    // do not interpolate / extrapolate between them.
+    double range = frames->at(i + 1)->Offset() - frames->at(i)->Offset();
+    if (range <= 0.0) {
+      continue;
+    }
     double min_progress =
-        i == 0 ? ((min_total_progress - frames->at(0)->Offset()) /
-                  (frames->at(1)->Offset() - frames->at(0)->Offset()))
-               : 0.0;
+        i == 0 ? ((min_total_progress - frames->at(0)->Offset()) / range) : 0.0;
     double max_progress =
         (i + 2) == frames->size()
-            ? ((max_total_progress - frames->at(i)->Offset()) /
-               (frames->at(i + 1)->Offset() - frames->at(i)->Offset()))
+            ? ((max_total_progress - frames->at(i)->Offset()) / range)
             : 1.0;
 
     TimingFunction& timing = frames->at(i)->Easing();
