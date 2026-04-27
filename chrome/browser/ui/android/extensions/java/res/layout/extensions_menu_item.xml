@@ -73,7 +73,7 @@ found in the LICENSE file.
             android:id="@+id/extensions_menu_item_context_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_more_vert"
+            android:src="@drawable/extensions_menu_context_menu_icon_selector"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/extensions_menu_context_menu_tooltip"
             app:layout_constraintEnd_toEndOf="parent"

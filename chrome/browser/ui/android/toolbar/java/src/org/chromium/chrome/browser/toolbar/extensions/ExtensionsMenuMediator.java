@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -361,9 +360,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * @return The created list item.
      */
     private ListItem createMenuItem(ExtensionsMenuTypes.MenuEntryState entry) {
-        boolean isActionPinned = entry.contextMenuButton.isOn;
-        int contextMenuIcon = isActionPinned ? R.drawable.ic_keep_24dp : R.drawable.ic_more_vert;
-
         PropertyModel model =
                 new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                         .with(ExtensionsMenuItemProperties.EXTENSION_ID, entry.id)
@@ -371,9 +367,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                                 ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK,
                                 (view) ->
                                         onContextMenuButtonClicked((ListMenuButton) view, entry.id))
-                        .with(
-                                ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ICON,
-                                contextMenuIcon)
                         .with(
                                 ExtensionsMenuItemProperties.PRIMARY_ACTION_ON_CLICK,
                                 (view) -> mMenuBridge.executeAction(entry.id))
@@ -453,6 +446,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             PropertyModel itemModel, ExtensionsMenuTypes.MenuEntryState itemState) {
         itemModel.set(ExtensionsMenuItemProperties.TITLE, itemState.actionButton.text);
         itemModel.set(ExtensionsMenuItemProperties.ICON, itemState.actionButton.icon);
+        itemModel.set(ExtensionsMenuItemProperties.IS_PINNED, itemState.contextMenuButton.isOn);
         itemModel.set(
                 ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED,
                 itemState.siteAccessToggle.isOn);

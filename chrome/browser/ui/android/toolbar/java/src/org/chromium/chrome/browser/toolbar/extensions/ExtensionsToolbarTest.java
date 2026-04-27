@@ -8,13 +8,18 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isActivated;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +36,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -334,6 +340,52 @@ public class ExtensionsToolbarTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 0,
                 "Popup should have closed");
+    }
+
+    @Test
+    @LargeTest
+    public void testPinnedExtensionContextMenuIcon() throws IOException {
+        String extensionName = "Test Extension";
+        String extensionId = loadBasicExtension("extension", extensionName, "Test Action");
+
+        // Open the extensions menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
+
+        // Find the context menu button for the pinned extension.
+        ViewInteraction contextMenuButton =
+                onView(
+                        allOf(
+                                withId(R.id.extensions_menu_item_context_menu),
+                                hasSibling(hasDescendant(withText(extensionName)))));
+
+        // Verify the button does not have the activate state, which reflects that the action is
+        // unpinned.
+        contextMenuButton
+                .check(matches(isDisplayed()))
+                .check(matches(not(isActivated())))
+                .check(matches(not(isSelected())));
+
+        // Close the extensions menu.
+        androidx.test.espresso.Espresso.pressBack();
+
+        // Pin the extension.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+
+        // Open the extensions menu again.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
+
+        // Find the context menu button for the pinned extension again.
+        contextMenuButton =
+                onView(
+                        allOf(
+                                withId(R.id.extensions_menu_item_context_menu),
+                                hasSibling(hasDescendant(withText(extensionName)))));
+
+        // Verify the button now has activate state.
+        contextMenuButton
+                .check(matches(isDisplayed()))
+                .check(matches(isActivated()))
+                .check(matches(not(isSelected())));
     }
 
     private String loadBasicExtension(String dirName, String name, String actionTitle)

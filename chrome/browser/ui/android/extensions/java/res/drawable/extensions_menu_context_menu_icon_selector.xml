@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Show the "keep icon" when the extension is pinned (activated state)
+        and the button is not in an "active" state (pressed, hovered, focused,
+        or selected). -->
+    <item
+        android:state_activated="true"
+        android:state_pressed="false"
+        android:state_hovered="false"
+        android:state_focused="false"
+        android:state_selected="false"
+        android:drawable="@drawable/ic_keep_24dp" />
+
+    <item android:drawable="@drawable/ic_more_vert" />
+</selector>

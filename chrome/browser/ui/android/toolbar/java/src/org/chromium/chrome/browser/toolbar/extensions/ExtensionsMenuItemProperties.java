@@ -24,10 +24,9 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<@Nullable Bitmap> ICON =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
-    public static final WritableIntPropertyKey CONTEXT_MENU_BUTTON_ICON =
-            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<View.OnClickListener>
             CONTEXT_MENU_BUTTON_ON_CLICK = new WritableObjectPropertyKey<>();
@@ -63,8 +62,8 @@ public class ExtensionsMenuItemProperties {
             new PropertyKey[] {
                 EXTENSION_ID,
                 ICON,
+                IS_PINNED,
                 TITLE,
-                CONTEXT_MENU_BUTTON_ICON,
                 CONTEXT_MENU_BUTTON_ON_CLICK,
                 PRIMARY_ACTION_ON_CLICK,
                 SITE_ACCESS_TOGGLE_CHECKED,
