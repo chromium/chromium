@@ -93,6 +93,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     mouse_event_manager_->NodeWillBeRemoved(node);
     pointer_event_manager_->NodeWillBeRemoved(node);
   }
+  void HandlePseudoElementRemoval(PseudoElement& pseudo) {
+    mouse_event_manager_->HandlePseudoElementRemoval(pseudo);
+    pointer_event_manager_->HandlePseudoElementRemoval(pseudo);
+  }
 
   void UpdateSelectionForMouseDrag();
   void StartMiddleClickAutoscroll(LayoutObject*);

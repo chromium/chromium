@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -307,6 +308,39 @@ void PointerEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
 
 void PointerEventManager::NodeWillBeRemoved(Node& node) {
   HandleRemoveSubtree(node, /*include_root=*/true);
+}
+
+void PointerEventManager::HandlePseudoElementRemoval(PseudoElement& pseudo) {
+  Element* parent = pseudo.ParentOrShadowHostElement();
+  for (auto& entry : element_under_pointer_) {
+    if (entry.value && entry.value->IsPseudoElement() &&
+        pseudo.IsShadowIncludingInclusiveAncestorOf(*entry.value)) {
+      entry.value = parent;
+      original_element_under_pointer_removed_.insert(entry.key);
+    }
+  }
+
+  for (auto& entry : pointer_capture_target_) {
+    if (entry.value && entry.value->IsPseudoElement() &&
+        pseudo.IsShadowIncludingInclusiveAncestorOf(*entry.value)) {
+      entry.value = parent;
+    }
+  }
+
+  for (auto& entry : pending_pointer_capture_target_) {
+    if (entry.value && entry.value->IsPseudoElement() &&
+        pseudo.IsShadowIncludingInclusiveAncestorOf(*entry.value)) {
+      entry.value = parent;
+    }
+  }
+
+  if (pointer_event_factory_) {
+    pointer_event_factory_->HandlePseudoElementRemoved(pseudo);
+  }
+
+  if (touch_event_manager_) {
+    touch_event_manager_->HandlePseudoElementRemoval(pseudo);
+  }
 }
 
 void PointerEventManager::HandleRemoveSubtree(Node& node, bool include_root) {
@@ -1230,8 +1264,13 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
 
   if (consider_click_dispatch) {
     ProcessPendingPointerCapture(pointer_event);
+    Element* click_mouse_target = mouse_target;
+    if (click_mouse_target && click_mouse_target->IsPseudoElement() &&
+        !click_mouse_target->isConnected()) {
+      click_mouse_target = mouse_event_manager_->GetElementUnderMouse();
+    }
     mouse_event_manager_->DispatchMouseClickIfNeeded(
-        mouse_target, captured_click_target, mouse_event,
+        click_mouse_target, captured_click_target, mouse_event,
         pointer_event->pointerId(), pointer_event->pointerType(),
         pointer_event_factory_->GetPointerDownTarget(
             pointer_event->pointerId()),

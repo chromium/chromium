@@ -84,6 +84,7 @@ class CORE_EXPORT PointerEventManager final
 
   void NodeChildrenWillBeRemoved(ContainerNode&);
   void NodeWillBeRemoved(Node&);
+  void HandlePseudoElementRemoval(PseudoElement&);
   void SetHandwritingRadius(int handwriting_radius);
 
   // Starts capturing of all events with the given |PointerId| to the given
@@ -278,6 +279,9 @@ class CORE_EXPORT PointerEventManager final
 
   // Set upon scrolling starts when sending a pointercancel, prevents PE
   // dispatches for non-hovering pointers until all of them become inactive.
+  // NOTE: If adding a new field to this class please ensure that it is
+  // updated in |PointerEventManager::HandlePseudoElementRemoval()| if it's a
+  // target.
   bool non_hovering_pointers_canceled_ = false;
 
   Deque<uint32_t> touch_ids_for_canceled_pointerdowns_;

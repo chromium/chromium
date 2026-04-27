@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -462,13 +463,37 @@ void MouseEventManager::NodeWillBeRemoved(Node& node) {
   HandleRemoveSubtree(node, /*include_root=*/true);
 }
 
+void MouseEventManager::HandlePseudoElementRemoval(PseudoElement& pseudo) {
+  Element* parent = pseudo.ParentOrShadowHostElement();
+  if (mousedown_element_ && mousedown_element_->IsPseudoElement() &&
+      pseudo.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
+    mousedown_element_ = parent;
+  }
+  if (mouse_press_node_ && mouse_press_node_->IsPseudoElement() &&
+      pseudo.IsShadowIncludingInclusiveAncestorOf(*mouse_press_node_)) {
+    mouse_press_node_ = parent;
+  }
+  if (element_under_mouse_ && element_under_mouse_->IsPseudoElement() &&
+      pseudo.IsShadowIncludingInclusiveAncestorOf(*element_under_mouse_)) {
+    element_under_mouse_ = parent;
+    original_element_under_mouse_removed_ = true;
+  }
+}
+
 void MouseEventManager::HandleRemoveSubtree(Node& node, bool include_root) {
   Node* remaining_node = include_root ? node.parentNode() : &node;
   if (mousedown_element_ && (include_root || mousedown_element_ != node) &&
       node.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
-    mousedown_element_ = nullptr;
+    // However, if the removed node is a pseudo-element, it's just a style
+    // change, so we should fallback to its originating element so that
+    // click events can still be dispatched.
+    if (node.IsPseudoElement()) {
+      mousedown_element_ = node.ParentOrShadowHostElement();
+    } else {
+      mousedown_element_ = nullptr;
+    }
   }
   if (mouse_press_node_ && (include_root || mouse_press_node_ != node) &&
       node.IsShadowIncludingInclusiveAncestorOf(*mouse_press_node_)) {
