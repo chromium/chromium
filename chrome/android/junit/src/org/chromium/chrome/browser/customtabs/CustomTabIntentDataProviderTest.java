@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -973,6 +974,47 @@ public class CustomTabIntentDataProviderTest {
 
         intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.foo.bar");
         Assert.assertTrue(CustomTabIntentDataProvider.isTrustedCustomTab(intent, null));
+    }
+
+    @Test
+    public void testConfigureIntentForResizableCustomTab_regularCCT_transparentTheme() {
+        Intent intent = Mockito.mock(Intent.class);
+
+        // Regular CCT won't get the transparent activity theme.
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent, never())
+                .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
+        Mockito.clearInvocations(intent);
+
+        // Regular CCT with translucency extra gets the transparent activity theme.
+        when(intent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
+                .thenReturn(true);
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent)
+                .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
+    }
+
+    @Test
+    public void testConfigureIntentForResizableCustomTab_partialCCT_transparentTheme() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.isFirstParty(eq("com.foo.bar"))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        Intent intent = Mockito.mock(Intent.class);
+
+        // Partial CCT gets the transparent activity theme.
+        when(intent.getStringExtra(eq(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)))
+                .thenReturn("com.foo.bar");
+        when(intent.getIntExtra(eq(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX), eq(0)))
+                .thenReturn(50);
+
+        // Partial CCT with translucency extra also gets the transparent activity theme.
+        when(intent.hasExtra(eq(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND)))
+                .thenReturn(true);
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(mContext, intent);
+        Mockito.verify(intent)
+                .setClassName(eq(mContext), eq(TranslucentCustomTabActivity.class.getName()));
+        Mockito.clearInvocations(intent);
     }
 
     @Test

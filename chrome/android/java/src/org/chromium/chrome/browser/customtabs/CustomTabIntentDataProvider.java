@@ -214,7 +214,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     static final String EXTRA_CUSTOM_CONTENT_ACTIONS =
             "androidx.browser.customtabs.extra.CUSTOM_CONTENT_ACTIONS";
 
-    private static final String EXTRA_TRANSLUCENT_BACKGROUND =
+    static final String EXTRA_TRANSLUCENT_BACKGROUND =
             "androidx.browser.customtabs.extra.TRANSLUCENT_BACKGROUND";
 
     @IntDef({
