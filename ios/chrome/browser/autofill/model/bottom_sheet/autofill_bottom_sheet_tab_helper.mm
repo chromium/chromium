@@ -603,7 +603,11 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
            manager.client().GetPersonalDataManager().payments_data_manager())
            .empty();
 
-  bool should_attach_listeners = is_cc_form && has_cc_cards;
+  bool should_attach_listeners =
+      is_cc_form &&
+      (has_cc_cards ||
+       base::FeatureList::IsEnabled(
+           autofill::features::kAutofillEnableBottomSheetScanCardAndFill));
 
   if (!should_attach_listeners && !UseListenersInvalidation()) {
     // Do not detach listeners if they can't be invalidated.
