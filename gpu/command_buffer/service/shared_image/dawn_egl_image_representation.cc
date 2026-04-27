@@ -64,7 +64,9 @@ DawnEGLImageRepresentation::~DawnEGLImageRepresentation() {
 wgpu::Texture DawnEGLImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
-  gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
+  if (!gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage))) {
+    return nullptr;
+  }
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = ToDawnFormat(format());
   texture_descriptor.viewFormatCount = view_formats_.size();
