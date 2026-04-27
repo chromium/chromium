@@ -56,8 +56,7 @@ TEST_P(AeadTest, SealOpenSpan) {
       aead.Open(ciphertext, nonce, kAdditionalData);
   ASSERT_TRUE(decrypted);
   ASSERT_EQ(decrypted->size(), sizeof(kPlaintext));
-  UNSAFE_TODO(
-      ASSERT_EQ(0, memcmp(decrypted->data(), kPlaintext, sizeof(kPlaintext))));
+  ASSERT_EQ(base::span(*decrypted), base::span(kPlaintext));
 
   std::vector<uint8_t> wrong_key(aead.KeyLength(), 1u);
   crypto::Aead aead_wrong_key(alg);
