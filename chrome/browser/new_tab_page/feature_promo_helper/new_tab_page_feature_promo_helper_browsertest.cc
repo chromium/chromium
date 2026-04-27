@@ -7,26 +7,31 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
-class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
+class NewTabPageFeaturePromoHelperTest : public InProcessBrowserTest {
  protected:
-  NewTabPageFeaturePromoHelperTest() = default;
+  NewTabPageFeaturePromoHelperTest() {
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature});
+  }
 
-  void SetUp() override {
+  void SetUpInProcessBrowserTestFixture() override {
     // Override the factory before the browser window is created.
     user_ed_override_ =
         BrowserWindowFeatures::GetUserDataFactoryForTesting()
@@ -35,13 +40,12 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
                   return std::make_unique<MockBrowserUserEducationInterface>(
                       &window);
                 }));
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
 
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
-    iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature});
-
-    AddTab(browser(), GURL("chrome://newtab"));
     tab_ = browser()->tab_strip_model()->GetActiveWebContents();
 
     helper_ = std::make_unique<NewTabPageFeaturePromoHelper>();
@@ -70,7 +74,8 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
 
 // In CFT mode, there are often no User Ed controllers.
 #if !BUILDFLAG(CHROME_FOR_TESTING)
-TEST_F(NewTabPageFeaturePromoHelperTest, RecordFeatureUsage_CustomizeChrome) {
+IN_PROC_BROWSER_TEST_F(NewTabPageFeaturePromoHelperTest,
+                       RecordFeatureUsage_CustomizeChrome) {
   // By default let through all calls to endpromo.
   EXPECT_CALL(*user_education(),
               NotifyFeaturePromoFeatureUsed(testing::_, testing::_))
@@ -88,8 +93,8 @@ TEST_F(NewTabPageFeaturePromoHelperTest, RecordFeatureUsage_CustomizeChrome) {
 }
 #endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
-TEST_F(NewTabPageFeaturePromoHelperTest,
-       MaybeShowFeaturePromo_CustomizeChrome) {
+IN_PROC_BROWSER_TEST_F(NewTabPageFeaturePromoHelperTest,
+                       MaybeShowFeaturePromo_CustomizeChrome) {
   EXPECT_CALL(
       *user_education(),
       MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
@@ -100,8 +105,8 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
       feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature, tab());
 }
 
-TEST_F(NewTabPageFeaturePromoHelperTest,
-       MaybeShowFeaturePromo_NonGoogle_CustomizeChrome) {
+IN_PROC_BROWSER_TEST_F(NewTabPageFeaturePromoHelperTest,
+                       MaybeShowFeaturePromo_NonGoogle_CustomizeChrome) {
   EXPECT_CALL(*user_education(), MaybeShowFeaturePromo).Times(0);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
   helper()->MaybeShowFeaturePromo(
