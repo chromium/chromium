@@ -40,6 +40,9 @@ class DedicatedWorkerDevToolsAgentHost final
 
   void DisconnectIfNotCreated();
 
+  void MarkAsTerminated() { state_terminating_ = true; }
+  bool state_terminating() const { return state_terminating_; }
+
   // A DedicatedWorkerDevToolsAgentHost is created before it is known if a
   // worker thread will be created in the renderer. This method is used to
   // indicate the the worker thread is actually created and this agent host is
@@ -68,6 +71,7 @@ class DedicatedWorkerDevToolsAgentHost final
 
   std::unique_ptr<protocol::TargetAutoAttacher> const auto_attacher_;
   bool child_worker_created_ = false;
+  bool state_terminating_ = false;
   const std::string parent_frame_id_;
 };
 

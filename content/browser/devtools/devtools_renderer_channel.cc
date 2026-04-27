@@ -190,13 +190,16 @@ void DevToolsRendererChannel::ChildTargetCreated(
       DedicatedWorkerDevToolsAgentHost* dedicated_worker_agent_host =
           WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
               devtools_worker_token);
-      if (!dedicated_worker_agent_host) {
-        // If `dedicated_worker_agent_host` is nullptr, we can assume that
-        // `DedicatedWorkerHost` has been destructed while handling
+      if (!dedicated_worker_agent_host ||
+          dedicated_worker_agent_host->state_terminating()) {
+        // If `dedicated_worker_agent_host` is nullptr or terminating, we can
+        // assume that `DedicatedWorkerHost` has been destructed while handling
         // `DedicatedWorker::ContinueStart`. We do not need to continue in that
         // case.
         return;
       }
+      CHECK(content::DevToolsAgentHost::GetForId(
+          devtools_worker_token.ToString()));
       if (base::FeatureList::IsEnabled(
               ::features::kWorkerOrWorkletAgentDoubleReleaseFix) &&
           dedicated_worker_agent_host->child_worker_created()) {

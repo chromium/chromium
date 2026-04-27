@@ -89,6 +89,7 @@ void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   if (it == hosts_.end()) {
     return;
   }
+  it->second->MarkAsTerminated();
   it->second->DisconnectIfNotCreated();
   hosts_.erase(it);
 }
