@@ -715,7 +715,7 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
-    public void setShowStatusIconForSecureOrigins_pageInfoMoved_phone() {
+    public void setShowStatusIconForSecureOrigins_whenPageInfoMoved() {
         // Set security level to SECURE, the status view should be hidden.
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
@@ -723,22 +723,6 @@ public final class StatusMediatorUnitTest {
         // Try to show the status icon, it should not work because the page info is moved to app
         // menu.
         mMediator.setShowStatusIconForSecureOrigins(true);
-        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
-    }
-
-    @Test
-    @SmallTest
-    @Config(qualifiers = "sw600dp")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
-    public void setShowStatusIconForSecureOrigins_pageInfoNotMoved_tablet() {
-        // Tablet should not move page info to app menu, even if feature is enabled.
-
-        // Set security level to SECURE, the status view should be shown initially.
-        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
-        assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
-
-        // Try to hide the status icon, it should work because page info is not moved to app menu.
-        mMediator.setShowStatusIconForSecureOrigins(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 

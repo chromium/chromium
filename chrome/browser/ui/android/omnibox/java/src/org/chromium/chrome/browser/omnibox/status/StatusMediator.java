@@ -28,6 +28,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
@@ -45,7 +46,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.CookieControlsBridge;
@@ -158,7 +158,6 @@ public class StatusMediator
             NonNullObservableSupplier<Integer> fuseboxStateSupplier,
             Runnable onPlusButtonClicked,
             NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
-        mContext = context;
         initBackgroundDrawables(context);
         mModel = model;
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, false);
@@ -172,6 +171,7 @@ public class StatusMediator
                 });
 
         mProfileSupplier = profileSupplier;
+        mContext = context;
         mPageInfoIphController = pageInfoIphController;
 
         mIsTablet = isTablet;
@@ -1014,8 +1014,8 @@ public class StatusMediator
         return mExactMatchUrlSupplier.get() == null;
     }
 
-    private boolean isPageInfoMovedToAppMenu() {
-        return BrowserUiUtils.isPageInfoMovedToAppMenu(mContext);
+    private static boolean isPageInfoMovedToAppMenu() {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled();
     }
 
     @Nullable CookieControlsBridge getCookieControlsBridgeForTesting() {
