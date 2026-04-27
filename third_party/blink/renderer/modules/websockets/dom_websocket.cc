@@ -220,7 +220,6 @@ DOMWebSocket* DOMWebSocket::Create(
   }
 
   DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
-  websocket->UpdateStateIfNeeded();
 
   DCHECK(protocols);
   switch (protocols->GetContentType()) {
@@ -250,6 +249,13 @@ void DOMWebSocket::Connect(const String& url,
   DVLOG(1) << "WebSocket " << this << " connect() url=" << url;
 
   channel_ = CreateChannel(GetExecutionContext(), this);
+  UpdateStateIfNeeded();
+  // UpdateStateIfNeeded() can trigger closing the WebSocket.
+  // Return early to prevent starting the network connection.
+  if (common_.GetState() == WebSocketCommon::kClosed) {
+    return;
+  }
+
   auto result = common_.Connect(GetExecutionContext(), url, protocols, channel_,
                                 exception_state);
 
@@ -491,12 +497,12 @@ void DOMWebSocket::ContextLifecycleStateChanged(
              RuntimeEnabledFeatures::DisconnectWebSocketOnBFCacheEnabled()) {
     event_queue_->Pause();
     if (common_.GetState() == kConnecting || common_.GetState() == kOpen) {
-      if (auto* context = GetExecutionContext()) {
-        DCHECK(channel_);
-        channel_->Fail("Page entered Back-Forward Cache.",
-                       mojom::blink::ConsoleMessageLevel::kError,
-                       CaptureSourceLocation(context));
-      }
+      ExecutionContext* context = GetExecutionContext();
+      CHECK(context);
+      CHECK(channel_);
+      channel_->Fail("Page entered Back-Forward Cache.",
+                     mojom::blink::ConsoleMessageLevel::kError,
+                     CaptureSourceLocation(context));
     }
   } else {
     event_queue_->Pause();

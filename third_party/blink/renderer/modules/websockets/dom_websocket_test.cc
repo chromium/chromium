@@ -49,7 +49,6 @@ class DOMWebSocketWithMockChannel final : public DOMWebSocket {
   static DOMWebSocketWithMockChannel* Create(ExecutionContext* context) {
     DOMWebSocketWithMockChannel* websocket =
         MakeGarbageCollected<DOMWebSocketWithMockChannel>(context);
-    websocket->UpdateStateIfNeeded();
     return websocket;
   }
 
@@ -864,6 +863,15 @@ TEST(DOMWebSocketTest, binaryType) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+  {
+    InSequence s;
+    EXPECT_CALL(websocket_scope.Channel(),
+                Connect(KURL("ws://example.com/"), String()))
+        .WillOnce(Return(true));
+  }
+  websocket_scope.Socket().Connect("ws://example.com/", Vector<String>(),
+                                   scope.GetExceptionState());
+
   EXPECT_EQ(V8BinaryType::Enum::kBlob, websocket_scope.Socket().binaryType());
 
   websocket_scope.Socket().setBinaryType(
