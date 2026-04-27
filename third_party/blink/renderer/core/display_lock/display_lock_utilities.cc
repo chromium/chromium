@@ -52,10 +52,18 @@ class AncestorTraversal {
       return other.current_node_ == current_node_;
     }
     Iterator& operator++() {
-      if (auto* element = DynamicTo<Element>(current_node_);
-          element && element->IsScrollMarkerPseudoElement()) {
+      auto* element = DynamicTo<Element>(current_node_);
+      if (element && element->IsScrollMarkerPseudoElement()) {
         current_node_ = static_cast<ScrollMarkerPseudoElement*>(element)
                             ->ScrollMarkerGroup();
+      } else if (element && (element->IsScrollMarkerGroupPseudoElement() ||
+                             element->IsScrollButtonPseudoElement())) {
+        // ::scroll-marker-group and ::scroll-button are laid out as siblings
+        // of their originating element rather than as descendants, so the
+        // originating element's display lock does not affect them. Skip
+        // past the originating element when traversing ancestors.
+        Element* originating = element->parentElement();
+        current_node_ = originating ? Traversal::Parent(*originating) : nullptr;
       } else {
         current_node_ = Traversal::Parent(*current_node_);
       }
