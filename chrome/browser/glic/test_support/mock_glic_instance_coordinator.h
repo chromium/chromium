@@ -18,7 +18,6 @@ class MockGlicInstanceCoordinator
   MockGlicInstanceCoordinator();
   ~MockGlicInstanceCoordinator();
 
-  MOCK_METHOD(HostManager&, host_manager, (), (override));
   MOCK_METHOD(std::vector<GlicInstance*>, GetInstances, (), (override));
   MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,

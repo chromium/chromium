@@ -58,7 +58,6 @@ class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
-class HostManager;
 class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;

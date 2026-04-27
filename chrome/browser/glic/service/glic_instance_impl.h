@@ -126,6 +126,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::TimeDelta GetTimeSinceLastActive() const override;
   bool IsHibernated() const;
   void Hibernate();
+  void Shutdown();
   void CloseInstanceAndShutdown();
   void BindTabWithoutShowing(tabs::TabInterface* tab, bool pin_on_bind);
   // Initializes the instance for a hidden client. No-op if the instance already

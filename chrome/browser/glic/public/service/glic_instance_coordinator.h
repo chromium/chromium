@@ -56,7 +56,6 @@ class GlicInstanceCoordinator {
   GlicInstanceCoordinator() = default;
   virtual ~GlicInstanceCoordinator() = default;
 
-  virtual HostManager& host_manager() = 0;
   virtual std::vector<GlicInstance*> GetInstances() = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;

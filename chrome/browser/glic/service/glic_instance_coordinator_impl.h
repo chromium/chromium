@@ -106,7 +106,6 @@ class GlicInstanceCoordinatorImpl
   // implementation
   std::vector<GlicInstance*> GetInstances() override;
   // GlicInstanceCoordinator implementation
-  HostManager& host_manager() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   // Sorts instances by recency and returns the instance id and
   // conversation title of each conversation.
@@ -264,8 +263,6 @@ class GlicInstanceCoordinatorImpl
 
   base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>>
       invoke_handlers_;
-
-  std::unique_ptr<HostManager> host_manager_;
 
   raw_ptr<GlicInstanceImpl> active_instance_ = nullptr;
   raw_ptr<GlicInstanceImpl> last_active_instance_ = nullptr;

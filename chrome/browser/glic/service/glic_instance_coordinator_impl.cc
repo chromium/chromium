@@ -83,11 +83,6 @@ BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGlicMaxAwakeInstancesLimit{
     &kGlicMaxAwakeInstances, "limit", 15};
 
-// TODO(refactor): Remove after launching kGlicMultiInstance.
-HostManager& GlicInstanceCoordinatorImpl::host_manager() {
-  return *host_manager_;
-}
-
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -120,7 +115,6 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
         base::BindRepeating(&GlicInstanceCoordinatorImpl::CheckMemoryUsage,
                             base::Unretained(this)));
   }
-  host_manager_ = std::make_unique<HostManager>(profile, this);
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
@@ -289,7 +283,9 @@ void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
-  host_manager().Shutdown();
+  for (auto& [instance_id, instance] : instances_) {
+    instance->Shutdown();
+  }
 }
 
 void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {

@@ -36,7 +36,6 @@ class RenderProcessHost;
 namespace glic {
 class GlicKeyedService;
 class GlicPageHandler;
-class GlicInstanceCoordinator;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
@@ -459,7 +458,6 @@ class Host : public GlicSharingManagerProvider {
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
  private:
-  friend class HostManager;
 
   void InvokeInternal(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
@@ -565,32 +563,6 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
       mojom::PanelState(mojom::PanelStateKind::kDetached, std::nullopt);
 };
 
-// Manages hosts. Note, this is a stopgap that will be replaced by something
-// else soon.
-class HostManager {
- public:
-  HostManager(Profile* profile, GlicInstanceCoordinator* instance_coordinator);
-  ~HostManager();
-
-  void Shutdown();
-
-  // Called when a glic guest (webview web contents) is added.
-  void GuestAdded(content::WebContents* guest_contents);
-
-  // Returns whether `host` is the glic WebUI render process host.
-  bool IsGlicWebUiHost(content::RenderProcessHost* host);
-
-  // Returns whether `contents` is the glic WebUI web contents.
-  bool IsGlicWebUi(content::WebContents* contents);
-
-  // Get pointers to all Hosts.
-  std::vector<Host*> GetAllHosts();
-
- private:
-  raw_ptr<Profile> profile_;
-  // Owns this.
-  raw_ptr<GlicInstanceCoordinator> instance_coordinator_;
-};
-
 }  // namespace glic
+
 #endif  // CHROME_BROWSER_GLIC_HOST_HOST_H_

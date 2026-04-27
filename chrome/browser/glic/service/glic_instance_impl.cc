@@ -1428,6 +1428,10 @@ void GlicInstanceImpl::Hibernate() {
   host_.Shutdown();
 }
 
+void GlicInstanceImpl::Shutdown() {
+  host_.Shutdown();
+}
+
 void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,
                                                GlicPinningStatusEvent event) {
   bool pinned = std::holds_alternative<GlicPinEvent>(event);

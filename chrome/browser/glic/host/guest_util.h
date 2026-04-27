@@ -10,8 +10,10 @@
 #include "url/origin.h"
 
 namespace content {
-class WebContents;
+class BrowserContext;
+class RenderFrameHost;
 class RenderProcessHost;
+class WebContents;
 }
 
 namespace glic {
@@ -42,13 +44,17 @@ bool IsGlicWebUI(const content::WebContents* web_contents);
 // main WebUI.
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
 
-// Returns the guest web contents if `web_contents` is the glic host.
+// Returns the guest web contents if `webui_contents` is the glic host.
 content::WebContents* GetGlicGuestWebContents(
-    content::WebContents* web_contents);
+    content::WebContents* webui_contents);
 
 // If `guest_contents` is the glic guest, do glic-specific setup and return
 // true, otherwise return false.
 bool OnGuestAdded(content::WebContents* guest_contents);
+
+// Returns all Glic guest WebContents for the given browser context.
+std::vector<content::WebContents*> GetAllGlicGuestWebContentsForTesting(
+    content::BrowserContext* browser_context);
 
 }  // namespace glic
 

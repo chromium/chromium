@@ -38,7 +38,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -760,67 +759,6 @@ void Host::FloatingPanelCanAttachChanged(bool can_attach) {
     return;
   }
   handler_info_->web_client->FloatingPanelCanAttachChanged(can_attach);
-}
-
-HostManager::HostManager(Profile* profile,
-                         GlicInstanceCoordinator* instance_coordinator)
-    : profile_(profile), instance_coordinator_(instance_coordinator) {}
-
-HostManager::~HostManager() = default;
-
-void HostManager::Shutdown() {
-  for (Host* host : GetAllHosts()) {
-    host->Shutdown();
-  }
-}
-
-void HostManager::GuestAdded(content::WebContents* guest_contents) {
-  content::WebContents* top =
-      guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
-
-  for (Host* host : GetAllHosts()) {
-    auto* webui_contents = host->webui_contents();
-    if (!webui_contents || top != webui_contents) {
-      continue;
-    }
-
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(harringtond): This looks wrong, either fix or document this.
-    blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
-    prefs.default_font_size =
-        host->webui_contents()->GetOrCreateWebPreferences().default_font_size;
-    top->SetWebPreferences(prefs);
-#else
-    // TODO(b/470059315): What do we do for Android?
-#endif
-    return;
-  }
-}
-
-std::vector<Host*> HostManager::GetAllHosts() {
-  std::vector<Host*> hosts;
-  for (GlicInstance* instance : instance_coordinator_->GetInstances()) {
-    hosts.push_back(&instance->host());
-  }
-  return hosts;
-}
-
-bool HostManager::IsGlicWebUi(content::WebContents* contents) {
-  for (const Host* host : GetAllHosts()) {
-    if (host->IsGlicWebUi(contents)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool HostManager::IsGlicWebUiHost(content::RenderProcessHost* process_host) {
-  for (const Host* host : GetAllHosts()) {
-    if (host->IsGlicWebUiHost(process_host)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace glic
