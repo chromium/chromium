@@ -10,6 +10,7 @@
 #include <array>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -230,10 +231,12 @@ UScriptCode GetScriptOfFontPref(const char* pref_name) {
   static const size_t kScriptNameLength = 4;
 
   size_t len = strlen(pref_name);
-  DCHECK_GT(len, kScriptNameLength);
-  const char* scriptName = &UNSAFE_TODO(pref_name[len - kScriptNameLength]);
-  int32_t code = u_getPropertyValueEnum(UCHAR_SCRIPT, scriptName);
-  DCHECK(code >= 0 && code < USCRIPT_CODE_LIMIT);
+  CHECK_GE(len, kScriptNameLength);
+  std::string_view pref_name_view(pref_name);
+  const char* script_name =
+      pref_name_view.substr(len - kScriptNameLength).data();
+  int32_t code = u_getPropertyValueEnum(UCHAR_SCRIPT, script_name);
+  CHECK(code >= 0 && code < USCRIPT_CODE_LIMIT);
   return static_cast<UScriptCode>(code);
 }
 
