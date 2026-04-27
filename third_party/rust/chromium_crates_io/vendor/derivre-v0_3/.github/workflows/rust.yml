@@ -7,6 +7,16 @@ on:
       - 'v*'
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      commit_id:
+        description: 'Branch or Commit ID (optional)'
+        required: false
+        type: string
+  schedule:
+    # * is a special character in YAML so we quote this string
+    # Run at 09:20 UTC every day
+    - cron:  '20 09 * * *'
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,7 +25,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_id || github.sha }}
     - run: cargo fmt --check
     - run: cargo clippy --all-targets --all-features -- -D warnings
     - name: Build
@@ -27,9 +39,11 @@ jobs:
     name: MSRV Check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event_name == 'workflow_dispatch' && inputs.commit_id || github.sha }}
     - name: Set up Rust
-      uses: dtolnay/rust-toolchain@1.80.0
+      uses: dtolnay/rust-toolchain@1.87.0
       with:
         components: clippy
     - run: cargo build --verbose --locked
@@ -43,7 +57,7 @@ jobs:
     environment: pkg
     needs: [build]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Publish to crates.io
         run: cargo publish
         env:

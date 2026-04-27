@@ -332,9 +332,9 @@ checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
 
 [[package]]
 name = "derivre"
-version = "0.3.9"
+version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cc33bc6d9125f496c6f20a5630a1eb2c4bd435e2d5a735d39dd3232b5c14e6e"
+checksum = "242fdcaa7ed2a72ad6c19191aaaa66a9497653b376ae890c604a2ba70006d0cf"
 dependencies = [
  "ahash",
  "anyhow",
@@ -716,7 +716,7 @@ checksum = "241eaef5fd12c88705a01fc1066c48c4b36e0dd4377dcdc7ec3942cea7a69956"
 
 [[package]]
 name = "llguidance"
-version = "1.7.2"
+version = "1.7.3"
 dependencies = [
  "anyhow",
  "cbindgen",
@@ -995,9 +995,9 @@ checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
 
 [[package]]
 name = "rand"
-version = "0.9.1"
+version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fbfd9d094a40bf3ae768db9361049ace4c0e04a4fd6b359518bd7b73a73dd97"
+checksum = "44c5af06bb1b7d3216d91932aed5265164bf384dc89cd6ba05cf59a35f5f76ea"
 dependencies = [
  "rand_chacha",
  "rand_core",
@@ -1384,9 +1384,9 @@ dependencies = [
 
 [[package]]
 name = "toktrie"
-version = "1.7.2"
+version = "1.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b589bf48bfca2bfc3ccf04501b1b99b769c14209856edf4c4f168022594a6b9b"
+checksum = "ae479c16a9638575eaba7333d3a4fb60b39126e0663bfd417e57e1a3d935c192"
 dependencies = [
  "anyhow",
  "bytemuck",
