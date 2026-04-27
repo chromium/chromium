@@ -179,6 +179,5 @@ component("signin_switches") {
     ":signin_buildflags",
     "//base",
     "//components/prefs",
-    "//components/sync/base:features",
   ]
 }
