@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -46,6 +47,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -63,6 +65,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -870,6 +873,54 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DebuggerMv3) {
   ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
+                       FetchFulfillRequestCannotSetRestrictedCookie) {
+  // Using HTTPS to allow testing secure http only cookies.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+
+  GURL allowed_url = https_server.GetURL("a.test", "/index.html");
+  GURL restricted_url = https_server.GetURL("b.test", "/index.html");
+
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL,
+                 base::StringPrintf(
+                     "*://%s/*", std::string(restricted_url.host()).c_str())));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+
+  std::string custom_arg = allowed_url.spec() + ";" + restricted_url.spec();
+  ASSERT_TRUE(RunExtensionTest("debugger_fetch_cookie",
+                               {.custom_arg = custom_arg.c_str()}))
+      << message_;
+
+  // We cannot verify the cookies from the extension because it would not
+  // have access.
+  base::test::TestFuture<const std::vector<net::CanonicalCookie>&>
+      futureCookies;
+  profile()
+      ->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->GetAllCookies(futureCookies.GetCallback());
+  bool found_restricted = false;
+  bool found_allowed = false;
+  for (const auto& cookie : futureCookies.Get()) {
+    if (cookie.Name() == "restricted") {
+      found_restricted = true;
+    }
+    if (cookie.Name() == "allowed") {
+      found_allowed = true;
+    }
+  }
+  // This assertion will be inverted in the next CL.
+  EXPECT_TRUE(found_restricted) << "Restricted cookie was not found";
+  EXPECT_TRUE(found_allowed) << "Allowed cookie was not found";
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
