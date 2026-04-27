@@ -67,9 +67,6 @@ class PasswordStoreBridge
   // Called by Java to clear all stored passwords.
   void ClearAllPasswords(JNIEnv* env);
 
-  // Called by Java to clear all passwords from profile store.
-  void ClearAllPasswordsFromProfileStore(JNIEnv* env);
-
   // Called by Java to destroy `this`.
   void Destroy(JNIEnv* env);
 
