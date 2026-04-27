@@ -32,6 +32,24 @@ BASE_DECLARE_FEATURE(kSafetyCheckAutorunByManagerKillswitch);
 // Stack if no issues are found.
 BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 
+// Enum defining the available Tab Grid setup modes.
+enum class TabGridSetupMode {
+  // The Tab Grid is set up immediately at startup (legacy behavior).
+  kImmediate = 0,
+  // The Tab Grid is set up after startup, once the UI thread is idle.
+  kDeferred = 1,
+
+  // For simulating the race condition where the user navigates to
+  // the tab grid before deferred setup is complete.
+  kLazy_ForTesting = 2,
+};
+
+// Feature flag to control Tab Grid setup mode.
+BASE_DECLARE_FEATURE(kTabGridSetupMode);
+extern const base::FeatureParam<int> kTabGridSetupModeParam;
+extern const char kTabGridSetupModeParamName[];
+TabGridSetupMode GetTabGridSetupMode();
+
 // Feature to enable the refactored implementation of the `OmahaService`, using
 // new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
 BASE_DECLARE_FEATURE(kOmahaServiceRefactor);

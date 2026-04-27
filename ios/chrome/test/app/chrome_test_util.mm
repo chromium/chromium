@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -153,6 +154,39 @@ UIViewController* GetActiveViewController() {
             .browserViewController;
   }
   return active_view_controller;
+}
+
+namespace {
+template <typename T>
+T* FindViewControllerOfType(UIViewController* root) {
+  if (!root) {
+    return nil;
+  }
+  if ([root isKindOfClass:[T class]]) {
+    return base::apple::ObjCCastStrict<T>(root);
+  }
+  for (UIViewController* child in root.childViewControllers) {
+    T* result = FindViewControllerOfType<T>(child);
+    if (result) {
+      return result;
+    }
+  }
+  if (root.presentedViewController) {
+    return FindViewControllerOfType<T>(root.presentedViewController);
+  }
+  return nil;
+}
+}  // namespace
+
+bool IsTabGridSetUp() {
+  UIWindow* main_window = GetAnyKeyWindow();
+  TabGridViewController* tab_grid_view_controller =
+      FindViewControllerOfType<TabGridViewController>(
+          main_window.rootViewController);
+  if (tab_grid_view_controller) {
+    return tab_grid_view_controller.childViewsAreSetUp;
+  }
+  return false;
 }
 
 id<SceneCommands,

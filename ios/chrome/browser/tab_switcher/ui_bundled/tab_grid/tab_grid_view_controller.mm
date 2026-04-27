@@ -16,6 +16,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
+#import "base/trace_event/trace_event.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
@@ -191,11 +193,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return self;
 }
 
+- (void)didSetupChildViewsForTesting {
+  _childViewsAreSetUp = YES;
+}
+
 #pragma mark - UIViewController
 
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+- (void)setupChildViewsIfNeeded {
+  if (_childViewsAreSetUp) {
+    return;
+  }
+  TRACE_EVENT("ui", "TabGridViewController::setupChildViewsIfNeeded");
+  _childViewsAreSetUp = YES;
+
   [self setupScrollView];
 
   [self setupSearchUI];
@@ -214,6 +224,38 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // tab grid transitions.
   if (!IsNewTabGridTransitionsEnabled()) {
     [self hideToolbars];
+  }
+
+  [self scrollToPage:self.currentPage animated:NO];
+}
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+
+  switch (GetTabGridSetupMode()) {
+    case TabGridSetupMode::kDeferred: {
+      // Schedule the setup to run on the UI thread, once the thread is idle.
+      // This takes the expensive setup of the tab grid off of the critical path
+      // of presenting the BrowserContentViewController, improving the
+      // perceived startup performance. The setup will normally run before the
+      // user opens the tab grid, so that the animated transition to the tab
+      // grid will still be smooth. In the unlikely event that the tab grid is
+      // presented before the setup completes, the setup will be triggered
+      // synchronously in `contentWillAppearAnimated:`, which may result in a
+      // few frames of stutter.
+      __weak __typeof(self) weakSelf = self;
+      base::SingleThreadTaskRunner::GetCurrentBestEffort()->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf setupChildViewsIfNeeded];
+          }));
+      break;
+    }
+    case TabGridSetupMode::kImmediate:
+      [self setupChildViewsIfNeeded];
+      break;
+    case TabGridSetupMode::kLazy_ForTesting:
+      break;
   }
 
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
@@ -277,6 +319,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  CHECK(_childViewsAreSetUp);
   if (scrollView.dragging || scrollView.decelerating) {
     // Only when user initiates scroll through dragging.
     CGFloat offsetWidth =
@@ -304,6 +347,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  CHECK(_childViewsAreSetUp);
   // Disable the page control when the user drags on the scroll view since
   // tapping on the page control during scrolling can result in erratic
   // scrolling.
@@ -312,11 +356,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
+  CHECK(_childViewsAreSetUp);
   // Re-enable the page control since the user isn't dragging anymore.
   self.topToolbar.pageControl.userInteractionEnabled = YES;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
+  CHECK(_childViewsAreSetUp);
   // Update currentPage if scroll view has moved to a new page. Especially
   // important here for 3-finger accessibility swipes since it's not registered
   // as dragging in scrollViewDidScroll:
@@ -332,6 +378,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
+  CHECK(_childViewsAreSetUp);
   TabGridPage currentPage = GetPageFromScrollView(scrollView);
   if (currentPage != self.currentPage && self.isDragSessionInProgress) {
     // This happens when the user drags an item from one scroll view into
@@ -377,6 +424,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
+  [self setupChildViewsIfNeeded];
+
   _pageChangedSinceEntering = NO;
   _backgroundedSinceEntering = NO;
   [self resetIdlePageStatus];
@@ -524,6 +573,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the edge effects on the top and bottom toolbars based on the current
 // layout.
 - (void)updateToolbarEdgeEffects {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   if (!@available(iOS 26, *)) {
     return;
   }
@@ -612,6 +664,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Sets the proper insets for the Grid ViewControllers to accommodate for the
 // safe area and toolbars.
 - (void)setInsetForGridViews {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   // Sync the scroll view offset to the current page value if the scroll view
   // isn't scrolling. Don't animate this.
   if (!self.scrollViewAnimatingContentOffset && !self.scrollView.dragging &&
@@ -709,8 +764,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     animated = NO;
   }
 
-  // If the view isn't loaded yet, just do bookkeeping on `currentPage`.
-  if (!self.viewLoaded) {
+  // If the view isn't loaded or set up yet, just do bookkeeping on
+  // `currentPage`.
+  if (!self.viewLoaded || !_childViewsAreSetUp) {
     self.currentPage = targetPage;
     return;
   }
@@ -805,7 +861,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   gridsStack.distribution = UIStackViewDistributionEqualSpacing;
 
   [scrollView addSubview:gridsStack];
-  [self.view addSubview:scrollView];
+  [self.view insertSubview:scrollView atIndex:0];
   [self.incognitoGridContainerViewController
       didMoveToParentViewController:self];
   [self.regularGridContainerViewController didMoveToParentViewController:self];
@@ -844,7 +900,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIView* topToolbar = self.topToolbar;
   CHECK(topToolbar);
 
-  [self.view addSubview:topToolbar];
+  [self.view insertSubview:topToolbar aboveSubview:self.scrollView];
 
   [NSLayoutConstraint activateConstraints:@[
     [topToolbar.topAnchor
@@ -861,7 +917,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CHECK(bottomToolbar);
 
   if (IsChromeNextIaEnabled()) {
-    [self.view addSubview:bottomToolbar];
+    [self.view insertSubview:bottomToolbar aboveSubview:self.scrollView];
 
     _bottomToolbarBottomConstraint = [bottomToolbar.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor];
@@ -874,7 +930,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       _bottomToolbarBottomConstraint,
     ]];
   } else {
-    [self.view addSubview:bottomToolbar];
+    [self.view insertSubview:bottomToolbar aboveSubview:self.scrollView];
 
     [NSLayoutConstraint activateConstraints:@[
       [bottomToolbar.bottomAnchor
@@ -897,7 +953,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   pinnedTabsViewController.delegate = self;
 
   [self addChildViewController:pinnedTabsViewController];
-  [self.view addSubview:pinnedTabsViewController.view];
+  [self.view insertSubview:pinnedTabsViewController.view
+              aboveSubview:self.scrollView];
   [pinnedTabsViewController didMoveToParentViewController:self];
 
   [self updatePinnedTabsViewControllerConstraints];
@@ -915,12 +972,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Shows the two toolbars and the floating button. Suitable for use in
 // animations.
 - (void)showToolbars {
+  CHECK(_childViewsAreSetUp);
   [self.topToolbar show];
   [self.bottomToolbar show];
 }
 
 // Hides the two toolbars. Suitable for use in animations.
 - (void)hideToolbars {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   [self.topToolbar hide];
   [self.bottomToolbar hide];
 }
@@ -929,6 +990,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // the transition coordinator. Transitions are preferred here since they don't
 // interact with the layout system at all.
 - (void)animateToolbarsForAppearance {
+  CHECK(_childViewsAreSetUp);
   DCHECK(self.transitionCoordinator);
   // Unless reduce motion is enabled, hide the scroll view during the
   // animation.
@@ -966,6 +1028,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Translates the toolbar views offscreen using the transition coordinator.
 - (void)animateToolbarsForDisappearance {
+  CHECK(_childViewsAreSetUp);
   DCHECK(self.transitionCoordinator);
   // Unless reduce motion is enabled, hide the scroll view during the
   // animation.
@@ -1095,6 +1158,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Shows scrim overlay.
 - (void)showScrim {
+  CHECK(_childViewsAreSetUp);
   self.scrimView.alpha = 0.0f;
   self.scrimView.hidden = NO;
   if (!self.scrimView.superview) {
@@ -1123,6 +1187,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Hides scrim overlay.
 - (void)hideScrim {
+  CHECK(_childViewsAreSetUp);
   __weak TabGridViewController* weakSelf = self;
   [UIView animateWithDuration:kAnimationDuration.InSecondsF()
       animations:^{
@@ -1146,6 +1211,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the appearance of the toolbars based on the scroll position of the
 // currently active Grid.
 - (void)updateToolbarsAppearance {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   CGFloat remainingScrollDistanceTop;
   CGFloat remainingScrollDistanceBottom;
   switch (self.currentPage) {
@@ -1339,6 +1407,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)updateConstraintsOnTraitChange {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   if (IsPinnedTabsEnabled()) {
     [self updatePinnedTabsViewControllerConstraints];
   }
@@ -1386,6 +1457,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar*)searchBar {
+  CHECK(_childViewsAreSetUp);
   _searchText = searchBar.text;
   [self updateScrimVisibilityForText:searchBar.text];
   [self.currentPageViewController.view
@@ -1393,15 +1465,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar*)searchBar {
+  CHECK(_childViewsAreSetUp);
   [self.currentPageViewController.view
       removeGestureRecognizer:self.searchResultPanRecognizer];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar {
+  CHECK(_childViewsAreSetUp);
   [searchBar resignFirstResponder];
 }
 
 - (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
+  CHECK(_childViewsAreSetUp);
   if ([_searchText isEqualToString:searchText]) {
     // It seems that in some cases, the keyboard is triggered twice in the same
     // runloop. This is a tentative fix to avoid trigger duplicate updates. See
@@ -1442,6 +1517,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {
+  CHECK(_childViewsAreSetUp);
   if (_mode != TabGridMode::kSearch) {
     return;
   }
@@ -2035,6 +2111,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Updates and sets constraints for `pinnedTabsViewController`.
 - (void)updatePinnedTabsViewControllerConstraints {
+  if (!_childViewsAreSetUp) {
+    return;
+  }
   if ([self.pinnedTabsConstraints count] > 0) {
     [NSLayoutConstraint deactivateConstraints:self.pinnedTabsConstraints];
     self.pinnedTabsConstraints = nil;
