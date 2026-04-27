@@ -218,6 +218,17 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     DCHECK(!attribs.webgl_compatibility_context);
   }
 
+  if (gl_display_->ext->b_EGL_ANGLE_create_context_extensions_enabled) {
+    if (attribs.webgl_compatibility_context) {
+      DCHECK(!attribs.enable_all_extensions);
+    }
+    context_attributes.push_back(EGL_EXTENSIONS_ENABLED_ANGLE);
+    context_attributes.push_back(attribs.enable_all_extensions ? EGL_TRUE
+                                                               : EGL_FALSE);
+  } else {
+    DCHECK(attribs.enable_all_extensions);
+  }
+
   if (gl_display_->IsEGLContextPrioritySupported()) {
     // Medium priority is the default, only set the attribute if
     // a different priority is requested.

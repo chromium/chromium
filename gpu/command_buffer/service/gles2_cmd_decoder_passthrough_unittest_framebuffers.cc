@@ -163,7 +163,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   }
 }
 
-TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsync) {
+TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsync) {
   auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
@@ -235,7 +235,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
   EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
 }
 
-TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
+TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
   size_t shm_size = 0;
   auto* result =
       GetSharedMemoryAsWithSize<cmds::ReadPixels::Result*>(&shm_size);
@@ -287,7 +287,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
   }
 }
 
-TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
+TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
   size_t shm_size = 0;
   auto* result =
       GetSharedMemoryAsWithSize<cmds::ReadPixels::Result*>(&shm_size);

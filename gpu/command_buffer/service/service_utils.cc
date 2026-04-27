@@ -137,6 +137,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
   attribs.gpu_preference = gpu_preference;
   if (context_group->use_passthrough_cmd_decoder()) {
     attribs.webgl_compatibility_context = IsWebGLContextType(context_type);
+    attribs.enable_all_extensions = false;
     attribs.hardened_context = !attribs.webgl_compatibility_context;
 
     // Always use the global texture and semaphore share group for the

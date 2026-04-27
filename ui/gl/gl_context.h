@@ -121,6 +121,11 @@ struct GL_EXPORT GLContextAttribs {
   // renderer is compromised and the attacker is creating a non-WebGL context.
   bool hardened_context = false;
 
+  // Create a context with all extensions enabled by default. If false,
+  // extensions must be enabled explicitly with glRequestExtensionANGLE after
+  // context creation.
+  bool enable_all_extensions = true;
+
   AngleContextVirtualizationGroup angle_context_virtualization_group_number =
       AngleContextVirtualizationGroup::kDefault;
 

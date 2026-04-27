@@ -490,6 +490,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   bool OnlyHasPendingProgramCompletionQueries();
 
+  void BuildRequestableExtensionString();
+
   PassthroughProgramCache* get_passthrough_program_cache() const;
 
   int commands_to_process_;
@@ -533,6 +535,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // By default, all requestable extensions should be loaded at initialization
   // time. Can be disabled for testing with only specific extensions enabled.
   bool request_optional_extensions_ = true;
+
+  // Set of extension strings that are valid to request by a client. Other
+  // extension requests are ignored.
+  gfx::ExtensionSet requestable_extensions_;
+  std::string requestable_extension_string_;
 
   // Mappings from client side IDs to service side IDs for shared objects
   raw_ptr<PassthroughResources> resources_ = nullptr;

@@ -93,6 +93,36 @@ TEST_P(RequestExtensionCHROMIUMTest, Basic) {
   }
 }
 
+// Test that common driver extensions that are not valid for command decoder
+// requests are not included in the list of requestable extensions
+TEST_P(RequestExtensionCHROMIUMTest, ShouldOnlyContainValidExtensions) {
+  // If these extensions ever become WebGL extensions, remove them from the
+  // list.
+  constexpr const char* kExtensionsToCheck[] = {
+      "GL_EXT_texture_buffer",        "GL_EXT_texture_storage_compression",
+      "GL_EXT_tessellation_shader",   "GL_EXT_YUV_target",
+      "GL_ANGLE_yuv_internal_format",
+  };
+
+  // Check that the above strings are not in the list of requestable extensions.
+  std::string requestable_extensions_string =
+      reinterpret_cast<const char*>(glGetRequestableExtensionsCHROMIUM());
+  for (const char* to_check : kExtensionsToCheck) {
+    EXPECT_FALSE(requestable_extensions_string.contains(to_check)) << to_check;
+  }
+
+  // Attempt to request the extensions anyways and verify that they are not in
+  // the extension string
+  for (const char* to_check : kExtensionsToCheck) {
+    glRequestExtensionCHROMIUM(to_check);
+  }
+  std::string extensions_string =
+      reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+  for (const char* to_check : kExtensionsToCheck) {
+    EXPECT_FALSE(extensions_string.contains(to_check)) << to_check;
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(WithContextTypes,
                          RequestExtensionCHROMIUMTest,
                          ::testing::Values(CONTEXT_TYPE_WEBGL1,

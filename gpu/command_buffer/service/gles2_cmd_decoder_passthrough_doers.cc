@@ -4057,14 +4057,36 @@ error::Error GLES2DecoderPassthroughImpl::DoUnmapBuffer(GLenum target) {
 
 error::Error GLES2DecoderPassthroughImpl::DoGetRequestableExtensionsCHROMIUM(
     const char** extensions) {
-  *extensions = reinterpret_cast<const char*>(
-      api()->glGetStringFn(GL_REQUESTABLE_EXTENSIONS_ANGLE));
+  *extensions = requestable_extension_string_.c_str();
   return error::kNoError;
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
     const char* extension) {
-  api()->glRequestExtensionANGLEFn(extension);
+  gfx::ExtensionSet requested_extensions = gfx::MakeExtensionSet(extension);
+
+  // Remove extension requests that are not in requestable_extensions_
+  {
+    auto iter = requested_extensions.begin();
+    while (iter != requested_extensions.end()) {
+      if (requestable_extensions_.contains(*iter)) {
+        iter++;
+      } else {
+        LOG(WARNING) << "Requested extension " << *iter
+                     << " is not requestable, ignoring.";
+        iter = requested_extensions.erase(iter);
+      }
+    }
+  }
+
+  if (requested_extensions.empty()) {
+    return error::kNoError;
+  }
+
+  std::string validated_requested_extension_string =
+      gfx::MakeExtensionString(requested_extensions);
+  api()->glRequestExtensionANGLEFn(
+      validated_requested_extension_string.c_str());
 
   // Make sure there are no pending GL errors before re-initializing feature
   // info
@@ -4073,6 +4095,7 @@ error::Error GLES2DecoderPassthroughImpl::DoRequestExtensionCHROMIUM(
   // Make sure newly enabled extensions are exposed and usable.
   context_->ReinitializeDynamicBindings();
   feature_info_->ForceReinitialize();
+  BuildRequestableExtensionString();
 
   return error::kNoError;
 }

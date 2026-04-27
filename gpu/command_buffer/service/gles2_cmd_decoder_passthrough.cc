@@ -197,6 +197,150 @@ bool GetClientID(const ClientServiceMap<ClientType, ServiceType>* map,
   return true;
 }
 
+// Extensions that are enabled via emulation on the client side or needed for
+// basic command buffer functionality.  Make sure they are always enabled.
+constexpr const char* kRequiredFunctionalityExtensions[] = {
+    "GL_ANGLE_blob_cache",
+    "GL_ANGLE_framebuffer_blit",
+#if BUILDFLAG(IS_FUCHSIA)
+    "GL_ANGLE_memory_object_fuchsia",
+#endif
+    "GL_ANGLE_memory_size",
+    "GL_ANGLE_native_id",
+#if BUILDFLAG(IS_FUCHSIA)
+    "GL_ANGLE_semaphore_fuchsia",
+#endif
+    "GL_ANGLE_texture_storage_external",
+    "GL_ANGLE_texture_usage",
+    "GL_CHROMIUM_bind_uniform_location",
+    "GL_CHROMIUM_sync_query",
+    "GL_EXT_debug_marker",
+    "GL_EXT_memory_object",
+    "GL_EXT_memory_object_fd",
+    "GL_EXT_semaphore",
+    "GL_EXT_semaphore_fd",
+    "GL_KHR_debug",
+    "GL_NV_fence",
+    "GL_OES_EGL_image",
+    "GL_OES_EGL_image_external",
+    "GL_OES_EGL_image_external_essl3",
+#if BUILDFLAG(IS_APPLE)
+    "GL_ANGLE_texture_rectangle",
+#endif
+    "GL_ANGLE_vulkan_image",
+};
+
+// Extensions that are not required but are used for command buffer
+// functionality. They are enabled by default but some tests request them
+// individually to ensure there is test coverage of them not being present.
+static constexpr const char* kOptionalFunctionalityExtensions[] = {
+    "GL_ANGLE_depth_texture",
+    "GL_ANGLE_framebuffer_multisample",
+    "GL_ANGLE_get_tex_level_parameter",
+    "GL_ANGLE_instanced_arrays",
+    "GL_ANGLE_memory_object_flags",
+    "GL_ANGLE_pack_reverse_row_order",
+    "GL_ANGLE_translated_shader_source",
+    "GL_EXT_blend_minmax",
+    "GL_EXT_discard_framebuffer",
+    "GL_EXT_disjoint_timer_query",
+    "GL_EXT_map_buffer_range",
+    "GL_EXT_multisampled_render_to_texture",
+    "GL_EXT_occlusion_query_boolean",
+    "GL_EXT_sRGB",
+    "GL_EXT_sRGB_write_control",
+    "GL_EXT_texture_format_BGRA8888",
+    "GL_EXT_texture_norm16",
+    "GL_EXT_texture_rg",
+    "GL_EXT_texture_sRGB_decode",
+    "GL_EXT_texture_storage",
+    "GL_EXT_unpack_subimage",
+    "GL_KHR_parallel_shader_compile",
+    "GL_KHR_robust_buffer_access_behavior",
+    "GL_OES_mapbuffer",
+#if BUILDFLAG(IS_CHROMEOS)
+    // Required for Webgl to display in overlay on ChromeOS devices.
+    // TODO(crbug.com/40244202): Consider for other platforms.
+    "GL_MESA_framebuffer_flip_y",
+#endif
+    "GL_NV_pack_subimage",
+    "GL_NV_pixel_buffer_object",
+    "GL_OES_depth32",
+    "GL_OES_packed_depth_stencil",
+    "GL_OES_rgb8_rgba8",
+    "GL_OES_vertex_array_object",
+    "NV_EGL_stream_consumer_external",
+};
+
+// List of extensions needed to implement WebGL extensions and other command
+// decoder client functionality.
+constexpr const char* kValidRequestableExtensions[] = {
+    "GL_ANGLE_base_vertex_base_instance",
+    "GL_ANGLE_clip_cull_distance",
+    "GL_ANGLE_compressed_texture_etc",
+    "GL_ANGLE_instanced_arrays",
+    "GL_ANGLE_multi_draw",
+    "GL_ANGLE_polygon_mode",
+    "GL_ANGLE_provoking_vertex",
+    "GL_ANGLE_shader_pixel_local_storage",
+    "GL_ANGLE_stencil_texturing",
+    "GL_ANGLE_texture_compression_dxt1",
+    "GL_ANGLE_texture_compression_dxt3",
+    "GL_ANGLE_texture_compression_dxt5",
+    "GL_ANGLE_translated_shader_source",
+    "GL_CHROMIUM_color_buffer_float_rgb",
+    "GL_CHROMIUM_color_buffer_float_rgba",
+    "GL_CHROMIUM_depth_texture",
+    "GL_CHROMIUM_framebuffer_multisample",
+    "GL_EXT_blend_func_extended",
+    "GL_EXT_blend_minmax",
+    "GL_EXT_clip_control",
+    "GL_EXT_color_buffer_float",
+    "GL_EXT_color_buffer_half_float",
+    "GL_EXT_conservative_depth",
+    "GL_EXT_depth_clamp",
+    "GL_EXT_discard_framebuffer",
+    "GL_EXT_disjoint_timer_query",
+    "GL_EXT_disjoint_timer_query_webgl2",
+    "GL_EXT_draw_buffers",
+    "GL_EXT_float_blend",
+    "GL_EXT_frag_depth",
+    "GL_EXT_multisampled_render_to_texture",
+    "GL_EXT_polygon_offset_clamp",
+    "GL_EXT_render_snorm",
+    "GL_EXT_sRGB",
+    "GL_EXT_shader_texture_lod",
+    "GL_EXT_texture_compression_bptc",
+    "GL_EXT_texture_compression_dxt1",
+    "GL_EXT_texture_compression_rgtc",
+    "GL_EXT_texture_compression_s3tc",
+    "GL_EXT_texture_compression_s3tc_srgb",
+    "GL_EXT_texture_filter_anisotropic",
+    "GL_EXT_texture_mirror_clamp_to_edge",
+    "GL_EXT_texture_norm16",
+    "GL_IMG_texture_compression_pvrtc",
+    "GL_KHR_parallel_shader_compile",
+    "GL_KHR_texture_compression_astc_hdr",
+    "GL_KHR_texture_compression_astc_ldr",
+    "GL_NV_shader_noperspective_interpolation",
+    "GL_OES_compressed_ETC1_RGB8_texture",
+    "GL_OES_draw_buffers_indexed",
+    "GL_OES_element_index_uint",
+    "GL_OES_fbo_render_mipmap",
+    "GL_OES_packed_depth_stencil",
+    "GL_OES_rgb8_rgba8",
+    "GL_OES_sample_variables",
+    "GL_OES_shader_multisample_interpolation",
+    "GL_OES_standard_derivatives",
+    "GL_OES_texture_float",
+    "GL_OES_texture_float_linear",
+    "GL_OES_texture_half_float",
+    "GL_OES_texture_half_float_linear",
+    "GL_OES_vertex_array_object",
+    "GL_OVR_multiview2",
+    "GL_QCOM_render_shared_exponent",
+};
+
 void RequestExtensions(gl::GLApi* api,
                        const gfx::ExtensionSet& requestable_extensions,
                        base::span<const char* const> extensions_to_request) {
@@ -831,89 +975,31 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     return result;
   }
 
-  // Extensions that are enabled via emulation on the client side or needed for
-  // basic command buffer functionality.  Make sure they are always enabled.
-  if (IsWebGLContextType(context_type)) {
-    // Grab the extensions that are requestable
+  {
     gfx::ExtensionSet requestable_extensions(
         gl::GetRequestableGLExtensionsFromCurrentContext());
 
-    static constexpr const char* kRequiredFunctionalityExtensions[] = {
-        "GL_ANGLE_blob_cache",
-        "GL_ANGLE_framebuffer_blit",
-#if BUILDFLAG(IS_FUCHSIA)
-        "GL_ANGLE_memory_object_fuchsia",
-#endif
-        "GL_ANGLE_memory_size",
-        "GL_ANGLE_native_id",
-#if BUILDFLAG(IS_FUCHSIA)
-        "GL_ANGLE_semaphore_fuchsia",
-#endif
-        "GL_ANGLE_texture_storage_external",
-        "GL_ANGLE_texture_usage",
-        "GL_CHROMIUM_bind_uniform_location",
-        "GL_CHROMIUM_sync_query",
-        "GL_EXT_debug_marker",
-        "GL_EXT_memory_object",
-        "GL_EXT_memory_object_fd",
-        "GL_EXT_semaphore",
-        "GL_EXT_semaphore_fd",
-        "GL_KHR_debug",
-        "GL_NV_fence",
-        "GL_OES_EGL_image",
-        "GL_OES_EGL_image_external",
-        "GL_OES_EGL_image_external_essl3",
-#if BUILDFLAG(IS_APPLE)
-        "GL_ANGLE_texture_rectangle",
-#endif
-        "GL_ANGLE_vulkan_image",
-    };
+    // Request extensions needed for command decoder functionality
     RequestExtensions(api(), requestable_extensions,
                       kRequiredFunctionalityExtensions);
 
+    // Request optional functionality extensions. `request_optional_extensions_`
+    // may be set by tests to disable this behavior.
     if (request_optional_extensions_) {
-      static constexpr const char* kOptionalFunctionalityExtensions[] = {
-          "GL_ANGLE_depth_texture",
-          "GL_ANGLE_framebuffer_multisample",
-          "GL_ANGLE_get_tex_level_parameter",
-          "GL_ANGLE_instanced_arrays",
-          "GL_ANGLE_memory_object_flags",
-          "GL_ANGLE_pack_reverse_row_order",
-          "GL_ANGLE_translated_shader_source",
-          "GL_CHROMIUM_path_rendering",
-          "GL_EXT_blend_minmax",
-          "GL_EXT_discard_framebuffer",
-          "GL_EXT_disjoint_timer_query",
-          "GL_EXT_multisampled_render_to_texture",
-          "GL_EXT_occlusion_query_boolean",
-          "GL_EXT_sRGB",
-          "GL_EXT_sRGB_write_control",
-          "GL_EXT_texture_format_BGRA8888",
-          "GL_EXT_texture_norm16",
-          "GL_EXT_texture_rg",
-          "GL_EXT_texture_sRGB_decode",
-          "GL_EXT_texture_storage",
-          "GL_EXT_unpack_subimage",
-          "GL_KHR_parallel_shader_compile",
-          "GL_KHR_robust_buffer_access_behavior",
-#if BUILDFLAG(IS_CHROMEOS)
-          // Required for Webgl to display in overlay on ChromeOS devices.
-          // TODO(crbug.com/40244202): Consider for other platforms.
-          "GL_MESA_framebuffer_flip_y",
-#endif
-          "GL_NV_pack_subimage",
-          "GL_OES_depth32",
-          "GL_OES_packed_depth_stencil",
-          "GL_OES_rgb8_rgba8",
-          "GL_OES_vertex_array_object",
-          "NV_EGL_stream_consumer_external",
-      };
       RequestExtensions(api(), requestable_extensions,
                         kOptionalFunctionalityExtensions);
     }
 
-    context->ReinitializeDynamicBindings();
+    // For non-WebGL command decoders, request all valid requestable extensions
+    // right away.
+    if (!IsWebGLContextType(context_type)) {
+      RequestExtensions(api(), requestable_extensions,
+                        kValidRequestableExtensions);
+    }
   }
+
+  context->ReinitializeDynamicBindings();
+  BuildRequestableExtensionString();
 
   // Each context initializes its own feature info because some extensions may
   // be enabled dynamically.  Don't disallow any features, leave it up to ANGLE
@@ -2147,6 +2233,23 @@ bool GLES2DecoderPassthroughImpl::OnlyHasPendingProgramCompletionQueries() {
   return std::ranges::all_of(pending_queries_, [](const auto& query) {
     return query.target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
   });
+}
+
+void GLES2DecoderPassthroughImpl::BuildRequestableExtensionString() {
+  const gfx::ExtensionSet driver_requestable_extensions =
+      gl::GetRequestableGLExtensionsFromCurrentContext();
+
+  // Rebuild requestable_extensions_ using static strings from
+  // kValidRequestableExtensions.
+  requestable_extensions_.clear();
+  for (const char* valid_requestable_ext : kValidRequestableExtensions) {
+    if (driver_requestable_extensions.contains(valid_requestable_ext)) {
+      requestable_extensions_.insert(valid_requestable_ext);
+    }
+  }
+
+  requestable_extension_string_ =
+      gfx::MakeExtensionString(requestable_extensions_);
 }
 
 PassthroughProgramCache*
