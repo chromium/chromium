@@ -192,31 +192,59 @@ inline SBThreatTypeSet CreateSBThreatTypeSet(
 
 // The information required to uniquely identify each list the client is
 // interested in maintaining and downloading from the SafeBrowsing servers.
-// For example, for digests of Malware binaries on Windows:
+// For example for v4, for digests of Malware binaries on Windows:
 // platform_type = WINDOWS,
 // threat_entry_type = EXECUTABLE,
 // threat_type = MALWARE
 class ListIdentifier {
  public:
+  // For v4:
   ListIdentifier(PlatformType platform_type,
                  ThreatEntryType threat_entry_type,
                  ThreatType threat_type);
   explicit ListIdentifier(const ListUpdateResponse&);
 
-  friend bool operator==(const ListIdentifier&,
-                         const ListIdentifier&) = default;
+  // For v5:
+  explicit ListIdentifier(SBThreatType threat_type);
+
+  ListIdentifier() = delete;
+
+  bool operator==(const ListIdentifier& other) const;
+  bool operator!=(const ListIdentifier& other) const;
   size_t hash() const;
 
-  PlatformType platform_type() const { return platform_type_; }
-  ThreatEntryType threat_entry_type() const { return threat_entry_type_; }
-  ThreatType threat_type() const { return threat_type_; }
+  // For v4:
+  PlatformType platform_type() const {
+    CHECK(!uses_v5_api_);
+    return platform_type_;
+  }
+  ThreatEntryType threat_entry_type() const {
+    CHECK(!uses_v5_api_);
+    return threat_entry_type_;
+  }
+  ThreatType threat_type() const {
+    CHECK(!uses_v5_api_);
+    return threat_type_;
+  }
+
+  // For v5:
+  SBThreatType sb_threat_type() const {
+    CHECK(uses_v5_api_);
+    return sb_threat_type_;
+  }
+
+  bool uses_v5_api() const { return uses_v5_api_; }
 
  private:
+  // For v4:
   PlatformType platform_type_;
   ThreatEntryType threat_entry_type_;
   ThreatType threat_type_;
 
-  ListIdentifier() = delete;
+  // For v5:
+  SBThreatType sb_threat_type_;
+
+  bool uses_v5_api_;
 };
 
 std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);

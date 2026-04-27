@@ -105,6 +105,13 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
 }
 
 std::ostream& operator<<(std::ostream& os, const ListIdentifier& id) {
+  if (id.uses_v5_api()) {
+    os << "{hash: " << id.hash() << "; sb_threat_type: "
+       << static_cast<std::underlying_type<SBThreatType>::type>(
+              id.sb_threat_type())
+       << "}";
+    return os;
+  }
   os << "{hash: " << id.hash() << "; platform_type: " << id.platform_type()
      << "; threat_entry_type: " << id.threat_entry_type()
      << "; threat_type: " << id.threat_type() << "}";
@@ -126,52 +133,82 @@ PlatformType GetCurrentPlatformType() {
 }
 
 ListIdentifier GetChromeExtMalwareId() {
-  return ListIdentifier(CHROME_PLATFORM, CHROME_EXTENSION, MALWARE_THREAT);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_EXTENSION)
+             : ListIdentifier(CHROME_PLATFORM, CHROME_EXTENSION,
+                              MALWARE_THREAT);
 }
 
 ListIdentifier GetChromeUrlApiId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, API_ABUSE);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_API_ABUSE)
+             : ListIdentifier(GetCurrentPlatformType(), URL, API_ABUSE);
 }
 
 ListIdentifier GetUrlBillingId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_BILLING)
+             : ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
 }
 
 ListIdentifier GetUrlCsdDownloadAllowlistId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_DOWNLOAD_ALLOWLIST);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(
+                   SBThreatType::SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST)
+             : ListIdentifier(GetCurrentPlatformType(), URL,
+                              CSD_DOWNLOAD_ALLOWLIST);
 }
 
 ListIdentifier GetUrlCsdAllowlistId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_ALLOWLIST);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST)
+             : ListIdentifier(GetCurrentPlatformType(), URL, CSD_ALLOWLIST);
 }
 
 ListIdentifier GetUrlHighConfidenceAllowlistId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL,
-                        HIGH_CONFIDENCE_ALLOWLIST);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(
+                   SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST)
+             : ListIdentifier(GetCurrentPlatformType(), URL,
+                              HIGH_CONFIDENCE_ALLOWLIST);
 }
 
 ListIdentifier GetUrlMalwareId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, MALWARE_THREAT);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_MALWARE)
+             : ListIdentifier(GetCurrentPlatformType(), URL, MALWARE_THREAT);
 }
 
 ListIdentifier GetUrlMalBinId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, MALICIOUS_BINARY);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE)
+             : ListIdentifier(GetCurrentPlatformType(), URL, MALICIOUS_BINARY);
 }
 
 ListIdentifier GetUrlSocEngId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, SOCIAL_ENGINEERING);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_PHISHING)
+             : ListIdentifier(GetCurrentPlatformType(), URL,
+                              SOCIAL_ENGINEERING);
 }
 
 ListIdentifier GetUrlSubresourceFilterId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, SUBRESOURCE_FILTER);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
+             : ListIdentifier(GetCurrentPlatformType(), URL,
+                              SUBRESOURCE_FILTER);
 }
 
 ListIdentifier GetUrlSuspiciousSiteId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, SUSPICIOUS);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE)
+             : ListIdentifier(GetCurrentPlatformType(), URL, SUSPICIOUS);
 }
 
 ListIdentifier GetUrlUwsId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, UNWANTED_SOFTWARE);
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? ListIdentifier(SBThreatType::SB_THREAT_TYPE_URL_UNWANTED)
+             : ListIdentifier(GetCurrentPlatformType(), URL, UNWANTED_SOFTWARE);
 }
 
 std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
@@ -210,7 +247,21 @@ bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
   return true;
 }
 
+bool ListIdentifier::operator==(const ListIdentifier& other) const {
+  CHECK(uses_v5_api_ == other.uses_v5_api_);
+  if (uses_v5_api_) {
+    return sb_threat_type_ == other.sb_threat_type_;
+  }
+  return platform_type_ == other.platform_type_ &&
+         threat_entry_type_ == other.threat_entry_type_ &&
+         threat_type_ == other.threat_type_;
+}
+
 size_t ListIdentifier::hash() const {
+  if (uses_v5_api_) {
+    return std::hash<SBThreatType>()(sb_threat_type_);
+  }
+
   std::size_t first = std::hash<unsigned int>()(platform_type_);
   std::size_t second = std::hash<unsigned int>()(threat_entry_type_);
   std::size_t third = std::hash<unsigned int>()(threat_type_);
@@ -224,7 +275,9 @@ ListIdentifier::ListIdentifier(PlatformType platform_type,
                                ThreatType threat_type)
     : platform_type_(platform_type),
       threat_entry_type_(threat_entry_type),
-      threat_type_(threat_type) {
+      threat_type_(threat_type),
+      uses_v5_api_(false) {
+  CHECK(!base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
   DCHECK(PlatformType_IsValid(platform_type));
   DCHECK(ThreatEntryType_IsValid(threat_entry_type));
   DCHECK(ThreatType_IsValid(threat_type));
@@ -234,6 +287,11 @@ ListIdentifier::ListIdentifier(const ListUpdateResponse& response)
     : ListIdentifier(response.platform_type(),
                      response.threat_entry_type(),
                      response.threat_type()) {}
+
+ListIdentifier::ListIdentifier(SBThreatType sb_threat_type)
+    : sb_threat_type_(sb_threat_type), uses_v5_api_(true) {
+  CHECK(base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
+}
 
 // static
 base::TimeDelta SBProtocolManagerUtil::GetNextBackOffInterval(
