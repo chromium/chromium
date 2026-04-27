@@ -281,6 +281,11 @@ class ApiTests extends ApiTestFixtureBase {
       withErrorMessage: 'tabContext failed: profile mismatch',
     });
   }
+
+  async testShowClientErrorDialog() {
+    assertDefined(this.host.setErrorDialogState);
+    this.host.setErrorDialogState!(1 /* kDisabledByOrganization */);
+  }
 }
 
 class FaviconTest extends ApiTests {

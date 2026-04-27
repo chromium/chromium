@@ -1684,6 +1684,21 @@ enum WebUseCounter {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
+
+// @generate glic_api
+// Client error dialog types.
+// LINT.IfChange(ClientErrorDialogType)
+[Stable, Extensible]
+enum ClientErrorDialogType {
+  [Default] kUnknown = 0,
+  kDisabledByOrganization = 1,
+  kGenericAvailability = 2,
+  kIneligibleAccount = 3,
+  kSignout = 4,
+  kUnsupportedLocation = 5,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicClientErrorDialogType)
 [Stable, Extensible]
 enum ResponseStopCause {
   [Default] kUnknown = 0,

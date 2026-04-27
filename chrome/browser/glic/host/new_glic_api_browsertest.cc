@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -340,6 +341,20 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFailureForCapturedApiTestError) {
       "Error: Non-throwing test error";
   ExecuteJsTest(
       {.should_fail = true, .should_fail_with_error = expected_failure});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testShowClientErrorDialog) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Wait for the histogram to be recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetAllSamples("Glic.Api.Client.ErrorDialogShown")
+               .size() > 0;
+  }));
+  histogram_tester.ExpectUniqueSample("Glic.Api.Client.ErrorDialogShown",
+                                      /*kDisabledByOrganization*/ 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testLoadWhileWindowClosed) {

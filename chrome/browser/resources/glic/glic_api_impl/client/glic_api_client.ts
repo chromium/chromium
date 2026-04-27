@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
@@ -1097,6 +1097,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserOnMicrophoneStatusChange', {status});
   }
 
+  setErrorDialogState?(shownDialogType?: ClientErrorDialogType): void {
+    this.sender.requestNoResponse(
+        'glicBrowserSetErrorDialogState', {shownDialogType});
+  }
+
   async resizeWindow(
       width: number, height: number,
       options?: ResizeWindowOptions): Promise<void> {
@@ -1633,7 +1638,11 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   }
 
   onRecordUseCounter?(counter: number): void {
-    this.sender.requestNoResponse('glicBrowserOnRecordUseCounter', {counter});
+    // Since the frontend can contain a newer version than what Chrome is
+    // built against, we use a sparse histogram.
+    this.sender.requestNoResponse(
+        'glicBrowserRecordHistogram',
+        {name: 'Glic.Api.UseCounter', sparseValue: counter});
   }
 }
 

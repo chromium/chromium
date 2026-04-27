@@ -542,8 +542,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
     const requestTypeNumber: number|undefined =
         (HOST_REQUEST_TYPES as any)[histogramSuffix];
     if (!requestTypeNumber) {
-      console.warn(
-          `reportRequestCountEvent: invalid requestType ${histogramSuffix}`);
       return;
     }
     chrome.histograms.recordEnumerationValue(

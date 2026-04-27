@@ -122,6 +122,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:BrowserActiveState) -->
 
+<!-- LINT.IfChange(ClientErrorDialogType) -->
+
+<enum name="GlicClientErrorDialogType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Disabled By Organization"/>
+  <int value="2" label="Generic Availability"/>
+  <int value="3" label="Ineligible Account"/>
+  <int value="4" label="Signout"/>
+  <int value="5" label="Unsupported Location"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ClientErrorDialogType) -->
+
 <!-- LINT.IfChange(GlicDaisyChainFirstAction) -->
 
 <enum name="GlicDaisyChainFirstAction">
@@ -330,7 +343,7 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="OnModeChange"/>
   <int value="71" label="SubscribeToCaptureRegion"/>
   <int value="72" label="UnsubscribeFromCaptureRegion"/>
-  <int value="73" label="OnRecordUseCounter"/>
+  <int value="73" label="(Obsolete) OnRecordUseCounter"/>
   <int value="74" label="InterruptActorTask"/>
   <int value="75" label="UninterruptActorTask"/>
   <int value="76" label="ActivateTab"/>

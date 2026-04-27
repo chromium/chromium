@@ -143,6 +143,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.Client.ErrorDialogShown"
+    enum="GlicClientErrorDialogType" expires_after="2027-04-24">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records when a client error dialog is shown, indicating the type of error.
+    This may be recorded while the glic web client is in the background, and
+    therefore, may or may not be seen by the user.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.FetchZeroStateSuggestionsLatency" units="ms"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>
@@ -218,7 +229,6 @@ chromium-metrics-reviews@google.com.
     <variant name="OnMicrophoneStatusChange"/>
     <variant name="OnModeChange"/>
     <variant name="OnReaction"/>
-    <variant name="OnRecordUseCounter"/>
     <variant name="OnResponseRated"/>
     <variant name="OnResponseStarted"/>
     <variant name="OnResponseStopped"/>

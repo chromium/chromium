@@ -1107,6 +1107,16 @@ export declare interface GlicBrowserHost {
    * Called when the microphone status changes in the web client.
    */
   onMicrophoneStatusChange?(status: MicrophoneStatus): void;
+
+  /**
+   * Informs Chrome of whether an error dialog is showing. Used for metrics,
+   * and may cause Chrome to eventually reload the page if the GiC panel is
+   * backgrounded.
+   *
+   * @param shownDialogType The type of error dialog that is showing. If
+   *   `undefined`, no error dialog is showing.
+   */
+  setErrorDialogState?(shownDialogType?: ClientErrorDialogType): void;
 }
 
 /** Information about a conversation. */
@@ -3011,6 +3021,18 @@ export enum WebUseCounter {
   SUBMIT_PROMPT_WITH_AUTO_MODE = 1,
   TASK_INTERRUPTED_FOR_USER_CONFIRMATION = 2,
   TASK_INTERRUPTED_FOR_USER_CLARIFICATION = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Client error dialog types.
+export enum ClientErrorDialogType {
+  UNKNOWN = 0,
+  DISABLED_BY_ORGANIZATION = 1,
+  GENERIC_AVAILABILITY = 2,
+  INELIGIBLE_ACCOUNT = 3,
+  SIGNOUT = 4,
+  UNSUPPORTED_LOCATION = 5,
 }
 
 ///////////////////////////////////////////////
