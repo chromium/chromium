@@ -2231,7 +2231,7 @@ void RenderWidgetHostViewAndroid::SynchronousCopyContents(
       (float)output_width / (float)input_size_in_pixel.width(),
       (float)output_height / (float)input_size_in_pixel.height());
   sync_compositor_->DemandDrawSw(&canvas, /*software_canvas=*/true);
-  std::move(callback).Run(viz::CopyOutputBitmapWithMetadata{.bitmap = bitmap});
+  std::move(callback).Run(viz::CopyOutputBitmapWithMetadata(bitmap));
 }
 
 WebContentsAccessibilityAndroid*
