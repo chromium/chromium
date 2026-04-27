@@ -523,7 +523,7 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
   }
 
   // Resolve pseudos to their originating element unless they have activation
-  // behavior (::scroll-marker, ::scroll-button, ::interest-hint). Touch
+  // behavior (::scroll-marker, ::scroll-button, ::interest-button). Touch
   // adjustment targets the clickable element, which for pseudos like
   // ::before, ::after, ::marker is the originating element.
   while (adjusted_node && adjusted_node->IsPseudoElement() &&

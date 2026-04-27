@@ -60,7 +60,7 @@ InspectorStyleResolver::InspectorStyleResolver(
         element_pseudo_id == kPseudoIdAfter ||
         element_pseudo_id == kPseudoIdExpandIcon ||
         element_pseudo_id == kPseudoIdPickerIcon ||
-        element_pseudo_id == kPseudoIdInterestHint ||
+        element_pseudo_id == kPseudoIdInterestButton ||
         element_pseudo_id == kPseudoIdMarker ||
         element_pseudo_id == kPseudoIdBackdrop ||
         element_pseudo_id == kPseudoIdColumn ||

@@ -739,7 +739,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoHover:
     case CSSSelector::kPseudoIncrement:
     case CSSSelector::kPseudoIndeterminate:
-    case CSSSelector::kPseudoInterestHint:
+    case CSSSelector::kPseudoInterestButton:
     case CSSSelector::kPseudoInterestSource:
     case CSSSelector::kPseudoInterestTarget:
     case CSSSelector::kPseudoInvalid:

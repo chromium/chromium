@@ -1135,8 +1135,8 @@ bool SelectionController::HandleMousePressEvent(
                                   IsSelectionOverLink(event)) &&
                                  !event.GetScrollbar();
   // Don't start selection when clicking an activation-behavior pseudo-element
-  // (e.g. ::scroll-marker, ::interest-hint). These act as interactive controls
-  // and clearing the selection on mousedown already happens in
+  // (e.g. ::scroll-marker, ::interest-button). These act as interactive
+  // controls and clearing the selection on mousedown already happens in
   // HandleMouseFocus.
   if (mouse_down_may_start_select_) {
     if (auto* pseudo = DynamicTo<PseudoElement>(

@@ -619,7 +619,7 @@ TEST_F(ElementRuleCollectorTest, EmptyStyleNotUseCounted) {
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kScrollMarkerPseudoElement));
   EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kInterestHintPseudoElement));
+      GetDocument().IsUseCounted(WebFeature::kInterestButtonPseudoElement));
 }
 
 TEST_F(ElementRuleCollectorTest, FirstLineUseCounted) {

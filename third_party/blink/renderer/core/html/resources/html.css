@@ -1552,7 +1552,7 @@ button[interestfor] {
   user-select: none;
 }
 
-[interestfor]::interest-hint {
+[interestfor]::interest-button {
   user-select: none;
   color: buttontext;
   display: inline-block;

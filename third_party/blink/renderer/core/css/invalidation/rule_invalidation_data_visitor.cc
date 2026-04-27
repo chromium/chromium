@@ -95,7 +95,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoAfter:
-    case CSSSelector::kPseudoInterestHint:
+    case CSSSelector::kPseudoInterestButton:
     case CSSSelector::kPseudoExpandIcon:
     case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoMarker:

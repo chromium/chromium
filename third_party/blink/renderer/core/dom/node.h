@@ -475,7 +475,7 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsScrollMarkerGroupPseudoElement() const { return false; }
   virtual bool IsScrollButtonPseudoElement() const { return false; }
   virtual bool IsIndexedPseudoElement() const { return false; }
-  virtual bool IsInterestHintPseudoElement() const { return false; }
+  virtual bool IsInterestButtonPseudoElement() const { return false; }
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
   virtual bool IsMediaElement() const { return false; }

@@ -2276,7 +2276,7 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-            kPseudoIdExpandIcon, kPseudoIdPickerIcon, kPseudoIdInterestHint,
+            kPseudoIdExpandIcon, kPseudoIdPickerIcon, kPseudoIdInterestButton,
             kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarker,
             kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
             kPseudoIdScrollButtonInlineEnd, kPseudoIdScrollButtonBlockEnd}) {

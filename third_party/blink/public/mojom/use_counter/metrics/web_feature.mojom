@@ -4942,7 +4942,7 @@ enum WebFeature {
   kLocalNetworkAccessWithinDedicatedWorker = 5628,
   // The items above roughly this point are available in the M140 branch.
   kCSSPseudoParentInScope = 5629,
-  kInterestHintPseudoElement = 5630,
+  kInterestButtonPseudoElement = 5630,
   kCookieStoreEmptyPath = 5631,
   kV8CookieListItem_Domain_AttributeGetter = 5632,
   kV8CookieListItem_Path_AttributeGetter = 5633,

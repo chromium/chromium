@@ -593,7 +593,7 @@ void InspectorDOMSnapshotAgent::VisitPseudoElements(
   for (PseudoId pseudo_id :
        {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
         kPseudoIdAfter, kPseudoIdExpandIcon, kPseudoIdPickerIcon,
-        kPseudoIdInterestHint, kPseudoIdMarker}) {
+        kPseudoIdInterestButton, kPseudoIdMarker}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id))
       VisitNode(pseudo_node, parent_index, contrast);
   }

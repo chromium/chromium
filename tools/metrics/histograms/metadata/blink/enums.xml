@@ -6254,7 +6254,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5627" label="LocalNetworkAccessWithinSharedWorker"/>
   <int value="5628" label="LocalNetworkAccessWithinDedicatedWorker"/>
   <int value="5629" label="CSSPseudoParentInScope"/>
-  <int value="5630" label="InterestHintPseudoElement"/>
+  <int value="5630" label="InterestButtonPseudoElement"/>
   <int value="5631" label="CookieStoreEmptyPath"/>
   <int value="5632" label="V8CookieListItem_Domain_AttributeGetter"/>
   <int value="5633" label="V8CookieListItem_Path_AttributeGetter"/>

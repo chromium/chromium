@@ -42,7 +42,7 @@ namespace blink {
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
   if (auto* pseudo = DynamicTo<PseudoElement>(reference_node)) {
     // Pseudos with activation behavior (::scroll-marker, ::scroll-button,
-    // ::interest-hint) are kept as event.RawTarget() so their
+    // ::interest-button) are kept as event.RawTarget() so their
     // DefaultEventHandler fires correctly (the handler checks
     // |event.RawTarget() == this|).
     // Other pseudos resolve to their originating element.

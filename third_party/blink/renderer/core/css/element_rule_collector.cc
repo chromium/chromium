@@ -1377,7 +1377,7 @@ void ElementRuleCollector::DidMatchRule(
          dynamic_pseudo == kPseudoIdAfter ||
          dynamic_pseudo == kPseudoIdExpandIcon ||
          dynamic_pseudo == kPseudoIdPickerIcon ||
-         dynamic_pseudo == kPseudoIdInterestHint) &&
+         dynamic_pseudo == kPseudoIdInterestButton) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent)) {
       return;
     }

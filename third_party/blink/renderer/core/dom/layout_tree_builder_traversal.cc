@@ -225,11 +225,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       [[fallthrough]];
     case kPseudoIdPickerIcon:
       if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdInterestHint)) {
+              parent_element->GetPseudoElement(kPseudoIdInterestButton)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
       if (Node* next = parent_element->GetPseudoElement(
               kPseudoIdScrollMarkerGroupAfter)) {
         return next;
@@ -322,11 +322,11 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
   switch (pseudo_id) {
     case kPseudoIdScrollMarkerGroupAfter:
       if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdInterestHint)) {
+              parent_element->GetPseudoElement(kPseudoIdInterestButton)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
       if (Node* previous =
               parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
         return previous;
@@ -437,7 +437,7 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
           current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
     return last;
   }
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdInterestHint)) {
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdInterestButton)) {
     return last;
   }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
@@ -566,7 +566,8 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
     return first;
   }
-  if (Node* first = current_element->GetPseudoElement(kPseudoIdInterestHint)) {
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdInterestButton)) {
     return first;
   }
   return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter);

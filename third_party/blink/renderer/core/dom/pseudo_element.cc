@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/interest_hint_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/interest_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -114,15 +114,15 @@ PseudoElement* PseudoElement::Create(Element* parent,
     }
   }
 
-  if (pseudo_id == kPseudoIdInterestHint) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+  if (pseudo_id == kPseudoIdInterestButton) {
+    CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
         parent->GetDocument().GetExecutionContext()));
     if (!parent->InterestForElement()) {
-      // The `::interest-hint` pseudo-element should only be created for
+      // The `::interest-button` pseudo-element should only be created for
       // elements with the `interestfor` attribute.
       return nullptr;
     }
-    return MakeGarbageCollected<InterestHintPseudoElement>(parent, pseudo_id);
+    return MakeGarbageCollected<InterestButtonPseudoElement>(parent, pseudo_id);
   }
 
   if (pseudo_id == kPseudoIdFirstLetter) {
@@ -145,8 +145,9 @@ PseudoElement* PseudoElement::Create(Element* parent,
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdPickerIcon ||
          pseudo_id == kPseudoIdExpandIcon ||
-         pseudo_id == kPseudoIdInterestHint || pseudo_id == kPseudoIdBackdrop ||
-         pseudo_id == kPseudoIdMarker || pseudo_id == kPseudoIdColumn ||
+         pseudo_id == kPseudoIdInterestButton ||
+         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
+         pseudo_id == kPseudoIdColumn ||
          pseudo_id == kPseudoIdOverscrollAreaParent);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              pseudo_argument);
@@ -176,10 +177,10 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::expand-icon")));
       return expand_icon;
     }
-    case kPseudoIdInterestHint: {
-      DEFINE_STATIC_LOCAL(QualifiedName, interest_hint,
-                          (AtomicString("::interest-hint")));
-      return interest_hint;
+    case kPseudoIdInterestButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, interest_button,
+                          (AtomicString("::interest-button")));
+      return interest_button;
     }
     case kPseudoIdBackdrop: {
       DEFINE_STATIC_LOCAL(QualifiedName, backdrop,
@@ -578,7 +579,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdAfter:
     case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
     case kPseudoIdScrollMarker:
       break;
     default: {
@@ -661,7 +662,7 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdAfter:
     case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroup:
     case kPseudoIdScrollButtonBlockStart:
@@ -732,7 +733,7 @@ bool PseudoElement::SupportsHitTesting(PseudoId pseudo_id) {
     case kPseudoIdAfter:
     case kPseudoIdMarker:
       return RuntimeEnabledFeatures::PseudoElementsHitTestableEnabled();
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroupBefore:
     case kPseudoIdScrollMarkerGroupAfter:
@@ -817,7 +818,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdAfter:
     case kPseudoIdExpandIcon:
     case kPseudoIdPickerIcon:
-    case kPseudoIdInterestHint:
+    case kPseudoIdInterestButton:
       return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollButtonBlockStart:

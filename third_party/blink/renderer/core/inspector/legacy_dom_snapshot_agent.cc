@@ -343,7 +343,7 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
       !parent->GetPseudoElement(kPseudoIdAfter) &&
       !parent->GetPseudoElement(kPseudoIdExpandIcon) &&
       !parent->GetPseudoElement(kPseudoIdPickerIcon) &&
-      !parent->GetPseudoElement(kPseudoIdInterestHint)) {
+      !parent->GetPseudoElement(kPseudoIdInterestButton)) {
     return nullptr;
   }
 
@@ -351,7 +351,7 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
   for (PseudoId pseudo_id :
        {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
         kPseudoIdAfter, kPseudoIdExpandIcon, kPseudoIdPickerIcon,
-        kPseudoIdInterestHint}) {
+        kPseudoIdInterestButton}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id)) {
       pseudo_elements->emplace_back(VisitNode(pseudo_node,
                                               include_event_listeners,

@@ -3289,11 +3289,11 @@
       name: "HTMLInterestForAttribute",
       status: "stable",
     },
-    // Adds support for the `::interest-hint` pseudo element, which is a sub-
+    // Adds support for the `::interest-button` pseudo element, which is a sub-
     // feature of the HTMLInterestForAttribute feature.
     // https://open-ui.org/components/interest-invokers.explainer/
     {
-      name: "HTMLInterestForInterestHintPseudo",
+      name: "HTMLInterestForInterestButtonPseudo",
       status: "experimental",
       depends_on: ["HTMLInterestForAttribute"],
     },

@@ -2549,7 +2549,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // elements with an actual layout object.
     return pseudo == kPseudoIdCheckMark || pseudo == kPseudoIdBefore ||
            pseudo == kPseudoIdAfter || pseudo == kPseudoIdExpandIcon ||
-           pseudo == kPseudoIdPickerIcon || pseudo == kPseudoIdInterestHint;
+           pseudo == kPseudoIdPickerIcon || pseudo == kPseudoIdInterestButton;
   }
 
   bool HasScrollMarkerGroupBefore() const {

@@ -2479,7 +2479,7 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                  kPseudoIdAfter,
                                  kPseudoIdExpandIcon,
                                  kPseudoIdPickerIcon,
-                                 kPseudoIdInterestHint,
+                                 kPseudoIdInterestButton,
                                  kPseudoIdMarker,
                                  kPseudoIdBackdrop,
                                  kPseudoIdScrollMarkerGroupBefore,

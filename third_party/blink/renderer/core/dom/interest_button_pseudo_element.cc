@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/interest_hint_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/interest_button_pseudo_element.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -19,23 +19,23 @@
 
 namespace blink {
 
-InterestHintPseudoElement::InterestHintPseudoElement(
+InterestButtonPseudoElement::InterestButtonPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id) {
-  UseCounter::Count(GetDocument(), WebFeature::kInterestHintPseudoElement);
-  CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+  UseCounter::Count(GetDocument(), WebFeature::kInterestButtonPseudoElement);
+  CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
       GetDocument().GetExecutionContext()));
 }
 
-void InterestHintPseudoElement::HandleButtonActivation() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+void InterestButtonPseudoElement::HandleButtonActivation() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
       GetDocument().GetExecutionContext()));
   Element& invoker = UltimateOriginatingElement();
   invoker.ShowInterestNow();
 }
 
-void InterestHintPseudoElement::DefaultEventHandler(Event& event) {
+void InterestButtonPseudoElement::DefaultEventHandler(Event& event) {
   bool should_intercept =
       event.IsMouseEvent() && event.type() == event_type_names::kClick;
   if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event)) {
@@ -50,7 +50,7 @@ void InterestHintPseudoElement::DefaultEventHandler(Event& event) {
   PseudoElement::DefaultEventHandler(event);
 }
 
-FocusableState InterestHintPseudoElement::SupportsFocus(
+FocusableState InterestButtonPseudoElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
   if (PseudoElement::SupportsFocus(update_behavior) ==
       FocusableState::kNotFocusable) {

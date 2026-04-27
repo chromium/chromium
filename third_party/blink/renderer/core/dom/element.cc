@@ -5250,9 +5250,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
         }
       }
 
-      if (RuntimeEnabledFeatures::HTMLInterestForInterestHintPseudoEnabled(
+      if (RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
               GetExecutionContext())) {
-        UpdatePseudoElement(kPseudoIdInterestHint, child_change,
+        UpdatePseudoElement(kPseudoIdInterestButton, child_change,
                             child_recalc_context);
       }
 
@@ -5930,7 +5930,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
       RebuildPseudoElementLayoutTree(kPseudoIdExpandIcon, *child_attacher);
       RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
-      RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
+      RebuildPseudoElementLayoutTree(kPseudoIdInterestButton, *child_attacher);
     }
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
@@ -10928,7 +10928,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
   const bool is_before_or_after_like =
       pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
       pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdExpandIcon ||
-      pseudo_id == kPseudoIdPickerIcon || pseudo_id == kPseudoIdInterestHint;
+      pseudo_id == kPseudoIdPickerIcon || pseudo_id == kPseudoIdInterestButton;
 
   if (is_before_or_after_like) {
     DCHECK(request.parent_override);
@@ -11069,7 +11069,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       return false;
     }
   }
-  if (pseudo_id == kPseudoIdInterestHint && !InterestForElement()) {
+  if (pseudo_id == kPseudoIdInterestButton && !InterestForElement()) {
     return false;
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
@@ -13581,7 +13581,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdAfter:
       case kPseudoIdExpandIcon:
       case kPseudoIdPickerIcon:
-      case kPseudoIdInterestHint:
+      case kPseudoIdInterestButton:
       case kPseudoIdBackdrop:
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:

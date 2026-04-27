@@ -91,7 +91,7 @@ class CORE_EXPORT HitTestResult {
   CompositorElementId GetScrollableContainer() const;
   Element* InnerElement() const { return inner_element_.Get(); }
   // Returns the hit-testable pseudo-element (::scroll-marker, ::scroll-button,
-  // ::interest-hint, etc.) if one was hit, otherwise falls back to
+  // ::interest-button, etc.) if one was hit, otherwise falls back to
   // InnerElement(). Use this for hover/active state updates and event dispatch
   // so that activation-behavior pseudos receive events correctly.
   Element* InnerPossiblyPseudoElement() const;

@@ -126,7 +126,7 @@ template <typename Functor>
 void ForEachSupportedPseudo(const Element* element, Functor& func) {
   for (PseudoId pseudo_id :
        {kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
-        kPseudoIdExpandIcon, kPseudoIdPickerIcon, kPseudoIdInterestHint,
+        kPseudoIdExpandIcon, kPseudoIdPickerIcon, kPseudoIdInterestButton,
         kPseudoIdMarker, kPseudoIdBackdrop, kPseudoIdScrollMarker,
         kPseudoIdScrollMarkerGroupBefore, kPseudoIdScrollMarkerGroupAfter,
         kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
@@ -243,8 +243,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ExpandIcon;
     case kPseudoIdPickerIcon:
       return protocol::DOM::PseudoTypeEnum::PickerIcon;
-    case kPseudoIdInterestHint:
-      return protocol::DOM::PseudoTypeEnum::InterestHint;
+    case kPseudoIdInterestButton:
+      return protocol::DOM::PseudoTypeEnum::InterestButton;
     case kPseudoIdMarker:
       return protocol::DOM::PseudoTypeEnum::Marker;
     case kPseudoIdBackdrop:

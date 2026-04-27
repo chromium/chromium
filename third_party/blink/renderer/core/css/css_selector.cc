@@ -343,8 +343,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdExpandIcon;
     case kPseudoPickerIcon:
       return kPseudoIdPickerIcon;
-    case kPseudoInterestHint:
-      return kPseudoIdInterestHint;
+    case kPseudoInterestButton:
+      return kPseudoIdInterestButton;
     case kPseudoMarker:
       return kPseudoIdMarker;
     case kPseudoBackdrop:
@@ -656,7 +656,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"in-range", CSSSelector::kPseudoInRange},
     {"increment", CSSSelector::kPseudoIncrement},
     {"indeterminate", CSSSelector::kPseudoIndeterminate},
-    {"interest-hint", CSSSelector::kPseudoInterestHint},
+    {"interest-button", CSSSelector::kPseudoInterestButton},
     {"interest-source", CSSSelector::kPseudoInterestSource},
     {"interest-target", CSSSelector::kPseudoInterestTarget},
     {"invalid", CSSSelector::kPseudoInvalid},
@@ -956,7 +956,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     // For pseudo-elements
     case kPseudoExpandIcon:
     case kPseudoPickerIcon:
-    case kPseudoInterestHint:
+    case kPseudoInterestButton:
     case kPseudoCheckMark:
     case kPseudoBackdrop:
     case kPseudoCue:
@@ -1718,7 +1718,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoExpandIcon ||
           GetPseudoType() == kPseudoPickerIcon ||
-          GetPseudoType() == kPseudoInterestHint ||
+          GetPseudoType() == kPseudoInterestButton ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
@@ -1759,7 +1759,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoAfter:
     case kPseudoExpandIcon:
     case kPseudoPickerIcon:
-    case kPseudoInterestHint:
+    case kPseudoInterestButton:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:

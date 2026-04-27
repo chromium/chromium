@@ -280,8 +280,8 @@ String ToString(PseudoId pseudo_id) {
       return "kPseudoIdExpandIcon";
     case kPseudoIdPickerIcon:
       return "kPseudoIdPickerIcon";
-    case kPseudoIdInterestHint:
-      return "kPseudoIdInterestHint";
+    case kPseudoIdInterestButton:
+      return "kPseudoIdInterestButton";
     case kPseudoIdMarker:
       return "kPseudoIdMarker";
     case kPseudoIdBackdrop:
