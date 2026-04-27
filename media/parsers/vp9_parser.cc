@@ -323,41 +323,38 @@ bool Vp9FrameHeader::IsIntra() const {
 }
 
 VideoColorSpace Vp9FrameHeader::GetColorSpace() const {
-  VideoColorSpace ret;
-  ret.range = color_range ? gfx::ColorSpace::RangeID::FULL
-                          : gfx::ColorSpace::RangeID::LIMITED;
+  gfx::ColorSpace::RangeID range = color_range
+                                       ? gfx::ColorSpace::RangeID::FULL
+                                       : gfx::ColorSpace::RangeID::LIMITED;
   switch (color_space) {
     case Vp9ColorSpace::RESERVED:
     case Vp9ColorSpace::UNKNOWN:
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                             VideoColorSpace::TransferID::UNSPECIFIED,
+                             VideoColorSpace::MatrixID::UNSPECIFIED, range);
     case Vp9ColorSpace::BT_601:
     case Vp9ColorSpace::SMPTE_170:
-      ret.primaries = VideoColorSpace::PrimaryID::SMPTE170M;
-      ret.transfer = VideoColorSpace::TransferID::SMPTE170M;
-      ret.matrix = VideoColorSpace::MatrixID::SMPTE170M;
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
+                             VideoColorSpace::TransferID::SMPTE170M,
+                             VideoColorSpace::MatrixID::SMPTE170M, range);
     case Vp9ColorSpace::BT_709:
-      ret.primaries = VideoColorSpace::PrimaryID::BT709;
-      ret.transfer = VideoColorSpace::TransferID::BT709;
-      ret.matrix = VideoColorSpace::MatrixID::BT709;
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                             VideoColorSpace::TransferID::BT709,
+                             VideoColorSpace::MatrixID::BT709, range);
     case Vp9ColorSpace::SMPTE_240:
-      ret.primaries = VideoColorSpace::PrimaryID::SMPTE240M;
-      ret.transfer = VideoColorSpace::TransferID::SMPTE240M;
-      ret.matrix = VideoColorSpace::MatrixID::SMPTE240M;
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE240M,
+                             VideoColorSpace::TransferID::SMPTE240M,
+                             VideoColorSpace::MatrixID::SMPTE240M, range);
     case Vp9ColorSpace::BT_2020:
-      ret.primaries = VideoColorSpace::PrimaryID::BT2020;
-      ret.transfer = VideoColorSpace::TransferID::BT2020_10;
-      ret.matrix = VideoColorSpace::MatrixID::BT2020_NCL;
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                             VideoColorSpace::TransferID::BT2020_10,
+                             VideoColorSpace::MatrixID::BT2020_NCL, range);
     case Vp9ColorSpace::SRGB:
-      ret.primaries = VideoColorSpace::PrimaryID::BT709;
-      ret.transfer = VideoColorSpace::TransferID::IEC61966_2_1;
-      ret.matrix = VideoColorSpace::MatrixID::BT709;
-      break;
+      return VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                             VideoColorSpace::TransferID::IEC61966_2_1,
+                             VideoColorSpace::MatrixID::BT709, range);
   }
-  return ret;
+  return VideoColorSpace();
 }
 
 Vp9Parser::FrameInfo::FrameInfo() = default;

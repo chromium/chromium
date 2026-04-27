@@ -30,7 +30,7 @@ constexpr int kColorRangeLimited = 2;
 
 MediaFormatColorSpace::MediaFormatColorSpace(
     const VideoColorSpace& color_space) {
-  switch (color_space.primaries) {
+  switch (color_space.primaries()) {
     case VideoColorSpace::PrimaryID::BT709:
       standard = kColorStandardBT709;
       break;
@@ -47,7 +47,7 @@ MediaFormatColorSpace::MediaFormatColorSpace(
       break;
   }
 
-  switch (color_space.transfer) {
+  switch (color_space.transfer()) {
     case VideoColorSpace::TransferID::BT709:
     case VideoColorSpace::TransferID::SMPTE170M:
     case VideoColorSpace::TransferID::SMPTE240M:
@@ -66,7 +66,7 @@ MediaFormatColorSpace::MediaFormatColorSpace(
       break;
   }
 
-  switch (color_space.range) {
+  switch (color_space.range()) {
     case gfx::ColorSpace::RangeID::LIMITED:
       range = kColorRangeLimited;
       break;

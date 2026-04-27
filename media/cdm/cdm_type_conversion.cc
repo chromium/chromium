@@ -58,10 +58,10 @@ gfx::ColorSpace::RangeID ToGfxColorRange(cdm::ColorRange range) {
 cdm::ColorSpace ToCdmColorSpace(const VideoColorSpace& color_space) {
   // Cast is okay because both VideoColorSpace and cdm::ColorSpace follow the
   // standard ISO 23001-8:2016.
-  return {base::checked_cast<uint8_t>(color_space.primaries),
-          base::checked_cast<uint8_t>(color_space.transfer),
-          base::checked_cast<uint8_t>(color_space.matrix),
-          ToCdmColorRange(color_space.range)};
+  return {base::checked_cast<uint8_t>(color_space.primaries()),
+          base::checked_cast<uint8_t>(color_space.transfer()),
+          base::checked_cast<uint8_t>(color_space.matrix()),
+          ToCdmColorRange(color_space.range())};
 }
 
 VideoColorSpace ToMediaColorSpace(const cdm::ColorSpace& color_space) {

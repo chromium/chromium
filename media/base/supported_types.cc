@@ -83,7 +83,7 @@ bool IsDecoderSupportedHdrMetadata(const VideoType& type) {
     case gfx::HdrMetadataType::kSmpteSt2086:
       // HDR metadata is currently only used with the PQ transfer function.
       // See gfx::ColorTransform for more details.
-      return type.color_space.transfer ==
+      return type.color_space.transfer() ==
              VideoColorSpace::TransferID::SMPTEST2084;
 
     // 2094-10 SEI metadata is not the same as Dolby Vision RPU metadata, Dolby
@@ -94,8 +94,8 @@ bool IsDecoderSupportedHdrMetadata(const VideoType& type) {
   }
 }
 
-bool IsDecoderColorSpaceSupported(const VideoColorSpace& color_space) {
-  switch (color_space.primaries) {
+bool IsColorSpaceSupported(const VideoColorSpace& color_space) {
+  switch (color_space.primaries()) {
     // Transfers supported before color management.
     case VideoColorSpace::PrimaryID::BT709:
     case VideoColorSpace::PrimaryID::UNSPECIFIED:
@@ -114,12 +114,11 @@ bool IsDecoderColorSpaceSupported(const VideoColorSpace& color_space) {
     case VideoColorSpace::PrimaryID::EBU_3213_E:
       break;
 
-    // Never supported.
     case VideoColorSpace::PrimaryID::INVALID:
       return false;
   }
 
-  switch (color_space.transfer) {
+  switch (color_space.transfer()) {
     // Transfers supported before color management.
     case VideoColorSpace::TransferID::UNSPECIFIED:
     case VideoColorSpace::TransferID::GAMMA22:
@@ -148,7 +147,7 @@ bool IsDecoderColorSpaceSupported(const VideoColorSpace& color_space) {
       return false;
   }
 
-  switch (color_space.matrix) {
+  switch (color_space.matrix()) {
     // Supported before color management.
     case VideoColorSpace::MatrixID::BT709:
     case VideoColorSpace::MatrixID::UNSPECIFIED:
@@ -171,8 +170,9 @@ bool IsDecoderColorSpaceSupported(const VideoColorSpace& color_space) {
       return false;
   }
 
-  if (color_space.range == gfx::ColorSpace::RangeID::INVALID)
+  if (color_space.range() == gfx::ColorSpace::RangeID::INVALID) {
     return false;
+  }
 
   return true;
 }
@@ -229,7 +229,7 @@ bool IsAudioCodecProprietary(AudioCodec codec) {
 #endif  // !BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 bool IsDecoderHevcProfileSupported(const VideoType& type) {
-  if (!IsDecoderColorSpaceSupported(type.color_space)) {
+  if (!IsColorSpaceSupported(type.color_space)) {
     return false;
   }
 
@@ -253,14 +253,14 @@ bool IsDecoderHevcProfileSupported(const VideoType& type) {
 bool IsDecoderVp9ProfileSupported(const VideoType& type) {
 #if BUILDFLAG(IS_ANDROID)
   // After Q, all VP9 profiles are required by Android
-  return IsDecoderColorSpaceSupported(type.color_space);
+  return IsColorSpaceSupported(type.color_space);
 #elif BUILDFLAG(ENABLE_LIBVPX)
   // High bit depth capabilities may be toggled via LibVPX config flags.
   static const bool vpx_supports_hbd = (vpx_codec_get_caps(vpx_codec_vp9_dx()) &
                                         VPX_CODEC_CAP_HIGHBITDEPTH) != 0;
 
   // Color management required for HDR to not look terrible.
-  if (!IsDecoderColorSpaceSupported(type.color_space)) {
+  if (!IsColorSpaceSupported(type.color_space)) {
     return false;
   }
 
@@ -283,11 +283,11 @@ bool IsDecoderVp9ProfileSupported(const VideoType& type) {
 bool IsDecoderAV1Supported(const VideoType& type) {
   // If the AV1 decoder is enabled, or if we're on Q or later, yes.
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  return IsDecoderColorSpaceSupported(type.color_space);
+  return IsColorSpaceSupported(type.color_space);
 #elif BUILDFLAG(IS_ANDROID)
   return base::android::android_info::sdk_int() >=
              base::android::android_info::SDK_VERSION_Q &&
-         IsDecoderColorSpaceSupported(type.color_space);
+         IsColorSpaceSupported(type.color_space);
 #else
   return false;
 #endif

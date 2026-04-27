@@ -276,7 +276,8 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT601) {
   auto image_buffer = CreateCVImageBuffer(cs);
   ASSERT_TRUE(image_buffer);
 
-  cs.primaries = VideoColorSpace::PrimaryID::SMPTE170M;
+  cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M, cs.transfer(),
+                       cs.matrix(), cs.range());
   auto expected_cs = ToBT709_APPLE(cs.ToGfxColorSpace());
   EXPECT_EQ(expected_cs, GetImageBufferColorSpace(image_buffer.get()));
 }

@@ -90,7 +90,6 @@ class MEDIA_EXPORT VideoColorSpace {
                   TransferID transfer,
                   MatrixID matrix,
                   gfx::ColorSpace::RangeID range);
-
   bool operator==(const VideoColorSpace& other) const;
   bool operator!=(const VideoColorSpace& other) const;
 
@@ -98,7 +97,7 @@ class MEDIA_EXPORT VideoColorSpace {
   // than INVALID or UNSPECIFIED.
   bool IsSpecified() const;
 
-  // Returns true if HDR.
+  // Returns true if the transfer function is HDR (PQ or HLG).
   bool IsHDR() const;
 
   // These will return INVALID if the number you give it
@@ -122,14 +121,21 @@ class MEDIA_EXPORT VideoColorSpace {
 
   static VideoColorSpace FromGfxColorSpace(const gfx::ColorSpace& color_space);
 
-  // Note, these are public variables.
-  PrimaryID primaries = PrimaryID::INVALID;
-  TransferID transfer = TransferID::INVALID;
-  MatrixID matrix = MatrixID::INVALID;
-  gfx::ColorSpace::RangeID range = gfx::ColorSpace::RangeID::INVALID;
+  PrimaryID primaries() const;
+  TransferID transfer() const;
+  MatrixID matrix() const;
+  gfx::ColorSpace::RangeID range() const { return color_space_.GetRangeID(); }
 
  private:
-  gfx::ColorSpace ToGfxColorSpaceInternal(bool allow_guessing) const;
+  VideoColorSpace(gfx::ColorSpace color_space,
+                  bool primaries_unspecified,
+                  bool transfer_unspecified,
+                  bool matrix_unspecified);
+
+  gfx::ColorSpace color_space_;
+  bool primaries_unspecified_ = true;
+  bool transfer_unspecified_ = true;
+  bool matrix_unspecified_ = true;
 };
 
 }  // namespace media

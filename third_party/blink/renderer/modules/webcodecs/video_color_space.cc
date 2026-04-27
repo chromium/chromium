@@ -122,7 +122,7 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
 }
 
 VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
-  switch (color_space.primaries) {
+  switch (color_space.primaries()) {
     case media::VideoColorSpace::PrimaryID::BT709:
       primaries_ = V8VideoColorPrimaries(V8VideoColorPrimaries::Enum::kBt709);
       break;
@@ -145,7 +145,7 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
       break;
   }
 
-  switch (color_space.transfer) {
+  switch (color_space.transfer()) {
     case media::VideoColorSpace::TransferID::BT709:
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kBt709);
@@ -175,7 +175,7 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
       break;
   }
 
-  switch (color_space.matrix) {
+  switch (color_space.matrix()) {
     case media::VideoColorSpace::MatrixID::RGB:
       matrix_ =
           V8VideoMatrixCoefficients(V8VideoMatrixCoefficients::Enum::kRgb);
@@ -201,7 +201,7 @@ VideoColorSpace::VideoColorSpace(const media::VideoColorSpace& color_space) {
       break;
   }
 
-  switch (color_space.range) {
+  switch (color_space.range()) {
     case gfx::ColorSpace::RangeID::LIMITED:
       full_range_ = false;
       break;
