@@ -5,6 +5,7 @@
 #include "extensions/browser/service_worker/service_worker_host.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extensions_test.h"
@@ -40,7 +41,7 @@ TEST_F(ServiceWorkerHostTest, DidStartServiceWorkerContext_NonExtensionScope) {
   // Setup: Add extension to process map so we don't return early.
   ExtensionId extension_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   ProcessMap::Get(browser_context())
-      ->Insert(extension_id, render_process_host_->GetID().GetUnsafeValue());
+      ->Insert(extension_id, render_process_host_->GetID());
 
   // Create ServiceWorkerHost.
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> remote;
@@ -64,7 +65,7 @@ TEST_F(ServiceWorkerHostTest, DidStartServiceWorkerContext_NonExtensionScope) {
 TEST_F(ServiceWorkerHostTest, DidStartServiceWorkerContext_WrongExtensionHost) {
   ExtensionId extension_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   ProcessMap::Get(browser_context())
-      ->Insert(extension_id, render_process_host_->GetID().GetUnsafeValue());
+      ->Insert(extension_id, render_process_host_->GetID());
 
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> remote;
   auto host = std::make_unique<ServiceWorkerHost>(
@@ -86,7 +87,7 @@ TEST_F(ServiceWorkerHostTest, DidStartServiceWorkerContext_WrongExtensionHost) {
 TEST_F(ServiceWorkerHostTest, DidStopServiceWorkerContext_NonExtensionScope) {
   ExtensionId extension_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   ProcessMap::Get(browser_context())
-      ->Insert(extension_id, render_process_host_->GetID().GetUnsafeValue());
+      ->Insert(extension_id, render_process_host_->GetID());
 
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> remote;
   auto host = std::make_unique<ServiceWorkerHost>(
@@ -107,7 +108,7 @@ TEST_F(ServiceWorkerHostTest, DidStopServiceWorkerContext_NonExtensionScope) {
 TEST_F(ServiceWorkerHostTest, DidStopServiceWorkerContext_WrongExtensionHost) {
   ExtensionId extension_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   ProcessMap::Get(browser_context())
-      ->Insert(extension_id, render_process_host_->GetID().GetUnsafeValue());
+      ->Insert(extension_id, render_process_host_->GetID());
 
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> remote;
   auto host = std::make_unique<ServiceWorkerHost>(

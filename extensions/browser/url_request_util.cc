@@ -8,6 +8,7 @@
 
 #include "base/types/optional_util.h"
 #include "components/guest_view/buildflags/buildflags.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
@@ -108,8 +109,11 @@ bool AllowCrossRendererResourceLoad(
 
   // When navigating in subframe, verify that the extension the resource is
   // loaded from matches the process loading it.
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (network::IsRequestDestinationEmbeddedFrame(destination) &&
-      process_map.Contains(extension->id(), child_id)) {
+      process_map.Contains(
+          extension->id(),
+          content::ChildProcessId::FromUnsafeValue(child_id))) {
     *allowed = true;
     return true;
   }

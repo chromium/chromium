@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
@@ -44,10 +45,12 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
 
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       int render_frame_id) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
-        std::move(callback), render_process_id, render_frame_id);
+        std::move(callback), render_process_id.GetUnsafeValue(),
+        render_frame_id);
   }
 
   void SetUp() override {
@@ -164,13 +167,12 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
 IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, TOCTOUPermissionBypass) {
   base::test::TestFuture<bool /* ask_user */, bool /* is_allowed */> future;
 
-  int process_id = browser()
-                       ->tab_strip_model()
-                       ->GetActiveWebContents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetID()
-                       .GetUnsafeValue();
+  content::ChildProcessId process_id = browser()
+                                           ->tab_strip_model()
+                                           ->GetActiveWebContents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetProcess()
+                                           ->GetID();
 
   // Call CheckRenderFrameType directly on the UI thread with an invalid RFH ID
   // but a valid renderer process ID to simulate a detached iframe.
@@ -192,13 +194,12 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
                        ExtensionBackgroundPageAllowed) {
   base::test::TestFuture<bool /* ask_user */, bool /* is_allowed */> future;
 
-  int process_id = browser()
-                       ->tab_strip_model()
-                       ->GetActiveWebContents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetID()
-                       .GetUnsafeValue();
+  content::ChildProcessId process_id = browser()
+                                           ->tab_strip_model()
+                                           ->GetActiveWebContents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetProcess()
+                                           ->GetID();
 
   extensions::ProcessMap::Get(browser()->profile())
       ->Insert("fake_extension_id", process_id);

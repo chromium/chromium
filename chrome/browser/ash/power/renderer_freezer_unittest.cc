@@ -22,6 +22,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/extension_registrar.h"
@@ -265,7 +266,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
 
     // Fake that the RenderProcessHost is hosting the gcm app.
     extensions::ProcessMap::Get(profile_)->Insert(extension->id(),
-                                                  rph->GetDeprecatedID());
+                                                  rph->GetID());
 
     SimulateRenderProcessHostCreated(rph);
   }

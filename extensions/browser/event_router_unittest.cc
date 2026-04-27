@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/event_router.h"
@@ -442,9 +443,10 @@ class ProcessMapFake : public ProcessMap {
   explicit ProcessMapFake(content::BrowserContext* browser_context)
       : ProcessMap(browser_context) {}
 
-  mojom::ContextType GetMostLikelyContextType(const Extension* extension,
-                                              int process_id,
-                                              const GURL* url) const override {
+  mojom::ContextType GetMostLikelyContextType(
+      const Extension* extension,
+      content::ChildProcessId process_id,
+      const GURL* url) const override {
     return mojom::ContextType::kWebUi;
   }
 };

@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -255,9 +256,10 @@ bool IsRequestFromExtension(const WebRequestInfo& request,
     return false;
   }
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   const Extension* extension =
       ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
-          request.render_process_id);
+          content::ChildProcessId::FromUnsafeValue(request.render_process_id));
   return extension && !extension->is_hosted_app();
 }
 

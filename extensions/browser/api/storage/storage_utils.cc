@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/values.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_map.h"
@@ -130,7 +131,7 @@ bool CanRendererAccessExtensionStorage(
     if (access_level == api::storage::AccessLevel::kTrustedContexts) {
       ProcessMap* process_map = ProcessMap::Get(&browser_context);
       return process_map->IsPrivilegedExtensionProcess(
-          extension, render_process_host.GetDeprecatedID());
+          extension, render_process_host.GetID());
     }
   }
 

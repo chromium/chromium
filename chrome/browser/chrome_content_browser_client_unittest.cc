@@ -82,6 +82,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -247,8 +248,7 @@ TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, ExtensionProcess) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("Test").Build();
-  process_map->Insert(extension->id(),
-                      main_rfh()->GetProcess()->GetID().value());
+  process_map->Insert(extension->id(), main_rfh()->GetProcess()->GetID());
   extensions::ExtensionRegistry::Get(profile())->AddEnabled(extension);
 
   EXPECT_TRUE(client.IsPopupBypassAllowed(main_rfh()));
@@ -269,8 +269,7 @@ TEST_F(ChromeContentBrowserClientIsPopupBypassAllowedTest, PrivilegedWebPage) {
 
   extensions::ExtensionRegistry::Get(profile())->AddEnabled(hosted_app);
   auto* process_map = extensions::ProcessMap::Get(profile());
-  process_map->Insert(hosted_app->id(),
-                      main_rfh()->GetProcess()->GetID().value());
+  process_map->Insert(hosted_app->id(), main_rfh()->GetProcess()->GetID());
 
   EXPECT_TRUE(client.IsPopupBypassAllowed(main_rfh()));
 }

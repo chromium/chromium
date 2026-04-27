@@ -19,6 +19,7 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -53,8 +54,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return *GetActiveWebContents()->GetPrimaryMainFrame()->GetProcess();
   }
 
-  int GetActiveMainFrameProcessID() {
-    return GetActiveMainFrameProcess().GetDeprecatedID();
+  content::ChildProcessId GetActiveMainFrameProcessID() {
+    return GetActiveMainFrameProcess().GetID();
   }
 
   // Adds a new extension with the given `extension_name` and host permission to
@@ -964,11 +965,12 @@ void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
 
   EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
 
-  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
-  int sandboxed_frame_process_id =
-      sandboxed_child_frame->GetProcess()->GetDeprecatedID();
-  int non_sandboxed_frame_process_id =
-      non_sandboxed_child_frame->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId main_frame_process_id =
+      main_frame->GetProcess()->GetID();
+  content::ChildProcessId sandboxed_frame_process_id =
+      sandboxed_child_frame->GetProcess()->GetID();
+  content::ChildProcessId non_sandboxed_frame_process_id =
+      non_sandboxed_child_frame->GetProcess()->GetID();
 
   if (expect_subframes_isolated_from_each_other) {
     EXPECT_NE(sandboxed_frame_process_id, non_sandboxed_frame_process_id);
@@ -1070,8 +1072,8 @@ void ProcessMapBrowserTest::
 
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
-  int sandboxed_frame_process_id =
-      sandboxed_child_frame->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId sandboxed_frame_process_id =
+      sandboxed_child_frame->GetProcess()->GetID();
   // Sandboxed extension frames should still have access to other extension
   // resources. Verify the extension script (resource.js) was properly loaded
   // by looking for foo variable.
@@ -1161,9 +1163,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   content::RenderFrameHost* sandboxed_child_frame =
       content::ChildFrameAt(main_frame, 0);
 
-  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
-  int sandboxed_frame_process_id =
-      sandboxed_child_frame->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId main_frame_process_id =
+      main_frame->GetProcess()->GetID();
+  content::ChildProcessId sandboxed_frame_process_id =
+      sandboxed_child_frame->GetProcess()->GetID();
 
   // Since we normally process-isolate E1 from E2, placing E1 in a sandboxed
   // iframe will make no difference.
@@ -1226,11 +1229,12 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   EXPECT_TRUE(ExtensionFrameIsSandboxed(sandboxed_frame));
   EXPECT_TRUE(ExtensionFrameIsSandboxed(other_sandboxed_frame));
 
-  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
-  int sandboxed_frame_process_id =
-      sandboxed_frame->GetProcess()->GetDeprecatedID();
-  int other_sandboxed_frame_process_id =
-      other_sandboxed_frame->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId main_frame_process_id =
+      main_frame->GetProcess()->GetID();
+  content::ChildProcessId sandboxed_frame_process_id =
+      sandboxed_frame->GetProcess()->GetID();
+  content::ChildProcessId other_sandboxed_frame_process_id =
+      other_sandboxed_frame->GetProcess()->GetID();
 
   // The two manifest-sandboxed frames will be in the same process, regardless
   // of whether IsolateSandboxedIframes is enabled or not.
@@ -1418,11 +1422,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   // The embedder (the app window) should be a privileged extension process,
   // but the webview should not.
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
-      *extension,
-      embedder->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      *extension, embedder->GetPrimaryMainFrame()->GetProcess()->GetID()));
   EXPECT_FALSE(process_map()->IsPrivilegedExtensionProcess(
-      *extension,
-      webview->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      *extension, webview->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
