@@ -7664,8 +7664,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "probability": "0.05",
-                        "trigger_id": "uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB"
+                        "en_site_id": "uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB",
+                        "probability": "0.05"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForClearBrowsingHistory"
@@ -7686,8 +7686,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "probability": "0.05",
-                        "trigger_id": "Y2We4jMf70ugnJ3q1cK0QFVzpBEr"
+                        "en_site_id": "Y2We4jMf70ugnJ3q1cK0QFVzpBEr",
+                        "probability": "0.05"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDownloadJourney"
@@ -7708,8 +7708,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "probability": "0.05",
-                        "trigger_id": "ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3"
+                        "en_site_id": "ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3",
+                        "probability": "0.05"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForPinExtensionJourney"
