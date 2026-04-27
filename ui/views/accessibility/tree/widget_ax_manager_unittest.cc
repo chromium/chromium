@@ -858,4 +858,109 @@ TEST_F(WidgetAXManagerTest, VirtualChildrenRemovedFromCacheWhenViewDetached) {
   EXPECT_EQ(api.cache()->Get(nested_virtual_id), nullptr);
 }
 
+TEST_F(WidgetAXManagerTest, FocusTracking_InitiallyNoFocus) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  EXPECT_EQ(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_TracksFocusedView) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v1 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* v2 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v1->RequestFocus();
+
+  EXPECT_EQ(manager()->GetFocusedNodeId(),
+            static_cast<ui::AXNodeID>(
+                v1->GetViewAccessibility().GetUniqueId()));
+
+  v2->RequestFocus();
+  EXPECT_EQ(manager()->GetFocusedNodeId(),
+            static_cast<ui::AXNodeID>(
+                v2->GetViewAccessibility().GetUniqueId()));
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_ClearsFocusOnBlur) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  ASSERT_NE(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+
+  widget()->GetFocusManager()->ClearFocus();
+  EXPECT_EQ(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_SchedulesPendingUpdate) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  api.WaitForNextSerialization();
+  ASSERT_FALSE(api.processing_update_posted());
+
+  widget()->Show();
+  v->RequestFocus();
+  EXPECT_TRUE(api.processing_update_posted());
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_DoesNotResolveActiveDescendant) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* parent = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  parent->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  auto* child = parent->AddChildView(std::make_unique<View>());
+
+  api.WaitForNextSerialization();
+
+  parent->GetViewAccessibility().SetActiveDescendant(*child);
+
+  widget()->Show();
+  parent->RequestFocus();
+
+  // focus_id should point to the focused VIEW, not its active descendant.
+  // The BAM resolves active descendants itself via GetActiveDescendant()
+  // in GetFocusFromThisOrDescendantFrame().
+  EXPECT_EQ(manager()->GetFocusedNodeId(),
+            static_cast<ui::AXNodeID>(
+                parent->GetViewAccessibility().GetUniqueId()));
+}
+
+TEST_F(WidgetAXManagerTest, FocusTracking_HandlesManagerDestruction) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  v->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  api.WaitForNextSerialization();
+
+  widget()->Show();
+  v->RequestFocus();
+  ASSERT_NE(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+
+  // Simulate FocusManager destruction by calling the listener callback
+  // directly, then verify focused_node_id_ is cleared.
+  manager()->OnFocusManagerDestroying(widget()->GetFocusManager());
+  EXPECT_EQ(manager()->GetFocusedNodeId(), ui::kInvalidAXNodeID);
+}
+
 }  // namespace views::test
