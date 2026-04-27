@@ -168,9 +168,9 @@ class NearbyPresenceTest : public testing::Test,
 
   mojo::Receiver<::ash::nearby::presence::mojom::ScanObserver> scan_observer_{
       this};
-  raw_ptr<::nearby::presence::FakePresenceService, DanglingUntriaged>
-      fake_presence_service_ = nullptr;
   std::unique_ptr<NearbyPresence> nearby_presence_;
+  raw_ptr<::nearby::presence::FakePresenceService> fake_presence_service_ =
+      nullptr;
 
   int num_devices_found_ = 0;
   int num_devices_changed_ = 0;
