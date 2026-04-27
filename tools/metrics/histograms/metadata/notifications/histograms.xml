@@ -711,7 +711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.WriteNotificationMetadataReadResult"
-    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+    enum="NotificationDatabaseStatus" expires_after="2027-04-22">
   <owner>skrakowi@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -723,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.WriteNotificationMetadataUpdateResult"
-    enum="NotificationDatabaseStatus" expires_after="2026-04-22">
+    enum="NotificationDatabaseStatus" expires_after="2027-04-22">
   <owner>skrakowi@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
