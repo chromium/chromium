@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_RULE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/css/css_condition_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class StyleRuleContainer;
+class CSSContainerCondition;
 class ContainerQuery;
 class ContainerSelector;
+class StyleRuleContainer;
 
-class CSSContainerRule final : public CSSConditionRule {
+class CORE_EXPORT CSSContainerRule final : public CSSConditionRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -24,14 +26,19 @@ class CSSContainerRule final : public CSSConditionRule {
   String cssText() const override;
   String containerName() const;
   String containerQuery() const;
+  const FrozenArray<CSSContainerCondition>& conditions();
 
   const AtomicString& Name() const;
   const ContainerSelector& Selector() const;
   void SetConditionText(const ExecutionContext*, String);
 
+  void Trace(Visitor*) const override;
+
  private:
   CSSRule::Type GetType() const override { return kContainerRule; }
   const class ContainerQuery& ContainerQuery() const;
+
+  Member<FrozenArray<CSSContainerCondition>> conditions_;
 };
 
 template <>

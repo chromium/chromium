@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_container_condition.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
@@ -43,6 +44,7 @@ void CSSContainerRule::SetConditionText(
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
   To<StyleRuleContainer>(group_rule_.Get())
       ->SetConditionText(execution_context, parent_contents, value);
+  conditions_ = nullptr;
 }
 
 String CSSContainerRule::containerName() const {
@@ -63,6 +65,28 @@ String CSSContainerRule::containerQuery() const {
 
 const ContainerQuery& CSSContainerRule::ContainerQuery() const {
   return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery();
+}
+
+const FrozenArray<CSSContainerCondition>& CSSContainerRule::conditions() {
+  if (!conditions_) {
+    FrozenArray<CSSContainerCondition>::VectorType condition_array;
+    CSSContainerCondition* condition = CSSContainerCondition::Create();
+    condition->setName(ContainerQuery().Selector().Name());
+    if (const ConditionalExpNode* query = ContainerQuery().Query()) {
+      condition->setQuery(query->Serialize());
+    } else {
+      condition->setQuery(g_empty_string);
+    }
+    condition_array.push_back(condition);
+    conditions_ = MakeGarbageCollected<FrozenArray<CSSContainerCondition>>(
+        std::move(condition_array));
+  }
+  return *conditions_;
+}
+
+void CSSContainerRule::Trace(Visitor* visitor) const {
+  CSSConditionRule::Trace(visitor);
+  visitor->Trace(conditions_);
 }
 
 }  // namespace blink

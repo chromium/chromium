@@ -1,10 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] CSSContainerRule interface: attribute conditions
-  assert_true: The prototype object must have a property "conditions" expected true got false
-[FAIL] CSSContainerRule interface: sheet.cssRules[0] must inherit property "conditions" with the proper type
-  assert_inherits: property "conditions" not found in prototype chain
-[FAIL] CSSContainerRule interface: sheet.cssRules[0].cssRules[0] must inherit property "conditions" with the proper type
-  assert_inherits: property "conditions" not found in prototype chain
 [FAIL] CSSSupportsConditionRule interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
 [FAIL] CSSSupportsConditionRule interface object length
