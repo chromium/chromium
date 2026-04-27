@@ -46,29 +46,13 @@ const char kSpotlightActionQRScanner[] = "OpenQRScanner";
 const char kSpotlightActionSetDefaultBrowser[] = "SetDefaultBrowser";
 const char kSpotlightActionLens[] = "OpenLensFromSpotlight";
 
-// Enum is used to record the actions performed by the user.
-enum {
-  // Recorded when a user pressed the New Tab spotlight action.
-  SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
-  // Recorded when a user pressed the New Incognito Tab spotlight action.
-  SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
-  // Recorded when a user pressed the Voice Search spotlight action.
-  SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
-  // Recorded when a user pressed the QR scanner spotlight action.
-  SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
-  // Recorded when a user pressed the Set Default Browser spotlight action.
-  SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
-  // Recorded when a user pressed the Lens spotlight action.
-  SPOTLIGHT_ACTION_LENS_PRESSED,
-  // NOTE: Add new spotlight actions in sources only immediately above this
-  // line. Also, make sure the enum list for histogram `SpotlightActions` in
-  // histograms.xml is updated with any change in here.
-  SPOTLIGHT_ACTION_COUNT
-};
-
 // The histogram used to record user actions performed on the spotlight actions.
 const char kSpotlightActionsHistogram[] = "IOS.Spotlight.Action";
 
+// LINT.IfChange
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_user_activity.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 BOOL SetStartupParametersForSpotlightAction(
     NSString* query,
     AppStartupParameters* startupParams) {
@@ -127,6 +111,7 @@ BOOL SetStartupParametersForSpotlightAction(
   }
   return YES;
 }
+// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
 
 }  // namespace spotlight
 

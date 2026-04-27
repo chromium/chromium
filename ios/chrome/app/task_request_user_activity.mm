@@ -20,6 +20,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
@@ -144,6 +145,56 @@ void RecordMetrics(UserActivityType user_activity_type,
 
       base::UmaHistogramEnumeration(kAppLaunchSource,
                                     AppLaunchSource::SPOTLIGHT_CHROME);
+      if (domain == spotlight::DOMAIN_ACTIONS) {
+        NSString* action =
+            [item_id substringFromIndex:[spotlight::StringFromSpotlightDomain(
+                                            spotlight::DOMAIN_ACTIONS) length] +
+                                        1];
+        if ([action isEqualToString:
+                        base::SysUTF8ToNSString(
+                            spotlight::kSpotlightActionNewIncognitoTab)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        } else if ([action isEqualToString:
+                               base::SysUTF8ToNSString(
+                                   spotlight::kSpotlightActionVoiceSearch)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        } else if ([action isEqualToString:
+                               base::SysUTF8ToNSString(
+                                   spotlight::kSpotlightActionQRScanner)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        } else if ([action isEqualToString:
+                               base::SysUTF8ToNSString(
+                                   spotlight::kSpotlightActionNewTab)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        } else if ([action
+                       isEqualToString:
+                           base::SysUTF8ToNSString(
+                               spotlight::kSpotlightActionSetDefaultBrowser)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        } else if ([action
+                       isEqualToString:base::SysUTF8ToNSString(
+                                           spotlight::kSpotlightActionLens)]) {
+          base::UmaHistogramEnumeration(
+              spotlight::kSpotlightActionsHistogram,
+              spotlight::SPOTLIGHT_ACTION_LENS_PRESSED,
+              spotlight::SPOTLIGHT_ACTION_COUNT);
+        }
+      }
       break;
     }
     case UserActivityType::kSearchInChrome:

@@ -16,6 +16,31 @@ extern const char kSpotlightActionNewTab[];
 extern const char kSpotlightActionNewIncognitoTab[];
 extern const char kSpotlightActionVoiceSearch[];
 extern const char kSpotlightActionQRScanner[];
+extern const char kSpotlightActionSetDefaultBrowser[];
+extern const char kSpotlightActionLens[];
+
+// Enum used to record the actions performed by the user.
+enum {
+  // Recorded when a user pressed the New Tab spotlight action.
+  SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
+  // Recorded when a user pressed the New Incognito Tab spotlight action.
+  SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
+  // Recorded when a user pressed the Voice Search spotlight action.
+  SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
+  // Recorded when a user pressed the QR scanner spotlight action.
+  SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
+  // Recorded when a user pressed the Set Default Browser spotlight action.
+  SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
+  // Recorded when a user pressed the Lens spotlight action.
+  SPOTLIGHT_ACTION_LENS_PRESSED,
+  // NOTE: Add new spotlight actions in sources only immediately above this
+  // line. Also, make sure the enum list for histogram `SpotlightActions` in
+  // histograms.xml is updated with any change in here.
+  SPOTLIGHT_ACTION_COUNT
+};
+
+// The histogram used to record user actions performed on the spotlight actions.
+extern const char kSpotlightActionsHistogram[];
 
 // Sets the correct properties for startup parameters according to the action
 // specified by the `query`. Returns YES if the properties were successfully
