@@ -39,6 +39,7 @@
   --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
   --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
   --color-composebox-suggestion-activity: rgba(86, 89, 94, 1);
+  --color-composebox-submit-button-background: rgba(52, 107, 241, 1);
   --color-composebox-type-ahead: rgba(117, 117, 117, 1);
   --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
@@ -223,7 +224,7 @@
       rgba(44, 45, 53, 1);
   --color-menu-background: var(--cr-menu-background-color);
   --color-composebox-context-entrypoint-text-disabled: rgba(105, 105, 105, 1);
-  --color-composebox-submit-button-background: rgba(10, 80, 209, 1);
+  --color-composebox-submit-button-background: rgba(52, 107, 241, 1);
   --color-full-file-chip-remove-button-hover-background: rgba(0, 0, 0, 0.9);
   --color-partial-file-chip-remove-button-hover-background:
       rgba(25, 25, 29, 0.95);
