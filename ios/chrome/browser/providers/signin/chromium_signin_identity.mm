@@ -59,10 +59,6 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
   void FetchCapabilities(id<SystemIdentity> identity,
                          const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
-  void BuildExternalPrivacyContext(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      BuildExternalPrivacyContextCallback callback) final;
   void RegisterExternalPrivacyContextProvider(
       id<ExternalPrivacyContextUIProvider> provider) final;
   void UnregisterExternalPrivacyContextProvider(
@@ -189,13 +185,6 @@ void ChromiumSystemIdentityManager::FetchCapabilities(
     id<SystemIdentity> identity,
     const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
-  NOTREACHED();
-}
-
-void ChromiumSystemIdentityManager::BuildExternalPrivacyContext(
-    id<SystemIdentity> identity,
-    UIViewController* view_controller,
-    BuildExternalPrivacyContextCallback callback) {
   NOTREACHED();
 }
 

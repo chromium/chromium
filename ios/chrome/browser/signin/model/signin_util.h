@@ -78,10 +78,6 @@ base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch();
 
 // Pre-fetches system capabilities for the given identities so that they
 // can be cached for later usage.
-//
-// Note: When `switches::kBuildExternalPrivacyContext` is enabled, capabilities
-// prefetching must happen after
-// `SystemIdentityManager::BuildExternalPrivacyContext()`.
 void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
 
 // Resets the data related to device restore. This is for test only.
