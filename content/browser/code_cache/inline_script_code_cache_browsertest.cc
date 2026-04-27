@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -88,15 +89,24 @@ namespace content {
 
 class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
  public:
-  InlineScriptCodeCacheBrowserTest() {
+  InlineScriptCodeCacheBrowserTest()
+      : InlineScriptCodeCacheBrowserTest(base::FieldTrialParams()) {}
+
+ protected:
+  explicit InlineScriptCodeCacheBrowserTest(
+      const base::FieldTrialParams& extra_params) {
+    base::FieldTrialParams params = extra_params;
+    base::FieldTrialParams default_params = {{"timeout", "1s"}};
+    params.merge(default_params);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{net::features::kSplitCacheByNetworkIsolationKey, {}},
          {net::features::kSplitCodeCacheByNetworkIsolationKey, {}},
          {blink::features::kUsePersistentCacheForCodeCache, {}},
-         {blink::features::kInlineScriptCache, {{"timeout", "1s"}}}},
+         {blink::features::kInlineScriptCache, params}},
         {{}});
   }
 
+ public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
   }
@@ -131,6 +141,29 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
                         GetCacheableLongStaticJavascriptSource(),
                         "</script></body></html>"});
 
+      http_response->set_content(content);
+      http_response->set_content_type("text/html");
+      return http_response;
+    }
+    if (absolute_url.GetPath() == "/default-cachehint.html" ||
+        absolute_url.GetPath() == "/eager-cachehint.html" ||
+        absolute_url.GetPath() == "/never-cachehint.html") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      std::string cachehint_value = "default";
+      if (absolute_url.GetPath() == "/eager-cachehint.html") {
+        cachehint_value = "eager";
+      } else if (absolute_url.GetPath() == "/never-cachehint.html") {
+        cachehint_value = "never";
+      }
+      std::string content = base::StrCat(
+          {"<html><head><title>Title</title></head><body>",
+           "<script type='text/javascript'>",
+           GenerateUniqueHeavyJavascriptSource(),
+           "</script><script type='text/javascript' cachehint='",
+           cachehint_value, "'>", GetCacheableLongStaticJavascriptSource(),
+           "</script></body></html>\n"});
       http_response->set_content(content);
       http_response->set_content_type("text/html");
       return http_response;
@@ -227,6 +260,137 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   uint32_t served_count_ = 0;
 };
+
+class InlineScriptCodeCacheHintBrowserTest
+    : public InlineScriptCodeCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  InlineScriptCodeCacheHintBrowserTest()
+      : InlineScriptCodeCacheBrowserTest(
+            {{"enable_for_default_hint", GetParam() ? "true" : "false"}}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InlineScriptCodeCacheHintBrowserTest,
+                         testing::Bool());
+
+// TODO(crbug.com/498265776): Test is expected to time out on ChromeOS and Linux
+// MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_DefaultCacheHint DISABLED_DefaultCacheHint
+#else
+#define MAYBE_DefaultCacheHint DefaultCacheHint
+#endif
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheHintBrowserTest,
+                       MAYBE_DefaultCacheHint) {
+  GURL url =
+      embedded_test_server()->GetURL("example.com", "/default-cachehint.html");
+
+  // Step 1: Load the page first time.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    FetchHistogramsFromChildProcesses();
+    if (GetParam()) {
+      histogram_tester.ExpectBucketCount(
+          "V8.CompileScript.CacheBehaviour",
+          CacheBehaviourNameToInt("kNoCacheBecauseInlineScriptCacheTooCold"),
+          1);
+    }
+  }
+
+  PurgeResourceCacheFromTheMainFrame();
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Step 2: Reload to produce cache.
+  {
+    bool produced = false;
+    for (int i = 0; i < 5; i++) {
+      base::HistogramTester histogram_tester;
+      ASSERT_TRUE(NavigateToURL(shell(), url));
+      FetchHistogramsFromChildProcesses();
+      if (GetProduceCacheCount(histogram_tester) == 1) {
+        produced = true;
+        break;
+      }
+      PurgeResourceCacheFromTheMainFrame();
+      ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+    }
+    if (GetParam()) {
+      EXPECT_TRUE(produced) << "Failed to produce cache";
+    } else {
+      EXPECT_FALSE(produced) << "Cache should not be produced";
+    }
+  }
+}
+
+// TODO(crbug.com/498265776): Test is expected to time out on ChromeOS and Linux
+// MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_EagerCacheHint DISABLED_EagerCacheHint
+#else
+#define MAYBE_EagerCacheHint EagerCacheHint
+#endif
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheHintBrowserTest,
+                       MAYBE_EagerCacheHint) {
+  GURL url =
+      embedded_test_server()->GetURL("example.com", "/eager-cachehint.html");
+
+  // Step 1: Load the page first time.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    FetchHistogramsFromChildProcesses();
+    histogram_tester.ExpectBucketCount(
+        "V8.CompileScript.CacheBehaviour",
+        CacheBehaviourNameToInt("kNoCacheBecauseInlineScriptCacheTooCold"), 1);
+  }
+
+  PurgeResourceCacheFromTheMainFrame();
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Step 2: Reload to produce cache.
+  {
+    bool produced = false;
+    for (int i = 0; i < 5; i++) {
+      base::HistogramTester histogram_tester;
+      ASSERT_TRUE(NavigateToURL(shell(), url));
+      FetchHistogramsFromChildProcesses();
+      if (GetProduceCacheCount(histogram_tester) == 1) {
+        produced = true;
+        break;
+      }
+      PurgeResourceCacheFromTheMainFrame();
+      ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+    }
+    EXPECT_TRUE(produced) << "Failed to produce cache";
+  }
+}
+
+// TODO(crbug.com/498265776): Test is expected to time out on ChromeOS and Linux
+// MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_NeverCacheHint DISABLED_NeverCacheHint
+#else
+#define MAYBE_NeverCacheHint NeverCacheHint
+#endif
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheHintBrowserTest,
+                       MAYBE_NeverCacheHint) {
+  GURL url =
+      embedded_test_server()->GetURL("example.com", "/never-cachehint.html");
+
+  // Load multiple times, expect NO cache produced.
+  const int num_tries = 3;
+  base::HistogramTester histogram_tester;
+  for (int i = 0; i < num_tries; i++) {
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+    PurgeResourceCacheFromTheMainFrame();
+    ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  }
+  FetchHistogramsFromChildProcesses();
+  EXPECT_EQ(GetProduceCacheCount(histogram_tester), 0);
+  EXPECT_EQ(GetConsumeCacheCount(histogram_tester), 0);
+}
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
@@ -453,11 +617,10 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, MAYBE_IsolatedByNik) {
   }
 }
 
-// TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) &&                     \
-    defined(MEMORY_SANITIZER) ||                                           \
-    defined(THREAD_SANITIZER) ||                                           \
-    ((BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && !defined(NDEBUG))
+// TODO(crbug.com/498265776): Test timed out on some slow builders like MSan,
+// TSan, and Win 10 (dbg).
+#if defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_ProducedCacheHitsOnAnotherProcess \
   DISABLED_ProducedCacheHitsOnAnotherProcess
 #else
@@ -495,51 +658,39 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
       PurgeResourceCacheFromTheMainFrame();
       ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
     }
-    ASSERT_TRUE(produced) << "Failed to produce cache; skipping Step 4 "
-                             "because the precondition is not satisfied.";
+    EXPECT_TRUE(produced) << "Failed to produce cache";
   }
 
-  const int rph_id_before_recreate = shell()
-                                        ->web_contents()
-                                        ->GetPrimaryMainFrame()
-                                        ->GetProcess()
-                                        ->GetDeprecatedID();
-
-  // Step 3: Recreate the window to ensure the next load happens in a completely
-  // new renderer process.
+  // Step 3: Try recreating the window to ensure the next load happens in a
+  // new renderer process. If fail, skip the step 4.
+  const ChildProcessId process_id_before_recreate =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   RecreateWindow();
+  const ChildProcessId process_id_after_recreate =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 
-  // Step 4: Load the page again. Since it's a new process, it cannot hit the
-  // in-memory Isolate cache. It must strictly hit the persistent code cache.
-  {
-    bool consumed = false;
-    for (int i = 0; i < 5; i++) {
-      base::HistogramTester histogram_tester;
-      ASSERT_TRUE(NavigateToURL(shell(), url));
-      if (i == 0) {
-        const int rph_id_after_recreate = shell()
-                                          ->web_contents()
-                                          ->GetPrimaryMainFrame()
-                                          ->GetProcess()
-                                          ->GetDeprecatedID();
-        ASSERT_NE(rph_id_before_recreate, rph_id_after_recreate)
-            << "RecreateWindow() did not produce a new renderer process for "
-               "a.example; the cross-process invariant required by this test "
-               "is not satisfied. ";
+  if (process_id_before_recreate != process_id_after_recreate) {
+    // Step 4: Load the page again. Since it's a new process, it cannot hit the
+    // in-memory Isolate cache. It must strictly hit the persistent code cache.
+    {
+      bool consumed = false;
+      for (int i = 0; i < 5; i++) {
+        base::HistogramTester histogram_tester;
+        ASSERT_TRUE(NavigateToURL(shell(), url));
+        FetchHistogramsFromChildProcesses();
+        const int persistent_consume_count = histogram_tester.GetBucketCount(
+            "V8.CompileScript.CacheBehaviour",
+            CacheBehaviourNameToInt("kConsumeCodeCache"));
+        if (persistent_consume_count == 1) {
+          consumed = true;
+          break;
+        }
+        PurgeResourceCacheFromTheMainFrame();
+        ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
       }
-      FetchHistogramsFromChildProcesses();
-      const int persistent_consume_count = histogram_tester.GetBucketCount(
-          "V8.CompileScript.CacheBehaviour",
-          CacheBehaviourNameToInt("kConsumeCodeCache"));
-      if (persistent_consume_count == 1) {
-        consumed = true;
-        break;
-      }
-      PurgeResourceCacheFromTheMainFrame();
-      ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+      EXPECT_TRUE(consumed) << "Failed to consume persistent code cache "
+                               "(kConsumeCodeCache) in the new process.";
     }
-    EXPECT_TRUE(consumed) << "Failed to consume persistent code cache "
-                             "(kConsumeCodeCache) in the new process.";
   }
 }
 
