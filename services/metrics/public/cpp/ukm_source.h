@@ -52,6 +52,12 @@ class METRICS_EXPORT UkmSource {
     // redirect chain for navigation sources.
     std::vector<GURL> urls;
 
+    // This field is populated if and only if this Source represents a blink
+    // Document, possibly in a subframe, in which case this field contains a
+    // exact copy of urls of the Source of the NAVIGATION_ID representing the
+    // main frame navigation that led to the creation of this Document.
+    std::vector<GURL> resolved_urls;
+
     // The previous source id for this tab.
     SourceId previous_source_id = kInvalidSourceId;
 
@@ -111,7 +117,14 @@ class METRICS_EXPORT UkmSource {
 
   ukm::SourceId id() const { return id_; }
 
-  const GURL& url() const { return navigation_data_.urls.back(); }
+  const GURL& url() const {
+    return navigation_data_.urls.empty() ? GURL::EmptyGURL()
+                                         : navigation_data_.urls.back();
+  }
+
+  const std::vector<GURL>& resolved_urls() const {
+    return navigation_data_.resolved_urls;
+  }
 
   const std::vector<GURL>& urls() const { return navigation_data_.urls; }
 
@@ -123,6 +136,9 @@ class METRICS_EXPORT UkmSource {
 
   // Records a new URL for this source.
   void UpdateUrl(const GURL& url);
+
+  // Sets the resolved URLs.
+  void set_resolved_urls(const std::vector<GURL>& urls);
 
   // Serializes the members of the class into the supplied proto.
   void PopulateProto(Source* proto_source) const;

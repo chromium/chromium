@@ -250,6 +250,24 @@ bool UkmRecorderImpl::ShouldDropEntryForTesting(mojom::UkmEntry* entry) {
   return ShouldDropEntry(entry);
 }
 
+absl::flat_hash_map<SourceId, std::vector<GURL>>
+UkmRecorderImpl::GetDocumentToNavigationUrlsMap(
+    const std::vector<mojom::UkmEntry*>& document_created_entries) const {
+  absl::flat_hash_map<SourceId, std::vector<GURL>> result;
+  for (const auto* entry : document_created_entries) {
+    auto nav_source_id_it = entry->metrics.find(
+        builders::DocumentCreated::kNavigationSourceIdNameHash);
+    if (nav_source_id_it != entry->metrics.end()) {
+      auto it = sources().find(nav_source_id_it->second);
+      if (it != sources().end()) {
+        DCHECK(!result.contains(entry->source_id));
+        result[entry->source_id] = it->second->urls();
+      }
+    }
+  }
+  return result;
+}
+
 bool UkmRecorderImpl::IsSamplingConfigured() const {
   return sampling_forced_for_testing_ ||
          base::FeatureList::IsEnabled(kUkmSamplingRateFeature);
@@ -398,10 +416,15 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 
   // Set of source ids seen by entries in recordings_.
   std::set<SourceId> source_ids_seen;
+  std::vector<mojom::UkmEntry*> document_created_entries;
   for (const auto& entry : recordings_.entries) {
     Entry* proto_entry = report->add_entries();
     StoreEntryProto(*entry, proto_entry);
     source_ids_seen.insert(entry->source_id);
+
+    if (entry->event_hash == builders::DocumentCreated::kEntryNameHash) {
+      document_created_entries.push_back(entry.get());
+    }
   }
 
   for (const auto& [source_id, features_set] : recordings_.webdx_features) {
@@ -426,7 +449,17 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 
   std::unordered_map<SourceIdType, int> serialized_source_type_counts;
 
+  absl::flat_hash_map<SourceId, std::vector<GURL>>
+      document_source_id_to_resolved_urls =
+          GetDocumentToNavigationUrlsMap(document_created_entries);
+
   for (const auto& kv : recordings_.sources) {
+    auto it = document_source_id_to_resolved_urls.find(kv.first);
+    if (it != document_source_id_to_resolved_urls.end()) {
+      kv.second->set_resolved_urls(it->second);
+      document_source_id_to_resolved_urls.erase(it);
+    }
+
     MaybeMarkForDeletion(kv.first);
     // If the source id is not allowlisted, don't send it unless it has
     // associated entries and the URL matches that of an allowlisted source.
@@ -459,6 +492,26 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     kv.second->PopulateProto(proto_source);
 
     serialized_source_type_counts[GetSourceIdType(kv.first)]++;
+  }
+
+  for (const auto& [source_id, resolved_urls] :
+       document_source_id_to_resolved_urls) {
+    // Only add if this blink Document source contains at least one entry.
+    if (!source_ids_seen.contains(source_id)) {
+      continue;
+    }
+
+    // Create a synthetic source. We use an empty GURL as the source's own URL
+    // since we don't have the real subframe URL and using the main frame
+    // URL would be misleading. The main frame URLs are stored in
+    // |resolved_urls|.
+    auto source = std::make_unique<UkmSource>(source_id, GURL());
+    source->set_resolved_urls(resolved_urls);
+
+    Source* proto_source = report->add_sources();
+    source->PopulateProto(proto_source);
+
+    serialized_source_type_counts[GetSourceIdType(source_id)]++;
   }
 
   for (const auto& event_and_aggregate : recordings_.event_aggregations) {

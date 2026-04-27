@@ -127,6 +127,7 @@ UkmSource::NavigationData UkmSource::NavigationData::CopyWithSanitizedUrls(
   sanitized_navigation_data.is_renderer_initiated = is_renderer_initiated;
   sanitized_navigation_data.is_error_page = is_error_page;
   sanitized_navigation_data.navigation_time = navigation_time;
+  sanitized_navigation_data.resolved_urls = resolved_urls;
   return sanitized_navigation_data;
 }
 
@@ -135,8 +136,9 @@ UkmSource::UkmSource(ukm::SourceId id, const GURL& url)
       type_(GetSourceIdType(id_)),
       android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
-  navigation_data_.urls = {url};
-  DCHECK(!url.is_empty());
+  if (!url.is_empty()) {
+    navigation_data_.urls = {url};
+  }
 }
 
 UkmSource::UkmSource(ukm::SourceId id, const NavigationData& navigation_data)
@@ -146,8 +148,6 @@ UkmSource::UkmSource(ukm::SourceId id, const NavigationData& navigation_data)
       android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(type_ == SourceIdType::NAVIGATION_ID);
-  DCHECK(!navigation_data.urls.empty());
-  DCHECK(!navigation_data.urls.back().is_empty());
 }
 
 UkmSource::~UkmSource() = default;
@@ -160,6 +160,10 @@ void UkmSource::UpdateUrl(const GURL& new_url) {
   navigation_data_.urls = {new_url};
 }
 
+void UkmSource::set_resolved_urls(const std::vector<GURL>& resolved_urls) {
+  navigation_data_.resolved_urls = resolved_urls;
+}
+
 void UkmSource::PopulateProto(Source* proto_source) const {
   DCHECK(!proto_source->has_id());
   DCHECK(!proto_source->has_type());
@@ -167,7 +171,9 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   proto_source->set_id(id_);
   proto_source->set_type(ToProtobufSourceType(type_));
   for (const auto& url : urls()) {
-    proto_source->add_urls()->set_url(GetShortenedURL(url));
+    if (!url.is_empty()) {
+      proto_source->add_urls()->set_url(GetShortenedURL(url));
+    }
   }
 
   // -1 corresponds to the unset state. Android activity type values start at 0.
@@ -214,6 +220,10 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   if (navigation_data_.navigation_time) {
     proto_source->set_navigation_time_msec(
         navigation_data_.navigation_time->since_origin().InMilliseconds());
+  }
+
+  for (const auto& url : navigation_data_.resolved_urls) {
+    proto_source->add_resolved_urls()->set_url(GetShortenedURL(url));
   }
 }
 

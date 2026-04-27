@@ -28,7 +28,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ukm_consent_state.h"
+#include "url/gurl.h"
 
 namespace metrics {
 class UkmBrowserTestBase;
@@ -246,6 +249,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
                            ObserverNotifiedWhenNotRecording);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebDXFeaturesConsent);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebDXFeaturesSampling);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, GetDocumentToNavigationUrlsMap);
+  FRIEND_TEST_ALL_PREFIXES(
+      UkmRecorderImplTest,
+      GetDocumentToNavigationUrlsMap_MissingSubframeSource);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest,
+                           GetDocumentToNavigationUrlsMap_Redirect);
 
   struct MetricAggregate {
     uint64_t total_count = 0;
@@ -290,6 +299,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Determines if an UkmEntry should be dropped and records reason if so.
   bool ShouldDropEntry(mojom::UkmEntry* entry);
+
+  // Returns a map from SourceIds of Blink Documents to the main-frame
+  // navigation URLs that created them.
+  absl::flat_hash_map<SourceId, std::vector<GURL>>
+  GetDocumentToNavigationUrlsMap(
+      const std::vector<mojom::UkmEntry*>& document_created_entries) const;
 
   // Loads sampling configurations from field-trial information.
   void LoadExperimentSamplingInfo();
