@@ -36,21 +36,14 @@
 
 namespace blink {
 
-namespace {
-using vector_math::Conv;
-using vector_math::PrepareFilterForConv;
-}  // namespace
-
 DirectConvolver::DirectConvolver(
     size_t input_block_size,
     std::unique_ptr<AudioFloatArray> convolution_kernel)
     : input_block_size_(input_block_size),
       buffer_(input_block_size * 2),
       convolution_kernel_(std::move(convolution_kernel)) {
-  size_t kernel_size = ConvolutionKernelSize();
-  PrepareFilterForConv(
-      convolution_kernel_->as_span().subspan(kernel_size - 1).data(), -1,
-      kernel_size, &prepared_convolution_kernel_);
+  vector_math::PrepareFilterForConv(convolution_kernel_->as_span(),
+                                    &prepared_convolution_kernel_);
 }
 
 void DirectConvolver::Process(base::span<const float> source,
@@ -68,10 +61,10 @@ void DirectConvolver::Process(base::span<const float> source,
       .subspan(input_block_size_, frames_to_process)
       .copy_from(source.first(frames_to_process));
 
-  Conv(buffer_.as_span().subspan(input_block_size_ - kernel_size + 1).data(), 1,
-       convolution_kernel_->as_span().subspan(kernel_size - 1).data(), -1,
-       destination.data(), 1, frames_to_process, kernel_size,
-       &prepared_convolution_kernel_);
+  vector_math::Conv(
+      buffer_.as_span().subspan(input_block_size_ - kernel_size + 1),
+      convolution_kernel_->as_span(), destination, frames_to_process,
+      &prepared_convolution_kernel_);
 
   // Copy 2nd half of input buffer to 1st half.
   buffer_.as_span()

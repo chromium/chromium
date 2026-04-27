@@ -310,9 +310,9 @@ TEST_F(VectorMathTest, Conv) {
       for (auto& dest : GetSecondaryVectors(
                GetDestination(1u), source.memory_layout(), frames_to_process)) {
         AudioFloatArray prepared_filter;
-        PrepareFilterForConv(filter_p, -1, filter_size, &prepared_filter);
-        Conv(source.p(), 1, filter_p, -1, dest.p(), 1, frames_to_process,
-             filter_size, &prepared_filter);
+        PrepareFilterForConv(reversed_filter.as_span(), &prepared_filter);
+        Conv(source.as_span(), reversed_filter.as_span(), dest.as_span(),
+             frames_to_process, &prepared_filter);
         for (size_t i = 0u; i < frames_to_process; ++i) {
           EXPECT_NEAR(expected_dest[i], dest[i],
                       1e-3 * std::abs(expected_dest[i]));
