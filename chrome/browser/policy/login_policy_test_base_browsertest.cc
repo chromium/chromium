@@ -17,7 +17,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -243,8 +243,7 @@ class StartupBrowserWindowLaunchSuppressedTest : public LoginPolicyTestBase {
 
     Profile* const profile = GetProfileForActiveUser();
 
-    ASSERT_EQ(count,
-              ProfileBrowserCollection::GetForProfile(profile)->GetSize());
+    ASSERT_EQ(count, chrome::GetBrowserCount(profile));
   }
 };
 

@@ -1048,9 +1048,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     // loaded when main message loop ends and we cannot load it from disk now.
     return;
   }
-  DCHECK_EQ(0u,
-            ProfileBrowserCollection::GetForProfile(_lastProfile)->GetSize());
-  if (!ProfileBrowserCollection::GetForProfile(_lastProfile)->GetSize()) {
+  DCHECK_EQ(0u, chrome::GetBrowserCount(_lastProfile));
+  if (!chrome::GetBrowserCount(_lastProfile)) {
     // As we're shutting down, we need to nuke the TabRestoreService, which
     // will start the shutdown of the NavigationControllers and allow for
     // proper shutdown. If we don't do this, Chrome won't shut down cleanly,

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -218,8 +217,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
   // Policy urls should be opened on a new window if the startup policy is set
   // as kPrefValueLastAndURLs.
   if (!expected_urls_in_new_window_.empty()) {
-    ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
-                      ->GetSize());
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
     BrowserWindowInterface* const pref_urls_opened_browser =
         chrome::FindLastActiveWithProfile(browser()->profile());
     ASSERT_TRUE(pref_urls_opened_browser);

@@ -299,26 +299,20 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, CreateNewWindow) {
   AppListControllerDelegate* controller = client;
   ASSERT_TRUE(controller);
 
-  EXPECT_EQ(
-      1U,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
-  EXPECT_EQ(0U, ProfileBrowserCollection::GetForProfile(
-                    browser()->profile()->GetPrimaryOTRProfile(
-                        /*create_if_needed=*/true))
-                    ->GetSize());
+  EXPECT_EQ(1U, chrome::GetBrowserCount(browser()->profile()));
+  EXPECT_EQ(0U,
+            chrome::GetBrowserCount(browser()->profile()->GetPrimaryOTRProfile(
+                /*create_if_needed=*/true)));
 
   controller->CreateNewWindow(/*incognito=*/false,
                               /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(
-      2U,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(2U, chrome::GetBrowserCount(browser()->profile()));
 
   controller->CreateNewWindow(/*incognito=*/true,
                               /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(1U, ProfileBrowserCollection::GetForProfile(
-                    browser()->profile()->GetPrimaryOTRProfile(
-                        /*create_if_needed=*/true))
-                    ->GetSize());
+  EXPECT_EQ(1U,
+            chrome::GetBrowserCount(browser()->profile()->GetPrimaryOTRProfile(
+                /*create_if_needed=*/true)));
 }
 
 // When getting activated, SelfDestroyAppItem has itself removed from the
@@ -861,9 +855,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile);
 
   // Starting with just one regular browser.
-  EXPECT_EQ(1U, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
-  EXPECT_EQ(0U,
-            ProfileBrowserCollection::GetForProfile(profile_otr)->GetSize());
+  EXPECT_EQ(1U, chrome::GetBrowserCount(profile));
+  EXPECT_EQ(0U, chrome::GetBrowserCount(profile_otr));
 
   // First browser launch time should be recorded.
   const base::Time time_recorded1 =
@@ -874,8 +867,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   // exiting the test.
   controller->CreateNewWindow(/*incognito=*/true,
                               /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(1U,
-            ProfileBrowserCollection::GetForProfile(profile_otr)->GetSize());
+  EXPECT_EQ(1U, chrome::GetBrowserCount(profile_otr));
   // Creating incognito browser should not update the launch time.
   EXPECT_EQ(time_recorded1,
             prefs->GetLastLaunchTime(app_constants::kChromeAppId));
@@ -883,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   // Close the regular browser.
   CloseBrowserSynchronously(
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser());
-  EXPECT_EQ(0U, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
+  EXPECT_EQ(0U, chrome::GetBrowserCount(profile));
   // Recorded the launch time should not update.
   EXPECT_EQ(time_recorded1,
             prefs->GetLastLaunchTime(app_constants::kChromeAppId));
@@ -893,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   controller->CreateNewWindow(/*incognito=*/false,
                               /*should_trigger_session_restore=*/true);
   const base::Time time_after_launch = base::Time::Now();
-  EXPECT_EQ(1U, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
+  EXPECT_EQ(1U, chrome::GetBrowserCount(profile));
 
   const base::Time time_recorded2 =
       prefs->GetLastLaunchTime(app_constants::kChromeAppId);
@@ -903,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   // Creating a second regular browser should not update the launch time.
   controller->CreateNewWindow(/*incognito=*/false,
                               /*should_trigger_session_restore=*/true);
-  EXPECT_EQ(2U, ProfileBrowserCollection::GetForProfile(profile)->GetSize());
+  EXPECT_EQ(2U, chrome::GetBrowserCount(profile));
   EXPECT_EQ(time_recorded2,
             prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 }

@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   BrowserWindowInterface* new_browser = nullptr;
 
   // The last used profile (the profile_2 in this case) must be active.
-  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile_2)->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_2));
   new_browser = ProfileBrowserCollection::GetForProfile(&profile_2)
                     ->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);
@@ -101,19 +101,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   }
 
   // All other profiles browser should not be active.
-  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile_1)->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_1));
   new_browser = ProfileBrowserCollection::GetForProfile(&profile_1)
                     ->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 
-  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile_3)->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_3));
   new_browser = ProfileBrowserCollection::GetForProfile(&profile_3)
                     ->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 
-  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile_4)->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_4));
   new_browser = ProfileBrowserCollection::GetForProfile(&profile_4)
                     ->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser);

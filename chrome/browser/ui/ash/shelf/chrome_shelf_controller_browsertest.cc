@@ -81,7 +81,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -2427,9 +2426,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   SelectApp(web_app_id, ash::LAUNCH_FROM_APP_LIST);
 
   // There should be no new browsers or tabs as both apps were already open.
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
@@ -2488,9 +2485,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   browser_created_observer2.Wait();
 
   // There should be two new browsers.
-  EXPECT_EQ(
-      3u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
 
   // The apps should now be running.
   EXPECT_EQ(ash::STATUS_RUNNING,

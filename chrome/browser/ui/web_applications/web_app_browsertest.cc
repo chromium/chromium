@@ -51,7 +51,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -754,8 +753,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OpenInChrome) {
 
     EXPECT_EQ(1, app_browser->tab_strip_model()->count());
     EXPECT_EQ(1, browser()->tab_strip_model()->count());
-    ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->profile())
-                      ->GetSize());
+    ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
     ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
         app_browser);
@@ -776,9 +774,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OpenInChrome) {
   }
 
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 }
 
 // Check the 'App info' menu button for web app windows.

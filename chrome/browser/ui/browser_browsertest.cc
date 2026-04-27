@@ -52,8 +52,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -74,7 +72,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -114,8 +111,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -1222,9 +1217,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // There should be one browser and one tab to start with.
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Load an app.
@@ -1254,9 +1247,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
 #endif  // BUILDFLAG(IS_WIN)
 
   // Check that the number of browsers and tabs is correct.
-  EXPECT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -1316,9 +1307,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   Browser* const dev_tools_browser = browser_created_observer->Wait();
 
   // The launch should have created a new app browser and a dev tools browser.
-  ASSERT_EQ(
-      3u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
 
   ASSERT_TRUE(dev_tools_browser);
   ASSERT_TRUE(app_browser);
@@ -1352,9 +1341,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(),
                                                     /*is_docked=*/true);
-  ASSERT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 
   // Grab its main web contents.
   content::WebContents* devtools_main_web_contents =
@@ -1367,9 +1354,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
       static_cast<DevToolsUIBindings::Delegate*>(devtools_window);
   devtools_delegate->SetIsDocked(false);
   // This should have created a new dev tools browser.
-  ASSERT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Re-attach the dev tools window. This resets its Browser*.
   ui_test_utils::BrowserDestroyedObserver observer(
@@ -1377,9 +1362,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
   devtools_delegate->SetIsDocked(true);
   // Wait until the browser actually gets closed.
   observer.Wait();
-  ASSERT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 
   // Do something that will make SearchTabHelper access its OmniboxView. This
   // should not crash, even though the Browser association and thus the
@@ -1424,27 +1407,23 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   g_browser_process->local_state()->SetInteger(
       prefs::kLastWhatsNewVersion, version_info::GetMajorVersionNumberAsInt());
 
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
-
   // Close the browser window.
-  CloseBrowserSynchronously(browser());
+  browser()->window()->Close();
 
   // Launch again with the same profile.
-  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun first_run =
       first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.Launch(profile(), chrome::startup::IsProcessStartup::kNo,
+  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
                 /*restore_tabbed_browser=*/true);
-  Browser* const new_browser = browser_created_observer.Wait();
 
   // The launch should have created a new browser.
-  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(profile())->GetSize());
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  // Find the new browser.
+  Browser* const new_browser = ui_test_utils::GetBrowserNotInSet({browser()});
 
   // We should get back an additional tab for the app, and another for the
   // default home page.
@@ -1500,9 +1479,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
             app_window->GetURL());
 
   // The launch should have created a new browser.
-  ASSERT_EQ(
-      2u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   ASSERT_TRUE(new_browser);
   ASSERT_TRUE(new_browser != browser());
@@ -2343,9 +2320,7 @@ class ClickModifierTest : public InProcessBrowserTest {
                blink::WebMouseEvent::Button button,
                WindowOpenDisposition disposition) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
-    EXPECT_EQ(
-        1u,
-        ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize());
+    EXPECT_EQ(1u, chrome::GetBrowserCount(browser->profile()));
     EXPECT_EQ(1, browser->tab_strip_model()->count());
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
@@ -2355,8 +2330,7 @@ class ClickModifierTest : public InProcessBrowserTest {
       content::TestNavigationObserver same_tab_observer(web_contents);
       SimulateMouseClick(web_contents, modifiers, button);
       same_tab_observer.Wait();
-      EXPECT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser->profile())
-                        ->GetSize());
+      EXPECT_EQ(1u, chrome::GetBrowserCount(browser->profile()));
       EXPECT_EQ(1, browser->tab_strip_model()->count());
       EXPECT_EQ(GetSecondPageTitle(), web_contents->GetTitle());
       return;
@@ -2368,14 +2342,11 @@ class ClickModifierTest : public InProcessBrowserTest {
     new_tab_observer.Wait();
 
     if (disposition == WindowOpenDisposition::NEW_WINDOW) {
-      EXPECT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser->profile())
-                        ->GetSize());
+      EXPECT_EQ(2u, chrome::GetBrowserCount(browser->profile()));
       return;
     }
 
-    EXPECT_EQ(
-        1u,
-        ProfileBrowserCollection::GetForProfile(browser->profile())->GetSize());
+    EXPECT_EQ(1u, chrome::GetBrowserCount(browser->profile()));
     EXPECT_EQ(2, browser->tab_strip_model()->count());
     web_contents = browser->tab_strip_model()->GetActiveWebContents();
     if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
@@ -3225,9 +3196,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserCloseEmitsClosedNotificationsOnce) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // There should be one browser and one tab to start with.
-  EXPECT_EQ(
-      1u,
-      ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
+  EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Assert only a single closed operation is propagated to registered clients.
