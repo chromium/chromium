@@ -120,7 +120,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
         base::BindRepeating(&GlicInstanceCoordinatorImpl::CheckMemoryUsage,
                             base::Unretained(this)));
   }
-  host_manager_ = std::make_unique<HostManager>(profile, GetWeakPtr());
+  host_manager_ = std::make_unique<HostManager>(profile, this);
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {

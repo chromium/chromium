@@ -11,6 +11,7 @@
 
 namespace content {
 class WebContents;
+class RenderProcessHost;
 }
 
 namespace glic {
@@ -36,6 +37,10 @@ GURL MaybeAddMultiInstanceParameter(const GURL& guest_url);
 
 // Returns true if `web_contents` contains the Glic WebUI application.
 bool IsGlicWebUI(const content::WebContents* web_contents);
+
+// Returns true if `process_host` is either the Glic FRE WebUI or the Glic
+// main WebUI.
+bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
 
 // Returns the guest web contents if `web_contents` is the glic host.
 content::WebContents* GetGlicGuestWebContents(

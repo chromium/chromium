@@ -16,9 +16,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/certificate_viewer.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -54,12 +56,8 @@ namespace {
 
 // Checks that `contents` is for glic.
 bool IsForGlic(content::WebContents* contents) {
-  content::WebContents* outer = contents->GetOutermostWebContents();
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          outer->GetBrowserContext());
-  return glic_service && (glic_service->IsGlicWebUi(contents) ||
-                          glic_service->IsGlicWebUi(outer));
+  return glic::IsGlicWebUI(contents) ||
+         glic::IsGlicWebUI(contents->GetOutermostWebContents());
 }
 
 // Combines IsForGlic with glic dev switch.

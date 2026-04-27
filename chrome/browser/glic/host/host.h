@@ -569,8 +569,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
 // else soon.
 class HostManager {
  public:
-  HostManager(Profile* profile,
-              base::WeakPtr<GlicInstanceCoordinator> window_controller);
+  HostManager(Profile* profile, GlicInstanceCoordinator* instance_coordinator);
   ~HostManager();
 
   void Shutdown();
@@ -588,9 +587,9 @@ class HostManager {
   std::vector<Host*> GetAllHosts();
 
  private:
-  std::vector<Host*> GetPrimaryHosts();
   raw_ptr<Profile> profile_;
-  base::WeakPtr<GlicInstanceCoordinator> window_controller_;
+  // Owns this.
+  raw_ptr<GlicInstanceCoordinator> instance_coordinator_;
 };
 
 }  // namespace glic

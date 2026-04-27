@@ -404,10 +404,6 @@ void GlicKeyedService::UnpinTabsFromAllInstances(
   }
 }
 
-void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
-  host_manager().GuestAdded(guest_contents);
-}
-
 bool GlicKeyedService::IsWindowShowing() const {
   for (const auto* instance : instance_coordinator().GetInstances()) {
     if (instance && instance->IsShowing()) {
@@ -596,13 +592,6 @@ base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
-  if (!contents) {
-    return false;
-  }
-  return host_manager().IsGlicWebUi(contents);
-}
-
 void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
   base::UmaHistogramEnumeration("Glic.Prewarming.ChecksResult", result);
   if (preload_callback_) {
@@ -615,19 +604,6 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
   }
 
   web_contents_warming_pool_->EnsurePreload();
-}
-
-bool GlicKeyedService::IsProcessHostForGlic(
-    content::RenderProcessHost* process_host) {
-  return host_manager().IsGlicWebUiHost(process_host);
-}
-
-bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
-  return host_manager().IsGlicWebUi(web_contents);
-}
-
-HostManager& GlicKeyedService::host_manager() {
-  return instance_coordinator().host_manager();
 }
 
 GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {

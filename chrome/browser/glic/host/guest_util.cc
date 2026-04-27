@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -167,18 +169,29 @@ bool IsGlicWebUI(const content::WebContents* web_contents) {
          web_contents->GetLastCommittedURL() == chrome::kChromeUIGlicURL;
 }
 
+bool IsProcessHostForGlic(content::RenderProcessHost* process_host) {
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      process_host->GetBrowserContext(), /*create=*/false);
+  if (!service) {
+    return false;
+  }
+  return service->instance_coordinator().host_manager().IsGlicWebUiHost(
+      process_host);
+}
+
 content::WebContents* GetGlicGuestWebContents(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
   }
   GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      web_contents->GetBrowserContext());
+      web_contents->GetBrowserContext(), /*create=*/false);
   if (!service) {
     return nullptr;
   }
 
-  for (Host* host : service->host_manager().GetAllHosts()) {
+  for (Host* host :
+       service->instance_coordinator().host_manager().GetAllHosts()) {
     if (host->webui_contents() == web_contents) {
       content::RenderFrameHost* guest_rfh = host->GetGuestMainFrame();
       return guest_rfh ? content::WebContents::FromRenderFrameHost(guest_rfh)
@@ -205,8 +218,8 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (!IsGlicWebUI(top)) {
     return false;
   }
-  GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(top->GetBrowserContext());
+  GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      top->GetBrowserContext(), /*create=*/false);
   if (!service) {
     return false;
   }
@@ -215,7 +228,7 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   guest_contents->SetSupportsDraggableRegions(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  service->GuestAdded(guest_contents);
+  service->instance_coordinator().host_manager().GuestAdded(guest_contents);
 
   guest_contents->SetUserData(
       "glic::WebviewWebContentsObserver",

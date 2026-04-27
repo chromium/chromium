@@ -148,9 +148,6 @@ class GlicKeyedService : public KeyedService,
   void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
                                  GlicUnpinTrigger trigger);
 
-  // Called when a webview guest is created within a chrome://glic WebUI.
-  void GuestAdded(content::WebContents* guest_contents);
-
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
 
@@ -227,8 +224,6 @@ class GlicKeyedService : public KeyedService,
   GlicRegionCaptureController& region_capture_controller();
 #endif
 
-  bool IsActiveWebContents(content::WebContents* contents);
-
   void AddPreloadCallback(base::OnceCallback<void()> callback);
 
   virtual void TryPreload();
@@ -247,18 +242,9 @@ class GlicKeyedService : public KeyedService,
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
-  HostManager& host_manager();
-
   GlicWebContentsWarmingPool& web_contents_warming_pool() {
     return *web_contents_warming_pool_;
   }
-
-  // Returns whether this process host is either the Glic FRE WebUI or the Glic
-  // main WebUI.
-  bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
-  // Returns whether this web contents contains the Chrome glic WebUI,
-  // chrome://glic.
-  bool IsGlicWebUi(content::WebContents* web_contents);
 
   // Get the GlicInstance associated with the given browser's active tab, or
   // null if there is none. `bwi` can be null if preloaded with no browser open.

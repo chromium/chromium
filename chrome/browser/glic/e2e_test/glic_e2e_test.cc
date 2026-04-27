@@ -336,7 +336,8 @@ void GlicE2ETest::ThrottleWebContentsNetwork(
 void GlicE2ETest::ThrottleGlicNetwork() {
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  for (auto* host : glic_service->host_manager().GetAllHosts()) {
+  for (auto* host :
+       glic_service->instance_coordinator().host_manager().GetAllHosts()) {
     auto* webui_contents = host->webui_contents();
     if (webui_contents) {
       content::WebContents* inner_contents =

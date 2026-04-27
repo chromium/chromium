@@ -118,18 +118,8 @@ class GlicUI : public ui::MojoWebUIController,
       preload_factory_receiver_{this};
 
   // Raw pointer to the host this UI is attached to. This object is not owned
-  // by GlicUI. Its lifetime is managed by GlicKeyedService (single-instance) or
-  // GlicInstanceImpl (multi-instance).
-  //
-  // In the single-instance path, `HostManager` (owned by `GlicKeyedService`)
-  // owns `Host`s. `HostManager::Shutdown()` is called during
-  // `GlicKeyedService::Shutdown()`, which destroys all hosts and thus their
-  // associated WebUIs.
-  //
-  // In the multi-instance path, `GlicInstanceImpl` owns `Host`. The
-  // `GlicInstanceImpl` calls `Shutdown()` on the `Host` in its destructor,
-  // which destroys the WebUI (and thus this `GlicUI`), ensuring `host_`
-  // outlives `this`.
+  // by GlicUI. Its lifetime is managed by GlicInstanceImpl (multi-instance),
+  // which owns Host.
   raw_ptr<Host> host_ = nullptr;
 
   mojo::PendingReceiver<glic::mojom::PageHandler> pending_receiver_;

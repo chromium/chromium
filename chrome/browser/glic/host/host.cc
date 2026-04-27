@@ -762,10 +762,9 @@ void Host::FloatingPanelCanAttachChanged(bool can_attach) {
   handler_info_->web_client->FloatingPanelCanAttachChanged(can_attach);
 }
 
-HostManager::HostManager(
-    Profile* profile,
-    base::WeakPtr<GlicInstanceCoordinator> window_controller)
-    : profile_(profile), window_controller_(window_controller) {}
+HostManager::HostManager(Profile* profile,
+                         GlicInstanceCoordinator* instance_coordinator)
+    : profile_(profile), instance_coordinator_(instance_coordinator) {}
 
 HostManager::~HostManager() = default;
 
@@ -778,12 +777,10 @@ void HostManager::Shutdown() {
 void HostManager::GuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
-  for (Host* host : GetPrimaryHosts()) {
+
+  for (Host* host : GetAllHosts()) {
     auto* webui_contents = host->webui_contents();
-    if (!webui_contents) {
-      continue;
-    }
-    if (top != webui_contents) {
+    if (!webui_contents || top != webui_contents) {
       continue;
     }
 
@@ -801,7 +798,11 @@ void HostManager::GuestAdded(content::WebContents* guest_contents) {
 }
 
 std::vector<Host*> HostManager::GetAllHosts() {
-  return GetPrimaryHosts();
+  std::vector<Host*> hosts;
+  for (GlicInstance* instance : instance_coordinator_->GetInstances()) {
+    hosts.push_back(&instance->host());
+  }
+  return hosts;
 }
 
 bool HostManager::IsGlicWebUi(content::WebContents* contents) {
@@ -820,17 +821,6 @@ bool HostManager::IsGlicWebUiHost(content::RenderProcessHost* process_host) {
     }
   }
   return false;
-}
-
-std::vector<Host*> HostManager::GetPrimaryHosts() {
-  if (!window_controller_) {
-    return {};
-  }
-  std::vector<Host*> hosts;
-  for (GlicInstance* instance : window_controller_->GetInstances()) {
-    hosts.push_back(&instance->host());
-  }
-  return hosts;
 }
 
 }  // namespace glic

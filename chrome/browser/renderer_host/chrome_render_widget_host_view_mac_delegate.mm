@@ -10,8 +10,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 #include "chrome/browser/ui/browser.h"
@@ -455,9 +455,7 @@
   // inactive, aligning with the expected behavior of native chrome dialogs.
   // TODO(crbug.com/399119513): Consider making this a single WebContents
   // scoped setting, allowing this behavior to be configured by feature code.
-  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
-      Profile::FromBrowserContext(webContents->GetBrowserContext()));
-  if (glic_service && glic_service->IsActiveWebContents(webContents)) {
+  if (glic::GetGlicGuestWebContents(webContents) != nullptr) {
     return AcceptMouseEvents::kWhenInActiveApp;
   }
 
