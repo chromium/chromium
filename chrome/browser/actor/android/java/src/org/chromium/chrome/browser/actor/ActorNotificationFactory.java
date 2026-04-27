@@ -71,7 +71,6 @@ public class ActorNotificationFactory {
                                         /* notificationTag= */ null,
                                         notificationId))
                         .setSmallIcon(R.drawable.ic_spark_24dp)
-                        .setGroup(NotificationConstants.GROUP_ACTOR)
                         .setLocalOnly(true)
                         .setSilent(isSilent);
 
