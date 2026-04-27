@@ -61,6 +61,22 @@ found in the LICENSE file.
         android:focusable="true"
         android:text="@string/ntp_customization_subtitle" />
 
+    <LinearLayout
+        android:id="@+id/ntp_theme_history_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_description"
+        app:layout_constraintStart_toStartOf="@id/bottom_sheet_title"
+        app:layout_constraintEnd_toEndOf="@id/bottom_sheet_title"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_sheet_list_container_view"
+        android:visibility="gone">
+        <include
+            layout="@layout/ntp_customization_history_data_container_layout" />
+    </LinearLayout>
+
     <org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView
         android:id="@+id/ntp_customization_options_container"
         android:layout_width="match_parent"
@@ -68,7 +84,7 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:layout_marginTop="@dimen/ntp_customization_ntp_cards_margin"
         android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_description"
+        app:layout_constraintTop_toBottomOf="@id/ntp_theme_history_container"
         app:layout_constraintStart_toStartOf="parent" >
     </org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView>
 

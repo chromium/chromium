@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Horizontal RecyclerView for theme history items. -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ntp_theme_history_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:orientation="horizontal"
+        android:padding="@dimen/ntp_customization_history_data_recyclerview_padding"
+        android:layout_marginBottom="@dimen/ntp_customization_theme_list_item_margin_top"
+        android:clipToPadding="false"
+        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_top"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/more_options_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_bottom">
+
+        <ImageView
+            android:id="@+id/more_options_icon"
+            android:layout_width="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
+            android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
+            android:src="@drawable/paint_icon"
+            android:layout_marginTop="@dimen/ntp_customization_history_data_recyclerview_padding"
+            android:layout_marginBottom="@dimen/ntp_customization_history_data_recyclerview_padding"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/more_options_title"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/more_options_title"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constrainedWidth="true"
+            android:singleLine="true"
+            android:text="@string/ntp_customization_more_options_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/more_options_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
