@@ -97,14 +97,15 @@ std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory(
     if (!application_tag.empty()) {
       config.application_tag = std::string(application_tag);
     }
-  }
-  auto unexportable_key_factory =
-      UnexportablePrivateKeyFactory::TryCreate(std::move(config));
-  if (unexportable_key_factory) {
-    sub_factories.insert_or_assign(PrivateKeySource::kUnexportableKey,
-                                   std::move(unexportable_key_factory));
-  } else {
-    LOG(ERROR) << "Failed to create unexportable key factory.";
+
+    auto unexportable_key_factory =
+        UnexportablePrivateKeyFactory::TryCreate(std::move(config));
+    if (unexportable_key_factory) {
+      sub_factories.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                                     std::move(unexportable_key_factory));
+    } else {
+      LOG(ERROR) << "Failed to create unexportable key factory.";
+    }
   }
 
   return PrivateKeyFactory::Create(std::move(sub_factories));
