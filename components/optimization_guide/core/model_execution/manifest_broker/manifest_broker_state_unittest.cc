@@ -81,33 +81,58 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
       [&]() { return !fake_.launcher().is_service_running(); }));
 }
 
-// TODO(holte): Maybe flaky on android somehow?  Will land separately.
-// // When the device is incapable of downloading models due to low disk space,
-// // session creations attempts should fail, rather than hang.
-// TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
-//   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+// When the device is incapable of downloading models due to low disk space,
+// session creations attempts should fail, rather than hang.
+TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
 
-//   // Ensure the device is considered incapable of using on-device models.
-//   base::test::ScopedFeatureList feature_list;
-//   feature_list.InitAndDisableFeature(
-//       on_device_model::features::kOnDeviceModelCpuBackend);
-//   fake_.component_state().SetFreeDiskSpace(base::ByteCount(1));
-//   fake_.Startup();
+  // Ensure the device is considered incapable of using on-device models.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      on_device_model::features::kOnDeviceModelCpuBackend);
+  fake_.component_state().SetFreeDiskSpace(base::ByteCount(1));
+  fake_.Startup();
 
-//   base::HistogramTester histogram_tester;
-//   base::test::TestFuture<ModelBrokerClient::CreateSessionResult>
-//   session_future; fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
-//                                SessionConfigParams{},
-//                                session_future.GetCallback());
-//   // Broker should have a Manifest that supports no features, so session
-//   // creations should fail (kNotSupported).
-//   ASSERT_FALSE(session_future.Take());
-// }
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  // Broker should have a Manifest that supports no features, so session
+  // creations should fail (kNotSupported).
+  ASSERT_FALSE(session_future.Take());
+}
 
-// TODO(crbug.com/504749700): Ensure equivalent scenarios from these
-// OnDeviceModelServiceControllerTest tests are covered here:
-// TestAvailabilityObserver
-// GetCapabilities
+class TestOnDeviceModelAvailabilityObserver
+    : public OnDeviceModelAvailabilityObserver {
+ public:
+  explicit TestOnDeviceModelAvailabilityObserver(
+      mojom::OnDeviceFeature expected_feature) {
+    expected_feature_ = expected_feature;
+  }
+
+  void OnDeviceModelAvailabilityChanged(
+      mojom::OnDeviceFeature feature,
+      OnDeviceModelEligibilityReason reason) override {
+    EXPECT_EQ(expected_feature_, feature);
+    reason_ = reason;
+  }
+  mojom::OnDeviceFeature expected_feature_;
+  std::optional<OnDeviceModelEligibilityReason> reason_;
+};
+
+// Verify that availability observers are hooked up to the ModelBrokerImpl.
+TEST_F(ManifestBrokerStateTest, TestAvailabilityObserver) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.Startup();
+  TestOnDeviceModelAvailabilityObserver obs(mojom::OnDeviceFeature::kTest);
+  fake_.state().AddOnDeviceModelAvailabilityChangeObserver(
+      mojom::OnDeviceFeature::kTest, &obs);
+  fake_.client().RequestAssetsFor("test");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return obs.reason_ == OnDeviceModelEligibilityReason::kSuccess;
+  }));
+}
 
 // Tests fallback when `max_tokens` manifest proto field is 0 or unspecified.
 TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
