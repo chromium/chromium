@@ -43,7 +43,8 @@ UIColor* NormalTintColor() {
 
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
                           incognito:(BOOL)incognito {
-  if ((self = [super initWithFrame:CGRectZero])) {
+  if ((self = [super initWithFrame:CGRectMake(0, 0, kToolbarButtonSize,
+                                              kToolbarButtonSize)])) {
     _imageLoader = [imageLoader copy];
 
     [NSLayoutConstraint activateConstraints:@[
