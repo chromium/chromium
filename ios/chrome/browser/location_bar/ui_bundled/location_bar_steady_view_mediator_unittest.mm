@@ -19,7 +19,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -29,7 +31,8 @@
 class LocationBarSteadyViewMediatorTest : public PlatformTest {
  protected:
   LocationBarSteadyViewMediatorTest()
-      : mediator_([[LocationBarSteadyViewMediator alloc]
+      : web_client_(std::make_unique<web::FakeWebClient>()),
+        mediator_([[LocationBarSteadyViewMediator alloc]
             initWithLocationBarModel:&model_]),
         consumer_([[FakeLocationBarSteadyViewConsumer alloc] init]) {
     // Set up the TestBrowser.
@@ -51,6 +54,7 @@ class LocationBarSteadyViewMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
