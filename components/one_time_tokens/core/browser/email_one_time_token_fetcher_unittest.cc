@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
@@ -91,6 +92,7 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
@@ -169,6 +171,8 @@ TEST_F(EmailOneTimeTokenFetcherTest, NetworkError) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency", 1);
 }
 
 // Tests that an error is returned when the response proto is invalid.

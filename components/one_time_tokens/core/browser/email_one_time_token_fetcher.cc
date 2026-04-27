@@ -5,6 +5,7 @@
 #include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
 
 #include "base/base64url.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_request.pb.h"
 #include "components/one_time_tokens/core/browser/fetch_email_one_time_token_response.pb.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -136,12 +137,15 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
       url_loader_factory_.get(),
       base::BindOnce(
           &EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService,
-          weakptr_factory_.GetWeakPtr()),
+          weakptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void EmailOneTimeTokenFetcher::OnResponseBytesFromOneTimeTokenService(
+    base::TimeTicks network_request_start_time,
     std::optional<std::string> response_body) {
+  base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency",
+                          base::TimeTicks::Now() - network_request_start_time);
   if (response_body.has_value()) {
     auto result = ExtractOneTimeTokenValueFromResponse(*response_body);
     simple_url_loader_.reset();

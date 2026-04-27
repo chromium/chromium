@@ -5631,6 +5631,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.NetworkLatency"
+    units="ms" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration of the network request to the OneTimeTokenService to
+    fetch a Gmail one time token. Recorded when the response is received.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.Success" enum="Boolean"
     expires_after="2027-05-01">
   <owner>koerber@google.com</owner>

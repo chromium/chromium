@@ -65,6 +65,7 @@ class EmailOneTimeTokenFetcher {
 
   // Callback for when the network request to the Gmail OTP endpoint completes.
   void OnResponseBytesFromOneTimeTokenService(
+      base::TimeTicks network_request_start_time,
       std::optional<std::string> response_body);
 
   // Parses the response proto and extracts the OneTimeToken value from it.
