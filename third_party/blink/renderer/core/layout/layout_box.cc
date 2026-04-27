@@ -1110,12 +1110,13 @@ LayoutUnit LayoutBox::ScrollWidth() const {
       return ScrollableOverflowRect().Width();
   }
   // For objects with scrollable overflow, this matches IE.
-  PhysicalRect overflow_rect = ScrollableOverflowRect();
+  const PhysicalRect overflow_rect = ScrollableOverflowRect();
   if (!StyleRef().GetWritingDirection().IsFlippedX()) {
-    return std::max(ClientWidth(), overflow_rect.Right() - BorderLeft());
+    return std::max(ClientWidth(),
+                    overflow_rect.Right() - BorderOutsets().left);
   }
   return ClientWidth() -
-         std::min(LayoutUnit(), overflow_rect.X() - BorderLeft());
+         std::min(LayoutUnit(), overflow_rect.X() - BorderOutsets().left);
 }
 
 LayoutUnit LayoutBox::ScrollHeight() const {
@@ -1132,7 +1133,7 @@ LayoutUnit LayoutBox::ScrollHeight() const {
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
   return std::max(ClientHeight(),
-                  ScrollableOverflowRect().Bottom() - BorderTop());
+                  ScrollableOverflowRect().Bottom() - BorderOutsets().top);
 }
 
 PhysicalBoxStrut LayoutBox::MarginOutsets() const {
@@ -4317,10 +4318,8 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
   PhysicalRect constraining_rect(OverflowClipRect(PhysicalOffset()));
-  constraining_rect.Move(PhysicalOffset(-BorderLeft() + PaddingLeft(),
-                                        -BorderTop() + PaddingTop()));
-  constraining_rect.ContractEdges(LayoutUnit(), PaddingLeft() + PaddingRight(),
-                                  PaddingTop() + PaddingBottom(), LayoutUnit());
+  constraining_rect.Move(-BorderOutsets().Offset());
+  constraining_rect.Contract(PaddingOutsets());
 
   // Subtract off the scroll origin to move into scrolling content space.
   constraining_rect.Move(-PhysicalOffset(ScrollOrigin()));

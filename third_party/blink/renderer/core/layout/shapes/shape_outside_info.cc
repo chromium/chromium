@@ -70,8 +70,8 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
     LogicalSize new_reference_box_logical_size,
     LogicalSize margin_size) {
   Document& document = layout_box_->GetDocument();
-  bool is_horizontal_writing_mode =
-      layout_box_->ContainingBlock()->StyleRef().IsHorizontalWritingMode();
+  const WritingDirectionMode writing_direction =
+      layout_box_->ContainingBlock()->StyleRef().GetWritingDirection();
 
   LogicalSize margin_box_for_use_counter = new_reference_box_logical_size;
   margin_box_for_use_counter.Expand(margin_size.inline_size,
@@ -89,13 +89,8 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       break;
     case CSSBoxType::kPadding:
       UseCounter::Count(document, WebFeature::kShapeOutsidePaddingBox);
-      if (is_horizontal_writing_mode) {
-        new_reference_box_logical_size.Shrink(layout_box_->BorderWidth(),
-                                              layout_box_->BorderHeight());
-      } else {
-        new_reference_box_logical_size.Shrink(layout_box_->BorderHeight(),
-                                              layout_box_->BorderWidth());
-      }
+      new_reference_box_logical_size -=
+          layout_box_->BorderOutsets().ConvertToLogical(writing_direction);
 
       if (new_reference_box_logical_size != margin_box_for_use_counter) {
         UseCounter::Count(
@@ -104,20 +99,14 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       }
       break;
     case CSSBoxType::kContent: {
-      bool is_shape_image = shape_value.GetType() == ShapeValue::kImage;
-
-      if (!is_shape_image)
+      const bool is_shape_image = shape_value.GetType() == ShapeValue::kImage;
+      if (!is_shape_image) {
         UseCounter::Count(document, WebFeature::kShapeOutsideContentBox);
-
-      if (is_horizontal_writing_mode) {
-        new_reference_box_logical_size.Shrink(
-            layout_box_->BorderAndPaddingWidth(),
-            layout_box_->BorderAndPaddingHeight());
-      } else {
-        new_reference_box_logical_size.Shrink(
-            layout_box_->BorderAndPaddingHeight(),
-            layout_box_->BorderAndPaddingWidth());
       }
+
+      new_reference_box_logical_size -=
+          (layout_box_->BorderOutsets() + layout_box_->PaddingOutsets())
+              .ConvertToLogical(writing_direction);
 
       if (!is_shape_image &&
           new_reference_box_logical_size != margin_box_for_use_counter) {

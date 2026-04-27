@@ -227,39 +227,38 @@ void WriteLayoutObject(StringBuilder& ts,
     if (!o.IsBoxModelObject())
       return;
 
-    const auto& box = To<LayoutBoxModelObject>(o);
-    if (box.BorderTop() || box.BorderRight() || box.BorderBottom() ||
-        box.BorderLeft()) {
+    const PhysicalBoxStrut border = To<LayoutBoxModelObject>(o).BorderOutsets();
+    if (!border.IsZero()) {
       ts << " [border:";
 
-      if (!box.BorderTop()) {
+      if (!border.top) {
         ts << " none";
       } else {
-        ts << " (" << box.BorderTop() << "px ";
+        ts << " (" << border.top << "px ";
         PrintBorderStyle(ts, o.StyleRef().BorderTopStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderTopColor()) << ")";
       }
 
-      if (!box.BorderRight()) {
+      if (!border.right) {
         ts << " none";
       } else {
-        ts << " (" << box.BorderRight() << "px ";
+        ts << " (" << border.right << "px ";
         PrintBorderStyle(ts, o.StyleRef().BorderRightStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderRightColor()) << ")";
       }
 
-      if (!box.BorderBottom()) {
+      if (!border.bottom) {
         ts << " none";
       } else {
-        ts << " (" << box.BorderBottom() << "px ";
+        ts << " (" << border.bottom << "px ";
         PrintBorderStyle(ts, o.StyleRef().BorderBottomStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderBottomColor()) << ")";
       }
 
-      if (!box.BorderLeft()) {
+      if (!border.left) {
         ts << " none";
       } else {
-        ts << " (" << box.BorderLeft() << "px ";
+        ts << " (" << border.left << "px ";
         PrintBorderStyle(ts, o.StyleRef().BorderLeftStyle());
         ts << o.ResolveColor(GetCSSPropertyBorderLeftColor()) << ")";
       }

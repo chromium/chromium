@@ -234,15 +234,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return LayoutUnit(StyleRef().BorderRightWidth());
   }
 
-  LayoutUnit BorderWidth() const {
-    NOT_DESTROYED();
-    return BorderLeft() + BorderRight();
-  }
-  LayoutUnit BorderHeight() const {
-    NOT_DESTROYED();
-    return BorderTop() + BorderBottom();
-  }
-
   PhysicalBoxStrut BorderOutsets() const {
     NOT_DESTROYED();
     return {BorderTop(), BorderRight(), BorderBottom(), BorderLeft()};
@@ -320,7 +311,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
 
-  LogicalRect LocalCaretRectForEmptyElement(LayoutUnit width,
+  LogicalRect LocalCaretRectForEmptyElement(LayoutUnit inline_size,
                                             LayoutUnit text_indent_offset,
                                             CaretShape caret_shape) const;
 

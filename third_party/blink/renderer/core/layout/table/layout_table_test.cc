@@ -254,11 +254,7 @@ TEST_F(LayoutTableTest, PaddingWithCollapsedBorder) {
     </table>
   )HTML");
 
-  auto* table = GetTableByElementId("table");
-  EXPECT_EQ(0, table->PaddingLeft());
-  EXPECT_EQ(0, table->PaddingRight());
-  EXPECT_EQ(0, table->PaddingTop());
-  EXPECT_EQ(0, table->PaddingBottom());
+  EXPECT_EQ(PhysicalBoxStrut(), GetTableByElementId("table")->PaddingOutsets());
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {

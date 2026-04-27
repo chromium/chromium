@@ -556,8 +556,8 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
 
   const auto* scroll_container = scroll_container_layer.GetLayoutBox();
   DCHECK(scroll_container);
-  const PhysicalOffset scroll_container_border_offset(
-      scroll_container->BorderLeft(), scroll_container->BorderTop());
+  const PhysicalOffset scroll_container_border_offset =
+      scroll_container->BorderOutsets().Offset();
 
   MapCoordinatesFlags flags = kIgnoreTransforms | kIgnoreScrollOffset |
                               kIgnoreStickyOffset |
@@ -805,14 +805,15 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
           To<LayoutBox>(this)->AnchorPositionScrollTranslationOffset();
     }
 
-    if (offset_parent_object->IsLayoutInline()) {
-      const auto* inline_parent = To<LayoutInline>(offset_parent_object);
+    if (const auto* inline_parent =
+            DynamicTo<LayoutInline>(offset_parent_object)) {
       reference_point -= inline_parent->FirstLineBoxTopLeft();
     }
 
-    if (offset_parent_object->IsBox() && !offset_parent_object->IsBody()) {
-      auto* box = To<LayoutBox>(offset_parent_object);
-      reference_point -= PhysicalOffset(box->BorderLeft(), box->BorderTop());
+    if (const auto* box_parent = DynamicTo<LayoutBox>(offset_parent_object)) {
+      if (!box_parent->IsBody()) {
+        reference_point -= box_parent->BorderOutsets().Offset();
+      }
     }
   }
 
@@ -835,7 +836,7 @@ LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
 }
 
 LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
-    LayoutUnit width,
+    LayoutUnit inline_size,
     LayoutUnit text_indent_offset,
     CaretShape caret_shape) const {
   NOT_DESTROYED();
@@ -891,14 +892,15 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
       break;
   }
 
-  LayoutUnit x = BorderLeft() + PaddingLeft();
-  LayoutUnit max_x = width - BorderRight() - PaddingRight();
-  BoxStrut border_padding =
+  const BoxStrut border_padding =
       (BorderOutsets() + PaddingOutsets())
           .ConvertToLogical(
               {current_style.GetWritingMode(), TextDirection::kLtr});
-  x = border_padding.inline_start;
-  max_x = width - border_padding.inline_end;
+  const LayoutUnit max_x = inline_size - border_padding.inline_end;
+  LayoutUnit x = border_padding.inline_start;
+
+  // FIXME: caret_width is used in the calculation of x below, then modified,
+  // this is likely incorrect for "right" aligned carets.
   LayoutUnit caret_width = GetFrameView()->BarCaretWidth();
 
   switch (alignment) {
