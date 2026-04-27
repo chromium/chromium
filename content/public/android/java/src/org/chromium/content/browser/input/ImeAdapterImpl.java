@@ -1305,7 +1305,7 @@ public class ImeAdapterImpl
             // followed by commitText(). We append the underline here because the text
             // must be committed before the span can be applied to it.
             if (mAutocorrectManager != null) {
-                mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+                mAutocorrectManager.maybeApplyDeferredUnderline();
                 mAutocorrectManager.onCommitTextOrSendKeyEvent();
             }
 

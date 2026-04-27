@@ -66,8 +66,8 @@ public class AutocorrectManager {
         mCorrectionInfo = correctionInfo;
     }
 
-    public void maybeAppendAutocorrectUnderlineSpan() {
-        if (DEBUG_LOGS) Log.i(TAG, "maybeAppendAutocorrectUnderlineSpan");
+    public void maybeApplyDeferredUnderline() {
+        if (DEBUG_LOGS) Log.i(TAG, "maybeApplyDeferredUnderline");
 
         // We expect a commitText() call to come immediately after commitCorrection()
         // from the IME (observed in Gboard, SwiftKey and Yandex). We wait for that
