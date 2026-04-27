@@ -73,6 +73,7 @@ source_set("unit_tests") {
   sources = [
     "gemini_consent_view_controller_unittest.mm",
     "gemini_fre_wrapper_view_controller_unittest.mm",
+    "gemini_ui_utils_unittest.mm",
   ]
   deps = [
     ":ui",
@@ -80,7 +81,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/intelligence/bwg/metrics",
-    "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/button_stack:constants",
