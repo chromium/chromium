@@ -249,6 +249,7 @@
 }
 
 - (void)stopAgeMismatchSignoutCoordinator {
+  _applicationUIBlocker.reset();
   _ageMismatchSignoutCoordinator.delegate = nil;
   [_ageMismatchSignoutCoordinator stop];
   _ageMismatchSignoutCoordinator = nil;
@@ -314,7 +315,6 @@
 - (void)markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
     (id<SystemIdentity>)identity {
   CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
-  _applicationUIBlocker.reset();
   _isAgeMismatchSignoutInProgress = NO;
 
   // Show the age mismatch signout screen.

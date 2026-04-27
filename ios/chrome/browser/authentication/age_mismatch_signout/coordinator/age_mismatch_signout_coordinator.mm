@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -36,9 +35,6 @@
 
   // The mode of the prompt.
   AgeMismatchPromptMode _mode;
-
-  // Block the application UI when the Age Mismatch Prompt is visible.
-  std::unique_ptr<ScopedUIBlocker> _applicationUIBlocker;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -61,8 +57,6 @@
   CHECK(!authenticationService->HasPrimaryIdentity(),
         base::NotFatalUntil::M153);
 
-  _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
-      self.browser->GetSceneState(), UIBlockerExtent::kApplication);
   _mediator = [[AgeMismatchSignoutMediator alloc]
             initWithIdentity:_identity
       identityAvatarProvider:GetApplicationContext()
@@ -84,7 +78,6 @@
                                                                completion:nil];
   _viewController.delegate = nil;
   _viewController = nil;
-  _applicationUIBlocker.reset();
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
