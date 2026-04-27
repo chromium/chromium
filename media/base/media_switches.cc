@@ -854,6 +854,10 @@ BASE_FEATURE(kOnDeviceWebSpeech,
 // Enables on-device speech recognition using on-device Gemini Nano.
 BASE_FEATURE(kOnDeviceWebSpeechGeminiNano, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables on-device speech recognition using on-device TinyGemma.
+BASE_FEATURE(kOnDeviceWebSpeechSmallExpertModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, base::FEATURE_ENABLED_BY_DEFAULT);
 

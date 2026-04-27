@@ -28,7 +28,8 @@ class ContentBrowserTestContentBrowserClient
   media::mojom::AvailabilityStatus
   GetOnDeviceSpeechRecognitionAvailabilityStatus(
       BrowserContext* context,
-      const std::string& language) override;
+      const std::string& language,
+      media::mojom::SpeechRecognitionQuality quality) override;
 };
 
 }  // namespace content

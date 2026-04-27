@@ -89,7 +89,8 @@ class OnDeviceSpeechRecognitionImpl
   // installOnDevice() for a language before the language is available to the
   // origin.
   media::mojom::AvailabilityStatus GetMaskedAvailabilityStatus(
-      std::string_view language);
+      std::string_view language,
+      media::mojom::SpeechRecognitionQuality quality);
 
   void OnModelClientAvailable(
       base::WeakPtr<optimization_guide::ModelClient> client);

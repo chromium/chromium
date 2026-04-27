@@ -171,6 +171,9 @@ std::string_view GetStringNameForOptimizationTarget(
     case proto::
         OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
       return "OnDeviceSpeechRecognition";
+    case proto::
+        OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA:
+      return "SpeechRecognitionSmallExpertModel";
     case proto::OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR:
       return "WebRTCNeuralResidualEchoEstimator";
     case proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER:

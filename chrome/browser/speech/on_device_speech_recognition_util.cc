@@ -20,6 +20,23 @@
 
 namespace {
 const char kEnglishLanguageCode[] = "en";
+
+std::optional<optimization_guide::mojom::OnDeviceFeature> PickOnDeviceFeature(
+    media::mojom::SpeechRecognitionQuality quality) {
+  if ((quality == media::mojom::SpeechRecognitionQuality::kConversation &&
+       !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) ||
+      (quality == media::mojom::SpeechRecognitionQuality::kDictation &&
+       !base::FeatureList::IsEnabled(
+           media::kOnDeviceWebSpeechSmallExpertModel))) {
+    return std::nullopt;
+  }
+
+  return quality == media::mojom::SpeechRecognitionQuality::kDictation
+             ? optimization_guide::mojom::OnDeviceFeature::
+                   kSpeechRecognitionSmallExpertModel
+             : optimization_guide::mojom::OnDeviceFeature::
+                   kOnDeviceSpeechRecognition;
+}
 }  // namespace
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -27,11 +44,19 @@ namespace speech {
 
 media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     content::BrowserContext* context,
-    std::string_view language) {
+    std::string_view language,
+    media::mojom::SpeechRecognitionQuality quality) {
 #if BUILDFLAG(IS_ANDROID)
   return media::mojom::AvailabilityStatus::kUnavailable;
 #else
-  if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
+    std::optional<optimization_guide::mojom::OnDeviceFeature> feature =
+        PickOnDeviceFeature(quality);
+    if (!feature) {
+      return media::mojom::AvailabilityStatus::kUnavailable;
+    }
+
     OptimizationGuideKeyedService* service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(context));
@@ -48,22 +73,15 @@ media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     std::optional<optimization_guide::mojom::ModelUnavailableReason>
         unavailable_reason =
             optimization_guide::AvailabilityFromEligibilityReason(
-                service->GetOnDeviceModelEligibility(
-                    optimization_guide::mojom::OnDeviceFeature::
-                        kOnDeviceSpeechRecognition));
+                service->GetOnDeviceModelEligibility(feature.value()));
     if (!unavailable_reason.has_value()) {
       return media::mojom::AvailabilityStatus::kAvailable;
+    } else if (unavailable_reason ==
+               optimization_guide::mojom::ModelUnavailableReason::
+                   kNotSupported) {
+      return media::mojom::AvailabilityStatus::kUnavailable;
     } else {
-      if (unavailable_reason.value() ==
-              optimization_guide::mojom::ModelUnavailableReason::
-                  kPendingAssets ||
-          unavailable_reason.value() ==
-              optimization_guide::mojom::ModelUnavailableReason::
-                  kPendingUsage) {
-        return media::mojom::AvailabilityStatus::kDownloadable;
-      } else {
-        return media::mojom::AvailabilityStatus::kUnavailable;
-      }
+      return media::mojom::AvailabilityStatus::kDownloadable;
     }
   }
 

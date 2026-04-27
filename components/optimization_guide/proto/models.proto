@@ -278,6 +278,9 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE = 73;
   // Target for shopping classifier.
   OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER = 74;
+  // Target for on-device speech recognition using Tiny Gemma.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA =
+      75;
 }
 
 // The model engine versions that can be used to do model inference.

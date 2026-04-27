@@ -182,8 +182,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   bool on_device_available =
       GetContentClient()
           ->browser()
-          ->GetOnDeviceSpeechRecognitionAvailabilityStatus(browser_context,
-                                                           language) ==
+          ->GetOnDeviceSpeechRecognitionAvailabilityStatus(
+              browser_context, language, params->quality) ==
       media::mojom::AvailabilityStatus::kAvailable;
 #else
   bool on_device_available = false;
@@ -240,13 +240,10 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
     config.grammars.push_back(*grammar_ptr);
   }
 
-  const bool use_gemini_nano =
-      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
-      config.quality == media::mojom::SpeechRecognitionQuality::kConversation;
-
   if (SpeechRecognitionManager::GetInstance()->UseOnDeviceSpeechRecognition(
           config) &&
-      params->audio_forwarder.is_valid() && !use_gemini_nano) {
+      params->audio_forwarder.is_valid() &&
+      !SpeechRecognitionManagerImpl::IsOptimizationGuideSpeechModel(config)) {
     // Use on-device speech recognition, bypassing the browser process. The
     // speech recognition session will live in the speech recognition service
     // process.

@@ -120,6 +120,9 @@ std::string_view GetStringNameForModelExecutionFeature(
         MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
       return "OnDeviceSpeechRecognition";
     case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA:
+      return "SpeechRecognitionSmallExpertModel";
+    case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING:
       return "IosSmartTabGrouping";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SKILLS:

@@ -90,6 +90,13 @@ void OnDeviceSpeechRecognitionImpl::Available(
     return;
   }
 
+  if (quality == media::mojom::SpeechRecognitionQuality::kDictation &&
+      !base::FeatureList::IsEnabled(
+          media::kOnDeviceWebSpeechSmallExpertModel)) {
+    std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+    return;
+  }
+
   media::mojom::AvailabilityStatus overall_status =
       media::mojom::AvailabilityStatus::kAvailable;
   for (std::string_view language : languages) {
@@ -106,8 +113,8 @@ void OnDeviceSpeechRecognitionImpl::Available(
     //   'downloading' if all languages are either downloading or available
     //   'downloadable' if all languages are either available, downloading, or
     //   downloadable 'unavailable' in if one or more language is unavailable
-    media::mojom::AvailabilityStatus status =
-        GetMaskedAvailabilityStatus(language_config.value().language_name);
+    media::mojom::AvailabilityStatus status = GetMaskedAvailabilityStatus(
+        language_config.value().language_name, quality);
     if (status < overall_status) {
       overall_status = status;
     }
@@ -129,8 +136,20 @@ void OnDeviceSpeechRecognitionImpl::Install(
     return;
   }
 
+  if (languages.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (quality == media::mojom::SpeechRecognitionQuality::kConversation &&
       !base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (quality == media::mojom::SpeechRecognitionQuality::kDictation &&
+      !base::FeatureList::IsEnabled(
+          media::kOnDeviceWebSpeechSmallExpertModel)) {
     std::move(callback).Run(false);
     return;
   }
@@ -162,7 +181,8 @@ void OnDeviceSpeechRecognitionImpl::Install(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano)) {
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
     OptimizationGuideKeyedService* optimization_guide_keyed_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(
@@ -178,17 +198,20 @@ void OnDeviceSpeechRecognitionImpl::Install(
     model_broker_client_ =
         optimization_guide_keyed_service->CreateModelBrokerClient();
 
+    optimization_guide::mojom::OnDeviceFeature feature =
+        quality == media::mojom::SpeechRecognitionQuality::kDictation
+            ? optimization_guide::mojom::OnDeviceFeature::
+                  kSpeechRecognitionSmallExpertModel
+            : optimization_guide::mojom::OnDeviceFeature::
+                  kOnDeviceSpeechRecognition;
+
     // Call `RequestAssetsFor()` to trigger the download and installation of
     // the model.
-    model_broker_client_->RequestAssetsFor(
-        optimization_guide::mojom::OnDeviceFeature::kOnDeviceSpeechRecognition);
+    model_broker_client_->RequestAssetsFor(feature);
 
-    model_broker_client_
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::
-                            kOnDeviceSpeechRecognition)
-        .WaitForClient(base::BindOnce(
-            &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
-            weak_ptr_factory_.GetWeakPtr()));
+    model_broker_client_->GetSubscriber(feature).WaitForClient(
+        base::BindOnce(&OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     language_installation_callbacks_[language_names_key].push_back(
         std::move(callback));
@@ -323,10 +346,11 @@ void OnDeviceSpeechRecognitionImpl::
 
 media::mojom::AvailabilityStatus
 OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
-    std::string_view language) {
+    std::string_view language,
+    media::mojom::SpeechRecognitionQuality quality) {
   media::mojom::AvailabilityStatus availability_status =
       GetOnDeviceSpeechRecognitionAvailabilityStatus(
-          render_frame_host().GetBrowserContext(), language);
+          render_frame_host().GetBrowserContext(), language, quality);
   if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
       !HasOnDeviceLanguageDownloaded(language)) {
     return media::mojom::AvailabilityStatus::kDownloadable;

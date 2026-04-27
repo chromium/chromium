@@ -49,7 +49,8 @@ void ContentBrowserTestContentBrowserClient::OnNetworkServiceCreated(
 media::mojom::AvailabilityStatus ContentBrowserTestContentBrowserClient::
     GetOnDeviceSpeechRecognitionAvailabilityStatus(
         BrowserContext* context,
-        const std::string& language) {
+        const std::string& language,
+        media::mojom::SpeechRecognitionQuality quality) {
 #if BUILDFLAG(IS_ANDROID)
   return media::mojom::AvailabilityStatus::kUnavailable;
 #else

@@ -33,6 +33,8 @@ std::string_view GetVariantName(mojom::OnDeviceFeature feature) {
       return "WritingAssistanceApi";
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return "OnDeviceSpeechRecognition";
+    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
+      return "SpeechRecognitionSmallExpertModel";
     case mojom::OnDeviceFeature::kClassifier:
       return "Classifier";
   }
@@ -53,6 +55,7 @@ OnDeviceModelType GetOnDeviceModelType(mojom::OnDeviceFeature feature) {
     case mojom::OnDeviceFeature::kProofreaderApi:
     case mojom::OnDeviceFeature::kWritingAssistanceApi:
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
+    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
       return OnDeviceModelType::kBaseModel;
   }
 }
@@ -87,6 +90,9 @@ proto::OptimizationTarget GetOptimizationTargetForFeature(
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return proto::
           OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
+    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
+      return proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA;
     case mojom::OnDeviceFeature::kClassifier:
       return proto::OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_CLASSIFIER;
   }
@@ -124,6 +130,9 @@ proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION;
+    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA;
     case mojom::OnDeviceFeature::kClassifier:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CLASSIFIER;
   }
@@ -169,6 +178,8 @@ std::string ToUseCaseName(mojom::OnDeviceFeature feature) {
       return "proofreader_api";
     case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
       return "speech_recognition";
+    case mojom::OnDeviceFeature::kSpeechRecognitionSmallExpertModel:
+      return "speech_recognition_tinygemma";
     case mojom::OnDeviceFeature::kClassifier:
       return "classifier_api";
   }

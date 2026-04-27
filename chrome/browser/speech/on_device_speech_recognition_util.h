@@ -22,7 +22,8 @@ namespace speech {
 // process.
 media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     content::BrowserContext* context,
-    std::string_view language);
+    std::string_view language,
+    media::mojom::SpeechRecognitionQuality quality);
 
 }  // namespace speech
 

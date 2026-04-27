@@ -4579,9 +4579,10 @@ ChromeContentBrowserClient::CreateModelBrokerClient(
 media::mojom::AvailabilityStatus
 ChromeContentBrowserClient::GetOnDeviceSpeechRecognitionAvailabilityStatus(
     content::BrowserContext* context,
-    const std::string& language) {
-  return speech::GetOnDeviceSpeechRecognitionAvailabilityStatus(context,
-                                                                language);
+    const std::string& language,
+    media::mojom::SpeechRecognitionQuality quality) {
+  return speech::GetOnDeviceSpeechRecognitionAvailabilityStatus(
+      context, language, quality);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

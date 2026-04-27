@@ -39,6 +39,7 @@
 #include "content/public/common/content_client.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
@@ -56,7 +57,6 @@
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/on_device_speech_recognition_engine_impl.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
-#include "media/base/media_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -184,6 +184,19 @@ int SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(  // IN-TEST
       render_process_id, render_frame_id);
 }
 
+// static
+bool SpeechRecognitionManagerImpl::IsOptimizationGuideSpeechModel(
+    const SpeechRecognitionSessionConfig& config) {
+  const bool use_gemini_nano =
+      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
+      config.quality == media::mojom::SpeechRecognitionQuality::kConversation;
+  const bool use_tinygemma =
+      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechSmallExpertModel) &&
+      config.quality == media::mojom::SpeechRecognitionQuality::kDictation;
+  return use_gemini_nano || use_tinygemma;
+}
+
+// static
 SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
 }
@@ -616,8 +629,12 @@ int SpeechRecognitionManagerImpl::CreateSession(
   const bool use_gemini_nano =
       base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
       config.quality == media::mojom::SpeechRecognitionQuality::kConversation;
+  const bool use_tinygemma =
+      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechSmallExpertModel) &&
+      config.quality == media::mojom::SpeechRecognitionQuality::kDictation;
+  const bool uses_optimization_guide_model = use_gemini_nano || use_tinygemma;
   if (UseOnDeviceSpeechRecognition(config) &&
-      audio_forwarder_config.has_value() && !use_gemini_nano) {
+      audio_forwarder_config.has_value() && !uses_optimization_guide_model) {
     CHECK_GT(audio_forwarder_config.value().channel_count, 0);
     CHECK_GT(audio_forwarder_config.value().sample_rate, 0);
     // The speech recognition service process will create and manage the speech
@@ -666,7 +683,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
 #if !BUILDFLAG(IS_FUCHSIA)
   if (UseOnDeviceSpeechRecognition(config)) {
-    if (use_gemini_nano) {
+    if (IsOptimizationGuideSpeechModel(config)) {
       speech_recognition_engine =
           std::make_unique<OnDeviceSpeechRecognitionEngine>(config);
     } else {

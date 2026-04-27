@@ -1427,8 +1427,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns whether on-device speech recognition is available.
   virtual media::mojom::AvailabilityStatus
-  GetOnDeviceSpeechRecognitionAvailabilityStatus(BrowserContext* context,
-                                                 const std::string& language);
+  GetOnDeviceSpeechRecognitionAvailabilityStatus(
+      BrowserContext* context,
+      const std::string& language,
+      media::mojom::SpeechRecognitionQuality quality);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to return a delegate for the TtsController.

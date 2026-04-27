@@ -65,6 +65,9 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   static int GetSessionTrackerCountForTesting(int render_process_id,
                                               int render_frame_id);
 
+  static bool IsOptimizationGuideSpeechModel(
+      const SpeechRecognitionSessionConfig& config);
+
   // SpeechRecognitionManager implementation.
   int CreateSession(const SpeechRecognitionSessionConfig& config) override;
   int CreateSession(

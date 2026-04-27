@@ -878,7 +878,8 @@ ContentBrowserClient::CreateModelBrokerClient(BrowserContext* browser_context) {
 media::mojom::AvailabilityStatus
 ContentBrowserClient::GetOnDeviceSpeechRecognitionAvailabilityStatus(
     BrowserContext* context,
-    const std::string& language) {
+    const std::string& language,
+    media::mojom::SpeechRecognitionQuality quality) {
   return media::mojom::AvailabilityStatus::kUnavailable;
 }
 

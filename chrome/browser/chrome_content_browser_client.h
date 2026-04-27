@@ -523,7 +523,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   media::mojom::AvailabilityStatus
   GetOnDeviceSpeechRecognitionAvailabilityStatus(
       content::BrowserContext* context,
-      const std::string& language) override;
+      const std::string& language,
+      media::mojom::SpeechRecognitionQuality quality) override;
 #if BUILDFLAG(IS_CHROMEOS)
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif

@@ -141,15 +141,18 @@ void OnDeviceSpeechRecognitionEngine::CreateModelClientOnUI(
       GetContentClient()->browser()->CreateModelBrokerClient(
           rfh->GetBrowserContext());
 
+  optimization_guide::mojom::OnDeviceFeature feature =
+      config_.quality == media::mojom::SpeechRecognitionQuality::kDictation
+          ? optimization_guide::mojom::OnDeviceFeature::
+                kSpeechRecognitionSmallExpertModel
+          : optimization_guide::mojom::OnDeviceFeature::
+                kOnDeviceSpeechRecognition;
+
   if (core_->model_broker_client) {
-    core_->model_broker_client->RequestAssetsFor(
-        optimization_guide::mojom::OnDeviceFeature::kOnDeviceSpeechRecognition);
-    core_->model_broker_client
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::
-                            kOnDeviceSpeechRecognition)
-        .WaitForClient(base::BindOnce(
-            &OnDeviceSpeechRecognitionEngine::OnModelClientAvailable,
-            weak_factory_.GetWeakPtr()));
+    core_->model_broker_client->RequestAssetsFor(feature);
+    core_->model_broker_client->GetSubscriber(feature).WaitForClient(
+        base::BindOnce(&OnDeviceSpeechRecognitionEngine::OnModelClientAvailable,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
