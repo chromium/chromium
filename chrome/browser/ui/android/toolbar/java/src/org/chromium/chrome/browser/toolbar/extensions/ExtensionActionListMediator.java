@@ -51,6 +51,25 @@ class ExtensionActionListMediator implements Destroyable {
         /** State when no menu or popup is active. */
         public static final class Idle extends ActionState {}
 
+        /** State when popup is waiting for UI animations to finish. */
+        public static final class PopupPending extends ActionState {
+            private final String mActionId;
+            private final ExtensionActionPopupContents mContents;
+
+            public PopupPending(String actionId, ExtensionActionPopupContents contents) {
+                mActionId = actionId;
+                mContents = contents;
+            }
+
+            public String getActionId() {
+                return mActionId;
+            }
+
+            public ExtensionActionPopupContents getContents() {
+                return mContents;
+            }
+        }
+
         /** State when a popup is active. */
         public static final class PopupActive extends ActionState {
             private final ExtensionActionPopup mPopup;
@@ -492,15 +511,27 @@ class ExtensionActionListMediator implements Destroyable {
         closePopup();
         closeContextMenu();
 
-        ExtensionActionPopupContents contents = ExtensionActionPopupContents.create(nativeHostPtr);
-        requestActionVisibility(actionId, () -> showPopupOnAnchor(actionId, contents));
+        mActionState =
+                new ActionState.PopupPending(
+                        actionId, ExtensionActionPopupContents.create(nativeHostPtr));
+
+        requestActionVisibility(actionId, () -> showPopupOnAnchor());
     }
 
-    private void showPopupOnAnchor(String actionId, ExtensionActionPopupContents contents) {
+    private void showPopupOnAnchor() {
+        if (!(mActionState instanceof ActionState.PopupPending)) {
+            return;
+        }
+
+        ActionState.PopupPending state = (ActionState.PopupPending) mActionState;
+        String actionId = state.getActionId();
+        ExtensionActionPopupContents contents = state.getContents();
+
         ListMenuButton buttonView =
                 (ListMenuButton) mRecyclerViewDelegate.getButtonViewForId(actionId);
         if (buttonView == null) {
             contents.destroy();
+            mActionState = new ActionState.Idle();
             undoPopout();
             return;
         }
@@ -508,6 +539,7 @@ class ExtensionActionListMediator implements Destroyable {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) {
             contents.destroy();
+            mActionState = new ActionState.Idle();
             return;
         }
 
@@ -517,7 +549,6 @@ class ExtensionActionListMediator implements Destroyable {
         // ourselves.
         buttonView.setIsPressed(true);
 
-        assert mActionState instanceof ActionState.Idle;
         ExtensionActionPopup popup =
                 new ExtensionActionPopup(
                         activity,
@@ -534,6 +565,14 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void closePopup() {
+        if (mActionState instanceof ActionState.PopupPending pendingState) {
+            // Handle cancellation of a pending popup.
+            pendingState.getContents().destroy();
+            mActionState = new ActionState.Idle();
+            undoPopout();
+            return;
+        }
+
         if (!(mActionState instanceof ActionState.PopupActive)) {
             return;
         }

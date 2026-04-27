@@ -472,6 +472,35 @@ public class ExtensionActionListMediatorTest {
                 reservedWidth);
     }
 
+    @Test
+    public void testPendingPopup_DestroyedOnCancellation() {
+        // Trigger a popup.
+        long nativeHostPtr = 123L;
+        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+
+        // Verify the native contents were created.
+        verify(mPopupContentsJniMock).create(nativeHostPtr);
+
+        // Simulate a cancellation by opening a context menu for another action.
+        mBridgeDelegateCaptor.getValue().showContextMenu(ACTION2_ID);
+
+        // The pending popup contents must be destroyed to prevent memory leaks.
+        verify(mPopupContentsMock).destroy();
+    }
+
+    @Test
+    public void testPendingPopup_DestroyedOnMediatorTeardown() {
+        // Trigger a popup to enter the PopupPending state.
+        long nativeHostPtr = 123L;
+        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+
+        // Destroy the mediator before the UI animation finishes.
+        mMediator.destroy();
+
+        // The pending popup contents must be destroyed during teardown.
+        verify(mPopupContentsMock).destroy();
+    }
+
     private static Bitmap createSimpleIcon(int color) {
         Bitmap bitmap = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
