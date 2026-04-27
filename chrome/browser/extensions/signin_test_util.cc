@@ -19,8 +19,6 @@ AccountInfo SimulateExplicitSignIn(
     Profile* profile,
     signin::IdentityTestEnvironment* identity_test_env,
     std::optional<std::string> email) {
-  CHECK(switches::IsExtensionsExplicitBrowserSigninEnabled());
-
   auto account_info = identity_test_env->MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)

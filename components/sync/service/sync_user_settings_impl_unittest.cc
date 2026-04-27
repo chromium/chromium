@@ -281,11 +281,6 @@ TEST_F(SyncUserSettingsImplTest,
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kSavedTabGroups, UserSelectableType::kCookies};
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Extensions syncing in transport mode is not supported on ChromeOS.
-  expected_disabled_types.Put(UserSelectableType::kExtensions);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Themes is not supported on mobile.
   expected_disabled_types.Put(UserSelectableType::kThemes);

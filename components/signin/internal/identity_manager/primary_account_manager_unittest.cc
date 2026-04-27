@@ -1196,9 +1196,8 @@ class PrimaryAccountManagerExplicitSigninNewFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that the extensions explicit signin pref is set if
-// `switches::IsExtensionsExplicitBrowserSigninEnabled()` is enabled and the
-// user signs in through the extension install bubble.
+// Test that the extensions explicit signin pref is set if the user signs in
+// through the extension install bubble.
 TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninExtensionPref) {
   CreatePrimaryAccountManager();

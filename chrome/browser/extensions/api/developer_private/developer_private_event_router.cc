@@ -19,6 +19,7 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -104,7 +105,10 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
 
-  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))
+#endif
+  {
     account_extension_tracker_observation_.Observe(
         AccountExtensionTracker::Get(profile));
   }

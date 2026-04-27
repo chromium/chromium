@@ -34,6 +34,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -878,13 +879,14 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
             .spec();
   }
 
-  // Whether the extension can be uploaded as an account extension.
-  // `CanUploadAsAccountExtension` should already check for the feature flag
-  // somewhere but add another guard for it here just in case.
   info.can_upload_as_account_extension =
-      switches::IsExtensionsExplicitBrowserSigninEnabled() &&
       AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
-          extension);
+          extension)
+#if BUILDFLAG(IS_CHROMEOS)
+      &&
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+#endif
+      ;
 
   // The icon. This section must come last as it moves `info`.
   ExtensionResource icon = IconsInfo::GetIconResource(

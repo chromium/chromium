@@ -48,6 +48,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/browser/crx_installer.h"
 #include "extensions/browser/disable_reason.h"
@@ -2213,9 +2214,13 @@ DeveloperPrivateUploadExtensionToAccountFunction::Run() {
   //   disabled.
   // - the extension is already associated with the signed in user's account.
   // - the extension is not syncable (for example, if it's unpacked).
-  if (!switches::IsExtensionsExplicitBrowserSigninEnabled() ||
-      !AccountExtensionTracker::Get(profile_)->CanUploadAsAccountExtension(
-          *extension)) {
+  if (!AccountExtensionTracker::Get(profile_)->CanUploadAsAccountExtension(
+          *extension)
+#if BUILDFLAG(IS_CHROMEOS)
+      ||
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+#endif
+  ) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         kCannotUploadExtensionToAccount, extension_id_)));
   }

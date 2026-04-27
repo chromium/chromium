@@ -721,12 +721,4 @@ BASE_FEATURE(kUsePrimaryAndTonalButtonsForPromos,
 
 // keep-sorted end
 
-bool IsExtensionsExplicitBrowserSigninEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return true;
-#endif
-}
-
 }  // namespace switches

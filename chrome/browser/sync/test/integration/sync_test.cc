@@ -1364,7 +1364,11 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-    if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos))
+#endif
+    {
       allowed_types.Put(syncer::EXTENSIONS);
       allowed_types.Put(syncer::EXTENSION_SETTINGS);
     }

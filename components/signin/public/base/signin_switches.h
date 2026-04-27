@@ -713,14 +713,6 @@ extern const base::FeatureParam<SeamlessSigninStringType>
 
 // keep-sorted end
 
-// Helper functions that are no longer attached to any features.
-
-// Returns if the current browser supports an explicit sign in (signs the user
-// into transport mode, as defined above) for extension access points (e.g. the
-// `ExtensionPostInstallDialogDelegate`).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsExtensionsExplicitBrowserSigninEnabled();
-
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

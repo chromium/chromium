@@ -484,16 +484,14 @@ TEST_F(SyncPrefsTest,
   // also listed as they are not enabled by default but require new sign.
   const UserSelectableTypeSet expected_types = Difference(
       UserSelectableTypeSet::All(), {
-#if BUILDFLAG(IS_CHROMEOS)
-                                        UserSelectableType::kExtensions,
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
                                         // kThemes is not supported on mobile.
                                         UserSelectableType::kThemes,
-#else
+#elif !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kBookmarks,
                                         UserSelectableType::kReadingList,
                                         UserSelectableType::kExtensions,
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
@@ -516,9 +514,6 @@ TEST_F(SyncPrefsTest,
   signin_prefs.SetExtensionsExplicitBrowserSignin(gaia_id_, true);
   const UserSelectableTypeSet expected_types_new_signin = Difference(
       UserSelectableTypeSet::All(), {
-#if BUILDFLAG(IS_CHROMEOS)
-                                        UserSelectableType::kExtensions,
-#endif  // BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
@@ -1716,11 +1711,16 @@ TEST_F(SyncPrefsMigrationTest,
                        gaia_id_));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_SyncEverything) {
   base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+#if BUILDFLAG(IS_CHROMEOS)
+      syncer::kReplaceSyncPromosWithSignInPromos
+#else
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1742,7 +1742,12 @@ TEST_F(SyncPrefsMigrationTest,
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeEnabled) {
   base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+#if BUILDFLAG(IS_CHROMEOS)
+      syncer::kReplaceSyncPromosWithSignInPromos
+#else
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 
   // All types including kExtensions are selected in the global prefs.
   {
@@ -1764,7 +1769,12 @@ TEST_F(SyncPrefsMigrationTest,
 TEST_F(SyncPrefsMigrationTest,
        GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeDisabled) {
   base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
+#if BUILDFLAG(IS_CHROMEOS)
+      syncer::kReplaceSyncPromosWithSignInPromos
+#else
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 
   // All types except for kExtensions are selected in the global prefs.
   {
@@ -1848,8 +1858,7 @@ TEST_F(SyncPrefsMigrationTest,
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kBookmarks));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsTest, IsTypeDisabledByUserForAccount) {
   base::test::ScopedFeatureList enable_sync_to_signin(
