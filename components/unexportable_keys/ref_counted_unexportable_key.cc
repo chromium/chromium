@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/ref_counted_unexportable_key.h"
 
 #include <memory>
 
@@ -13,11 +13,19 @@ namespace unexportable_keys {
 
 RefCountedUnexportableSigningKey::RefCountedUnexportableSigningKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key,
-    UnexportableKeyId key_id)
+    UnexportableSigningKeyId key_id)
     : key_(std::move(key)), id_(key_id) {
   DCHECK(key_);
 }
 
 RefCountedUnexportableSigningKey::~RefCountedUnexportableSigningKey() = default;
+
+crypto::UnexportableSigningKey& RefCountedUnexportableSigningKey::key() const {
+  return *key_;
+}
+
+const UnexportableSigningKeyId& RefCountedUnexportableSigningKey::id() const {
+  return id_;
+}
 
 }  // namespace unexportable_keys

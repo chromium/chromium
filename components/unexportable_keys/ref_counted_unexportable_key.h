@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_SIGNING_KEY_H_
-#define COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_SIGNING_KEY_H_
+#ifndef COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_KEY_H_
+#define COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_KEY_H_
 
 #include <stdint.h>
 
@@ -12,12 +12,23 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-
-namespace crypto {
-class UnexportableSigningKey;
-}
+#include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
+
+// Shared base class for lifetime interlocking of unexportable keys.
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableKey
+    : public base::RefCountedThreadSafe<RefCountedUnexportableKey> {
+ public:
+  virtual crypto::UnexportableKey& key() const = 0;
+  virtual const UnexportableKeyId& id() const = 0;
+
+ protected:
+  virtual ~RefCountedUnexportableKey() = default;
+
+ private:
+  friend class base::RefCountedThreadSafe<RefCountedUnexportableKey>;
+};
 
 // RefCounted wrapper around `crypto::UnexportableSigningKey`.
 //
@@ -25,31 +36,26 @@ namespace unexportable_keys {
 // be used for a faster key comparison (as opposed to comparing public key
 // infos). It doesn't guarantee that two objects with different ids have
 // different underlying keys.
-// This id can be written to disk and re-used across browser sessions.
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
-    : public base::RefCountedThreadSafe<RefCountedUnexportableSigningKey> {
+    : public RefCountedUnexportableKey {
  public:
   // `key` must be non-null.
   explicit RefCountedUnexportableSigningKey(
       std::unique_ptr<crypto::UnexportableSigningKey> key,
-      UnexportableKeyId key_id);
+      UnexportableSigningKeyId key_id);
 
-  RefCountedUnexportableSigningKey(const RefCountedUnexportableSigningKey&) =
-      delete;
-  RefCountedUnexportableSigningKey& operator=(
-      const RefCountedUnexportableSigningKey&) = delete;
-
-  crypto::UnexportableSigningKey& key() const { return *key_; }
-  UnexportableKeyId id() const { return id_; }
+  // Use covariance to return more specific types for `key` and `id`.
+  crypto::UnexportableSigningKey& key() const override;
+  const UnexportableSigningKeyId& id() const override;
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;
-  ~RefCountedUnexportableSigningKey();
+  ~RefCountedUnexportableSigningKey() override;
 
   const std::unique_ptr<crypto::UnexportableSigningKey> key_;
-  const UnexportableKeyId id_;
+  const UnexportableSigningKeyId id_;
 };
 
 }  // namespace unexportable_keys
 
-#endif  // COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_SIGNING_KEY_H_
+#endif  // COMPONENTS_UNEXPORTABLE_KEYS_REF_COUNTED_UNEXPORTABLE_KEY_H_

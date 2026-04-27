@@ -15,7 +15,7 @@
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "components/unexportable_keys/background_task_type.h"
-#include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -31,7 +31,7 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
   }
 
   return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(key), UnexportableKeyId());
+      std::move(key), UnexportableSigningKeyId());
 }
 
 // TOOD(crbug.com/501307030): Return the more generic

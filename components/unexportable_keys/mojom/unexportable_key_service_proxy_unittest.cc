@@ -20,7 +20,7 @@
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
-#include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
