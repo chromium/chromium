@@ -40,6 +40,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -773,6 +774,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testShowsBnplProgressScreen() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
@@ -802,6 +804,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testShowsBnplIssuerSelectionScreenWithLinkedIssuers() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
@@ -821,6 +824,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testShowsBnplIssuerSelectionScreenWithUnlinkedIssuers() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
