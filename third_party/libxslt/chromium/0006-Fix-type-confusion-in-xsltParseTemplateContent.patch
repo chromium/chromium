@@ -1,0 +1,64 @@
+From 4c582b582b582b582b582b582b582b582b582b58 Mon Sep 17 00:00:00 2001
+From: Andrew Paseltiner <apaseltiner@chromium.org>
+Date: Thu, 23 Apr 2026 14:00:00 -0400
+Subject: [PATCH] Fix type confusion in xsltParseTemplateContent
+
+A potential type confusion vulnerability exists in libxslt within the
+xsltParseTemplateContent function. When a DTD contains a comment as its
+first child, the traversal logic can descend into the DTD and process
+an XML_ENTITY_DECL node as if it were an XML_ELEMENT_NODE.
+
+This leads to a type confusion where the 'ns' field of an xmlNode
+(offset 72) overlaps with the 'orig' string pointer of an xmlEntity.
+Treating the 'orig' pointer as an xmlNs struct allows an attacker to
+control the 'prefix' field (offset 24), which is then dereferenced in
+xsltCheckExtPrefix. This results in a heap-buffer-overflow (READ) and
+can lead to a deterministic crash (Denial of Service) or a constrained
+arbitrary read primitive within the renderer process.
+
+This patch adds a check to ensure that the node is an element before
+accessing its namespace field and robustly skips all DTD-related
+declarations during traversal. While DTD-related nodes share a common
+header with xmlNode, they lack the 'ns' field, which could lead to type
+confusion if their fields were accessed as if they were elements.
+
+Bug: 503879106
+---
+ libxslt/xslt.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/libxslt/xslt.c b/libxslt/xslt.c
+index 6532f976b3a02..594696199b658 100644
+--- a/libxslt/xslt.c
++++ b/libxslt/xslt.c
+@@ -5019,7 +5019,8 @@ xsltParseTemplateContent(xsltStylesheetPtr style, xmlNodePtr templ) {
+                goto skip_children;
+            }
+        }
+-       else if ((cur->ns != NULL) && (style->nsDefs != NULL) &&
++       else if ((cur->type == XML_ELEMENT_NODE) && (cur->ns != NULL) &&
++           (style->nsDefs != NULL) &&
+            (xsltCheckExtPrefix(style, cur->ns->prefix)))
+        {
+            /*
+@@ -5047,10 +5048,16 @@ xsltParseTemplateContent(xsltStylesheetPtr style, xmlNodePtr templ) {
+            }
+        }
+        /*
+-        * Skip to next node
++        * Skip to next node. DTD-related nodes are explicitly skipped because
++        * they lack the `ns` field found in `xmlNode` and `xmlAttr`. While
++        * they share a common header with `xmlNode`, accessing their fields
++        * as if they were elements can lead to type confusion.
+         */
+        if (cur->children != NULL) {
+-           if (cur->children->type != XML_ENTITY_DECL) {
++           if ((cur->type != XML_ENTITY_DECL) &&
++               (cur->type != XML_DTD_NODE) &&
++               (cur->type != XML_ELEMENT_DECL) &&
++               (cur->type != XML_ATTRIBUTE_DECL)) {
+                cur = cur->children;
+                continue;
+            }
+-- 
+2.50.0.rc0.642.g800a2b2222-goog

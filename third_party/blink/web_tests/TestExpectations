@@ -1659,6 +1659,7 @@ crbug.com/619978 fast/css/giant-stylesheet-crash.html [ Crash Failure Pass Timeo
 # disables the main XSLT flag, which should keep XSLT disabled.
 crbug.com/421650040 external/wpt/xml/xslt/* [ Failure ]
 crbug.com/503627446 external/wpt/xml/xslt/xslt-attribute-double-free-crash.html [ Pass ]
+crbug.com/503879106 external/wpt/xml/xslt/xslt-type-confusion-crash.html [ Pass ]
 crbug.com/421650040 virtual/xslt-enabled/external/wpt/xml/xslt/* [ Pass ]
 crbug.com/421650040 http/tests/xsl/xslt/* [ Failure ]
 crbug.com/421650040 virtual/xslt-enabled/http/tests/xsl/xslt/* [ Pass ]
