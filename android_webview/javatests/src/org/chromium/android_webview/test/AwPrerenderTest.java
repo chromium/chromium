@@ -1911,6 +1911,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     })
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    @DisabledTest(message = "Flaky, see crbug.com/506930789")
     public void testHogePrefetchAheadOfPrerenderTriggered_PrefetchAheadOfPrerender()
             throws Throwable {
         loadInitialPage();
