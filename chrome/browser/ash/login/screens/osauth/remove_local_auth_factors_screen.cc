@@ -110,6 +110,7 @@ void RemoveLocalAuthFactorsScreen::OnGetAuthFactorsConfiguration(
   // affected.
   context()->extra_factors_token =
       AuthSessionStorage::Get()->Store(std::move(user_context));
+  KeepAliveAuthSession();
   SetOnlinePasswordAndRemoveLocalAuthFactors();
 }
 
