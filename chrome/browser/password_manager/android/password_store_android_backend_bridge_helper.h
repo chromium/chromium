@@ -30,12 +30,6 @@ class PasswordStoreAndroidBackendBridgeHelper {
   static std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> Create(
       password_manager::IsAccountStore is_account_store);
 
-  // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
-  virtual bool CanUseGetAffiliatedPasswordsAPI() = 0;
-
-  // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
-  virtual bool CanUseGetAllLoginsWithBrandingInfoAPI() = 0;
-
   // Sets the `consumer` that is notified on job completion as defined in
   // `PasswordStoreAndroidBackendReceiverBridge::Consumer`.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;

@@ -27,7 +27,6 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -1374,68 +1373,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreAndroidAccountBackendTest, GetGroupedMatchingLoginsAsync) {
-  FakeAffiliationService fake_affiliation_service;
-  MockAffiliatedMatchHelper mock_affiliated_match_helper(
-      &fake_affiliation_service);
-  backend().InitBackend(
-      &mock_affiliated_match_helper,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-
-  const JobId kFirstJobId{1337};
-  const JobId kSecondJobId{2903};
-  EXPECT_CALL(*bridge_helper(), GetLoginsForSignonRealm("test.com", _))
-      .WillOnce(Return(kFirstJobId));
-  EXPECT_CALL(*bridge_helper(), GetLoginsForSignonRealm(kTestAndroidRealm, _))
-      .WillOnce(Return(kSecondJobId));
-
-  std::string TestURL1("https://a.test.com/");
-  PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
-                                 GURL(TestURL1));
-
-  EXPECT_CALL(*bridge_helper(), CanUseGetAffiliatedPasswordsAPI)
-      .WillOnce(Return(false));
-
-  std::vector<std::string> affiliated_android_realms;
-  affiliated_android_realms.push_back(kTestAndroidRealm);
-  mock_affiliated_match_helper.ExpectCallToGetAffiliatedAndGrouped(
-      form_digest, affiliated_android_realms);
-  mock_affiliated_match_helper
-      .ExpectCallToInjectAffiliationAndBrandingInformation({});
-  backend().GetGroupedMatchingLoginsAsync(
-      form_digest, AdaptBackendLoginsResultCallback(mock_reply.Get()));
-
-  // Imitate login retrieval.
-  PasswordForm exact_match = CreateTestLogin(
-      kTestUsername, kTestPassword, "https://a.test.com/", kTestDateCreated);
-  PasswordForm psl_match = CreateTestLogin(
-      kTestUsername, kTestPassword, "https://b.test.com/", kTestDateCreated);
-  PasswordForm android_match = CreateTestLogin(
-      kTestUsername, kTestPassword, kTestAndroidRealm, kTestDateCreated);
-
-  // Retrieving logins for the last form should trigger the final callback.
-  LoginsResult expected_logins;
-  expected_logins.push_back(exact_match);
-  expected_logins.back().match_type = PasswordForm::MatchType::kExact;
-  expected_logins.push_back(psl_match);
-  expected_logins.back().match_type = PasswordForm::MatchType::kPSL;
-  expected_logins.push_back(android_match);
-  expected_logins.back().match_type = PasswordForm::MatchType::kAffiliated;
-
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_logins))));
-
-  consumer().OnCompleteWithLogins(kFirstJobId,
-                                  FromPasswordForms({exact_match, psl_match}));
-  consumer().OnCompleteWithLogins(kSecondJobId,
-                                  FromPasswordForms({android_match}));
-  RunUntilIdle();
-}
-
 TEST_F(PasswordStoreAndroidAccountBackendTest,
        CallsBridgeForGroupedMatchingLogins) {
   backend().InitBackend(
@@ -1448,8 +1385,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
                                  GURL(TestURL1));
 
-  EXPECT_CALL(*bridge_helper(), CanUseGetAffiliatedPasswordsAPI)
-      .WillOnce(Return(true));
   EXPECT_CALL(*bridge_helper(), GetAffiliatedLoginsForSignonRealm(TestURL1, _))
       .WillOnce(Return(kJobId));
   backend().GetGroupedMatchingLoginsAsync(
@@ -1492,59 +1427,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 }
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,
-       GetAllLoginsWithAffiliationAndBrandingInformation) {
-  FakeAffiliationService fake_affiliation_service;
-  MockAffiliatedMatchHelper mock_affiliated_match_helper(
-      &fake_affiliation_service);
-  backend().InitBackend(
-      &mock_affiliated_match_helper,
-      PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
-      base::NullCallback(), base::DoNothing());
-  backend().OnSyncServiceInitialized(sync_service());
-  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
-      affiliation_info_for_results = {
-          {kTestUrl, kTestAndroidName, GURL(kTestAndroidIconURL)},
-          {/* Pretend affiliation or branding info is unavailable. */}};
-
-  mock_affiliated_match_helper
-      .ExpectCallToInjectAffiliationAndBrandingInformation(
-          affiliation_info_for_results);
-
-  PasswordForm android_form = CreateTestLogin(
-      kTestUsername, kTestPassword, kTestAndroidRealm, kTestDateCreated);
-  PasswordForm form =
-      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-
-  std::vector<PasswordForm> expected_results;
-  expected_results.push_back(android_form);
-  // Expect branding info for android credential.
-  expected_results.back().affiliated_web_realm = kTestUrl;
-  expected_results.back().app_display_name = kTestAndroidName;
-  expected_results.back().app_icon_url = GURL(kTestAndroidIconURL);
-  expected_results.push_back(form);
-
-  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
-      .WillOnce(Return(false));
-  backend().GetAllLoginsWithAffiliationAndBrandingAsync(
-      AdaptBackendLoginsResultCallback(mock_reply.Get()));
-  RunUntilIdle();
-
-  std::vector<PasswordForm> returned_forms;
-  returned_forms.push_back(android_form);
-  returned_forms.push_back(form);
-  consumer().OnCompleteWithLogins(kJobId,
-                                  FromPasswordForms(std::move(returned_forms)));
-
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_results))));
-  RunUntilIdle();
-}
-
-TEST_F(PasswordStoreAndroidAccountBackendTest,
        CallsBridgeForGetAllLoginsWithAffiliationAndBrandingInformation) {
   backend().InitBackend(
       /*affiliated_match_helper=*/nullptr,
@@ -1556,8 +1438,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
                                  GURL(TestURL1));
 
-  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
-      .WillOnce(Return(true));
   EXPECT_CALL(*bridge_helper(), GetAllLoginsWithBrandingInfo(_))
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(
@@ -1859,9 +1739,6 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
        GetAllLoginsWithAffiliationAndBrandingAsync) {
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  ON_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
-      .WillByDefault(Return(true));
-
   EXPECT_CALL(*bridge_helper(), GetAllLoginsWithBrandingInfo)
       .WillRepeatedly(Return(kJobId));
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(
@@ -1906,8 +1783,6 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
 
 TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
        GetGroupedMatchingLoginsAsync) {
-  EXPECT_CALL(*bridge_helper(), CanUseGetAffiliatedPasswordsAPI)
-      .WillOnce(Return(true));
   base::MockCallback<LoginsOrErrorReply> mock_reply;
 
   EXPECT_CALL(*bridge_helper(), GetAffiliatedLoginsForSignonRealm)

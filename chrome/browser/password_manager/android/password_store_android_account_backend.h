@@ -18,8 +18,6 @@ class SyncService;
 
 namespace password_manager {
 
-class AffiliatedMatchHelper;
-
 // This class processes passwords only from an account.
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                                            public PasswordStoreAndroidBackend {
@@ -80,15 +78,6 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
   GetStorageType() override;
 
-  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
-  // and branding information for Android credentials in the forms and invokes
-  // |callback| with the result. If an error was received instead, it directly
-  // invokes |callback| with it, as no forms could be fetched. Called on
-  // the main sequence.
-  void InjectAffiliationAndBrandingInformation(
-      BackendLoginsOrErrorReply callback,
-      BackendLoginsResultOrError forms_or_error);
-
   // Called when password sync flips from disabled to enabled and vice-versa.
   // If the sync status changes, all pending jobs should be replied to
   // with the corresponding error since their results are no longer relevant.
@@ -100,7 +89,6 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // called.
   void SyncShutdown();
 
-  raw_ptr<AffiliatedMatchHelper> affiliated_match_helper_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // Legacy delegate to handle sync events.

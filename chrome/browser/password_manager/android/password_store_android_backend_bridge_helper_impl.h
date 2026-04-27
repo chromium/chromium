@@ -40,8 +40,6 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   ~PasswordStoreAndroidBackendBridgeHelperImpl() override;
 
   // PasswordStoreAndroidBackendBridgeHelper implementation
-  bool CanUseGetAffiliatedPasswordsAPI() override;
-  bool CanUseGetAllLoginsWithBrandingInfoAPI() override;
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   [[nodiscard]] JobId GetAllLogins(std::string account) override;
   [[nodiscard]] JobId GetAllLoginsWithBrandingInfo(

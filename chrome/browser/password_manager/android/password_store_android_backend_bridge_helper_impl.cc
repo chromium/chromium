@@ -22,9 +22,6 @@ namespace password_manager {
 
 namespace {
 
-constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
-constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
-
 using JobId = PasswordStoreAndroidBackendBridgeHelper::JobId;
 
 }
@@ -83,35 +80,6 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
   bool will_delete = background_task_runner_->DeleteSoon(
       FROM_HERE, std::move(dispatcher_bridge_));
   DCHECK(will_delete);
-}
-
-bool PasswordStoreAndroidBackendBridgeHelperImpl::
-    CanUseGetAffiliatedPasswordsAPI() {
-  int current_gms_core_version;
-  if (!base::StringToInt(base::android::device_info::gms_version_code(),
-                         &current_gms_core_version)) {
-    return false;
-  }
-  if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
-    return false;
-  }
-
-  return true;
-}
-
-bool PasswordStoreAndroidBackendBridgeHelperImpl::
-    CanUseGetAllLoginsWithBrandingInfoAPI() {
-  int current_gms_core_version;
-  if (!base::StringToInt(base::android::device_info::gms_version_code(),
-                         &current_gms_core_version)) {
-    return false;
-  }
-  if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >
-      current_gms_core_version) {
-    return false;
-  }
-
-  return true;
 }
 
 void PasswordStoreAndroidBackendBridgeHelperImpl::SetConsumer(
