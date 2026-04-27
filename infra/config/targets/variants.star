@@ -290,6 +290,7 @@ targets.variant(
     identifier = "iPad Air (6th generation) 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -348,6 +349,7 @@ targets.variant(
     identifier = "iPad Pro 13-inch (M4) 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -392,6 +394,7 @@ targets.variant(
     identifier = "iPad (10th generation) 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -451,6 +454,7 @@ targets.variant(
     identifier = "iPhone 15 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -494,6 +498,7 @@ targets.variant(
     identifier = "iPhone 16 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -537,6 +542,7 @@ targets.variant(
     identifier = "iPhone 16 Plus 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
@@ -611,6 +617,7 @@ targets.variant(
     identifier = "iPhone SE (3rd generation) 26.0",
     mixins = [
         "ios_runtime_cache_26_0",
+        "use-ios-simulator-cache",
     ],
     args = [
         "--platform",

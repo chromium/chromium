@@ -64,6 +64,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -232,6 +233,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -342,6 +344,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -452,6 +455,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -620,6 +624,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -730,6 +735,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -898,6 +904,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1008,6 +1015,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1118,6 +1126,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1234,6 +1243,7 @@
         "args": [
           "--clones",
           "2",
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1404,6 +1414,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1514,6 +1525,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1682,6 +1694,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1793,6 +1806,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -1904,6 +1918,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2072,6 +2087,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2183,6 +2199,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2352,6 +2369,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2520,6 +2538,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2688,6 +2707,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2798,6 +2818,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -2908,6 +2929,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -3076,6 +3098,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -3186,6 +3209,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -3354,6 +3378,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
@@ -3464,6 +3489,7 @@
       },
       {
         "args": [
+          "--use-simulator-cache",
           "--platform",
           "iPhone 16",
           "--version",
