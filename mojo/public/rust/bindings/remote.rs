@@ -259,7 +259,7 @@ where
     /// header, retrieve the corresponding response callback from
     /// the map, and invoke the interface's response handler with
     /// it.
-    fn incoming_message_handler(raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
+    fn incoming_message_handler(mut raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
         let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
             Ok(msg) => msg,
             Err(err) => {

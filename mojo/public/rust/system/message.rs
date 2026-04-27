@@ -91,7 +91,7 @@ impl RawMojoMessage {
         let mut total_bytes_written = 0;
         while total_bytes_written < bytes.len() {
             total_bytes_written += message::MojoAppendMessageData(
-                &self.message_handle,
+                &mut self.message_handle,
                 message::AppendMessageDataFlags::empty(),
                 &bytes[total_bytes_written..],
                 handles,
@@ -205,9 +205,9 @@ impl RawMojoMessage {
     }
 
     /// Mark the message as ready to be sent.
-    pub fn finalize_for_sending(&self) {
+    pub fn finalize_for_sending(&mut self) {
         let ret = message::MojoAppendMessageData(
-            &self.message_handle,
+            &mut self.message_handle,
             message::AppendMessageDataFlags::COMMIT_SIZE,
             &[],
             vec![],
@@ -226,11 +226,11 @@ impl RawMojoMessage {
     /// To make it harder to forget to do so, this function will always return
     /// an error result so the compiler will warn if you try to treat it like a
     /// panic and ignore its return value.
-    pub fn report_bad_message(&self, error_msg: &str) -> Result<(), BadMessageError> {
+    pub fn report_bad_message(&mut self, error_msg: &str) -> Result<(), BadMessageError> {
         // Ignore the MojoError; this can only fail if the message_handle is invalid,
         // and we guarantee that it's valid as part of this type.
         // SAFETY: We guarantee that our contained handle is alive.
-        message::MojoNotifyBadMessage(&self.message_handle, error_msg);
+        message::MojoNotifyBadMessage(&mut self.message_handle, error_msg);
         Err(BadMessageError)
     }
 }

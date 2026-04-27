@@ -176,7 +176,7 @@ fn test_make_regular_trap() {
 
 #[gtest(RustSystemAPITestSuite, ReportBadMessage)]
 fn test_report_bad_message() {
-    let msg = system::message::RawMojoMessage::new_with_bytes(b"moist").unwrap();
+    let mut msg = system::message::RawMojoMessage::new_with_bytes(b"moist").unwrap();
 
     let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
     let err_msg_clone = err_msg.clone();

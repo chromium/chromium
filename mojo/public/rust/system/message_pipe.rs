@@ -38,7 +38,7 @@ impl MessageEndpoint {
     ///
     /// # Possible Error Codes:
     /// - `FailedPrecondition`: If the other end of the message pipe is closed.
-    pub fn write(&self, msg: RawMojoMessage) -> MojoResult<()> {
+    pub fn write(&self, mut msg: RawMojoMessage) -> MojoResult<()> {
         msg.finalize_for_sending();
         message_pipe::MojoWriteMessage(&self.handle, msg.message_handle)
     }

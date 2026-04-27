@@ -131,16 +131,14 @@ impl Drop for UntypedHandle {
 /// A wrapper for the MojoMessageHandle C type which is guaranteed to be live.
 /// This type always represents a Mojo message object.
 ///
-/// NOTE: Unlike other types of Mojo API objects, messages are NOT thread-safe
-/// and thus callers of message-related APIs must be careful to restrict usage
-/// of any given `MessageHandle` to a single thread at a time. In Rust, this is
-/// enforced by not implementing the `Sync` trait.
+/// NOTE: The C equivalent of this type is not thread-safe, because it exposes
+/// direct mutable access to its internal buffer without any locks. In Rust,
+/// the borrow checker enforces that accesses are safe, so this type can be
+/// safely shared between threads..
 #[repr(transparent)]
 #[derive(Debug)] // Do NOT derive Copy or Clone!
 pub struct MessageHandle {
     pub(crate) handle_value: std::num::NonZeroUsize,
-    // This member is equivalent to `impl !Sync`, which is currently unstable
-    _phantom_unsync: std::marker::PhantomData<std::cell::Cell<()>>,
 }
 
 impl MessageHandle {
@@ -153,10 +151,7 @@ impl MessageHandle {
         if is_pseudohandle(raw_value) {
             panic!("Cannot wrap a handle value between 0 and -12!")
         }
-        Self {
-            handle_value: raw_value.try_into().unwrap(),
-            _phantom_unsync: std::marker::PhantomData,
-        }
+        Self { handle_value: raw_value.try_into().unwrap() }
     }
 }
 

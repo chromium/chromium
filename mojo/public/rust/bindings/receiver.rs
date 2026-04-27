@@ -237,7 +237,7 @@ where
     /// header, call the corresponding method on the state object, and then
     /// send a response back through the pipe (if the message expects one).
     fn incoming_message_handler(
-        raw_message: RawMojoMessage,
+        mut raw_message: RawMojoMessage,
         state_weak: &Weak<Mutex<StateTy>>,
         sender: ResponseSender,
     ) {

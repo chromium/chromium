@@ -89,7 +89,7 @@ declare_mojo_options!(MojoAppendMessageDataOptions, flags: raw_ffi::MojoAppendMe
 ///   implementation- or embedder-defined maximum.
 /// - `FailedPrecondition` if the message already has a context attached
 pub fn MojoAppendMessageData(
-    message: &MessageHandle,
+    message: &mut MessageHandle,
     flags: AppendMessageDataFlags,
     bytes: &[u8],
     handles: Vec<UntypedHandle>,
@@ -336,7 +336,9 @@ fn MojoGetMessageDataInternal(
 /// Typically this will result in the process that created the message being
 /// terminated. Note that reporting a bad message does not stop the _current_
 /// process from running.
-pub fn MojoNotifyBadMessage(message: &MessageHandle, error_msg: &str) {
+// I'm not entirely sure if it's safe to call this concurrently from multiple
+// threads, so I'm requiring &mut for safety.
+pub fn MojoNotifyBadMessage(message: &mut MessageHandle, error_msg: &str) {
     // SAFETY: The option pointer is allowed to be be null. The string parts were
     // constructed from an &str, and will not be retained by C code after the
     // function returns.
