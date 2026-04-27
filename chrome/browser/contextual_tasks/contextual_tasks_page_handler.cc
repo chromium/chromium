@@ -384,7 +384,7 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   } else if (aim_to_client_message.has_restore_input()) {
     web_ui_controller_->GetPageRemote()->RestoreInput();
   } else if (aim_to_client_message.has_enter_basic_mode()) {
-    web_ui_controller_->GetPageRemote()->HideInput();
+    web_ui_controller_->GetPageRemote()->EnterBasicMode();
   } else if (aim_to_client_message
                  .has_set_chrome_desktop_input_plate_configuration()) {
     const auto& update_msg =
@@ -395,7 +395,7 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->GetPageRemote()->UpdateComposeboxPosition(
         std::move(mojo_position));
   } else if (aim_to_client_message.has_exit_basic_mode()) {
-    web_ui_controller_->GetPageRemote()->RestoreInput();
+    web_ui_controller_->GetPageRemote()->ExitBasicMode();
   } else if (aim_to_client_message.has_update_thread_context_library()) {
     OnReceivedUpdatedThreadContextLibrary(
         aim_to_client_message.update_thread_context_library());

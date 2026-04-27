@@ -287,7 +287,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test(
-      'hides composebox and header using z-index when hideInput called',
+      'hides composebox and header using z-index when enterBasicMode called',
       async () => {
         const threadFrame = contextualTasksApp.$.threadFrame;
         const flexCenterContainer = contextualTasksApp.$.flexCenterContainer;
@@ -295,7 +295,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         testProxy.handler.setIsAiPage(false);
         contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
-        testProxy.callbackRouterRemote.hideInput();
+        testProxy.callbackRouterRemote.enterBasicMode();
         await testProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -312,7 +312,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
             '0', flexCenterStyle.zIndex,
             'Flex center container z-index should be 0');
 
-        testProxy.callbackRouterRemote.restoreInput();
+        testProxy.callbackRouterRemote.exitBasicMode();
         await testProxy.callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
 
@@ -330,7 +330,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
       });
 
   test(
-      'hides composebox and header when hideInput called' +
+      'hides composebox and header when enterBasicMode called' +
           'and enableBasicModeZOrder is false',
       async () => {
         loadTimeData.overrideValues({enableBasicModeZOrder: false});
@@ -349,23 +349,23 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         testProxy.handler.setIsAiPage(false);
         contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
-        testProxy.callbackRouterRemote.hideInput();
+        testProxy.callbackRouterRemote.enterBasicMode();
         await testProxy.callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
         await microtasksFinished();
         assertTrue(
             !!contextualComposebox,
-            'Contextual composebox should exist after hideInput');
-        assertTrue(!!header, 'Composebox header should exist after hideInput');
+            'Contextual composebox should exist after enterBasicMode');
+        assertTrue(!!header, 'Composebox header should exist after enterBasicMode');
 
         assertTrue(
             header.hidden,
-            'Composebox header should be hidden after hideInput');
+            'Composebox header should be hidden after enterBasicMode');
         assertTrue(
             contextualComposebox.hidden,
-            'Contextual composebox should be hidden after hideInput');
+            'Contextual composebox should be hidden after enterBasicMode');
 
-        testProxy.callbackRouterRemote.restoreInput();
+        testProxy.callbackRouterRemote.exitBasicMode();
         await testProxy.callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.updateComplete;
         await microtasksFinished();
@@ -373,17 +373,17 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         assertTrue(
             !!contextualComposebox,
             'Contextual composebox ' +
-                'should exist after restoreInput');
+                'should exist after exitBasicMode');
         assertFalse(
             contextualComposebox.hidden,
-            'Contextual composebox should not be hidden after restoreInput');
+            'Contextual composebox should not be hidden after exitBasicMode');
 
         assertTrue(
             !!header,
-            'Contextual composebox header should exist after restoreInput');
+            'Contextual composebox header should exist after exitBasicMode');
         assertFalse(
             header.hidden,
-            'Composebox header should not be hidden after restoreInput');
+            'Composebox header should not be hidden after exitBasicMode');
       });
 
   test('Composebox submits then clears input', async () => {

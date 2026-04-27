@@ -249,8 +249,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 2.1: Enables stratus dark mode colors.
 // Version 2.2: Added UI fixes for NLM.
 // Version 2.3: UI fixes for transitions from search results.
+// Version 2.4: Adds ability to hideInput/restoreInput
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.3"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.4"};
 
 const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     &kContextualTasks,

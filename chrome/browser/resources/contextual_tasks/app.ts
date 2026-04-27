@@ -167,6 +167,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         reflect: true,
       },
       isInBasicMode_: {type: Boolean, reflect: true},
+      isInputHidden_: {type: Boolean, reflect: true},
       // Means no queries have been submitted in current AIM thread.
       isZeroState_: {
         type: Boolean,
@@ -255,6 +256,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor isInBasicMode_: boolean = false;
+  protected accessor isInputHidden_: boolean = false;
+
   protected accessor isErrorPageVisible_: boolean = false;
   // Whether no queries have been submitted in the current AIM thread. This
   // can be undefined on initial load to prevent the composebox from flashing
@@ -371,37 +374,29 @@ export class ContextualTasksAppElement extends CrLitElement {
       // TODO(crbug.com/474359572): Rename this to be more descriptive of what
       // it actually does.
       callbackRouter.hideInput.addListener(() => {
+        this.isInputHidden_ = true;
+      }),
+      callbackRouter.restoreInput.addListener(() => {
+        this.isInputHidden_ = false;
+      }),
+      callbackRouter.enterBasicMode.addListener(() => {
         if (!this.enableBasicMode_) {
           return;
         }
-        // OnBeforeRequest will trigger before the navigation, so this is needed
-        // to prevent the input from being hidden when navigating to a new
-        // page. However, while this guard prevents flickering, it also
-        // prevents legitimate changes when going from history page to old
-        // thread. Stash it. Whichever is the last basic mode signal is the
-        // legitimate one.
         if (this.isNavigatingFromAiPage_) {
           this.pendingBasicMode_ = true;
           return;
         }
-
         this.isInBasicMode_ = true;
       }),
-      callbackRouter.restoreInput.addListener(() => {
+      callbackRouter.exitBasicMode.addListener(() => {
         if (!this.enableBasicMode_) {
           return;
         }
-        // OnBeforeRequest will trigger before the navigation, so this is needed
-        // to prevent the input from being restored when navigating to a new
-        // page. However, while this guard prevents flickering, it also
-        // prevents legitimate changes when going from history page to old
-        // thread. Stash it. Whichever is the last basic mode signal is the
-        // legitimate one.
         if (this.isNavigatingFromAiPage_) {
           this.pendingBasicMode_ = false;
           return;
         }
-
         this.isInBasicMode_ = false;
       }),
       callbackRouter.injectInput.addListener(
@@ -793,6 +788,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     // reloading.
     this.forcedComposeboxBounds_ = null;
     this.occluders_ = null;
+    this.isInputHidden_ = false;
 
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
@@ -927,6 +923,10 @@ export class ContextualTasksAppElement extends CrLitElement {
     // Stay hidden until the first isZeroState_ value is determined to prevent
     // the composebox from flickering in.
     if (this.isZeroState_ === undefined) {
+      return true;
+    }
+
+    if (this.isInputHidden_) {
       return true;
     }
 

@@ -210,6 +210,14 @@ interface Page {
   RestoreInput();
 
   // Called by the browser process (C++) when the AIM server sends an
+  // EnterBasicMode command to enter basic mode.
+  EnterBasicMode();
+
+  // Called by the browser process (C++) when the AIM server sends an
+  // ExitBasicMode command to exit basic mode.
+  ExitBasicMode();
+
+  // Called by the browser process (C++) when the AIM server sends an
   // InjectInput command to inject an input into the compose box and specifies
   // a thumbnail source. `file_token` is an identifier for the input generated
   // by ContextualSearchSessionHandle. `supports_unimodal` specifies whether the
