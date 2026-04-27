@@ -350,7 +350,8 @@ void LogAutocompletePredictionCollisionTypeMetrics(
     FieldType heuristic_type = field->heuristic_type();
     FieldType server_type = field->server_type();
 
-    auto prediction_state = AutofillMetrics::PredictionState::kNone;
+    AutofillMetrics::PredictionState prediction_state =
+        AutofillMetrics::PredictionState::kNone;
     if (IsFillableFieldType(heuristic_type)) {
       prediction_state = IsFillableFieldType(server_type)
                              ? AutofillMetrics::PredictionState::kBoth
@@ -359,7 +360,7 @@ void LogAutocompletePredictionCollisionTypeMetrics(
       prediction_state = AutofillMetrics::PredictionState::kServer;
     }
 
-    auto autocomplete_state =
+    AutofillMetrics::AutocompleteState autocomplete_state =
         AutofillMetrics::AutocompleteStateForSubmittedField(*field);
     AutofillMetrics::LogAutocompletePredictionCollisionState(
         prediction_state, autocomplete_state);
@@ -496,7 +497,7 @@ bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
 void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
                                       const FormStructure& form) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  for (const auto& field : form) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
     if (field->autocomplete_attribute() == "off" &&
         field->did_trigger_suggestions() &&
         !field->all_modifiers().contains(FieldModifier::kAutofill)) {
@@ -613,8 +614,9 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
         ukm_source_id);
   }
 
-  std::vector<FormFieldData> fields_for_autocomplete =
-      base::ToVector(form_structure, [&](const auto& autofill_field) {
+  std::vector<FormFieldData> fields_for_autocomplete = base::ToVector(
+      form_structure,
+      [&](const std::unique_ptr<AutofillField>& autofill_field) {
         FormFieldData field = *autofill_field;
         if (autofill_field->Type().GetCreditCardType() ==
             CREDIT_CARD_VERIFICATION_CODE) {
@@ -757,7 +759,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
 // create a new footer section if there is none. Then, it moves the webauthn
 // sign-in fallback item to the footer - before any "Manage" suggestion.
 void ReorderWebauthnFallbackToFooter(std::vector<Suggestion>& suggestions) {
-  auto old_pos = std::ranges::find(
+  const auto old_pos = std::ranges::find(
       suggestions, SuggestionType::kWebauthnSignInWithAnotherDevice,
       &Suggestion::type);
   if (suggestions.size() < 2 || old_pos == suggestions.end()) {
@@ -2365,7 +2367,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   // Log to chrome://autofill-internals that a field's value was set by
   // JavaScript.
   auto StructureOfString = [](std::u16string str) {
-    for (auto& c : str) {
+    for (char16_t& c : str) {
       if (base::IsAsciiAlpha(c)) {
         c = 'a';
       } else if (base::IsAsciiDigit(c)) {
@@ -2933,8 +2935,8 @@ void BrowserAutofillManager::OnFormProcessed(
   // If a standalone cvc field is found in the form, query the DOM for last four
   // combinations. Used to search for the virtual card last four for a virtual
   // card saved on file of a merchant webpage.
-  auto contains_standalone_cvc_field =
-      std::ranges::any_of(form_structure.fields(), [](const auto& field) {
+  const bool contains_standalone_cvc_field = std::ranges::any_of(
+      form_structure.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->Type().GetCreditCardType() ==
                CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
       });
@@ -2945,7 +2947,7 @@ void BrowserAutofillManager::OnFormProcessed(
     metrics_->has_observed_phone_number_field = true;
   }
 
-  for (const auto& field : form_structure) {
+  for (const std::unique_ptr<AutofillField>& field : form_structure) {
     if (field->html_type() == HtmlFieldType::kOneTimeCode) {
       metrics_->has_observed_one_time_code_field = true;
       break;
@@ -3274,7 +3276,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
       autofill_metrics::ShouldRecordUkm() &&
       ShouldUploadUkm(form_structure, /*require_classified_field=*/true);
 
-  for (const auto& autofill_field : form_structure) {
+  for (const std::unique_ptr<AutofillField>& autofill_field : form_structure) {
     if (should_upload_ukm) {
       client().GetFormInteractionsUkmLogger().LogAutofillFieldInfoAtFormRemove(
           driver().GetPageUkmSourceId(), form_structure, *autofill_field,
@@ -3304,7 +3306,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         GetAcUnrecognizedBehavior(client()));
   }
 
-  for (const auto& autofill_field : form_structure) {
+  for (const std::unique_ptr<AutofillField>& autofill_field : form_structure) {
     // Clear log events.
     // Not conditioned on kAutofillLogUKMEventsWithSamplingOnSession because
     // there may be other reasons to log events.
@@ -3324,8 +3326,9 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
   size_t num_rationalization_event = 0;
   size_t num_ablation_event = 0;
 
-  for (const auto& autofill_field : form_structure) {
-    for (const auto& log_event : autofill_field->field_log_events()) {
+  for (const std::unique_ptr<AutofillField>& autofill_field : form_structure) {
+    for (const AutofillField::FieldLogEventType& log_event :
+         autofill_field->field_log_events()) {
       static_assert(
           std::variant_size<AutofillField::FieldLogEventType>() == 10,
           "When adding new variants check that this function does not "
@@ -3431,8 +3434,9 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
             client().GetComposeDelegate(), trigger_source));
   }
   if (relevant_filling_products.contains(FillingProduct::kIdentityCredential)) {
-    if (auto* delegate = client().GetIdentityCredentialDelegate()) {
-      if (auto suggestion_generator =
+    if (IdentityCredentialDelegate* delegate =
+            client().GetIdentityCredentialDelegate()) {
+      if (std::unique_ptr<SuggestionGenerator> suggestion_generator =
               delegate->GetIdentityCredentialSuggestionGenerator()) {
         suggestion_generators_.push_back(std::move(suggestion_generator));
       }
