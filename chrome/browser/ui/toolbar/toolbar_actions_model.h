@@ -198,16 +198,22 @@ class ToolbarActionsModel
   // enabled extensions.
   const extensions::Extension* GetExtensionById(const ActionId& id) const;
 
-  // Updates |pinned_action_ids_| per GetFilteredPinnedActionIds() and notifies
-  // observers if they have changed.
-  void UpdatePinnedActionIds();
-
   // Gets a list of pinned action ids that only contains that only contains IDs
   // with a corresponding action in the model.
   std::vector<ActionId> GetFilteredPinnedActionIds() const;
 
   // Notifies `observers_` that `action_id` has been updated.
   void NotifyToolbarActionUpdated(const ActionId& action_id);
+
+  // Updates `pinned_action_ids_` per `GetFilteredPinnedActionIds()` and
+  // notifies observers if they have changed.
+  void UpdateAndNotifyPinnedActionIdsChanged();
+
+  // Updates `pinned_action_ids_` per `GetFilteredPinnedActionIds()`.
+  void UpdatePinnedActionIds();
+
+  // Notify the observers that the pinned actions have changed.
+  void NotifyPinnedActionIdsChanged();
 
   // Our observers.
   base::ObserverList<Observer>::Unchecked observers_;
