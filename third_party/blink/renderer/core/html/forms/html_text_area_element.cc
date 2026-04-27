@@ -180,7 +180,7 @@ int HTMLTextAreaElement::scrollWidth() {
   if (!box || !editor_box)
     return TextControlElement::scrollWidth();
   LayoutUnit width =
-      editor_box->ClientWidth() + box->PaddingLeft() + box->PaddingRight();
+      editor_box->ClientWidth() + box->PaddingOutsets().HorizontalSum();
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(width, box->StyleRef())
       .Round();
 }
@@ -198,7 +198,7 @@ int HTMLTextAreaElement::scrollHeight() {
   if (!box || !editor_box)
     return TextControlElement::scrollHeight();
   LayoutUnit height =
-      editor_box->ClientHeight() + box->PaddingTop() + box->PaddingBottom();
+      editor_box->ClientHeight() + box->PaddingOutsets().VerticalSum();
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(height, box->StyleRef())
       .Round();
 }

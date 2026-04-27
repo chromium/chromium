@@ -491,7 +491,8 @@ void MouseEvent::ComputeRelativePosition() {
     // box.
     if (layout_object->IsBoxModelObject()) {
       const auto* layout_box = To<LayoutBoxModelObject>(layout_object);
-      local_pos.Offset(-layout_box->BorderLeft(), -layout_box->BorderTop());
+      const PhysicalOffset offset = layout_box->BorderOutsets().Offset();
+      local_pos.Offset(-offset.left, -offset.top);
     }
 
     offset_x_ = local_pos.x() * inverse_zoom_factor;

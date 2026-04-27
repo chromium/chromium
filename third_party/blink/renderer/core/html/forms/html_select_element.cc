@@ -1554,7 +1554,7 @@ LayoutUnit HTMLSelectElement::ClientPaddingLeft() const {
       style.IsLeftToRightDirection()
           ? theme.PopupInternalPaddingStart(style)
           : theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), style);
-  return this_box->PaddingLeft() + inner_padding;
+  return this_box->PaddingOutsets().left + inner_padding;
 }
 
 LayoutUnit HTMLSelectElement::ClientPaddingRight() const {
@@ -1569,7 +1569,7 @@ LayoutUnit HTMLSelectElement::ClientPaddingRight() const {
       style.IsLeftToRightDirection()
           ? theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), style)
           : theme.PopupInternalPaddingStart(style);
-  return this_box->PaddingRight() + inner_padding;
+  return this_box->PaddingOutsets().right + inner_padding;
 }
 
 void HTMLSelectElement::PopupDidHide() {

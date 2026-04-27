@@ -1027,8 +1027,7 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
   // Add border and padding to the bounding rect.
   PhysicalRect element_rect =
       PhysicalRect::EnclosingRect(transformed_path.BoundingRect());
-  element_rect.Move({lbmo->BorderLeft() + lbmo->PaddingLeft(),
-                     lbmo->BorderTop() + lbmo->PaddingTop()});
+  element_rect.Move((lbmo->BorderOutsets() + lbmo->PaddingOutsets()).Offset());
 
   // Update the accessible object.
   ax_object_cache->SetCanvasObjectBounds(canvas_element, element, element_rect);
