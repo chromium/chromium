@@ -77,6 +77,9 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   Element* OwningElement() { return owning_element_.Get(); }
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(ScriptedTimelineTriggerTest,
+                           ForbidScriptDuringActivation);
+
   void PerformActivate();
   void PerformDeactivate();
   static void PerformBehavior(Animation& animation,
@@ -94,6 +97,10 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   scoped_refptr<cc::AnimationTrigger> compositor_trigger_;
 
   WeakMember<Element> owning_element_;
+
+  // Set to true during PerformActivate and PerformDeactivate to prevent
+  // mutations of the behavior map.
+  bool is_activating_or_deactivating_ = false;
 
  private:
   virtual void WillAddAnimation(Animation* animation,
