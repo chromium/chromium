@@ -60,6 +60,27 @@ public class CoBrowseViews {
         mView = buildView(context);
     }
 
+    /** Destroys the co-browse view and its components. */
+    @CalledByNative
+    @VisibleForTesting
+    void destroy() {
+        ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
+        ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);
+        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
+        if (mWebUi != null) {
+            webUiContainer.removeAllViews();
+            mWebUi.destroy();
+        }
+        if (mFusebox != null) {
+            fuseboxContainer.removeAllViews();
+            mFusebox.destroy();
+        }
+        if (mPeekView != null) {
+            peekContainer.removeAllViews();
+            mPeekView = null;
+        }
+    }
+
     /** Returns the background color for the co-browse view. */
     public @ColorInt int getBackgroundColor() {
         return mBackgroundColor;
@@ -80,27 +101,6 @@ public class CoBrowseViews {
 
     public boolean hasPeekView() {
         return mPeekView != null;
-    }
-
-    /** Destroys the co-browse view and its components. */
-    @CalledByNative
-    @VisibleForTesting
-    void destroy() {
-        ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);
-        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
-        if (mWebUi != null) {
-            webUiContainer.removeAllViews();
-            mWebUi.destroy();
-        }
-        if (mFusebox != null) {
-            fuseboxContainer.removeAllViews();
-            mFusebox.destroy();
-        }
-        if (mPeekView != null) {
-            peekContainer.removeAllViews();
-            mPeekView = null;
-        }
     }
 
     /**
@@ -146,10 +146,6 @@ public class CoBrowseViews {
         }
     }
 
-    @Nullable WebContents getWebContents() {
-        return mWebUi != null ? mWebUi.getWebContents() : null;
-    }
-
     /** Sets whether the sheet is resizing. */
     public void setIsResizing(boolean isResizing) {
         if (mWebUi != null) {
@@ -173,23 +169,13 @@ public class CoBrowseViews {
         }
     }
 
-    int getThinWebViewHeight() {
-        if (mWebUi != null) {
-            return mWebUi.getWebUiView().getHeight();
-        }
-        return 0;
-    }
-
-    int getFuseboxHeight() {
-        if (mFusebox != null) {
-            return mFusebox.getFuseboxView().getHeight();
-        }
-        return 0;
-    }
-
     @TabBottomSheetClientType
     int getClientType() {
         return mClientType;
+    }
+
+    @Nullable WebContents getWebContents() {
+        return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
     private View buildView(Context context) {

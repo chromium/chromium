@@ -125,6 +125,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewsTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUiTest.java",
@@ -137,6 +138,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/javatests:common_unit_test_deps_java",
+    "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
