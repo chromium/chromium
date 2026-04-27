@@ -7744,7 +7744,7 @@
       type_name: "FitText",
       converter: "ConvertFitText",
       invalidate: ["layout"],
-      runtime_flag: "CssFitWidthText",
+      runtime_flag: "CssTextFit",
       percentages_depend_on_used_value: false,
     },
     {

@@ -223,7 +223,7 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
 }  // namespace
 
 bool ShouldApplyFitText(const InlineNode node) {
-  if (!RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
+  if (!RuntimeEnabledFeatures::CssTextFitEnabled()) {
     return false;
   }
   const ComputedStyle& style = node.Style();

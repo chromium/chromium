@@ -315,7 +315,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
     DCHECK(!text_item.IsSvgText());
-    if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
+    if (RuntimeEnabledFeatures::CssTextFitEnabled()) {
       scaling_factor = text_item.GetFitTextScale();
     }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
@@ -412,7 +412,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   GraphicsContextStateSaver state_saver(context, /*save_and_restore=*/false);
   const int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   LayoutUnit top = physical_box.offset.top + ascent;
-  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && !svg_inline_text) {
+  if (RuntimeEnabledFeatures::CssTextFitEnabled() && !svg_inline_text) {
     top = LayoutUnit(physical_box.offset.top + ascent * scaling_factor);
   }
   LineRelativeOffset text_origin{physical_box.offset.left, top};

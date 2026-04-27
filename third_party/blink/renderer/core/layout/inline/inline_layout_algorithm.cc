@@ -639,7 +639,7 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
   InlineBoxState::AdjustEdges(line_style, *line_style.GetFont(), baseline_type_,
                               should_apply_over, should_apply_under,
                               intrinsic_metrics);
-  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && apply_fit_text_) {
+  if (RuntimeEnabledFeatures::CssTextFitEnabled() && apply_fit_text_) {
     float scale = line_info.TextFitScale();
     if (scale < 1.0f) {
       std::optional<float> min_size = Node().MinimumFontPhysicalSize();

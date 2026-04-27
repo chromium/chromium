@@ -1582,15 +1582,6 @@
       status: "stable",
     },
     {
-      // crbug.com/417306102
-      name: "CssFitWidthText",
-      status: "experimental",
-    },
-    {
-      // crbug.com/417306102
-      name: "CssFitWidthTextReshaping",
-    },
-    {
       // crbug.com/483689942
       // Serialize font-family names as space-separated idents when possible,
       // per CSSWG resolution. See https://github.com/w3c/csswg-drafts/issues/5846.
@@ -1972,6 +1963,15 @@
     {
       name: "CSSTextDecorationSkipSpaces",
       status: "test",
+    },
+    {
+      // crbug.com/417306102
+      name: "CssTextFit",
+      status: "experimental",
+    },
+    {
+      // crbug.com/417306102
+      name: "CssTextFitReshaping",
     },
     {
       // crbug.com/434361099

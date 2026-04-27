@@ -783,7 +783,7 @@ const AffineTransform* TextPainter::SvgTextPaintState::GetShaderTransform()
 void TextPainter::ApplyTextFitScale(
     const TextFragmentPaintInfo& paint_info,
     std::optional<GraphicsContextStateSaver>* state_saver) {
-  if (!RuntimeEnabledFeatures::CssFitWidthTextEnabled() ||
+  if (!RuntimeEnabledFeatures::CssTextFitEnabled() ||
       paint_info.text_fit_scaling_factor == 1.0f) {
     return;
   }

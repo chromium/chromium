@@ -11,7 +11,7 @@
 namespace blink {
 
 FitTextMethod FitText::Method() const {
-  return RuntimeEnabledFeatures::CssFitWidthTextReshapingEnabled()
+  return RuntimeEnabledFeatures::CssTextFitReshapingEnabled()
              ? FitTextMethod::kFontSize
              : FitTextMethod::kScale;
 }

@@ -663,7 +663,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
   ParagraphScale paragraph_scale;
-  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
+  if (RuntimeEnabledFeatures::CssTextFitEnabled()) {
     const FitText& fit_text = Style().TextFit();
     const bool grow_consistent =
         fit_text.Type() == FitTextType::kGrow &&
