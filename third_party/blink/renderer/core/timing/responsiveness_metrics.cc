@@ -625,8 +625,9 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
   if (source_id != ukm::kInvalidSourceId &&
-      (!sampling_ || base::RandInt(kMinValueForSampling,
-                                   kMaxValueForSampling) <= kUkmSamplingRate)) {
+      (!sampling_ ||
+       base::RandIntInclusive(kMinValueForSampling, kMaxValueForSampling) <=
+           kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int64_t>(interaction_type))
         .SetMaxEventDuration(duration.InMilliseconds())
