@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -130,6 +131,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<@Nullable P
             ChromePaymentRequestDelegateImplObserverForTest observer) {
         assert observer != null;
         sObserverForTest = observer;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     @Override
@@ -143,7 +145,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<@Nullable P
         }
 
         if (!mRenderFrameHost.isFeatureEnabled(PermissionsPolicyFeature.PAYMENT)) {
-            mRenderFrameHost.terminateRendererDueToBadMessage(241 /*PAYMENTS_WITHOUT_PERMISSION*/);
+            // PAYMENTS_WITHOUT_PERMISSION = 241
+            mRenderFrameHost.terminateRendererDueToBadMessage(241);
             return null;
         }
 

@@ -1463,6 +1463,7 @@ public class PaymentRequestUi
     public static void setEditorObserverForTest(EditorObserverForTest editorObserverForTest) {
         sEditorObserverForTest = editorObserverForTest;
         EditorDialogView.setEditorObserverForTest(sEditorObserverForTest);
+        ResettersForTesting.register(() -> sEditorObserverForTest = null);
     }
 
     public static void setPaymentRequestObserverForTest(
