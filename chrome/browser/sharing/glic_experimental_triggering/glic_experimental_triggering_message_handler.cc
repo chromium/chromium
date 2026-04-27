@@ -212,6 +212,12 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     return;
   }
 
+  if (request.has_request() && request.request().has_device_opt_in_request()) {
+    // TODO (qinmin): Show the device opt-in UI.
+    std::move(done_callback).Run(nullptr);
+    return;
+  }
+
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
                                                          /*create=*/false);

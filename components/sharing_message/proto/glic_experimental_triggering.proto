@@ -44,9 +44,15 @@ message GlicExperimentalTriggering {
       optional string stop_reason = 1;
     }
 
+    message DeviceOptInRequest {
+      // The source of the triggering request.
+      optional string triggering_source = 1;
+    }
+
     oneof payload {
       TriggerActuationRequest trigger_actuation_request = 1;
       StopActuationRequest stop_actuation_request = 2;
+      DeviceOptInRequest device_opt_in_request = 3;
     }
   }
 
@@ -87,8 +93,16 @@ message GlicExperimentalTriggering {
       map<string, string> metadata = 5;
     }
 
+    // The result of the device opt-in request.
+    enum DeviceOptInResult {
+      UNKNOWN = 0;
+      DECLINED = 1;
+      ACCEPTED = 2;
+    }
+
     oneof payload {
       TaskUpdate task_update = 3;
+      DeviceOptInResult device_opt_in_result = 4;
     }
   }
 

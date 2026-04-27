@@ -465,4 +465,21 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   run_loop.Run();
 }
 
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       HandlesDeviceOptInRequest) {
+  components_sharing_message::SharingMessage message;
+  auto* request = message.mutable_glic_experimental_triggering()
+                      ->mutable_request()
+                      ->mutable_device_opt_in_request();
+  request->set_triggering_source("ChromeOS");
+
+  base::MockOnceCallback<void(
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>
+      done_callback;
+  EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+  EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  handler_->OnMessage(std::move(message), done_callback.Get());
+}
+
 }  // namespace
