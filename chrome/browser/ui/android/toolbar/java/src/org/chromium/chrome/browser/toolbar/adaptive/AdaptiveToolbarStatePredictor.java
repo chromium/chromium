@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
@@ -36,6 +37,7 @@ public class AdaptiveToolbarStatePredictor {
     private static @Nullable List<Integer> sSegmentationResultsForTesting;
 
     private static @Nullable Integer sToolbarStateForTesting;
+    private final Context mContext;
     private final Profile mProfile;
     private final AdaptiveToolbarBehavior mBehavior;
 
@@ -81,6 +83,7 @@ public class AdaptiveToolbarStatePredictor {
             Profile profile,
             @Nullable AndroidPermissionDelegate androidPermissionDelegate,
             @Nullable AdaptiveToolbarBehavior behavior) {
+        mContext = context;
         mProfile = profile;
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mBehavior =
@@ -262,6 +265,8 @@ public class AdaptiveToolbarStatePredictor {
 
     private boolean isVariantEnabled(@AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
+            case AdaptiveToolbarButtonVariant.NEW_TAB:
+                return !isBottomBarEnabled();
             case AdaptiveToolbarButtonVariant.VOICE:
                 if (mAndroidPermissionDelegate == null) return true;
                 return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
@@ -270,10 +275,15 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return AdaptiveToolbarFeatures.isTranslateEnabled(mProfile);
             case AdaptiveToolbarButtonVariant.GLIC:
-                return AdaptiveToolbarFeatures.isGlicEnabledForProfile(mProfile);
+                return AdaptiveToolbarFeatures.isGlicEnabledForProfile(mProfile)
+                        && !isBottomBarEnabled();
             default:
                 return true;
         }
+    }
+
+    private boolean isBottomBarEnabled() {
+        return BottomBarConfigUtils.isBottomBarEnabled(mContext);
     }
 
     /**

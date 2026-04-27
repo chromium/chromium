@@ -351,6 +351,51 @@ public class AdaptiveToolbarStatePredictorTest {
                         SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
     }
 
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testNewTabEnabled() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        List.of(AdaptiveToolbarButtonVariant.NEW_TAB));
+
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(
+                                List.of(
+                                        AdaptiveToolbarButtonVariant.NEW_TAB,
+                                        AdaptiveToolbarButtonVariant.SHARE)),
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.NEW_TAB);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testNewTabFilteredWhenBottomBarEnabled() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        List.of(AdaptiveToolbarButtonVariant.NEW_TAB));
+
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.SHARE)),
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
     private AdaptiveToolbarStatePredictor buildStatePredictor(
             boolean toolbarSettingsToggleEnabled,
             Integer manualOverride,

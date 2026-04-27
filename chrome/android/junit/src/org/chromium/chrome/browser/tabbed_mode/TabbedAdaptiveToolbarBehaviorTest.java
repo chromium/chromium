@@ -133,6 +133,16 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     }
 
     @Test
+    @Config(qualifiers = "w390dp-h820dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testResultFilter_BottomBarEnabled() {
+        assertTopResult(
+                /* segmentationResults= */ List.of(
+                        AdaptiveToolbarButtonVariant.NEW_TAB, AdaptiveToolbarButtonVariant.SHARE),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.SHARE);
+    }
+
+    @Test
     @Config(qualifiers = "w690dp-h820dp")
     public void testGetTopSegmentationResultWithNTBOnTablet() {
         assertTopResult(

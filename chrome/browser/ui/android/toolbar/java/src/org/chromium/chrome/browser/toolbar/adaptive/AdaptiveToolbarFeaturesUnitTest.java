@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,5 +95,28 @@ public class AdaptiveToolbarFeaturesUnitTest {
     public void testShouldForciblyShowGlicButton_BottomBarEnabled() {
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mock(ActorTask.class));
         assertFalse(AdaptiveToolbarFeatures.shouldForciblyShowGlicButton(mContext, mProfile));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    })
+    public void testGetDefaultButtonVariant_BottomBarDisabled_GlicEnabled() {
+        assertEquals(
+                AdaptiveToolbarButtonVariant.GLIC,
+                AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext, mProfile));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testGetDefaultButtonVariant_BottomBarEnabled_GlicEnabled() {
+        assertEquals(
+                AdaptiveToolbarButtonVariant.SHARE,
+                AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext, mProfile));
     }
 }

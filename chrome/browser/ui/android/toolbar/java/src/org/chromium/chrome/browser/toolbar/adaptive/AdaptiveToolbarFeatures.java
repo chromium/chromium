@@ -208,7 +208,8 @@ public class AdaptiveToolbarFeatures {
      */
     public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(
             Context context, Profile profile) {
-        if (isGlicEnabledForProfile(profile)) {
+        boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
+        if (isGlicEnabledForProfile(profile) && !isBottomBarEnabled) {
             return AdaptiveToolbarButtonVariant.GLIC;
         }
         if (sDefaultSegmentForTesting != null) {
@@ -219,7 +220,7 @@ public class AdaptiveToolbarFeatures {
                 default -> AdaptiveToolbarButtonVariant.UNKNOWN;
             };
         }
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) || isBottomBarEnabled
                 ? AdaptiveToolbarButtonVariant.SHARE
                 : AdaptiveToolbarButtonVariant.NEW_TAB;
     }
