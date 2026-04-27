@@ -151,15 +151,20 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
   WKWebView* wkWebView = [self findWKWebViewInView:_webStateView];
 
-  // Refrain from moving when handling sub-scrolls within a WKWebView.
-  if (scrollView != wkWebView.scrollView) {
+  // Allow overscroll for the main scroll view and sub-scroll views (e.g.
+  // iframes) if they are descendants of the web view.
+  BOOL isDescendant = [scrollView isDescendantOfView:wkWebView];
+  if (!isDescendant) {
     return NO;
   }
 
   // Check boundaries.
   CGFloat verticalVelocity = [panRecognizer velocityInView:scrollView].y;
   BOOL draggingDown = verticalVelocity > 0;
-  BOOL isAtTop = [self isContentScrolledToTop:wkWebView];
+
+  // Check if the current scroll view is at the top.
+  BOOL isAtTop = scrollView.contentOffset.y <= 0;
+
   BOOL sheetMovementForLargestDetent =
       isInLargestDetent && isAtTop && draggingDown;
   BOOL sheetMovementForSmallerDetents = !isInLargestDetent && isAtTop;
@@ -280,14 +285,6 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 #pragma mark - Private
-
-// Returns YES if the embedded content is at its top boundary.
-- (BOOL)isContentScrolledToTop:(WKWebView*)wkWebView {
-  if (wkWebView) {
-    return wkWebView.scrollView.contentOffset.y <= 0;
-  }
-  return YES;
-}
 
 // Recursively searches for a WKWebView in the given view's hierarchy.
 - (WKWebView*)findWKWebViewInView:(UIView*)view {
