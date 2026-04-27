@@ -127,6 +127,9 @@ class AwBrowserProcess {
   // returns immediately.
   static void WaitForBackgroundTracingInit();
 
+  static void SetNativeWebViewZygoteEnabled(bool enabled);
+  static bool IsNativeWebViewZygoteEnabled();
+
  private:
   void CreateSafeBrowsingUIManager();
   void CreateSafeBrowsingAllowlistManager();

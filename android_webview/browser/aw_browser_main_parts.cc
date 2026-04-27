@@ -472,6 +472,11 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewStartupTasksMetrics2", startup_tasks_experiment_group,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
+
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "NativeWebViewZygote",
+      AwBrowserProcess::IsNativeWebViewZygoteEnabled() ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {

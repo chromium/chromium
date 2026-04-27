@@ -91,6 +91,7 @@ base::WaitableEvent* GetTracingInitEvent() {
 
 bool g_init_tracing_during_browser_main = true;
 bool g_initializing_tracing_on_background_thread = false;
+bool g_is_native_webview_zygote_enabled = false;
 
 }  // namespace
 
@@ -361,6 +362,11 @@ static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
   AwBrowserProcess::GetInstance()->GetBrowserClient()->OnStartupComplete();
 }
 
+static void JNI_AwBrowserProcess_SetNativeWebViewZygoteEnabled(JNIEnv* env,
+                                                               bool enabled) {
+  AwBrowserProcess::SetNativeWebViewZygoteEnabled(enabled);
+}
+
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     JNIEnv* env,
     const std::string& processName) {
@@ -416,6 +422,16 @@ void AwBrowserProcess::WaitForBackgroundTracingInit() {
 // static
 bool AwBrowserProcess::ShouldInitTracingDuringBrowserMain() {
   return g_init_tracing_during_browser_main;
+}
+
+// static
+void AwBrowserProcess::SetNativeWebViewZygoteEnabled(bool enabled) {
+  g_is_native_webview_zygote_enabled = enabled;
+}
+
+// static
+bool AwBrowserProcess::IsNativeWebViewZygoteEnabled() {
+  return g_is_native_webview_zygote_enabled;
 }
 
 }  // namespace android_webview

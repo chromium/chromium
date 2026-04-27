@@ -62,6 +62,7 @@ import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
 import org.chromium.android_webview.safe_mode.DisableStartupTasksSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BundleUtils;
@@ -750,6 +751,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     startupTimestamps.getProviderClassForNameEnd()
                             - startupTimestamps.getProviderClassForNameStart());
         }
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        boolean isNativeWebViewZygoteEnabled =
+                delegate != null && delegate.isNativeWebViewZygoteEnabled(webViewDelegate);
+        AwBrowserProcess.setNativeWebViewZygoteEnabled(isNativeWebViewZygoteEnabled);
     }
 
     // The startup tasks are setup to run based on the following logic:

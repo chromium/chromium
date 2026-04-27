@@ -366,6 +366,10 @@ public final class AwBrowserProcess {
         sWebViewPackageName = webViewPackageName;
     }
 
+    public static void setNativeWebViewZygoteEnabled(boolean enabled) {
+        AwBrowserProcessJni.get().setNativeWebViewZygoteEnabled(enabled);
+    }
+
     public static String getWebViewPackageName() {
         if (sWebViewPackageName == null) return ""; // May be null in testing.
         return sWebViewPackageName;
@@ -973,6 +977,8 @@ public final class AwBrowserProcess {
 
     @NativeMethods
     interface Natives {
+        void setNativeWebViewZygoteEnabled(boolean enabled);
+
         void setProcessNameCrashKey(@JniType("std::string") String processName);
 
         ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
