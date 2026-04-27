@@ -41,6 +41,10 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
   paint_rect.Move(paint_offset);
 
   auto* canvas = To<HTMLCanvasElement>(layout_html_canvas_.GetNode());
+  if (paint_info.IsPrivacyPreserving() && !canvas->OriginClean()) {
+    return;
+  }
+
   if (!canvas->IsCanvasClear()) {
     PaintTiming::From(layout_html_canvas_.GetDocument())
         .MarkFirstContentfulPaint();
