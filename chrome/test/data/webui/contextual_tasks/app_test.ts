@@ -45,8 +45,6 @@ suite('ContextualTasksAppTest', function() {
       enableComposeboxJumpFix: false,
       isGhostLoaderVisible: false,
       isAiPage: true,
-      nlmUrlParam: 'ajid',
-      enableCustomNlmUi: true,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
@@ -670,19 +668,12 @@ suite('ContextualTasksAppTest', function() {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
-    const {promise, resolve} = Promise.withResolvers<void>();
     const appElement = document.createElement('contextual-tasks-app');
-    appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
-
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    // Wait for load to finish before proceeding to avoid race condition.
-    await promise;
-
     appElement.setIsZeroStateForTesting(false);
     appElement.setInNlmForTesting(true);
-    appElement.setIsZeroStateForTesting(false);
     await appElement.updateComplete;
     await microtasksFinished();
 
