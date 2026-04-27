@@ -103,4 +103,21 @@ TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsDisabled) {
   EXPECT_EQ([TraitCollectionSetForTraits(traits) count], [traits count]);
 }
 
+// Tests that the memory footprint of an image is calculated correctly.
+TEST_F(UIKitUIUtilTest, MemoryFootprintForImage) {
+  const CGSize kSize = CGSizeMake(100, 100);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = 0;
+  format.opaque = NO;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:kSize format:format];
+  UIImage* image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context){
+      }];
+  size_t image_size_in_kb = CGImageGetBytesPerRow([image CGImage]) *
+                            CGImageGetHeight([image CGImage]) / 1024;
+  EXPECT_EQ(MemoryFootprintForImage(image), image_size_in_kb);
+}
+
 }  // namespace

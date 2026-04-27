@@ -105,8 +105,12 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
     }
 
     lruCache.setObject(value: image, forKey: snapshotID)
-    let imageToWrite = IsSnapshotDownsampleImageEnabled()
+    let imageToWrite =
+      IsSnapshotDownsampleImageEnabled()
       ? Self.downsampledForStorage(image) : image
+    HistogramUtils.recordHistogram(
+      "IOS.Snapshots.SnapshotImageMemoryFootprint",
+      withMemoryKB: UiKitUtils.memoryFootprint(for: image))
     fileManager.write(image: imageToWrite, snapshotID: snapshotID)
 
     for observer in observers {

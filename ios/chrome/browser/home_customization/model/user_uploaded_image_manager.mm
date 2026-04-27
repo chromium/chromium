@@ -18,6 +18,7 @@
 #import "base/uuid.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 namespace {
 
@@ -100,6 +101,9 @@ LoadImageResult LoadImageAtPath(const base::FilePath& path,
     return {nil, CGSizeZero, UserUploadedImageError::kFailedToReadFile};
   }
 
+  base::UmaHistogramMemoryKB(
+      "IOS.HomeCustomization.Background.UserUploaded.ImageMemoryFootprint",
+      MemoryFootprintForImage(image));
   return {image, original_size, UserUploadedImageError::kNone};
 }
 

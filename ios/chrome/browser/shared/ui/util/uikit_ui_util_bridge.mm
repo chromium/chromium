@@ -12,4 +12,8 @@
   return GreyImage(image);
 }
 
++ (size_t)memoryFootprintForImage:(UIImage*)image {
+  return MemoryFootprintForImage(image);
+}
+
 @end

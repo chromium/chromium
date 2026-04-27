@@ -9,6 +9,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -89,6 +90,7 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
 
   store_run_loop.Run();
 
+  base::HistogramTester histogram_tester;
   base::RunLoop load_run_loop;
   UIImage* loaded_image;
   CGSize original_size;
@@ -101,6 +103,8 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
   load_run_loop.Run();
 
   ASSERT_NSNE(nil, loaded_image);
+  histogram_tester.ExpectTotalCount(
+      "IOS.HomeCustomization.Background.UserUploaded.ImageMemoryFootprint", 1);
   EXPECT_EQ(UserUploadedImageError::kNone, error);
 
   // The image is compressed and converted before being stored, so the bytes may

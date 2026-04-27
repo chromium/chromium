@@ -101,13 +101,17 @@ let kJPEGImageQualityCompressed: CGFloat = 0.97
     backgroundTaskGroup.enter()
     backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
       guard let self = self else { return }
-      let quality = IsSnapshotCompressedJPEGQualityEnabled()
+      let quality =
+        IsSnapshotCompressedJPEGQualityEnabled()
         ? kJPEGImageQualityCompressed : kJPEGImageQualityDefault
       guard let data = image.jpegData(compressionQuality: quality) else {
         backgroundTaskGroup.leave()
         return
       }
       do {
+        HistogramUtils.recordHistogram(
+          "IOS.Snapshots.DowngradedQualityImageMemoryFootprint", withMemoryKB: data.count / 1024)
+
         try data.write(to: imagePath, options: [.atomic])
 
         // Encrypt the snapshot file (mostly for Incognito, but can't hurt to

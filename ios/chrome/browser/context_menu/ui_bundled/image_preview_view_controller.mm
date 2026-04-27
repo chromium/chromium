@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -142,6 +143,9 @@ constexpr CGFloat kPreviewImageScale = 2.0;
           }));
     } else {
       UIImage* image = [UIImage imageWithData:safeImageData];
+      base::UmaHistogramMemoryKB("IOS.ContextMenu.PreviewImageMemoryFootprint",
+                                 MemoryFootprintForImage(image));
+
       _imageView.image = image;
       _imageView.hidden = NO;
       self.preferredContentSize = image.size;
@@ -209,6 +213,9 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   _imageView.image = image;
   _imageView.hidden = NO;
   self.preferredContentSize = originalPixelSize;
+
+  base::UmaHistogramMemoryKB("IOS.ContextMenu.PreviewImageMemoryFootprint",
+                             MemoryFootprintForImage(image));
 }
 
 // Called if the loading is too long. A spinner is presented.

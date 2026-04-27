@@ -231,4 +231,7 @@ bool IsBottomOmniboxAvailable();
 NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits)
     API_AVAILABLE(ios(17.0));
 
+// Returns the memory footprint of an image in KB.
+size_t MemoryFootprintForImage(UIImage* image);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

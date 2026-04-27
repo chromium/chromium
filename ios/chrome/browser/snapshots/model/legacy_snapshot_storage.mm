@@ -179,6 +179,9 @@ UIImage* DownsampledForStorage(UIImage* image) {
       base::FeatureList::IsEnabled(kSnapshotDownsampleImage)
           ? DownsampledForStorage(image)
           : image;
+
+  base::UmaHistogramMemoryKB("IOS.Snapshots.SnapshotImageMemoryFootprint",
+                             MemoryFootprintForImage(image));
   [_fileManager writeImage:imageToWrite withSnapshotID:snapshotID];
 }
 

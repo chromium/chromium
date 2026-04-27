@@ -671,6 +671,16 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the loading of the image preview succeeded.</summary>
 </histogram>
 
+<histogram name="IOS.ContextMenu.PreviewImageMemoryFootprint" units="KB"
+    expires_after="2026-09-20">
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Records the memory footprint of ContextMenu’s preview image (in KB) after
+    any image optimizations (like downsampling) have been applied.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ContextMenu.UpdateConfigurationResult" enum="Boolean"
     expires_after="2027-02-08">
   <owner>justincohen@google.com</owner>
@@ -3152,6 +3162,17 @@ chromium-metrics-reviews@google.com.
     Records the result of a user attempting to upload an image for the ntp
     background. This is logged on each attempt to upload an image from the
     customization menu even if there is no error.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.HomeCustomization.Background.UserUploaded.ImageMemoryFootprint"
+    units="KB" expires_after="2026-08-16">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the memory footprint of Home’s user uploaded background image (in
+    KB). This is logged each time the background image is loaded.
   </summary>
 </histogram>
 
@@ -6865,6 +6886,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Snapshots.DowngradedQualityImageMemoryFootprint"
+    units="KB" expires_after="2027-02-12">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the memory footprint of a snapshot image (in KB) after its quality
+    has been downgraded.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
     expires_after="2026-10-11">
   <owner>asamidoi@chromium.org</owner>
@@ -6877,6 +6908,13 @@ chromium-metrics-reviews@google.com.
   <owner>asamidoi@chromium.org</owner>
   <owner>bling-kiwi-pod@google.com</owner>
   <summary>Records the time to retrieve a grey snapshot.</summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.SnapshotImageMemoryFootprint" units="KB"
+    expires_after="2027-02-12">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>Records the memory footprint of a snapshot image (in KB).</summary>
 </histogram>
 
 <histogram name="IOS.Snapshots.UpdateSnapshotTime" units="ms"

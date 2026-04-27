@@ -10,6 +10,7 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -153,6 +154,10 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
     // unsupported bitmap format.
     data = UIImagePNGRepresentation(image);
   }
+
+  base::UmaHistogramMemoryKB(
+      "IOS.Snapshots.DowngradedQualityImageMemoryFootprint",
+      [data length] / 1024);
   [data writeToFile:path atomically:YES];
 
   // Encrypt the snapshot file (mostly for Incognito, but can't hurt to
