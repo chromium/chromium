@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -272,14 +271,6 @@ void GlicInstanceCoordinatorImpl::Toggle(
 
   ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion,
                   deprecated_auto_send, deprecated_conversation_id);
-}
-
-void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
-    base::WeakPtr<Browser> browser) {
-  // TODO(crbug/4263869): Used by GlicPageHandler::SignInAndClosePanel(), which
-  // should close glic and reopen it after signin is complete. This flow likely
-  // still makes sense for the floating panel, but not for the side panel.
-  NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {

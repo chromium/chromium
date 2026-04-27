@@ -132,7 +132,6 @@ class GlicInstanceCoordinatorImpl
               std::optional<std::string> deprecated_prompt_suggestion,
               bool deprecated_auto_send,
               std::optional<std::string> deprecated_conversation_id) override;
-  void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
   void Shutdown() override;

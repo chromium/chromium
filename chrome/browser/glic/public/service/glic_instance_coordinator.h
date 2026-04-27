@@ -76,11 +76,6 @@ class GlicInstanceCoordinator {
       bool deprecated_auto_send,
       std::optional<std::string> deprecated_conversation_id) = 0;
 
-  // If the panel is opened, but sign-in is required, we provide a sign-in
-  // button which closes the panel. This is called after the user signs in to
-  // open the panel again.
-  virtual void ShowAfterSignIn(base::WeakPtr<Browser> browser) = 0;
-
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;
 

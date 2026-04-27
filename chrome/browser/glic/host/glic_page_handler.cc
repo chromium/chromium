@@ -2632,11 +2632,7 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
-  GetGlicService()->GetAuthController().ShowReauthForAccount(base::BindOnce(
-      &GlicInstanceCoordinator::ShowAfterSignIn,
-      // Unretained is safe because the keyed service owns the
-      // auth controller and the window controller.
-      base::Unretained(&GetGlicService()->instance_coordinator()), nullptr));
+  GetGlicService()->GetAuthController().ShowReauthForAccount(base::DoNothing());
   host().ClosePanel(this);
 }
 
