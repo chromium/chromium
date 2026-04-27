@@ -1271,7 +1271,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
       // token, and the second call crashes when it tries to access it.
       // See https://crbug.com/496389117.
       if (start_worker_token.has_value()) {
-        for (auto& observer : sync_observer_list_->observers) {
+        for (auto& observer : safe_sync_observer_list->observers) {
           observer.OnStoppedSync(version->version_id(), version->scope(),
                                  *start_worker_token);
         }
@@ -1294,7 +1294,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
       if (start_worker_token.has_value()) {
-        for (auto& observer : sync_observer_list_->observers) {
+        for (auto& observer : safe_sync_observer_list->observers) {
           observer.OnStoppingSync(version->version_id(), version->scope(),
                                   *start_worker_token);
         }
