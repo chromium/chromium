@@ -338,9 +338,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, FromAllStores) {
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest,
        UsernameAndPasswordFieldsVisible) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
 
@@ -408,9 +405,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest,
 }
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest, FieldsAreNotVisible) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   PasswordForm saved_form =
       CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
   saved_form.actor_login_approved = true;

@@ -96,11 +96,6 @@ class ActorLoginFormFinder {
       const std::vector<password_manager::PasswordFormManager*>&
           eligible_managers);
 
-  // Retrieves all `PasswordFormManager`s for the given `origin` that contain a
-  // valid login form, along with the
-  // `optimization_guide::proto::ActorLoginQuality_ParsedFormDetails` for all
-  // parsed forms.
-  FormFinderResult GetEligibleLoginFormManagers(const url::Origin& origin);
 
   // Asynchronously finds all `PasswordFormManager`s that are associated with
   // `origin` and have a valid parsed login form. Invokes `callback` with the

@@ -181,18 +181,10 @@ void ActorLoginPasswordCredentialsFetcher::Fetch(FetchResultCallback callback) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFieldVisibilityCheck)) {
-    login_form_finder_->GetEligibleLoginFormManagersAsync(
-        request_origin_,
-        base::BindOnce(&ActorLoginPasswordCredentialsFetcher::
-                           OnEligibleLoginFormManagersRetrieved,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    FormFinderResult result =
-        login_form_finder_->GetEligibleLoginFormManagers(request_origin_);
-    OnEligibleLoginFormManagersRetrieved(std::move(result));
-  }
+  login_form_finder_->GetEligibleLoginFormManagersAsync(
+      request_origin_, base::BindOnce(&ActorLoginPasswordCredentialsFetcher::
+                                          OnEligibleLoginFormManagersRetrieved,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorLoginPasswordCredentialsFetcher::OnEligibleLoginFormManagersRetrieved(

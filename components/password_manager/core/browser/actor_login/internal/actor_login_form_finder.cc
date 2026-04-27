@@ -35,29 +35,6 @@ namespace {
 
 using DriverFormKey = actor_login::ActorLoginFormFinder::DriverFormKey;
 
-bool IsElementFocusable(autofill::FieldRendererId renderer_id,
-                        const autofill::FormData& form_data) {
-  auto field = std::ranges::find(form_data.fields(), renderer_id,
-                                 &autofill::FormFieldData::renderer_id);
-  CHECK(field != form_data.fields().end());
-  return field->is_focusable();
-}
-
-bool IsLoginForm(const password_manager::PasswordForm& form) {
-  const bool has_focusable_username =
-      form.HasUsernameElement() &&
-      IsElementFocusable(form.username_element_renderer_id, form.form_data);
-  const bool has_focusable_password =
-      form.HasPasswordElement() &&
-      IsElementFocusable(form.password_element_renderer_id, form.form_data);
-  const bool has_focusable_new_password =
-      form.HasNewPasswordElement() &&
-      IsElementFocusable(form.new_password_element_renderer_id, form.form_data);
-
-  return (has_focusable_username || has_focusable_password) &&
-         !has_focusable_new_password;
-}
-
 void OnCheckViewAreaVisibleFinished(
     actor_login::LoginFieldType type,
     base::RepeatingCallback<void(std::pair<actor_login::LoginFieldType, bool>)>
@@ -204,45 +181,6 @@ ActorLoginFormFinder::GetSigninFormManager(
     }
   }
   return signin_form_manager;
-}
-
-FormFinderResult ActorLoginFormFinder::GetEligibleLoginFormManagers(
-    const url::Origin& origin) {
-  std::vector<password_manager::PasswordFormManager*> eligible_form_managers;
-  password_manager::PasswordFormCache* form_cache =
-      client_->GetPasswordManager()->GetPasswordFormCache();
-  if (!form_cache) {
-    return FormFinderResult(std::move(eligible_form_managers),
-                            /*parsed_forms_details=*/{});
-  }
-  for (const auto& manager : form_cache->GetFormManagers()) {
-    if (!manager->GetDriver()) {
-      continue;
-    }
-
-    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
-      continue;
-    }
-
-    const password_manager::PasswordForm* parsed_form =
-        manager->GetParsedObservedForm();
-
-    if (!parsed_form) {
-      continue;
-    }
-
-    ParsedFormDetails form_details;
-    SetFormData(*form_details.mutable_form_data(), *parsed_form);
-    parsed_forms_details_.emplace_back(std::move(form_details));
-
-    if (!IsLoginForm(*parsed_form)) {
-      continue;
-    }
-
-    eligible_form_managers.emplace_back(manager.get());
-  }
-  return FormFinderResult(std::move(eligible_form_managers),
-                          std::move(parsed_forms_details_));
 }
 
 void ActorLoginFormFinder::GetEligibleLoginFormManagersAsync(

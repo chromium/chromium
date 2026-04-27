@@ -1370,11 +1370,6 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
 }
 
 TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          password_manager::features::kActorLoginFieldVisibilityCheck});
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL(), origin);
@@ -1459,14 +1454,14 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_SUCCESS);
   expected_details.set_attempt_login_time_ms(attempt_login_time);
 
-  // The async check is not executed, so there are only details
-  // about the form data.
-  *expected_details.add_parsed_form_details()->mutable_form_data() =
-      CreateExpectedFormData(*parsed_form);
-  *expected_details.add_parsed_form_details()->mutable_form_data() =
-      CreateExpectedFormData(*username_only_parsed_form);
-  *expected_details.add_parsed_form_details()->mutable_form_data() =
-      CreateExpectedFormData(*password_only_parsed_form);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      *parsed_form, /*is_username_visible=*/true, /*is_password_visible=*/true);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      *username_only_parsed_form, /*is_username_visible=*/true,
+      /*is_password_visible=*/false);
+  *expected_details.add_parsed_form_details() = CreateExpectedLoginFormDetails(
+      *password_only_parsed_form, /*is_username_visible=*/false,
+      /*is_password_visible=*/true);
 
   FillingFormResult* form_result1 = expected_details.add_filling_form_result();
   *form_result1->mutable_form_data() = CreateExpectedFormData(*parsed_form);
@@ -1792,9 +1787,6 @@ TEST_P(ActorLoginCredentialFillerTest, RequestsReauthBeforeFillingAllFields) {
 
 TEST_P(ActorLoginCredentialFillerTest,
        FillAllFields_OnlyUsernamesVisible_AsyncVisibilityCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL(), origin);
@@ -1910,10 +1902,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        FillAllFields_OnlyPasswordsVisible_AsyncVisibilityCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
-
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL(), origin);
@@ -2027,9 +2015,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        UsernameAndPasswordFieldAreNotVisible_AsyncCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginFieldVisibilityCheck);
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL(), origin);
