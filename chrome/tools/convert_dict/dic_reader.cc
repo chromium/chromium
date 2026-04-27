@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <set>
+#include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -20,7 +22,7 @@ namespace convert_dict {
 namespace {
 
 // Maps each unique word to the unique affix group IDs associated with it.
-typedef std::map<std::string, std::set<int> > WordSet;
+typedef std::map<std::string, std::set<int>> WordSet;
 
 void SplitDicLine(const std::string& line, std::vector<std::string>* output) {
   // We split the line on a slash not preceded by a backslash. A slash at the
@@ -39,7 +41,7 @@ void SplitDicLine(const std::string& line, std::vector<std::string>* output) {
   // convert all escaped slashes ("\/" sequences) to regular slashes.
   std::string word = line.substr(0, slash_index);
   base::ReplaceSubstringsAfterOffset(&word, 0, "\\/", "/");
-  output->push_back(word);
+  output->push_back(std::move(word));
 
   // Everything (if anything) after the slash is the second.
   if (slash_index < line.size() - 1)
@@ -83,7 +85,7 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     // The first part is the word, the second (optional) part is the affix. We
     // always use UTF-8 as the encoding to simplify life.
     std::string utf8word;
-    std::string encoding_string(encoding);
+    std::string_view encoding_string = encoding;
     if (encoding_string == "UTF-8") {
       utf8word = split[0];
     } else if (!aff_reader->EncodingToUTF8(split[0], &utf8word)) {
@@ -102,7 +104,7 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
       // generate a nice dump), so we remove it.
       size_t split1_tab_offset = split[1].find('\t');
       if (split1_tab_offset != std::string::npos)
-        split[1] = split[1].substr(0, split1_tab_offset);
+        split[1].erase(split1_tab_offset);
 
       if (aff_reader->has_indexed_affixes())
         affix_index = atoi(split[1].c_str());
@@ -115,14 +117,14 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     // rules.)
     size_t word_tab_offset = utf8word.find('\t');
     if (word_tab_offset != std::string::npos)
-      utf8word = utf8word.substr(0, word_tab_offset);
+      utf8word.erase(word_tab_offset);
 
     auto found = word_set->find(utf8word);
     std::set<int> affix_vector;
     affix_vector.insert(affix_index);
 
     if (found == word_set->end())
-      word_set->insert(std::make_pair(utf8word, affix_vector));
+      word_set->emplace(std::move(utf8word), std::move(affix_vector));
     else
       found->second.insert(affix_index);
   }
@@ -180,7 +182,7 @@ bool DicReader::Read(AffReader* aff_reader) {
     // Double check that the affixes are sorted. This isn't strictly necessary
     // but it's nice for the file to have a fixed layout.
     std::ranges::sort(affixes, std::ranges::greater());
-    words_.push_back(std::make_pair(word->first, affixes));
+    words_.emplace_back(word->first, std::move(affixes));
   }
 
   // Double-check that the words are sorted.
