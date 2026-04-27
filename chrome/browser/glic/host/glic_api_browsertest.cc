@@ -457,6 +457,9 @@ class DISABLED_GlicApiTestWithOneTabAndPreloading
         {{features::kGlic,
           {
               {"glic-default-hotkey", "Ctrl+G"},
+          }},
+         {features::kGlicWebClientLoadTimes,
+          {
               // Shorten load timeouts.
               {features::kGlicPreLoadingTimeMs.name, "20"},
               {features::kGlicMinLoadingTimeMs.name, "40"},
@@ -520,6 +523,9 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
         {{features::kGlic,
           {
               {"glic-default-hotkey", "Ctrl+G"},
+          }},
+         {features::kGlicWebClientLoadTimes,
+          {
               // Shorten load timeouts.
               {features::kGlicPreLoadingTimeMs.name, "20"},
               {features::kGlicMinLoadingTimeMs.name, "40"},
@@ -577,7 +583,7 @@ class GlicApiTestWithFastTimeout : public GlicApiTest {
     features2_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{
-            features::kGlic,
+            features::kGlicWebClientLoadTimes,
             {
 // For slow binaries, use a longer timeout.
 #if defined(SLOW_BINARY)

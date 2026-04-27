@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -138,10 +139,10 @@ class GlicPolicyTest : public PolicyTest {
  public:
   GlicPolicyTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlic,
+        {{features::kGlicWebClientLoadTimes,
           {
               // This test currently loads about:blank instead of a client which
-              // could ever reach the kReady state. To speed that up, cut down
+              // could never reach the kReady state. To speed that up, cut down
               // the time we wait for it.
               {features::kGlicMaxLoadingTimeMs.name, "500"},
           }}},

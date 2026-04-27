@@ -24,6 +24,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/common/actor/action_result.h"
@@ -82,7 +83,8 @@ GlicActorUiTest::GlicActorUiTest() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {// Increase timeout since tests are timing out with ASAN builds.
-       {features::kGlic, {{"glic-max-loading-time-ms", "30000"}}},
+       {features::kGlicWebClientLoadTimes,
+        {{features::kGlicMaxLoadingTimeMs.name, "30000"}}},
        {features::kGlicActor,
         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
        {features::kGlicActorToctouValidation, {}},

@@ -7,6 +7,7 @@
 
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/render_frame_host.h"
@@ -96,6 +97,9 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
             {features::kGlic,
              {
                  {"glic-default-hotkey", "Ctrl+G"},
+             }},
+            {features::kGlicWebClientLoadTimes,
+             {
                  // Shorten transition times.
                  {features::kGlicPreLoadingTimeMs.name, "20"},
                  {features::kGlicMinLoadingTimeMs.name, "40"},

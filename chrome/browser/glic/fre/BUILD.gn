@@ -19,6 +19,7 @@ source_set("fre") {
     "//chrome/browser:browser_process",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/shared",
     "//chrome/browser/predictors",
     "//chrome/browser/resources/glic:resources",
