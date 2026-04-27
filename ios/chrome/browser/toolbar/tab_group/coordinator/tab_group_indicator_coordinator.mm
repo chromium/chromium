@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_configuration.h"
 #import "ios/chrome/browser/saved_tab_groups/coordinator/face_pile_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
@@ -99,6 +101,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
                   shareKitService:ShareKitServiceFactory::GetForProfile(profile)
              collaborationService:collaborationService
                dataSharingService:dataSharingService
+           fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser)
                          consumer:_view
                      webStateList:browser->GetWebStateList()
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(browser)

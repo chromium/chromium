@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/collaboration/model",
   "+ios/chrome/browser/data_sharing/model",
   "+ios/chrome/browser/feature_engagement",
+  "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/saved_tab_groups/coordinator",
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/saved_tab_groups/ui",

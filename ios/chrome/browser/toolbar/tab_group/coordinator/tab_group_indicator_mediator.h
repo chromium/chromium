@@ -26,6 +26,7 @@ namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+class FullscreenBrowserAgent;
 @protocol SceneCommands;
 class ShareKitService;
 @protocol TabGroupIndicatorConsumer;
@@ -55,6 +56,7 @@ class WebStateList;
                (collaboration::CollaborationService*)collaborationService
              dataSharingService:
                  (data_sharing::DataSharingService*)dataSharingService
+         fullscreenBrowserAgent:(FullscreenBrowserAgent*)fullscreenBrowserAgent
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList
                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
