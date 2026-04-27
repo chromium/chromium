@@ -61,7 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class XrTestFramework {
     public static final HashSet<String> OLD_DEVICE_BOARDS =
-            new HashSet(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */));
+            new HashSet<>(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */));
     public static final int PAGE_LOAD_TIMEOUT_S = 10;
     // These two were originally different values, but the short one was bumped up to increase
     // test harness reliability. The long version might also want to be bumped up at some point, or

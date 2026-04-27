@@ -109,6 +109,9 @@ public class ExtensionsMenuMediatorTest {
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    @Captor
+    private ArgumentCaptor<List<ExtensionsMenuTypes.HostAccessRequest>> mHostAccessRequestsCaptor;
+
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
     // This is the reference to the list that the mediator holds and modifies.
@@ -1069,10 +1072,11 @@ public class ExtensionsMenuMediatorTest {
                         ExtensionsMenuTypes.OptionalSectionType.RELOAD_PAGE);
 
         // Verify that the HOST_ACCESS_REQUESTS property is cleared to an empty list
-        ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMenuPropertyModel)
-                .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), listCaptor.capture());
-        assertTrue(listCaptor.getValue().isEmpty());
+                .set(
+                        eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS),
+                        mHostAccessRequestsCaptor.capture());
+        assertTrue(mHostAccessRequestsCaptor.getValue().isEmpty());
     }
 
     @Test
@@ -1084,10 +1088,11 @@ public class ExtensionsMenuMediatorTest {
         mMenuMediator.onModelChanged();
 
         // Verify that the HOST_ACCESS_REQUESTS property is cleared to an empty list
-        ArgumentCaptor<List> listCaptor = ArgumentCaptor.forClass(List.class);
         verify(mMenuPropertyModel)
-                .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), listCaptor.capture());
-        assertTrue(listCaptor.getValue().isEmpty());
+                .set(
+                        eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS),
+                        mHostAccessRequestsCaptor.capture());
+        assertTrue(mHostAccessRequestsCaptor.getValue().isEmpty());
     }
 
     /**

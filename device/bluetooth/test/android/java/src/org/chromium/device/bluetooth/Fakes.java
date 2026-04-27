@@ -135,7 +135,7 @@ class Fakes {
         private final FakeBluetoothLeScanner mFakeScanner;
         private boolean mPowered = true;
         private int mEnabledDeviceTransport = BluetoothDevice.DEVICE_TYPE_DUAL;
-        private final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet();
+        private final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet<>();
         private DeviceBondStateReceiverWrapper.Callback mDeviceBondStateCallback;
         DeviceConnectStateReceiverWrapper.Callback mDeviceConnectStateCallback;
         final long mNativeBluetoothTestAndroid;

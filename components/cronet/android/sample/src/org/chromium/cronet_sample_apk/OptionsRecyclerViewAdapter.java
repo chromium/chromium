@@ -65,7 +65,7 @@ public class OptionsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
                 ((Options.BooleanOption) mOptions.get(position)).getValue());
         toggleOptionViewHolder.mOptionSwitch.setOnClickListener(
                 v ->
-                        mOptions.get(position)
+                        ((Options.BooleanOption) mOptions.get(position))
                                 .setValue(toggleOptionViewHolder.mOptionSwitch.isChecked()));
     }
 

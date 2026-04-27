@@ -343,7 +343,7 @@ public class UnusedResources {
             String ownerName = target.replace('.', '/');
 
             nameMap = Maps.newHashMap();
-            Pair<ResourceType, Map<String, String>> pair = new Pair(type, nameMap);
+            Pair<ResourceType, Map<String, String>> pair = new Pair<>(type, nameMap);
             mResourceObfuscation.put(ownerName, pair);
             // For fast lookup in isResourceClass
             mResourceObfuscation.put(ownerName + DOT_CLASS, pair);

@@ -216,6 +216,7 @@ public class ToolbarManagerUnitTest {
     private TopToolbarSceneLayer mTopToolbarSceneLayerInstance;
 
     @Before
+    @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
     public void setUp() {
         ComposeboxQueryControllerBridge.setInstanceForTesting(null);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(

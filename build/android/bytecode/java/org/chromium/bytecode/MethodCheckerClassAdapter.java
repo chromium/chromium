@@ -118,7 +118,7 @@ class MethodCheckerClassAdapter extends ClassVisitor {
     }
 
     private boolean isClassDerivedFrom(Class clazz, String classDescriptor) {
-        Class superClass = getClass(classDescriptor);
+        Class<?> superClass = getClass(classDescriptor);
         if (clazz == null || superClass == null) return false;
         return superClass.isAssignableFrom(clazz);
     }

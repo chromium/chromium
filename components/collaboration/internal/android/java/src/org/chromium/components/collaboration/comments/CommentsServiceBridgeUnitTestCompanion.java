@@ -21,7 +21,10 @@ import java.util.UUID;
 @JNINamespace("collaboration::comments::android")
 public class CommentsServiceBridgeUnitTestCompanion {
     private final CommentsService mService;
+
+    @SuppressWarnings("unchecked") // Mockito.mock(Callback.class) returns raw Callback.
     private final Callback<Boolean> mSuccessCallback = Mockito.mock(Callback.class);
+
     private final ArgumentCaptor<Boolean> mCallbackValueCaptor =
             ArgumentCaptor.forClass(Boolean.class);
 

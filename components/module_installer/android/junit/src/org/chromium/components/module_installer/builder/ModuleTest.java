@@ -29,10 +29,10 @@ public class ModuleTest {
     @Mock private InstallEngine mInstallEngineMock;
 
     private static final String MODULE_NAME = "module_stub";
-    private static final Class INTERFACE = ModuleTestStubInterface.class;
+    private static final Class<ModuleTestStubInterface> INTERFACE = ModuleTestStubInterface.class;
     private final String mImplName = ModuleTestStub.class.getName();
 
-    private Module<ModuleTestStub> mModule;
+    private Module<ModuleTestStubInterface> mModule;
 
     /**
      * This class needs to be static (for testing purposes).
@@ -92,11 +92,11 @@ public class ModuleTest {
     @Test
     public void whenGetImpl_VerifyCorrectInstance() {
         // Arrange.
-        Class expectedType = ModuleTestStub.class;
+        Class<ModuleTestStub> expectedType = ModuleTestStub.class;
         doReturn(true).when(mInstallEngineMock).isInstalled(MODULE_NAME);
 
         // Act.
-        ModuleTestStub impl = mModule.getImpl();
+        ModuleTestStubInterface impl = mModule.getImpl();
 
         // Assert.
         assertEquals(expectedType, impl.getClass());
@@ -106,7 +106,7 @@ public class ModuleTest {
     public void whenGettingUnknownImpl_VerifyError() {
         // Arrange.
         String impl = "some unknown type";
-        Module<ModuleTestStub> module = new Module<>(MODULE_NAME, INTERFACE, impl);
+        Module<ModuleTestStubInterface> module = new Module<>(MODULE_NAME, INTERFACE, impl);
         doReturn(true).when(mInstallEngineMock).isInstalled(MODULE_NAME);
         module.setInstallEngine(mInstallEngineMock);
 

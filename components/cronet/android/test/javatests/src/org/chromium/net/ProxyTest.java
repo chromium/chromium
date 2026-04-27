@@ -766,6 +766,8 @@ public class ProxyTest {
     // Mockito fails on Marshmallow with NoClassDefFoundError:
     // org.mockito.internal.invocation.TypeSafeMatching$$ExternalSyntheticLambda0
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @SuppressWarnings(
+            "unchecked") // ArgumentCaptor.forClass(List.class): no @Captor infra in this file.
     public void testCallback_proxyResponseSuccessIsReported() {
         try (NativeTestServer proxyServer = mNativeTestServer;
                 NativeTestServer originServer =
@@ -871,6 +873,8 @@ public class ProxyTest {
     // Mockito fails on Marshmallow with NoClassDefFoundError:
     // org.mockito.internal.invocation.TypeSafeMatching$$ExternalSyntheticLambda0
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    @SuppressWarnings(
+            "unchecked") // ArgumentCaptor.forClass(List.class): no @Captor infra in this file.
     public void testCallback_bidiStream_isSuccessfullyProxied() throws Exception {
         try (NativeTestServer proxyServer = mNativeTestServer) {
             assertThat(

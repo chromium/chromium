@@ -667,6 +667,7 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // mock(Observer.class) returns raw Observer.
     public void testSurfaceAvailable() {
         Observer<Unit> observer = mock(Observer.class);
         Scope scope = mock(Scope.class);

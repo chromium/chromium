@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -62,11 +63,12 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mMockScheduledExecutorService = mock(ScheduledExecutorService.class);
-        when(mMockScheduledExecutorService.schedule(
+        doReturn(mock(ScheduledFuture.class))
+                .when(mMockScheduledExecutorService)
+                .schedule(
                         any(Runnable.class),
                         any(Long.class),
-                        any(java.util.concurrent.TimeUnit.class)))
-                .thenReturn(mock(ScheduledFuture.class));
+                        any(java.util.concurrent.TimeUnit.class));
         doAnswer(
                         invocation -> {
                             ((Runnable) invocation.getArgument(0)).run();
@@ -613,10 +615,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
         ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
-        when(mMockScheduledExecutorService.schedule(
-                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
-                .thenReturn(mockFuture);
+        ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
+        doReturn(mockFuture)
+                .when(mMockScheduledExecutorService)
+                .schedule(any(Runnable.class), eq(3000L), eq(MILLISECONDS));
 
         mAdaptiveStream.start();
         verify(mMockScheduledExecutorService)
@@ -644,10 +646,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
         ArgumentCaptor<Runnable> failoverRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
-        when(mMockScheduledExecutorService.schedule(
-                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
-                .thenReturn(mockFuture);
+        ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
+        doReturn(mockFuture)
+                .when(mMockScheduledExecutorService)
+                .schedule(any(Runnable.class), eq(3000L), eq(MILLISECONDS));
 
         mAdaptiveStream.start();
         verify(mMockScheduledExecutorService)
@@ -668,10 +670,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
-        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
-        when(mMockScheduledExecutorService.schedule(
-                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
-                .thenReturn(mockFuture);
+        ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
+        doReturn(mockFuture)
+                .when(mMockScheduledExecutorService)
+                .schedule(any(Runnable.class), eq(3000L), eq(MILLISECONDS));
         // Simulate that the future cannot be canceled (e.g., it's already running).
         when(mockFuture.cancel(false)).thenReturn(false);
 
@@ -976,11 +978,11 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
-        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
         when(mockFuture.cancel(false)).thenReturn(true);
-        when(mMockScheduledExecutorService.schedule(
-                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
-                .thenReturn(mockFuture);
+        doReturn(mockFuture)
+                .when(mMockScheduledExecutorService)
+                .schedule(any(Runnable.class), eq(3000L), eq(MILLISECONDS));
 
         mAdaptiveStream.start();
 
@@ -1031,11 +1033,11 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
 
-        ScheduledFuture mockFuture = mock(ScheduledFuture.class);
+        ScheduledFuture<?> mockFuture = mock(ScheduledFuture.class);
         when(mockFuture.cancel(false)).thenReturn(true);
-        when(mMockScheduledExecutorService.schedule(
-                        any(Runnable.class), eq(3000L), eq(MILLISECONDS)))
-                .thenReturn(mockFuture);
+        doReturn(mockFuture)
+                .when(mMockScheduledExecutorService)
+                .schedule(any(Runnable.class), eq(3000L), eq(MILLISECONDS));
 
         mAdaptiveStream.start();
 

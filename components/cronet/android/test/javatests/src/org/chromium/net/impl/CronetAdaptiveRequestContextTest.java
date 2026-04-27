@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -327,14 +328,14 @@ public class CronetAdaptiveRequestContextTest {
 
         ScheduledExecutorService mockExecutor1 = mock(ScheduledExecutorService.class);
         ScheduledExecutorService mockExecutor2 = mock(ScheduledExecutorService.class);
-        ScheduledFuture mockFuture1 = mock(ScheduledFuture.class);
-        ScheduledFuture mockFuture2 = mock(ScheduledFuture.class);
+        ScheduledFuture<?> mockFuture1 = mock(ScheduledFuture.class);
+        ScheduledFuture<?> mockFuture2 = mock(ScheduledFuture.class);
 
         when(mockFuture1.cancel(false)).thenReturn(true);
         when(mockFuture2.cancel(false)).thenReturn(true);
 
-        when(mockExecutor1.schedule(any(Runnable.class), anyLong(), any())).thenReturn(mockFuture1);
-        when(mockExecutor2.schedule(any(Runnable.class), anyLong(), any())).thenReturn(mockFuture2);
+        doReturn(mockFuture1).when(mockExecutor1).schedule(any(Runnable.class), anyLong(), any());
+        doReturn(mockFuture2).when(mockExecutor2).schedule(any(Runnable.class), anyLong(), any());
 
         CronetAdaptiveNetworkBidirectionalStream stream1 =
                 new CronetAdaptiveNetworkBidirectionalStream(

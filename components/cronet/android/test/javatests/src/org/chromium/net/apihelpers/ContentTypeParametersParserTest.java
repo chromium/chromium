@@ -160,7 +160,7 @@ public class ContentTypeParametersParserTest {
         }
         assertWithMessage("Exception not thrown").that(actualException).isNotNull();
         assertThat(actualException.getClass()).isEqualTo(exceptionType);
-        return (E) actualException;
+        return exceptionType.cast(actualException);
     }
 
     private interface ThrowingRunnable {

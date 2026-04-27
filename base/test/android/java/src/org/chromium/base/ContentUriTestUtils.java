@@ -60,7 +60,7 @@ public class ContentUriTestUtils {
             // and the database will claim that the path being inserted already exists.
             // This is a known issue and is documented in the following StackOverflow post:
             // https://stackoverflow.com/questions/22184729/sqliteconstraintexception-thrown-when-trying-to-insert
-            CompletableFuture<Uri> future = new CompletableFuture();
+            CompletableFuture<Uri> future = new CompletableFuture<>();
             MediaScannerConnection.scanFile(
                     ContextUtils.getApplicationContext(),
                     new String[] {path},

@@ -33,6 +33,7 @@ public abstract class LocalService<T> extends Service {
             mSrc = src;
         }
 
+        @SuppressWarnings("unchecked") // T is erased; caller must pass a matching binder.
         static <T> Observable<T> from(IBinder binder) {
             return ((BinderObservable<T>) binder).mSrc;
         }
@@ -104,7 +105,7 @@ public abstract class LocalService<T> extends Service {
 
     @Override
     public final IBinder onBind(Intent intent) {
-        return new BinderObservable(bind(intent));
+        return new BinderObservable<>(bind(intent));
     }
 
     @Override

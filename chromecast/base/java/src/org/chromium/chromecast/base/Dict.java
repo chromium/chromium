@@ -100,7 +100,7 @@ public class Dict<K, V> {
                         // retaining the old entry are notified of the update.
                         mKeys.remove(key).close();
                     }
-                    mKeys.put(key, new Entry(value, mEntries.add(Both.of(key, value))));
+                    mKeys.put(key, new Entry<>(value, mEntries.add(Both.of(key, value))));
                 });
     }
 

@@ -784,6 +784,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    @SuppressWarnings("unchecked") // Hamcrest contains(Matcher...) varargs heap pollution.
     public void testLargeFormFactorHasDismissButton() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
 
@@ -809,6 +810,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    @SuppressWarnings("unchecked") // Hamcrest contains(Matcher...) varargs heap pollution.
     public void testLargeFormFactorHasFixedItems() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
         Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);

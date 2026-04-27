@@ -278,6 +278,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
+    @SuppressWarnings("unchecked") // mock(Callback.class) returns raw Callback.
     public void testShouldShowMessageUiAsync() {
         mCallback = mock(Callback.class);
         mService.getVersioningMessageController()
