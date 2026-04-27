@@ -115,6 +115,21 @@ public class PdfToolbarCoordinatorUnitTest {
         Assert.assertEquals("100%", zoomValue.getText().toString());
     }
 
+    // Regression test: onViewportChanged with a zoom value just below 5.0
+    // formats as "500%" via "%.0f%%", which parses back to exactly 5.0f.  When the user then
+    // clicks zoom-in, getNextZoomLevel(5.0f, true) used to throw IndexOutOfBoundsException
+    // because the while-loop advanced index to mZoomLevels.size().
+    @Test
+    public void testZoomIncrease_atMaxZoom_doesNotCrash() {
+        // 4.999f < 5.0f, so the zoom-increase button is enabled...
+        mPdfToolbarCoordinator.onViewportChanged(0, 4.999f);
+        // ...but "%.0f%%" rounds 499.9 → "500%", which parses back to 5.0f.
+        View zoomIncreaseButton = mPdfPageView.findViewById(R.id.zoom_increase_button);
+        // Should not throw and should clamp to the maximum zoom level (5.0f).
+        zoomIncreaseButton.performClick();
+        verify(mDelegate).changeZoomLevel(5.0f);
+    }
+
     @Test
     public void testOnDocumentLoaded() {
         // Initial state from constructor is 99/100

@@ -75,6 +75,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
 
         if (increase) {
             // Return the next highest, or stay at the max if we're at the end
+            if (index >= mZoomLevels.size()) return mZoomLevels.get(mZoomLevels.size() - 1);
             return mZoomLevels.get(index);
         } else {
             //  If the current zoom level is in the list, decrease by 2. Otherwise, decrease by 1.
