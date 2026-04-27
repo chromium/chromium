@@ -689,20 +689,38 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
             horizontal_layout.vertical_tab_strip_width;
       }
 
-      // TODO(crbug.com/493595250): Once the expand on hover animations are
-      // specced this logic should be revisited, updated, and moved to
-      // CalculateVerticalTabStripAnimation.
       const int vertical_tab_strip_hover_width =
-          (tabs::kVerticalTabStripDefaultUncollapsedWidth -
-           horizontal_layout.vertical_tab_strip_width) *
+          std::max(0, tabs::kVerticalTabStripDefaultUncollapsedWidth -
+                          horizontal_layout.vertical_tab_strip_width) *
           vertical_tab_strip_animation.expand_on_hover;
+
+      int vertical_tab_strip_width =
+          horizontal_layout.vertical_tab_strip_width +
+          vertical_tab_strip_hover_width;
+
+      // The overall width during an expand must change monotonically.
+      if (vertical_tab_strip_animation.current_motion ==
+          TabStripAnimations::kExpand) {
+        const int target_width =
+            views().vertical_tab_strip_region_view->uncollapsed_width();
+        if (last_vertical_tab_strip_width_ > target_width) {
+          vertical_tab_strip_width =
+              std::max(target_width, std::min(vertical_tab_strip_width,
+                                              last_vertical_tab_strip_width_));
+        } else {
+          vertical_tab_strip_width =
+              std::min(target_width, std::max(vertical_tab_strip_width,
+                                              last_vertical_tab_strip_width_));
+        }
+      } else {
+        last_vertical_tab_strip_width_ = vertical_tab_strip_width;
+      }
 
       vertical_tab_strip_bounds =
           gfx::Rect(params.visual_client_area.x(),
                     params.visual_client_area.y() +
                         vertical_tab_strip_animation.top_offset,
-                    horizontal_layout.vertical_tab_strip_width +
-                        vertical_tab_strip_hover_width,
+                    vertical_tab_strip_width,
                     params.visual_client_area.height() -
                         vertical_tab_strip_animation.top_offset);
       // In vertical tabs mode, extra space is allocated next to the top element
