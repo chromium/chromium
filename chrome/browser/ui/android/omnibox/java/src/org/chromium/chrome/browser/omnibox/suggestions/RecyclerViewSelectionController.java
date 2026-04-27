@@ -95,7 +95,7 @@ public class RecyclerViewSelectionController extends SelectionController
         // If we don't expose additional views, the user may occasionally be unable to tab through
         // the list; the LayoutManager may report <null> when we request a view at a specific
         // position, because the view is not yet bound when we need it.
-        if (isSelected) {
+        if (isSelected && mLastSelectedItemIndex != index) {
             int exposeUntilViewIndex =
                     (mLastSelectedItemIndex < index)
                             ? Math.min(

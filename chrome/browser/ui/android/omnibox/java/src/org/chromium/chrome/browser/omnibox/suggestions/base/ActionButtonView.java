@@ -44,7 +44,7 @@ public class ActionButtonView extends AppCompatImageView {
      */
     public void enableShowOnlyOnFocus(boolean showOnlyOnFocus) {
         mShowOnlyOnFocus = showOnlyOnFocus;
-        setVisibility(mShowOnlyOnFocus ? View.GONE : View.VISIBLE);
+        setVisibility(mShowOnlyOnFocus ? View.INVISIBLE : View.VISIBLE);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ActionButtonView extends AppCompatImageView {
         setVisibility(
                 mParentHovered || mParentSelected || isHovered() || isPressed()
                         ? View.VISIBLE
-                        : View.GONE);
+                        : View.INVISIBLE);
     }
 
     @Override

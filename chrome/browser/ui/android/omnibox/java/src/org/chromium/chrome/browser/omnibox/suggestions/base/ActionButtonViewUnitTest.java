@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -63,51 +65,39 @@ public class ActionButtonViewUnitTest {
 
     @Test
     public void showOnlyOnFocusButton_selected() {
+        InOrder inOrder = inOrder(mView);
+
         mView.enableShowOnlyOnFocus(true);
-        verify(mView).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.VISIBLE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.INVISIBLE);
 
         mView.onParentViewSelected(true);
-        verify(mView).setVisibility(View.VISIBLE);
-        verify(mView).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.VISIBLE);
 
         mView.onParentViewSelected(false);
-        verify(mView).setVisibility(View.VISIBLE);
-        verify(mView, times(2)).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.INVISIBLE);
     }
 
     @Test
     public void showOnlyOnFocusButton_hoverChanged() {
+        InOrder inOrder = inOrder(mView);
+
         mView.enableShowOnlyOnFocus(true);
-        verify(mView).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.VISIBLE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.INVISIBLE);
 
         // Button is visible when parent view is hovered.
         mView.onParentViewHoverChanged(true);
-        verify(mView).setVisibility(View.VISIBLE);
-        verify(mView).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.VISIBLE);
 
         // Button is not visible when parent view is not hovered.
         mView.onParentViewHoverChanged(false);
-        verify(mView).setVisibility(View.VISIBLE);
-        verify(mView, times(2)).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.INVISIBLE);
 
         // Button is visible when button view is hovered.
         mView.setHovered(true);
-        verify(mView, times(2)).setVisibility(View.VISIBLE);
-        verify(mView, times(2)).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.VISIBLE);
 
         // Button is not visible when button view is not hovered.
         mView.setHovered(false);
-        verify(mView, times(2)).setVisibility(View.VISIBLE);
-        verify(mView, times(3)).setVisibility(View.GONE);
-        verify(mView, times(0)).setVisibility(View.INVISIBLE);
+        inOrder.verify(mView).setVisibility(View.INVISIBLE);
     }
 }
