@@ -8025,6 +8025,24 @@
             ]
         }
     ],
+    "DesktopNtpAnimatedDoodles": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260421",
+                    "enable_features": [
+                        "NtpAnimatedDoodles"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
