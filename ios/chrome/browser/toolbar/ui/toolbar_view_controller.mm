@@ -36,7 +36,9 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 namespace {
@@ -63,6 +65,9 @@ constexpr CGFloat kLocationBarStackViewMarginLandscape = 18;
 // Max width of the location bar.
 constexpr CGFloat kLocationBarMaxWidth = 600;
 
+// The threshold for the fullscreen progress of a collapsed toolbar.
+constexpr CGFloat kFullscreenCollapsedThreshold = 0.05;
+
 // Timing to finish the animation of the progress bar before hiding it.
 const base::TimeDelta kProgressBarEndAnimationDuration =
     base::Milliseconds(250);
@@ -85,6 +90,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   ToolbarButton* _tabGridButton;
   UIMenu* _tabGridButtonMenu;
   ToolbarButton* _toolsMenuButton;
+
+  // Button taking the full size of the toolbar. Exits fullscreen mode to expand
+  // the toolbar when tapped.
+  UIButton* _collapsedToolbarButton;
 
   // Page load progress bar on the edge of the toolbar.
   ToolbarProgressBar* _progressBar;
@@ -601,6 +610,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   _locationBarContainer.transform = translationTransform;
   _leadingStackView.transform = translationTransform;
   _trailingStackView.transform = translationTransform;
+
+  _collapsedToolbarButton.hidden = progress > kFullscreenCollapsedThreshold;
 }
 
 #pragma mark - TabGroupIndicatorViewDelegate
@@ -802,6 +813,21 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   return locationBarContainer;
 }
 
+// Creates a target to dismiss fullscreen when the collapsed toolbar is tapped.
+- (UIButton*)createCollapsedToolbarButton {
+  UIButton* collapsedToolbarButton = [[UIButton alloc] init];
+  collapsedToolbarButton.translatesAutoresizingMaskIntoConstraints = NO;
+  collapsedToolbarButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON);
+  collapsedToolbarButton.hidden = YES;
+
+  UITapGestureRecognizer* tapRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self.mutator
+                                              action:@selector(exitFullscreen)];
+  [collapsedToolbarButton addGestureRecognizer:tapRecognizer];
+  return collapsedToolbarButton;
+}
+
 // Creates a loading progress bar.
 - (ToolbarProgressBar*)createProgressBar {
   ToolbarProgressBar* progressBar = [[ToolbarProgressBar alloc] init];
@@ -821,6 +847,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     _fakeOmniboxTarget = [self createFakeOmniboxTarget];
   }
   _progressBar = [self createProgressBar];
+  _collapsedToolbarButton = [self createCollapsedToolbarButton];
 
   _separator = [[UIView alloc] init];
   _separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
@@ -953,6 +980,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self.view addSubview:_trailingStackView];
   [self.view addSubview:_progressBar];
   [self.view addSubview:_separator];
+  [self.view addSubview:_collapsedToolbarButton];
+  AddSameConstraints(self.view, _collapsedToolbarButton);
 
   NSLayoutConstraint* progressBarEdgeConstraint =
       _topPosition ? [_progressBar.bottomAnchor

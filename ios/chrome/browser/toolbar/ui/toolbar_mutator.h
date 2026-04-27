@@ -8,6 +8,9 @@
 // Protocol for handling toolbar button actions.
 @protocol ToolbarMutator
 
+// Exits fullscreen mode.
+- (void)exitFullscreen;
+
 // Navigates back.
 - (void)goBack;
 

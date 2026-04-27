@@ -175,6 +175,20 @@
 
 #pragma mark - ToolbarMutator
 
+- (void)exitFullscreen {
+  FullscreenModeTransitionTrigger trigger =
+      FullscreenModeTransitionTrigger::kForcedByUser;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
+    return;
+  }
+
+  if (_fullscreenController) {
+    _fullscreenController->ExitFullscreen(trigger);
+  }
+}
+
 - (void)goBack {
   if (self.navigationBrowserAgent) {
     self.navigationBrowserAgent->GoBack();
