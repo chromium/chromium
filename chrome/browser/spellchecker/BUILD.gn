@@ -84,7 +84,7 @@ if (enable_spellcheck) {
       "//components/pref_registry",
       "//components/strings:components_strings",
       "//components/sync/base",
-      "//components/sync/protocol:protocol",
+      "//components/sync/protocol",
       "//components/user_prefs",
       "//crypto",
       "//net",
