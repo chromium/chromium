@@ -366,7 +366,9 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
     FileSystemAccessTransferTokenImpl* resolved_destination_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!resolved_destination_directory) {
+  if (!resolved_destination_directory ||
+      resolved_destination_directory->origin() !=
+          context_.storage_key.origin()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidArgument));
     return;
