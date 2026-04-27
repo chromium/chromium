@@ -39,6 +39,10 @@ mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
 void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset,
     cc::ScrollSourceType source_type) {
+  if (on_finish_) {
+    std::move(on_finish_)
+        .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
+  }
   CancelAnimation();
   source_type_ = source_type;
   ScrollOffsetChanged(offset, GetScrollType(), source_type);
@@ -48,8 +52,9 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
     const ScrollOffset& offset,
     cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
-  if (run_state_ == RunState::kPostAnimationCleanup)
+  if (run_state_ == RunState::kPostAnimationCleanup) {
     ResetAnimationState();
+  }
 
   if (on_finish_) {
     std::move(on_finish_)
@@ -85,8 +90,11 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
 void ProgrammaticScrollAnimator::CancelAnimation() {
   DCHECK_NE(run_state_, RunState::kRunningOnCompositorButNeedsUpdate);
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
-  if (on_finish_)
+  if (on_finish_) {
+    // TODO(https://crbug.com/40712058): Why is this callback not run as
+    // interrupted?
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  }
 }
 
 void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {

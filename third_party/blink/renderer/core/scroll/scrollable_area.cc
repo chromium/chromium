@@ -526,6 +526,8 @@ bool ScrollableArea::InitiateScrollAnimation(
   }
 
   if (ScrollOffsetIsNoop(offset)) {
+    // TODO(https://crbug.com/40712058): Why is this cancellation only for no-op
+    // scrolls, instead of all scrolls with `scroll_type` programmatic?
     CancelProgrammaticScrollAnimation();
     return false;
   }
@@ -533,15 +535,19 @@ bool ScrollableArea::InitiateScrollAnimation(
   ScrollCallback callback = ScrollCallback(blink::BindOnce(
       [](WeakPersistent<ScrollableArea> area,
          std::unique_ptr<ScrollPromiseResolver::ActiveScrollTracker>
-             scroll_tracker_in_cb,
+             scroll_tracker_in_callback,
          ScrollCompletionMode mode) {
         if (area) {
           area->OnScrollFinished(/*enqueue_scrollend=*/mode ==
                                  ScrollCompletionMode::kFinished);
         }
-        // When this callback is done or destroyed, `scroll_tracker_in_cb` gets
-        // released, signaling `ScrollPromiseResolver` to resolve the promise if
-        // needed.
+        // When this callback is done or destroyed, `scroll_tracker_in_callback`
+        // gets released, signaling `ScrollPromiseResolver` to resolve the
+        // promise if needed.
+        if (scroll_tracker_in_callback &&
+            mode == ScrollCompletionMode::kInterruptedByScroll) {
+          scroll_tracker_in_callback->MarkInterrupted();
+        }
       },
       WrapWeakPersistent(this), std::move(scroll_tracker)));
 
