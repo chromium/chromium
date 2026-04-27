@@ -72,6 +72,7 @@
   }
 
   _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
   _observerBridge = nullptr;
 }
 

@@ -99,6 +99,7 @@
   [dispatcher stopDispatchingToTarget:self];
 
   _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
 
   [_mediator disconnect];
   _mediator.consumer = nil;

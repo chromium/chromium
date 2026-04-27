@@ -108,6 +108,7 @@
   _mediator = nil;
   _locationBarBadgeFullscreenUIUpdater = nullptr;
   _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
 }
 
 - (void)addIncognitoBadgeViewController:

@@ -80,6 +80,7 @@
   // Cancel any scheduled automatic dismissal block.
   _autoDismissBannerTimer.Stop();
   _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
 }
 
 - (void)presentInfobarBannerAnimated:(BOOL)animated
@@ -194,6 +195,7 @@
                                              presenting:NO];
   self.bannerTransitionDriver = nil;
   _fullscreenDisabler = nullptr;
+  _legacyAnimatedFullscreenDisabler = nullptr;
   [self infobarWasDismissed];
 }
 

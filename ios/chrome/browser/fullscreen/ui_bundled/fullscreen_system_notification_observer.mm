@@ -22,7 +22,7 @@
 @property(nonatomic, readonly, nonnull) FullscreenController* controller;
 // The LegacyFullscreenMediator through which foreground events are propagated
 // to FullscreenControllerObservers.
-@property(nonatomic, readonly, nonnull) LegacyFullscreenMediator* mediator;
+@property(nonatomic, readonly) LegacyFullscreenMediator* mediator;
 // Creates or destroys `_voiceOverDisabler` depending on whether VoiceOver is
 // enabled.
 - (void)voiceOverStatusChanged;
@@ -86,7 +86,9 @@
 
 - (void)disconnect {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  _voiceOverDisabler.reset();
   _controller = nullptr;
+  _mediator = nullptr;
 }
 
 #pragma mark Private
@@ -99,10 +101,16 @@
 }
 
 - (void)applicationDidEnterBackground {
+  if (!self.mediator) {
+    return;
+  }
   self.mediator->ExitFullscreenWithoutAnimation();
 }
 
 - (void)applicationWillEnterForeground {
+  if (!self.mediator) {
+    return;
+  }
   self.mediator->ExitFullscreenWithoutAnimation();
 }
 
