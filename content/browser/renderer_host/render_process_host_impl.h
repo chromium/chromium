@@ -1679,6 +1679,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::optional<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
 
+  mojo::ScopedMessagePipeHandle initial_gpu_channel_;
+
   // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost
   // is used for a new renderer process or prepares for deletion.

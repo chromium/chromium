@@ -51,6 +51,7 @@ inline constexpr char kFrameAcceptHeaderValue[] =
 inline constexpr int kChildProcessReceiverAttachmentName = 0;
 inline constexpr int kChildProcessHostRemoteAttachmentName = 1;
 inline constexpr int kLegacyIpcBootstrapAttachmentName = 2;
+inline constexpr int kGPUChannelAttachmentName = 3;
 
 } // namespace content
 

@@ -860,12 +860,13 @@ bool GpuServiceImpl::IsExiting() const {
   return is_exiting_.IsSet();
 }
 
-void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
-                                         uint64_t client_tracing_id,
-                                         bool is_gpu_host,
-                                         bool enable_extra_handles_validation,
-                                         EstablishGpuChannelCallback callback) {
-  // This should always be called on the IO thread first.
+void GpuServiceImpl::EstablishGpuChannel(
+    int32_t client_id,
+    uint64_t client_tracing_id,
+    bool is_gpu_host,
+    bool enable_extra_handles_validation,
+    mojo::ScopedMessagePipeHandle channel_handle,
+    EstablishGpuChannelCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {
     if (IsExiting()) {
       // We are already exiting so there is no point in responding. Close the
@@ -875,21 +876,19 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     }
 
     if (gpu::IsReservedClientId(client_id)) {
-      // This returns a null handle, which is treated by the client as a failure
-      // case.
-      std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+      std::move(callback).Run(/*success=*/false, gpu::GPUInfo(),
                               gpu::GpuFeatureInfo(),
                               gpu::SharedImageCapabilities());
       return;
     }
-
     EstablishGpuChannelCallback wrap_callback =
         base::BindPostTask(io_runner_, std::move(callback));
     main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::EstablishGpuChannel,
-                                  weak_ptr_, client_id, client_tracing_id,
-                                  is_gpu_host, enable_extra_handles_validation,
-                                  std::move(wrap_callback)));
+        FROM_HERE,
+        base::BindOnce(&GpuServiceImpl::EstablishGpuChannel, weak_ptr_,
+                       client_id, client_tracing_id, is_gpu_host,
+                       enable_extra_handles_validation,
+                       std::move(channel_handle), std::move(wrap_callback)));
     return;
   }
 
@@ -900,24 +899,22 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
       gpu_feature_info_);
 
   if (!gpu_channel) {
-    // This returns a null handle, which is treated by the client as a failure
-    // case.
-    std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+    std::move(callback).Run(/*success=*/false, gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
                             gpu::SharedImageCapabilities());
     return;
   }
-  mojo::MessagePipe pipe;
+
   if (features::IsLegacyIpcDisabled()) {
-    gpu_channel->Start(std::move(pipe.handle0));
+    gpu_channel->Start(std::move(channel_handle));
   } else {
-    gpu_channel->Init(pipe.handle0.release(), shutdown_event_);
+    gpu_channel->Init(channel_handle.release(), shutdown_event_);
   }
 
   media_gpu_channel_manager_->AddChannel(client_id, channel_token);
 
   std::move(callback).Run(
-      std::move(pipe.handle1), gpu_info_, gpu_feature_info_,
+      /*success=*/true, gpu_info_, gpu_feature_info_,
       gpu_channel->shared_image_stub()->factory()->MakeCapabilities());
 }
 

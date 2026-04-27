@@ -103,7 +103,7 @@ class BrowserGpuChannelHostFactory::EstablishRequest
   // therefore can't wait for an async mojo reply on the same thread.
   void Establish(bool sync);
   void OnEstablished(
-      mojo::ScopedMessagePipeHandle channel_handle,
+      mojo::ScopedMessagePipeHandle handle,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities,
@@ -168,12 +168,14 @@ void BrowserGpuChannelHostFactory::EstablishRequest::Establish(bool sync) {
   }
 
   bool is_gpu_host = true;
+
+  mojo::MessagePipe pipe;
   host->gpu_host()->EstablishGpuChannel(
       gpu_client_id_, gpu_client_tracing_id_, is_gpu_host,
-      /*enable_extra_handles_validation=*/false, sync,
+      /*enable_extra_handles_validation=*/false, sync, std::move(pipe.handle1),
       base::BindOnce(
-          &BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished,
-          this));
+          &BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished, this,
+          std::move(pipe.handle0)));
   host->gpu_host()->SetChannelClientPid(gpu_client_id_,
                                         base::GetCurrentProcId());
 }
@@ -184,8 +186,7 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::SharedImageCapabilities& shared_image_capabilities,
     viz::GpuHostImpl::EstablishChannelStatus status) {
-  if (!channel_handle.is_valid() &&
-      status == viz::GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid &&
+  if (status == viz::GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid &&
       // Ask client every time instead of passing this down from UI thread to
       // avoid having the value be stale.
       GetContentClient()->browser()->AllowGpuLaunchRetryOnIOThread()) {
@@ -205,7 +206,8 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
     return;
   }
 
-  if (channel_handle.is_valid()) {
+  if (status == viz::GpuHostImpl::EstablishChannelStatus::kSuccess &&
+      channel_handle.is_valid()) {
     gpu_channel_ = gpu::GpuChannelHost::Create(
         gpu_client_id_, gpu_info, gpu_feature_info, shared_image_capabilities,
         std::move(channel_handle), GetIOThreadTaskRunner({}));

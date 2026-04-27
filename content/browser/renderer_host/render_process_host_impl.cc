@@ -1840,7 +1840,22 @@ bool RenderProcessHostImpl::Init() {
   is_dead_ = false;
   sent_render_process_ready_ = false;
 
-  gpu_client_->PreEstablishGpuChannel();
+  // We may reach Init() during process death notification (e.g.
+  // RenderProcessExited on some observer). In this case the Channel may be
+  // null, so we re-initialize it here.
+  if (!channel_) {
+    InitializeChannelProxy();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+    // Pre-establish the GPU channel and send the renderer pipe at renderer
+    // launch time.
+    gpu_client_->InitializeGpuChannelForNewRenderer(
+        mojo_invitation_.AttachMessagePipe(kGPUChannelAttachmentName));
+  } else {
+    gpu_client_->InitializeGpuChannelForNewRenderer(
+        mojo::ScopedMessagePipeHandle());
+  }
 
   // Set cache information after establishing a channel since the handles are
   // stored on the channels. Note that we also check if the factory is
@@ -1857,12 +1872,6 @@ bool RenderProcessHostImpl::Init() {
       }
     }
   }
-
-  // We may reach Init() during process death notification (e.g.
-  // RenderProcessExited on some observer). In this case the Channel may be
-  // null, so we re-initialize it here.
-  if (!channel_)
-    InitializeChannelProxy();
 
   if (ShouldPauseChannelUntilProcessLaunched()) {
     // Unpause the Channel briefly. This will be paused again below if we launch
@@ -3597,6 +3606,11 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
 
   if (IsForTopChromeWebUI()) {
     command_line->AppendSwitch(switches::kTopChromeWebUI);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+    command_line->AppendSwitchASCII(
+        switches::kGpuClientId, base::NumberToString(gpu_client_->client_id()));
   }
 
   // Call this as early as possible so that --extension-process will show early
