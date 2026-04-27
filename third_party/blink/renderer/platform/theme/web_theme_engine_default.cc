@@ -22,24 +22,6 @@
 
 namespace blink {
 
-namespace {
-
-#if BUILDFLAG(IS_WIN)
-// The width of a vertical scroll bar in dips.
-int32_t g_vertical_scroll_bar_width;
-
-// The height of a horizontal scroll bar in dips.
-int32_t g_horizontal_scroll_bar_height;
-
-// The height of the arrow bitmap on a vertical scroll bar in dips.
-int32_t g_vertical_arrow_bitmap_height;
-
-// The width of the arrow bitmap on a horizontal scroll bar in dips.
-int32_t g_horizontal_arrow_bitmap_width;
-#endif
-
-}  // namespace
-
 static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
     WebThemeEngine::Part part,
     WebThemeEngine::State state,
@@ -209,26 +191,6 @@ WebThemeEngineDefault::~WebThemeEngineDefault() = default;
 gfx::Size WebThemeEngineDefault::GetSize(WebThemeEngine::Part part) {
   ui::NativeTheme::ExtraParams extra;
   ui::NativeTheme::Part native_theme_part = NativeThemePart(part);
-#if BUILDFLAG(IS_WIN)
-  if (!ScrollbarThemeSettings::FluentScrollbarsEnabled()) {
-    switch (native_theme_part) {
-      case ui::NativeTheme::kScrollbarDownArrow:
-      case ui::NativeTheme::kScrollbarLeftArrow:
-      case ui::NativeTheme::kScrollbarRightArrow:
-      case ui::NativeTheme::kScrollbarUpArrow:
-      case ui::NativeTheme::kScrollbarHorizontalThumb:
-      case ui::NativeTheme::kScrollbarVerticalThumb:
-      case ui::NativeTheme::kScrollbarHorizontalTrack:
-      case ui::NativeTheme::kScrollbarVerticalTrack: {
-        return gfx::Size(g_vertical_scroll_bar_width,
-                         g_vertical_scroll_bar_width);
-      }
-
-      default:
-        break;
-    }
-  }
-#endif
   return ui::NativeTheme::GetInstanceForWeb()->GetPartSize(
       native_theme_part, ui::NativeTheme::kNormal, extra);
 }
@@ -317,19 +279,5 @@ std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
   return ui::NativeTheme::GetInstanceForWeb()->user_color();
   // LINT.ThenChange(//content/renderer/render_thread_impl.cc:UserColor)
 }
-
-#if BUILDFLAG(IS_WIN)
-// static
-void WebThemeEngineDefault::cacheScrollBarMetrics(
-    int32_t vertical_scroll_bar_width,
-    int32_t horizontal_scroll_bar_height,
-    int32_t vertical_arrow_bitmap_height,
-    int32_t horizontal_arrow_bitmap_width) {
-  g_vertical_scroll_bar_width = vertical_scroll_bar_width;
-  g_horizontal_scroll_bar_height = horizontal_scroll_bar_height;
-  g_vertical_arrow_bitmap_height = vertical_arrow_bitmap_height;
-  g_horizontal_arrow_bitmap_width = horizontal_arrow_bitmap_width;
-}
-#endif
 
 }  // namespace blink

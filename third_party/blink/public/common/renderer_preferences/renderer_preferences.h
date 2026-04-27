@@ -80,10 +80,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   int32_t status_font_height{0};
   std::u16string message_font_family_name;
   int32_t message_font_height{0};
-  int32_t vertical_scroll_bar_width_in_dips{0};
-  int32_t horizontal_scroll_bar_height_in_dips{0};
-  int32_t arrow_bitmap_height_vertical_scroll_bar_in_dips{0};
-  int32_t arrow_bitmap_width_horizontal_scroll_bar_in_dips{0};
 #endif
 #if BUILDFLAG(IS_OZONE)
   bool selection_clipboard_buffer_available{false};

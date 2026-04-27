@@ -103,15 +103,6 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadMessageFontFamilyName(&out->message_font_family_name))
     return false;
   out->message_font_height = data.message_font_height();
-
-  out->vertical_scroll_bar_width_in_dips =
-      data.vertical_scroll_bar_width_in_dips();
-  out->horizontal_scroll_bar_height_in_dips =
-      data.horizontal_scroll_bar_height_in_dips();
-  out->arrow_bitmap_height_vertical_scroll_bar_in_dips =
-      data.arrow_bitmap_height_vertical_scroll_bar_in_dips();
-  out->arrow_bitmap_width_horizontal_scroll_bar_in_dips =
-      data.arrow_bitmap_width_horizontal_scroll_bar_in_dips();
 #endif
 #if BUILDFLAG(IS_OZONE)
   out->selection_clipboard_buffer_available =

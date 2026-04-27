@@ -3576,7 +3576,6 @@ void WebViewImpl::UpdateRendererPreferences(
     observer.OnRendererPreferencesUpdated(preferences);
   }
 
-  WebThemeEngineHelper::DidUpdateRendererPreferences(preferences);
   UpdateFontRenderingFromRendererPrefs();
 
   blink::SetCaretBlinkInterval(

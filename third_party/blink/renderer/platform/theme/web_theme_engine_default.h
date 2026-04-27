@@ -41,15 +41,6 @@ class WebThemeEngineDefault : public WebThemeEngine {
   gfx::Size NinePatchCanvasSize(Part part) const override;
   gfx::Rect NinePatchAperture(Part part) const override;
   std::optional<SkColor> GetAccentColor() const override;
-#if BUILDFLAG(IS_WIN)
-  // Caches the scrollbar metrics. These are retrieved in the browser and passed
-  // to the renderer in RendererPreferences because the required Windows
-  // system calls cannot be made in sandboxed renderers.
-  static void cacheScrollBarMetrics(int32_t vertical_scroll_bar_width,
-                                    int32_t horizontal_scroll_bar_height,
-                                    int32_t vertical_arrow_bitmap_height,
-                                    int32_t horizontal_arrow_bitmap_width);
-#endif
   int GetPaintedScrollbarTrackInset() const override;
 };
 

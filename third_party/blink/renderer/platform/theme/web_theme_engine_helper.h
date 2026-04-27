@@ -14,8 +14,6 @@ namespace blink {
 class PLATFORM_EXPORT WebThemeEngineHelper {
  public:
   static WebThemeEngine* GetNativeThemeEngine();
-  static void DidUpdateRendererPreferences(
-      const blink::RendererPreferences& renderer_prefs);
 
   // Swaps the current theme engine out returning the old one.
   static std::unique_ptr<WebThemeEngine> SwapNativeThemeEngineForTesting(
