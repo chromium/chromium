@@ -50,7 +50,6 @@ static_library("file_suggest") {
     "//components/drive",
     "//components/google/core/common",
     "//components/prefs",
-    "//components/prefs",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
     "//storage/browser",
