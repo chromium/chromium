@@ -103,7 +103,8 @@ public class AutofillProgressDialogBridge {
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mProgressDialogContentView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, buttonLabel);
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, buttonLabel)
+                        .with(ModalDialogProperties.CONTENT_DESCRIPTION, title);
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
