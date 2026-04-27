@@ -21,7 +21,10 @@ message LensOverlayContentMetadata {
   // Example: "product_presentation_final.pdf"
   string file_name = 2;
 
-  reserved 3, 4, 5;
+  reserved 3, 4;
+
+  // Optional. The URL associated with the content, if applicable.
+  string url = 5;
 
   // Optional. Metadata for Drive content.
   DriveMetadata drive_metadata = 6;

@@ -249,6 +249,8 @@ class ComposeboxQueryController
       lens::LensOverlayClientContext client_context,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> client_logs,
       RequestBodyProtoCreatedCallback callback,
+      std::optional<GURL> page_url,
+      std::optional<std::string> page_title,
       std::optional<std::string> file_name,
       lens::ImageData image_data);
 
@@ -258,6 +260,8 @@ class ComposeboxQueryController
       lens::LensOverlayRequestId request_id,
       std::vector<uint8_t> image_data,
       std::optional<lens::ImageEncodingOptions> options,
+      std::optional<GURL> page_url,
+      std::optional<std::string> page_title,
       std::optional<std::string> file_name,
       RequestBodyProtoCreatedCallback callback);
 
@@ -421,6 +425,8 @@ class ComposeboxQueryController
   void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
                                       const lens::ImageEncodingOptions& options,
                                       RequestBodyProtoCreatedCallback callback,
+                                      std::optional<GURL> page_url,
+                                      std::optional<std::string> page_title,
                                       std::optional<std::string> file_name,
                                       const SkBitmap& bitmap);
 

@@ -20,6 +20,8 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     lens::LensOverlayRequestId request_id,
     std::vector<uint8_t> image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::optional<std::string> file_name,
     RequestBodyProtoCreatedCallback callback) {
   CHECK(image_options.has_value());
@@ -46,5 +48,5 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
       base::BindOnce(&ComposeboxQueryController::
                          CreateFileUploadRequestProtoWithImageDataAndContinue,
                      request_id, CreateClientContext(), ref_counted_logs,
-                     std::move(callback), file_name));
+                     std::move(callback), page_url, page_title, file_name));
 }
