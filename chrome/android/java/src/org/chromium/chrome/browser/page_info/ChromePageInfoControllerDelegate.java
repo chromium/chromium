@@ -310,7 +310,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                             return tab;
                         }));
 
-        if (PageInfoAboutThisSiteController.isFeatureEnabled()) {
+        if (PageInfoAboutThisSiteController.isFeatureEnabled()
+                && (mEphemeralTabCoordinatorSupplier != null || mTabCreator != null)) {
             var aboutThisSiteRow = new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
             rowWrapper.addView(aboutThisSiteRow);
