@@ -1100,7 +1100,7 @@ class IDLSchema:
       namespace_node = GetChildWithName(self.idl, 'ExtensionManifest')
       if namespace_node is None or namespace_node.GetClass() != 'Dictionary':
         raise SchemaCompilerError(
-            'Schema must contain either a paritial Browser interface (for '
+            'Schema must contain either a partial Browser interface (for '
             'APIs) or a partial ExtensionManifest dictionary (for manifest '
             'stubs).', self.idl)
 

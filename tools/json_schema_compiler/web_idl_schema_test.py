@@ -676,7 +676,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
     self.assertEqual('nested.example', schema['namespace'])
     self.assertEqual(
-        'Schema to test nested namespacee names types in IDL (API names with a'
+        'Schema to test nested namespace names types in IDL (API names with a'
         ' dot in them). API should end up on `<Browser>.nested.example`.',
         schema['description'],
     )
@@ -690,7 +690,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
     self.assertEqual('multi.nested.example', schema['namespace'])
     self.assertEqual(
-        'Schema to test triple nested namespacee names types in IDL (API names'
+        'Schema to test triple nested namespace names types in IDL (API names'
         ' with 2 dots in them). API should end up on `<Browser>.multi.nested.'
         'example`.',
         schema['description'],
@@ -701,7 +701,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   def testMissingBrowserInterfaceError(self):
     expected_error_regex = (
         r'.* File\(test\/web_idl\/missing_browser_interface.idl\): Schema must'
-        r' contain either a paritial Browser interface \(for APIs\) or a'
+        r' contain either a partial Browser interface \(for APIs\) or a'
         r' partial ExtensionManifest dictionary \(for manifest stubs\)\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
