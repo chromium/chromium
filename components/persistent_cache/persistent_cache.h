@@ -92,10 +92,12 @@ enum class TransactionError;
 // threads.
 class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
  public:
-  // Returns a new instance on success or null on failure. Unconditionally
+  // Returns a new instance on success or an error code on failure (e.g., if the
+  // backend's files could not be opened or created, or the backend's storage is
+  // corrupt). See class comments regarding error management. Unconditionally
   // consumes `pending_backend`.
-  static std::unique_ptr<PersistentCache> Bind(Client client,
-                                               PendingBackend pending_backend);
+  static base::expected<std::unique_ptr<PersistentCache>, TransactionError>
+  Bind(Client client, PendingBackend pending_backend);
 
   explicit PersistentCache(Client client, std::unique_ptr<Backend> backend);
   ~PersistentCache();

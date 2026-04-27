@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/client.h"
 #include "components/persistent_cache/pending_backend.h"
@@ -52,8 +53,9 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
                                     /*single_connection=*/false,
                                     /*journal_mode_wal=*/false);
   ASSERT_NE(pending_backend, std::nullopt);
-  auto backend =
-      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest);
+  ASSERT_OK_AND_ASSIGN(
+      auto backend,
+      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest));
   ASSERT_NE(backend, nullptr);
 
   // The backend should have created some files.
@@ -79,8 +81,9 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDeleteWal) {
                                     /*single_connection=*/true,
                                     /*journal_mode_wal=*/true);
   ASSERT_NE(pending_backend, std::nullopt);
-  auto backend =
-      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest);
+  ASSERT_OK_AND_ASSIGN(
+      auto backend,
+      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest));
   ASSERT_NE(backend, nullptr);
 
   // The backend should have created some files.

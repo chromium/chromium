@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/client.h"
 #include "components/persistent_cache/mock/mock_backend.h"
@@ -277,8 +278,10 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnLRUEviction) {
     ASSERT_OK_AND_ASSIGN(
         auto pending_backend,
         collection.ShareReadWriteConnection(get_increasing_cache_id()));
-    caches.push_back(
+    ASSERT_OK_AND_ASSIGN(
+        auto cache,
         PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
+    caches.push_back(std::move(cache));
   }
   ASSERT_NE(caches.front(), nullptr);
 
@@ -289,8 +292,10 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnLRUEviction) {
   ASSERT_OK_AND_ASSIGN(
       auto pending_backend,
       collection.ShareReadWriteConnection(get_increasing_cache_id()));
-  caches.emplace_back(
+  ASSERT_OK_AND_ASSIGN(
+      auto cache,
       PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
+  caches.emplace_back(std::move(cache));
 
   // The first cache has now been evicted and is abandoned.
   EXPECT_THAT(FindEntry(*caches.front(), key),
@@ -304,7 +309,9 @@ TEST_F(PersistentCacheCollectionTest, InstancesAbandonnedOnClear) {
   std::string key("key");
   ASSERT_OK_AND_ASSIGN(auto pending_backend,
                        collection.ShareReadWriteConnection(key));
-  auto cache = PersistentCache::Bind(Client::kTest, std::move(pending_backend));
+  ASSERT_OK_AND_ASSIGN(
+      auto cache,
+      PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
 
   collection.Clear();
   EXPECT_THAT(FindEntry(*cache, base::as_byte_span(key)),
@@ -330,7 +337,9 @@ TEST_F(PersistentCacheCollectionTest, AbandonnedErrorsDoNotCauseDeletions) {
 
   ASSERT_OK_AND_ASSIGN(auto pending_backend,
                        collection.ShareReadWriteConnection(first_cache_id));
-  auto cache = PersistentCache::Bind(Client::kTest, std::move(pending_backend));
+  ASSERT_OK_AND_ASSIGN(
+      auto cache,
+      PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
   EXPECT_EQ(cache->Abandon(), LockState::kNotHeld);
 
   EXPECT_THAT(FindEntry(*cache, first_key),
@@ -367,7 +376,7 @@ TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
                     const base::FilePath& base_name, bool single_connection,
                     bool journal_mode_wal) {
         saved_base_name = base_name;
-        return (std::move(backend));
+        return base::ok(std::move(backend));
       });
 
   // This call only takes place as a reaction to the reader being left over

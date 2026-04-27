@@ -136,12 +136,14 @@ class PersistentCacheTest : public testing::Test,
       bool journal_mode_wal = false) {
     auto [cache_name, pending_backend] =
         MakePendingBackend(single_connection, journal_mode_wal);
-    auto cache =
-        PersistentCache::Bind(Client::kTest, *std::move(pending_backend));
-    if (!cache) {
-      ADD_FAILURE() << "Failed to bind PersistentCache";
-      return {};
-    }
+    ASSIGN_OR_RETURN(
+        auto cache,
+        PersistentCache::Bind(Client::kTest, *std::move(pending_backend)),
+        [](TransactionError error)
+            -> std::pair<base::FilePath, std::unique_ptr<PersistentCache>> {
+          ADD_FAILURE() << "Failed to Bind PersistentCache";
+          return {};
+        });
     return {std::move(cache_name), std::move(cache)};
   }
 
@@ -345,8 +347,9 @@ TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
     ASSERT_OK_AND_ASSIGN(
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
-    auto cache =
-        PersistentCache::Bind(Client::kTest, std::move(pending_backend));
+    ASSERT_OK_AND_ASSIGN(
+        auto cache,
+        PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
     ASSERT_TRUE(cache);
 
     // First run, setup.
@@ -378,9 +381,9 @@ TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
     ASSERT_OK_AND_ASSIGN(
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
-    caches.push_back(
-        PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
-    std::unique_ptr<PersistentCache>& cache = caches.back();
+    std::unique_ptr<PersistentCache>& cache = caches.emplace_back(nullptr);
+    ASSERT_OK_AND_ASSIGN(cache, PersistentCache::Bind(
+                                    Client::kTest, std::move(pending_backend)));
     ASSERT_TRUE(cache);
 
     // First run, setup.
@@ -415,9 +418,10 @@ TEST_P(PersistentCacheTest, MultipleInstancesShareData) {
         auto pending_backend,
         backend_storage().ShareReadOnlyConnection(cache_name, *main_cache));
     // Create a new instance that will read from the original.
-    caches.push_back(
+    std::unique_ptr<PersistentCache>& ro_cache = caches.emplace_back(nullptr);
+    ASSERT_OK_AND_ASSIGN(
+        ro_cache,
         PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
-    std::unique_ptr<PersistentCache>& ro_cache = caches.back();
     ASSERT_TRUE(ro_cache);
 
     if (i == 0) {
@@ -457,9 +461,10 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
     // Create a new instance that will read/write from/to the original.
-    caches.push_back(
+    std::unique_ptr<PersistentCache>& rw_cache = caches.emplace_back(nullptr);
+    ASSERT_OK_AND_ASSIGN(
+        rw_cache,
         PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
-    std::unique_ptr<PersistentCache>& rw_cache = caches.back();
     ASSERT_TRUE(rw_cache);
 
     // This new cache has access to all previous values.

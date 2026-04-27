@@ -61,8 +61,8 @@ sql::Database::Tag TagFromClient(Client client) {
 }  // namespace
 
 // static
-std::unique_ptr<Backend> SqliteBackendImpl::Bind(PendingBackend pending_backend,
-                                                 Client client) {
+base::expected<std::unique_ptr<Backend>, TransactionError>
+SqliteBackendImpl::Bind(PendingBackend pending_backend, Client client) {
   const auto access_rights =
       pending_backend.pending_file_set.read_write
           ? sqlite_vfs::SandboxedFile::AccessRights::kReadWrite
@@ -71,15 +71,17 @@ std::unique_ptr<Backend> SqliteBackendImpl::Bind(PendingBackend pending_backend,
   auto file_set = sqlite_vfs::SqliteVfsFileSet::Bind(
       VfsClientFromClient(client), std::move(pending_backend.pending_file_set));
   if (!file_set.has_value()) {
-    return nullptr;
+    // `pending_backend.pending_file_set` was consumed, but failed to produce a
+    // SqliteVfsFileSet. This is typically a failure to map the shared locks
+    // into this process's address space. There is no need to delete the files.
+    return base::unexpected(TransactionError::kConnectionError);
   }
   auto instance =
       base::WrapUnique(new SqliteBackendImpl(*std::move(file_set), client));
 
   base::ElapsedTimer timer;
-  if (!instance->Initialize()) {
-    return nullptr;
-  }
+  RETURN_IF_ERROR(instance->Initialize());
+
   base::UmaHistogramMicrosecondsTimes(
       GetHistogramName(
           client, "BackendInitialize",
@@ -114,7 +116,7 @@ SqliteBackendImpl::~SqliteBackendImpl() {
   db_.reset();
 }
 
-bool SqliteBackendImpl::Initialize() {
+base::expected<void, TransactionError> SqliteBackendImpl::Initialize() {
   TRACE_EVENT("persistent_cache", "Initialize");
 
   // Open  `db_` under `lock_` with lock tracking enabled. This allows this
@@ -122,8 +124,15 @@ bool SqliteBackendImpl::Initialize() {
   // sequence bound.
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
 
+  RETURN_IF_ERROR(InitializeImpl(),
+                  [](int error_code) { return TranslateError(error_code); });
+
+  return base::ok();
+}
+
+base::expected<void, int> SqliteBackendImpl::InitializeImpl() {
   if (!db_->Open(database_path_)) {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
   // Check the user-version (https://sqlite.org/pragma.html#pragma_user_version)
@@ -135,17 +144,17 @@ bool SqliteBackendImpl::Initialize() {
       get_user_version_stm.is_valid() && get_user_version_stm.Step()) {
     detected_user_version = get_user_version_stm.ColumnInt(0);
   } else {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
   if (detected_user_version == kCurrentUserVersion) {
-    return true;
+    return base::ok();
   }
 
   // A read only connection cannot do anything to recover from a mismatched
   // user version.
   if (IsReadOnly()) {
-    return false;
+    return base::unexpected(SQLITE_READONLY);
   }
 
   // This is either a new database (user-version has never been set) or was last
@@ -156,11 +165,11 @@ bool SqliteBackendImpl::Initialize() {
   // setting the associated user version is done atomically.
   sql::Transaction transaction(&*db_);
   if (!transaction.Begin()) {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
   if (!db_->Execute("DROP TABLE IF EXISTS entries")) {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
   // IMPORTANT: Revise the DROP TABLE statement above if more than the one
@@ -168,16 +177,20 @@ bool SqliteBackendImpl::Initialize() {
   if (!db_->Execute("CREATE TABLE entries(key BLOB PRIMARY KEY "
                     "UNIQUE NOT NULL, content BLOB NOT NULL,"
                     " input_signature INTEGER, write_timestamp INTEGER)")) {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
   if (!db_->Execute(
           base::StrCat({"PRAGMA user_version=",
                         base::NumberToString(kCurrentUserVersion)}))) {
-    return false;
+    return base::unexpected(db_->GetErrorCode());
   }
 
-  return transaction.Commit();
+  if (!transaction.Commit()) {
+    return base::unexpected(db_->GetErrorCode());
+  }
+
+  return base::ok();
 }
 
 base::expected<std::optional<EntryMetadata>, TransactionError>
@@ -308,27 +321,40 @@ base::expected<void, int> SqliteBackendImpl::InsertImpl(
 
 // static
 TransactionError SqliteBackendImpl::TranslateError(int error_code) {
-  switch (error_code) {
+  // Handle extended result codes directly.
+  if (error_code == SQLITE_IOERR_LOCK) {
+    // Lock abandonment.
+    return TransactionError::kConnectionError;
+  }
+
+  // Narrow the error down to its primary result code.
+  switch (error_code & 0xFF) {
     case SQLITE_BUSY:
+    case SQLITE_FULL:
+    case SQLITE_INTERRUPT:
     case SQLITE_NOMEM:
       return TransactionError::kTransient;
+
     case SQLITE_CANTOPEN:
-    case SQLITE_IOERR_LOCK:  // Lock abandonment.
+    case SQLITE_READONLY:  // Cannot modify a read-only database.
+      // This also includes SQLITE_READONLY_ROLLBACK, which can happen if a
+      // read-only connection is the first to discover that a hot journal needs
+      // to be rolled back.
       return TransactionError::kConnectionError;
+
     case SQLITE_ERROR:
     case SQLITE_CORRUPT:
-    case SQLITE_FULL:
-    case SQLITE_IOERR_FSTAT:
-    case SQLITE_IOERR_FSYNC:
-    case SQLITE_IOERR_READ:
-    case SQLITE_IOERR_WRITE:
+    case SQLITE_IOERR:
+    case SQLITE_NOTADB:
+      // The underlying file cannot be trusted. The best course of action is for
+      // the owner to close the connection and delete the underlying files.
       return TransactionError::kPermanent;
   }
 
-  // Remaining errors are treasted as transient.
-  // `Sql.Database.Statement.Error.PersistentCache` should be monitored to
-  // ensure that there are no surprising permanent errors wrongly handled here
-  // as this will mean unusable databases that keep being used.
+  // Remaining errors are considered transient. The Sql.Database.Statement.Error
+  // metrics should be monitored to ensure that there are no surprising
+  // permanent errors wrongly handled here as this will mean unusable databases
+  // that keep being used.
   return TransactionError::kTransient;
 }
 

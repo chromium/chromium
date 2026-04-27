@@ -24,6 +24,7 @@ namespace persistent_cache {
 
 namespace {
 
+using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::Eq;
 using ::testing::Ne;
@@ -62,8 +63,9 @@ TEST_F(SQLiteBackendImplTest, ReopeningFilesWithSameUserVersionWorks) {
       backend_storage_->MakePendingBackend(db_basename, false, false));
 
   // Initialize the backend and close it.
-  ASSERT_NE(SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
-            nullptr);
+  ASSERT_THAT(
+      SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
+      ValueIs(Ne(nullptr)));
 
   ASSERT_OK_AND_ASSIGN(pending_backend, backend_storage_->MakePendingBackend(
                                             db_basename, false, false));
@@ -77,8 +79,9 @@ TEST_F(SQLiteBackendImplTest, ReopeningFilesWithSameUserVersionWorks) {
   ASSERT_EQ(base::I32FromBigEndian(data),
             SqliteBackendImpl::kCurrentUserVersion);
 
-  ASSERT_NE(SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
-            nullptr);
+  ASSERT_THAT(
+      SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
+      ValueIs(Ne(nullptr)));
 }
 
 TEST_F(SQLiteBackendImplTest,
@@ -90,8 +93,9 @@ TEST_F(SQLiteBackendImplTest,
       backend_storage_->MakePendingBackend(db_path, false, false));
   base::File db_file = pending_backend.pending_file_set.db_file.Duplicate();
 
-  std::unique_ptr<PersistentCache> cache =
-      PersistentCache::Bind(Client::kTest, std::move(pending_backend));
+  ASSERT_OK_AND_ASSIGN(
+      auto cache,
+      PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
   ASSERT_NE(cache, nullptr);
 
   ASSERT_OK_AND_ASSIGN(
@@ -107,8 +111,9 @@ TEST_F(SQLiteBackendImplTest,
       Optional(sizeof(int)));
 
   // Mismatched version numbers makes Bind() fail.
-  ASSERT_EQ(SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
-            nullptr);
+  ASSERT_THAT(
+      SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest),
+      ErrorIs(TransactionError::kConnectionError));
 }
 
 TEST_F(SQLiteBackendImplTest,
@@ -119,8 +124,9 @@ TEST_F(SQLiteBackendImplTest,
       auto pending_backend,
       backend_storage_->MakePendingBackend(db_basename, false, false));
 
-  std::unique_ptr<PersistentCache> cache =
-      PersistentCache::Bind(Client::kTest, std::move(pending_backend));
+  ASSERT_OK_AND_ASSIGN(
+      auto cache,
+      PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
   ASSERT_NE(cache, nullptr);
 
   const base::span<const uint8_t> kKey = base::byte_span_from_cstring("key");
@@ -141,8 +147,9 @@ TEST_F(SQLiteBackendImplTest,
               Optional(sizeof(int)));
 
   // Bind succeeds.
-  std::unique_ptr<Backend> backend =
-      SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest);
+  ASSERT_OK_AND_ASSIGN(
+      auto backend,
+      SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest));
   ASSERT_NE(backend, nullptr);
 
   // The files were wiped so the value inserted is no longer present.

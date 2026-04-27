@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_type.h"
 #include "components/persistent_cache/metrics_util.h"
@@ -24,18 +25,13 @@
 namespace persistent_cache {
 
 // static
-std::unique_ptr<PersistentCache> PersistentCache::Bind(
-    Client client,
-    PendingBackend pending_backend) {
+base::expected<std::unique_ptr<PersistentCache>, TransactionError>
+PersistentCache::Bind(Client client, PendingBackend pending_backend) {
   // If there is ever occasion to have more than one type, branch on the type
   // here.
-  if (auto backend =
-          SqliteBackendImpl::Bind(std::move(pending_backend), client);
-      backend) {
-    return std::make_unique<PersistentCache>(client, std::move(backend));
-  }
-
-  return nullptr;
+  ASSIGN_OR_RETURN(auto backend,
+                   SqliteBackendImpl::Bind(std::move(pending_backend), client));
+  return std::make_unique<PersistentCache>(client, std::move(backend));
 }
 
 PersistentCache::PersistentCache(Client client,

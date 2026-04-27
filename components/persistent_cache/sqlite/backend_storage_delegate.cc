@@ -33,18 +33,18 @@ std::optional<PendingBackend> BackendStorageDelegate::MakePendingBackend(
   return PendingBackend(std::move(pending_file_set));
 }
 
-std::unique_ptr<Backend> BackendStorageDelegate::MakeBackend(
-    Client client,
-    const base::FilePath& directory,
-    const base::FilePath& base_name,
-    bool single_connection,
-    bool journal_mode_wal) {
+base::expected<std::unique_ptr<Backend>, TransactionError>
+BackendStorageDelegate::MakeBackend(Client client,
+                                    const base::FilePath& directory,
+                                    const base::FilePath& base_name,
+                                    bool single_connection,
+                                    bool journal_mode_wal) {
   if (auto pending_backend = MakePendingBackend(
           client, directory, base_name, single_connection, journal_mode_wal);
       pending_backend.has_value()) {
     return SqliteBackendImpl::Bind(*std::move(pending_backend), client);
   }
-  return nullptr;
+  return base::unexpected(TransactionError::kConnectionError);
 }
 
 std::optional<PendingBackend> BackendStorageDelegate::ShareReadOnlyConnection(

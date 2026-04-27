@@ -410,13 +410,16 @@ void GpuPersistentCache::InitializeCache(
     persistent_cache::PendingBackend pending_backend,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
   CHECK(!disk_cache_initialized_.IsSet());
-  auto cache = persistent_cache::PersistentCache::Bind(
-      persistent_cache::Client::kShaderCache, std::move(pending_backend));
-  if (!cache) {
-    HandlePersistentCacheError(&use_shader_cache_shm_count->data,
-                               persistent_cache::TransactionError::kPermanent);
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      auto cache,
+      persistent_cache::PersistentCache::Bind(
+          persistent_cache::Client::kShaderCache, std::move(pending_backend)),
+      [use_shader_cache_shm_count](persistent_cache::TransactionError error) {
+        // Treat any failure to bind to the cache as a permanent error.
+        HandlePersistentCacheError(
+            &use_shader_cache_shm_count->data,
+            persistent_cache::TransactionError::kPermanent);
+      });
 
   disk_cache_ = base::MakeRefCounted<DiskCache>(
       cache_prefix_, std::move(cache), async_write_options_,

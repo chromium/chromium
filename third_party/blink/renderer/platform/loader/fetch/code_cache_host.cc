@@ -490,9 +490,13 @@ class CodeCacheWithPersistentCacheHostImpl
           InvalidateAndRejectPendingRequests();
           return;
         }
-        cache_ = persistent_cache::PersistentCache::Bind(
-            persistent_cache::Client::kCodeCache, *std::move(pending_backend));
-        if (!cache_) {  // Failed to open the cache.
+        if (auto result = persistent_cache::PersistentCache::Bind(
+                persistent_cache::Client::kCodeCache,
+                *std::move(pending_backend));
+            result.has_value()) {
+          cache_ = *std::move(result);
+        } else {
+          // Failed to open the cache.
           InvalidateAndRejectPendingRequests();
           return;
         }

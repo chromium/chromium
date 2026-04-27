@@ -25,7 +25,7 @@ class MockBackendStorageDelegate : public BackendStorage::Delegate {
                bool single_connection,
                bool journal_mode_wal),
               (override));
-  MOCK_METHOD(std::unique_ptr<Backend>,
+  MOCK_METHOD((base::expected<std::unique_ptr<Backend>, TransactionError>),
               MakeBackend,
               (Client client,
                const base::FilePath& directory,

@@ -230,13 +230,21 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
   // `cache_id` must not contain invalid characters.
   CHECK(!base_name.empty());
 
-  auto backend =
+  ASSIGN_OR_RETURN(
+      auto backend,
       backend_storage_.MakeBackend(base_name, /*single_connection=*/false,
-                                   /*journal_mode_wal=*/false);
-  if (!backend) {
-    // Failed to open/create the backend's files or bind to them.
-    return nullptr;
-  }
+                                   /*journal_mode_wal=*/false),
+      [this, &base_name](TransactionError error) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+        // Failed to open/create the backend's files or bind to them.
+        if (error == TransactionError::kPermanent) {
+          // Delete the files since they are unusable. A future attempt to
+          // create this same cache has a chance to succeed.
+          backend_storage_.DeleteFiles(base_name);
+        }
+        return nullptr;
+      });
 
   // Create the cache
   auto inserted_it = persistent_caches_.Put(

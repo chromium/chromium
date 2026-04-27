@@ -18,9 +18,8 @@ namespace persistent_cache {
 // implementation to avoid littering the code with ifdefs.
 
 // static
-std::unique_ptr<PersistentCache> PersistentCache::Bind(
-    Client client,
-    PendingBackend pending_backend) {
+base::expected<std::unique_ptr<PersistentCache>, TransactionError>
+PersistentCache::Bind(Client client, PendingBackend pending_backend) {
   NOTREACHED();
 }
 

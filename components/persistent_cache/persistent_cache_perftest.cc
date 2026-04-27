@@ -88,9 +88,13 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
     if (auto pending_backend = backend_storage_->MakePendingBackend(
             base::FilePath(kBaseName), single_connection, journal_mode_wal);
         pending_backend.has_value()) {
-      return PersistentCache::Bind(Client::kTest, *std::move(pending_backend));
+      if (auto cache_result =
+              PersistentCache::Bind(Client::kTest, *std::move(pending_backend));
+          cache_result.has_value()) {
+        return *std::move(cache_result);
+      }
     }
-    ADD_FAILURE() << "Failed to make PendingBackend";
+    ADD_FAILURE() << "Failed to make PendingBackend or Bind it";
     return nullptr;
   }
 
@@ -204,9 +208,9 @@ TEST_P(PersistentCachePerftest, OpenClose) {
   RunAndTimeTest(
       "OpenClose", kIterationCount, [this, &cache = *cache, &success_count] {
         for (size_t i = 0; i < kIterationCount; ++i) {
-          auto persistent_cache_under_test = PersistentCache::Bind(
-              Client::kTest, *ShareReadWriteConnection(cache));
-          if (persistent_cache_under_test) {
+          if (PersistentCache::Bind(Client::kTest,
+                                    *ShareReadWriteConnection(cache))
+                  .has_value()) {
             ++success_count;
           }
         }

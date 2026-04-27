@@ -12,6 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
+#include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
 
@@ -51,14 +53,15 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
     // `PersistentCache` instance -- connections to it cannot be shared for use
     // by other instances. If `journal_mode_wal` (which only applies to the
     // SQLite backend) is true, the database will use write-ahead log
-    // journaling. Returns null in case of error (e.g., if the backend's files
-    // could not be opened or created, or if the backend's storage is corrupt).
-    virtual std::unique_ptr<Backend> MakeBackend(
-        Client client,
-        const base::FilePath& directory,
-        const base::FilePath& base_name,
-        bool single_connection,
-        bool journal_mode_wal) = 0;
+    // journaling. Returns an error code on failure (e.g., if the backend's
+    // files could not be opened or created, or the backend's storage is
+    // corrupt). See persistent_cache.h for details regarding error handling.
+    virtual base::expected<std::unique_ptr<Backend>, TransactionError>
+    MakeBackend(Client client,
+                const base::FilePath& directory,
+                const base::FilePath& base_name,
+                bool single_connection,
+                bool journal_mode_wal) = 0;
 
     // Returns a pending backend for a read-only connection to the backend named
     // `base_name` within `directory`. This allows another party to bind to an
@@ -128,11 +131,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   // by only one `PersistentCache` instance -- connections to it cannot be
   // shared for use by other instances. If `journal_mode_wal` (which only
   // applies to the SQLite backend) is true, the database will use write-ahead
-  // log journaling. Returns null in case of error (e.g., if the backend's files
-  // could not be opened or created, or the backend's storage is corrupt).
-  std::unique_ptr<Backend> MakeBackend(const base::FilePath& base_name,
-                                       bool single_connection,
-                                       bool journal_mode_wal);
+  // log journaling. Returns an error code on failure (e.g., if the backend's
+  // files could not be opened or created, or the backend's storage is corrupt).
+  // See persistent_cache.h for details regarding error handling.
+  base::expected<std::unique_ptr<Backend>, TransactionError> MakeBackend(
+      const base::FilePath& base_name,
+      bool single_connection,
+      bool journal_mode_wal);
 
   // Returns a pending backend for a read-only connection to the backend named
   // `base_name` within the instance's directory. This allows another party to
