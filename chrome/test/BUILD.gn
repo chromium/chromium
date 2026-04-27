@@ -4522,6 +4522,7 @@ if (!is_android) {
       sources += [
         "../browser/chrome_multiprofile_startup_browsertest.cc",
         "../browser/download/bubble/download_bubble_ui_controller_browsertest.cc",
+        "../browser/download/bubble/download_display_controller_browsertest.cc",
         "../browser/enterprise/reporting/cloud_profile_reporting_browsertest.cc",
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/policy/cloud/extension_install_policy_service_browsertest.cc",
@@ -8939,7 +8940,6 @@ test("unit_tests") {
       "../browser/download/bubble/download_bubble_prefs_unittest.cc",
       "../browser/download/bubble/download_bubble_update_service_unittest.cc",
       "../browser/download/bubble/download_bubble_utils_unittest.cc",
-      "../browser/download/bubble/download_display_controller_unittest.cc",
       "../browser/download/download_ui_context_menu_unittest.cc",
       "../browser/hid/hid_status_icon_unittest.cc",
     ]

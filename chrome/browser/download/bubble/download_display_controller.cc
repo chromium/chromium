@@ -115,6 +115,12 @@ DownloadDisplayController::~DownloadDisplayController() {
   base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
+void DownloadDisplayController::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  icon_disappearance_timer_.SetTaskRunner(task_runner);
+  icon_inactive_timer_.SetTaskRunner(task_runner);
+}
+
 void DownloadDisplayController::OnNewItem(bool show_animation) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;

@@ -23,6 +23,7 @@ class DownloadDisplay;
 namespace base {
 class TimeDelta;
 class OneShotTimer;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace offline_items_collection {
@@ -88,6 +89,9 @@ class DownloadDisplayController : public FullscreenObserver,
   DownloadDisplay* download_display_for_testing() { return display_; }
 
   void OpenSecuritySubpage(const offline_items_collection::ContentId& id);
+
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   friend class DownloadDisplayControllerTest;
