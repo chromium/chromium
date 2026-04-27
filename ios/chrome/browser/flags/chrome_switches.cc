@@ -14,8 +14,6 @@ const char kDisableThirdPartyKeyboardWorkaround[] =
 const char kEnableIOSHandoffToOtherDevices[] =
     "enable-ios-handoff-to-other-devices";
 
-const char kEnableSpotlightActions[] = "enable-spotlight-actions";
-
 const char kEnableThirdPartyKeyboardWorkaround[] =
     "enable-third-party-keyboard-workaround";
 

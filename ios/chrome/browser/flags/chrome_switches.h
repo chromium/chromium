@@ -26,9 +26,6 @@ extern const char kDisableThirdPartyKeyboardWorkaround[];
 // other Apple devices.
 extern const char kEnableIOSHandoffToOtherDevices[];
 
-// Enables the Spotlight actions.
-extern const char kEnableSpotlightActions[];
-
 // Enables the 3rd party keyboard omnibox workaround.
 extern const char kEnableThirdPartyKeyboardWorkaround[];
 
