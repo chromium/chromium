@@ -612,10 +612,10 @@
     Sites usually use your video camera for communication features like video chatting
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CAMERA_ASK" desc="Primary text corresponding to the ask button in the camera permission radio button group.">
-    Site can ask for your camera
+    Sites can ask for your camera
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CAMERA_BLOCK" desc="Primary text corresponding to the block button in the camera permission radio button group.">
-    Don't allow sites to see your location
+    Don't allow sites to use your camera
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CAMERA_BLOCK_DESCRIPTION" desc="Description of block camera permission.">
     Features that need a camera won't work
