@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -244,22 +243,19 @@ public class LocationBarTest {
     @Test
     @MediumTest
     public void testOnConfigurationChanged() {
+        // Start activity in Desktop mode. Expect UrlBar to focus.
+        // The DesktopMode check verifies connected peripherals, not just the Configuration change.
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
         startActivityNormally();
-        // We expect the UrlBar to be focused iff a Hardware keyboard handler does not automatically
-        // call up Software keyboard (IME).
-        boolean wantUrlBarFocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(mActivity);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarMediator.showUrlBarCursorWithoutFocusAnimations();
-                    // If IME is configured to show up with hardware keys, url bar should not
-                    // receive focus.
-                    Assert.assertEquals(wantUrlBarFocus, mLocationBarMediator.isUrlBarFocused());
+                    Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
                 });
 
+        // Update configuration to non-Desktop mode. Expect focus clear.
         Configuration configuration = mActivity.getSavedConfigurationForTesting();
-        configuration.keyboard = Configuration.KEYBOARD_12KEY;
-
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarMediator.onConfigurationChanged(configuration);
