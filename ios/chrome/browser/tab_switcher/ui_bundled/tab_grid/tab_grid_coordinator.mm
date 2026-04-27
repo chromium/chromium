@@ -587,10 +587,25 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [self.browserLayoutViewController removeFromParentViewController];
       self.browserLayoutViewController = viewController;
 
-      viewController.view.frame = frame;
+      if (!IsChromeNextIaEnabled()) {
+        viewController.view.frame = frame;
+      }
       viewController.view.alpha = 1.0;
       [_viewController addChildViewController:viewController];
-      [_viewController.view addSubview:viewController.view];
+      if (IsChromeNextIaEnabled()) {
+        UIView* appContentGuide = [LayoutGuideCenterForBrowser(nil)
+            referencedViewUnderName:kAppContentGuide];
+        if (IsFullscreenRefactoringEnabled()) {
+          [_viewController.view addSubview:viewController.view];
+          AddSameConstraints(appContentGuide, viewController.view);
+        } else {
+          [appContentGuide addSubview:viewController.view];
+          viewController.view.frame = frame;
+        }
+      } else {
+        [_viewController.view addSubview:viewController.view];
+      }
+
       [viewController.view layoutIfNeeded];
       [viewController didMoveToParentViewController:_viewController];
     }
