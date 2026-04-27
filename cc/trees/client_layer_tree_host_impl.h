@@ -12,7 +12,7 @@ namespace cc {
 
 class CC_EXPORT ClientLayerTreeHostImpl : public LayerTreeHostImpl {
  public:
-  static std::unique_ptr<LayerTreeHostImpl> Create(
+  static std::unique_ptr<ClientLayerTreeHostImpl> Create(
       const LayerTreeSettings& settings,
       LayerTreeHostImplClient* client,
       TaskRunnerProvider* task_runner_provider,

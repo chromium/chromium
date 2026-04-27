@@ -31,11 +31,11 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/scheduler/scheduler_state_machine.h"
+#include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/commit_state.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
-#include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -200,7 +200,7 @@ void ProxyImpl::InitializeLayerTreeFrameSinkOnImpl(
 
   proxy_main_frame_sink_bound_weak_ptr_ = proxy_main_frame_sink_bound_weak_ptr;
 
-  LayerTreeHostImpl* host_impl = host_impl_.get();
+  ClientLayerTreeHostImpl* host_impl = host_impl_.get();
   bool success = host_impl->InitializeFrameSink(layer_tree_frame_sink);
   MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyMain::DidInitializeLayerTreeFrameSink,

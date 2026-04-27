@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/viz/service/layers/layer_context_impl.h"
+#include "components/viz/service/layers/viz_layer_tree_host_impl.h"
 
 namespace viz {
 

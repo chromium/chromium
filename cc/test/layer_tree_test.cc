@@ -34,6 +34,7 @@
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
@@ -164,7 +165,7 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
 }  // namespace
 
 // Adapts LayerTreeHostImpl for test. Runs real code, then invokes test hooks.
-class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
+class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
  public:
   static std::unique_ptr<LayerTreeHostImplForTesting> Create(
       TestHooks* test_hooks,
@@ -191,7 +192,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
       TaskGraphRunner* task_graph_runner,
       RenderingStatsInstrumentation* stats_instrumentation,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner)
-      : LayerTreeHostImpl(
+      : ClientLayerTreeHostImpl(
             settings,
             host_impl_client,
             task_runner_provider,
@@ -574,7 +575,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
     return layer_tree_host;
   }
 
-  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+  std::unique_ptr<ClientLayerTreeHostImpl> CreateLayerTreeHostImplInternal(
       LayerTreeHostImplClient* host_impl_client,
       MutatorHost*,
       const LayerTreeSettings& settings,
@@ -587,7 +588,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr)
       override {
-    std::unique_ptr<LayerTreeHostImpl> host_impl =
+    std::unique_ptr<ClientLayerTreeHostImpl> host_impl =
         LayerTreeHostImplForTesting::Create(
             test_hooks_, settings, host_impl_client, scheduling_client,
             task_runner_provider, task_graph_runner,

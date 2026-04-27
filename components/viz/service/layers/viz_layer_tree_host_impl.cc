@@ -8,7 +8,7 @@
 
 namespace viz {
 
-std::unique_ptr<cc::LayerTreeHostImpl> VizLayerTreeHostImpl::Create(
+std::unique_ptr<VizLayerTreeHostImpl> VizLayerTreeHostImpl::Create(
     const cc::LayerTreeSettings& settings,
     cc::LayerTreeHostImplClient* client,
     cc::TaskRunnerProvider* task_runner_provider,

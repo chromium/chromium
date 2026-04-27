@@ -36,7 +36,7 @@ struct CommitTimestamps;
 struct BrowserControlsOffsetTagModifications;
 class LayerTreeFrameSink;
 class LayerTreeHost;
-class LayerTreeHostImpl;
+class ClientLayerTreeHostImpl;
 class LayerTreeMutator;
 class LayerTreeSettings;
 class PaintWorkletLayerPainter;
@@ -244,7 +244,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;
 
-  std::unique_ptr<LayerTreeHostImpl> host_impl_;
+  std::unique_ptr<ClientLayerTreeHostImpl> host_impl_;
 
   // Used to post tasks to ProxyMain on the main thread.
   base::WeakPtr<ProxyMain> proxy_main_weak_ptr_;

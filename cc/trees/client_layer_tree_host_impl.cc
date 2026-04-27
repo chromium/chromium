@@ -6,7 +6,7 @@
 
 namespace cc {
 
-std::unique_ptr<LayerTreeHostImpl> ClientLayerTreeHostImpl::Create(
+std::unique_ptr<ClientLayerTreeHostImpl> ClientLayerTreeHostImpl::Create(
     const LayerTreeSettings& settings,
     LayerTreeHostImplClient* client,
     TaskRunnerProvider* task_runner_provider,

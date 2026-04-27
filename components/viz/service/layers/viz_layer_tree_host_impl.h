@@ -20,7 +20,7 @@ namespace viz {
 
 class VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
  public:
-  static std::unique_ptr<LayerTreeHostImpl> Create(
+  static std::unique_ptr<VizLayerTreeHostImpl> Create(
       const cc::LayerTreeSettings& settings,
       cc::LayerTreeHostImplClient* client,
       cc::TaskRunnerProvider* task_runner_provider,

@@ -75,6 +75,7 @@ class ViewTransitionRequest;
 class HeadsUpDisplayLayer;
 class PropertyTreeDelegate;
 class LayerTreeHostImpl;
+class ClientLayerTreeHostImpl;
 class LayerTreeHostImplClient;
 class LayerTreeHostSingleThreadClient;
 class LayerTreeMutator;
@@ -808,7 +809,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
   void DidFailToInitializeLayerTreeFrameSink();
-  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
+  std::unique_ptr<ClientLayerTreeHostImpl> CreateLayerTreeHostImpl(
       LayerTreeHostImplClient* client);
   void DidLoseLayerTreeFrameSink();
   void DidCommitAndDrawFrame(int source_frame_number) {
@@ -1038,7 +1039,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // free of slow-paths before toggling the flag.
   enum { kNumFramesToConsiderBeforeRemovingSlowPathFlag = 60 };
 
-  virtual std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+  virtual std::unique_ptr<ClientLayerTreeHostImpl>
+  CreateLayerTreeHostImplInternal(
       LayerTreeHostImplClient* client,
       MutatorHost* mutator_host,
       const LayerTreeSettings& settings,
