@@ -47,7 +47,8 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
                    const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
                    const AutoDarkMode& auto_dark_mode,
-                   cc::PaintFlags&) final;
+                   cc::PaintFlags& flags,
+                   PaintFlags paint_flags) final;
 
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const final;
 

@@ -47,6 +47,7 @@ struct PatternData {
  public:
   std::unique_ptr<Pattern> pattern;
   AffineTransform transform;
+  PaintFlags paint_flags = PaintFlag::kNoFlag;
 };
 
 LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
@@ -123,7 +124,8 @@ bool LayoutSVGResourcePattern::FindCycleFromSelf() const {
 }
 
 std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
-    const gfx::RectF& object_bounding_box) {
+    const gfx::RectF& object_bounding_box,
+    PaintFlags paint_flags) {
   NOT_DESTROYED();
   auto pattern_data = std::make_unique<PatternData>();
 
@@ -170,7 +172,8 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
   }
 
   pattern_data->pattern = Pattern::CreatePaintRecordPattern(
-      AsPaintRecord(tile_transform), gfx::RectF(tile_bounds.size()));
+      AsPaintRecord(tile_transform, paint_flags),
+      gfx::RectF(tile_bounds.size()));
 
   // Compute pattern space transformation.
   pattern_data->transform.Translate(tile_bounds.x(), tile_bounds.y());
@@ -184,14 +187,21 @@ bool LayoutSVGResourcePattern::ApplyShader(
     const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
     const AutoDarkMode&,
-    cc::PaintFlags& flags) {
+    cc::PaintFlags& flags,
+    PaintFlags paint_flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();
 
   std::unique_ptr<PatternData>& pattern_data =
       pattern_map_.insert(&client, nullptr).stored_value->value;
-  if (!pattern_data)
-    pattern_data = BuildPatternData(reference_box);
+  if (pattern_data && pattern_data->paint_flags != paint_flags) {
+    pattern_data.reset();
+  }
+
+  if (!pattern_data) {
+    pattern_data = BuildPatternData(reference_box, paint_flags);
+    pattern_data->paint_flags = paint_flags;
+  }
 
   if (!pattern_data->pattern)
     return false;
@@ -205,7 +215,8 @@ bool LayoutSVGResourcePattern::ApplyShader(
 }
 
 PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
-    const AffineTransform& tile_transform) const {
+    const AffineTransform& tile_transform,
+    PaintFlags paint_flags) const {
   NOT_DESTROYED();
   DCHECK(!should_collect_pattern_attributes_);
 
@@ -231,7 +242,8 @@ PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
   PaintRecordBuilder builder;
   for (LayoutObject* child = pattern_layout_object->FirstChild(); child;
        child = child->NextSibling()) {
-    SVGObjectPainter(*child, nullptr).PaintResourceSubtree(builder.Context());
+    SVGObjectPainter(*child, nullptr)
+        .PaintResourceSubtree(builder.Context(), paint_flags);
   }
   canvas->save();
   canvas->concat(tile_transform.ToSkM44());

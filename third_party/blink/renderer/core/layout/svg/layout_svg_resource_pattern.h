@@ -50,8 +50,9 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   bool ApplyShader(const SVGResourceClient&,
                    const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
-                   const AutoDarkMode&,
-                   cc::PaintFlags&) override;
+                   const AutoDarkMode& auto_dark_mode,
+                   cc::PaintFlags& flags,
+                   PaintFlags paint_flags) override;
 
   static const LayoutSVGResourceType kResourceType = kPatternResourceType;
   LayoutSVGResourceType ResourceType() const override {
@@ -67,8 +68,10 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
 
   bool FindCycleFromSelf() const override;
   std::unique_ptr<PatternData> BuildPatternData(
-      const gfx::RectF& object_bounding_box);
-  PaintRecord AsPaintRecord(const AffineTransform&) const;
+      const gfx::RectF& object_bounding_box,
+      PaintFlags paint_flags);
+  PaintRecord AsPaintRecord(const AffineTransform&,
+                            PaintFlags paint_flags) const;
 
   mutable bool should_collect_pattern_attributes_ : 1;
   mutable PatternAttributes attributes_;

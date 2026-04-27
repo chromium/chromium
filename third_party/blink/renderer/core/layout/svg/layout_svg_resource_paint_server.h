@@ -22,6 +22,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 
 namespace blink {
 
@@ -36,7 +37,8 @@ class LayoutSVGResourcePaintServer : public LayoutSVGResourceContainer {
                            const gfx::RectF& reference_box,
                            const AffineTransform* additional_transform,
                            const AutoDarkMode& auto_dark_mode,
-                           cc::PaintFlags&) = 0;
+                           cc::PaintFlags&,
+                           PaintFlags paint_flags) = 0;
 
  protected:
   void StyleDidChange(StyleDifference,
