@@ -12,27 +12,27 @@ export function getHtml(this: ComposeboxElement) {
   return html`
 <div class="context-menu-container" id="contextMenuContainer"
     part="context-menu-and-tools"
-    @mousedown="${this.onContextMenuContainerMousedown_}"
-    @click="${this.onContextMenuContainerClick_}">
+    @mousedown="${this.onContextMenuContainerMousedown}"
+    @click="${this.onContextMenuContainerClick}">
   ${this.showMenuOnClick ? html`
     <cr-composebox-contextual-entrypoint-and-menu
         id="contextEntrypoint"
         part="composebox-entrypoint"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
-        @add-tab-context="${this.onAddTabContext_}"
-        @delete-tab-context="${this.onDeleteTabContext_}"
+        @add-tab-context="${this.onAddTabContext}"
+        @delete-tab-context="${this.onDeleteTabContext}"
         @tool-click="${this.onToolClick}"
         @model-click="${this.onModelClick}"
         @get-tab-preview="${this.onGetTabPreview}"
-        @context-menu-closed="${this.onContextMenuClosed_ }"
-        @context-menu-opened="${this.onContextMenuOpened_}"
+        @context-menu-closed="${this.onContextMenuClosed}"
+        @context-menu-opened="${this.onContextMenuOpened}"
         @open-image-upload="${this.onOpenImageUpload}"
         @open-file-upload="${this.onOpenFileUpload}"
         @smart-tab-sharing-active-changed="${
-            this.onSmartTabSharingActiveChanged_}"
+            this.onSmartTabSharingActiveChanged}"
         .inputState="${this.inputState}"
-        .smartTabSharingActive="${this.smartTabSharingActive_}"
+        .smartTabSharingActive="${this.smartTabSharingActive}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
         .hasImageFiles="${this.hasImageFiles()}"
@@ -55,7 +55,7 @@ export function getHtml(this: ComposeboxElement) {
   ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch() ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon"
         part="voice-icon" iron-icon="cr:mic"
-        @click="${this.onVoiceSearchButtonClick_}"
+        @click="${this.onVoiceSearchButtonClick}"
         title="${this.i18n('voiceSearchButtonLabel')}">
     </cr-icon-button>
   ` : ''}

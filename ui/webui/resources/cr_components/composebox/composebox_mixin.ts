@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -12,15 +13,16 @@ import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordToolModeSelection, recordUserAction} from './common.js';
-import type {ComposeboxState} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction} from './common.js';
+import type {ComposeboxState, TabUpload, TabUploadOrigin} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import {WindowProxy} from './window_proxy.js';
 
 export enum VoiceSearchAction {
@@ -61,7 +63,10 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             showContextMenuDescription: {type: Boolean},
+            smartTabSharingActive: {type: Boolean},
             shouldShowGhostFiles: {type: Boolean},
+            showMenuOnClick: {type: Boolean},
+            isCanvasQuerySubmitted: {type: Boolean},
             canSubmitFilesAndInput: {
               type: Boolean,
               reflect: true,
@@ -130,11 +135,15 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('composeboxShowImageSuggest');
         accessor smartComposeEnabled: boolean =
             loadTimeData.getBoolean('composeboxSmartComposeEnabled');
+        accessor smartTabSharingActive: boolean = false;
         contextMenuDescriptionEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenuDescription');
         accessor showContextMenuDescription: boolean =
             this.contextMenuDescriptionEnabled;
         accessor shouldShowGhostFiles: boolean = false;
+        accessor showMenuOnClick: boolean = true;
+        accessor isCanvasQuerySubmitted: boolean = false;
+        browserTabContextAdded: boolean = false;
         pendingUploads: Set<UnguessableToken> = new Set();
         dragAndDropEnabled: boolean =
             loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
@@ -226,6 +235,12 @@ export const ComposeboxEmbedderMixin =
         }
 
         getSearchboxHandler(): SearchboxPageHandlerRemote {
+          assertNotReached();
+        }
+
+        addTabContextHandleCallback(
+            _tabUpload: TabUpload,
+            _replaceAutoActiveTabToken: boolean = false): Promise<void> {
           assertNotReached();
         }
 
@@ -568,6 +583,114 @@ export const ComposeboxEmbedderMixin =
         onOpenFileUpload() {
           recordContextualElementClickedMetric(
               this.composeboxSource, 'AimPopup', ContextType.FILE);
+        }
+
+        onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
+          this.smartTabSharingActive = e.detail.active;
+          this.getPageHandler().setSmartTabSharingActive(e.detail.active);
+        }
+
+        onContextMenuContainerMousedown(e: FocusEvent) {
+          // Special treatment for the "Tall" layout variants where not clicking
+          // on an inner element should be treated as clicking on a
+          // non-focusable area.
+          if (this.searchboxLayoutMode !== 'Compact' &&
+              (e.target instanceof HTMLElement &&
+               e.target.id === 'contextMenuContainer')) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }
+
+        onContextMenuContainerClick(e: MouseEvent) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Ignore non-primary button clicks.
+          if (e.button !== 0) {
+            return;
+          }
+
+          if (this.searchboxLayoutMode !== 'Compact') {
+            this.focusInput();
+          }
+        }
+
+        onDeleteTabContext(
+            e: CustomEvent<
+                {uuid: UnguessableToken, fromUserAction?: boolean}>) {
+          this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+        }
+
+        onAddTabContext(e: CustomEvent<{
+          id: number,
+          title: string,
+          url: Url,
+          delayUpload: boolean,
+          origin: TabUploadOrigin,
+        }>) {
+          if (!this.browserTabContextAdded) {
+            recordContextualElementClickedMetric(
+                this.composeboxSource, 'AimPopup', ContextType.TAB);
+            this.browserTabContextAdded = true;
+          }
+          this.addTabContextHandleCallback({
+            tabId: e.detail.id,
+            title: e.detail.title,
+            url: e.detail.url,
+            delayUpload: e.detail.delayUpload,
+            origin: e.detail.origin,
+          });
+        }
+
+        async onContextMenuClosed() {
+          this.contextMenuOpened = false;
+
+          await this.updateComplete;
+          this.focusInput();
+        }
+
+        onContextMenuOpened() {
+          this.browserTabContextAdded = false;
+          this.contextMenuOpened = true;
+          this.refreshTabSuggestions();
+
+          if (this.inputState) {
+            const {allowedInputTypes, disabledInputTypes} = this.inputState;
+            allowedInputTypes.forEach((inputType: InputType) => {
+              if (inputType !== InputType.kBrowserTab &&
+                  !disabledInputTypes.includes(inputType)) {
+                recordInputTypeShown(
+                    inputType, this.composeboxSource, 'AimPopup');
+              }
+            });
+
+            const {allowedTools, disabledTools} = this.inputState;
+            allowedTools.forEach((tool: ToolMode) => {
+              if (!disabledTools.includes(tool)) {
+                recordToolModeShown(tool, this.composeboxSource, 'AimPopup');
+              }
+            });
+
+            const {allowedModels, disabledModels} = this.inputState;
+            allowedModels.forEach((model: ModelMode) => {
+              if (!disabledModels.includes(model)) {
+                recordModelModeShown(model, this.composeboxSource, 'AimPopup');
+              }
+            });
+          }
+        }
+
+        onVoiceSearchButtonClick() {
+          this.inVoiceSearchMode = true;
+          this.animationState = GlowAnimationState.LISTENING;
+          this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
+          // For contextual tasks composebox voice metrics.
+          this.fire('composebox-voice-search-start');
+          this.shadowRoot
+              ?.querySelector<ComposeboxVoiceSearchElement>(
+                  'cr-composebox-voice-search')
+              ?.start();
         }
 
         // =====================================================================
@@ -1199,9 +1322,13 @@ export interface ComposeboxEmbedderMixinInterface extends
   isDraggingFile: boolean;
   enableImageContextualSuggestions: boolean;
   smartComposeEnabled: boolean;
+  smartTabSharingActive: boolean;
   contextMenuDescriptionEnabled: boolean;
   showContextMenuDescription: boolean;
   shouldShowGhostFiles: boolean;
+  showMenuOnClick: boolean;
+  isCanvasQuerySubmitted: boolean;
+  browserTabContextAdded: boolean;
   pendingUploads: Set<UnguessableToken>;
   dragAndDropEnabled: boolean;
   composeboxSource: string;
@@ -1260,8 +1387,24 @@ export interface ComposeboxEmbedderMixinInterface extends
   getActiveElement(): Element|null;
   getPageHandler(): PageHandlerRemote;
   getSearchboxHandler(): SearchboxPageHandlerRemote;
+  addTabContextHandleCallback(
+      tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
 
   // Common event handlers
+  onContextMenuContainerMousedown(e: FocusEvent): void;
+  onContextMenuContainerClick(e: MouseEvent): void;
+  onDeleteTabContext(
+      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>): void;
+  onAddTabContext(e: CustomEvent<{
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+    origin: TabUploadOrigin,
+  }>): void;
+  onContextMenuClosed(): Promise<void>;
+  onContextMenuOpened(): void;
+  onVoiceSearchButtonClick(): void;
   onFileContextAdded(file: ComposeboxFile): void;
   voiceSearchEndCleanup(): void;
   onVoiceSearchFinalResult(e: CustomEvent<string>): void;
@@ -1291,6 +1434,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   onModelClick(e: CustomEvent<{model: ModelMode}>): void;
   onOpenImageUpload(): void;
   onOpenFileUpload(): void;
+  onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>): void;
 
   // Common helper methods
   addToPendingUploads(token: UnguessableToken): void;

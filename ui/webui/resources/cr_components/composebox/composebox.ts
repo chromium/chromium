@@ -30,9 +30,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeShown, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -42,9 +41,8 @@ import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin, VoiceSearchAction} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
-import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
@@ -93,7 +91,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   static override get properties() {
     return {
-      smartTabSharingActive_: {type: Boolean},
       showLensButton: {type: Boolean},
       suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
@@ -103,9 +100,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       },
       expanding_: {
         reflect: true,
-        type: Boolean,
-      },
-      isCanvasQuerySubmitted: {
         type: Boolean,
       },
       /**
@@ -136,7 +130,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       carouselOnTop_: {
         type: Boolean,
       },
-      showMenuOnClick: {type: Boolean},
       entrypointName: {type: String, reflect: true},
       disableCaretColorAnimation: {
         type: Boolean,
@@ -170,7 +163,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor searchboxNextEnabled: boolean = false;
   accessor carouselOnTop_: boolean = false;
-  accessor showMenuOnClick: boolean = true;
   accessor entrypointName: string = '';
   accessor lensButtonDisabled: boolean = false;
 
@@ -182,12 +174,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
   protected accessor isCollapsible: boolean = false;
-  protected accessor smartTabSharingActive_: boolean = false;
   // Whether the composebox is currently expanded. Always true if isCollapsible
   // is false.
   protected accessor expanding_: boolean = false;
   protected accessor isOmniboxInCompactMode_: boolean = false;
-  accessor isCanvasQuerySubmitted: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
   protected pendingAutomaticActiveTabUrl_: string = '';
@@ -203,7 +193,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxListenerIds: number[] = [];
   private resizeObservers_: ResizeObserver[] = [];
   private automaticActiveTab_: ComposeboxFile|null = null;
-  private browserTabContextAdded_: boolean = false;
   protected shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
@@ -296,7 +285,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
     if (smartTabSharingVisible) {
       const {active} = await this.pageHandler_.getSmartTabSharingActive();
-      this.smartTabSharingActive_ = active;
+      this.smartTabSharingActive = active;
     }
 
     this.syncResizeObservers_();
@@ -544,7 +533,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
               file.origin === TabUploadOrigin.CONTEXT_MENU) {
             entrypointAndMenu.openMenuForMultiSelection();
           }
-          this.addTabContextHandleCallback_({
+          this.addTabContextHandleCallback({
             tabId: file.tabId,
             title: file.title,
             url: file.url,
@@ -576,31 +565,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.input.trim().length > 0 || this.files.size > 0 ?
         this.i18n('composeboxCancelButtonTitleInput') :
         this.i18n('composeboxCancelButtonTitle');
-  }
-
-  protected onContextMenuContainerMousedown_(e: FocusEvent) {
-    // Special treatment for the "Tall" layout variants where not clicking on an
-    // inner element should be treated as clicking on a non-focusable area.
-    if (this.searchboxLayoutMode !== 'Compact' &&
-        (e.target instanceof HTMLElement &&
-         e.target.id === 'contextMenuContainer')) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }
-
-  protected onContextMenuContainerClick_(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Ignore non-primary button clicks.
-    if (e.button !== 0) {
-      return;
-    }
-
-    if (this.searchboxLayoutMode !== 'Compact') {
-      this.focusInput();
-    }
   }
 
   private computeShowDropdown_() {
@@ -756,12 +720,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource);
   }
 
-  protected onSmartTabSharingActiveChanged_(e: CustomEvent<{active: boolean}>) {
-    this.smartTabSharingActive_ = e.detail.active;
-    this.pageHandler_.setSmartTabSharingActive(e.detail.active);
-  }
-
-
   // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
@@ -827,7 +785,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // Do not reset above pending states in this async callback since
       // later requests make any older async callback updates irrelevant.
       // Add the `TabInfo` as `ComposeboxFile` in carousel.
-      this.addTabContextHandleCallback_(
+      this.addTabContextHandleCallback(
           {
             tabId: tab.tabId,
             title: tab.title,
@@ -848,33 +806,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
   }
 
-  protected onDeleteTabContext_(
-      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
-    this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
-  }
-
-  protected onAddTabContext_(e: CustomEvent<{
-    id: number,
-    title: string,
-    url: Url,
-    delayUpload: boolean,
-    origin: TabUploadOrigin,
-  }>) {
-    if (!this.browserTabContextAdded_) {
-      recordContextualElementClickedMetric(
-          this.composeboxSource, 'AimPopup', ContextType.TAB);
-      this.browserTabContextAdded_ = true;
-    }
-    this.addTabContextHandleCallback_({
-      tabId: e.detail.id,
-      title: e.detail.title,
-      url: e.detail.url,
-      delayUpload: e.detail.delayUpload,
-      origin: e.detail.origin,
-    } as TabUpload);
-  }
-
-  private async addTabContextHandleCallback_(
+  override async addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false) {
     try {
       const token = await this.searchboxHandler_.addTabContext(
@@ -945,54 +877,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected onSubmitClick_(e: MouseEvent) {
     this.submitQuery(e);
-  }
-
-  protected async onContextMenuClosed_() {
-    this.contextMenuOpened = false;
-
-    await this.updateComplete;
-    this.focusInput();
-  }
-
-  protected onContextMenuOpened_() {
-    this.browserTabContextAdded_ = false;
-    this.contextMenuOpened = true;
-    this.refreshTabSuggestions();
-
-    if (this.inputState) {
-      const {allowedInputTypes, disabledInputTypes} = this.inputState;
-      allowedInputTypes.forEach((inputType: InputType) => {
-        if (inputType !== InputType.kBrowserTab &&
-            !disabledInputTypes.includes(inputType)) {
-          recordInputTypeShown(inputType, this.composeboxSource, 'AimPopup');
-        }
-      });
-
-      const {allowedTools, disabledTools} = this.inputState;
-      allowedTools.forEach((tool: ToolMode) => {
-        if (!disabledTools.includes(tool)) {
-          recordToolModeShown(tool, this.composeboxSource, 'AimPopup');
-        }
-      });
-
-      const {allowedModels, disabledModels} = this.inputState;
-      allowedModels.forEach((model: ModelMode) => {
-        if (!disabledModels.includes(model)) {
-          recordModelModeShown(model, this.composeboxSource, 'AimPopup');
-        }
-      });
-    }
-  }
-
-  protected onVoiceSearchButtonClick_() {
-    this.inVoiceSearchMode = true;
-    this.animationState = GlowAnimationState.LISTENING;
-    this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
-    // For contextual tasks composebox voice metrics.
-    this.fire('composebox-voice-search-start');
-    this.shadowRoot
-        .querySelector<ComposeboxVoiceSearchElement>(
-            'cr-composebox-voice-search')!.start();
   }
 
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
@@ -1326,7 +1210,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   // TODO(crbug.com/486707998): Move this to omnibox composebox.
   private addTabFromAttachment_(tabAttachment: TabAttachment) {
-    this.addTabContextHandleCallback_({
+    this.addTabContextHandleCallback({
       tabId: tabAttachment.tabId,
       title: tabAttachment.title,
       url: tabAttachment.url,
