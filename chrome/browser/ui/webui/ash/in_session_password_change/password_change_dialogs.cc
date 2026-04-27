@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_data_source.h"

@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui/network_logs_message_handler.h"
 #include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/network_ui_resources.h"
 #include "chrome/grit/network_ui_resources_map.h"

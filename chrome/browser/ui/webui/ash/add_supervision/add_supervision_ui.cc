@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/grit/add_supervision_resources.h"
 #include "chrome/grit/add_supervision_resources_map.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"

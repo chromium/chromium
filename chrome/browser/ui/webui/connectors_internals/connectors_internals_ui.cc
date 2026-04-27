@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
 #include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/grit/connectors_internals_resources.h"
 #include "components/grit/connectors_internals_resources_map.h"

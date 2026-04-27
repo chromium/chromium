@@ -10,7 +10,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_config_dialog_resources.h"
 #include "chrome/grit/internet_config_dialog_resources_map.h"
