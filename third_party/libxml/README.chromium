@@ -20,6 +20,9 @@ Modifications:
 - xml-attr-extra.patch: add an `extra` member to struct _xmlAttr.
 - widen-extra-field-in-_xmlNode-to-an-int.patch widen
   the `extra` member in _xmlNode.
+- fix-xmlEscapeText-integer-overflow.patch: Fixes a 32-bit signed integer
+  truncation in xmlEscapeText that can lead to an undersized allocation and
+  heap-buffer-overflow.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:
