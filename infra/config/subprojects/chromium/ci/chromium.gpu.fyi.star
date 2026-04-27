@@ -1919,6 +1919,11 @@ ci.thin_tester(
                     shards = 2,
                 ),
             ),
+            "trace_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -2703,6 +2708,11 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "pixel_skia_gold_gl_passthrough_ganesh_test": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "trace_test": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
                 ),
