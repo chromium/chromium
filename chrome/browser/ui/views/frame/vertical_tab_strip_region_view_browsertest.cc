@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   // Shrink the area a small amount and the preferred width will adjust
   // immediately.
   {
-    const int resize_amount = -10;
+    const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
     ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
 
@@ -205,6 +205,56 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
     ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
     EXPECT_EQ(VerticalTabStripRegionView::kCollapsedWidth,
               region_view()->GetPreferredSize().width());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeSnapsToDefault) {
+  const int default_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
+
+  // 1. Resize smaller within snap distance (-10).
+  {
+    const int resize_amount = -10;
+    region_view()->OnResize(resize_amount, false);
+    EXPECT_EQ(default_width, region_view()->GetPreferredSize().width());
+    EXPECT_EQ(
+        default_width,
+        region_view()->target_collapse_state_for_testing().uncollapsed_width);
+  }
+
+  // 2. Resize larger within snap distance (+10).
+  {
+    const int resize_amount = 10;
+    region_view()->OnResize(resize_amount, false);
+    EXPECT_EQ(default_width, region_view()->GetPreferredSize().width());
+    EXPECT_EQ(
+        default_width,
+        region_view()->target_collapse_state_for_testing().uncollapsed_width);
+  }
+
+  // 3. Resize smaller outside snap distance (-20).
+  {
+    const int resize_amount = -20;
+    region_view()->OnResize(resize_amount, false);
+    EXPECT_EQ(default_width + resize_amount,
+              region_view()->GetPreferredSize().width());
+    EXPECT_EQ(
+        default_width + resize_amount,
+        region_view()->target_collapse_state_for_testing().uncollapsed_width);
+  }
+
+  // Reset to default.
+  region_view()->OnResize(0, true);
+  ASSERT_EQ(default_width, region_view()->GetPreferredSize().width());
+
+  // 4. Resize larger outside snap distance (+20).
+  {
+    const int resize_amount = 20;
+    region_view()->OnResize(resize_amount, false);
+    EXPECT_EQ(default_width + resize_amount,
+              region_view()->GetPreferredSize().width());
+    EXPECT_EQ(
+        default_width + resize_amount,
+        region_view()->target_collapse_state_for_testing().uncollapsed_width);
   }
 }
 
@@ -314,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Adjust the area without finishing resizing. The state controller's
   // uncollapsed width will not change.
   {
-    const int resize_amount = 10;
+    const int resize_amount = 20;
     const int resize_width = initial_width + resize_amount;
     ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
@@ -327,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Adjust the area and finish resizing. The state controller's uncollapsed
   // width will update.
   {
-    const int resize_amount = -10;
+    const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
     ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
@@ -402,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
 
   // Adjust the area without finishing resizing. Nothing should be logged.
   {
-    const int resize_amount = 10;
+    const int resize_amount = 20;
     const int resize_width = initial_width + resize_amount;
     ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);
@@ -418,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
   // Adjust the area and finish resizing. The resize UMA and width histogram
   // will be logged.
   {
-    const int resize_amount = -10;
+    const int resize_amount = -20;
     const int resize_width = initial_width + resize_amount;
     ASSERT_LE(VerticalTabStripRegionView::kUncollapsedMinWidth, resize_width);
     ASSERT_LE(resize_width, VerticalTabStripRegionView::kUncollapsedMaxWidth);

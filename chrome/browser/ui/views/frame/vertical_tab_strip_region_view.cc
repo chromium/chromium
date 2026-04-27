@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -86,6 +87,7 @@ namespace {
 constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
 constexpr int kKeyboardResizeWidth = 50;
+constexpr int kSnapDistance = 15;
 
 // Shadow is used in expand-on-hover mode. Shadow radius and opacity are dynamic
 // and set by the layout.
@@ -945,6 +947,12 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   if (!new_state.collapsed) {
     new_state.uncollapsed_width =
         std::clamp(proposed_width, kUncollapsedMinWidth, kUncollapsedMaxWidth);
+    if (std::abs(new_state.uncollapsed_width -
+                 tabs::kVerticalTabStripDefaultUncollapsedWidth) <
+        kSnapDistance) {
+      new_state.uncollapsed_width =
+          tabs::kVerticalTabStripDefaultUncollapsedWidth;
+    }
     if (done_resizing) {
       // We only want to save the uncollapsed width to the state controller if
       // the user has lifted their mouse, otherwise dragging the resize area to
