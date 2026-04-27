@@ -726,14 +726,13 @@ public class SettingsSearchCoordinator
         KeyboardUtils.showKeyboard(queryEdit);
         setFragmentState(FS_SEARCH);
         mBackActionCallback.setEnabled(true);
-        if (mUseMultiColumn) {
-            // When being restored, MultiColumnTitleUpdater restores the first-visible title index
-            // from the saved bundle. Do not override it.
-            if (!isRestored) {
-                int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
-                mUpdateFirstVisibleTitle.onResult(stackCount + 1);
-            }
-        } else {
+        // When being restored, MultiColumnTitleUpdater restores the first-visible title index
+        // from the saved bundle. Do not override it.
+        if (!isRestored) {
+            int stackCount = getSettingsFragmentManager().getBackStackEntryCount();
+            mUpdateFirstVisibleTitle.onResult(stackCount + 1);
+        }
+        if (!mUseMultiColumn) {
             updateSingleColumnSearchUiWidth();
         }
 
