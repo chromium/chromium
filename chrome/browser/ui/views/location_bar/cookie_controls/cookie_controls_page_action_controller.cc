@@ -208,7 +208,9 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     page_action_controller_->OverrideText(kActionShowCookieControls, label);
   }
 
-  if (!icon_status_.icon_visible || !icon_status_.should_highlight ||
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kUserBypassUxSimplification) ||
+      !icon_status_.icon_visible || !icon_status_.should_highlight ||
       icon_status_.controls_state != CookieControlsState::kBlocked3pc ||
       bubble_delegate_->HasBubble()) {
     return;

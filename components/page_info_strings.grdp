@@ -742,7 +742,7 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the page info bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
     Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the page info third-party cookies subpage explaining the trade-off of allowing third-party cookies for this site." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the page info third-party cookies subpage explaining the trade-off of allowing third-party cookies for this site.">
     Try allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
