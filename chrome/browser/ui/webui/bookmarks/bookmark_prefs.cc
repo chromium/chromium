@@ -22,7 +22,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(side_panel::mojom::SortOrder::kNewest));
   registry->RegisterIntegerPref(
       prefs::kBookmarksViewType,
-      static_cast<int>(side_panel::mojom::ViewType::kExpanded));
+      static_cast<int>(side_panel::mojom::ViewType::kCompact));
 }
 
 }  // namespace bookmarks_webui
