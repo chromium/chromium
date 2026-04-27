@@ -28,32 +28,63 @@ public final class TabBottomSheetUtils {
         return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue();
     }
 
-    // Attach TabBottomSheetManager to WindowAndroid.
-    // This allows TabBottomSheetManager to be retrieved statically.
+    /**
+     * Attach TabBottomSheetManager to WindowAndroid. This allows TabBottomSheetManager to be
+     * retrieved statically.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to attach to.
+     * @param manager The {@link TabBottomSheetManager} to attach.
+     */
     static void attachManagerToWindow(WindowAndroid windowAndroid, TabBottomSheetManager manager) {
         MANAGER_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), manager);
     }
 
-    // Detach TabBottomSheetManager from WindowAndroid.
+    /**
+     * Detach TabBottomSheetManager from WindowAndroid.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to detach from.
+     */
     static void detachManagerFromWindow(WindowAndroid windowAndroid) {
         MANAGER_KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    static @Nullable TabBottomSheetManager getManagerFromWindow(WindowAndroid windowAndroid) {
+    /**
+     * Returns the {@link TabBottomSheetManager} associated with the given {@link WindowAndroid}.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to retrieve the manager from.
+     * @return The {@link TabBottomSheetManager}, or null if not found.
+     */
+    public static @Nullable TabBottomSheetManager getManagerFromWindow(
+            WindowAndroid windowAndroid) {
         return MANAGER_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    // Attach CoBrowseViewFactory to WindowAndroid.
-    // This allows CoBrowseViewFactory to be retrieved statically.
+    /**
+     * Attach CoBrowseViewFactory to WindowAndroid. This allows CoBrowseViewFactory to be retrieved
+     * statically.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to attach to.
+     * @param factory The {@link CoBrowseViewFactory} to attach.
+     */
     static void attachFactoryToWindow(WindowAndroid windowAndroid, CoBrowseViewFactory factory) {
         FACTORY_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), factory);
     }
 
-    // Detach CoBrowseViewFactory from WindowAndroid.
+    /**
+     * Detach CoBrowseViewFactory from WindowAndroid.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to detach from.
+     */
     static void detachFactoryFromWindow(WindowAndroid windowAndroid) {
         FACTORY_KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
+    /**
+     * Returns the {@link CoBrowseViewFactory} associated with the given {@link WindowAndroid}.
+     *
+     * @param windowAndroid The {@link WindowAndroid} to retrieve the factory from.
+     * @return The {@link CoBrowseViewFactory}, or null if not found.
+     */
     static @Nullable CoBrowseViewFactory getFactoryFromWindow(WindowAndroid windowAndroid) {
         return FACTORY_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

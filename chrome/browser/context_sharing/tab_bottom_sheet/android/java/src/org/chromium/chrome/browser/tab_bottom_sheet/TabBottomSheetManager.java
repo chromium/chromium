@@ -58,6 +58,11 @@ public interface TabBottomSheetManager extends Destroyable {
     boolean isSheetShowing();
 
     /**
+     * @return Whether the bottom sheet is currently in peek mode.
+     */
+    boolean isInPeekMode();
+
+    /**
      * Sets the supplier for the active playback tab from ReadAloud.
      *
      * @param activePlaybackTabSupplier The supplier.

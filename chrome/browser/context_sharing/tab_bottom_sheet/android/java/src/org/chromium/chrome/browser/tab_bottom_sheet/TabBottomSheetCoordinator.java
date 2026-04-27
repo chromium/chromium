@@ -301,6 +301,10 @@ public class TabBottomSheetCoordinator {
         return mIsShowingTabBottomSheet;
     }
 
+    boolean isInPeekMode() {
+        return mBottomSheetController.getSheetState() == BottomSheetController.SheetState.PEEK;
+    }
+
     // Cleanup methods.
     void destroy() {
         if (mIsShowingTabBottomSheet && mSheetContent != null) {

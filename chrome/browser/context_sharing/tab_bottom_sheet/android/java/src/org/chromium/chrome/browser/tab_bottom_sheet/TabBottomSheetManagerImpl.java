@@ -259,6 +259,13 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     }
 
     @Override
+    public boolean isInPeekMode() {
+        return mTabBottomSheetCoordinator != null
+                && mTabBottomSheetCoordinator.isSheetShowing()
+                && mTabBottomSheetCoordinator.isInPeekMode();
+    }
+
+    @Override
     public void setReadAloudActivePlaybackTabSupplier(
             NullableObservableSupplier<Tab> activePlaybackTabSupplier) {
         assert mActivePlaybackTabSupplier == null;

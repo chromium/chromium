@@ -2567,6 +2567,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
+        if (mTabBottomSheetManager != null && mTabBottomSheetManager.isInPeekMode()) {
+            mTabBottomSheetManager.setSheetExpanded(true);
+            return true;
+        }
+
         Profile profile =
                 mTabModelSelectorSupplier.asNonNull().get().getCurrentModel().getProfile();
         assert profile != null;
