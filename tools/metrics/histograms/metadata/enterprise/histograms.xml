@@ -2814,7 +2814,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.IOS.WebState.DataControls.Clipboard.{Action}.WarningBypassed"
-    enum="Boolean" expires_after="2026-04-30">
+    enum="Boolean" expires_after="2026-12-29">
   <owner>eic@google.com</owner>
   <owner>bling-enterprise@google.com</owner>
   <summary>
