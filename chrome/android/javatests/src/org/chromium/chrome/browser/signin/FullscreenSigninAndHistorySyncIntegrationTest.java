@@ -82,7 +82,6 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.policy.test.annotations.Policies.Add;
 import org.chromium.components.policy.test.annotations.Policies.Item;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -196,7 +195,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         accountConsistencyHistogram.assertExpected();
         accountStartedHistogram.assertExpected();
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
@@ -267,7 +266,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         verify(mHistorySyncHelperMock, never()).recordHistorySyncNotShown(anyInt());
 
         // Verify that the user is signed-out.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -474,7 +473,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         verify(mHistorySyncHelperMock, never()).recordHistorySyncNotShown(anyInt());
 
         // Verify that the user is not signed-out.
-        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
         historySyncHistogramWatcher.assertExpected();
     }
 
@@ -622,7 +621,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // the user was signed out.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -661,7 +660,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // history sync was not enabled.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
-        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -70,14 +69,14 @@ public final class SigninTestUtil {
     }
 
     /**
-     * @return The primary account of the requested {@link ConsentLevel}.
+     * @return The primary account.
      */
-    static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
+    static CoreAccountInfo getPrimaryAccount() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return IdentityServicesProvider.get()
                             .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(consentLevel);
+                            .getPrimaryAccountInfo();
                 });
     }
 
@@ -129,7 +128,7 @@ public final class SigninTestUtil {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
                 });
     }
 
@@ -146,7 +145,7 @@ public final class SigninTestUtil {
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.turnOnSyncForTesting(
                             coreAccountInfo, SigninAccessPoint.WEB_SIGNIN);
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
                 });
     }
 
@@ -191,7 +190,7 @@ public final class SigninTestUtil {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount());
                 });
         SyncTestUtil.waitForHistorySyncEnabled();
     }

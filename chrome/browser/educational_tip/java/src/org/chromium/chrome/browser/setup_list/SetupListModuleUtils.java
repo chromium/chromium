@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserStateProvider;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -144,8 +143,7 @@ public class SetupListModuleUtils {
             case ModuleType.SIGN_IN_PROMO:
                 IdentityManager identityManager =
                         IdentityServicesProvider.get().getIdentityManager(profile);
-                return identityManager != null
-                        && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+                return identityManager != null && identityManager.hasPrimaryAccount();
             case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
                 return new SafeBrowsingBridge(profile).getSafeBrowsingState()
                         == SafeBrowsingState.ENHANCED_PROTECTION;

@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -210,7 +209,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!identityManager.hasPrimaryAccount()) {
             // Hide promo for signed-out users.
             return PromoState.NONE;
         }

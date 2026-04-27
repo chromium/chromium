@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -144,8 +143,7 @@ public class MismatchNotificationCheckerUnitTest {
             when(mTracker.acquireDisplayLock()).thenReturn(mIphDisplayLock);
 
             mIdentityManager = mock(IdentityManager.class);
-            when(mIdentityManager.getPrimaryAccountInfo(anyInt()))
-                    .thenReturn(TestAccounts.ACCOUNT1);
+            when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
             mAppData.showCount = INIT_SHOW_COUNT;
             mAppData.userActCount = INIT_USER_ACT_COUNT;
@@ -183,7 +181,7 @@ public class MismatchNotificationCheckerUnitTest {
         }
 
         public MismatchNotificationCheckerTester signOut() {
-            when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(null);
+            when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(null);
             return this;
         }
 

@@ -199,7 +199,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo();
         doAnswer(
                         (invocation) -> {
                             Runnable callback = invocation.getArgument(1);
@@ -233,7 +233,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo();
         doAnswer(
                         (invocation) -> {
                             Runnable callback = invocation.getArgument(1);
@@ -267,7 +267,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo();
         doAnswer(
                         (invocation) -> {
                             Runnable callback = invocation.getArgument(0);
@@ -302,7 +302,7 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
-        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(null).when(mIdentityManager).getPrimaryAccountInfo();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

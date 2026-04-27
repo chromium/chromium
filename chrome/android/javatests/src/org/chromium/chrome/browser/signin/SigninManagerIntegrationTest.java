@@ -42,7 +42,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -168,9 +167,7 @@ public class SigninManagerIntegrationTest {
                             List.of(TestAccounts.ACCOUNT1),
                             mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
                 });
-        assertNotNull(
-                "primary account shoudld still be set",
-                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull("primary account shoudld still be set", mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -329,7 +326,7 @@ public class SigninManagerIntegrationTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertNull(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                    assertNull(mIdentityManager.getPrimaryAccountInfo());
                     assertNull(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail());
                     Assert.assertEquals(
@@ -379,7 +376,7 @@ public class SigninManagerIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail(),
+                            mIdentityManager.getPrimaryAccountInfo().getEmail(),
                             renamedAccount.getEmail());
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
@@ -395,13 +392,13 @@ public class SigninManagerIntegrationTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount());
 
                     // Run test.
                     mSigninManager.signOut(SignoutReason.TEST);
 
                     // Check the account is signed out
-                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount());
                 });
 
         // Wait for the operation to have completed.
@@ -415,7 +412,7 @@ public class SigninManagerIntegrationTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         SigninTestUtil.signinAndWaitForPrefsCommit(TestAccounts.ACCOUNT1);
 
-        Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertTrue(mIdentityManager.hasPrimaryAccount());
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onSignedIn();
     }
@@ -432,7 +429,7 @@ public class SigninManagerIntegrationTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount());
                     Assert.assertFalse(mAccountManagerFacade.getAccounts().isFulfilled());
                     Assert.assertEquals(
                             List.of(TestAccounts.ACCOUNT1),
@@ -442,7 +439,7 @@ public class SigninManagerIntegrationTest {
                     mSigninManager.signOut(SignoutReason.TEST);
 
                     // Check the account is signed out
-                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount());
                 });
 
         // Wait for the operation to have completed.
@@ -453,7 +450,7 @@ public class SigninManagerIntegrationTest {
         blocker.close();
         // Check that the account is still signed out but the account is available in identity
         // manager.
-        Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertFalse(mIdentityManager.hasPrimaryAccount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(

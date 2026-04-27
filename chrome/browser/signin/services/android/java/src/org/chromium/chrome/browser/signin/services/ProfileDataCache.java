@@ -38,7 +38,6 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
@@ -422,7 +421,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
     }
 
     private @Nullable AccountInfo getPrimaryAccountInfo() {
-        var primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        var primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             return null;
         }

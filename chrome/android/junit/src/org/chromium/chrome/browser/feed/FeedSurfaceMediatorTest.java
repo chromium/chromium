@@ -107,7 +107,7 @@ public class FeedSurfaceMediatorTest {
                 .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mFeedSurfaceCoordinator.isActive()).thenReturn(true);
         when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
         when(mFeedSurfaceCoordinator.createFeedStream(

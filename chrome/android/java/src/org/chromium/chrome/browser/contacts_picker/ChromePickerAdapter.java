@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
@@ -117,8 +116,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
      */
     @Override
     protected @Nullable String findOwnerEmail() {
-        CoreAccountInfo signedInAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo signedInAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (signedInAccountInfo != null) {
             return signedInAccountInfo.getEmail();
         }

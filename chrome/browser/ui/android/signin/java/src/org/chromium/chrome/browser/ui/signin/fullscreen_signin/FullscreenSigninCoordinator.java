@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -167,8 +166,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
             // If the sign-in occurred through this promo, then it is already being handled.
             return;
         }
-        if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                == PrimaryAccountChangeEvent.Type.SET) {
+        if (eventDetails.getEventTypeFor() == PrimaryAccountChangeEvent.Type.SET) {
             mDelegate.advanceToNextPage();
         }
     }

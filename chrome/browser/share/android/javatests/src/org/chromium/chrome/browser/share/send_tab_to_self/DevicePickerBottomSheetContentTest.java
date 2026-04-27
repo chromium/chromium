@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.WebContents;
@@ -72,8 +71,7 @@ public class DevicePickerBottomSheetContentTest {
                 CoreAccountInfo.createFromEmailAndGaiaId("test@example.com", new GaiaId("test_id"));
         mAccountInfo = new AccountInfo.Builder(mCoreAccountInfo).build();
 
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mCoreAccountInfo);
         when(mIdentityManager.findExtendedAccountInfoByAccountId(any())).thenReturn(mAccountInfo);
 
         mContext = Robolectric.buildActivity(Activity.class).create().get();

@@ -42,7 +42,6 @@ import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
@@ -90,7 +89,7 @@ public abstract class FirstRunFlowSequencer {
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(profile);
             assumeNonNull(identityManager);
-            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+            return identityManager.hasPrimaryAccount();
         }
 
         /** @return true if the Search Engine promo page should be shown. */

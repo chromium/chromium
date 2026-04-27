@@ -87,7 +87,6 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -324,7 +323,7 @@ public class CollaborationIntegrationTest {
         onViewWaiting(withId(R.id.button_secondary)).perform(click());
 
         // The user is signed out.
-        assertNull(mActivityTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mActivityTestRule.getSigninTestRule().getPrimaryAccount());
     }
 
     @Test

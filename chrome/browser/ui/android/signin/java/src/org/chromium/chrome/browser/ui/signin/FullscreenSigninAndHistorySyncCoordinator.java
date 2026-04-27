@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -371,7 +370,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+        return identityManager.hasPrimaryAccount();
     }
 
     private void showChildView(@ChildView int child) {

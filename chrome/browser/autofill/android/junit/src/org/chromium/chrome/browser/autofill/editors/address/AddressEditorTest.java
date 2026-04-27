@@ -244,7 +244,7 @@ public class AddressEditorTest {
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
 
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         SyncServiceFactory.setInstanceForTesting(mSyncService);

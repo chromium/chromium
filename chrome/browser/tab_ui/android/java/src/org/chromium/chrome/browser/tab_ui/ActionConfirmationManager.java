@@ -25,7 +25,6 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -284,10 +283,10 @@ public class ActionConfirmationManager {
 
     private @Nullable CoreAccountInfo getCoreAccountInfo() {
         IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
-        @Nullable
-        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
+        @Nullable IdentityManager identityManager =
+                identityServicesProvider.getIdentityManager(mProfile);
         if (identityManager != null) {
-            return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            return identityManager.getPrimaryAccountInfo();
         } else {
             return null;
         }

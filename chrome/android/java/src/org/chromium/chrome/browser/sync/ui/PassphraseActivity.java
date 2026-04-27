@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
@@ -68,8 +67,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
         super.onResume();
         assumeNonNull(mIdentityManager);
         Account account =
-                CoreAccountInfo.getAndroidAccountFrom(
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                CoreAccountInfo.getAndroidAccountFrom(mIdentityManager.getPrimaryAccountInfo());
         if (account == null) {
             finish();
             return;

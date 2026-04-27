@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ButtonCompat;
@@ -61,7 +60,7 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                 (View v) -> {
                     assert !mProfile.isChild();
                     if (!assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile))
-                            .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                            .hasPrimaryAccount()) {
                         // Clearing the primary account is happening asynchronously, so it is
                         // possible that a sign-out happened in the meantime.
                         return;

@@ -57,7 +57,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -97,7 +96,7 @@ public class TipsPromoCoordinatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         mTipsPromoCoordinator =
                 new TipsPromoCoordinator(
                         mActivity,
@@ -420,7 +419,7 @@ public class TipsPromoCoordinatorUnitTest {
     @SmallTest
     @Test
     public void testShowBottomSheet_Signin_UserAlreadySignedIn() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
 
         setUpTipsPromoCoordinator(TipsNotificationsFeatureType.SIGNIN);
         mTipsPromoCoordinator.showBottomSheet();

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.TestActivity;
@@ -107,8 +106,8 @@ public class SafetyHubAccountPasswordsDataSourceTest {
     }
 
     public void mockSignedInState(boolean isSignedIn) {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(isSignedIn);
+        when(mIdentityManager.getPrimaryAccountInfo())
                 .thenReturn(
                         isSignedIn
                                 ? CoreAccountInfo.createFromEmailAndGaiaId(

@@ -108,7 +108,7 @@ public class BookmarkUtilsTest {
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo();
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(false).when(mProfile).isOffTheRecord();
 

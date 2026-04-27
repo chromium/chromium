@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -257,7 +256,7 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (identityManager.hasPrimaryAccount()) {
             return PromoState.ACCOUNT_SETTINGS;
         }
 

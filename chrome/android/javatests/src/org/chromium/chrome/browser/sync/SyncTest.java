@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.PassphraseType;
@@ -82,11 +81,11 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testStopAndStartSync() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount());
 
         // Signing out should disable sync.
         mSyncTestRule.signOut();
-        Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSyncTestRule.getPrimaryAccount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -95,7 +94,7 @@ public class SyncTest {
                 });
 
         accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -176,7 +175,7 @@ public class SyncTest {
     @Feature({"Sync"})
     public void testGetLocalDataDescription() throws Exception {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
-        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount());
 
         CallbackHelper callbackHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(

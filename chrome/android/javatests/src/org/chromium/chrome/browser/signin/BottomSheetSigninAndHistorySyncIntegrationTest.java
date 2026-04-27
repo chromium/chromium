@@ -100,7 +100,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -253,7 +252,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 withText(R.string.signin_account_picker_bottom_sheet_error_title),
                 ViewElement.rootSpecOption(RootSpec.anyRoot()));
         verify(mDelegate, never()).onFlowComplete(any());
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -447,7 +446,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .check(matches(allOf(isDisplayed(), withText(containsString(expectedEmail)))));
 
         acceptHistorySyncAndVerifyFlowCompletion(/* hasSignedIn= */ false);
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -467,7 +466,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .check(matches(allOf(isDisplayed(), withText(containsString(expectedEmail)))));
 
         acceptHistorySyncAndVerifyFlowCompletion(/* hasSignedIn= */ false);
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -501,7 +500,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         // Should signout on decline.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -538,7 +537,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         // Should signout on decline.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -566,7 +565,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         // Should signout on decline.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -596,7 +595,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         // Should signout on decline.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -649,7 +648,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         // Should signout on decline.
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -852,7 +851,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         Espresso.pressBack();
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         assertFalse(SyncTestUtil.isBookmarksAndReadingListEnabled());
     }
@@ -1053,7 +1052,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         Espresso.pressBack();
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
@@ -1075,7 +1074,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         Espresso.pressBack();
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
@@ -1089,7 +1088,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 HistorySyncConfig.OptInMode.NONE);
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
@@ -1110,7 +1109,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         Espresso.pressBack();
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
@@ -1158,7 +1157,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         withId(R.id.account_picker_continue_as_button),
                         withParent(withId(R.id.account_picker_state_no_account)),
                         isCompletelyDisplayed()));
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
         addAccountStateWatcher.assertExpected();
     }
@@ -1258,7 +1257,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .onFlowComplete(eq(Result.aborted()));
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -1415,7 +1414,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         verify(mDelegate, never()).onFlowComplete(any());
 
         // Verify that the user remains signed in (current behavior).
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -1493,7 +1492,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .onFlowComplete(eq(Result.aborted()));
 
         // Verify that the user remains signed in (current behavior).
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     private void launchSeamlessSigninAndVerifySignedIn(

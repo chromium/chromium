@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -118,7 +117,7 @@ public class FirstRunFlowSequencerTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(profile))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
 
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
@@ -237,7 +236,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     public void testFlowShowHistorySyncPageWhenUserIsSignedIn() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -261,7 +260,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowUserIsSignedIn_historySyncDisabledByPolicy() {
         when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -286,7 +285,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowUserIsSignedIn_userAlreadySyncsHistory() {
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(

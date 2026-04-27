@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -36,7 +35,7 @@ class PrivacyGuideUtils {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+        return identityManager.hasPrimaryAccount();
     }
 
     static boolean isAdTopicsEnabled(Profile profile) {

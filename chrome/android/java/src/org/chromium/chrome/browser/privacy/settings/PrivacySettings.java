@@ -75,7 +75,6 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
 import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -374,7 +373,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     }
                 };
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                        .getPrimaryAccountInfo()
                 == null) {
             // User is signed out, show the string with one link to "Google Services".
             return SpanApplier.applySpans(

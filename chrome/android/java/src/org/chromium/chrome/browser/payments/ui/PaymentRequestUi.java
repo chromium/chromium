@@ -55,7 +55,6 @@ import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -1212,7 +1211,7 @@ public class PaymentRequestUi
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
-        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo info = identityManager.getPrimaryAccountInfo();
         return CoreAccountInfo.getEmailFrom(info);
     }
 

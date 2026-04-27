@@ -1633,7 +1633,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
 
@@ -1652,7 +1652,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
 

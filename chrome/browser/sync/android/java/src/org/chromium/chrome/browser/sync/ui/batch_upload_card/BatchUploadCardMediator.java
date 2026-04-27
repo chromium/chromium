@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoor
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
@@ -172,8 +171,7 @@ class BatchUploadCardMediator
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         assumeNonNull(syncService);
         syncService.triggerLocalDataMigration(types);
-        CoreAccountInfo coreAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo coreAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         assumeNonNull(coreAccountInfo);
         // TODO(crbug.com/354922852): Handle accounts with non-displayable email address.
         String snackbarMessage =
@@ -239,7 +237,7 @@ class BatchUploadCardMediator
     }
 
     private void setupBatchUploadCardPropertyModel() {
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
         // setupBatchUploadCardView() is called asynchronously through updateBatchUploadCard(), so
         // it could be called while there is no primary account.
         if (accountInfo == null) {

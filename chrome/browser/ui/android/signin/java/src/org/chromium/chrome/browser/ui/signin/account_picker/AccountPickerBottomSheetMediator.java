@@ -35,7 +35,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -677,7 +676,7 @@ public class AccountPickerBottomSheetMediator
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
 
-        if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (mIdentityManager.hasPrimaryAccount()) {
             // Signout before sign-in is from web sign-in traffic (crbug.com/435381574)
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED);
         }

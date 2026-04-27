@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -45,12 +44,11 @@ abstract class QuickDeleteDelegate {
 
     /**
      * @param {@link Profile} from which to query the signed-in status.
-     *
      * @return A boolean indicating whether the user is signed in or not.
      */
     static boolean isSignedIn(Profile profile) {
         IdentityManager manager = IdentityServicesProvider.get().getIdentityManager(profile);
-        return assumeNonNull(manager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        return assumeNonNull(manager).hasPrimaryAccount();
     }
 
     /**

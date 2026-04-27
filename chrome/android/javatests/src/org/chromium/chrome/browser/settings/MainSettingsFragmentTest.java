@@ -137,7 +137,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -379,7 +378,7 @@ public class MainSettingsFragmentTest {
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.sign_out)).perform(click());
-        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsActivityTestRule.getActivity();
         final String expectedSnackbarMessage =
@@ -409,7 +408,7 @@ public class MainSettingsFragmentTest {
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.sign_out)).perform(click());
-        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsActivityTestRule.getActivity();
         final String expectedSnackbarMessage =

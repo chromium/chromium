@@ -57,7 +57,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -189,7 +188,7 @@ public class TipsPromoCoordinator {
 
         mIsUserSignedIn =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                        .hasPrimaryAccount();
 
         // Fire an event for the original setup.
         mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());

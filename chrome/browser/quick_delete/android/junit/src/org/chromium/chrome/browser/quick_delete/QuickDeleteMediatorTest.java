@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -67,7 +66,7 @@ public class QuickDeleteMediatorTest {
     }
 
     private void setSignedInStatus(boolean isSignedIn) {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(isSignedIn);
     }
 
     @Test

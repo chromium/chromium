@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -104,7 +103,7 @@ public class BookmarkSaveFlowTest {
 
         // Setup mocks.
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
-        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

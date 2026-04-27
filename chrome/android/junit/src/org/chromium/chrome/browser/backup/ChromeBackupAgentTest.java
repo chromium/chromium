@@ -181,7 +181,7 @@ public class ChromeBackupAgentTest {
 
         editor.putBoolean(SHARED_PREF_NOT_BACKED_UP, false);
 
-        doReturn(mAccountInfo).when(mIdentityManagerMock).getPrimaryAccountInfo(anyInt());
+        doReturn(mAccountInfo).when(mIdentityManagerMock).getPrimaryAccountInfo();
         editor.apply();
     }
 
@@ -887,7 +887,7 @@ public class ChromeBackupAgentTest {
                         /* hasSignedInUser= */ true,
                         /* hasAccountSettings= */ true);
         mAccountManagerTestRule.addAccount(mAccountInfo);
-        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(anyInt());
+        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount();
 
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(

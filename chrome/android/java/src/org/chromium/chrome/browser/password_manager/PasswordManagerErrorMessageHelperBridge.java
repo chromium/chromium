@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
@@ -65,7 +64,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         // It is possible that the account is removed from Chrome between the password manager
         // calling the Google Play Services backend and Chrome receiving the reply. In that
         // case, the error is no longer relevant/fixable.
-        if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) return false;
+        if (identityManager.getPrimaryAccountInfo() == null) return false;
 
         PrefService prefService = UserPrefs.get(profile);
         long lastShownTimestamp =
@@ -95,8 +94,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assert identityManager != null : "Regular profile should have an IdentityManager";
-        final CoreAccountInfo primaryAccountInfo =
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final CoreAccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
         // If the account has been removed before calling this method, there are no credentials to
         // update.
         if (primaryAccountInfo == null) return;

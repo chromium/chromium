@@ -48,7 +48,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingSource;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /** Tests family link controls are reflected in UI */
 @DoNotBatch(
@@ -86,7 +85,7 @@ public class FamilyLinkControlsTest {
                         IdentityServicesProvider.get()
                                 .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                 .getIdentityManager()
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN));
+                                .hasPrimaryAccount());
     }
 
     @Test

@@ -257,7 +257,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncController;
@@ -638,8 +637,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     IdentityManager identityManager =
                             IdentityServicesProvider.get().getIdentityManager(profile);
                     assumeNonNull(identityManager);
-                    CoreAccountInfo primaryAccountInfo =
-                            identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                    CoreAccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
                     assert primaryAccountInfo != null;
                     AccountManagerFacadeProvider.getInstance()
                             .updateCredentials(primaryAccountInfo, mActivity, successCallback);

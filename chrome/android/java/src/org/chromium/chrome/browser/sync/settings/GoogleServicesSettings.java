@@ -48,7 +48,6 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -203,7 +202,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
             IdentityManager identityManager =
                     assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()));
             boolean shouldSignUserOut =
-                    identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) && !((boolean) newValue);
+                    identityManager.hasPrimaryAccount() && !((boolean) newValue);
             if (!shouldSignUserOut) {
                 mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, (boolean) newValue);
                 return true;

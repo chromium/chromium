@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.plus_addresses.PlusAddressesMetricsRecorder;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -59,8 +58,7 @@ public class AutofillFallbackSurfaceLauncher {
             return;
         }
 
-        @Nullable CoreAccountInfo accountInfo =
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        @Nullable CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
         if (accountInfo == null) {
             // Signed out users should not be able to open the plus address management UI. Early
             // return if account information is not available for whatever reason.

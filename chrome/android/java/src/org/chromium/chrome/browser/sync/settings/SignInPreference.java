@@ -45,7 +45,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -180,7 +179,7 @@ public class SignInPreference extends Preference
     private static @Nullable CoreAccountInfo getAccountInfo(Profile profile) {
         var identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        return identityManager.getPrimaryAccountInfo();
     }
 
     private void setupSigninDisabledByPolicy() {

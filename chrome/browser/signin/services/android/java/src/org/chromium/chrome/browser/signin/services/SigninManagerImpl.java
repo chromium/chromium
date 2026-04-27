@@ -40,7 +40,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinder;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinderOutcome;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
@@ -145,8 +144,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 && (didAccountFetchSucceed() || !accountsPromise.getResult().isEmpty())) {
             seedThenReloadAllAccountsFromSystem(
                     mAccountManagerFacade.getAccounts().getResult(),
-                    CoreAccountInfo.getIdFrom(
-                            identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                    CoreAccountInfo.getIdFrom(identityManager.getPrimaryAccountInfo()));
         }
         mPrefChangeRegistrar = new PrefChangeRegistrar(mPrefService);
         mPrefChangeRegistrar.addObserver(Pref.SIGNIN_ALLOWED, this::notifySignInAllowedChanged);
@@ -176,8 +174,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             return;
         }
 
-        @Nullable CoreAccountInfo primaryAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        @Nullable CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             seedThenReloadAllAccountsFromSystem(accounts, null);
             return;
@@ -204,7 +201,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      * to null in case the user is signed out.
      */
     private void maybeUpdateLegacyPrimaryAccountEmail() {
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (Objects.equals(
                 CoreAccountInfo.getEmailFrom(accountInfo),
                 SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {
@@ -228,7 +225,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     public boolean isSigninAllowed() {
         return mSignInState == null
                 && mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)
-                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
+                && mIdentityManager.getPrimaryAccountInfo() == null
                 && isSigninSupported(/* requireUpdatedPlayServices= */ false);
     }
 
@@ -236,7 +233,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     public boolean isSignOutAllowed() {
         return mSignOutState == null
                 && mSignInState == null
-                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
+                && mIdentityManager.getPrimaryAccountInfo() != null
                 && mIdentityManager.isClearPrimaryAccountAllowed();
     }
 
@@ -290,8 +287,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @Override
     public void turnOnSyncForTesting(
             CoreAccountInfo coreAccountInfo, @SigninAccessPoint int accessPoint) {
-        CoreAccountInfo primaryAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         assert primaryAccountInfo != null && primaryAccountInfo.equals(coreAccountInfo)
                 : "Must be signed-in to turn on sync ";
         @PrimaryAccountError
@@ -315,7 +311,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                                     + "  Signed-in account: %s",
                             mSignInState,
                             mPrefService.getBoolean(Pref.SIGNIN_ALLOWED),
-                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                            mIdentityManager.getPrimaryAccountInfo()));
         }
 
         // The mSignInState must be updated prior to the async processing below, as this indicates
@@ -363,8 +359,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      */
     private void finishSignInAfterPolicyEnforced() {
         assert mSignInState != null : "SigninState shouldn't be null!";
-        assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                : "The user should not be already signed in";
+        assert !mIdentityManager.hasPrimaryAccount() : "The user should not be already signed in";
 
         // Retain the sign-in callback since pref commit callback will be called after sign-in is
         // considered completed and sign-in state is reset.
@@ -373,7 +368,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         int primaryAccountError =
                 mIdentityMutator.setPrimaryAccount(
                         mSignInState.mCoreAccountInfo.getId(),
-                        ConsentLevel.SIGNIN,
                         mSignInState.getAccessPoint(),
                         () -> {
                             Log.d(TAG, "Sign-in native prefs written.");

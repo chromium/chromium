@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
@@ -164,7 +163,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     /** Set up account data to be shown by the UI. */
     private void setUpAccountData(AccountInfo account) {
         // Set up account data to be shown by the UI.
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByAccountId(account.getId()))
                 .thenReturn(account);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);

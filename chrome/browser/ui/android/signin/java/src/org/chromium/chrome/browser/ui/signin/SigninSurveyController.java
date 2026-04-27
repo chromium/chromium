@@ -34,7 +34,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -272,7 +271,7 @@ public class SigninSurveyController implements Destroyable {
         psd.put("Number of Google Accounts", String.valueOf(numberOfAccounts));
         boolean isSignedIn =
                 assertNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile))
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                        .hasPrimaryAccount();
         psd.put("Sign-in Status", isSignedIn ? "Signed In" : "Signed Out");
         return psd;
     }

@@ -56,7 +56,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -697,7 +696,7 @@ public class FullscreenSigninMediator
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager == null) return null;
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        return identityManager.getPrimaryAccountInfo();
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
@@ -728,7 +727,7 @@ public class FullscreenSigninMediator
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
         Profile profile = assumeNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .hasPrimaryAccount()) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
             Runnable signOutCallback =
                     () -> {

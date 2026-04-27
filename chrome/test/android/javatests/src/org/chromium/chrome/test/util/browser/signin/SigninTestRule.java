@@ -27,7 +27,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -224,7 +223,7 @@ public class SigninTestRule implements TestRule {
                     Criteria.checkThat(
                             IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                                    .getPrimaryAccountInfo(),
                             is(coreAccountInfo));
                 });
         mIsSignedIn = true;
@@ -257,10 +256,10 @@ public class SigninTestRule implements TestRule {
     }
 
     /**
-     * @return The primary account of the requested {@link ConsentLevel}.
+     * @return The primary account.
      */
-    public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return SigninTestUtil.getPrimaryAccount(consentLevel);
+    public CoreAccountInfo getPrimaryAccount() {
+        return SigninTestUtil.getPrimaryAccount();
     }
 
     /** Sign out from the current account. */

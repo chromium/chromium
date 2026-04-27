@@ -192,7 +192,7 @@ public class AddressEditorRenderTest {
                     IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
                     when(mIdentityServicesProvider.getIdentityManager(mProfile))
                             .thenReturn(mIdentityManager);
-                    when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+                    when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
                 });
 
         doAnswer(

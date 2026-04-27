@@ -63,7 +63,6 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
@@ -310,8 +309,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     /** IdentityManager.Observer implementation. */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                == PrimaryAccountChangeEvent.Type.CLEARED) {
+        if (eventDetails.getEventTypeFor() == PrimaryAccountChangeEvent.Type.CLEARED) {
             finishCurrentSettings();
         }
     }
@@ -337,7 +335,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 (CentralAccountCardPreference) findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
         IdentityManager identityManager = getIdentityManager(profile);
         centralAccountCardPreference.initialize(
-                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)),
+                assumeNonNull(identityManager.getPrimaryAccountInfo()),
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                         getContext(), identityManager));
     }
@@ -453,8 +451,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      */
     private void updateSyncPreferences() {
         String signedInAccountName =
-                CoreAccountInfo.getEmailFrom(
-                        getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                CoreAccountInfo.getEmailFrom(getIdentityManager().getPrimaryAccountInfo());
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
             finishCurrentSettings();
@@ -690,8 +687,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (mSyncService.isPassphraseRequiredForPreferredDataTypes()) {
             displayPassphraseDialog();
         } else if (mSyncService.isTrustedVaultKeyRequired()) {
-            CoreAccountInfo primaryAccountInfo =
-                    getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            CoreAccountInfo primaryAccountInfo = getIdentityManager().getPrimaryAccountInfo();
             if (primaryAccountInfo != null) {
                 SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
                         this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
@@ -785,8 +781,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void onErrorCardClicked(@UserActionableError int error) {
-        final CoreAccountInfo primaryAccountInfo =
-                getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final CoreAccountInfo primaryAccountInfo = getIdentityManager().getPrimaryAccountInfo();
         assert primaryAccountInfo != null;
 
         switch (error) {

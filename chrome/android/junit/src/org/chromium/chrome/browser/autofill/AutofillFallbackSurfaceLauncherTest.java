@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -160,7 +159,7 @@ public class AutofillFallbackSurfaceLauncherTest {
         CoreAccountInfo accountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(
                         "test@gmail.com", new GaiaId("testGaiaId"));
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(accountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
 
         AutofillFallbackSurfaceLauncher.openManagePlusAddresses(mActivity, mProfile);
 

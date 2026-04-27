@@ -50,7 +50,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -103,7 +102,7 @@ public class EducationalTipModuleBuilderUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
         mModuleBuilder =

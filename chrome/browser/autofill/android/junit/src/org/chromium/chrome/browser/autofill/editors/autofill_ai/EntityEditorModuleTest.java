@@ -527,7 +527,7 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testWalletEntitySourceNotice() {
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
 
         String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
@@ -548,7 +548,7 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testWalletEntitySourceNotice_ClickLink() {
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
@@ -561,7 +561,7 @@ public class EntityEditorModuleTest {
     @Test
     @SmallTest
     public void testPrivateWalletEntitySourceNotice_ClickLink() {
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(PRIVATE_WALLET_PASSPORT);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();

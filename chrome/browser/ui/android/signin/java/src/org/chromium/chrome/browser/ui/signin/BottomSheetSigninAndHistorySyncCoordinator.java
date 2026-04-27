@@ -49,7 +49,6 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -616,7 +615,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(assertNonNull(mProfile));
         assumeNonNull(identityManager);
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (identityManager.hasPrimaryAccount()) {
             maybeShowHistoryOptInDialog();
             return;
         }

@@ -50,12 +50,9 @@ public class IdentityMutator {
      *   <li>the account username is allowed by policy,
      *   <li>there is not already a primary account set.
      * </ul>
-     *
-     * <p>TODO(crbug.com/40066949): Remove ConsentLevel param.
      */
     public @PrimaryAccountError int setPrimaryAccount(
             CoreAccountId accountId,
-            @SuppressWarnings("unused") @ConsentLevel int consentLevel,
             @SigninAccessPoint int accessPoint,
             Runnable prefsSavedCallback) {
         return IdentityMutatorJni.get()

@@ -29,7 +29,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -259,8 +258,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         assumeNonNull(identityManager);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         assumeNonNull(signinManager);
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                || !signinManager.isSigninAllowed()) {
+        if (identityManager.hasPrimaryAccount() || !signinManager.isSigninAllowed()) {
             return PromoState.NONE;
         }
 

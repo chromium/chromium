@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -156,8 +155,7 @@ public class HistorySyncPromoCoordinator
     /** Implements {@link IdentityManager.Observer}. */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                == PrimaryAccountChangeEvent.Type.CLEARED) {
+        if (eventDetails.getEventTypeFor() == PrimaryAccountChangeEvent.Type.CLEARED) {
             mRemoveModuleRunnable.run();
         }
     }

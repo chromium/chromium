@@ -48,7 +48,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -130,7 +129,7 @@ public class SigninManagerImplTest {
         verify(callback, never()).onSignInAborted();
 
         // The primary account is now present and consented to sign in.
-        assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        assertTrue(mIdentityManager.hasPrimaryAccount());
     }
 
     @Test
@@ -279,7 +278,7 @@ public class SigninManagerImplTest {
     @MediumTest
     public void testSignOutNotAllowedForChildAccounts() {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        assertTrue(mIdentityManager.hasPrimaryAccount());
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mSigninManager.isSignOutAllowed()));
     }

@@ -80,7 +80,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -286,7 +285,7 @@ public class NewTabPageSigninPromoTest {
                         .build();
         mSigninTestRule.addAccount(accountHostedDomainUnknown);
         verifySigninPromoShown();
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
 
         onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo(), click());
         onView(withId(R.id.signin_promo_primary_button))
@@ -310,7 +309,7 @@ public class NewTabPageSigninPromoTest {
         openNewTabPage();
         // Check that the sign-in promo is displayed for a signed-out user.
         verifySigninPromoShown();
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         // Click the sign-in button.
         // For landscape mode tests, scroll to ensure button is visible.
         onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo(), click());
@@ -319,7 +318,7 @@ public class NewTabPageSigninPromoTest {
         // Wait for promo to disappear.
         waitForNoView(withId(R.id.signin_promo_view_container));
         // Once the sign-in promo disappears, the sign-in flow is complete.
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
 
         // Click "Undo" button in the snackbar. This should sign the user out and permanently
         // dismiss the promo.
@@ -327,7 +326,7 @@ public class NewTabPageSigninPromoTest {
         clickSigninSnackbarActionButton();
         verifySignoutSnackbarShown();
 
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNull(mSigninTestRule.getPrimaryAccount());
         onView(withId(R.id.signin_promo_view_container))
                 .check(matches(withEffectiveVisibility(Visibility.GONE)));
     }

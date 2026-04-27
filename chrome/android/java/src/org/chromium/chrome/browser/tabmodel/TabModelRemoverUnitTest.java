@@ -54,7 +54,6 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -110,8 +109,7 @@ public class TabModelRemoverUnitTest {
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(TestAccounts.ACCOUNT1);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);

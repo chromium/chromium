@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -137,14 +136,14 @@ public class HistorySyncTest {
                         .getActivity()
                         .getString(
                                 R.string.history_sync_footer_with_email,
-                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                                mSigninTestRule.getPrimaryAccount().getEmail());
 
         String expectedDeclineText =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.history_sync_secondary_action,
-                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                                mSigninTestRule.getPrimaryAccount().getEmail());
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -165,14 +164,14 @@ public class HistorySyncTest {
                         .getActivity()
                         .getString(
                                 R.string.history_sync_footer_with_email,
-                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                                mSigninTestRule.getPrimaryAccount().getEmail());
 
         String expectedDeclineText =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.history_sync_secondary_action,
-                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                                mSigninTestRule.getPrimaryAccount().getEmail());
 
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
@@ -198,11 +197,11 @@ public class HistorySyncTest {
         String expectedFooter =
                 activity.getString(
                         R.string.history_sync_footer_with_email,
-                        mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                        mSigninTestRule.getPrimaryAccount().getEmail());
         String expectedDeclineText =
                 activity.getString(
                         R.string.history_sync_recent_tabs_secondary_action,
-                        mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+                        mSigninTestRule.getPrimaryAccount().getEmail());
         onView(withId(R.id.history_sync_footer)).check(matches(withText(expectedFooter)));
         onView(withId(R.id.button_secondary)).check(matches(withText(expectedDeclineText)));
     }
@@ -251,7 +250,7 @@ public class HistorySyncTest {
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -297,7 +296,7 @@ public class HistorySyncTest {
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
                 .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
-        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
 
@@ -318,8 +317,7 @@ public class HistorySyncTest {
         verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock, atLeastOnce())
                 .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
-        CriteriaHelper.pollUiThread(
-                () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
+        CriteriaHelper.pollUiThread(() -> mSigninTestRule.getPrimaryAccount() == null);
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
 
@@ -333,8 +331,7 @@ public class HistorySyncTest {
                         "Signin.HistorySyncOptIn.Aborted", SIGNIN_ACCESS_POINT);
 
         mSigninTestRule.signOut();
-        CriteriaHelper.pollUiThread(
-                () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
+        CriteriaHelper.pollUiThread(() -> mSigninTestRule.getPrimaryAccount() == null);
 
         histogramWatcher.assertExpected();
         verify(mHistorySyncDelegateMock)

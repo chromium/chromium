@@ -126,7 +126,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -299,7 +298,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         when(mIdentityService.getIdentityManager(any(Profile.class))).thenReturn(mIdentityManager);
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         PageZoomUtils.setShouldShowMenuItemForTesting(false);
         FeedFeatures.setFakePrefsForTest(mPrefService);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);

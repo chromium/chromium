@@ -78,7 +78,6 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -556,7 +555,7 @@ public class AddressEditorMediator {
     }
 
     private @Nullable String getUserEmail() {
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
         return CoreAccountInfo.getEmailFrom(accountInfo);
     }
 

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -166,7 +165,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testBookmarkAccountSettingsPromoShown_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());
@@ -180,7 +179,7 @@ public class SigninPromoDelegateTest {
     public void
             testBookmarkAccountSettingsPromoHidden_readingListManagedByPolicyAndBookmarksEnabled() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         doReturn(true).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.READING_LIST);
         doReturn(false).when(mSyncService).isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
         doReturn(Set.of(UserSelectableType.BOOKMARKS)).when(mSyncService).getSelectedTypes();
@@ -193,7 +192,7 @@ public class SigninPromoDelegateTest {
     public void
             testBookmarkAccountSettingsPromoShown_readingListManagedByPolicyAndBookmarksDisabled() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         lenient()
                 .doReturn(true)
                 .when(mSyncService)
@@ -208,7 +207,7 @@ public class SigninPromoDelegateTest {
     @Test
     public void testNtpPromoHidden_hasPrimaryAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
 
         assertFalse(mDelegate.canShowPromo());
@@ -343,7 +342,7 @@ public class SigninPromoDelegateTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());
@@ -354,7 +353,7 @@ public class SigninPromoDelegateTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(false).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
 
         assertFalse(mDelegate.canShowPromo());
@@ -366,7 +365,7 @@ public class SigninPromoDelegateTest {
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         doReturn(true).when(mHistorySyncHelper).isDeclinedOften();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
 
         assertFalse(mDelegate.canShowPromo());
@@ -479,7 +478,7 @@ public class SigninPromoDelegateTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
 
         assertTrue(mDelegate.canShowPromo());

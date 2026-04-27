@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 @NullMarked
@@ -91,7 +90,7 @@ public class HistorySyncFirstRunFragment extends Fragment
         // from occurring in the first place.
         boolean canSkipAdvanceToNextPage = isFrePromoEnabled() && !isResumed();
 
-        if (signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
+        if (signinManager.getIdentityManager().getPrimaryAccountInfo() == null) {
             if (!canSkipAdvanceToNextPage) {
                 Log.w(TAG, "No primary account set, dismissing the history sync screen.");
                 getPageDelegate().advanceToNextPage();

@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -87,7 +86,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
     }
 
     @Test
@@ -173,13 +172,13 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 0.01);
 
         // Test signal "is_user_signed_in".
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(0, inputContext.getEntryValue("is_user_signed_in").floatValue, 0.01);
 
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);

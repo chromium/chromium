@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -119,8 +118,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
             // with the X button.
             IdentityManager identityManager =
                     assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-            CoreAccountInfo accountInfo =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
             if (accountInfo == null) {
                 return;
             }

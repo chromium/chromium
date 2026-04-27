@@ -60,7 +60,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -300,7 +299,7 @@ public class IdentityDiscController
      */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        switch (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)) {
+        switch (eventDetails.getEventTypeFor()) {
             case PrimaryAccountChangeEvent.Type.SET:
                 notifyObservers(true);
                 break;
@@ -398,9 +397,7 @@ public class IdentityDiscController
      * @return account info for the current profile. Returns null for OTR profile.
      */
     private @Nullable CoreAccountInfo getSignedInAccountInfo() {
-        return mIdentityManager != null
-                ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                : null;
+        return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo() : null;
     }
 
     /**

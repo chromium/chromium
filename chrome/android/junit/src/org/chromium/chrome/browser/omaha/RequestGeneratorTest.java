@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omaha;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -109,7 +108,7 @@ public class RequestGeneratorTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
-        when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
+        when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount())
                 .thenReturn(true);
 
         String sessionId = "random_session_id";

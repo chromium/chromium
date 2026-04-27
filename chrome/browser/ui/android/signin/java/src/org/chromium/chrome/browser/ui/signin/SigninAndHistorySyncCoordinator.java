@@ -27,7 +27,6 @@ import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -171,7 +170,7 @@ public abstract class SigninAndHistorySyncCoordinator {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
-        if (!willShowSigninUi(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!willShowSigninUi(profile) && !identityManager.hasPrimaryAccount()) {
             // Signin is suppressed because of something other than the user being signed in. Since
             // the user cannot sign in, we should not show history sync either.
             return false;

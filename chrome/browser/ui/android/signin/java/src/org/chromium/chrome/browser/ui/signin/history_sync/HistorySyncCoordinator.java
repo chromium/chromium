@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -96,7 +95,7 @@ public class HistorySyncCoordinator {
         IdentityManager identityManager = signinManager.getIdentityManager();
         MinorModeHelper.resolveMinorMode(
                 identityManager,
-                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).getId(),
+                assumeNonNull(identityManager.getPrimaryAccountInfo()).getId(),
                 mMediator::onMinorModeRestrictionStatusUpdated);
     }
 

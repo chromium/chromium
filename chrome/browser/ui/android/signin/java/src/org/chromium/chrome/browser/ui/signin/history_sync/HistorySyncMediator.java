@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -63,7 +62,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mConfig = config;
         // The history sync screen should never be created when the user is signed out.
         final CoreAccountInfo primaryAccount =
-                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                assumeNonNull(identityManager.getPrimaryAccountInfo());
         DisplayableProfileData profileData = mProfileDataCache.getById(primaryAccount.getId());
         mAccountEmail = profileData.getAccountEmail();
         // Use a different decline button text for recent tabs when seamless sign-in is enabled.

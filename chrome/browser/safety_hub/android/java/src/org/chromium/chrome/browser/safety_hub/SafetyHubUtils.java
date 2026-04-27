@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -79,7 +78,7 @@ class SafetyHubUtils {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assert identityManager != null;
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+        return identityManager.hasPrimaryAccount();
     }
 
     /**
@@ -89,8 +88,7 @@ class SafetyHubUtils {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assert identityManager != null;
-        return CoreAccountInfo.getEmailFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        return CoreAccountInfo.getEmailFrom(identityManager.getPrimaryAccountInfo());
     }
 
     /**

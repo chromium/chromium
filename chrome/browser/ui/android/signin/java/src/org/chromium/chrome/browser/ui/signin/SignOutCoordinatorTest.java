@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.DataType;
@@ -361,7 +360,7 @@ public class SignOutCoordinatorTest {
     @SmallTest
     public void testUndoSigninWithSnackbarThrowsNotSignedIn() {
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
-        doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount();
 
         assertUndoSignInWithSnackbarThrows(
                 IllegalStateException.class,
@@ -388,7 +387,7 @@ public class SignOutCoordinatorTest {
     private void setUpMocks() {
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
-        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount();
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         doAnswer(
                         args -> {

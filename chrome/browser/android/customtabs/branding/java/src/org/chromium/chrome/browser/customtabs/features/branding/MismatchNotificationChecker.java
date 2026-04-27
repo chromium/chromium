@@ -28,7 +28,6 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -205,7 +204,7 @@ public class MismatchNotificationChecker
     /** Returns a cropped hash of the currently sign-in account ID. */
     @VisibleForTesting
     String getAccountId() {
-        CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo account = mIdentityManager.getPrimaryAccountInfo();
         GaiaId gaiaId = CoreAccountInfo.getGaiaIdFrom(account);
         if (gaiaId == null) return "";
         var hash = HashUtil.getMd5Hash(new HashUtil.Params(gaiaId.toString()));

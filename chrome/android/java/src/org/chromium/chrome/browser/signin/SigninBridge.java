@@ -53,7 +53,6 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -171,7 +170,7 @@ final class SigninBridge {
                 // If the account is added to the device but there is no primary
                 // account then surface the bottom sheet otherwise wait for
                 // cookies to be minted.
-                if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
+                if (identityManager.getPrimaryAccountInfo() == null) {
                     openAccountPickerBottomSheet(
                             tab,
                             continueUrl,

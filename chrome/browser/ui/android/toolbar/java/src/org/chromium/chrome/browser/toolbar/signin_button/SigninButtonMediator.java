@@ -51,7 +51,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -182,7 +181,7 @@ final class SigninButtonMediator
      */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        switch (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)) {
+        switch (eventDetails.getEventTypeFor()) {
             case PrimaryAccountChangeEvent.Type.SET:
                 updateButtonState();
                 break;
@@ -202,7 +201,7 @@ final class SigninButtonMediator
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
         String primaryEmail =
                 CoreAccountInfo.getEmailFrom(
-                        assumeNonNull(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                        assumeNonNull(mIdentityManager).getPrimaryAccountInfo());
         if (profileData.getAccountEmail().equals(primaryEmail)) {
             updateButtonState();
         }
@@ -253,8 +252,7 @@ final class SigninButtonMediator
                         ? UserActionableError.NONE
                         : mSyncService.getUserActionableError();
 
-        CoreAccountInfo coreAccountInfo =
-                assumeNonNull(mIdentityManager).getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo coreAccountInfo = assumeNonNull(mIdentityManager).getPrimaryAccountInfo();
         if (coreAccountInfo != null) {
             assumeNonNull(mProfileDataCache)
                     .setBadge(

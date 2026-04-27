@@ -40,7 +40,6 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -220,10 +219,10 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * @return The primary account of the requested {@link ConsentLevel}.
+     * @return The primary account.
      */
-    public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return mSigninTestRule.getPrimaryAccount(consentLevel);
+    public CoreAccountInfo getPrimaryAccount() {
+        return mSigninTestRule.getPrimaryAccount();
     }
 
     /**
@@ -261,7 +260,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void signOut() {
         mSigninTestRule.signOut();
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount());
     }
 
     public void clearServerData() {

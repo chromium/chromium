@@ -49,19 +49,16 @@ public class PrimaryAccountChangeEvent {
     }
 
     /**
-     * Returns primary account change event type for the corresponding consentLevel.
+     * Returns primary account change event type.
      *
-     * <p>TODO(crbug.com/40066949): Remove ConsentLevel param.
-     *
-     * @param consentLevel The consent level for the primary account change.
      * @return The event type for the change:
      *     <ul>
-     *       <li>NONE - No change in primary account for consentLevel.
-     *       <li>SET - A new primary account is set or changed for consentLevel.
-     *       <li>CLEARED - The primary account set for consentLevel is cleared.
+     *       <li>NONE - No change in primary account.
+     *       <li>SET - A new primary account is set or changed.
+     *       <li>CLEARED - The primary account set is cleared.
      *     </ul>
      */
-    public @Type int getEventTypeFor(@SuppressWarnings("unused") @ConsentLevel int consentLevel) {
+    public @Type int getEventTypeFor() {
         return mEventType;
     }
 }

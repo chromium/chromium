@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -66,7 +65,7 @@ class WebsiteApprovalMediator {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
-        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
         if (accountInfo == null) {
             // This is an unexpected window condition: there is no signed in account.
             // TODO(crbug.com/40843544): dismiss the bottom sheet.

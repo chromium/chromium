@@ -21,7 +21,6 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninPromoAction;
@@ -174,8 +173,7 @@ final class SigninPromoMediator
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         boolean wasVisibleAccountUpdated =
-                eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
-                        != PrimaryAccountChangeEvent.Type.NONE;
+                eventDetails.getEventTypeFor() != PrimaryAccountChangeEvent.Type.NONE;
         refreshPromoContent(wasVisibleAccountUpdated);
     }
 
@@ -336,8 +334,7 @@ final class SigninPromoMediator
      * device.
      */
     private @Nullable CoreAccountInfo getVisibleAccount() {
-        @Nullable CoreAccountInfo visibleAccount =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        @Nullable CoreAccountInfo visibleAccount = mIdentityManager.getPrimaryAccountInfo();
         if (visibleAccount == null) {
             visibleAccount =
                     AccountUtils.getDefaultAccountIfFulfilled(mAccountManagerFacade.getAccounts());

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
@@ -370,8 +369,7 @@ public class SetupListManager
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        boolean isSignedIn =
-                identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+        boolean isSignedIn = identityManager != null && identityManager.hasPrimaryAccount();
 
         if (moduleType == ModuleType.HISTORY_SYNC_PROMO) {
             return isSignedIn;
@@ -462,8 +460,7 @@ public class SetupListManager
 
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        @PrimaryAccountChangeEvent.Type
-        int eventType = eventDetails.getEventTypeFor(ConsentLevel.SIGNIN);
+        @PrimaryAccountChangeEvent.Type int eventType = eventDetails.getEventTypeFor();
         if (eventType == PrimaryAccountChangeEvent.Type.SET) {
             setModuleCompleted(ModuleType.SIGN_IN_PROMO, /* silent= */ false);
         }

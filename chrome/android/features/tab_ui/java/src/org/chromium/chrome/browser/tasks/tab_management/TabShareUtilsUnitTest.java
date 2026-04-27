@@ -27,7 +27,6 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -80,7 +79,7 @@ public class TabShareUtilsUnitTest {
 
         when(mTabGroupSyncService.getGroup(mLocalTabGroupId)).thenReturn(mSavedTabGroup);
 
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+        when(mIdentityManager.getPrimaryAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID));
     }
 

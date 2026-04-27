@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 
@@ -102,7 +101,7 @@ public class HistorySyncFragmentTest {
     }
 
     private void setSigninState(boolean isSignedIn) {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(isSignedIn);
     }
 
     @Test

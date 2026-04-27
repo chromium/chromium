@@ -70,7 +70,6 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -629,7 +628,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()));
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!identityManager.hasPrimaryAccount()) {
             return false;
         }
         if (profile.getRecordType() != RecordType.LOCAL_OR_SYNCABLE) {

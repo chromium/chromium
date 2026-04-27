@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +70,7 @@ public class PriceTrackingFeatures {
             return false;
         }
         return assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                .hasPrimaryAccount();
     }
 
     private static boolean isAnonymizedUrlDataCollectionEnabled(Profile profile) {

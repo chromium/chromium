@@ -89,7 +89,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -890,7 +889,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
-        if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
+        if (identityManager.getPrimaryAccountInfo() == null) {
             // Show the signout snackbar, or wait until `onStart()` if the fragment is not in the
             // `STARTED` state.
             if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {

@@ -494,7 +494,7 @@ public class TabUiUtilsUnitTest {
                 .when(mActionConfirmationManager)
                 .processLeaveGroupAttempt(any(), any());
         createSyncGroup(COLLABORATION_ID1);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(null);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(null);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
                 ApplicationProvider.getApplicationContext(),
@@ -604,6 +604,6 @@ public class TabUiUtilsUnitTest {
 
     private void mockIdentity(String email, GaiaId gaiaId) {
         CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
     }
 }

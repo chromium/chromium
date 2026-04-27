@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -121,7 +120,7 @@ public class SignOutCoordinator {
 
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!identityManager.hasPrimaryAccount()) {
             throw new IllegalStateException("There is no signed-in account");
         }
 
@@ -210,7 +209,7 @@ public class SignOutCoordinator {
 
         IdentityManager identityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        if (!identityManager.hasPrimaryAccount()) {
             throw new IllegalStateException("There is no signed-in account");
         }
 

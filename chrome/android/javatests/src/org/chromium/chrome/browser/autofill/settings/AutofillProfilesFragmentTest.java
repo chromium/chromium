@@ -114,7 +114,6 @@ import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
@@ -866,7 +865,7 @@ public class AutofillProfilesFragmentTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         setUpMockSyncService(new HashSet<>());
 
         verifyAddressProfileIcons(/* expectedLocalIconLayout= */ 0);
@@ -2091,9 +2090,8 @@ public class AutofillProfilesFragmentTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
-        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(accountInfo);
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(accountInfo);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
     }
 
     private void setUpMockSyncService(Set<Integer> selectedTypes) {

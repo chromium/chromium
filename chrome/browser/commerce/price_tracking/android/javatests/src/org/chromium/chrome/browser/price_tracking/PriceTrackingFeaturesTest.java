@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import androidx.test.annotation.UiThreadTest;
@@ -141,7 +140,7 @@ public class PriceTrackingFeaturesTest {
     }
 
     private void setSignedInStatus(boolean isSignedIn) {
-        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(isSignedIn);
     }
 
     private void setTabSyncStatus(boolean hasSessions) {

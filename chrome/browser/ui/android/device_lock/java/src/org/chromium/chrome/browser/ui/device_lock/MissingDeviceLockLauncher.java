@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -123,7 +122,7 @@ public class MissingDeviceLockLauncher {
 
         signinManager.runAfterOperationInProgress(
                 () -> {
-                    if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null) {
+                    if (identityManager.getPrimaryAccountInfo() != null) {
                         signinManager.signOut(
                                 SignoutReason.DEVICE_LOCK_REMOVED_ON_AUTOMOTIVE,
                                 () -> {

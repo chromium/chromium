@@ -36,7 +36,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -115,20 +114,20 @@ public class StepDisplayHandlerImplTest {
 
     @Test
     public void hidesHistorySyncWhenNotSignedIn() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
     public void hidesHistorySyncDisabledByPolicy() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
     public void showsHistorySyncIsNotManagedByPolicyNorCustodian() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(false);
         when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(false);
         assertTrue(mStepDisplayHandler.shouldDisplayHistorySync());
@@ -136,7 +135,7 @@ public class StepDisplayHandlerImplTest {
 
     @Test
     public void hidesHistorySyncWhenIsDisabledByCustodian() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }

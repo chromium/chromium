@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -277,9 +276,7 @@ public class ChromeFeedbackCollectorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
-        when(IdentityServicesProvider.get()
-                        .getIdentityManager(any())
-                        .getPrimaryAccountInfo(anyInt()))
+        when(IdentityServicesProvider.get().getIdentityManager(any()).getPrimaryAccountInfo())
                 .thenReturn(TestAccounts.ACCOUNT1);
     }
 

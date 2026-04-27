@@ -26,7 +26,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Provides information about the signals of cards in the educational tip module. */
@@ -172,7 +171,7 @@ public class EducationalTipCardProviderSignalHandler {
      */
     private static float isEligibleToHistoryOptIn(Profile profile) {
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .hasPrimaryAccount()) {
             HistorySyncHelper helper = HistorySyncHelper.getForProfile(profile);
             return !helper.shouldDisplayHistorySync() || helper.isDeclinedOften() ? 0.0f : 1.0f;
         }
@@ -183,7 +182,7 @@ public class EducationalTipCardProviderSignalHandler {
     /** Returns a value of 1.0f if the user has signed in. Otherwise, it returns 0.0f. */
     private static float isUserSignedIn(Profile profile) {
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .hasPrimaryAccount()) {
             return 1.0f;
         }
 

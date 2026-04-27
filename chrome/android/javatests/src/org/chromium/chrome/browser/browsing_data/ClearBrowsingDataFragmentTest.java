@@ -98,7 +98,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.ui.test.util.ViewUtils;
@@ -220,7 +219,7 @@ public class ClearBrowsingDataFragmentTest {
                 () ->
                         !IdentityServicesProvider.get()
                                 .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
+                                .hasPrimaryAccount(),
                 "Account should be signed out!");
         // Footer should be hidden after sign-out.
         onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
@@ -256,7 +255,7 @@ public class ClearBrowsingDataFragmentTest {
                 () ->
                         !IdentityServicesProvider.get()
                                 .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
+                                .hasPrimaryAccount(),
                 "Account should be signed out!");
         // Footer should be hidden after sign-out.
         onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());

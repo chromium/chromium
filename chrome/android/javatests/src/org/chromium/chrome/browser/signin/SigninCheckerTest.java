@@ -27,7 +27,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /**
@@ -56,8 +55,7 @@ public class SigninCheckerTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return TestAccounts.CHILD_ACCOUNT.equals(
-                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+                    return TestAccounts.CHILD_ACCOUNT.equals(mSigninTestRule.getPrimaryAccount());
                 });
         Assert.assertEquals(
                 2,
@@ -79,7 +77,7 @@ public class SigninCheckerTest {
                 1,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount());
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -101,7 +99,7 @@ public class SigninCheckerTest {
                 1,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount());
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -115,8 +113,7 @@ public class SigninCheckerTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return TestAccounts.CHILD_ACCOUNT.equals(
-                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+                    return TestAccounts.CHILD_ACCOUNT.equals(mSigninTestRule.getPrimaryAccount());
                 });
 
         // The check should be done twice at account addition and once during force sign-in.
