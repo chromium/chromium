@@ -73,7 +73,8 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
           base::BindRepeating(&SnooperNode::ReadFromDelayBuffer,
                               base::Unretained(this))),
       channel_mix_strategy_(
-          (input_params_.channel_layout() == output_params_.channel_layout())
+          (input_params_.channel_layout_config() ==
+           output_params_.channel_layout_config())
               ? ChannelMixStrategy::kNone
               : ((output_params_.channels() < input_params_.channels())
                      ? ChannelMixStrategy::kBefore

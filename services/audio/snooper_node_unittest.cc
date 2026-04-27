@@ -32,9 +32,10 @@ namespace {
 // something finite.
 constexpr float kInvalidAudioSample = std::numeric_limits<float>::infinity();
 
-// The tones the source should generate into the left and right channels.
-constexpr double kLeftChannelFrequency = 500.0;
-constexpr double kRightChannelFrequency = 1200.0;
+// The tones the source should generate into the channels, and the alternate
+// frequency to use when testing swapped/discontinuous input.
+constexpr double kDefaultFrequency = 500.0;
+constexpr double kSwappedFrequency = 1200.0;
 constexpr double kSourceVolume = 0.5;
 
 // The duration of the audio that flows through the SnooperNode for each test.
@@ -50,35 +51,99 @@ constexpr base::TimeDelta kInputAdvanceTime = base::Milliseconds(2);
 constexpr std::string_view kDumpAsWavSwitch = "dump-as-wav";
 
 // Test parameters.
-struct InputAndOutputParams {
-  media::AudioParameters input;
-  media::AudioParameters output;
-};
+class AudioParametersBuilder {
+ public:
+  AudioParametersBuilder() = default;
 
-// Helper so that gtest can produce useful logging of the test parameters.
-std::ostream& operator<<(std::ostream& out,
-                         const InputAndOutputParams& test_params) {
-  return out << "{input=" << test_params.input.AsHumanReadableString()
-             << ", output=" << test_params.output.AsHumanReadableString()
-             << "}";
-}
+  AudioParametersBuilder& WithLayout(media::ChannelLayout layout,
+                                     int channels) {
+    layout_ = layout;
+    channels_ = channels;
+    return *this;
+  }
+  AudioParametersBuilder& WithRate(int rate) {
+    rate_ = rate;
+    return *this;
+  }
+  AudioParametersBuilder& WithFrames(int frames) {
+    frames_ = frames;
+    return *this;
+  }
+
+  media::AudioParameters Build() const {
+    return media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::ChannelLayoutConfig(layout_, channels_), rate_, frames_);
+  }
+
+ private:
+  media::ChannelLayout layout_ = media::CHANNEL_LAYOUT_STEREO;
+  int channels_ = 2;
+  int rate_ = 48000;
+  int frames_ = 480;
+};
+struct InputAndOutputParams {
+  AudioParametersBuilder input;
+  AudioParametersBuilder output;
+  std::string name;
+};
 
 class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
  public:
   SnooperNodeTest() = default;
   ~SnooperNodeTest() override = default;
 
-  const media::AudioParameters& input_params() const {
-    return GetParam().input;
+  media::AudioParameters input_params() {
+    if (!input_params_.IsValid()) {
+      input_params_ = GetParam().input.Build();
+    }
+    return input_params_;
   }
-  const media::AudioParameters& output_params() const {
-    return GetParam().output;
+  media::AudioParameters output_params() {
+    if (!output_params_.IsValid()) {
+      output_params_ = GetParam().output.Build();
+    }
+    return output_params_;
   }
   base::TimeDelta output_delay() const { return output_delay_; }
   double max_relative_error() const { return max_relative_error_; }
 
   base::TestMockTimeTaskRunner* task_runner() const {
     return task_runner_.get();
+  }
+  // Builds a gain matrix so tests can compute the expected output without
+  // hardcoding the values.
+  void PrecomputeExpectedMixMatrix() {
+    const int in_channels = input_params().channels();
+    const int out_channels = output_params().channels();
+    expected_mix_matrix_.assign(in_channels, std::vector<double>(out_channels));
+
+    auto input_bus = media::AudioBus::Create(in_channels, /*frames=*/1);
+    auto output_bus = media::AudioBus::Create(out_channels, /*frames=*/1);
+    media::ChannelMixer mixer(input_params(), output_params());
+
+    for (int in_ch = 0; in_ch < in_channels; ++in_ch) {
+      input_bus->Zero();
+      input_bus->channel(in_ch)[0] = 1.0f;
+      mixer.Transform(input_bus.get(), output_bus.get());
+      for (int out_ch = 0; out_ch < out_channels; ++out_ch) {
+        expected_mix_matrix_[in_ch][out_ch] =
+            static_cast<double>(output_bus->channel(out_ch)[0]);
+      }
+    }
+  }
+
+  double GetExpectedGain(int input_ch, int output_ch) const {
+    return expected_mix_matrix_[input_ch][output_ch];
+  }
+
+  bool IsOutputChannelSilent(int out_ch) {
+    for (int in_ch = 0; in_ch < input_params().channels(); ++in_ch) {
+      if (GetExpectedGain(in_ch, out_ch) > 0.0) {
+        return false;
+      }
+    }
+    return true;
   }
   FakeLoopbackGroupMember* group_member() { return &*group_member_; }
   SnooperNode* node() { return &*node_; }
@@ -131,6 +196,8 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // "huge" to ensure time calculations are being tested for overflow cases.
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
         base::Time(), base::TimeTicks() + base::Microseconds(INT64_C(1) << 62));
+
+    PrecomputeExpectedMixMatrix();
   }
 
   void TearDown() override {
@@ -148,54 +215,10 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     }
   }
 
-  // Selects which frequency to return for each channel based on the input and
-  // output channel layout.
-  enum WhichFlow : int8_t {
-    FOR_INPUT,
-    FOR_SWAPPED_INPUT,
-    FOR_OUTPUT,
-    FOR_SWAPPED_OUTPUT,
-  };
-
-  double GetLeftChannelFrequency(WhichFlow which) const {
-    switch (which) {
-      case FOR_INPUT:
-      case FOR_OUTPUT:
-        return kLeftChannelFrequency;
-      case FOR_SWAPPED_INPUT:
-      case FOR_SWAPPED_OUTPUT:
-        return kRightChannelFrequency;
-    }
-  }
-
-  double GetRightChannelFrequency(WhichFlow which) const {
-    switch (which) {
-      // If the test parameters call for stereo→mono channel down-mixing, use
-      // the left channel frequency again for the right channel input. Down-
-      // mixing is tested elsewhere.
-      case FOR_INPUT:
-        return (output_params().channels() == 1 ? kLeftChannelFrequency
-                                                : kRightChannelFrequency);
-      case FOR_SWAPPED_INPUT:
-        return (output_params().channels() == 1 ? kRightChannelFrequency
-                                                : kLeftChannelFrequency);
-
-      // If the input was monaural, the output's right channel should contain
-      // the input's "left" channel frequency.
-      case FOR_OUTPUT:
-        return (input_params().channels() == 1 ? kLeftChannelFrequency
-                                               : kRightChannelFrequency);
-      case FOR_SWAPPED_OUTPUT:
-        return (input_params().channels() == 1 ? kRightChannelFrequency
-                                               : kLeftChannelFrequency);
-    }
-  }
-
   void CreateNewPipeline() {
     group_member_.emplace(input_params());
-    group_member_->SetChannelTone(0, GetLeftChannelFrequency(FOR_INPUT));
-    if (input_params().channels() > 1) {
-      group_member_->SetChannelTone(1, GetRightChannelFrequency(FOR_INPUT));
+    for (int ch = 0; ch < input_params().channels(); ++ch) {
+      group_member_->SetChannelTone(ch, kDefaultFrequency);
     }
     group_member_->SetVolume(kSourceVolume);
 
@@ -237,6 +260,32 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
           << " at output_time=" << output_time << ", ch=" << ch;
     }
     consumer_->Consume(*bus);
+  }
+
+  // Used to check each output channel is producing the correct tones at
+  // `position`.
+  void VerifyTonesAt(int position, double freq) {
+    for (int out_ch = 0; out_ch < output_params().channels(); ++out_ch) {
+      double expected_vol = 0.0;
+      for (int in_ch = 0; in_ch < input_params().channels(); ++in_ch) {
+        expected_vol += GetExpectedGain(in_ch, out_ch) * kSourceVolume;
+      }
+      if (expected_vol == 0.0) {
+        continue;
+      }
+      EXPECT_NEAR(expected_vol,
+                  consumer()->ComputeAmplitudeAt(out_ch, freq, position),
+                  expected_vol * max_relative_error())
+          << "Failure for output ch " << out_ch;
+    }
+  }
+
+  void VerifySilenceInRange(int start_frame, int end_frame) {
+    for (int ch = 0; ch < output_params().channels(); ++ch) {
+      EXPECT_TRUE(consumer()->IsSilentInRange(ch, start_frame, end_frame))
+          << "Channel " << ch << " expected to be silent between "
+          << start_frame << " and " << end_frame;
+    }
   }
 
   // Post delayed tasks to schedule normal, uninterrupted input with the default
@@ -286,6 +335,11 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
+  media::AudioParameters input_params_;
+  media::AudioParameters output_params_;
+
+  std::vector<std::vector<double>> expected_mix_matrix_;
+
   // A suitable output delay to use for rendering audio from the pipeline. See
   // comments in SetUp() for further details.
   base::TimeDelta output_delay_;
@@ -333,17 +387,7 @@ TEST_P(SnooperNodeTest, MAYBE_ContinuousAudioFlowAdaptsToSkew) {
           ((input_skew * kInputAdvanceTime.InSecondsF()) +
            (output_skew * output_delay().InSecondsF())) *
           output_params().sample_rate();
-      const double frames_in_one_millisecond =
-          output_params().sample_rate() /
-          double{base::Time::kMillisecondsPerSecond};
-      EXPECT_NEAR(expected_end_of_silence_position,
-                  consumer()->FindEndOfSilence(0, 0),
-                  frames_in_one_millisecond);
-      if (output_params().channels() > 1) {
-        EXPECT_NEAR(expected_end_of_silence_position,
-                    consumer()->FindEndOfSilence(1, 0),
-                    frames_in_one_millisecond);
-      }
+      VerifySilenceInRange(0, expected_end_of_silence_position);
 
       // Analyze the recording in several places for the expected tones.
       constexpr int kNumToneChecks = 16;
@@ -351,16 +395,7 @@ TEST_P(SnooperNodeTest, MAYBE_ContinuousAudioFlowAdaptsToSkew) {
         const int end_frame =
             consumer()->GetRecordedFrameCount() * i / kNumToneChecks;
         SCOPED_TRACE(testing::Message() << "end_frame=" << end_frame);
-        EXPECT_NEAR(kSourceVolume,
-                    consumer()->ComputeAmplitudeAt(
-                        0, GetLeftChannelFrequency(FOR_OUTPUT), end_frame),
-                    kSourceVolume * max_relative_error());
-        if (output_params().channels() > 1) {
-          EXPECT_NEAR(kSourceVolume,
-                      consumer()->ComputeAmplitudeAt(
-                          1, GetRightChannelFrequency(FOR_OUTPUT), end_frame),
-                      kSourceVolume * max_relative_error());
-        }
+        VerifyTonesAt(end_frame, kDefaultFrequency);
       }
 
       if (HasFailure()) {
@@ -425,18 +460,7 @@ TEST_P(SnooperNodeTest, HandlesMissingInput) {
     // Just before the drop, there should be a tone.
     const int position_a_little_before_silence_begins =
         output_silence_position - output_frames_in_20_milliseconds;
-    EXPECT_NEAR(
-        kSourceVolume,
-        consumer()->ComputeAmplitudeAt(0, GetLeftChannelFrequency(FOR_OUTPUT),
-                                       position_a_little_before_silence_begins),
-        kSourceVolume * max_relative_error());
-    if (output_params().channels() > 1) {
-      EXPECT_NEAR(kSourceVolume,
-                  consumer()->ComputeAmplitudeAt(
-                      1, GetRightChannelFrequency(FOR_OUTPUT),
-                      position_a_little_before_silence_begins),
-                  kSourceVolume * max_relative_error());
-    }
+    VerifyTonesAt(position_a_little_before_silence_begins, kDefaultFrequency);
 
     // There should be silence during the drop.
     const int position_a_little_after_silence_begins =
@@ -445,26 +469,14 @@ TEST_P(SnooperNodeTest, HandlesMissingInput) {
         position_a_little_after_silence_begins +
         output_frames_in_a_quarter_second -
         2 * output_frames_in_20_milliseconds;
-    EXPECT_TRUE(
-        consumer()->IsSilentInRange(0, position_a_little_after_silence_begins,
-                                    position_a_little_before_silence_ends));
+    VerifySilenceInRange(position_a_little_after_silence_begins,
+                         position_a_little_before_silence_ends);
 
     // Finally, the tone should be back after the drop.
     const int position_a_little_after_silence_ends =
         position_a_little_before_silence_ends +
         2 * output_frames_in_20_milliseconds;
-    EXPECT_NEAR(
-        kSourceVolume,
-        consumer()->ComputeAmplitudeAt(0, GetLeftChannelFrequency(FOR_OUTPUT),
-                                       position_a_little_after_silence_ends),
-        kSourceVolume * max_relative_error());
-    if (output_params().channels() > 1) {
-      EXPECT_NEAR(kSourceVolume,
-                  consumer()->ComputeAmplitudeAt(
-                      1, GetRightChannelFrequency(FOR_OUTPUT),
-                      position_a_little_after_silence_ends),
-                  kSourceVolume * max_relative_error());
-    }
+    VerifyTonesAt(position_a_little_after_silence_ends, kDefaultFrequency);
     output_silence_position += output_frames_in_one_second;
   }
 }
@@ -496,11 +508,8 @@ TEST_P(SnooperNodeTest, HandlesBackwardsInput) {
           FROM_HERE,
           base::BindOnce(
               [](SnooperNodeTest* test) {
-                test->group_member()->SetChannelTone(
-                    0, test->GetLeftChannelFrequency(FOR_SWAPPED_INPUT));
-                if (test->input_params().channels() > 1) {
-                  test->group_member()->SetChannelTone(
-                      1, test->GetRightChannelFrequency(FOR_SWAPPED_INPUT));
+                for (int ch = 0; ch < test->input_params().channels(); ++ch) {
+                  test->group_member()->SetChannelTone(ch, kSwappedFrequency);
                 }
               },
               this),
@@ -533,23 +542,9 @@ TEST_P(SnooperNodeTest, HandlesBackwardsInput) {
   for (int output_end = consumer()->GetRecordedFrameCount();
        output_position < output_end;
        output_position += output_frames_in_one_second) {
-    const int left_ch_freq = (output_position < output_position_halfway)
-                                 ? GetLeftChannelFrequency(FOR_OUTPUT)
-                                 : GetLeftChannelFrequency(FOR_SWAPPED_OUTPUT);
-    EXPECT_NEAR(
-        kSourceVolume,
-        consumer()->ComputeAmplitudeAt(0, left_ch_freq, output_position),
-        kSourceVolume * max_relative_error());
-    if (output_params().channels() > 1) {
-      const int right_ch_freq =
-          (output_position < output_position_halfway)
-              ? GetRightChannelFrequency(FOR_OUTPUT)
-              : GetRightChannelFrequency(FOR_SWAPPED_OUTPUT);
-      EXPECT_NEAR(
-          kSourceVolume,
-          consumer()->ComputeAmplitudeAt(1, right_ch_freq, output_position),
-          kSourceVolume * max_relative_error());
-    }
+    VerifyTonesAt(output_position, output_position < output_position_halfway
+                                       ? kDefaultFrequency
+                                       : kSwappedFrequency);
   }
 }
 
@@ -718,75 +713,103 @@ TEST_P(SnooperNodeTest, HandlesSeekedRenderTimes) {
         render_time < (kTestDuration / 3 + kQuarterSecond)) {
       // Special case: Expect the zero-fill gap immediately after the first
       // discontinuity.
-      for (int ch = 0; ch < output_params().channels(); ++ch) {
-        EXPECT_TRUE(consumer()->IsSilentInRange(
-            ch, position - output_params().frames_per_buffer(), position));
-      }
+      VerifySilenceInRange(position - output_params().frames_per_buffer(),
+                           position);
     } else {
-      for (int ch = 0; ch < output_params().channels(); ++ch) {
-        EXPECT_NEAR(kSourceVolume,
-                    consumer()->ComputeAmplitudeAt(ch, expected_freq, position),
-                    kSourceVolume * max_relative_error());
-      }
+      VerifyTonesAt(position, expected_freq);
     }
   }
 }
 
-InputAndOutputParams MakeParams(
-    media::ChannelLayoutConfig input_channel_layout_config,
-    int input_sample_rate,
-    int input_frames_per_buffer,
-    media::ChannelLayoutConfig output_channel_layout_config,
-    int output_sample_rate,
-    int output_frames_per_buffer) {
-  return InputAndOutputParams{
-      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                             input_channel_layout_config, input_sample_rate,
-                             input_frames_per_buffer),
-      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                             output_channel_layout_config, output_sample_rate,
-                             output_frames_per_buffer)};
+// A specialized test to ensure L/R channels are mixed correctly without
+// bleeding.
+TEST_P(SnooperNodeTest, StereoIsMixedCorrectly) {
+  if (input_params().channel_layout() != media::CHANNEL_LAYOUT_STEREO ||
+      output_params().channel_layout() != media::CHANNEL_LAYOUT_STEREO) {
+    GTEST_SKIP() << "Test only applies to stereo channel layouts.";
+  }
+
+  CreateNewPipeline();
+
+  // Set distinct frequencies for Left and Right channels.
+  constexpr double kLeftFreq = 500.0;
+  constexpr double kRightFreq = 1200.0;
+  group_member()->SetChannelTone(0, kLeftFreq);
+  group_member()->SetChannelTone(1, kRightFreq);
+
+  ScheduleDefaultInputTasks();
+  ScheduleDefaultRenderTasks();
+  RunAllPendingTasks();
+
+  // Check near the end of the recording.
+  const int check_position =
+      consumer()->GetRecordedFrameCount() - output_params().sample_rate();
+
+  // Left output channel should have the left tone.
+  EXPECT_NEAR(kSourceVolume,
+              consumer()->ComputeAmplitudeAt(0, kLeftFreq, check_position),
+              kSourceVolume * max_relative_error());
+
+  // Right output channel should have the right tone.
+  EXPECT_NEAR(kSourceVolume,
+              consumer()->ComputeAmplitudeAt(1, kRightFreq, check_position),
+              kSourceVolume * max_relative_error());
 }
 
+AudioParametersBuilder BaseParams() {
+  return AudioParametersBuilder();
+}
+
+InputAndOutputParams MakeParams(const AudioParametersBuilder& input,
+                                const AudioParametersBuilder& output,
+                                std::string name) {
+  return {input, output, std::move(name)};
+}
+
+// TODO(crbug.com/474107074): We have to temporarily split ChannelLayoutConfig
+// into a ChannelLayout and a channel count, due to the kEnableHighChannelCounts
+// feature flag being called in `GetConcurrentMaxChannels()` (we need to avoid
+// creating parameterized types that depend on feature list flags, directly or
+// indirectly). Once the flag has been removed, this will no longer be an issue
+// and this can go back to ChannelLayoutConfigs.
 INSTANTIATE_TEST_SUITE_P(
     All,
     SnooperNodeTest,
-    testing::Values(MakeParams(media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480,
-                               media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480),
-                    MakeParams(media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               64,
-                               media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480),
-                    MakeParams(media::ChannelLayoutConfig::Stereo(),
-                               44100,
-                               64,
-                               media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480),
-                    MakeParams(media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               512,
-                               media::ChannelLayoutConfig::Stereo(),
-                               44100,
-                               441),
-                    MakeParams(media::ChannelLayoutConfig::Mono(),
-                               8000,
-                               64,
-                               media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480),
-                    MakeParams(media::ChannelLayoutConfig::Stereo(),
-                               48000,
-                               480,
-                               media::ChannelLayoutConfig::Mono(),
-                               8000,
-                               80)));
+    testing::Values(
+        MakeParams(BaseParams(), BaseParams(), "StereoToStereo"),
+        MakeParams(BaseParams().WithFrames(64),
+                   BaseParams(),
+                   "Stereo64ToStereo480"),
+        MakeParams(BaseParams().WithRate(44100).WithFrames(64),
+                   BaseParams(),
+                   "Stereo44100_64ToStereo48000_480"),
+        MakeParams(BaseParams().WithFrames(512),
+                   BaseParams().WithRate(44100).WithFrames(441),
+                   "Stereo48000_512ToStereo44100_441"),
+        MakeParams(BaseParams()
+                       .WithLayout(media::CHANNEL_LAYOUT_MONO, 1)
+                       .WithRate(8000)
+                       .WithFrames(64),
+                   BaseParams(),
+                   "Mono8kToStereo48k"),
+        MakeParams(BaseParams(),
+                   BaseParams()
+                       .WithLayout(media::CHANNEL_LAYOUT_MONO, 1)
+                       .WithRate(8000)
+                       .WithFrames(80),
+                   "Stereo48kToMono8k"),
+        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
+                   BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
+                   "Surround5_1ToSurround5_1"),
+        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
+                   BaseParams(),
+                   "Surround5_1ToStereo"),
+        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_DISCRETE, 1),
+                   BaseParams().WithLayout(media::CHANNEL_LAYOUT_DISCRETE, 7),
+                   "Discrete1ToDiscrete7")),
+    [](const testing::TestParamInfo<InputAndOutputParams>& info) {
+      return info.param.name;
+    });
 
 }  // namespace
 }  // namespace audio
