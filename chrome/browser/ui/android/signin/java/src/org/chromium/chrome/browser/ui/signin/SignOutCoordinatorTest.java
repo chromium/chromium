@@ -98,12 +98,12 @@ public class SignOutCoordinatorTest {
                 .runAfterOperationInProgress(any(Runnable.class));
         doAnswer(
                         args -> {
-                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
-                            signOutCallback.signOutComplete();
+                            Runnable signOutCallback = args.getArgument(1);
+                            signOutCallback.run();
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
 
         startSignOutFlow(signOutReason, mOnSignOut, false);
 
@@ -142,12 +142,12 @@ public class SignOutCoordinatorTest {
                 .runAfterOperationInProgress(any(Runnable.class));
         doAnswer(
                         args -> {
-                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
-                            signOutCallback.signOutComplete();
+                            Runnable signOutCallback = args.getArgument(1);
+                            signOutCallback.run();
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
 
         startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
 
@@ -218,12 +218,11 @@ public class SignOutCoordinatorTest {
                 .runAfterOperationInProgress(any(Runnable.class));
         doAnswer(
                         args -> {
-                            args.getArgument(1, SigninManager.SignOutCallback.class)
-                                    .signOutComplete();
+                            args.getArgument(1, Runnable.class).run();
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
         startSignOutFlow(signOutReason, mOnSignOut, false);
         onView(withText(R.string.sign_out_unsaved_data_title))
                 .inRoot(isDialog())
@@ -281,12 +280,11 @@ public class SignOutCoordinatorTest {
                 .runAfterOperationInProgress(any(Runnable.class));
         doAnswer(
                         args -> {
-                            args.getArgument(1, SigninManager.SignOutCallback.class)
-                                    .signOutComplete();
+                            args.getArgument(1, Runnable.class).run();
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
         startSignOutFlow(signOutReason, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 

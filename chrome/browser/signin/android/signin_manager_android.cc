@@ -261,20 +261,6 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
                      std::move(policy_callback)));
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-SigninManagerAndroid::GetManagementDomain(JNIEnv* env) {
-  base::android::ScopedJavaLocalRef<jstring> domain;
-
-  policy::CloudPolicyStore* store = user_cloud_policy_manager_->core()->store();
-
-  if (store && store->is_managed() && store->policy()->has_username()) {
-    domain.Reset(base::android::ConvertUTF8ToJavaString(
-        env, gaia::ExtractDomainName(store->policy()->username())));
-  }
-
-  return domain;
-}
-
 void SigninManagerAndroid::WipeProfileData(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {

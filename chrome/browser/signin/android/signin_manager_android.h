@@ -69,8 +69,6 @@ class SigninManagerAndroid : public KeyedService {
 
   void StopApplyingCloudPolicy(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jstring> GetManagementDomain(JNIEnv* env);
-
   // Delete all data for this profile.
   void WipeProfileData(JNIEnv* env, const base::RepeatingClosure& callback);
 

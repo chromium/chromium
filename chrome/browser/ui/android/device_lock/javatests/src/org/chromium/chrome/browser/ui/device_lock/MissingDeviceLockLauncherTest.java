@@ -202,8 +202,8 @@ public class MissingDeviceLockLauncherTest {
         doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doAnswer(
                         (invocation) -> {
-                            SigninManager.SignOutCallback callback = invocation.getArgument(1);
-                            callback.signOutComplete();
+                            Runnable callback = invocation.getArgument(1);
+                            callback.run();
                             return null;
                         })
                 .when(mSigninManager)
@@ -236,8 +236,8 @@ public class MissingDeviceLockLauncherTest {
         doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doAnswer(
                         (invocation) -> {
-                            SigninManager.SignOutCallback callback = invocation.getArgument(1);
-                            callback.signOutComplete();
+                            Runnable callback = invocation.getArgument(1);
+                            callback.run();
                             return null;
                         })
                 .when(mSigninManager)

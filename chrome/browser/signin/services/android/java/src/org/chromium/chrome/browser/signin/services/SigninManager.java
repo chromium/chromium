@@ -58,15 +58,6 @@ public interface SigninManager {
         void onSignInAborted();
     }
 
-    /** Callbacks for the sign-out flow. */
-    interface SignOutCallback {
-        /** Called before the data wiping is started. */
-        default void preWipeData() {}
-
-        /** Called after the data is wiped. */
-        void signOutComplete();
-    }
-
     /** Extracts the domain name of a given account's email. */
     String extractDomainName(String accountEmail);
 
@@ -154,18 +145,13 @@ public interface SigninManager {
      *
      * @param signoutSource describes the event driving the signout (e.g. {@link
      *     SignoutReason#USER_CLICKED_SIGNOUT_SETTINGS}).
-     * @param signOutCallback Callback to notify about the sign-out progress.
+     * @param signOutCallback Callback to notify when the sign-out is complete.
      * @param forceWipeUserData Whether user selected to wipe all device data.
      */
     void signOut(
             @SignoutReason int signoutSource,
-            @Nullable SignOutCallback signOutCallback,
+            @Nullable Runnable signOutCallback,
             boolean forceWipeUserData);
-
-    /**
-     * Returns the management domain if the signed in account is managed, otherwise returns null.
-     */
-    @Nullable String getManagementDomain();
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or
@@ -194,7 +180,4 @@ public interface SigninManager {
      * @return Whether the user has accepted signing into a Managed Account.
      */
     boolean getUserAcceptedAccountManagement();
-
-    /** Returns whether fetching the list of accounts from the device eventually succeeded. */
-    boolean didAccountFetchSucceed();
 }

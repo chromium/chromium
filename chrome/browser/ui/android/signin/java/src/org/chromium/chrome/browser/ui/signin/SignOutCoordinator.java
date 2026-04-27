@@ -438,7 +438,7 @@ public class SignOutCoordinator {
     private static void signOut(
             SigninManager signinManager,
             @SignoutReason int signOutReason,
-            SigninManager.SignOutCallback signOutCallback) {
+            Runnable signOutCallback) {
         signinManager.runAfterOperationInProgress(
                 () -> {
                     if (!signinManager.isSignOutAllowed()) {

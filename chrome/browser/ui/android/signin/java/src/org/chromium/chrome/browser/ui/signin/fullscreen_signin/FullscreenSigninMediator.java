@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Ev
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -660,7 +659,7 @@ public class FullscreenSigninMediator
             @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             @Nullable SignInCallback signInCallback) {
-        SignOutCallback signOutCallback =
+        Runnable signOutCallback =
                 () -> {
                     if (mDestroyed) return;
                     FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
@@ -731,7 +730,7 @@ public class FullscreenSigninMediator
         if (assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
                 .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
-            SignOutCallback signOutCallback =
+            Runnable signOutCallback =
                     () -> {
                         if (mDestroyed) {
                             // FirstRunActivity was destroyed while we were waiting for the
