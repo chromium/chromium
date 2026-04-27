@@ -194,7 +194,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
   // Vector of forms that have been received via the password sharing feature
   // and the user has not been notified about them yet.
-  std::vector<const password_manager::PasswordForm*> _sharedUnnotifiedForms;
+  std::vector<password_manager::PasswordForm> _sharedUnnotifiedForms;
 
   // Profile images of password senders if any of the passwords were received
   // via the password sharing feature. Empty otherwise.
@@ -496,7 +496,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     if (form.type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form.sharing_notification_displayed) {
-      _sharedUnnotifiedForms.push_back(&form);
+      _sharedUnnotifiedForms.push_back(form);
       __weak __typeof__(self) weakSelf = self;
       image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
                                                kImageFetcherUmaClient);
@@ -527,14 +527,12 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     return;
   }
 
-  for (const password_manager::PasswordForm* form : _sharedUnnotifiedForms) {
-    // Make a non-const copy so we can modify it.
-    password_manager::PasswordForm updatedForm = *form;
-    updatedForm.sharing_notification_displayed = true;
-    if (form->IsUsingAccountStore()) {
-      _accountPasswordStore->UpdateLogin(std::move(updatedForm));
+  for (password_manager::PasswordForm& form : _sharedUnnotifiedForms) {
+    form.sharing_notification_displayed = true;
+    if (form.IsUsingAccountStore()) {
+      _accountPasswordStore->UpdateLogin(std::move(form));
     } else {
-      _profilePasswordStore->UpdateLogin(std::move(updatedForm));
+      _profilePasswordStore->UpdateLogin(std::move(form));
     }
   }
   _sharedUnnotifiedForms.clear();
@@ -554,7 +552,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   if (_sharedUnnotifiedForms.size() == 1) {
     return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
         IDS_IOS_PASSWORD_SHARING_NOTIFICATION_SINGLE_PASSWORD_SUBTITLE,
-        _sharedUnnotifiedForms[0]->sender_name,
+        _sharedUnnotifiedForms[0].sender_name,
         base::SysNSStringToUTF16(domain)));
   } else {
     return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
