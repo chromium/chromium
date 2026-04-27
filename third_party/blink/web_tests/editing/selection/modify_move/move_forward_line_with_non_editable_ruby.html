@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+// Regression test for https://issues.chromium.org/issues/502468279
+selection_test(
+  [
+    '<div contenteditable>',
+      '<p>テ|キスト<ruby contenteditable="false">漢字<rt>かんじ</rt></ruby>テキスト</p>',
+      '<p>２行目のテキスト</p>',
+      '<p>３行目のテキスト</p>',
+    '</div>',
+  ].join(''),
+  selection => selection.modify('move', 'forward', 'line'),
+  [
+    '<div contenteditable>',
+      '<p>テキスト<ruby contenteditable="false">漢字<rt>かんじ</rt></ruby>テキスト</p>',
+      '<p>２|行目のテキスト</p>',
+      '<p>３行目のテキスト</p>',
+    '</div>',
+  ].join(''),
+  'move forward by line skips annotation line inside contenteditable=false ruby');
+
+selection_test(
+  [
+    '<div contenteditable style="width: 8em">',
+      '<p>テ|キスト<ruby contenteditable="false">漢字<rt>かんじ</rt></ruby>テキストテキストテキスト</p>',
+      '<p>２行目のテキスト</p>',
+    '</div>',
+  ].join(''),
+  selection => selection.modify('move', 'forward', 'line'),
+  [
+    '<div contenteditable style="width: 8em">',
+      '<p>テキスト<ruby contenteditable="false">漢字<rt>かんじ</rt></ruby>テキス|トテキストテキスト</p>',
+      '<p>２行目のテキスト</p>',
+    '</div>',
+  ].join(''),
+  'move forward by line with soft wrap skips annotation line inside contenteditable=false ruby');
+</script>

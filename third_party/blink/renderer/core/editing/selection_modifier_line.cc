@@ -88,7 +88,11 @@ class AbstractLineBox {
     InlineCursor previous_line = cursor_;
     do {
       previous_line.MoveToPreviousIncludingFragmentainer();
-    } while (previous_line && !previous_line.Current().IsLineBox());
+    } while (
+        previous_line &&
+        (!previous_line.Current().IsLineBox() ||
+         (RuntimeEnabledFeatures::EditingLineMovementWithRubyFixEnabled() &&
+          previous_line.Current().IsRubyAnnotationLine())));
     if (!previous_line || previous_line.Current()->IsBlockInInline())
       return AbstractLineBox();
     return AbstractLineBox(previous_line);
@@ -99,7 +103,11 @@ class AbstractLineBox {
     InlineCursor next_line = cursor_;
     do {
       next_line.MoveToNextIncludingFragmentainer();
-    } while (next_line && !next_line.Current().IsLineBox());
+    } while (
+        next_line &&
+        (!next_line.Current().IsLineBox() ||
+         (RuntimeEnabledFeatures::EditingLineMovementWithRubyFixEnabled() &&
+          next_line.Current().IsRubyAnnotationLine())));
     if (!next_line || next_line.Current()->IsBlockInInline())
       return AbstractLineBox();
     return AbstractLineBox(next_line);

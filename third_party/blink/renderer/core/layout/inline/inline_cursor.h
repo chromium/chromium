@@ -87,6 +87,9 @@ class CORE_EXPORT InlineCursorPosition {
   // other then line box.
   bool IsEmptyLineBox() const { return item_->IsEmptyLineBox(); }
 
+  // True if the current position is a ruby annotation line box.
+  bool IsRubyAnnotationLine() const { return item_->IsRubyAnnotationLine(); }
+
   // True if the current position is an inline box. It is error to call at end.
   bool IsInlineBox() const { return item_->IsInlineBox(); }
 

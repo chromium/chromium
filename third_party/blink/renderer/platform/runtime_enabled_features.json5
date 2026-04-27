@@ -2437,6 +2437,10 @@
       status: "stable",
     },
     {
+      name: "EditingLineMovementWithRubyFix",
+      status: "stable",
+    },
+    {
       public: true,
       name: "ElementCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},
