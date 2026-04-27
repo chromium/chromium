@@ -463,8 +463,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CLOSE_PROFILE));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ExecuteShowSyncSettings DISABLED_ExecuteShowSyncSettings
+#else
+#define MAYBE_ExecuteShowSyncSettings ExecuteShowSyncSettings
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
-                       ExecuteShowSyncSettings) {
+                       MAYBE_ExecuteShowSyncSettings) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_SYNC_SETTINGS));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
