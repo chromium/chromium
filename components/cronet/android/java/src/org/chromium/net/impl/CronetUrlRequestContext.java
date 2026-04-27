@@ -549,7 +549,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                     callback,
                                     mAdaptiveRequestContext.getOrCreateScheduledExecutor(),
                                     mAdaptiveRequestContext,
-                                    url,
+                                    adaptiveUri,
                                     mLogger,
                                     mAdaptiveRequestContext.isFastIdempotentRequest(adaptiveUri))
                             : null;

@@ -107,7 +107,7 @@ public class CronetAdaptiveRequestContextTest {
                 .thenReturn(new Network[] {mockNetwork});
         when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(mockNetwork);
 
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
 
         assertEquals(networkHandle, computeStreamNetworkHandles(url).mPrimaryNetworkHandle);
         assertEquals(
@@ -146,7 +146,7 @@ public class CronetAdaptiveRequestContextTest {
                 .thenReturn(new Network[] {mockNetwork});
         when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(mockNetwork);
 
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
 
         assertEquals(networkHandle, computeStreamNetworkHandles(url).mPrimaryNetworkHandle);
         assertEquals(
@@ -187,7 +187,7 @@ public class CronetAdaptiveRequestContextTest {
                 .thenReturn(new Network[] {mockNetwork});
         when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(mockNetwork);
 
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
         assertEquals(networkHandle, computeStreamNetworkHandles(url).mPrimaryNetworkHandle);
 
         // Advance time just past the 10s expiration.
@@ -224,7 +224,7 @@ public class CronetAdaptiveRequestContextTest {
                 .thenReturn(new Network[] {mockNetwork});
         when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(mockNetwork);
 
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
 
         // Advance time almost to expiration.
         mFakeClock.advanceTime(9999);
@@ -258,7 +258,7 @@ public class CronetAdaptiveRequestContextTest {
         // Mock the network is NOT in the list of available networks.
         when(mMockConnectivityManagerWrapper.getAllNetworks(any())).thenReturn(new Network[] {});
 
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
 
         // Even if not expired, it should return null because the network is not available.
         assertEquals(null, computeStreamNetworkHandles(url));
@@ -293,11 +293,11 @@ public class CronetAdaptiveRequestContextTest {
         when(mMockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(mockNetwork);
 
         // First memorize a fallback.
-        mContext.reportFallbackUsed(url, networkHandle);
+        mContext.reportFallbackUsed(URI.create(url), networkHandle);
         assertEquals(networkHandle, computeStreamNetworkHandles(url).mPrimaryNetworkHandle);
 
         // Now report default network.
-        mContext.reportFallbackUsed(url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        mContext.reportFallbackUsed(URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
 
         // Memory should be cleared.
         assertEquals(null, computeStreamNetworkHandles(url));
@@ -341,7 +341,7 @@ public class CronetAdaptiveRequestContextTest {
                         mock(BidirectionalStream.Callback.class),
                         mockExecutor1,
                         mContext,
-                        "https://example.com/path",
+                        URI.create("https://example.com/path"),
                         mock(CronetLogger.class),
                         false);
 
@@ -350,7 +350,7 @@ public class CronetAdaptiveRequestContextTest {
                         mock(BidirectionalStream.Callback.class),
                         mockExecutor2,
                         mContext,
-                        "https://example.com/path",
+                        URI.create("https://example.com/path"),
                         mock(CronetLogger.class),
                         false);
 
@@ -373,7 +373,7 @@ public class CronetAdaptiveRequestContextTest {
         stream2.start();
 
         String url = "https://example.com/path";
-        mContext.reportFallbackUsed(url, fallbackNetworkHandle);
+        mContext.reportFallbackUsed(URI.create(url), fallbackNetworkHandle);
 
         // Verify that both fallback streams were started (proving notification was delivered)
         verify(mockFallback1).start();
@@ -401,10 +401,10 @@ public class CronetAdaptiveRequestContextTest {
             CronetAdaptiveRequestContext spyContext = spy(contextForTest);
             String url = "https://example.com/path";
 
-            spyContext.reportFallbackUsed(url, 12345L);
+            spyContext.reportFallbackUsed(URI.create(url), 12345L);
             verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: N");
 
-            spyContext.reportFallbackUsed(url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+            spyContext.reportFallbackUsed(URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
             verify(spyContext).showDevToast("CRONET: Fallback used example.com/path def: Y");
         }
     }
@@ -449,7 +449,7 @@ public class CronetAdaptiveRequestContextTest {
                         mock(BidirectionalStream.Callback.class),
                         mock(ScheduledExecutorService.class),
                         mContext,
-                        "https://example.com/path",
+                        URI.create("https://example.com/path"),
                         mock(CronetLogger.class),
                         false);
 
@@ -469,7 +469,7 @@ public class CronetAdaptiveRequestContextTest {
                         mock(BidirectionalStream.Callback.class),
                         mock(ScheduledExecutorService.class),
                         mContext,
-                        "https://example.com/path",
+                        URI.create("https://example.com/path"),
                         mock(CronetLogger.class),
                         false);
 

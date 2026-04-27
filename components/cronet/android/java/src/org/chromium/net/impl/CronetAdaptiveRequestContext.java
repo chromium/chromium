@@ -298,8 +298,7 @@ class CronetAdaptiveRequestContext {
     }
 
     /** Reports that the fallback network was used for the given URL. */
-    void reportFallbackUsed(String url, Long networkHandle) {
-        URI parsedUri = URI.create(url);
+    void reportFallbackUsed(URI parsedUri, Long networkHandle) {
         String host = parsedUri.getHost();
 
         if (mToastHandler != null) {

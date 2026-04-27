@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -40,6 +39,7 @@ import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.CronetException;
 import org.chromium.net.UrlResponseInfo;
 
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -89,7 +89,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ false);
         mAdaptiveStream.setFallbackStream(mFallbackStream);
@@ -197,7 +197,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
 
-        verify(mMockAdaptiveRequestContext).reportFallbackUsed(eq(TEST_URL), eq(networkHandle));
+        verify(mMockAdaptiveRequestContext)
+                .reportFallbackUsed(eq(URI.create(TEST_URL)), eq(networkHandle));
     }
 
     @Test
@@ -212,7 +213,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
         mAdaptiveStream.getCallback().onStreamReady(mFallbackStream);
 
-        verify(mMockAdaptiveRequestContext).reportFallbackUsed(eq(TEST_URL), eq(networkHandle));
+        verify(mMockAdaptiveRequestContext)
+                .reportFallbackUsed(eq(URI.create(TEST_URL)), eq(networkHandle));
     }
 
     @Test
@@ -227,7 +229,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.start();
         mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
 
-        verify(mMockAdaptiveRequestContext, never()).reportFallbackUsed(anyString(), anyLong());
+        verify(mMockAdaptiveRequestContext, never()).reportFallbackUsed(any(URI.class), anyLong());
     }
 
     @Test
@@ -694,7 +696,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -717,7 +719,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -751,7 +753,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -778,7 +780,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -809,7 +811,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);
@@ -849,7 +851,7 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                         mMockCallback,
                         mMockScheduledExecutorService,
                         mMockAdaptiveRequestContext,
-                        TEST_URL,
+                        URI.create(TEST_URL),
                         mTestLogger,
                         /* isFastIdempotentRequest= */ true);
         mAdaptiveStream.setPrimaryStream(mPrimaryStream);

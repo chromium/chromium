@@ -381,7 +381,7 @@ public class AdaptiveBidirectionalStreamTest {
         // 1. Manually report a fallback used to memorize it.
         // We use mDefaultNetwork as the memorized fallback.
         long memorizedNetworkHandle = mDefaultNetworkHandle;
-        mAdaptiveRequestContext.reportFallbackUsed(url, memorizedNetworkHandle);
+        mAdaptiveRequestContext.reportFallbackUsed(URI.create(url), memorizedNetworkHandle);
 
         // 2. Now start a stream. It should use memorizedNetworkHandle as PRIMARY.
         // In our setup, the "normal" network handle is DEFAULT_NETWORK_HANDLE
@@ -437,7 +437,7 @@ public class AdaptiveBidirectionalStreamTest {
         when(mMockConnectivityManagerWrapper.getAllNetworks(any()))
                 .thenReturn(new Network[] {mockNetwork});
 
-        mAdaptiveRequestContext.reportFallbackUsed(url, networkHandle);
+        mAdaptiveRequestContext.reportFallbackUsed(URI.create(url), networkHandle);
         assertThat(getFallbackNetworkHandle(url)).isEqualTo(networkHandle);
 
         // Now mock that the network is NOT in the list of available networks.

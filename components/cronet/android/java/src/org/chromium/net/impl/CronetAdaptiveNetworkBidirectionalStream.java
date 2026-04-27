@@ -324,15 +324,14 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             BidirectionalStream.Callback backendCallback,
             ScheduledExecutorService scheduledExecutor,
             CronetAdaptiveRequestContext adaptiveRequestContext,
-            String url,
+            URI uri,
             CronetLogger logger,
             boolean isFastIdempotentRequest) {
         mExecutor = scheduledExecutor;
         mBackendCallback = new VersionSafeCallbacks.BidirectionalStreamCallback(backendCallback);
         mAdaptiveRequestContext = adaptiveRequestContext;
         mLogger = logger;
-        // TODO(b/474048542): get the mUri directly in the constructor here instead.
-        mUri = URI.create(url);
+        mUri = uri;
         mIsFastIdempotentRequest = isFastIdempotentRequest;
         mFallbackStream = null;
         mOnlyOneStreamRemains = new AtomicBoolean(false);
@@ -494,7 +493,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             mPrimaryStream.cancel();
             // TODO(b/474048542): get the mUri directly here instead.
             mAdaptiveRequestContext.reportFallbackUsed(
-                    mUri.toString(), mFallbackStream.getTargetNetworkHandle());
+                    mUri, mFallbackStream.getTargetNetworkHandle());
         } else {
             mLoggingState.setWinner(
                     CronetLogger.CronetAdaptiveTrafficWinner.CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN);
