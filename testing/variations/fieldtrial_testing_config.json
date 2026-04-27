@@ -22470,25 +22470,6 @@
             ]
         }
     ],
-    "SymphoniaAdditionalCodecs": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SymphoniaPcmDecoding",
-                        "SymphoniaVorbisDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "SymphoniaAudioDecoding": [
         {
             "platforms": [
@@ -22520,6 +22501,42 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SymphoniaMp3Decoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SymphoniaPcmDecoding": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SymphoniaPcmDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SymphoniaVorbisDecoding": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SymphoniaVorbisDecoding"
                     ]
                 }
             ]
