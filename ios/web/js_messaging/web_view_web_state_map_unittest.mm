@@ -67,4 +67,9 @@ TEST_F(WebViewWebStateMapTest, WebStateDestroyed) {
   EXPECT_FALSE(GetWebStateForWebView(web_view));
 }
 
+// Tests that call GetWebStateForWebView(...) with nil is supported.
+TEST_F(WebViewWebStateMapTest, AcceptNil) {
+  EXPECT_EQ(GetWebStateForWebView(nil), nullptr);
+}
+
 }  // namespace web

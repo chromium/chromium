@@ -68,7 +68,9 @@ void ClearAssociatedWebViewForWebState(WKWebView* web_view,
 }
 
 WebState* GetWebStateForWebView(WKWebView* web_view) {
-  CHECK(web_view);
+  if (!web_view) {
+    return nil;
+  }
 
   if (WebStateHandleForWebView* handle =
           base::apple::ObjCCast<WebStateHandleForWebView>(
