@@ -116,16 +116,8 @@ which _are_ valid. As a rule:
     * If it's a Graphics bug (including Skia, Dawn, ANGLE), put it in [hotlist 8198490](https://b.corp.google.com/hotlists/8198490)
     * If it's a UI bug, put it in [hotlist 8210976](https://issues.chromium.org/hotlists/8210976)
     * If it's a BoringSSL bug, put it in [component 1590116](https://b.corp.google.com/components/1590116)
+    * If it's a V8 (Javascript or WebAssembly) bug, put it in [hotlist 8308879](https://issues.chromium.org/hotlists/8308879)
     * TODO: add more here :)
-    * You are now done triaging this bug, congratulations!
-* If the bug is a v8 bug (including wasm):
-    * Do not attempt to reproduce!
-    * Assign it to [the current v8 shepherd](https://goto.google.com/current-v8-sheriff)
-    * Set it to High Severity (S1)
-    * Set the OS field to all platforms we use v8 on (everything except iOS)
-    * Set Found In to the oldest [active
-      branch](https://chromiumdash.appspot.com/branches)
-    * Set the component to `Chromium > Blink > JavaScript`
     * You are now done triaging this bug, congratulations!
 * If the bug is a privacy bug, rather than a security bug:
     * Add yourself and any other security team members who may need
