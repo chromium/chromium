@@ -1685,10 +1685,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DistantTab.TimeSinceLastUse" units="ms"
-    expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+    expires_after="2027-06-01">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-pandamonium@google.com</owner>
   <summary>
     The delay in milliseconds between the Tab is opened from this device and the
     last time the same Tab was modified on the other device. The 'last modified'
@@ -4607,10 +4606,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
-    expires_after="2026-06-01">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+    expires_after="2027-06-01">
+  <owner>qpubert@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     The result of the download operation done when the user taps &quot;open
     in&quot; button to open a file by a different application.
@@ -5119,10 +5117,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-meridian@google.com</owner>
   <summary>
     Logs media permission events when the user changes the state of a permission
     (e.g. the microphone permission) from the infobar modal.
@@ -5130,10 +5127,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Permission.PageInfo.Events" enum="IOSPermissionEvent"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-meridian@google.com</owner>
   <summary>
     Logs media permission events when the user changes the state of a permission
     (e.g. the microphone permission) from the page info.
@@ -5141,10 +5137,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Permission.Requests" enum="IOSPermissionRequest"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>ewannpv@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-meridian@google.com</owner>
   <summary>
     Logs media permission requests from websites. (e.g. the microphone
     permission is asked from a website).
