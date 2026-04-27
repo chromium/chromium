@@ -3897,9 +3897,15 @@ DispatchResponse NetworkHandler::SetRequestInterception(
   }
 
   if (!url_loader_interceptor_) {
-    url_loader_interceptor_ =
-        std::make_unique<DevToolsURLLoaderInterceptor>(base::BindRepeating(
-            &NetworkHandler::RequestIntercepted, weak_factory_.GetWeakPtr()));
+    url_loader_interceptor_ = std::make_unique<DevToolsURLLoaderInterceptor>(
+        base::BindRepeating(&NetworkHandler::RequestIntercepted,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            [](base::WeakPtr<NetworkHandler> handler,
+               const net::CanonicalCookie& cookie) {
+              return handler && handler->CanAccessCookie(cookie);
+            },
+            weak_factory_.GetWeakPtr()));
     url_loader_interceptor_->SetPatterns(interceptor_patterns, true);
     update_loader_factories_callback_.Run();
   } else {

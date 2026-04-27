@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -33,14 +34,21 @@ std::vector<FetchHandler*> FetchHandler::ForAgentHost(
 
 FetchHandler::FetchHandler(
     DevToolsIOContext* io_context,
+    DevToolsAgentHostClient* client,
     UpdateLoaderFactoriesCallback update_loader_factories_callback,
     base::OnceClosure cleanup_after_modifications_callback)
     : DevToolsDomainHandler(Fetch::Metainfo::domainName),
       io_context_(io_context),
       update_loader_factories_callback_(
           std::move(update_loader_factories_callback)),
+      client_(client),
       cleanup_after_modifications_callback_(
           std::move(cleanup_after_modifications_callback)) {}
+
+bool FetchHandler::CanAccessCookie(const net::CanonicalCookie& cookie) const {
+  return NetworkHandler::CanAccessCookie(CHECK_DEREF(client_.get()),
+                                         /*is_webui=*/false, cookie);
+}
 
 FetchHandler::~FetchHandler() {
   if (did_modifications_ && cleanup_after_modifications_callback_) {
@@ -113,8 +121,15 @@ void FetchHandler::Enable(
     std::unique_ptr<EnableCallback> callback) {
   if (!interceptor_) {
     interceptor_ =
-        std::make_unique<DevToolsURLLoaderInterceptor>(base::BindRepeating(
-            &FetchHandler::RequestIntercepted, weak_factory_.GetWeakPtr()));
+        std::make_unique<DevToolsURLLoaderInterceptor>(
+            base::BindRepeating(&FetchHandler::RequestIntercepted,
+                                weak_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                [](base::WeakPtr<FetchHandler> weak_this,
+                   const net::CanonicalCookie& cookie) {
+                  return weak_this && weak_this->CanAccessCookie(cookie);
+                },
+                weak_factory_.GetWeakPtr()));
   }
   std::vector<DevToolsURLLoaderInterceptor::Pattern> interception_patterns;
   Response response = ToInterceptionPatterns(patterns, &interception_patterns);

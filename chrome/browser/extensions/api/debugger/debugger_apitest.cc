@@ -918,8 +918,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
       found_allowed = true;
     }
   }
-  // This assertion will be inverted in the next CL.
-  EXPECT_TRUE(found_restricted) << "Restricted cookie was not found";
+  EXPECT_FALSE(found_restricted) << "Restricted cookie was found";
   EXPECT_TRUE(found_allowed) << "Allowed cookie was not found";
 }
 

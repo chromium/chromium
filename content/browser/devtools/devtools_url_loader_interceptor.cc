@@ -902,8 +902,11 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
 }
 
 DevToolsURLLoaderInterceptor::DevToolsURLLoaderInterceptor(
-    RequestInterceptedCallback callback)
-    : request_intercepted_callback_(std::move(callback)), weak_factory_(this) {}
+    RequestInterceptedCallback callback,
+    CheckCookieAccessCallback cookie_access_callback)
+    : request_intercepted_callback_(std::move(callback)),
+      cookie_access_callback_(std::move(cookie_access_callback)),
+      weak_factory_(this) {}
 
 DevToolsURLLoaderInterceptor::~DevToolsURLLoaderInterceptor() {
   for (auto const& entry : jobs_)
@@ -1553,6 +1556,11 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
       },
       base::BarrierClosure(cookies.size(), std::move(callback)));
   for (auto& cookie : cookies) {
+    if (interceptor_ && interceptor_->cookie_access_callback_ &&
+        !interceptor_->cookie_access_callback_.Run(*cookie)) {
+      on_cookie_set.Run(net::CookieAccessResult());
+      continue;
+    }
     cookie_manager_->SetCanonicalCookie(
         *cookie, create_loader_params_->request.url, options, on_cookie_set);
   }

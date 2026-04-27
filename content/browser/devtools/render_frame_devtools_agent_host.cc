@@ -396,13 +396,14 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
           base::Unretained(this)),
       session->GetClient());
   session->CreateAndAddHandler<protocol::FetchHandler>(
-      GetIOContext(), base::BindRepeating(
-                          [](RenderFrameDevToolsAgentHost* self,
-                             base::OnceClosure done_callback) {
-                            self->UpdateResourceLoaderFactories();
-                            std::move(done_callback).Run();
-                          },
-                          base::Unretained(this)));
+      GetIOContext(), session->GetRootSession()->GetClient(),
+      base::BindRepeating(
+          [](RenderFrameDevToolsAgentHost* self,
+             base::OnceClosure done_callback) {
+            self->UpdateResourceLoaderFactories();
+            std::move(done_callback).Run();
+          },
+          base::Unretained(this)));
   session->CreateAndAddHandler<protocol::SchemaHandler>();
   const bool may_attach_to_browser = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::ServiceWorkerHandler>();

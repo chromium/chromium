@@ -244,7 +244,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
 #endif
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::FetchHandler>(
-      GetIOContext(),
+      GetIOContext(), session->GetRootSession()->GetClient(),
       base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
   session->CreateAndAddHandler<protocol::MemoryHandler>();
   session->CreateAndAddHandler<protocol::SecurityHandler>();

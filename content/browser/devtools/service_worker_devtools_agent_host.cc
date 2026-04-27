@@ -257,7 +257,7 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
       session->GetClient());
 
   session->CreateAndAddHandler<protocol::FetchHandler>(
-      GetIOContext(),
+      GetIOContext(), session->GetRootSession()->GetClient(),
       base::BindRepeating(
           &ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories,
           base::Unretained(this)),

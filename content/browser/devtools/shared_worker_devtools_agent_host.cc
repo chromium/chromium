@@ -108,7 +108,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   // TODO(crbug.com/40154954): support pushing updated loader factories down to
   // renderer.
   session->CreateAndAddHandler<protocol::FetchHandler>(
-      GetIOContext(),
+      GetIOContext(), session->GetRootSession()->GetClient(),
       base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
   session->CreateAndAddHandler<protocol::SchemaHandler>();
   session->CreateAndAddHandler<protocol::StorageHandler>(this,
