@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonStatus;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -164,6 +165,11 @@ public class HomepageManager
      *     tab page if the homepage button is force enabled via flag.
      */
     public GURL getDefaultHomepageGurl(boolean isIncognito) {
+        // Shortcut to just the NTP if the partner homepage is disabled.
+        if (ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()) {
+            return getNtpUrl(isIncognito);
+        }
+
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
             return assumeNonNull(PartnerBrowserCustomizations.getInstance().getHomePageUrl());
         }

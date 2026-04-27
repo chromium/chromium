@@ -30,8 +30,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -205,6 +207,7 @@ public class HomepageSettingsUnitTest {
 
     @Test
     @Feature({"Homepage"})
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
     public void testStartUp_ChromeNtp_WithPartner() {
         setPartnerHomepage(TEST_URL_FOO);
         mHomepageTestRule.useChromeNtpForTest();
@@ -789,6 +792,7 @@ public class HomepageSettingsUnitTest {
 
     @Test
     @Feature({"Homepage"})
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
     public void testStartUp_DefaultToPartner() {
         setPartnerHomepage(TEST_URL_FOO);
         mHomepageTestRule.useDefaultHomepageForTest();

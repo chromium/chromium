@@ -21,6 +21,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -131,6 +132,10 @@ public class PartnerBrowserCustomizations {
      * been completed.
      */
     public boolean isHomepageProviderAvailableAndEnabled() {
+        // Pretend this capability is not available if the feature is disabled.
+        if (ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()) {
+            return false;
+        }
         GURL homepageUrl = getHomePageUrl();
         return homepageUrl != null && !homepageUrl.isEmpty();
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.homepage;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import org.junit.Assert;
@@ -66,6 +68,7 @@ public class HomepageManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
     public void testGetDefaultHomepageGurlPreferenceKeysMigration() {
         HomepageManager homepageManager = HomepageManager.getInstance();
 
@@ -475,5 +478,33 @@ public class HomepageManagerTest {
         Assert.assertFalse(
                 "Homepage should still be considered NTP when override is disabled.",
                 homepageManager.isHomepageNonNtp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    public void testGetDefaultHomepageGurl_DisablePartnerHomepageAndroid() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
+        when(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled())
+                .thenReturn(true);
+        when(mPartnerBrowserCustomizations.getHomePageUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        Assert.assertEquals(
+                UrlConstantResolverFactory.getOriginalResolver().getNtpGurl(),
+                homepageManager.getDefaultHomepageGurl(/* isIncognito= */ false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    public void testGetDefaultHomepageGurl_PartnerHomepageEnabled() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
+        when(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled())
+                .thenReturn(true);
+        when(mPartnerBrowserCustomizations.getHomePageUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        Assert.assertEquals(
+                JUnitTestGURLs.EXAMPLE_URL,
+                homepageManager.getDefaultHomepageGurl(/* isIncognito= */ false));
     }
 }

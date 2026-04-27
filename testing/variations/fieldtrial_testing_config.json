@@ -8871,6 +8871,21 @@
             ]
         }
     ],
+    "DisablePartnerHomepageAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisablePartnerHomepageAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSplitHostCacheByNetworkAnonymizationKey": [
         {
             "platforms": [

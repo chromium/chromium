@@ -933,6 +933,11 @@ public abstract class ChromeFeatureList {
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sDisablePartnerHomepageAndroid =
+            newCachedFlag(
+                    DISABLE_PARTNER_HOMEPAGE_ANDROID,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDocumentPictureInPictureAPI =
             newCachedFlag(DOCUMENT_PICTURE_IN_PICTURE_API, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sDrawChromePagesEdgeToEdge =
@@ -1301,6 +1306,7 @@ public abstract class ChromeFeatureList {
                     sDefaultBrowserPromoEntryPoint,
                     sDesktopAndroidLinkCapturing,
                     sDesktopUAOnConnectedDisplay,
+                    sDisablePartnerHomepageAndroid,
                     sDocumentPictureInPictureAPI,
                     sDrawChromePagesEdgeToEdge,
                     sEdgeToEdgeBottomChin,

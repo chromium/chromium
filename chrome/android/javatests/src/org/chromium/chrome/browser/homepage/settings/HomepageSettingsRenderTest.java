@@ -27,6 +27,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -446,6 +448,7 @@ public class HomepageSettingsRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
     public void testRender_PartnerHomepage() throws IOException {
         setupPartnerHomepage(TEST_GURL);
         ThreadUtils.runOnUiThreadBlocking(() -> mHomepageTestRule.useDefaultHomepageForTest());
