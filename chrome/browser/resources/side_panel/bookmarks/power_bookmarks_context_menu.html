@@ -9,7 +9,7 @@
   }
 </style>
 
-<cr-action-menu id="menu" on-mousedown="onMousedown_">
+<cr-action-menu id="menu" on-mousedown="onMousedown_" on-focusout="onFocusout_">
   <template is="dom-repeat"
       items="[[getMenuItemsForBookmarks_(
                    bookmarks_, priceTracked_, priceTrackingEligible_,

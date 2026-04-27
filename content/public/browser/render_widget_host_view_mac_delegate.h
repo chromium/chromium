@@ -97,6 +97,11 @@ enum class AcceptTooltipEvents {
 // NSView from the operating system's key view search.
 - (BOOL)shouldRefuseBecomingKeyView;
 
+// By default, right clicking does not make the view first responder.
+// The content embedder may override this method to override the default
+// behavior.
+- (BOOL)shouldBecomeFirstResponderOnRightClick;
+
 @end
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_MAC_DELEGATE_H_

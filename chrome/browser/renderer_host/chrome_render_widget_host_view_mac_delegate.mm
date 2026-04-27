@@ -484,4 +484,19 @@
   return AcceptTooltipEvents::kWhenInKeyWindow;
 }
 
+- (BOOL)shouldBecomeFirstResponderOnRightClick {
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
+    return NO;
+  }
+
+  // For Top Chrome WebUIs, allow right click to make the view first responder.
+  if (IsTopChromeWebUIURL(webContents->GetVisibleURL()) ||
+      IsTopChromeUntrustedWebUIURL(webContents->GetVisibleURL())) {
+    return YES;
+  }
+
+  return NO;
+}
+
 @end

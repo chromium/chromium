@@ -304,4 +304,26 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         loadTimeData.getString('menuOpenIncognito')));
     assertTrue(incognitoButton.disabled);
   });
+
+  test('DismissOnBlur', async () => {
+    const selection = [service.findBookmarkWithId('3')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false, false, 1);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    assertTrue(powerBookmarksContextMenu.isOpen());
+
+    // Simulate blur by dispatching focusout event with relatedTarget outside
+    // the menu.
+    const event = new FocusEvent('focusout', {
+      relatedTarget: document.body,
+    });
+    powerBookmarksContextMenu.shadowRoot!.querySelector('#menu')!.dispatchEvent(
+        event);
+
+    await flushTasks();
+
+    assertTrue(!powerBookmarksContextMenu.isOpen());
+  });
 });
