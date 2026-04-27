@@ -3250,10 +3250,8 @@ void RenderWidgetHostImpl::OnUnconfirmedTapConvertedToTap() {
 
 void RenderWidgetHostImpl::OnInputRouterActive() {
   input_router_active_ = true;
-  if (delegate_ && delegate_->IsWidgetForPrimaryMainFrame(this)) {
-    if (ready_for_input_callback_for_testing_) {
-      std::move(ready_for_input_callback_for_testing_).Run();
-    }
+  if (ready_for_input_callback_for_testing_) {
+    std::move(ready_for_input_callback_for_testing_).Run();
   }
 }
 
