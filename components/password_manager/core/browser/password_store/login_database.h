@@ -275,18 +275,8 @@ class LoginDatabase : public EncryptDecryptInterface {
         const sync_pb::DataTypeState& data_type_state) override;
 
     bool ClearDataTypeState(syncer::DataType data_type) override;
-    void SetPasswordDeletionsHaveSyncedCallback(
-        base::RepeatingCallback<void(bool)> callback) override;
-    bool HasUnsyncedPasswordDeletions() override;
 
     const raw_ptr<LoginDatabase> login_db_;
-    // A callback to be invoked whenever all pending deletions have been
-    // processed
-    // by Sync - see
-    // PasswordStoreSync::MetadataStore::SetDeletionsHaveSyncedCallback for more
-    // details.
-    base::RepeatingCallback<void(bool)>
-        password_deletions_have_synced_callback_;
   };
 
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseSyncMetadataTest,

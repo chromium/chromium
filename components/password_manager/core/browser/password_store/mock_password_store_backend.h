@@ -74,7 +74,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (const base::Location&,
                base::Time delete_begin,
                base::Time delete_end,
-               base::OnceCallback<void(bool)> sync_completion,
                PasswordChangesOrErrorReply callback),
               (override));
   MOCK_METHOD(void,

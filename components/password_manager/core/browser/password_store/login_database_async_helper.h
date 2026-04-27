@@ -79,8 +79,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   PasswordChangesOrError RemoveLoginsCreatedBetween(
       const base::Location& location,
       base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion);
+      base::Time delete_end);
   PasswordStoreChangeList DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
@@ -113,9 +112,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       UpdateCredentialError* error) override;
   void NotifyCredentialsChanged(
       const PasswordStoreChangeList& changes) override;
-  void AddDeletionsHaveSyncedCallback(
-      base::OnceCallback<void(bool)> sync_completion);
-  void NotifyDeletionsHaveSynced(bool success) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;
@@ -165,16 +161,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A list of callbacks that should be run once all pending deletions have been
-  // sent to the Sync server. Note that the vector itself lives on the
-  // background thread, but the callbacks must be run on the main thread!
-  std::vector<base::OnceCallback<void(bool)>> deletions_have_synced_callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Timeout closure that runs if sync takes too long to propagate deletions.
-  base::CancelableOnceClosure deletions_have_synced_timeout_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);

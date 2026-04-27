@@ -320,11 +320,6 @@ class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
               (syncer::DataType, const sync_pb::DataTypeState&),
               (override));
   MOCK_METHOD(bool, ClearDataTypeState, (syncer::DataType), (override));
-  MOCK_METHOD(void,
-              SetPasswordDeletionsHaveSyncedCallback,
-              (base::RepeatingCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(bool, HasUnsyncedPasswordDeletions, (), (override));
 };
 
 class MockPasswordStoreSync : public PasswordStoreSync {
@@ -353,7 +348,6 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               NotifyCredentialsChanged,
               (const PasswordStoreChangeList&),
               (override));
-  MOCK_METHOD(void, NotifyDeletionsHaveSynced, (bool), (override));
   MOCK_METHOD(bool, BeginTransaction, (), (override));
   MOCK_METHOD(bool, CommitTransaction, (), (override));
   MOCK_METHOD(void, RollbackTransaction, (), (override));

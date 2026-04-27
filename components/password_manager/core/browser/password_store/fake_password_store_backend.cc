@@ -252,17 +252,13 @@ void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
-  auto cb = sync_completion ? std::move(callback).Then(base::BindOnce(
-                                  std::move(sync_completion), true))
-                            : std::move(callback);
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal,
           base::Unretained(this), delete_begin, delete_end),
-      std::move(cb));
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(

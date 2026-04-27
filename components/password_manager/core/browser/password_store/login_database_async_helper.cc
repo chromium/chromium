@@ -22,12 +22,6 @@
 
 namespace password_manager {
 
-namespace {
-
-constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
-
-}  // namespace
-
 LoginDatabaseAsyncHelper::LoginDatabaseAsyncHelper(
     std::unique_ptr<LoginDatabase> login_db,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
@@ -81,11 +75,6 @@ bool LoginDatabaseAsyncHelper::Initialize(
     LOG(ERROR) << "Could not create/open login database.";
   }
   if (success) {
-    login_db_->password_sync_metadata_store()
-        .SetPasswordDeletionsHaveSyncedCallback(base::BindRepeating(
-            &LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
-            weak_ptr_factory_.GetWeakPtr()));
-
     // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
     // during the "hot phase" of Chrome startup.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -228,8 +217,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
     const base::Location& location,
     base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion) {
+    base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
   PasswordStoreChangeList changes;
@@ -244,32 +232,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   // the login data.
   CommitTransaction();
 
-  if (sync_completion) {
-    AddDeletionsHaveSyncedCallback(std::move(sync_completion));
-  }
-
   return success ? changes
                  : PasswordChangesOrError(PasswordStoreBackendError(
                        PasswordStoreBackendErrorType::kUncategorized));
-}
-
-void LoginDatabaseAsyncHelper::AddDeletionsHaveSyncedCallback(
-    base::OnceCallback<void(bool)> sync_completion) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
-  // Start a timeout for sync, or restart it if it was already running.
-  deletions_have_synced_timeout_.Reset(
-      base::BindOnce(&LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*success=*/false));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, deletions_have_synced_timeout_.callback(), kSyncTaskTimeout);
-
-  // Do an immediate check for the case where there are already no unsynced
-  // deletions.
-  if (login_db_ && !GetMetadataStore()->HasUnsyncedPasswordDeletions()) {
-    NotifyDeletionsHaveSynced(/*success=*/true);
-  }
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
@@ -367,21 +332,6 @@ void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(remote_forms_changes_received_callback_,
                                 changes, IsAccountStore()));
-}
-
-void LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced(bool success) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Either all deletions have been committed to the Sync server, or Sync is
-  // telling us that it won't commit them (because Sync was turned off
-  // permanently). In either case, run the corresponding callbacks now (on the
-  // main task runner).
-  DCHECK(!success || !GetMetadataStore()->HasUnsyncedPasswordDeletions());
-  for (auto& callback : deletions_have_synced_callbacks_) {
-    main_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(std::move(callback), success));
-  }
-  deletions_have_synced_timeout_.Cancel();
-  deletions_have_synced_callbacks_.clear();
 }
 
 bool LoginDatabaseAsyncHelper::BeginTransaction() {

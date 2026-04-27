@@ -111,7 +111,6 @@ TEST_F(PasswordStoreEmptyBackendTest,
   base::Time delete_end = base::Time::FromTimeT(2000);
   base::test::TestFuture<PasswordChangesOrError> future;
   backend->RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
-                                           base::DoNothing(),
                                            future.GetCallback());
 
   const PasswordChangesOrError& result = future.Get();

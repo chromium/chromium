@@ -501,7 +501,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   const JobId kGetLoginsJobId{13387};
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
   backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
-                                            base::OnceCallback<void(bool)>(),
                                             mock_deletion_reply.Get());
 
   // Imitate login retrieval and check that it triggers the removal of matching
@@ -1714,7 +1713,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
-                                            base::OnceCallback<void(bool)>(),
                                             mock_reply.Get());
 
   EXPECT_CALL(mock_reply,

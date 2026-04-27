@@ -2075,16 +2075,7 @@ void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
   CHECK_EQ(data_type, syncer::PASSWORDS);
   CHECK_EQ(data_type, syncer::PASSWORDS);
-  bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
   ClearAllSyncMetadata(&login_db_->db_, data_type);
-  if (had_unsynced_password_deletions &&
-      password_deletions_have_synced_callback_) {
-    // Note: At this point we can't be fully sure whether the deletions actually
-    // reached the server yet. We might have sent a commit, but haven't received
-    // the commit confirmation. Let's be conservative and assume they haven't
-    // been successfully deleted.
-    password_deletions_have_synced_callback_.Run(/*success=*/false);
-  }
 }
 
 bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
@@ -2117,31 +2108,7 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
 
   s.BindInt(0, storage_key_int);
   s.BindString(1, encrypted_metadata);
-  if (data_type != syncer::PASSWORDS) {
-    return s.Run();
-  }
-  CHECK_EQ(data_type, syncer::PASSWORDS);
-
-  // This ongoing operation may influence the value returned by
-  // HasUnsyncedPasswordDeletions() only if the storage key being updated
-  // represents a pending deletion AND the new metadata is not (necessary but
-  // not sufficient condition). Because HasUnsyncedPasswordDeletions() may be
-  // expensive, it is evaluated lazily to avoid performance issues.
-  //
-  // Note: No need for an explicit "is unsynced" check: Once the deletion is
-  // committed, the metadata entry is removed.
-  std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
-      GetSyncEntityMetadataForStorageKey(data_type, storage_key);
-  bool was_unsynced_deletion =
-      previous_metadata && previous_metadata->is_deleted();
-
-  bool result = s.Run();
-  if (result && was_unsynced_deletion && !metadata.is_deleted() &&
-      !HasUnsyncedPasswordDeletions() &&
-      password_deletions_have_synced_callback_) {
-    password_deletions_have_synced_callback_.Run(/*success=*/true);
-  }
-  return result;
+  return s.Run();
 }
 
 bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
@@ -2162,30 +2129,7 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
       base::StringPrintf("DELETE FROM %s WHERE storage_key=?",
                          kPasswordsSyncEntitiesMetadataTableName)));
   s.BindInt(0, storage_key_int);
-  if (data_type != syncer::PASSWORDS) {
-    return s.Run();
-  }
-  CHECK_EQ(data_type, syncer::PASSWORDS);
-
-  // This ongoing operation may influence the value returned by
-  // HasUnsyncedPasswordDeletions() only if the storage key being cleared
-  // represents a pending deletion (necessary but not sufficient condition).
-  // Because HasUnsyncedPasswordDeletions() may be expensive, it is evaluated
-  // lazily to avoid performance issues.
-  //
-  // Note: No need for an explicit "is unsynced" check: Once the deletion is
-  // committed, the metadata entry is removed.
-  std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
-      GetSyncEntityMetadataForStorageKey(data_type, storage_key);
-  bool was_unsynced_deletion =
-      previous_metadata && previous_metadata->is_deleted();
-
-  bool result = s.Run();
-  if (result && was_unsynced_deletion && !HasUnsyncedPasswordDeletions() &&
-      password_deletions_have_synced_callback_) {
-    password_deletions_have_synced_callback_.Run(/*success=*/true);
-  }
-  return result;
+  return s.Run();
 }
 
 bool LoginDatabase::SyncMetadataStore::UpdateDataTypeState(
@@ -2216,36 +2160,6 @@ bool LoginDatabase::SyncMetadataStore::ClearDataTypeState(
                                         kPasswordsSyncModelMetadataTableName)));
 
   return s.Run();
-}
-
-void LoginDatabase::SyncMetadataStore::SetPasswordDeletionsHaveSyncedCallback(
-    base::RepeatingCallback<void(bool)> callback) {
-  password_deletions_have_synced_callback_ = std::move(callback);
-}
-
-bool LoginDatabase::SyncMetadataStore::HasUnsyncedPasswordDeletions() {
-  TRACE_EVENT0("passwords", "SyncMetadataStore::HasUnsyncedDeletions");
-
-  sql::Statement s(login_db_->db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StringPrintf("SELECT metadata FROM %s",
-                         kPasswordsSyncEntitiesMetadataTableName)));
-
-  while (s.Step()) {
-    std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
-        DecryptAndParseSyncEntityMetadata(s.ColumnString(0),
-                                          login_db_->encryptor_.get());
-    if (!entity_metadata) {
-      return false;
-    }
-    // Note: No need for an explicit "is unsynced" check: Once the deletion is
-    // committed, the metadata entry is removed.
-    if (entity_metadata->is_deleted()) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(

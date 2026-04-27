@@ -136,7 +136,7 @@ class ChromeBrowsingDataRemoverDelegate
     kUserDataSnapshot = 35,
     // kMediaFeeds = 36, deprecated
     kAccountPasswords = 37,
-    kAccountPasswordsSynced = 38,
+    // kAccountPasswordsSynced = 38,
     // kAccountCompromisedCredentials = 39, deprecated
     kFaviconCacheExpiration = 40,
     kSecurePaymentConfirmationCredentials = 41,

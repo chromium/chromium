@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="kUserDataSnapshot"/>
   <int value="36" label="(Obsolete) kMediaFeeds"/>
   <int value="37" label="kAccountPasswords"/>
-  <int value="38" label="kAccountPasswordsSynced"/>
+  <int value="38" label="(Obsolete) kAccountPasswordsSynced"/>
   <int value="39" label="(Obsolete) kAccountCompromisedCredentials"/>
   <int value="40" label="kFaviconCacheExpiration"/>
   <int value="41" label="kSecurePaymentConfirmationInstruments"/>
@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
 </enum>
 
-<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
+<!-- LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h:TracingDataType) -->
 
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>

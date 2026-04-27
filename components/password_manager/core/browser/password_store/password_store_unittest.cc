@@ -407,10 +407,10 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::test::TestFuture<bool> completion_future;
 
-  store->RemoveLoginsCreatedBetween(
-      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
-      base::Time::FromSecondsSinceUnixEpoch(2), completion_future.GetCallback(),
-      base::NullCallback());
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    base::Time::FromSecondsSinceUnixEpoch(0),
+                                    base::Time::FromSecondsSinceUnixEpoch(2),
+                                    completion_future.GetCallback());
   WaitForPasswordStore();
 
   EXPECT_TRUE(completion_future.IsReady());
@@ -418,50 +418,6 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   store->RemoveObserver(&mock_observer);
-  store->ShutdownOnUIThread();
-}
-
-// Verify that RemoveLoginsCreatedBetween() fires the sync_completion callback
-// after deletions have been performed and synced to cloud have been sent out.
-// Whether the correct logins are removed or not is verified in detail in other
-// tests.
-TEST_F(PasswordStoreTest,
-       RemoveLoginsCreatedBetweenSyncCompletionCallbackIsCalled) {
-  /* clang-format off */
-  static const PasswordFormData kTestCredential =
-      {PasswordForm::Scheme::kHtml,
-       kTestWebRealm1,
-       kTestWebOrigin1,
-       "", u"", u"username_element_1",  u"password_element_1",
-       u"username_value_1",
-       u"", kTestLastUsageTime, 1};
-  /* clang-format on */
-
-  scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*affiliated_match_helper=*/nullptr);
-
-  std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
-  store->AddLogin(*test_form);
-  WaitForPasswordStore();
-
-  base::test::TestFuture<bool> sync_completion_future;
-
-  store->RemoveLoginsCreatedBetween(
-      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
-      base::Time::FromSecondsSinceUnixEpoch(2), base::NullCallback(),
-      sync_completion_future.GetCallback());
-
-  EXPECT_FALSE(sync_completion_future.IsReady());
-
-  auto* built_in_backend =
-      static_cast<PasswordStoreBuiltInBackend*>(store->GetBackendForTesting());
-  built_in_backend->NotifyDeletionsHaveSyncedForTesting(true);
-  WaitForPasswordStore();
-
-  EXPECT_TRUE(sync_completion_future.IsReady());
-  EXPECT_TRUE(sync_completion_future.Take());
-
   store->ShutdownOnUIThread();
 }
 
@@ -476,7 +432,7 @@ TEST_F(PasswordStoreTest,
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(WithArg<4>([](PasswordChangesOrErrorReply reply) {
+      .WillOnce(WithArg<3>([](PasswordChangesOrErrorReply reply) {
         std::move(reply).Run(PasswordStoreChangeList());
       }));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
@@ -501,7 +457,7 @@ TEST_F(PasswordStoreTest,
   MockPasswordStoreObserver mock_observer;
   store->AddObserver(&mock_observer);
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(WithArg<4>([](PasswordChangesOrErrorReply reply) -> void {
+      .WillOnce(WithArg<3>([](PasswordChangesOrErrorReply reply) -> void {
         std::move(reply).Run(PasswordChangesOrError(kBackendError));
       }));
   EXPECT_CALL(mock_observer,

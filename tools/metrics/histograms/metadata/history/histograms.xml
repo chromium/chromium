@@ -154,7 +154,6 @@ chromium-metrics-reviews@google.com.
 
   <token key="Task">
     <variant name="AccountPasswords" summary="AccountPasswords"/>
-    <variant name="AccountPasswordsSynced" summary="AccountPasswordsSynced"/>
     <variant name="AutofillData" summary="AutofillData"/>
     <variant name="AutofillOrigins" summary="AutofillOrigins"/>
     <variant name="CdmLicenses" summary="CdmLicenses"/>
@@ -186,7 +185,7 @@ chromium-metrics-reviews@google.com.
     <variant name="WebrtcEventLogs" summary="WebrtcEventLogs"/>
     <variant name="WebrtcLogs" summary="WebrtcLogs"/>
   </token>
-<!-- LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h:TracingDataType) -->
+<!-- LINT.ThenChange(//chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.cc:TracingDataTypeHistogramSuffix) -->
 
 </histogram>
 

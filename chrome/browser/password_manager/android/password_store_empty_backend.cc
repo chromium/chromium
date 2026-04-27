@@ -89,7 +89,6 @@ void PasswordStoreEmptyBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   // This is used by "Delete Browsing Data", which doesn't have a way to know
   // that the store is backend by an empty backend.
