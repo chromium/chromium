@@ -9,7 +9,6 @@ namespace signin {
 
 // ConsentLevel is the required level of user consent for an identity operation
 // (for example to fetch an OAuth2 access token).
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
 enum class ConsentLevel {
   // No specific consent required. In particular, browser sync consent is not
   // required. Operations are allowed if the user is signed in to Chrome. It is

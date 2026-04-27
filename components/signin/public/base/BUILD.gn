@@ -97,9 +97,6 @@ if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
     sources = [ "signin_metrics.h" ]
   }
-  java_cpp_enum("consent_level_enum_javagen") {
-    sources = [ "consent_level.h" ]
-  }
 }
 
 static_library("test_support") {
