@@ -1115,17 +1115,18 @@ void GlicInstanceMetrics::RecordSkillsWebClientEvent(
       base::UmaHistogramEnumeration("Glic.Skills.Invoke.Funnel",
                                     SkillsInvokeFunnel::kInvokedSkill);
       break;
-    // --- Management Page Metrics ---
     case kClickedManageFromMenu:
-      // TODO(crbug.com/483411707): Add routing for management page metrics.
-      break;
-    // --- Dialog Metrics ---
     case kClickedAddFromMenu:
     case kClickedSaveAsSkillHoverChip:
     case kClickedEditSkillHoverChip:
     case kClickedAddOn1pSkill:
     case kClickedEditFromMenu:
-      // TODO(crbug.com/483411707): Add routing for dialog metrics.
+    case kClickedBrowseSkillFromPlusMenu:
+    case kClickedSkillFromPlusMenu:
+    case kClickedManageSkillFromPlusMenu:
+    case kClickedMoreFromMenu:
+    case kClickedManageSkillFromMenu:
+    case kClickedSkillFromMenu:
       break;
     // --- SkillBuilder Metrics ---
     case kSkillBuilderClickedPromoChip:
