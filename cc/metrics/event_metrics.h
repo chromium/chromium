@@ -399,6 +399,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
                      base::TimeTicks scroll_begin_arrival_timestamp);
   ScrollEventMetrics(const ScrollEventMetrics&);
 
+  void CoalesceWith(const ScrollEventMetrics& newer_event);
+
  private:
   static std::unique_ptr<ScrollEventMetrics> CreateInternal(
       ui::EventType type,

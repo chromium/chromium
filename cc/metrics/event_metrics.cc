@@ -641,6 +641,12 @@ ScrollEventMetrics::~ScrollEventMetrics() {
   }
 }
 
+void ScrollEventMetrics::CoalesceWith(const ScrollEventMetrics& newer_event) {
+  DCHECK_EQ(scroll_begin_arrival_timestamp_,
+            newer_event.scroll_begin_arrival_timestamp_);
+  EventMetrics::CoalesceWith(newer_event);
+}
+
 const char* ScrollEventMetrics::GetScrollTypeName() const {
   return kScrollTypes[static_cast<int>(scroll_type_)].name;
 }
@@ -832,7 +838,7 @@ void ScrollUpdateEventMetrics::CoalesceWith(
     const ScrollUpdateEventMetrics& newer_scroll_update) {
   DCHECK(!is_synthetic_);
   DCHECK(!newer_scroll_update.is_synthetic_);
-  EventMetrics::CoalesceWith(newer_scroll_update);
+  ScrollEventMetrics::CoalesceWith(newer_scroll_update);
   last_timestamp_ = newer_scroll_update.last_timestamp_;
   delta_ += newer_scroll_update.delta_;
   predicted_delta_ += newer_scroll_update.predicted_delta_;
