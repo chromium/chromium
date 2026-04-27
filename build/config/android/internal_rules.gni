@@ -2795,7 +2795,6 @@ if (enable_java_templates) {
         _apksigner,
         _keystore_path,
       ]
-      _outputs += [ invoker.output_apk_path + ".idsig" ]
       _args += [
         "--apksigner-jar",
         rebase_path(_apksigner, root_build_dir),
@@ -2913,7 +2912,7 @@ if (enable_java_templates) {
     }
     action_with_pydeps(target_name) {
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = java_paths_for_inputs + _inputs
+      inputs = _inputs
       deps = _deps
       data = _data
       outputs = _outputs
