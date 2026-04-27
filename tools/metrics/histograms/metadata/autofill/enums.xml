@@ -2963,6 +2963,9 @@ Called by update_autofill_enums.py.-->
   <int value="3"
       label="User entered the autofill options via autofill profiles
              fragment."/>
+  <int value="4"
+      label="User entered the autofill options via autofill and passwords
+             fragment."/>
 </enum>
 
 <enum name="AutofillOtpAuthEvent">
