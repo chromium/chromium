@@ -2239,9 +2239,21 @@ int32_t WebContentsAccessibilityAndroid::FindElementType(
             MaybeFindRowColumn(start_node, element_type, forwards);
         ret) {
       ui::BrowserAccessibility* node = start_node->manager()->GetFromID(*ret);
-      return node ? static_cast<BrowserAccessibilityAndroid*>(node)
-                        ->GetUniqueId()
-                  : ui::kInvalidAXNodeID;
+      if (node) {
+        const BrowserAccessibilityAndroid* android_node =
+            static_cast<const BrowserAccessibilityAndroid*>(node);
+        // Per the W3C ARIA APG for grids[1], if a table/grid cell contains a
+        // single interactive widget, focus should be delegated to that widget.
+        // This logic is safely restricted to tables/grids via
+        // MaybeFindRowColumn().
+        // [1] https://www.w3.org/WAI/ARIA/apg/patterns/grid/#gridNav_focus
+        if (const BrowserAccessibilityAndroid* sole_interesting_node =
+                android_node->GetSoleInterestingNodeFromSubtree()) {
+          android_node = sole_interesting_node;
+        }
+        return android_node->GetUniqueId();
+      }
+      return ui::kInvalidAXNodeID;
     }
 
     predicate = PredicateForSearchKey(element_type);

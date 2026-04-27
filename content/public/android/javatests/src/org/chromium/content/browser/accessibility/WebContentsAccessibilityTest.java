@@ -3753,6 +3753,61 @@ public class WebContentsAccessibilityTest {
                 mNodeInfo.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
     }
 
+    /**
+     * Tests that TalkBack's Browse Mode table navigation (e.g., Ctrl + Alt + Arrows)
+     * correctly delegates focus to the interactive widget inside a gridcell.
+     * This ensures the inner link receives focus and can be activated, rather
+     * than focus getting trapped on the non-interactive cell wrapper.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_nextHtmlElement_gridCellDelegation() throws Throwable {
+        // Build an ARIA grid where each cell contains a single interactive link.
+        setupTestWithHTML(
+                "<div role='grid'>"
+                + "  <div role='row'>"
+                + "    <span role='gridcell' id='cell1'><a id='link1' href='#'>Link 1</a></span>"
+                + "    <span role='gridcell' id='cell2'><a id='link2' href='#'>Link 2</a></span>"
+                + "  </div>"
+                + "</div>");
+
+        // Find the inner link nodes
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "link1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "link2");
+        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Focus the first link to act as our starting point for navigation.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        // Simulate table navigation
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "COLUMN");
+
+        // Assert that the action successfully delegates focus to the inner link of the next cell,
+        // rather than the gridcell wrapper.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_NEXT_HTML_ELEMENT,
+                        bundle,
+                        () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+
+        // Update nodes and verify results.
+        mActivityTestRule.sendEndOfTestSignal();
+        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+    }
+
     // ------------------ Misc tests that cannot be done as tree/event tests ------------------ //
 
     /** Container class to hold a span and its range over a spannable text. */
