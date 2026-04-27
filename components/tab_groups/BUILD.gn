@@ -4,6 +4,7 @@
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 component("tab_groups") {
@@ -28,6 +29,15 @@ component("tab_groups") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/features.cc",
+      "android/features.h",
+      "android/tab_groups_feature_map.cc",
+    ]
+    deps += [ ":tab_groups_jni_headers" ]
+  }
 }
 
 if (is_android) {
@@ -36,18 +46,31 @@ if (is_android) {
     sources = [ "//components/tab_groups/tab_group_color.h" ]
   }
 
+  generate_jni("tab_groups_jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/tab_groups/TabGroupsFeatureMap.java" ]
+  }
+
   android_library("tab_groups_java") {
     resources_package = "org.chromium.components.tab_groups"
-    sources = [ "android/java/src/org/chromium/components/tab_groups/TabGroupColorPickerUtils.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/tab_groups/TabGroupColorPickerUtils.java",
+      "android/java/src/org/chromium/components/tab_groups/TabGroupsFeatureMap.java",
+    ]
     deps = [
       ":java_resources",
+      "//base:features_java",
       "//components/browser_ui/styles/android:java",
       "//third_party/android_deps:material_design_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:gendeps_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
-    srcjar_deps = [ ":java_enums" ]
+    srcjar_deps = [
+      ":java_enums",
+      ":tab_groups_jni_headers",
+    ]
   }
 
   android_resources("java_resources") {

@@ -376,6 +376,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-tab-group-colors",
+    "owners": [
+      "hitarthkothari@google.com",
+      "ckitagawa@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "android-theme-module",
     "owners": [
       "wenyufu@chromium.org"
