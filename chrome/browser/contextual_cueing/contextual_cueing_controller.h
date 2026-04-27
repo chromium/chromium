@@ -49,6 +49,10 @@ class ContextualCueingController
       delete;
   ~ContextualCueingController() override;
 
+  // Get contents' browser's ContextualCueingController if it exists.
+  static ContextualCueingController* GetForWebContents(
+      content::WebContents& contents);
+
   // Register a cue type. Feature code provides a CueTarget for reporting the
   // feature's cue eligibility and handling clicks. Calling this function for a
   // CueTargetType that was already registered will destroy the previous target.
@@ -62,6 +66,9 @@ class ContextualCueingController
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
+
+  // Hide the cue if it's showing.
+  void HideCue();
 
  private:
   // Initiates a model execution request to MES for the current window state.
@@ -88,8 +95,6 @@ class ContextualCueingController
                     actions::ActionInvocationContext);
 
   CueTarget* GetTarget(CueTargetType type);
-
-  void HideCue();
 
   // Returns the list of cue surfaces that are currently eligible to show a cue.
   absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>

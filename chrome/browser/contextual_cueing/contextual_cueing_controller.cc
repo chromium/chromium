@@ -139,6 +139,22 @@ ContextualCueingController::~ContextualCueingController() {
   }
 }
 
+// static
+ContextualCueingController* ContextualCueingController::GetForWebContents(
+    content::WebContents& contents) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED();
+#else
+  if (auto* tab = tabs::TabInterface::GetFromContents(&contents)) {
+    if (auto* browser_window_interface = tab->GetBrowserWindowInterface()) {
+      return browser_window_interface->GetFeatures()
+          .contextual_cueing_controller();
+    }
+  }
+#endif
+  return nullptr;
+}
+
 void ContextualCueingController::RegisterCueTarget(
     CueTargetType type,
     std::unique_ptr<CueTarget> target) {

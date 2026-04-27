@@ -189,6 +189,9 @@ class PageActionController {
                                    const AnchoredMessageConfig& config) = 0;
   virtual void HideAnchoredMessage(actions::ActionId action_id) = 0;
 
+  // Get the ID of the active anchored message, or nullopt if none is showing.
+  virtual std::optional<actions::ActionId> GetActiveAnchoredMessage() const = 0;
+
   // By default, in suggestion chip mode, the ActionItem text will be used as
   // the control label. However, features can provide a custom text to use
   // as the label. In that case, the custom text will take precedence over
@@ -308,6 +311,7 @@ class PageActionControllerImpl : public PageActionController,
   void HideSuggestionChip(actions::ActionId action_id) override;
   void ShowAnchoredMessage(actions::ActionId action_id,
                            const AnchoredMessageConfig& config) override;
+  std::optional<actions::ActionId> GetActiveAnchoredMessage() const override;
   void HideAnchoredMessage(actions::ActionId action_id) override;
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text) override;

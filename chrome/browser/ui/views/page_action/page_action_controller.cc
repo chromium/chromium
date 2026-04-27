@@ -257,6 +257,11 @@ void PageActionControllerImpl::ResumeAnchoredMessageTimeout(
   }
 }
 
+std::optional<actions::ActionId>
+PageActionControllerImpl::GetActiveAnchoredMessage() const {
+  return active_anchored_message_;
+}
+
 ScopedPageActionActivity PageActionControllerImpl::AddActivity(
     actions::ActionId action_id) {
   auto& counter = activity_counters_[action_id];

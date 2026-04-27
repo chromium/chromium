@@ -146,6 +146,13 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
             }));
   }
 
+  page_actions::PageActionController* GetPageActionController() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->page_action_controller();
+  }
+
  protected:
   raw_ptr<TestCueTarget> cue_target_ = nullptr;
 
@@ -400,11 +407,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   ASSERT_FALSE(cue_target_->HasClickData());
 
   page_actions::PageActionController* page_action_controller =
-      browser()
-          ->tab_strip_model()
-          ->GetActiveTab()
-          ->GetTabFeatures()
-          ->page_action_controller();
+      GetPageActionController();
   CHECK(page_action_controller);
   page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
   observer.RegisterAsPageActionObserver(*page_action_controller);
@@ -665,6 +668,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kSidePanelShowing, 1);
 }
+
+// TODO(crbug.com/503910711): Add a test for hiding on navigation
 
 }  // namespace
 }  // namespace contextual_cueing

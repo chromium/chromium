@@ -34,6 +34,10 @@ class MockPageActionController : public PageActionController {
               (actions::ActionId, const AnchoredMessageConfig&),
               (override));
   MOCK_METHOD(void, HideAnchoredMessage, (actions::ActionId), (override));
+  MOCK_METHOD(std::optional<actions::ActionId>,
+              GetActiveAnchoredMessage,
+              (),
+              (const override));
   MOCK_METHOD(void,
               OverrideText,
               (actions::ActionId, const std::u16string&),
