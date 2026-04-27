@@ -65,6 +65,15 @@ class MockWebStateDelegate : public web::WebStateDelegate {
               ShouldAllowCopy,
               (web::WebState*, base::OnceCallback<void(bool)>),
               (override));
+  MOCK_METHOD(void,
+              ShouldAllowPaste,
+              (web::WebState*, base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              ShouldAllowCut,
+              (web::WebState*, base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void, DidFinishClipboardRead, (web::WebState*), (override));
 };
 
 }  // namespace
@@ -176,4 +185,22 @@ TEST_F(ReaderModeWebStateDelegateTest,
 TEST_F(ReaderModeWebStateDelegateTest, ShouldAllowCopyForwarded) {
   EXPECT_CALL(mock_web_state_delegate_, ShouldAllowCopy(nullptr, testing::_));
   reader_mode_web_state_delegate_.ShouldAllowCopy(nullptr, base::DoNothing());
+}
+
+// Tests that ShouldAllowPaste is forwarded.
+TEST_F(ReaderModeWebStateDelegateTest, ShouldAllowPasteForwarded) {
+  EXPECT_CALL(mock_web_state_delegate_, ShouldAllowPaste(nullptr, testing::_));
+  reader_mode_web_state_delegate_.ShouldAllowPaste(nullptr, base::DoNothing());
+}
+
+// Tests that ShouldAllowCut is forwarded.
+TEST_F(ReaderModeWebStateDelegateTest, ShouldAllowCutForwarded) {
+  EXPECT_CALL(mock_web_state_delegate_, ShouldAllowCut(nullptr, testing::_));
+  reader_mode_web_state_delegate_.ShouldAllowCut(nullptr, base::DoNothing());
+}
+
+// Tests that DidFinishClipboardRead is forwarded.
+TEST_F(ReaderModeWebStateDelegateTest, DidFinishClipboardReadForwarded) {
+  EXPECT_CALL(mock_web_state_delegate_, DidFinishClipboardRead(nullptr));
+  reader_mode_web_state_delegate_.DidFinishClipboardRead(nullptr);
 }

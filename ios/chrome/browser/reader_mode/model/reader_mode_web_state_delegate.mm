@@ -90,3 +90,19 @@ void ReaderModeWebStateDelegate::ShouldAllowCopy(
     base::OnceCallback<void(bool)> callback) {
   web_state_delegate_->ShouldAllowCopy(source, std::move(callback));
 }
+
+void ReaderModeWebStateDelegate::ShouldAllowPaste(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  web_state_delegate_->ShouldAllowPaste(source, std::move(callback));
+}
+
+void ReaderModeWebStateDelegate::ShouldAllowCut(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  web_state_delegate_->ShouldAllowCut(source, std::move(callback));
+}
+
+void ReaderModeWebStateDelegate::DidFinishClipboardRead(web::WebState* source) {
+  web_state_delegate_->DidFinishClipboardRead(source);
+}
