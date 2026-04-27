@@ -16,6 +16,7 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -340,8 +341,8 @@ HRESULT TSFTextStore::GetText(LONG acp_start,
   acp_end = std::min(acp_end, acp_start + static_cast<LONG>(text_buffer_size));
   *text_buffer_copied = acp_end - acp_start;
 
-  const std::u16string& result =
-      string_buffer_document_.substr(acp_start, *text_buffer_copied);
+  std::u16string_view result = std::u16string_view(string_buffer_document_)
+                                   .substr(acp_start, *text_buffer_copied);
   for (size_t i = 0; i < result.size(); ++i) {
     text_buffer[i] = result[i];
   }
