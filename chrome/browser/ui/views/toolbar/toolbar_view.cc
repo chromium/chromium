@@ -353,6 +353,7 @@ void ToolbarView::Init() {
     // in popups.
     pinned_toolbar_actions_container_ = AddChildView(
         std::make_unique<PinnedToolbarActionsContainer>(browser_view_, this));
+    pinned_toolbar_actions_ = pinned_toolbar_actions_container_;
     SetBackground(views::CreateSolidBackground(kColorLocationBarBackground));
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
