@@ -1022,12 +1022,20 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (void)mainToolbarMediatorDidChangeOmniboxPosition:
     (MainToolbarMediator*)mediator {
+  if (!IsChromeNextIaEnabled()) {
+    return;
+  }
+
   if (mediator.isOmniboxInBottomPosition) {
     [_topLocationBarCoordinator setLocationBarActive:NO];
     [_bottomLocationBarCoordinator setLocationBarActive:YES];
+    OmniboxPositionBrowserAgent::FromBrowser(self.browser)
+        ->SetIsCurrentLayoutBottomOmnibox(YES);
   } else {
     [_topLocationBarCoordinator setLocationBarActive:YES];
     [_bottomLocationBarCoordinator setLocationBarActive:NO];
+    OmniboxPositionBrowserAgent::FromBrowser(self.browser)
+        ->SetIsCurrentLayoutBottomOmnibox(NO);
   }
 }
 

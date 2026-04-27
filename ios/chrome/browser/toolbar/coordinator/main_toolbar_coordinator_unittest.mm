@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
@@ -183,11 +184,34 @@ class MainToolbarCoordinatorTest : public PlatformTest {
 
   void TearDown() override { [coordinator_ stop]; }
 
+  void VerifyOmniboxPositionObservation() {
+    TestOmniboxPositionObserver observer;
+    base::ScopedObservation<OmniboxPositionBrowserAgent,
+                            TestOmniboxPositionObserver>
+        obs{&observer};
+
+    OmniboxPositionBrowserAgent* browser_agent =
+        OmniboxPositionBrowserAgent::FromBrowser(browser_.get());
+    obs.Observe(browser_agent);
+
+    coordinator_ =
+        [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    [coordinator_ start];
+    EXPECT_FALSE(observer.is_bottom_omnibox_);
+
+    // Change bottom omnibox pref.
+    GetApplicationContext()->GetLocalState()->SetBoolean(
+        omnibox::kIsOmniboxInBottomPosition, true);
+
+    EXPECT_TRUE(observer.is_bottom_omnibox_);
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   MainToolbarCoordinator* coordinator_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that the OmniboxPositionBrowserAgent can be observed to tell when the
@@ -197,25 +221,19 @@ TEST_F(MainToolbarCoordinatorTest, TestOmniboxPositionBrowserAgentObservation) {
   if (!IsBottomOmniboxAvailable()) {
     return;
   }
-  TestOmniboxPositionObserver observer;
-  base::ScopedObservation<OmniboxPositionBrowserAgent,
-                          TestOmniboxPositionObserver>
-      obs{&observer};
+  VerifyOmniboxPositionObservation();
+}
 
-  OmniboxPositionBrowserAgent* browser_agent =
-      OmniboxPositionBrowserAgent::FromBrowser(browser_.get());
-  obs.Observe(browser_agent);
-
-  coordinator_ =
-      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
-  [coordinator_ start];
-  EXPECT_FALSE(observer.is_bottom_omnibox_);
-
-  // Change bottom omnibox pref.
-  GetApplicationContext()->GetLocalState()->SetBoolean(
-      omnibox::kIsOmniboxInBottomPosition, true);
-
-  EXPECT_TRUE(observer.is_bottom_omnibox_);
+// Test that the OmniboxPositionBrowserAgent can be observed to tell when the
+// bottom omnibox position changes when ChromeNextIa is enabled.
+TEST_F(MainToolbarCoordinatorTest,
+       TestOmniboxPositionBrowserAgentObservation_ChromeNextIa) {
+  // Bottom omnibox is not supported on all devices (e.g. iPad).
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  VerifyOmniboxPositionObservation();
 }
 
 // Tests that taking a side swipe snapshot of a toolbar that is not in the
