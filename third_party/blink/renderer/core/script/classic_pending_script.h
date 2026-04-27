@@ -64,8 +64,7 @@ class CORE_EXPORT ClassicPendingScript final
                        ScriptSourceLocationType,
                        const ScriptFetchOptions&,
                        bool is_external,
-                       scheduler::TaskAttributionInfo* task_state,
-                       CacheHintAttributeValue cache_hint);
+                       scheduler::TaskAttributionInfo* task_state);
   ~ClassicPendingScript() override;
 
   void Trace(Visitor*) const override;
@@ -136,7 +135,6 @@ class CORE_EXPORT ClassicPendingScript final
   const ScriptSourceLocationType source_location_type_;
   const bool is_external_;
   ReadyState ready_state_;
-  const CacheHintAttributeValue cache_hint_;
 
   // The request is intervened by document.write() intervention.
   bool intervened_ = false;

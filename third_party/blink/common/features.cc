@@ -1082,11 +1082,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kInlineScriptCache,
                    "timeout",
                    base::Milliseconds(100));
-BASE_FEATURE_PARAM(bool,
-                   kInlineScriptCacheEnabledForDefaultHint,
-                   &kInlineScriptCache,
-                   "enable_for_default_hint",
-                   true);
 
 BASE_FEATURE(kInputPredictorTypeChoice, base::FEATURE_DISABLED_BY_DEFAULT);
 

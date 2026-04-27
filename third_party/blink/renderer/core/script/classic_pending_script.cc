@@ -7,7 +7,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -29,7 +28,6 @@
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/script/cache_hint_attribute_value.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -67,25 +65,6 @@ InlineScriptStreamer* GetInlineScriptStreamer(const String& source,
   return scriptable_parser->TakeInlineScriptStreamer(source);
 }
 
-bool ShouldUseInlineScriptCache(ScriptSourceLocationType source_location_type,
-                                CacheHintAttributeValue cache_hint) {
-  if (source_location_type != ScriptSourceLocationType::kInline) {
-    return false;
-  }
-  if (!features::IsInlineScriptCacheEnabled()) {
-    return false;
-  }
-  switch (cache_hint) {
-    case CacheHintAttributeValue::kNever:
-      return false;
-    case CacheHintAttributeValue::kEager:
-      return true;
-    case CacheHintAttributeValue::kDefault:
-      return features::kInlineScriptCacheEnabledForDefaultHint.Get();
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-classic-script">
@@ -107,7 +86,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), NullUrl(), NullUrl(),
           String(), ScriptSourceLocationType::kExternalFile, options,
-          /*is_external=*/true, task_state, CacheHintAttributeValue::kDefault);
+          /*is_external=*/true, task_state);
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -153,12 +132,11 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
     scheduler::TaskAttributionInfo* task_state,
-    CacheHintAttributeValue cache_hint) {
+    CacheHintAttributeValue /*unused*/) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
-          source_location_type, options, /*is_external=*/false, task_state,
-          cache_hint);
+          source_location_type, options, /*is_external=*/false, task_state);
   pending_script->CheckState();
   return pending_script;
 }
@@ -172,8 +150,7 @@ ClassicPendingScript::ClassicPendingScript(
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
     bool is_external,
-    scheduler::TaskAttributionInfo* task_state,
-    CacheHintAttributeValue cache_hint)
+    scheduler::TaskAttributionInfo* task_state)
     : PendingScript(element, starting_position, task_state),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
@@ -181,8 +158,7 @@ ClassicPendingScript::ClassicPendingScript(
       source_text_for_inline_script_(source_text_for_inline_script),
       source_location_type_(source_location_type),
       is_external_(is_external),
-      ready_state_(is_external ? kWaitingForResource : kReady),
-      cache_hint_(cache_hint) {
+      ready_state_(is_external ? kWaitingForResource : kReady) {
   CHECK(GetElement());
 
   if (is_external_) {
@@ -578,8 +554,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
 
       mojo_base::BigBuffer code_cache;
       if (DocumentLoader* loader = element_document->Loader();
-          loader &&
-          ShouldUseInlineScriptCache(source_location_type_, cache_hint_)) {
+          features::IsInlineScriptCacheEnabled() && loader) {
         if (CodeCacheHost* cache_host = loader->GetCodeCacheHost()) {
           CHECK(!source_text_for_inline_script_.IsNull());
           // Stores an empty `mojo_base::BigBuffer` on cache miss.
