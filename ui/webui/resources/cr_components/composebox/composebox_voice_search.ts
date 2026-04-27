@@ -39,7 +39,14 @@ const QUERY_LENGTH_LIMIT: number = 120;
  * Time in milliseconds to wait before automatically closing the UI after a
  * NO_MATCH error occurs (when the error timer is enabled).
  */
-const ERROR_TIMEOUT_MS: number = 24000;
+const ERROR_TIMEOUT_LONG_MS: number = 24000;
+
+/**
+ * Time in milliseconds to wait before automatically closing the UI after a non
+ * NO_MATCH error occurs (when the error timer is enabled).
+ */
+const ERROR_TIMEOUT_SHORT_MS: number = 9000;
+
 
 // The set of controller states.
 enum State {
@@ -424,32 +431,55 @@ export class ComposeboxVoiceSearchElement extends
     this.error_ = error;
     this.detailedError_ = error;
 
-    this.errorMessage_ = this.getErrorText_(error);
-
-    if (this.hasErrorTimer && error === VoiceSearchError.NO_MATCH) {
-      // NO_MATCH errors with a timer auto-close after 24s (NTP Realbox Case).
-      // Log as a canceling error.
-      this.recordMetric_(
-          VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
-          VoiceSearchAction.MAX_VALUE + 1);
-
-      this.fire('voice-search-error', /*canceled-by-error=*/ true);
-
-      // Start the auto-close timer. Do not record metrics here to avoid double
-      // counting.
-      this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
+    // Handle error display and dismissal behavior based on the embedder.
+    if (!this.hasErrorTimer) {
+      if (error === VoiceSearchError.NO_MATCH) {
+        // Without a timer, NO_MATCH errors close immediately with no message.
+        this.errorMessage_ = '';
         this.resetState_();
+        this.recordMetric_(
+            VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
+            VoiceSearchAction.MAX_VALUE + 1);
+        // This fire event does not record metric.
         this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
-      }, ERROR_TIMEOUT_MS);
-
+        // This fire event records metric for contextual tasks and cancels voice
+        // search.
+        this.fire('voice-search-error', /*canceled-by-error=*/ true);
+      } else {
+        // Without a timer, other errors show a message and stay open
+        // permanently.
+        this.errorMessage_ = this.getErrorText_(error);
+        this.recordMetric_(
+            VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_NON_CANCELING,
+            VoiceSearchAction.MAX_VALUE + 1);
+        // this fire event records metric for contextual tasks but does not
+        // cancel voice search.
+        this.fire('voice-search-error', /*canceled-by-error=*/ false);
+      }
     } else {
-      // All other errors keep the UI open permanently. Log as a non-canceling
-      // error.
-      this.recordMetric_(
-          VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_NON_CANCELING,
-          VoiceSearchAction.MAX_VALUE + 1);
+      // If there is a timer, an error message would show up.
+      this.errorMessage_ = this.getErrorText_(error);
 
-      this.fire('voice-search-error', /*canceled-by-error=*/ false);
+      if (error === VoiceSearchError.NO_MATCH) {
+        // NO_MATCH errors auto-close after a longer delay.
+        this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
+          this.recordMetric_(
+              VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
+              VoiceSearchAction.MAX_VALUE + 1);
+          this.resetState_();
+          // This fire event does not record metric.
+          this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        }, ERROR_TIMEOUT_LONG_MS);
+      } else {
+        // Other errors auto-close after a shorter delay.
+        this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
+          this.recordMetric_(
+              VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,
+              VoiceSearchAction.MAX_VALUE + 1);
+          this.resetState_();
+          this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        }, ERROR_TIMEOUT_SHORT_MS);
+      }
     }
   }
 
