@@ -139,6 +139,37 @@ QueryContextualizer::QueryContextualizer(ContextualTasksService* service,
 
 QueryContextualizer::~QueryContextualizer() = default;
 
+// static
+std::vector<GURL> QueryContextualizer::ExtractUrlsFromQuery(
+    const std::string& query_text) {
+  re2::StringPiece input(query_text);
+  std::string url_str;
+  // Regex to extract URLs.
+  // Matches http://, https://, ftp://, or www. followed by valid URL
+  // characters. Explicitly lists allowed characters instead of using ranges
+  // like #-; for readability. Allowed characters: alphanumeric, -, ., ~, :,
+  // /, ?, #, [, ], @, !, $, &, ', (, ), *, +, ,, ;, =, %
+  static const base::NoDestructor<re2::RE2> url_regex(
+      R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$&%'()*+,\-./:;!=?@\[\]_`{|}~]+))");
+
+  std::vector<GURL> extracted_urls;
+  base::flat_set<GURL> seen_urls;
+
+  while (RE2::FindAndConsume(&input, *url_regex, &url_str)) {
+    GURL url;
+    if (base::StartsWith(url_str, "www.",
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      url = GURL("http://" + url_str);
+    } else {
+      url = GURL(url_str);
+    }
+    if (url.is_valid() && seen_urls.insert(url).second) {
+      extracted_urls.push_back(url);
+    }
+  }
+  return extracted_urls;
+}
+
 void QueryContextualizer::Contextualize(
     const std::optional<base::Uuid>& task_id,
     const std::string& query_text,
@@ -284,31 +315,7 @@ void QueryContextualizer::OnContextRetrieved(
 
   // Extract URLs from the query text and start upload flows for them.
   if (lens::features::IsLensSendUrlsInComposeboxesEnabled()) {
-    re2::StringPiece input(query_text);
-    std::string url_str;
-    // Regex to extract URLs.
-    // Matches http://, https://, ftp://, or www. followed by valid URL
-    // characters. Explicitly lists allowed characters instead of using ranges
-    // like #-; for readability. Allowed characters: alphanumeric, -, ., ~, :,
-    // /, ?, #, [, ], @, !, $, &, ', (, ), *, +, ,, ;, =, %
-    static const base::NoDestructor<re2::RE2> url_regex(
-        R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$%'()*+,\-./:;!=?@\[\]_`{|}~]+))");
-
-    std::vector<GURL> extracted_urls;
-    base::flat_set<GURL> seen_urls;
-
-    while (RE2::FindAndConsume(&input, *url_regex, &url_str)) {
-      GURL url;
-      if (base::StartsWith(url_str, "www.",
-                           base::CompareCase::INSENSITIVE_ASCII)) {
-        url = GURL("http://" + url_str);
-      } else {
-        url = GURL(url_str);
-      }
-      if (url.is_valid() && seen_urls.insert(url).second) {
-        extracted_urls.push_back(url);
-      }
-    }
+    std::vector<GURL> extracted_urls = ExtractUrlsFromQuery(query_text);
 
     // Create the session handle if it did not already exist and there are URLs
     // to upload.

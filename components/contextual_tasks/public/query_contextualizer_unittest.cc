@@ -385,6 +385,38 @@ TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
   CompleteAllUploads();
 }
 
+TEST(QueryContextualizerStaticTest, ExtractUrlsFromQuery) {
+  // Test simple extraction.
+  std::vector<GURL> urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://example.com");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], GURL("https://example.com"));
+
+  // Test extraction with ampersand.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "Check out https://example.com?a=1&b=2");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], GURL("https://example.com?a=1&b=2"));
+
+  // Test extraction with multiple URLs.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "https://example.com and http://test.org");
+  ASSERT_EQ(urls.size(), 2u);
+  EXPECT_EQ(urls[0], GURL("https://example.com"));
+  EXPECT_EQ(urls[1], GURL("http://test.org"));
+
+  // Test extraction with www. prefix.
+  urls = QueryContextualizer::ExtractUrlsFromQuery("www.google.com");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], GURL("http://www.google.com"));
+
+  // Test deduplication.
+  urls = QueryContextualizer::ExtractUrlsFromQuery(
+      "https://example.com and https://example.com");
+  ASSERT_EQ(urls.size(), 1u);
+  EXPECT_EQ(urls[0], GURL("https://example.com"));
+}
+
 TEST_F(QueryContextualizerTest,
        Contextualize_DoesNotExtractUrlsWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
