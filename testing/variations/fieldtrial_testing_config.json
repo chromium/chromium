@@ -15701,7 +15701,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "execution_rate": "50"
+                        "execution_rate": "25"
                     },
                     "enable_features": [
                         "ModelBasedPageClassification"
