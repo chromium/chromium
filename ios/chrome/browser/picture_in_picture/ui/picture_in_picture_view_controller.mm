@@ -255,6 +255,8 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   [self.contentView addGestureRecognizer:tapGesture];
   self.contentView.userInteractionEnabled = YES;
 
+  self.contentView.accessibilityElements = @[ _playerView, _playPauseButton ];
+
   [self showControls];
 }
 
