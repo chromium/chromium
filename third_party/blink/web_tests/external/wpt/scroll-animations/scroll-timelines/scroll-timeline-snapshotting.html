@@ -41,6 +41,9 @@
 'use strict';
 
 promise_test(async t => {
+  assert_implements(window.ScrollTimeline,
+                    "ScrollTimeline is not implemented");
+
   const scroller = document.querySelector('.scroller');
   const max_scroll = scroller.scrollHeight - scroller.clientHeight;
   await runAndWaitForFrameUpdate(() => {
