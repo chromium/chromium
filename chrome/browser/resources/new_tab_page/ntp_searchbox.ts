@@ -355,7 +355,13 @@ export class NtpSearchboxElement extends SearchboxElement implements
     chrome.histograms.recordBoolean(
         'ContextualSearch.AiModeButtonClick.NtpRealbox', true);
 
-    if (!this.composeboxEnabled || this.$.input.inputElement.value.trim()) {
+    const isSearch = this.selectedMatch?.isSearchType ?? true;
+    if (!isSearch) {
+      this.setInputText('');
+    }
+    const queryText = isSearch ? this.$.input.inputElement.value.trim() : '';
+
+    if (!this.composeboxEnabled || queryText) {
       const histogramName =
           'ContextualSearch.UserAction.SubmitQueryV2.NewTabPage';
       // LINT.IfChange(ContextualSearchContextState)
@@ -369,8 +375,7 @@ export class NtpSearchboxElement extends SearchboxElement implements
 
       this.pageHandler().notifySessionStarted();
       this.pageHandler().submitQuery(
-          this.$.input.inputElement.value.trim(), e.detail.button,
-          false, /* altKey */
+          queryText, e.detail.button, false, /* altKey */
           e.detail.ctrlKey, e.detail.metaKey, e.detail.shiftKey);
     } else {
       this.openComposebox_();
