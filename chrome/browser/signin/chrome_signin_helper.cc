@@ -381,6 +381,9 @@ void ProcessMirrorHeader(
       base::FeatureList::IsEnabled(switches::kSupportWebSigninAddSession)) {
     if (!target_account_info.has_value()) {
       // Target account is not on the device.
+      base::UmaHistogramEnumeration(
+          "Signin.ProcessMirrorHeaders.Event",
+          signin::MirrorHeaderEvent::kAccountNotOnDevice);
       SigninBridgeFactory::GetForProfile(profile)->StartAddAccountFlow(
           TabAndroid::FromWebContents(web_contents),
           manage_accounts_params.email, continue_url);
@@ -391,6 +394,9 @@ void ProcessMirrorHeader(
     // error.
     if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             target_account_info->account_id)) {
+      base::UmaHistogramEnumeration(
+          "Signin.ProcessMirrorHeaders.Event",
+          signin::MirrorHeaderEvent::kAccountInPersistentError);
       SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
           TabAndroid::FromWebContents(web_contents), continue_url,
           target_account_info->account_id);
@@ -399,6 +405,9 @@ void ProcessMirrorHeader(
 
     // If the account is available on the device but is not in error state
     // then we wait for cookies.
+    base::UmaHistogramEnumeration(
+        "Signin.ProcessMirrorHeaders.Event",
+        signin::MirrorHeaderEvent::kAccountRecentlyAdded);
     SigninBridgeFactory::GetForProfile(profile)->WaitForCookiesAndRedirect(
         TabAndroid::FromWebContents(web_contents), continue_url,
         target_account_info->account_id);

@@ -2772,6 +2772,17 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
+<histogram name="Signin.ProcessMirrorHeaders.Event" enum="MirrorHeaderEvent"
+    expires_after="2026-09-06">
+  <owner>mlbipin@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records which the state of the target account when the mirror header is
+    received. This is recorded when the GAIA_SERVICE_TYPE_ADDSESSION header is
+    received.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Promo.ImpressionsUntil.{Action}.{AccessPoint}"
     units="impressions" expires_after="2026-08-23">
   <owner>myuu@google.com</owner>

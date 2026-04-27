@@ -486,6 +486,7 @@ TEST_F(ChromeSigninHelperTest, MirrorGoIncognitoInactiveWebContents) {
 // Tests that receiving an ADDSESSION action within kChromeManageAccountsHeader
 // opens the bottom sheet with the correct continue URL.
 TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
 
   TestTabModel tab_model(profile());
@@ -513,11 +514,15 @@ TEST_F(ChromeSigninHelperTest, AddSessionOpensBottomSheet) {
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
   task_environment()->RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountNotOnDevice, 1);
 }
 
 // Tests that receiving an ADDSESSION action within kChromeManageAccountsHeader
 // opens the wait for cookies bridge if account is already on device.
 TEST_F(ChromeSigninHelperTest, WaitForCookiesAndRedirectWhenAccountAvailable) {
+  base::HistogramTester histogram_tester;
   InitializeIdentityTestEnvironment();
   CoreAccountId account_id =
       identity_test_env()
@@ -550,6 +555,9 @@ TEST_F(ChromeSigninHelperTest, WaitForCookiesAndRedirectWhenAccountAvailable) {
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
   task_environment()->RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountRecentlyAdded, 1);
 }
 
 // Tests that receiving an action with show_consistency_promo parameter and a
@@ -672,6 +680,7 @@ TEST_F(ChromeSigninHelperTest, OpenBottomSheetWithConsistencyParameter) {
 // continue URL.
 TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
   InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
   CoreAccountId account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
@@ -708,6 +717,9 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
   task_environment()->RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
 }
 
 // Tests that receiving DEFAULT action within kChromeManageAccountsHeader

@@ -655,6 +655,16 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kBrowserContextShutDown"/>
 </enum>
 
+<!-- LINT.IfChange(MirrorHeaderEvent) -->
+
+<enum name="MirrorHeaderEvent">
+  <int value="0" label="Account not on device"/>
+  <int value="1" label="Account in persistent error state"/>
+  <int value="2" label="Account recently added"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/chrome_signin_helper.h:MirrorHeaderEvent) -->
+
 <enum name="OAuth2LoginAccountRevokedMigrationState">
   <int value="0" label="Account ID migration not started"/>
   <int value="1" label="Account ID migration in progress"/>
