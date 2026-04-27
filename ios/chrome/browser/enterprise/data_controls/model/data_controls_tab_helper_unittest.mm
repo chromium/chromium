@@ -13,6 +13,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
+#import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -988,6 +989,184 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Allowed) {
   SetCopyAllowRule();
   web_state_->SetCurrentURL(GURL(kAllowedUrl));
   EXPECT_TRUE(tab_helper()->ShouldAllowShare());
+}
+
+// Tests that IsSearchWithAllowed returns true by default when the feature flag
+// is disabled, even if a BLOCK policy is set.
+TEST_F(DataControlsTabHelperTest, IsSearchWithAllowed_FeatureDisabled) {
+  feature_list_.InitAndDisableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
+  EXPECT_TRUE(tab_helper()->IsSearchWithAllowed());
+}
+
+// Tests that IsSearchWithAllowed returns true by default when no rules are set.
+TEST_F(DataControlsTabHelperTest, IsSearchWithAllowed_Default) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  EXPECT_TRUE(tab_helper()->IsSearchWithAllowed());
+}
+
+// Tests that IsSearchWithAllowed returns false when a "BLOCK" rule matches.
+TEST_F(DataControlsTabHelperTest, IsSearchWithAllowed_Blocked) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
+  EXPECT_FALSE(tab_helper()->IsSearchWithAllowed());
+}
+
+// Tests that IsSearchWithAllowed returns true when an "ALLOW" rule matches.
+TEST_F(DataControlsTabHelperTest, IsSearchWithAllowed_Allowed) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyAllowRule();
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  EXPECT_TRUE(tab_helper()->IsSearchWithAllowed());
+}
+
+// Tests that ShouldAllowSearchWith allows the action when the feature is
+// disabled.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_FeatureDisabled) {
+  feature_list_.InitAndDisableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_TRUE(allowed);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith allows the action by default.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Default) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_TRUE(allowed);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith blocks the action when a "BLOCK" rule
+// matches.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Blocked) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_FALSE(allowed);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith allows the action when an "ALLOW" rule
+// matches.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Allowed) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyAllowRule();
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_TRUE(allowed);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith triggers a warning dialog that blocks if not
+// bypassed.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Warn_NotBypassed) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
+
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_FALSE(allowed);
+        run_loop.Quit();
+      }));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardActionWarn);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
+  EXPECT_TRUE([dialog.title
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_DATA_CONTROLS_CLIPBOARD_ACTION_WARN_TITLE)]);
+
+  std::move(handler->_callback).Run(false);
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith triggers a warning dialog that allows if
+// bypassed, and correctly reports the bypass.
+TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Warn_Bypassed) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
+  EXPECT_CALL(*reporting_router_, ReportCopyWarningBypassed(_, _)).Times(1);
+
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_TRUE(allowed);
+        run_loop.Quit();
+      }));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardActionWarn);
+
+  std::move(handler->_callback).Run(true);
+  run_loop.Run();
+}
+
+// Tests that ShouldAllowSearchWith includes the organization domain in the
+// warning dialog.
+TEST_F(DataControlsTabHelperTest,
+       ShouldAllowSearchWith_Warn_Bypassed_WithDomain) {
+  feature_list_.InitAndEnableFeature(data_controls::kDataControlsSearchWith);
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_),
+      "user@" + base::UTF16ToUTF8(kOrganizationDomain),
+      signin::ConsentLevel::kSignin);
+  SetCopyWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  auto* handler = [[FakeEnterpriseCommandsHandler alloc] init];
+  tab_helper()->SetEnterpriseCommandsHandler(handler);
+  EXPECT_CALL(*reporting_router_, ReportCopyWarningBypassed(_, _)).Times(1);
+
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowSearchWith(
+      10, base::BindLambdaForTesting([&](bool allowed) {
+        EXPECT_TRUE(allowed);
+        run_loop.Quit();
+      }));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !handler->_callback.is_null(); }));
+  EXPECT_EQ(handler.dialogType, DialogType::kClipboardActionWarn);
+  WarningDialog dialog =
+      GetWarningDialog(handler.dialogType, handler.organizationDomain);
+  EXPECT_TRUE([dialog.label
+      isEqualToString:l10n_util::GetNSStringF(
+                          IDS_DATA_CONTROLS_WARNED_LABEL_WITH_DOMAIN,
+                          std::u16string(kOrganizationDomain))]);
+
+  std::move(handler->_callback).Run(true);
+  run_loop.Run();
 }
 
 }  // namespace data_controls

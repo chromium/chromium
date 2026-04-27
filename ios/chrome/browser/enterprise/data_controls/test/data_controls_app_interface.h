@@ -16,6 +16,9 @@
 // Sets a data controls policy that warns on copy actions.
 + (void)setWarnCopyRule;
 
+// Sets a data controls policy that reports any copy action.
++ (void)setReportCopyRule;
+
 // Clears all data controls policies.
 + (void)clearDataControlRules;
 

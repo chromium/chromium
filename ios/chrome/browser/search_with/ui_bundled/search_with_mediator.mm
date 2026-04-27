@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -95,6 +98,14 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   if (!webState) {
     return NO;
   }
+
+  data_controls::DataControlsTabHelper* dataControlsTabHelper =
+      data_controls::DataControlsTabHelper::FromWebState(webState);
+  CHECK(dataControlsTabHelper);
+  if (!dataControlsTabHelper->IsSearchWithAllowed()) {
+    return NO;
+  }
+
   WebSelectionTabHelper* tabHelper =
       WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper || !tabHelper->CanRetrieveSelectedText() ||
@@ -129,7 +140,8 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
     if (weakSelf && response.valid && response.selectedText.length) {
-      [weakSelf triggerSearchForText:response.selectedText];
+      [weakSelf maybeTriggerSearchForText:response.selectedText
+                                 webState:weakWebState];
     }
   }));
 }
@@ -153,7 +165,9 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   __weak __typeof(self) weakSelf = self;
   tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
     if (weakSelf) {
-      [weakSelf addItemWithResponse:response completion:completion];
+      [weakSelf addItemWithResponse:response
+                           webState:weakWebState
+                         completion:completion];
     } else {
       completion(@[]);
     }
@@ -162,6 +176,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 // Adds the search button if the selection is valid.
 - (void)addItemWithResponse:(WebSelectionResponse*)response
+                   webState:(base::WeakPtr<web::WebState>)weakWebState
                  completion:(ProceduralBlockWithItemArray)completion {
   if (!response.valid) {
     completion(@[]);
@@ -181,13 +196,43 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
   __weak __typeof(self) weakSelf = self;
   UIAction* action = [self actionWithHandler:^(UIAction* a) {
-    [weakSelf triggerSearchForText:text];
+    [weakSelf maybeTriggerSearchForText:text webState:weakWebState];
   }];
   completion(@[ action ]);
 }
 
-// Triggeres a search for `text`.
-- (void)triggerSearchForText:(NSString*)text {
+// Performs an async data controls check, and triggers the search if allowed.
+- (void)maybeTriggerSearchForText:(NSString*)text
+                         webState:(base::WeakPtr<web::WebState>)weakWebState {
+  __weak __typeof(self) weakSelf = self;
+  auto on_allowed = base::BindOnce(^(bool allowed) {
+    [weakSelf executeSearchForText:text
+        allowedByDataControlsRulesPolicy:allowed];
+  });
+
+  if (!data_controls::DataControlsTabHelper::IsSearchWithFeatureEnabled()) {
+    std::move(on_allowed).Run(true);
+    return;
+  }
+
+  if (!weakWebState) {
+    // Feature is enabled but the web state is destroyed.
+    // Block to prevent potential data exfiltration.
+    return;
+  }
+
+  data_controls::DataControlsTabHelper* tabHelper =
+      data_controls::DataControlsTabHelper::FromWebState(weakWebState.get());
+  CHECK(tabHelper);
+  tabHelper->ShouldAllowSearchWith(text.length, std::move(on_allowed));
+}
+
+// Executes a search for `text` if `allowedByDataControlsRulesPolicy` is YES.
+- (void)executeSearchForText:(NSString*)text
+    allowedByDataControlsRulesPolicy:(BOOL)allowedByDataControlsRulesPolicy {
+  if (!allowedByDataControlsRulesPolicy) {
+    return;
+  }
   if (!_templateURLService ||
       !_templateURLService->GetDefaultSearchProvider()) {
     return;
@@ -204,12 +249,14 @@ void LogSelectedNumberChar(NSUInteger textLength) {
       defaultSearchEngine->GetEngineType(
           _templateURLService->search_terms_data()) ==
       SearchEngineType::SEARCH_ENGINE_GOOGLE;
-  LogTrigger(self.incognito, isDefaultSearchEngineGoogle);
+
+  BOOL incognito = self.incognito;
+  LogTrigger(incognito, isDefaultSearchEngineGoogle);
   LogSelectedNumberChar([text length]);
   OpenNewTabCommand* command =
       [[OpenNewTabCommand alloc] initWithURL:searchURL
                                     referrer:web::Referrer()
-                                 inIncognito:self.incognito
+                                 inIncognito:incognito
                                 inBackground:NO
                                     appendTo:OpenPosition::kCurrentTab];
   [self.sceneHandler openURLInNewTab:command];

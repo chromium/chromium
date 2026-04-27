@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -82,6 +84,13 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       [self isRunningTest:@selector(testCopyLinkWarnProceedOnReaderMode)] ||
       [self isRunningTest:@selector(testCopyLinkWarnCancelOnReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderModeInUS);
+  }
+
+  if ([self isRunningTest:@selector(testSearchWithBlocked)] ||
+      [self isRunningTest:@selector(testSearchWithWarnProceed)] ||
+      [self isRunningTest:@selector(testSearchWithWarnCancel)] ||
+      [self isRunningTest:@selector(testSearchWithReport)]) {
+    config.features_enabled.push_back(data_controls::kDataControlsSearchWith);
   }
 
   return config;
@@ -390,6 +399,118 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
                  kBlockCopyingLinkFailedMessage);
   [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that Search With via context menu is blocked when a "BLOCK" is set
+// in DataControls policy.
+- (void)testSearchWithBlocked {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  NSString* script =
+      @"var el = document.createElement('em'); el.id = 'search_text'; "
+      @"el.innerText = 'searchable'; document.body.appendChild(el);";
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  [ChromeEarlGreyUI
+      triggerEditMenu:[ElementSelector selectorWithElementID:"search_text"]];
+
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with Google");
+  GREYAssertNil(matcher, @"Search with Google button should not be found");
+
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that Search With via context menu is allowed after the user
+// proceeds through the warning triggered by DataControlRules policy.
+- (void)testSearchWithWarnProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  NSString* script =
+      @"var el = document.createElement('em'); el.id = 'search_text'; "
+      @"el.innerText = 'searchable'; document.body.appendChild(el);";
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  [ChromeEarlGreyUI
+      triggerEditMenu:[ElementSelector selectorWithElementID:"search_text"]];
+
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with Google");
+  GREYAssertNotNil(matcher, @"Search with Google button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  // Tap the "Continue" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CONTINUE)] performAction:grey_tap()];
+
+  // Check that the search opened in a new tab.
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that Search With via context menu is cancelled when the user
+// cancels on the warning triggered by DataControlRules policy.
+- (void)testSearchWithWarnCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  NSString* script =
+      @"var el = document.createElement('em'); el.id = 'search_text'; "
+      @"el.innerText = 'searchable'; document.body.appendChild(el);";
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  [ChromeEarlGreyUI
+      triggerEditMenu:[ElementSelector selectorWithElementID:"search_text"]];
+
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with Google");
+  GREYAssertNotNil(matcher, @"Search with Google button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  // Tap the "Cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
+
+  // Check that no new tab was opened.
+  GREYAssertEqual(1UL, [ChromeEarlGrey mainTabCount],
+                  @"Search should not have opened a new tab");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that Search With via context menu is allowed and executes when
+// a "REPORT" is set in DataControls policy.
+- (void)testSearchWithReport {
+  [DataControlsAppInterface setReportCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  NSString* script =
+      @"var el = document.createElement('em'); el.id = 'search_text'; "
+      @"el.innerText = 'searchable'; document.body.appendChild(el);";
+  [ChromeEarlGrey evaluateJavaScriptWithPotentialError:script];
+
+  [ChromeEarlGreyUI
+      triggerEditMenu:[ElementSelector selectorWithElementID:"search_text"]];
+
+  id<GREYMatcher> matcher =
+      FindEditMenuActionWithAccessibilityLabel(@"Search with Google");
+  GREYAssertNotNil(matcher, @"Search with Google button not found");
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+
+  // Check that the search opened in a new tab without any dialog interruption.
+  [ChromeEarlGrey waitForMainTabCount:2];
   [DataControlsAppInterface clearDataControlRules];
 }
 

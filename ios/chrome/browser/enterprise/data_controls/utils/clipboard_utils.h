@@ -59,6 +59,13 @@ Verdict IsShareAllowedByPolicy(const GURL& source_url,
                                ProfileIOS* source_profile  // Must be non-null.
 );
 
+// This function checks if a Search With action is allowed by the
+// "DataControlsRules" policy.
+Verdict IsSearchWithAllowedByPolicy(
+    const GURL& source_url,
+    ProfileIOS* source_profile  // Must be non-null.
+);
+
 // Reports a paste action if applicable.
 void MaybeReportDataControlsPaste(const GURL& source_url,
                                   const GURL& destination_url,

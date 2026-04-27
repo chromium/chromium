@@ -23,6 +23,7 @@ source_set("model") {
     ":ios_rules_service",
     "//base",
     "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:features",
     "//components/open_from_clipboard:open_from_clipboard_impl",
     "//components/policy/core/common:common_constants",
     "//components/strings",

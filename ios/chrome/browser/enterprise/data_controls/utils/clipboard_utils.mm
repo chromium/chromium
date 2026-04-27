@@ -84,6 +84,17 @@ Verdict IsShareAllowedByPolicy(const GURL& source_url,
   return rules_service->GetCopyToOSClipboardVerdict(source_url);
 }
 
+Verdict IsSearchWithAllowedByPolicy(const GURL& source_url,
+                                    ProfileIOS* source_profile) {
+  CHECK(source_profile);
+
+  IOSRulesService* rules_service =
+      IOSRulesServiceFactory::GetForProfile(source_profile);
+  // Treat the 'Search With [Default Search Engine]' intent as a copy to os
+  // clipboard intent.
+  return rules_service->GetCopyToOSClipboardVerdict(source_url);
+}
+
 void MaybeReportDataControlsPaste(const GURL& source_url,
                                   const GURL& destination_url,
                                   ProfileIOS* source_profile,

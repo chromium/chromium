@@ -8,11 +8,13 @@ source_set("ui_bundled") {
     "search_with_mediator.mm",
   ]
   deps = [
+    "//components/enterprise/data_controls/core/browser:features",
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_content/model",
     "//ios/chrome/browser/browser_content/ui_bundled:edit_menu_utils",
+    "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

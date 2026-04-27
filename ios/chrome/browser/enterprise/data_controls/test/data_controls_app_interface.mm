@@ -38,6 +38,19 @@
                                  /*machine_scope=*/false);
 }
 
++ (void)setReportCopyRule {
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  data_controls::SetDataControls(prefs, {R"({
+                                    "sources": {
+                                      "urls": ["*"]
+                                    },
+                                    "restrictions": [
+                                      {"class": "CLIPBOARD", "level": "REPORT"}
+                                    ]
+                                  })"},
+                                 /*machine_scope=*/false);
+}
+
 + (void)clearDataControlRules {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->ClearPref(data_controls::kDataControlsRulesPref);

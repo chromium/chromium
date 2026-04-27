@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 
+#import <string>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
 #import "components/policy/core/common/policy_types.h"
@@ -21,8 +25,9 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
-#import "ui/base/l10n/l10n_util.cc"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace data_controls {
@@ -130,6 +135,67 @@ bool DataControlsTabHelper::ShouldAllowShare() {
   return verdict.level() != Rule::Level::kBlock;
 }
 
+bool DataControlsTabHelper::IsSearchWithFeatureEnabled() {
+  return base::FeatureList::IsEnabled(data_controls::kDataControlsSearchWith);
+}
+
+bool DataControlsTabHelper::IsSearchWithAllowed() {
+  if (!IsSearchWithFeatureEnabled()) {
+    return true;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& source_url = web_state_->GetLastCommittedURL();
+
+  Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile);
+
+  return verdict.level() != Rule::Level::kBlock;
+}
+
+void DataControlsTabHelper::ShouldAllowSearchWith(
+    size_t text_length,
+    base::OnceCallback<void(bool)> callback) {
+  if (!IsSearchWithFeatureEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& source_url = web_state_->GetLastCommittedURL();
+
+  Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile);
+
+  ui::ClipboardMetadata metadata{
+      .size = text_length * sizeof(std::u16string::value_type),
+      .format_type = ui::ClipboardFormatType::PlainTextType()};
+
+  switch (verdict.level()) {
+    case Rule::Level::kBlock:
+      // The menu item should have been blocked synchronously.
+      std::move(callback).Run(false);
+      break;
+    case Rule::Level::kWarn:
+      ShowWarningDialog(
+          enterprise::DialogType::kClipboardActionWarn,
+          GetManagementDomain(profile),
+          base::BindOnce(&DataControlsTabHelper::FinishSearchWith,
+                         weak_factory_.GetWeakPtr(), source_url,
+                         profile->AsWeakPtr(), metadata, std::move(verdict),
+                         std::move(callback)));
+      break;
+    case Rule::Level::kReport:
+      MaybeReportDataControlsCopy(source_url, profile, metadata, verdict,
+                                  /*bypassed=*/false);
+      [[fallthrough]];
+    case Rule::Level::kAllow:
+    case Rule::Level::kNotSet:
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
 void DataControlsTabHelper::SetEnterpriseCommandsHandler(
     id<EnterpriseCommands> handler) {
   commands_handler_ = handler;
@@ -189,6 +255,20 @@ void DataControlsTabHelper::FinishCopy(const GURL& source_url,
   }
 
   std::move(callback).Run(allowed);
+}
+
+void DataControlsTabHelper::FinishSearchWith(
+    const GURL& source_url,
+    base::WeakPtr<ProfileIOS> source_profile,
+    const ui::ClipboardMetadata& metadata,
+    Verdict verdict,
+    base::OnceCallback<void(bool)> callback,
+    bool bypassed) {
+  if (bypassed && source_profile) {
+    MaybeReportDataControlsCopy(source_url, source_profile.get(), metadata,
+                                std::move(verdict), /*bypassed=*/true);
+  }
+  std::move(callback).Run(bypassed);
 }
 
 void DataControlsTabHelper::FinishShare(const GURL& source_url,

@@ -46,6 +46,23 @@ class DataControlsTabHelper
   // Determines if sharing should be allowed.
   bool ShouldAllowShare();
 
+  // Returns true if the Search With data controls feature is enabled.
+  static bool IsSearchWithFeatureEnabled();
+
+  // Determines if the "Search With [Default Search Engine]" action is allowed
+  // for the current tab (source URL) by enterprise policies. This is a
+  // synchronous check used during context menu construction to decide if the
+  // context menu should include this item.
+  bool IsSearchWithAllowed();
+
+  // Determines if the "Search With [Default Search Engine]" action should be
+  // executed for the current tab (source URL) by enterprise policies. Checks
+  // the policy's verdict and manages the action: allows, reports, or shows a
+  // warning dialog and executes the search asynchronously only if the user
+  // explicitly proceeds.
+  void ShouldAllowSearchWith(size_t text_length,
+                             base::OnceCallback<void(bool)> callback);
+
   // Sets the command handler for Enterprise.
   void SetEnterpriseCommandsHandler(id<EnterpriseCommands> handler);
 
@@ -85,6 +102,14 @@ class DataControlsTabHelper
                    Verdict verdict,
                    base::OnceCallback<void(bool)> callback,
                    bool bypassed);
+
+  // Finalizes the search with action invoking the callback.
+  void FinishSearchWith(const GURL& source_url,
+                        base::WeakPtr<ProfileIOS> source_profile,
+                        const ui::ClipboardMetadata& metadata,
+                        Verdict verdict,
+                        base::OnceCallback<void(bool)> callback,
+                        bool bypassed);
 
   // Displays a warning dialog associated with a user's action (e.g., copy,
   // paste, share).

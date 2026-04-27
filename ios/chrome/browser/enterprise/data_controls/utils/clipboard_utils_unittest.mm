@@ -323,4 +323,31 @@ TEST_F(ClipboardUtilsTest, MaybeReportDataControlsCopy_Bypassed) {
                               /*bypassed=*/true);
 }
 
+TEST_F(ClipboardUtilsTest, IsSearchWithAllowedByPolicy_Allow) {
+  GURL source_url(kSourceUrl);
+  EXPECT_CALL(*rules_service_, GetCopyToOSClipboardVerdict(source_url))
+      .WillOnce(::testing::Return(Verdict::Allow()));
+
+  Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile_.get());
+  EXPECT_EQ(verdict.level(), Rule::Level::kAllow);
+}
+
+TEST_F(ClipboardUtilsTest, IsSearchWithAllowedByPolicy_Block) {
+  GURL source_url(kSourceUrl);
+  EXPECT_CALL(*rules_service_, GetCopyToOSClipboardVerdict(source_url))
+      .WillOnce(::testing::Return(Verdict::Block({})));
+
+  Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile_.get());
+  EXPECT_EQ(verdict.level(), Rule::Level::kBlock);
+}
+
+TEST_F(ClipboardUtilsTest, IsSearchWithAllowedByPolicy_Warn) {
+  GURL source_url(kSourceUrl);
+  EXPECT_CALL(*rules_service_, GetCopyToOSClipboardVerdict(source_url))
+      .WillOnce(::testing::Return(Verdict::Warn({})));
+
+  Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile_.get());
+  EXPECT_EQ(verdict.level(), Rule::Level::kWarn);
+}
+
 }  // namespace data_controls
