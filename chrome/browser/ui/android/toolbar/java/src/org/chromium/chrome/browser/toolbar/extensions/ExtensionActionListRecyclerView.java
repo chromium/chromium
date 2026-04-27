@@ -114,6 +114,11 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
         mOnAnimationsFinishedRunnables.add(runnable);
     }
 
+    /** Clears all of the registered callbacks. */
+    public void clearOnAnimationsFinishedRunnables() {
+        mOnAnimationsFinishedRunnables.clear();
+    }
+
     private void runAllOnAnimationsFinishedRunnables() {
         if (mOnAnimationsFinishedRunnables.isEmpty()) {
             return;

@@ -225,12 +225,18 @@ public class ExtensionActionListCoordinator implements Destroyable {
          *
          * <p>Specifically, the runnable will execute on the next layout pass if there are no
          * animations currently running. If an animation is in progress, the runnable will be
-         * deferred and executed as soon as the animation ends.
+         * deferred and executed as soon as the animation ends. The callback is not guaranteed to be
+         * executed because it can be cleared by {@link clearOnAnimationFinishedRunnables()}.
          *
          * @param runnable The {@link Runnable} to execute once layouts/animations are settled.
          */
         public void addOnAnimationsFinishedRunnable(Runnable runnable) {
             mContainer.addOnAnimationsFinishedRunnable(runnable);
+        }
+
+        /** Clears all pending animations-finished runnables from {@link mContainer}. */
+        public void clearOnAnimationsFinishedRunnables() {
+            mContainer.clearOnAnimationsFinishedRunnables();
         }
 
         /** Requests a layout pass on the underlying RecyclerView container. */

@@ -147,6 +147,8 @@ class ExtensionActionListMediator implements Destroyable {
 
     @Override
     public void destroy() {
+        mRecyclerViewDelegate.clearOnAnimationsFinishedRunnables();
+
         closePopup();
         closeContextMenu();
 
