@@ -163,11 +163,15 @@ public interface SigninManager {
     /**
      * Wipes the user's bookmarks and sync data.
      *
+     * <p>TODO(crbug.com/506130502): This API doesn't belong here and has weird behavior, replace
+     * with direct calls to BrowsingDataBridge.
+     *
      * <p>Callers should make this call within a runAfterOperationInProgress() call in order to
      * ensure serialization of wipe operations.
      *
      * @param wipeDataCallback A callback which will be called once the data is wiped.
      */
+    @Deprecated
     void wipeSyncUserData(Runnable wipeDataCallback);
 
     /** Records that the user has accepted signing into a Managed Account. */

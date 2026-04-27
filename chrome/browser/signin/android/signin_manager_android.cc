@@ -85,15 +85,8 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
         break;
       }
       case ClearedTypes::kAllData: {
-        chrome_browsing_data_remover::DataType removed_types =
-            chrome_browsing_data_remover::ALL_DATA_TYPES;
-        // Browser sign-in won't upload existing passwords, so there's no reason
-        // to wipe them immediately before. Similarly, on browser sign-out,
-        // account passwords should survive (outside of the browser) to be used
-        // by other apps, until system-level sign-out. In other words, the
-        // browser has no business deleting any passwords here.
-        removed_types &= ~chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
-        remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
+        remover_->RemoveAndReply(base::Time(), base::Time::Max(),
+                                 chrome_browsing_data_remover::ALL_DATA_TYPES,
                                  chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
                                  this);
         break;
