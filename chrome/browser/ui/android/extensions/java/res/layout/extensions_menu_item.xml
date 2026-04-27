@@ -11,10 +11,11 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
     android:orientation="vertical"
     android:paddingStart="@dimen/extensions_menu_horizontal_padding"
     android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
-    android:paddingBottom="16dp"
     tools:ignore="UnusedResources" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,7 +47,7 @@ found in the LICENSE file.
 
             <TextView
                 android:id="@+id/extensions_menu_item_title"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -62,7 +63,7 @@ found in the LICENSE file.
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
             android:id="@+id/extensions_menu_item_toggle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
             app:layout_constraintTop_toTopOf="parent"
@@ -88,8 +89,8 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"

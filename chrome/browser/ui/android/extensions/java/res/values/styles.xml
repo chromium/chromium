@@ -27,6 +27,10 @@ found in the LICENSE file.
         <item name="android:importantForAccessibility">no</item>
     </style>
 
+    <style name="ExtensionsMenuAllowAccessText" parent="ExtensionsMenuControlText">
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
+    </style>
+
     <style name="ExtensionsMenuControlText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

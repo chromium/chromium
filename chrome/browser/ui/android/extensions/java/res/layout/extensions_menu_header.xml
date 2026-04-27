@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/extensions_menu_title"
-        android:textAppearance="@style/TextAppearance.Headline2.Primary"/>
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"/>
 
     <ImageButton
         android:id="@+id/extensions_menu_close_button"
