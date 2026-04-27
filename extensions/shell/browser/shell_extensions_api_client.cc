@@ -16,7 +16,6 @@
 #include "extensions/shell/browser/delegates/shell_kiosk_delegate.h"
 #include "extensions/shell/browser/shell_display_info_provider.h"
 #include "extensions/shell/browser/shell_extension_web_contents_observer.h"
-#include "extensions/shell/browser/shell_virtual_keyboard_delegate.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "extensions/shell/browser/api/file_system/shell_file_system_delegate.h"
@@ -29,6 +28,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/shell/browser/shell_app_view_guest_delegate.h"
+#include "extensions/shell/browser/shell_virtual_keyboard_delegate.h"
 #endif
 
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -72,11 +72,13 @@ ShellExtensionsAPIClient::CreateWebViewPermissionHelperDelegate(
 }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<VirtualKeyboardDelegate>
 ShellExtensionsAPIClient::CreateVirtualKeyboardDelegate(
     content::BrowserContext* browser_context) const {
   return std::make_unique<ShellVirtualKeyboardDelegate>();
 }
+#endif
 
 std::unique_ptr<DisplayInfoProvider>
 ShellExtensionsAPIClient::CreateDisplayInfoProvider() const {

@@ -131,13 +131,13 @@ ExtensionsAPIClient::CreateUsbDevicePermissionsPrompt(
 bool ExtensionsAPIClient::ShouldAllowDetachingUsb(int vid, int pid) const {
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<VirtualKeyboardDelegate>
 ExtensionsAPIClient::CreateVirtualKeyboardDelegate(
     content::BrowserContext* context) const {
   return nullptr;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ManagementAPIDelegate* ExtensionsAPIClient::CreateManagementAPIDelegate()
     const {

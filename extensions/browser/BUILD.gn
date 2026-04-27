@@ -648,7 +648,6 @@ source_set("browser_sources") {
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/mime_handler:stream_container",
     "//extensions/buildflags",
     "//extensions/common",
@@ -684,6 +683,7 @@ source_set("browser_sources") {
     deps += [
       "//chromeos/constants",
       "//extensions/browser/api/clipboard:clipboard_types",
+      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     ]
   }
 
@@ -1165,7 +1165,6 @@ source_set("unit_tests") {
     "//extensions/browser/api/content_settings",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:mime_handler_registry_unittest",
     "//extensions/browser/mime_handler:stream_container",
@@ -1188,6 +1187,10 @@ source_set("unit_tests") {
     "//third_party/zlib/google:zip",
     "//ui/display:test_support",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate" ]
+  }
 
   # TODO(https://crbug.com/356905053): Gradually include more of these sources
   # in the desktop-android build when the related APIs are enabled.

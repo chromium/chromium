@@ -64,7 +64,6 @@ source_set("app_shell_lib") {
     "//extensions/browser",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/kiosk",
     "//extensions/browser/updater",
     "//extensions/common",
@@ -145,8 +144,6 @@ source_set("app_shell_lib") {
     "browser/shell_speech_recognition_manager_delegate.h",
     "browser/shell_update_query_params_delegate.cc",
     "browser/shell_update_query_params_delegate.h",
-    "browser/shell_virtual_keyboard_delegate.cc",
-    "browser/shell_virtual_keyboard_delegate.h",
     "browser/shell_web_view_guest_delegate.cc",
     "browser/shell_web_view_guest_delegate.h",
     "common/shell_content_client.cc",
@@ -184,6 +181,8 @@ source_set("app_shell_lib") {
       "browser/shell_audio_controller_chromeos.h",
       "browser/shell_network_controller_chromeos.cc",
       "browser/shell_network_controller_chromeos.h",
+      "browser/shell_virtual_keyboard_delegate.cc",
+      "browser/shell_virtual_keyboard_delegate.h",
     ]
   }
 
@@ -224,6 +223,7 @@ source_set("app_shell_lib") {
     deps += [
       "//chromeos/dbus/constants",
       "//chromeos/dbus/power",
+      "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     ]
   }
 

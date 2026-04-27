@@ -96,9 +96,9 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       content::WebContents* web_contents) const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAllowDetachingUsb(int vid, int pid) const override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(
       content::BrowserContext* browser_context) const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ManagementAPIDelegate* CreateManagementAPIDelegate() const override;
   std::unique_ptr<SupervisedUserExtensionsDelegate>
   CreateSupervisedUserExtensionsDelegate(

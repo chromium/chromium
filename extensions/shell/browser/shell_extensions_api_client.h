@@ -40,8 +40,10 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const override;
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(
       content::BrowserContext* browser_context) const override;
+#endif
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;
 #if BUILDFLAG(IS_LINUX)

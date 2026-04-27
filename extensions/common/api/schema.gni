@@ -88,8 +88,6 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_udp.idl",
     "system_storage.webidl",
-    "virtual_keyboard_private.json",
-    "virtual_keyboard.webidl",
   ]
 
   if (is_chromeos) {
@@ -103,6 +101,8 @@ if (enable_extensions) {
       "media_perception_private.webidl",
       "serial.webidl",
       "usb.webidl",
+      "virtual_keyboard_private.json",
+      "virtual_keyboard.webidl",
       "webcam_private.webidl",
     ]
   } else {

@@ -75,7 +75,6 @@ group("api_implementations") {
       "//extensions/browser/api/sockets_udp",
       "//extensions/browser/api/system_info",
       "//extensions/browser/api/system_storage",
-      "//extensions/browser/api/virtual_keyboard_private",
     ]
 
     if (is_chromeos) {
@@ -89,6 +88,7 @@ group("api_implementations") {
         "//extensions/browser/api/media_perception_private",
         "//extensions/browser/api/serial",
         "//extensions/browser/api/virtual_keyboard",
+        "//extensions/browser/api/virtual_keyboard_private",
         "//extensions/browser/api/webcam_private",
       ]
     }
@@ -171,13 +171,13 @@ source_set("extensions_api_client") {
     "//extensions/common",
   ]
 
-  if (is_chromeos) {
-    public_deps += [ "//extensions/browser/api/clipboard:clipboard_types" ]
-  }
-
   deps = [
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/system_display:display_info_provider",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
   ]
+
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/clipboard:clipboard_types" ]
+    deps += [ "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate" ]
+  }
 }

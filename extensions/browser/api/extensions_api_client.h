@@ -194,11 +194,11 @@ class ExtensionsAPIClient {
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns true if device policy allows detaching a given USB device.
   virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>
   CreateVirtualKeyboardDelegate(content::BrowserContext* browser_context) const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Creates a delegate for handling the management extension api.
   virtual ManagementAPIDelegate* CreateManagementAPIDelegate() const;
