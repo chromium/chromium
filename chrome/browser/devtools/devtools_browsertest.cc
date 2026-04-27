@@ -158,6 +158,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
@@ -175,7 +176,6 @@
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
@@ -803,20 +803,29 @@ class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
   }
 };
 
-class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+class DevToolsServiceWorkerExtensionTest : public PlatformBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    Profile* profile = browser()->profile();
+    PlatformBrowserTest::SetUpOnMainThread();
+    Profile* profile = GetProfile();
     extension_registrar_ = extensions::ExtensionRegistrar::Get(profile);
     extension_registry_ = extensions::ExtensionRegistry::Get(profile);
+  }
+
+  void TearDownOnMainThread() override {
+    extension_registry_ = nullptr;
+    extension_registrar_ = nullptr;
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
   const extensions::Extension* LoadExtension(base::FilePath extension_path) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
     ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
-    extensions::UnpackedInstaller::Create(browser()->profile())
-        ->Load(extension_path);
+    extensions::UnpackedInstaller::Create(GetProfile())->Load(extension_path);
     observer.WaitForExtensionLoaded();
     const extensions::Extension* extension = nullptr;
     for (const auto& enabled_extension :
@@ -842,8 +851,7 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   }
 
   void OpenDevToolsWindow(scoped_refptr<DevToolsAgentHost> host) {
-    Profile* profile = browser()->profile();
-    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(profile, host);
+    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(GetProfile(), host);
   }
 
   void CloseDevToolsWindow() {
@@ -882,7 +890,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsServiceWorkerExtensionTest,
   RunTestFunction(window_, "waitForTestResultsInConsole");
   CloseDevToolsWindow();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 class WorkerDevToolsTest : public InProcessBrowserTest {
