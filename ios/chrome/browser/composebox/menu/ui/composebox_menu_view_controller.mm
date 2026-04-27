@@ -71,6 +71,15 @@ enum class ComposeboxMenuSectionIdentifier {
   [self applyInitialSnapshot];
 }
 
+- (CGSize)preferredContentSize {
+  CGSize size = super.preferredContentSize;
+  [self.view layoutIfNeeded];
+  size.height = _collectionView.contentSize.height +
+                _collectionView.contentInset.top +
+                _collectionView.contentInset.bottom;
+  return size;
+}
+
 - (void)setUpSections {
   ComposeboxMenuSection* attachmentsSection = [[ComposeboxMenuSection alloc]
       initWithTitle:nil

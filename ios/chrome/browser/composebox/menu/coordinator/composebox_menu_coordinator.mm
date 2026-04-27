@@ -10,6 +10,14 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
+namespace {
+
+// Custom detent identifier to fit the collection view by
+// the `preferredContentSize`.
+NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
+
+}  // namespace
+
 @interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
                                          UISheetPresentationControllerDelegate>
 @end
@@ -40,6 +48,17 @@
   _viewController.sheetPresentationController.delegate = self;
   _viewController.sheetPresentationController
       .prefersEdgeAttachedInCompactHeight = YES;
+
+  __weak UIViewController* weakVC = _viewController;
+  auto detentResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return weakVC.preferredContentSize.height;
+  };
+  _viewController.sheetPresentationController.detents =
+      @[ [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomFittingDetentIdentifier
+                            resolver:detentResolver] ];
+
   _viewController.mutator = _mediator;
 
   [self.baseViewController presentViewController:_viewController
