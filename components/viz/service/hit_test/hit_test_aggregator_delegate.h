@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_AGGREGATOR_DELEGATE_H_
 #define COMPONENTS_VIZ_SERVICE_HIT_TEST_HIT_TEST_AGGREGATOR_DELEGATE_H_
 
+#include <vector>
+
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 
 namespace viz {
@@ -15,6 +17,10 @@ class HitTestAggregatorDelegate {
   virtual void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) = 0;
+
+  // Check's the hierarchy of FrameSinkIds as registered by the Viz Host.
+  virtual bool IsChildOf(const FrameSinkId& parent,
+                         const FrameSinkId& child) const = 0;
 
  protected:
   // The dtor is protected so that HitTestAggregator does not take ownership.
