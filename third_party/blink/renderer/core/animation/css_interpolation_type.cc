@@ -458,7 +458,9 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
       CreateCSSValue(interpolable_value, non_interpolable_value, state);
   DCHECK(!css_value->IsUnparsedDeclaration());
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
-                              *css_value, StyleBuilder::ValueMode::kAnimated);
+                              *css_value,
+                              static_cast<CSSProperty::ValueModeFlags>(
+                                  StyleBuilder::ValueMode::kAnimated));
 }
 
 }  // namespace blink

@@ -16,7 +16,8 @@ void Longhand::ApplyParentValue(StyleResolverState& state) const {
       ComputedStyleUtils::ComputedPropertyValue(*this, *state.ParentStyle());
   CHECK(parent_computed_value);
   // Applying the CSSValue involves zooming using our effective zoom.
-  ApplyValue(state, *parent_computed_value, ValueMode::kNormal);
+  ApplyValue(state, *parent_computed_value,
+             static_cast<CSSProperty::ValueModeFlags>(ValueMode::kNormal));
 }
 
 bool Longhand::ApplyParentValueIfZoomChanged(StyleResolverState& state) const {

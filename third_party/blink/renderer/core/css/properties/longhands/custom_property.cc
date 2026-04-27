@@ -118,7 +118,7 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value,
-                                ValueMode value_mode) const {
+                                ValueModeFlags value_mode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   DCHECK(!value.IsCSSWideKeyword());
 
@@ -204,8 +204,8 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     return;
   }
 
-  bool is_animation_tainted = value_mode == ValueMode::kAnimated ||
-                              value_mode == ValueMode::kAttrTaintedAndAnimated;
+  bool is_animation_tainted =
+      value_mode & static_cast<ValueModeFlags>(ValueMode::kAnimated);
 
   // Note that the computed value ("SetVariableValue") is stored separately
   // from the substitution value ("SetVariableData") on ComputedStyle.
@@ -213,10 +213,10 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   // the custom property, and the computed value is generally used in other
   // cases (e.g. serialization).
 
-  bool is_attr_tainted = value_mode == ValueMode::kAttrTainted ||
-                         value_mode == ValueMode::kAttrTaintedAndAnimated ||
-                         (declaration && declaration->VariableDataValue() &&
-                          declaration->VariableDataValue()->IsAttrTainted());
+  bool is_attr_tainted =
+      (value_mode & static_cast<ValueModeFlags>(ValueMode::kAttrTainted)) ||
+      (declaration && declaration->VariableDataValue() &&
+       declaration->VariableDataValue()->IsAttrTainted());
 
   registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
       state, *registered_value, context);

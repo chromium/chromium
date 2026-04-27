@@ -68,15 +68,18 @@ void CSSDefaultInterpolationType::Apply(
     CSSInterpolationEnvironment& environment) const {
   DCHECK(
       To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
-  CSSProperty::ValueMode values_mode =
-      To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
-              ->IsAttrTainted()
-          ? CSSProperty::ValueMode::kAttrTaintedAndAnimated
-          : CSSProperty::ValueMode::kAnimated;
+  CSSProperty::ValueModeFlags value_mode_flags =
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kAnimated);
+  if (To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
+          ->IsAttrTainted()) {
+    value_mode_flags |= static_cast<CSSProperty::ValueModeFlags>(
+        CSSProperty::ValueMode::kAttrTainted);
+  }
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(), environment.GetState(),
       *To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue(),
-      values_mode);
+      value_mode_flags);
 }
 
 }  // namespace blink

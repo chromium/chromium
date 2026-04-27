@@ -55,7 +55,7 @@ namespace blink {
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
                                  const CSSValue& value,
-                                 ValueMode value_mode) {
+                                 ValueModeFlags value_mode) {
   CSSPropertyRef ref(name, state.GetDocument());
   DCHECK(ref.IsValid());
 
@@ -65,7 +65,7 @@ void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
 void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  StyleResolverState& state,
                                  const CSSValue& value,
-                                 ValueMode value_mode) {
+                                 ValueModeFlags value_mode) {
   const CSSProperty* physical = &property;
   if (property.IsSurrogate()) {
     physical =
@@ -78,7 +78,7 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
 void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
                                          StyleResolverState& state,
                                          const CSSValue& value,
-                                         ValueMode value_mode) {
+                                         ValueModeFlags value_mode) {
   DCHECK(!Variable::IsStaticInstance(property))
       << "Please use a CustomProperty instance to apply custom properties";
   DCHECK(!property.IsSurrogate())

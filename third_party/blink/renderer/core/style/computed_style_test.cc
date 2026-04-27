@@ -870,12 +870,16 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   light_value->Append(*CSSIdentifierValue::Create(CSSValueID::kLight));
 
   To<Longhand>(ref.GetProperty())
-      .ApplyValue(state, *dark_value, CSSProperty::ValueMode::kNormal);
+      .ApplyValue(state, *dark_value,
+                  static_cast<CSSProperty::ValueModeFlags>(
+                      CSSProperty::ValueMode::kNormal));
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             state.StyleBuilder().UsedColorScheme());
 
   To<Longhand>(ref.GetProperty())
-      .ApplyValue(state, *light_value, CSSProperty::ValueMode::kNormal);
+      .ApplyValue(state, *light_value,
+                  static_cast<CSSProperty::ValueModeFlags>(
+                      CSSProperty::ValueMode::kNormal));
   EXPECT_EQ(mojom::blink::ColorScheme::kLight,
             state.StyleBuilder().UsedColorScheme());
 }
@@ -994,8 +998,10 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
       CSSMathExpressionNumericLiteral::Create(CSSNumericLiteralValue::Create(
           10, CSSPrimitiveValue::UnitType::kNumber)));
 
-  GetCSSPropertyStrokeWidth().ApplyValue(state, *calc_value,
-                                         CSSProperty::ValueMode::kNormal);
+  GetCSSPropertyStrokeWidth().ApplyValue(
+      state, *calc_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
   const ComputedStyle* style = state.TakeStyle();
   auto* computed_value =
       GetCSSPropertyStrokeWidth().CSSValueFromComputedStyleInternal(
@@ -1978,8 +1984,10 @@ TEST_F(ComputedStyleTest, BackgroundRepeat) {
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatX));
 
-  GetCSSPropertyBackgroundRepeat().ApplyValue(state, *repeat_style_value,
-                                              CSSProperty::ValueMode::kNormal);
+  GetCSSPropertyBackgroundRepeat().ApplyValue(
+      state, *repeat_style_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
   const ComputedStyle* style = state.TakeStyle();
   auto* computed_value =
       GetCSSPropertyBackgroundRepeat().CSSValueFromComputedStyleInternal(
@@ -2003,8 +2011,10 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
   auto* repeat_style_value = MakeGarbageCollected<CSSRepeatStyleValue>(
       CSSIdentifierValue::Create(CSSValueID::kRepeatY));
 
-  GetCSSPropertyMaskRepeat().ApplyValue(state, *repeat_style_value,
-                                        CSSProperty::ValueMode::kNormal);
+  GetCSSPropertyMaskRepeat().ApplyValue(
+      state, *repeat_style_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
   const ComputedStyle* style = state.TakeStyle();
   auto* computed_value =
       GetCSSPropertyMaskRepeat().CSSValueFromComputedStyleInternal(
@@ -2028,7 +2038,8 @@ TEST_F(ComputedStyleTest, MaskMode) {
   auto* mode_style_value = CSSIdentifierValue::Create(CSSValueID::kAlpha);
 
   GetCSSPropertyMaskMode().ApplyValue(state, *mode_style_value,
-                                      CSSProperty::ValueMode::kNormal);
+                                      static_cast<CSSProperty::ValueModeFlags>(
+                                          CSSProperty::ValueMode::kNormal));
   const ComputedStyle* style = state.TakeStyle();
   auto* computed_value =
       GetCSSPropertyMaskMode().CSSValueFromComputedStyleInternal(
@@ -2063,7 +2074,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
-      state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
+      state, *dynamic_range_limit_mix_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
 
   const DynamicRangeLimit converted_limit =
       state.TakeStyle()->GetDynamicRangeLimit();
@@ -2097,7 +2110,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
-      state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
+      state, *dynamic_range_limit_mix_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
 
   const DynamicRangeLimit converted_limit =
       state.TakeStyle()->GetDynamicRangeLimit();
@@ -2131,7 +2146,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
-      state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
+      state, *dynamic_range_limit_mix_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
 
   const DynamicRangeLimit converted_limit =
       state.TakeStyle()->GetDynamicRangeLimit();
@@ -2166,7 +2183,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
   state.CreateNewClonedStyle(*initial);
 
   GetCSSPropertyDynamicRangeLimit().ApplyValue(
-      state, *dynamic_range_limit_mix_value, CSSProperty::ValueMode::kNormal);
+      state, *dynamic_range_limit_mix_value,
+      static_cast<CSSProperty::ValueModeFlags>(
+          CSSProperty::ValueMode::kNormal));
 
   const DynamicRangeLimit converted_limit =
       state.TakeStyle()->GetDynamicRangeLimit();

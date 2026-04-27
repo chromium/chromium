@@ -269,7 +269,9 @@ TEST_F(CustomPropertyTest, ValueMode) {
                              /* StyleRecalcContext */ nullptr, StyleRequest());
     state.CreateNewClonedStyle(
         *GetDocument().GetStyleResolver().InitialStyleForElement());
-    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
+    property.ApplyValue(state, *declaration,
+                        static_cast<CSSProperty::ValueModeFlags>(
+                            CSSProperty::ValueMode::kNormal));
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
     EXPECT_FALSE(
@@ -282,7 +284,9 @@ TEST_F(CustomPropertyTest, ValueMode) {
                              /* StyleRecalcContext */ nullptr, StyleRequest());
     state.CreateNewClonedStyle(
         *GetDocument().GetStyleResolver().InitialStyleForElement());
-    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
+    property.ApplyValue(state, *declaration,
+                        static_cast<CSSProperty::ValueModeFlags>(
+                            CSSProperty::ValueMode::kAnimated));
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
     EXPECT_TRUE(

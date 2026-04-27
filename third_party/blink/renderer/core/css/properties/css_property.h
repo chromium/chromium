@@ -310,14 +310,14 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     DCHECK_NE(flags_ & kLegacyOverlapping, flags & kNotLegacyOverlapping);
   }
 
-  enum class ValueMode {
-    kNormal,
+  enum class ValueMode : uint8_t {
+    kNormal = 0,
     // https://drafts.csswg.org/css-variables/#animation-tainted
-    kAnimated,
+    kAnimated = 1 << 0,
     // https://drafts.csswg.org/css-values-5/#attr-taint
-    kAttrTainted,
-    kAttrTaintedAndAnimated,
+    kAttrTainted = 1 << 1,
   };
+  using ValueModeFlags = uint8_t;
 
  private:
   static constexpr size_t kPropertyIdBits = 16;

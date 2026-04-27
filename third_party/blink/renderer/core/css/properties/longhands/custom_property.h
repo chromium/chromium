@@ -37,7 +37,7 @@ class CORE_EXPORT CustomProperty : public Variable {
   void ApplyInherit(StyleResolverState&) const override;
   void ApplyValue(StyleResolverState&,
                   const CSSValue&,
-                  ValueMode) const override;
+                  ValueModeFlags) const override;
 
   // Never used.
   const CSSValue* ParseSingleValue(CSSParserTokenStream&,
