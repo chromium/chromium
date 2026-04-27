@@ -244,12 +244,21 @@ void ProfilePickerTurnSyncOnDelegate::ShowManagedUserNotice(
 void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice(
     ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
   LogOutcome(outcome);
+
+  // As FinishSyncConfirmation() deletes `this`, adapter_ has to be copied.
+  auto adapter = adapter_;
+
   // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
   // makes sure the final callback does not get called. It does not matter
   // what happens to sync as the signed-in profile creation gets cancelled
   // right after.
   FinishSyncConfirmation(LoginUIService::UI_CLOSED);
-  ProfilePicker::CancelSignInFlow();
+
+  // Invoke CancelSignInFlow() only in case of explicit user cancellation.
+  // Bypass this for e.g. window closure.
+  if (adapter) {
+    ProfilePicker::CancelSignInFlow();
+  }
 }
 
 void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
