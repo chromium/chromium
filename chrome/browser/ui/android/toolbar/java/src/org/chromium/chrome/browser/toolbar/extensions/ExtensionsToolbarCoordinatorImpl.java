@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;

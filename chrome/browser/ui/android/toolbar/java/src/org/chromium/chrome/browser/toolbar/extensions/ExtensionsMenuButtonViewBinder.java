@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

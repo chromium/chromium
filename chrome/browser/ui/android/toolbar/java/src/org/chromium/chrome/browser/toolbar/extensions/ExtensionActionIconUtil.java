@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;

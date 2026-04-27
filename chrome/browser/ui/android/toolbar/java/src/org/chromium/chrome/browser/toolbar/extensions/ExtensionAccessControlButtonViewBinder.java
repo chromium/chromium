@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

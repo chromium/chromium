@@ -14,7 +14,7 @@ android_library("java") {
     ":*",
     "//chrome/browser/ui/android/toolbar:*",
   ]
-  resources_package = "org.chromium.chrome.browser.toolbar"
+  resources_package = "org.chromium.chrome.browser.toolbar.extensions"
   sources = [
     "ExtensionAccessControlButtonCoordinator.java",
     "ExtensionAccessControlButtonMediator.java",
@@ -88,7 +88,7 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  resources_package = "org.chromium.chrome.browser.toolbar"
+  resources_package = "org.chromium.chrome.browser.toolbar.extensions"
   sources = [
     "ExtensionAccessControlButtonMediatorTest.java",
     "ExtensionActionDragHelperTest.java",
@@ -110,6 +110,7 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/extensions:java_resources",
     "//chrome/browser/ui/android/extensions:test_support_java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/theme:java",
@@ -143,19 +144,21 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.toolbar"
+  resources_package = "org.chromium.chrome.browser.toolbar.extensions"
   sources = [ "ExtensionsToolbarTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/extensions:java",
+    "//chrome/browser/ui/android/extensions:java_resources",
     "//chrome/browser/ui/android/extensions:test_support_java",
     "//chrome/browser/ui/android/toolbar:core_java",
     "//chrome/browser/ui/android/toolbar:java_resources",

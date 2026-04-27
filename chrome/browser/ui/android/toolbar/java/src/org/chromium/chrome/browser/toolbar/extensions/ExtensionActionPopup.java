@@ -21,7 +21,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;

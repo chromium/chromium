@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;

@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.ui.modelutil.PropertyKey;

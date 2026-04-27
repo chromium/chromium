@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;

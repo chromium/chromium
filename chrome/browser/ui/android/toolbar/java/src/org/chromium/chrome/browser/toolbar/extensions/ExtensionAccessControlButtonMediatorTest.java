@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;

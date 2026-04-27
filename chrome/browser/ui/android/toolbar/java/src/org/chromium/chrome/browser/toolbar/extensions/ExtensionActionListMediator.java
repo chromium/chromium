@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;

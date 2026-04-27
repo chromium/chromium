@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinatorImpl.MenuButtonPinningDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuButtonState;
