@@ -661,6 +661,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
     // Retrieve the replacements strings to create the text.
     std::vector<std::u16string> string_replacements;
+    string_replacements.reserve(replacements.size());
     for (auto replacement : replacements) {
       string_replacements.push_back(replacement.text());
     }
