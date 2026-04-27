@@ -232,7 +232,7 @@ def generate_bug_link(args: argparse.Namespace, trace: str) -> str:
 
   args_list = '\n'.join(f'{k} = {v}' for k, v in args.__dict__.items())
 
-  summary = f'Test disabler failed for {args.test_id}'
+  summary = f'Test disabler failed for {args.test_regex}'
   description = f'''
 <Please describe the problem here>
 

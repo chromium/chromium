@@ -24,6 +24,15 @@ def get_test_metadata(invocation, test_regex: str) -> Tuple[str, str]:
     source tree where this test is defined.
   """
   test_results = query_test_result(invocation=invocation, test_regex=test_regex)
+
+  # If there isn't a match, check if the test ID contains a backslash. If so,
+  # try interpreting it as a literal backslash rather than as a regex escape.
+  if (('testResults' not in test_results or not test_results['testResults'])
+      and '\\' in test_regex):
+    test_results = query_test_result(invocation=invocation,
+                                     test_regex=test_regex.replace(
+                                         '\\', '\\\\'))
+
   if 'testResults' not in test_results:
     raise errors.UserError(
         f"ResultDB couldn't query for invocation: {invocation}")
