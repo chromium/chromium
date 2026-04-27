@@ -27,6 +27,11 @@ public class TrafficControl {
     private static @Nullable String sCurrentTestCase;
 
     private static final List<Station<?>> sActiveStations = new ArrayList<>();
+    private static final List<Runnable> sHopOffListeners = new ArrayList<>();
+
+    public static void addHopOffListener(Runnable listener) {
+        sHopOffListeners.add(listener);
+    }
 
     static void notifyCreatedStation(Station<?> station) {
         sAllStationNames.add(Pair.create(sCurrentTestCase, station.getName()));
@@ -64,6 +69,9 @@ public class TrafficControl {
      */
     public static void hopOffPublicTransit() {
         sActiveStations.clear();
+        for (Runnable listener : sHopOffListeners) {
+            listener.run();
+        }
     }
 
     public static List<Pair<String, String>> getAllStationsNames() {
