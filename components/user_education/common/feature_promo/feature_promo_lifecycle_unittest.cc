@@ -137,8 +137,8 @@ class FeaturePromoLifecycleTest : public testing::Test {
     auto result =
         std::make_unique<test::TestHelpBubble>(&element_, HelpBubbleParams());
     help_bubble_subscriptions_.emplace_back(
-        result->AddOnCloseCallback(base::BindLambdaForTesting(
-            [this](HelpBubble*, HelpBubble::CloseReason) {
+        result->AddOnClosingCallback(base::BindLambdaForTesting(
+            [this](const HelpBubble*, HelpBubble::CloseReason) {
               --num_open_bubbles_;
             })));
     return result;

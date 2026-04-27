@@ -16,12 +16,16 @@
 #include "base/timer/timer.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_event_relay.h"
+#include "components/user_education/views/help_bubble_view_info.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/widget/widget.h"
+
+class HelpBubbleViewTimeoutTest;
 
 namespace views {
 class ImageView;
@@ -72,13 +76,16 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Maximum width of the bubble. Longer strings will cause wrapping.
   static constexpr int kMaxWidthDip = 340;
 
-  HelpBubbleView(const HelpBubbleDelegate* delegate,
-                 const internal::HelpBubbleAnchorParams& anchor,
-                 HelpBubbleParams params,
-                 std::unique_ptr<HelpBubbleEventRelay> event_relay = nullptr);
   HelpBubbleView(const HelpBubbleView&) = delete;
   HelpBubbleView& operator=(const HelpBubbleView&) = delete;
   ~HelpBubbleView() override;
+
+  // Creates a help bubble view.
+  static HelpBubbleViewInfo Create(
+      const HelpBubbleDelegate* delegate,
+      const internal::HelpBubbleAnchorParams& anchor,
+      HelpBubbleParams params,
+      std::unique_ptr<HelpBubbleEventRelay> event_relay = nullptr);
 
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
@@ -100,13 +107,19 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
                                 views::Widget* widget) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
-                           RespectsProvidedTimeoutAfterActivate);
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewsTest, RootViewAccessibleName);
   friend class HelpBubbleViewsTest;
   friend class HelpBubbleEventRelay;
+  friend HelpBubbleViewTimeoutTest;
 
   class AnchorViewObserver;
+
+  HelpBubbleView(const HelpBubbleDelegate* delegate,
+                 const internal::HelpBubbleAnchorParams& anchor,
+                 HelpBubbleParams params,
+                 std::unique_ptr<HelpBubbleEventRelay> event_relay);
+
+  void InitializeAndShow(bool visible_arrow, bool show_active);
 
   void MaybeStartAutoCloseTimer();
 

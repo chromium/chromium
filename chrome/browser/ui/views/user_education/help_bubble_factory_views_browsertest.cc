@@ -77,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, ShowAndClose) {
   ASSERT_TRUE(help_bubble_);
   ASSERT_TRUE(help_bubble_->IsA<user_education::HelpBubbleViews>());
   EXPECT_TRUE(help_bubble_->is_open());
-  EXPECT_TRUE(help_bubble_->Close());
+  EXPECT_TRUE(help_bubble_->Close(
+      user_education::HelpBubble::CloseReason::kProgrammaticallyClosed));
   EXPECT_FALSE(help_bubble_->is_open());
 }
 

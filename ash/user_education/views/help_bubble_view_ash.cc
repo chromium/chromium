@@ -642,7 +642,38 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
       anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
           kShellWindowId_HelpBubbleContainer));
 
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+  auto* const anchor_bubble =
+      anchor.view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  if (anchor_bubble) {
+    anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
+  }
+}
+
+HelpBubbleViewAsh::~HelpBubbleViewAsh() {
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>(),
+                                       /*help_bubble_view=*/this);
+  }
+}
+
+// static
+user_education::HelpBubbleViewInfo HelpBubbleViewAsh::Create(
+    HelpBubbleId id,
+    const internal::HelpBubbleAnchorParams& anchor,
+    user_education::HelpBubbleParams params) {
+  auto bubble =
+      base::WrapUnique(new HelpBubbleViewAsh(id, anchor, std::move(params)));
+  auto* const bubble_ptr = bubble.get();
+  auto* const widget = views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  bubble_ptr->InitializeAndShow();
+  return user_education::HelpBubbleViewInfo(base::WrapUnique(widget),
+                                            bubble_ptr);
+}
+
+void HelpBubbleViewAsh::InitializeAndShow() {
+  views::Widget* widget = GetWidget();
 
   // This gets reset to the platform default when we call `CreateBubble()`, so
   // we have to change it afterwards. Note that rounded corners are updated
@@ -667,25 +698,12 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     widget->ShowInactive();
   }
 
-  auto* const anchor_bubble =
-      anchor.view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
-  if (anchor_bubble) {
-    anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
-  }
   MaybeStartAutoCloseTimer();
 
   // NOTE: `controller` may be `nullptr` in testing.
   if (auto* controller = UserEducationHelpBubbleController::Get()) {
     controller->NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>(),
                                       /*help_bubble_view=*/this);
-  }
-}
-
-HelpBubbleViewAsh::~HelpBubbleViewAsh() {
-  // NOTE: `controller` may be `nullptr` in testing.
-  if (auto* controller = UserEducationHelpBubbleController::Get()) {
-    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>(),
-                                       /*help_bubble_view=*/this);
   }
 }
 

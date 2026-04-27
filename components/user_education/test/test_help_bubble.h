@@ -58,10 +58,9 @@ class TestHelpBubble : public HelpBubble {
   // called.
   int focus_count() const { return focus_count_; }
 
- protected:
   // HelpBubble:
   bool ToggleFocusForAccessibility() override;
-  void CloseBubbleImpl() override;
+  bool Close(CloseReason reason) override;
   ui::ElementContext GetContext() const override;
 
  private:

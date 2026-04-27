@@ -46,7 +46,7 @@ class HelpBubbleWebUI : public HelpBubble {
                   ui::ElementIdentifier anchor_id);
 
   // HelpBubble:
-  void CloseBubbleImpl() override;
+  bool Close(CloseReason reason) override;
 
   const raw_ptr<HelpBubbleHandlerBase> handler_;
   const ui::ElementIdentifier anchor_id_;

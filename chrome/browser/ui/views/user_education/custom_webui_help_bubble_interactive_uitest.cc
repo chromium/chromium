@@ -324,7 +324,10 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
                               CustomWebUIHelpBubble::kWebViewIdForTesting),
       ClickElement(kWebViewElementId, kCancelButton),
       WaitForEvent(kToolbarAppMenuButtonElementId, kCallbackEvent),
-      Do([&help_bubble]() { help_bubble->Close(); }),
+      Do([&help_bubble]() {
+        help_bubble->Close(
+            user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
+      }),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckIsAnchor(kToolbarAppMenuButtonElementId, false));
 }
@@ -429,4 +432,37 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_FeatureUsed) {
                }),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckIsDismissed(kCustomWebUIHelpBubbleTestFeature, true));
+}
+
+// Regression tests for https://crbug.com/496456528
+
+IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromoAndCloseBrowser) {
+  RunTestSequence(
+      MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
+                     CustomHelpBubbleShown{
+                         CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
+      Do([this] { browser()->window()->Close(); }),
+      WaitForHide(kBrowserViewElementId),
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromoAndCloseBubble) {
+  RunTestSequence(
+      MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
+                     CustomHelpBubbleShown{
+                         CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
+      WithView(CustomWebUIHelpBubble::kHelpBubbleIdForTesting,
+               [](views::View* view) { view->GetWidget()->Close(); }),
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
+                       ShowPromoAndCloseBubbleNow) {
+  RunTestSequence(
+      MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
+                     CustomHelpBubbleShown{
+                         CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
+      WithView(CustomWebUIHelpBubble::kHelpBubbleIdForTesting,
+               [](views::View* view) { view->GetWidget()->CloseNow(); }),
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
 }
