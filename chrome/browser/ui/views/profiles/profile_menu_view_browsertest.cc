@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
-  EXPECT_NE(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_NE(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip->GetActiveWebContents()->GetURL());
 
   // Signout creates a new tab.
@@ -658,11 +658,11 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   // Start from the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
+                                           chrome::ChromeUINewTabURLAsGURL()));
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
-  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip->GetActiveWebContents()->GetURL());
 
   // Signout navigates the current tab.
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
-  EXPECT_NE(GURL(chrome::kChromeUINewTabURL),
+  EXPECT_NE(chrome::ChromeUINewTabURLAsGURL(),
             tab_strip->GetActiveWebContents()->GetURL());
 
   // Reauth creates a new tab.

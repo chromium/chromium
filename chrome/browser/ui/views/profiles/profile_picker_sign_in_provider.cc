@@ -457,7 +457,7 @@ void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
           DiceTabHelper::GetHistorySyncOptinCallbackForBrowser());
       helper.UpdateSigninErrorCallback(
           DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
-      helper.UpdateRedirectUrl(GURL(chrome::kChromeUINewTabURL));
+      helper.UpdateRedirectUrl(chrome::ChromeUINewTabURLAsGURL());
       return;
   }
 }
