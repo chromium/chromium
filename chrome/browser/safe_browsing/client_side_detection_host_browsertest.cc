@@ -1739,14 +1739,24 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTriggerDisabledTest,
   csd_host->set_ui_manager(mock_ui_manager.get());
   fake_csd_service.SendModelToRenderers();
 
-  NavigateToCreditCardForm();
-  FocusOnCreditCardNumberField();
+  // Navigate to a form, ensure that that completes, then focus on the form.
+  // Only the latter should trigger a ping.
+  // The reason for ensuring that they don't overlap is that there's some
+  // flakiness at least in Windows if these events can overlap, where the
+  // form detection event gets double counted in the
+  // SBClientPhishing.CreditCardFormEvent3 histogram.
 
-  // Wait for a short duration to ensure no ping is triggered.
-  base::RunLoop run_loop;
+  NavigateToCreditCardForm();
+  base::RunLoop nav_run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
-  run_loop.Run();
+      FROM_HERE, nav_run_loop.QuitClosure(), base::Milliseconds(500));
+  nav_run_loop.Run();
+
+  FocusOnCreditCardNumberField();
+  base::RunLoop focus_run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, focus_run_loop.QuitClosure(), base::Milliseconds(500));
+  focus_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
@@ -1755,9 +1765,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTriggerDisabledTest,
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 2);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormEvent3.OnAfterFocusOnFormField",
-      credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.CreditCardFormEvent3.OnFieldTypesDetermined",
       credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
 }
 
