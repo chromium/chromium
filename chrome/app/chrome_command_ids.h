@@ -442,6 +442,8 @@
 #define IDC_CONTENT_CONTEXT_LENS_OVERLAY 50193
 // Use passkey from another device from the top level of context menu.
 #define IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE 50194
+// Listen to this page context menu.
+#define IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE 50195
 // Open with items.
 #define IDC_CONTENT_CONTEXT_OPEN_WITH1 50200
 #define IDC_CONTENT_CONTEXT_OPEN_WITH2 50201

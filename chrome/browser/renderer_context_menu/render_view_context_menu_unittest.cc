@@ -2130,6 +2130,38 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          "MenuShuffleSeparation",
                                          "MenuShufflePlaceAtBottom"));
 
+class RenderViewContextMenuListenToThisPageTest
+    : public RenderViewContextMenuPrefsTest {
+ public:
+  RenderViewContextMenuListenToThisPageTest() = default;
+};
+
+TEST_F(RenderViewContextMenuListenToThisPageTest, MenuItemPresentWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImprovedReadAloud);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE));
+}
+
+TEST_F(RenderViewContextMenuListenToThisPageTest, MenuItemAbsentWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kImprovedReadAloud);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE));
+}
+
 class ReentrantTestRenderViewContextMenu : public TestRenderViewContextMenu {
  public:
   using TestRenderViewContextMenu::TestRenderViewContextMenu;

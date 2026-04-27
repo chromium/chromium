@@ -343,6 +343,8 @@
   E(kActionContentContextSpellingToggle, IDC_CONTENT_CONTEXT_SPELLING_TOGGLE) \
   E(kActionContentContextOpenInReadingMode, \
     IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE) \
+  E(kActionContentContextListenToThisPage, \
+    IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE) \
   E(kActionContentContextSavePluginAs, IDC_CONTENT_CONTEXT_SAVEPLUGINAS) \
   E(kActionContentContextInspectBackgroundPage, \
     IDC_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE) \

@@ -418,6 +418,7 @@ class RenderViewContextMenu
   void ExecOpenCompose();
 #endif
   void ExecOpenInReadAnything();
+  void ExecListenToThisPage();
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
   void SearchForVideoFrame(int event_flags,
@@ -628,6 +629,9 @@ class RenderViewContextMenu
 
            // Opening Glic
            IDC_CONTENT_CONTEXT_GLIC,
+
+           // Listen to Page.
+           IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
 
            // Autofill commands.
            IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY});
