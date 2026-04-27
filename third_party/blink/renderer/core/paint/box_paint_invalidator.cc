@@ -187,8 +187,10 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // Incremental invalidation is not applicable if there is border in the
   // direction of border box size change because we don't know the border
   // width when issuing incremental raster invalidations.
-  if (box_.BorderRight() || box_.BorderBottom())
+  const PhysicalBoxStrut borders = box_.BorderOutsets();
+  if (borders.right || borders.bottom) {
     return PaintInvalidationReason::kLayout;
+  }
 
   if (style.HasVisualOverflowingEffect() || style.HasEffectiveAppearance() ||
       style.HasFilterInducingProperty() || style.HasMask() ||

@@ -47,8 +47,9 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   scrolled_paint_rect.offset -=
       PhysicalOffset(this_box.PixelSnappedScrolledContentOffset());
   scrolled_paint_rect.SetWidth(border.HorizontalSum() + this_box.ScrollWidth());
-  scrolled_paint_rect.SetHeight(this_box.BorderTop() + this_box.ScrollHeight() +
-                                this_box.BorderBottom());
+  // FIXME: Why isn't this using the provided pixel snapped borders?
+  scrolled_paint_rect.SetHeight(this_box.BorderOutsets().VerticalSum() +
+                                this_box.ScrollHeight());
   return scrolled_paint_rect;
 }
 

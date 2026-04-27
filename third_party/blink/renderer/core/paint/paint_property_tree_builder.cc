@@ -3025,14 +3025,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
               LayoutReplaced::PreSnappedRectForPersistentSizing(content_rect);
         }
         // LayoutReplaced clips the foreground by rounded content box.
+        const PhysicalBoxStrut border_padding =
+            replaced.BorderOutsets() + replaced.PaddingOutsets();
         auto clip_rect =
             ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
-                replaced.StyleRef(), content_rect,
-                PhysicalBoxStrut(
-                    -(replaced.PaddingTop() + replaced.BorderTop()),
-                    -(replaced.PaddingRight() + replaced.BorderRight()),
-                    -(replaced.PaddingBottom() + replaced.BorderBottom()),
-                    -(replaced.PaddingLeft() + replaced.BorderLeft())))
+                replaced.StyleRef(), content_rect, -border_padding)
                 .AsRoundedRect();
         if (replaced.IsLayoutEmbeddedContent()) {
           // Embedded objects are always sized to fit the content rect, but they

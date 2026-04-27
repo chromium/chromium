@@ -641,12 +641,11 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
-      gfx::Rect thumb_rect = ToPixelSnappedRect(
-          PhysicalRect(thumb->PhysicalLocation(), thumb->StitchedSize()));
-      slider.thumb_x = thumb_rect.x() + input_box->PaddingLeft().ToInt() +
-                       input_box->BorderLeft().ToInt();
-      slider.thumb_y = thumb_rect.y() + input_box->PaddingTop().ToInt() +
-                       input_box->BorderTop().ToInt();
+      const gfx::Point thumb_position = ToRoundedPoint(
+          thumb->PhysicalLocation() +
+          (input_box->BorderOutsets() + input_box->PaddingOutsets()).Offset());
+      slider.thumb_x = thumb_position.x();
+      slider.thumb_y = thumb_position.y();
     }
   }
   WebThemeEngine::ExtraParams extra_params(slider);

@@ -607,9 +607,7 @@ bool PaintLayerScrollableArea::BackgroundNeedsRepaintOnScroll() const {
   }
   if (background_layers.AnyLayerHasLocalAttachment() &&
       background_layers.AnyLayerUsesContentBox() &&
-      background_paint_in_border_box &&
-      (box->PaddingLeft() || box->PaddingTop() || box->PaddingRight() ||
-       box->PaddingBottom())) {
+      background_paint_in_border_box && !box->PaddingOutsets().IsZero()) {
     // Local attachment content box background needs invalidation if there is
     // padding because the content area can change on scroll (e.g. the top
     // padding can disappear when the box scrolls to the bottom).
@@ -655,17 +653,17 @@ void PaintLayerScrollableArea::VisibleSizeChanged() {
 PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   // LayoutContentRect is conceptually the same as the box's client rect.
-  PhysicalSize layer_size = Size();
-  LayoutUnit border_width = GetLayoutBox()->BorderWidth();
-  LayoutUnit border_height = GetLayoutBox()->BorderHeight();
-  PhysicalBoxStrut scrollbars;
-  if (scrollbar_inclusion == kExcludeScrollbars)
-    scrollbars = GetLayoutBox()->ComputeScrollbars();
+  const PhysicalSize layer_size = Size();
+  const PhysicalBoxStrut border_scrollbar =
+      GetLayoutBox()->BorderOutsets() +
+      ((scrollbar_inclusion == kExcludeScrollbars)
+           ? GetLayoutBox()->ComputeScrollbars()
+           : PhysicalBoxStrut());
 
-  PhysicalSize size(
-      layer_size.width - border_width - scrollbars.HorizontalSum(),
-      layer_size.height - border_height - scrollbars.VerticalSum());
+  PhysicalSize size(layer_size.width - border_scrollbar.HorizontalSum(),
+                    layer_size.height - border_scrollbar.VerticalSum());
   size.ClampNegativeToZero();
+
   return PhysicalRect(PhysicalOffset::FromPointFRound(ScrollPosition()), size);
 }
 
@@ -928,8 +926,7 @@ gfx::Transform PaintLayerScrollableArea::InitializeResizeTransform(
 
 void PaintLayerScrollableArea::UpdateScrollOrigin() {
   PhysicalRect scrollable_overflow = overflow_rect_;
-  scrollable_overflow.Move(-PhysicalOffset(GetLayoutBox()->BorderLeft(),
-                                           GetLayoutBox()->BorderTop()));
+  scrollable_overflow.Move(-GetLayoutBox()->BorderOutsets().Offset());
   gfx::Point new_origin = ToFlooredPoint(-scrollable_overflow.offset) +
                           GetLayoutBox()->OriginAdjustmentForScrollbars();
   if (new_origin != scroll_origin_) {
@@ -2537,11 +2534,11 @@ PhysicalAxes PaintLayerScrollableArea::ScrollableAxes() const {
 }
 
 PhysicalOffset PaintLayerScrollableArea::LocalToScrollOriginOffset() const {
-  PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
-                                                -GetLayoutBox()->BorderTop());
   // There might be scroll bar between border_origin and scroll_origin.
-  gfx::Vector2d scroll_bar_adjustment =
+  const gfx::Vector2d scroll_bar_adjustment =
       GetLayoutBox()->OriginAdjustmentForScrollbars();
+  PhysicalOffset border_origin_to_scroll_origin =
+      -GetLayoutBox()->BorderOutsets().Offset();
   border_origin_to_scroll_origin.left -= scroll_bar_adjustment.x();
   border_origin_to_scroll_origin.top -= scroll_bar_adjustment.y();
   border_origin_to_scroll_origin +=
