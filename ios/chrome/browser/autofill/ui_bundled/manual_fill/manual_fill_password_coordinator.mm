@@ -8,8 +8,8 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credentials_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
@@ -27,7 +27,7 @@
                                              PlusAddressListNavigator>
 
 // Fetches and filters the passwords for the view controller.
-@property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
+@property(nonatomic, strong) ManualFillCredentialsMediator* credentialsMediator;
 
 // The view controller presented above the keyboard where the user can select
 // one of their passwords.
@@ -74,7 +74,7 @@
         IOSChromeAccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
 
-    _passwordMediator = [[ManualFillPasswordMediator alloc]
+    _credentialsMediator = [[ManualFillCredentialsMediator alloc]
            initWithFaviconLoader:faviconLoader
                         webState:browser->GetWebStateList()->GetActiveWebState()
                      syncService:syncService
@@ -83,13 +83,13 @@
             profilePasswordStore:profilePasswordStore
             accountPasswordStore:accountPasswordStore
           showAutofillFormButton:showAutofillFormButton];
-    [_passwordMediator fetchPasswordsForOrigin];
-    _passwordMediator.actionSectionEnabled = YES;
-    _passwordMediator.consumer = _passwordViewController;
-    _passwordMediator.navigator = self;
-    _passwordMediator.contentInjector = injectionHandler;
+    [_credentialsMediator fetchPasswordsForOrigin];
+    _credentialsMediator.actionSectionEnabled = YES;
+    _credentialsMediator.consumer = _passwordViewController;
+    _credentialsMediator.navigator = self;
+    _credentialsMediator.contentInjector = injectionHandler;
 
-    _passwordViewController.imageDataSource = _passwordMediator;
+    _passwordViewController.imageDataSource = _credentialsMediator;
 
     if (manualFillPlusAddressMediator) {
       manualFillPlusAddressMediator.contentInjector = injectionHandler;
@@ -105,9 +105,9 @@
   [self.activeChildCoordinator stop];
   [self.childCoordinators removeAllObjects];
 
-  [_passwordMediator disconnect];
-  _passwordMediator.consumer = nil;
-  _passwordMediator = nil;
+  [_credentialsMediator disconnect];
+  _credentialsMediator.consumer = nil;
+  _credentialsMediator = nil;
 }
 
 - (void)presentFromButton:(UIButton*)button {

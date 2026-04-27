@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credentials_mediator.h"
 
 #import <vector>
 
@@ -77,12 +77,12 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
 }  // namespace
 
-@interface ManualFillPasswordMediator () <CRWWebStateObserver,
-                                          FormActivityObserver,
-                                          FormFetcherConsumer,
-                                          ManualFillContentInjector,
-                                          PasswordCounterObserver,
-                                          SavedPasswordsPresenterObserver>
+@interface ManualFillCredentialsMediator () <CRWWebStateObserver,
+                                             FormActivityObserver,
+                                             FormFetcherConsumer,
+                                             ManualFillContentInjector,
+                                             PasswordCounterObserver,
+                                             SavedPasswordsPresenterObserver>
 
 // The favicon loader used in TableViewFaviconDataSource.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
@@ -101,7 +101,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
 @end
 
-@implementation ManualFillPasswordMediator {
+@implementation ManualFillCredentialsMediator {
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
@@ -479,8 +479,8 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   if (fromAllPasswordContext) {
     base::RecordAction(base::UserMetricsAction(
         "ManualFallback_OtherPasswords_OverflowMenu_Edit"));
-    [self.delegate manualFillPasswordMediator:self
-        didTriggerOpenPasswordDetailsInEditMode:credential];
+    [self.delegate manualFillCredentialsMediator:self
+         didTriggerOpenPasswordDetailsInEditMode:credential];
   } else {
     base::RecordAction(
         base::UserMetricsAction("ManualFallback_Password_OverflowMenu_Edit"));
@@ -533,7 +533,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 - (void)userDidPickContent:(NSString*)content
              passwordField:(BOOL)passwordField
              requiresHTTPS:(BOOL)requiresHTTPS {
-  [self.delegate manualFillPasswordMediatorWillInjectContent:self];
+  [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
   [self.contentInjector userDidPickContent:content
                              passwordField:passwordField
                              requiresHTTPS:requiresHTTPS];
@@ -541,14 +541,14 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
 - (void)autofillFormWithCredential:(ManualFillCredential*)credential
                       shouldReauth:(BOOL)shouldReauth {
-  [self.delegate manualFillPasswordMediatorWillInjectContent:self];
+  [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
   [self.contentInjector autofillFormWithCredential:credential
                                       shouldReauth:shouldReauth];
 }
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  [self.delegate manualFillPasswordMediatorWillInjectContent:self];
+  [self.delegate manualFillCredentialsMediatorWillInjectContent:self];
   [self.contentInjector autofillFormWithSuggestion:formSuggestion
                                            atIndex:index];
 }

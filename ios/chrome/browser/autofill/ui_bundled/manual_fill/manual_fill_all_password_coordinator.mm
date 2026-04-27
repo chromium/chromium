@@ -10,8 +10,8 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credentials_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -30,13 +30,13 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
 @interface ManualFillAllPasswordCoordinator () <
-    ManualFillPasswordMediatorDelegate,
+    ManualFillCredentialsMediatorDelegate,
     PasswordViewControllerDelegate,
     LocalReauthenticationCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
-@property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
+@property(nonatomic, strong) ManualFillCredentialsMediator* credentialsMediator;
 
 // The view controller presented above the keyboard where the user can select
 // one of their passwords.
@@ -84,10 +84,10 @@
 
   _savedPasswordsPresenter->Init();
 
-  // Initialize `passwordMediator` with a nil `profilePasswordStore` and
+  // Initialize `credentialsMediator` with a nil `profilePasswordStore` and
   // 'accountPasswordStore` as these arguments are only used to create a
   // PasswordCounterObserver, which is not needed in this case.
-  self.passwordMediator = [[ManualFillPasswordMediator alloc]
+  self.credentialsMediator = [[ManualFillCredentialsMediator alloc]
          initWithFaviconLoader:faviconLoader
                       webState:webState
                    syncService:syncService
@@ -97,17 +97,17 @@
           accountPasswordStore:nil
         showAutofillFormButton:[self.injectionHandler
                                        isActiveFormAPasswordForm]];
-  [self.passwordMediator
+  [self.credentialsMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
-  [self.passwordMediator fetchAllPasswords];
-  self.passwordMediator.actionSectionEnabled = NO;
-  self.passwordMediator.consumer = self.passwordViewController;
-  self.passwordMediator.contentInjector = self.injectionHandler;
-  self.passwordMediator.delegate = self;
+  [self.credentialsMediator fetchAllPasswords];
+  self.credentialsMediator.actionSectionEnabled = NO;
+  self.credentialsMediator.consumer = self.passwordViewController;
+  self.credentialsMediator.contentInjector = self.injectionHandler;
+  self.credentialsMediator.delegate = self;
 
-  self.passwordViewController.imageDataSource = self.passwordMediator;
+  self.passwordViewController.imageDataSource = self.credentialsMediator;
 
-  searchController.searchResultsUpdater = self.passwordMediator;
+  searchController.searchResultsUpdater = self.credentialsMediator;
 
   _navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.passwordViewController];
@@ -129,9 +129,9 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.passwordViewController = nil;
-  [self.passwordMediator disconnect];
-  self.passwordMediator.consumer = nil;
-  self.passwordMediator = nil;
+  [self.credentialsMediator disconnect];
+  self.credentialsMediator.consumer = nil;
+  self.credentialsMediator = nil;
   _savedPasswordsPresenter.reset();
   [super stop];
 }
@@ -142,16 +142,16 @@
   return self.passwordViewController;
 }
 
-#pragma mark - ManualFillPasswordMediatorDelegate
+#pragma mark - ManualFillCredentialsMediatorDelegate
 
-- (void)manualFillPasswordMediatorWillInjectContent:
-    (ManualFillPasswordMediator*)mediator {
+- (void)manualFillCredentialsMediatorWillInjectContent:
+    (ManualFillCredentialsMediator*)mediator {
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];  // The job is
                                                                  // done.
 }
 
-- (void)manualFillPasswordMediator:(ManualFillPasswordMediator*)mediator
+- (void)manualFillCredentialsMediator:(ManualFillCredentialsMediator*)mediator
     didTriggerOpenPasswordDetailsInEditMode:
         (password_manager::CredentialUIEntry)credential {
   [self.manualFillAllPasswordCoordinatorDelegate

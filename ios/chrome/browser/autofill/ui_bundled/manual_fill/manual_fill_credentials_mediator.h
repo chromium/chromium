@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CREDENTIALS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CREDENTIALS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
 @protocol ManualFillContentInjector;
-@class ManualFillPasswordMediator;
+@class ManualFillCredentialsMediator;
 @protocol ManualFillPasswordConsumer;
 @protocol PasswordListNavigator;
 
@@ -32,23 +32,23 @@ class WebState;
 class FaviconLoader;
 class GURL;
 
-// Delegate for the password mediator.
-@protocol ManualFillPasswordMediatorDelegate <NSObject>
+// Delegate for the credentials mediator.
+@protocol ManualFillCredentialsMediatorDelegate <NSObject>
 
 // The mediator will attempt to inject content.
-- (void)manualFillPasswordMediatorWillInjectContent:
-    (ManualFillPasswordMediator*)mediator;
+- (void)manualFillCredentialsMediatorWillInjectContent:
+    (ManualFillCredentialsMediator*)mediator;
 
 // Requests the delegate to open the details of a credential in edit mode.
-- (void)manualFillPasswordMediator:(ManualFillPasswordMediator*)mediator
+- (void)manualFillCredentialsMediator:(ManualFillCredentialsMediator*)mediator
     didTriggerOpenPasswordDetailsInEditMode:
         (password_manager::CredentialUIEntry)credential;
 
 @end
 
-// Object in charge of getting the passwords relevant for the manual fill
-// passwords UI.
-@interface ManualFillPasswordMediator
+// Object in charge of getting the credentials relevant for the manual fill
+// credentials UI.
+@interface ManualFillCredentialsMediator
     : NSObject <TableViewFaviconDataSource, UISearchResultsUpdating>
 
 // The consumer for passwords updates. Setting it will trigger the consumer
@@ -59,7 +59,7 @@ class GURL;
 // The object in charge of navigation.
 @property(nonatomic, weak) id<PasswordListNavigator> navigator;
 // The delegate for this object.
-@property(nonatomic, weak) id<ManualFillPasswordMediatorDelegate> delegate;
+@property(nonatomic, weak) id<ManualFillCredentialsMediatorDelegate> delegate;
 // If YES  actions will be post to the consumer. Set this value before
 // setting the consumer, since just setting this won't trigger the consumer
 // callbacks. Defaults to NO.
@@ -106,4 +106,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_PASSWORD_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CREDENTIALS_MEDIATOR_H_

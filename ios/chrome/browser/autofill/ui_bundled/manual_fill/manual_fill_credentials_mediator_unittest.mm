@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credentials_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
@@ -16,8 +16,8 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credentials_mediator+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -50,8 +50,8 @@ PasswordForm CreatePasswordForm() {
 
 }  // namespace
 
-// Test fixture for testing the ManualFillPasswordMediator class.
-class ManualFillPasswordMediatorTest : public PlatformTest {
+// Test fixture for testing the ManualFillCredentialsMediator class.
+class ManualFillCredentialsMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
@@ -84,7 +84,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
         affiliation_service_, store_, /*accont_store=*/nullptr);
     presenter_->Init();
 
-    mediator_ = [[ManualFillPasswordMediator alloc]
+    mediator_ = [[ManualFillCredentialsMediator alloc]
            initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                      profile_.get())
                         webState:fake_web_state_.get()
@@ -104,7 +104,7 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
 
   SavedPasswordsPresenter* presenter() { return presenter_.get(); }
 
-  ManualFillPasswordMediator* mediator() { return mediator_; }
+  ManualFillCredentialsMediator* mediator() { return mediator_; }
 
   id consumer() { return consumer_; }
 
@@ -129,12 +129,12 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   id consumer_;
   raw_ptr<affiliations::FakeAffiliationService> affiliation_service_;
-  ManualFillPasswordMediator* mediator_;
+  ManualFillCredentialsMediator* mediator_;
 };
 
 // Tests that the consumer is notified when the passwords related to the current
 // site are fetched.
-TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchDidComplete) {
+TEST_F(ManualFillCredentialsMediatorTest, NotifiesConsumerOnFetchDidComplete) {
   // Set the mediator's form fetcher.
   [mediator()
       setFormFetcher:std::make_unique<password_manager::FakeFormFetcher>()];
@@ -151,7 +151,7 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchDidComplete) {
 
 // Tests that the consumer is notified through `fetchAllPasswords` when the
 // saved passwords change.
-TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
+TEST_F(ManualFillCredentialsMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
   // Set the mediator's saved passwords presenter.
   mediator().savedPasswordsPresenter = presenter();
   ASSERT_TRUE([mediator()
@@ -181,7 +181,8 @@ TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
 
 // Tests that the consumer is notified with the right credentials when a
 // password form with a backup password is fetched.
-TEST_F(ManualFillPasswordMediatorTest, NotifiesConsumerWithBackupCredential) {
+TEST_F(ManualFillCredentialsMediatorTest,
+       NotifiesConsumerWithBackupCredential) {
   // Set the mediator's saved passwords presenter.
   mediator().savedPasswordsPresenter = presenter();
   ASSERT_TRUE([mediator()
