@@ -1205,6 +1205,10 @@ void WebContentsViewAura::StartDragging(
   aura::Window* root_window = GetNativeView()->GetRootWindow();
   RenderWidgetHostImpl* const source_rwh =
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
+  // Disallow reentrant drag which could be an attempt to exploit drag state.
+  if (drag_security_info_.did_initiate()) {
+    return;
+  }
   if (!aura::client::GetDragDropClient(root_window)) {
     web_contents_->SystemDragEnded(source_rwh);
     return;
