@@ -159,25 +159,6 @@ TEST_F(DocumentPolicySimTest,
   main_resource.Finish();
 }
 
-TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest::Params params;
-  params.response_http_headers = {
-      {"Document-Policy", "force-load-at-top, sync-xhr"}};
-
-  SimRequest main_resource("https://example.com", "text/html", params);
-  LoadURL("https://example.com");
-  main_resource.Finish();
-
-  histogram_tester.ExpectTotalCount("Blink.UseCounter.DocumentPolicy.Header",
-                                    2);
-  histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Header",
-                                     3 /* kForceLoadAtTop */, 1);
-  histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Header",
-                                     12 /* kSyncXHR */, 1);
-}
-
 TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
   base::HistogramTester histogram_tester;
 

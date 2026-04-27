@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -73,10 +72,6 @@ void SecurityContextInit::ApplyDocumentPolicy(
   document_policy = FilterByOriginTrial(document_policy, execution_context_);
   if (!document_policy.feature_state.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kDocumentPolicyHeader);
-    for (const auto& policy_entry : document_policy.feature_state) {
-      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.DocumentPolicy.Header",
-                                policy_entry.first);
-    }
   }
   execution_context_->GetSecurityContext().SetDocumentPolicy(
       DocumentPolicy::CreateWithHeaderPolicy(document_policy));

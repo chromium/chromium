@@ -5742,16 +5742,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.DocumentPolicy.Header"
-    enum="DocumentPolicyFeature" expires_after="2023-06-04">
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts the use of a specific document policy via the
-    &quot;Document-Policy&quot; HTTP response header.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UseCounter.DocumentPolicy.PolicyAttribute"
     enum="DocumentPolicyFeature" expires_after="2023-03-31">
   <owner>iclelland@chromium.org</owner>
