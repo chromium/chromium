@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
@@ -47,8 +46,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,11 +87,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      */
     private @Nullable SignInState mSignInState;
 
-    /**
-     * Set during sign-out process and nulled out once complete. Helps to atomically gather/clear
-     * various sign-out state.
-     */
-    private @Nullable SignOutState mSignOutState;
+    /** Set during sign-out process and nulled out once complete. */
+    private @Nullable Runnable mSignOutCallback;
 
     /** Tracks whether deletion of browsing data is in progress. */
     private boolean mWipeUserDataInProgress;
@@ -231,7 +225,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
 
     @Override
     public boolean isSignOutAllowed() {
-        return mSignOutState == null
+        return mSignOutCallback == null
                 && mSignInState == null
                 && mIdentityManager.getPrimaryAccountInfo() != null
                 && mIdentityManager.isClearPrimaryAccountAllowed();
@@ -416,7 +410,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      */
     private boolean isOperationInProgress() {
         ThreadUtils.assertOnUiThread();
-        return mSignInState != null || mSignOutState != null || mWipeUserDataInProgress;
+        return mSignInState != null || mSignOutCallback != null || mWipeUserDataInProgress;
     }
 
     /**
@@ -436,18 +430,12 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     }
 
     @Override
-    public void signOut(
-            @SignoutReason int signoutSource, Runnable signOutCallback, boolean forceWipeUserData) {
+    public void signOut(@SignoutReason int signoutSource, Runnable signOutCallback) {
         // Only one signOut at a time!
-        assert mSignOutState == null;
+        assert mSignOutCallback == null;
 
-        @SignOutState.DataWipeAction
-        int dataWipeAction =
-                forceWipeUserData
-                        ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
-                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY;
-        mSignOutState = new SignOutState(signOutCallback, dataWipeAction);
-        Log.i(TAG, "Signing out, dataWipeAction: %d", dataWipeAction);
+        mSignOutCallback = signOutCallback;
+        Log.i(TAG, "Signing out");
 
         mIdentityMutator.removePrimaryAccountButKeepTokens(signoutSource);
 
@@ -461,24 +449,13 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         }
 
         notifySignOutAllowedChanged();
-        assumeNonNull(mSignOutState);
-        Log.i(
-                TAG,
-                "Native signout complete, wiping data (user callback: %s)",
-                mSignOutState.mDataWipeAction);
+        assumeNonNull(mSignOutCallback);
+        Log.i(TAG, "Native signout complete");
 
         maybeUpdateLegacyPrimaryAccountEmail();
 
-        switch (mSignOutState.mDataWipeAction) {
-            case SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY:
-                SigninManagerImplJni.get()
-                        .wipeGoogleServiceWorkerCaches(
-                                mNativeSigninManagerAndroid, this::finishSignOut);
-                break;
-            case SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA:
-                wipeSyncUserData(this::finishSignOut);
-                break;
-        }
+        SigninManagerImplJni.get()
+                .wipeGoogleServiceWorkerCaches(mNativeSigninManagerAndroid, this::finishSignOut);
     }
 
     /**
@@ -509,7 +486,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @VisibleForTesting
     void finishSignOut() {
         // Should be set at start of sign-out flow.
-        assert mSignOutState != null;
+        assert mSignOutCallback != null;
 
         // After sign-out, reset the Sync promo show count, so the user will see Sync promos
         // again.
@@ -518,8 +495,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                                 SigninPreferencesManager.SigninPromoAccessPointId.NTP),
                         0);
-        Runnable signOutCallback = mSignOutState.mSignOutCallback;
-        mSignOutState = null;
+        Runnable signOutCallback = mSignOutCallback;
+        mSignOutCallback = null;
 
         signOutCallback.run();
         notifyCallbacksWaitingForOperation();
@@ -647,32 +624,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         int getAccessPoint() {
             assert mAccessPoint != null : "Not going to enable sync - no access point!";
             return mAccessPoint;
-        }
-    }
-
-    /**
-     * Contains all the state needed for sign out. Like SignInState, this forces flow state to be
-     * cleared atomically, and all final fields to be set upon initialization.
-     */
-    private static class SignOutState {
-        @IntDef({DataWipeAction.WIPE_SIGNIN_DATA_ONLY, DataWipeAction.WIPE_ALL_PROFILE_DATA})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface DataWipeAction {
-            int WIPE_SIGNIN_DATA_ONLY = 0;
-            int WIPE_ALL_PROFILE_DATA = 1;
-        }
-
-        final Runnable mSignOutCallback;
-        final @DataWipeAction int mDataWipeAction;
-
-        /**
-         * @param signOutCallback Callback to notify when the sign-out is complete.
-         * @param dataWipeAction Flag to wipe user data as requested by the user and enforced for
-         *     managed users.
-         */
-        SignOutState(Runnable signOutCallback, @DataWipeAction int dataWipeAction) {
-            this.mSignOutCallback = signOutCallback;
-            this.mDataWipeAction = dataWipeAction;
         }
     }
 

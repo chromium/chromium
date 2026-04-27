@@ -125,25 +125,24 @@ public class MissingDeviceLockLauncher {
                     if (identityManager.getPrimaryAccountInfo() != null) {
                         signinManager.signOut(
                                 SignoutReason.DEVICE_LOCK_REMOVED_ON_AUTOMOTIVE,
-                                () -> {
-                                    if (!wipeAllData) {
-                                        deletePasswordsAndCreditCards();
-                                    }
-                                    wipeDataCallback.run();
-                                },
-                                wipeAllData);
+                                () -> wipeData(signinManager, wipeAllData, wipeDataCallback));
                     } else {
-                        if (wipeAllData) {
-                            signinManager.wipeSyncUserData(wipeDataCallback);
-                        } else {
-                            deletePasswordsAndCreditCards();
-                            wipeDataCallback.run();
-                        }
+                        wipeData(signinManager, wipeAllData, wipeDataCallback);
                     }
                     ChromeSharedPreferences.getInstance()
                             .writeBoolean(
                                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false);
                 });
+    }
+
+    private void wipeData(
+            SigninManager signinManager, boolean wipeAllData, Runnable wipeDataCallback) {
+        if (wipeAllData) {
+            signinManager.wipeSyncUserData(wipeDataCallback);
+        } else {
+            deletePasswordsAndCreditCards();
+            wipeDataCallback.run();
+        }
     }
 
     void setPasswordStoreBridgeForTesting(PasswordStoreBridge passwordStoreBridge) {

@@ -670,11 +670,7 @@ public class FullscreenSigninMediator
                             mContext,
                             mModalDialogManager);
                 };
-        assumeNonNull(mSigninManager)
-                .signOut(
-                        SignoutReason.ABORT_SIGNIN,
-                        signOutCallback,
-                        /* forceWipeUserData= */ false);
+        assumeNonNull(mSigninManager).signOut(SignoutReason.ABORT_SIGNIN, signOutCallback);
     }
 
     /**
@@ -739,11 +735,7 @@ public class FullscreenSigninMediator
 
                         mDelegate.advanceToNextPage();
                     };
-            assumeNonNull(mSigninManager)
-                    .signOut(
-                            SignoutReason.ABORT_SIGNIN,
-                            signOutCallback,
-                            /* forceWipeUserData= */ false);
+            assumeNonNull(mSigninManager).signOut(SignoutReason.ABORT_SIGNIN, signOutCallback);
         } else {
             mDelegate.advanceToNextPage();
         }

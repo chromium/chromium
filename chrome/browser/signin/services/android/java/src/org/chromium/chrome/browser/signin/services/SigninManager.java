@@ -135,7 +135,7 @@ public interface SigninManager {
 
     /** Invokes signOut with no callback. */
     default void signOut(@SignoutReason int signoutSource) {
-        signOut(signoutSource, () -> {}, false);
+        signOut(signoutSource, () -> {});
     }
 
     /**
@@ -145,10 +145,8 @@ public interface SigninManager {
      * @param signoutSource describes the event driving the signout (e.g. {@link
      *     SignoutReason#USER_CLICKED_SIGNOUT_SETTINGS}).
      * @param signOutCallback Callback to notify when the sign-out is complete.
-     * @param forceWipeUserData Whether user selected to wipe all device data.
      */
-    void signOut(
-            @SignoutReason int signoutSource, Runnable signOutCallback, boolean forceWipeUserData);
+    void signOut(@SignoutReason int signoutSource, Runnable signOutCallback);
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or

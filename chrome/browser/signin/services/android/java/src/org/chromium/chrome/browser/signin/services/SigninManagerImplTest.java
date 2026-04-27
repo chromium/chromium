@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -144,20 +143,6 @@ public class SigninManagerImplTest {
     public void testDataNotWipedOnSignOutWithManagedAccount() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
         verifyDataNotWipedOnSignout();
-    }
-
-    @Test
-    @MediumTest
-    public void testDataWipedOnSignOutWithForceWipeData() {
-        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        verifyDataWipedOnSignOutWithForceWipeData();
-    }
-
-    @Test
-    @MediumTest
-    public void testDataWipedOnSignOutWithForceWipeDataAndManagedAccount() {
-        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
-        verifyDataWipedOnSignOutWithForceWipeData();
     }
 
     @Test
@@ -313,26 +298,6 @@ public class SigninManagerImplTest {
                             () -> {
                                 assertNotNull(
                                         "Bookmark should not have been wiped",
-                                        mBookmarkModel.getBookmarkById(bookmarkId));
-                            });
-                });
-    }
-
-    private void verifyDataWipedOnSignOutWithForceWipeData() {
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
-        BookmarkId bookmarkId = addBookmark("test", url);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Trigger the sign out flow and force wipe user data.
-                    mSigninManager.signOut(
-                            SignoutReason.TEST, () -> {}, /* forceWipeUserData= */ true);
-                    mSigninManager.runAfterOperationInProgress(
-                            () -> {
-                                // Sign-out should only clear the profile when the user is syncing
-                                // and has decided to wipe data.
-                                assertNull(
-                                        "Bookmark should be null after wipe",
                                         mBookmarkModel.getBookmarkById(bookmarkId));
                             });
                 });

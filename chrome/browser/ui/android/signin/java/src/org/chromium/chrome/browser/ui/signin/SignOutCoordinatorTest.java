@@ -102,7 +102,7 @@ public class SignOutCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class));
 
         startSignOutFlow(signOutReason, mOnSignOut, false);
 
@@ -146,7 +146,7 @@ public class SignOutCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class));
 
         startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
 
@@ -221,7 +221,7 @@ public class SignOutCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class));
         startSignOutFlow(signOutReason, mOnSignOut, false);
         onView(withText(R.string.sign_out_unsaved_data_title))
                 .inRoot(isDialog())
@@ -283,7 +283,7 @@ public class SignOutCoordinatorTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signOut(eq(signOutReason), any(Runnable.class), eq(false));
+                .signOut(eq(signOutReason), any(Runnable.class));
         startSignOutFlow(signOutReason, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 

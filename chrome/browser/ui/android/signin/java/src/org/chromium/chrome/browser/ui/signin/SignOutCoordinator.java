@@ -445,8 +445,7 @@ public class SignOutCoordinator {
                         // asynchronous. In that case return early instead.
                         return;
                     }
-                    signinManager.signOut(
-                            signOutReason, signOutCallback, /* forceWipeUserData= */ false);
+                    signinManager.signOut(signOutReason, signOutCallback);
                 });
     }
 }

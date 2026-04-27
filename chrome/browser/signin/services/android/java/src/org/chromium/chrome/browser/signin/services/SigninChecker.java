@@ -86,8 +86,7 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
                     } else {
                         mSigninManager.signOut(
                                 SignoutReason.SIGNOUT_BEFORE_SUPERVISED_SIGNIN,
-                                () -> onChildAccountStatusReady(isChild, childInfo),
-                                /* forceWipeUserData= */ false);
+                                () -> onChildAccountStatusReady(isChild, childInfo));
                     }
                 });
     }

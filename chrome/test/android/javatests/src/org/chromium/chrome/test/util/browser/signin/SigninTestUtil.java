@@ -214,7 +214,7 @@ public final class SigninTestUtil {
                     signinManager.runAfterOperationInProgress(
                             () ->
                                     signinManager.signOut(
-                                            signoutReason, callbackHelper::notifyCalled, false));
+                                            signoutReason, callbackHelper::notifyCalled));
                 });
         try {
             callbackHelper.waitForOnly();
