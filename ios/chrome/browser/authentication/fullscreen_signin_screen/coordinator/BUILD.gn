@@ -14,6 +14,7 @@ source_set("coordinator") {
     "//base",
     "//components/metrics:metrics_pref_names",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/web_resource",
@@ -37,6 +38,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -47,6 +49,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
   ]

@@ -12,12 +12,18 @@
 
 enum class SigninContextStyle;
 
+@class FullscreenSigninScreenViewController;
+
 // Delegate for the fullscreen sign-in view controller.
 @protocol FullscreenSigninScreenViewControllerDelegate <
     PromoStyleViewControllerDelegate>
 
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
+
+// Called when the view controller's view is loaded.
+- (void)fullscreenSigninScreenViewControllerViewDidLoad:
+    (FullscreenSigninScreenViewController*)viewController;
 
 @end
 

@@ -205,6 +205,7 @@ NSString* const kCollaborationSigninHeaderBackground =
   // Call super after setting up the strings and others, as required per super
   // class.
   [super viewDidLoad];
+  [self.delegate fullscreenSigninScreenViewControllerViewDidLoad:self];
 }
 
 #pragma mark - Properties
@@ -261,6 +262,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 - (void)setUIEnabled:(BOOL)UIEnabled {
   // For the disabled UI, show a spinner in the primary button.
   self.configuration.loading = !UIEnabled;
+  [self reloadConfiguration];
   self.view.userInteractionEnabled = UIEnabled;
 }
 
