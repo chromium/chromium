@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/android/callback_android.h"
-#include "base/android/device_info.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
@@ -730,18 +729,9 @@ BookmarkBridge::GetDefaultReadingListFolder(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobject>
 BookmarkBridge::GetDefaultBookmarkFolder(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // On Desktop builds of Android, default to the "Other bookmarks" folder
-  // rather than the "Mobile bookmarks" folder, which we will use on non-Desktop
-  // builds.
-  if (base::android::device_info::is_desktop()) {
-    if (bookmark_model_->account_other_node()) {
-      return GetAccountOtherFolderId(env);
-    }
-    return GetOtherFolderId(env);
-  }
-
-  // If the account mobile folder is active, use it as the default.
-  // Otherwise, fall back to the local mobile folder.
+  // If the account reading list is available, then it should be used as the
+  // default folder. Otherwise these would be saved into an empty local
+  // mobile folder.
   if (bookmark_model_->account_mobile_node()) {
     return GetAccountMobileFolderId(env);
   }
