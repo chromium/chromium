@@ -507,6 +507,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="338" label="RFH_ENTER_FULLSCREEN_PERMISSION_DENIED"/>
   <int value="339" label="DT_DUPLICATE_CHILD_TARGET_CREATED"/>
   <int value="340" label="RWH_POINTER_LOCK_FROM_SANDBOXED_FRAME"/>
+  <int value="341" label="SWSI_CROSS_ORIGIN_SCRIPT_URL"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

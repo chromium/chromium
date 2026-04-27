@@ -403,6 +403,7 @@
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
@@ -6142,6 +6143,7 @@ void ChromeContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
         const std::optional<url::Origin>& request_initiator,
+        network::mojom::RequestDestination request_destination,
         NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);
@@ -6159,12 +6161,18 @@ void ChromeContentBrowserClient::
         request_initiator->scheme() == webapps::kIsolatedAppScheme) {
       app_origin = request_initiator;
     }
-    factories->emplace(
-        webapps::kIsolatedAppScheme,
-        web_app::IsolatedWebAppURLLoaderFactory::Create(
-            browser_context, app_origin,
-            base::FeatureList::IsEnabled(
-                features::kEnforceDedicatedWorkerSameOriginCheck)));
+    bool enforce_same_origin = false;
+    if (request_destination == network::mojom::RequestDestination::kWorker) {
+      enforce_same_origin = base::FeatureList::IsEnabled(
+          features::kEnforceDedicatedWorkerSameOriginCheck);
+    } else if (request_destination ==
+               network::mojom::RequestDestination::kSharedWorker) {
+      enforce_same_origin = base::FeatureList::IsEnabled(
+          features::kEnforceSharedWorkerSameOriginCheck);
+    }
+    factories->emplace(webapps::kIsolatedAppScheme,
+                       web_app::IsolatedWebAppURLLoaderFactory::Create(
+                           browser_context, app_origin, enforce_same_origin));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

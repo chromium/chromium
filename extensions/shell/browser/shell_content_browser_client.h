@@ -96,6 +96,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* browser_context,
       const std::optional<url::Origin>& request_initiator,
+      network::mojom::RequestDestination request_destination,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories(
       content::BrowserContext* browser_context,

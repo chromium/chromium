@@ -58,6 +58,7 @@
 #include "extensions/shell/common/version.h"  // Generated file.
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/gurl.h"
 
@@ -246,6 +247,7 @@ void ShellContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         content::BrowserContext* browser_context,
         const std::optional<url::Origin>& request_initiator,
+        network::mojom::RequestDestination request_destination,
         NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(browser_context);
   DCHECK(factories);

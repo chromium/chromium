@@ -37,7 +37,9 @@
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -164,6 +166,31 @@ void SharedWorkerServiceImpl::ConnectToWorker(
           render_frame_host->GetStorageKey().origin())));
   const blink::StorageKey& storage_key =
       storage_key_override.value_or(render_frame_host->GetStorageKey());
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnforceSharedWorkerSameOriginCheck) &&
+      !info->url.SchemeIs(url::kDataScheme)) {
+    url::Origin script_origin = url::Origin::Create(info->url);
+    if (storage_key.origin() != script_origin) {
+      if (storage_key.origin().opaque() &&
+          storage_key.origin().GetTupleOrPrecursorTupleIfOpaque() ==
+              script_origin.GetTupleOrPrecursorTupleIfOpaque()) {
+        // Match found via precursor.
+      } else {
+        constexpr char kIsolatedAppScheme[] = "isolated-app";
+        constexpr char kExtensionScheme[] = "chrome-extension";
+        if (storage_key.origin().scheme() == kIsolatedAppScheme ||
+            storage_key.origin().scheme() == kExtensionScheme ||
+            script_origin.scheme() == kIsolatedAppScheme ||
+            script_origin.scheme() == kExtensionScheme) {
+          bad_message::ReceivedBadMessage(
+              render_frame_host->GetProcess(),
+              bad_message::SWSI_CROSS_ORIGIN_SCRIPT_URL);
+          return;
+        }
+      }
+    }
+  }
 
   // Enforce same-origin policy.
   // data: URLs are not considered a different origin.

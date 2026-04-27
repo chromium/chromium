@@ -1106,6 +1106,7 @@ void ContentBrowserClient::
     RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
         BrowserContext* browser_context,
         const std::optional<url::Origin>& request_initiator,
+        network::mojom::RequestDestination request_destination,
         NonNetworkURLLoaderFactoryMap* factories) {}
 
 void ContentBrowserClient::

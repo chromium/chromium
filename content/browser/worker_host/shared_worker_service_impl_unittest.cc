@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/fake_network_url_loader_factory.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 using blink::MessagePortChannel;
 
@@ -1832,5 +1834,197 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ContextTypeTestCase::kMatch,
                         ContextTypeTestCase::kMismatchRendererSecure,
                         ContextTypeTestCase::kMismatchRendererNonsecure)));
+
+// Tests the security hardening that prevents a compromised renderer from
+// starting a cross-origin SharedWorker from a chrome-extension:// context.
+// See https://crbug.com/504073872.
+TEST_F(SharedWorkerServiceImplTest, ExtensionCrossOriginSameOriginCheck) {
+  // Required to make url::Origin recognize "chrome-extension" as a standard
+  // scheme in the content_unittests environment.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  // Enable the security check feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnforceSharedWorkerSameOriginCheck);
+
+  // Set up a renderer process with an extension origin.
+  const GURL kExtensionUrl("chrome-extension://abc/");
+  const GURL kWorkerUrl("https://example.com/worker.js");
+  const char kName[] = "name";
+
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(kExtensionUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+
+  EXPECT_EQ(kExtensionUrl, web_contents->GetLastCommittedURL());
+  EXPECT_EQ("chrome-extension",
+            render_frame_host->GetStorageKey().origin().scheme());
+
+  int initial_bad_msg_count = renderer_host->bad_msg_count();
+
+  // Create worker info with a cross-origin script URL (https://example.com).
+  auto options = blink::mojom::WorkerOptions::New();
+  options->name = kName;
+  blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
+      kWorkerUrl, std::move(options),
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      blink::mojom::FetchClientSettingsObject::New(
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
+          GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
+
+  blink::MessagePortDescriptorPair pipe;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+  MockSharedWorkerClient client;
+  client.Bind(client_proxy.InitWithNewPipeAndPassReceiver());
+
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
+
+  // Simulate a renderer calling ConnectToWorker with a cross-origin URL.
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), std::move(info),
+      std::move(client_proxy),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe.TakePort1()), nullptr, std::nullopt);
+
+  // The browser process should detect the cross-origin request from the
+  // extension and terminate the renderer (reflected as a bad message count).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return renderer_host->bad_msg_count() > initial_bad_msg_count;
+  }));
+}
+
+// Verifies that the same same-origin hardening also applies to Isolated Web
+// Apps (isolated-app://), preventing a compromised IWA renderer from
+// starting cross-origin SharedWorkers.
+TEST_F(SharedWorkerServiceImplTest, IwaCrossOriginSameOriginCheck) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("isolated-app", url::SCHEME_WITH_HOST);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnforceSharedWorkerSameOriginCheck);
+
+  const GURL kIwaUrl("isolated-app://abc/");
+  const GURL kWorkerUrl("https://example.com/worker.js");
+  const char kName[] = "name";
+
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kIwaUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+
+  int initial_bad_msg_count = renderer_host->bad_msg_count();
+
+  auto options = blink::mojom::WorkerOptions::New();
+  options->name = kName;
+  blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
+      kWorkerUrl, std::move(options),
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      blink::mojom::FetchClientSettingsObject::New(
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
+          GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
+
+  blink::MessagePortDescriptorPair pipe;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+  MockSharedWorkerClient client;
+  client.Bind(client_proxy.InitWithNewPipeAndPassReceiver());
+
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
+
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), std::move(info),
+      std::move(client_proxy),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe.TakePort1()), nullptr, std::nullopt);
+
+  // IWA cross-origin request should also be blocked.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return renderer_host->bad_msg_count() > initial_bad_msg_count;
+  }));
+}
+
+// Verifies that when the security feature flag is disabled, cross-origin
+// SharedWorker creation from extensions is allowed (legacy behavior).
+TEST_F(SharedWorkerServiceImplTest, ExtensionSameOriginCheckFlagOff) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kEnforceSharedWorkerSameOriginCheck);
+
+  const GURL kExtensionUrl("chrome-extension://abc/");
+  const GURL kWorkerUrl("https://example.com/worker.js");
+  const char kName[] = "name";
+
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(kExtensionUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
+
+  int initial_bad_msg_count = renderer_host->bad_msg_count();
+
+  auto options = blink::mojom::WorkerOptions::New();
+  options->name = kName;
+  blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
+      kWorkerUrl, std::move(options),
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      blink::mojom::FetchClientSettingsObject::New(
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
+          GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false));
+
+  blink::MessagePortDescriptorPair pipe;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+  MockSharedWorkerClient client;
+  client.Bind(client_proxy.InitWithNewPipeAndPassReceiver());
+
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
+
+  TestSharedWorkerServiceObserver observer;
+  base::ScopedObservation<SharedWorkerService, SharedWorkerService::Observer>
+      observation(&observer);
+  observation.Observe(service);
+
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), std::move(info),
+      std::move(client_proxy),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe.TakePort1()), nullptr, std::nullopt);
+
+  // With the flag off, the connection should proceed to host creation
+  // instead of being blocked with a bad message.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetWorkerCount() > 0 ||
+           client.CheckReceivedOnScriptLoadFailed() ||
+           renderer_host->bad_msg_count() > initial_bad_msg_count;
+  }));
+  EXPECT_EQ(initial_bad_msg_count, renderer_host->bad_msg_count());
+}
 
 }  // namespace content

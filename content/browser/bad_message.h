@@ -366,6 +366,7 @@ enum BadMessageReason {
   RFH_ENTER_FULLSCREEN_PERMISSION_DENIED = 338,
   DT_DUPLICATE_CHILD_TARGET_CREATED = 339,
   RWH_POINTER_LOCK_FROM_SANDBOXED_FRAME = 340,
+  SWSI_CROSS_ORIGIN_SCRIPT_URL = 341,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
