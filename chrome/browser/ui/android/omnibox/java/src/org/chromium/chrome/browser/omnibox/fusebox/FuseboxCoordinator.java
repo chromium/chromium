@@ -128,7 +128,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
 
-        if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
+        if (!OmniboxFeatures.isMultimodalInputEnabled(context)
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
             mDeferredInitialized = true;
             return;

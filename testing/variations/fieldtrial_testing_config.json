@@ -16773,6 +16773,7 @@
                         "compact_fusebox": "true"
                     },
                     "enable_features": [
+                        "AndroidDesktopAimGate",
                         "ComposeboxUsesChromeComposeClient",
                         "OmniboxMultilineEditField",
                         "OmniboxMultimodalInput"

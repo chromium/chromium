@@ -286,7 +286,7 @@ public class LocationBarCoordinator
                                         ? mAutocompleteCoordinator.getSuggestionsDropdown()
                                         : null);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
-        if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
+        if (OmniboxFeatures.isMultimodalInputEnabled(context)) {
             fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();
             fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
         } else {

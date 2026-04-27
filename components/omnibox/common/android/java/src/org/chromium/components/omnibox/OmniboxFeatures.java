@@ -15,6 +15,7 @@ import com.google.android.gms.location.Priority;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
@@ -135,7 +136,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxSiteSearch =
             newFlag(OmniboxFeatureList.OMNIBOX_SITE_SEARCH, FeatureState.ENABLED_IN_TEST);
 
-    public static final CachedFlag sOmniboxMultimodalInput =
+    private static final CachedFlag sOmniboxMultimodalInput =
             newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_TEST);
 
     public static final BooleanCachedFeatureParam sShowDedicatedModeButton =
@@ -173,6 +174,9 @@ public class OmniboxFeatures {
 
     public static final BooleanCachedFeatureParam sUseAskHintForNtp =
             newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
+
+    public static final CachedFlag sAndroidDesktopAimGate =
+            newFlag(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
@@ -410,6 +414,18 @@ public class OmniboxFeatures {
     public static void setIsDesktopModeForTesting(Boolean isDesktopMode) {
         sIsDesktopModeForTesting = isDesktopMode;
         ResettersForTesting.register(() -> sIsDesktopModeForTesting = null);
+    }
+
+    /**
+     * Explicitly disable fusebox for desktop for release users, but not for tests or for local
+     * development. Fusebox feature checks should go through this instead of the feature directly.
+     * This should be removed in a milestone or two, before fusebox launch for desktop.
+     */
+    public static boolean isMultimodalInputEnabled(Context context) {
+        if (DeviceInfo.isDesktop() || isDesktopMode(context)) {
+            return sAndroidDesktopAimGate.isEnabled() && sOmniboxMultimodalInput.isEnabled();
+        }
+        return sOmniboxMultimodalInput.isEnabled();
     }
 
     /**

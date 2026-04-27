@@ -15572,6 +15572,7 @@ from previous Chrome versions.
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
   <int value="481422857" label="LensOverlaySidePanelOpenInNewTab:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>
+  <int value="481916934" label="AndroidDesktopAimGate:enabled"/>
   <int value="481942786" label="AndroidGrammarCheck:enabled"/>
   <int value="482232604" label="PercentBasedScrolling:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
@@ -17892,6 +17893,7 @@ from previous Chrome versions.
   <int value="1260234477" label="(Obsolete) ExplicitLanguageAsk:enabled"/>
   <int value="1260878896"
       label="AnnotatedPageContentsVirtualStructure:enabled"/>
+  <int value="1261095642" label="AndroidDesktopAimGate:disabled"/>
   <int value="1261379424" label="DecodeLossyWebPImagesToYUV:disabled"/>
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>

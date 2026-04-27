@@ -2467,7 +2467,7 @@ public class ToolbarPhone extends ToolbarLayout
         // issues.
         if (animatingSuggestionsListOnNtp()
                 && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()
-                && !OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
+                && !OmniboxFeatures.isMultimodalInputEnabled(getContext())) {
             ButtonData copy = mButtonData;
             updateOptionalButton(hasFocus ? null : mButtonData);
             mButtonData = copy;

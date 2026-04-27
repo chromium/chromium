@@ -537,7 +537,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private void onComposeplateButtonClicked(View view) {
-        if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
+        if (OmniboxFeatures.isMultimodalInputEnabled(mActivity)
                 && OmniboxFeatures.sRedirectComposeplateButton.getValue()
                 && !mIsTablet
                 && mIsComposeplatePolicyEnabled) {

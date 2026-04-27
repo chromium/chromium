@@ -165,6 +165,9 @@ BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 
+// An additional gate to the behavior of OmniboxMultimodalInput on desktop.
+BASE_FEATURE(kAndroidDesktopAimGate, DISABLED);
+
 // Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button. Only
 // used on desktop platforms.
 BASE_FEATURE(kAiModeOmniboxEntryPoint, ENABLED);
@@ -417,6 +420,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kPlatformAgnosticXGeo,
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
+      &kAndroidDesktopAimGate,
       &kMultilineEditField,
       &kOmniboxImprovementForLFF,
       &kServeJavaCachedZeroSuggest,

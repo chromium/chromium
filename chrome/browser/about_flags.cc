@@ -6598,6 +6598,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxMultimodalInputVariants,
                                     "OmniboxMultiModalInput")},
 
+    {"android-desktop-aim-gate", flag_descriptions::kAndroidDesktopAimGateName,
+     flag_descriptions::kAndroidDesktopAimGateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kAndroidDesktopAimGate)},
+
     {"omnibox-aim-suppress-verbatim-match",
      flag_descriptions::kAIMSuppressVerbatimMatchName,
      flag_descriptions::kAIMSuppressVerbatimMatchDescription, kOsAndroid,
