@@ -518,15 +518,22 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     create_client_to_aim_request_info->file_tokens =
         std::move(file_tokens).extract();
 
+    // Delay submission if context still uploading.
+    if (IsAnyContextUploading()) {
+      // Stash the request info instead of generating the message now.
+      // Generating the message here would evaluate file upload statuses
+      // prematurely, causing files that are still uploading to be stripped
+      // from the message. Storing the request info allows us to generate the
+      // message with up-to-date successful statuses once all uploads complete.
+      pending_query_request_info_ =
+          std::move(create_client_to_aim_request_info);
+      return;
+    }
+
     lens::ClientToAimMessage client_to_page_message =
         session_handle->CreateClientToAimRequest(
             std::move(create_client_to_aim_request_info));
 
-    // Delay submission if context still uploading.
-    if (IsAnyContextUploading()) {
-      pending_message_ = std::move(client_to_page_message);
-      return;
-    }
     // Otherwise, submit request to server side.
     web_ui_interface_->PostMessageToWebview(client_to_page_message);
   }
@@ -606,7 +613,7 @@ bool ContextualTasksComposeboxHandler::IsAnyContextUploading() {
 }
 
 bool ContextualTasksComposeboxHandler::HasPendingQueryForTesting() const {
-  return !!pending_message_;
+  return pending_query_request_info_ != nullptr;
 }
 
 uint16_t ContextualTasksComposeboxHandler::GetNumTabsDelayed() const {
@@ -754,7 +761,7 @@ void ContextualTasksComposeboxHandler::ClearFiles(
 
   pending_delayed_tab_ids_.clear();
   pending_context_uploads_.clear();
-  pending_message_ = std::nullopt;
+  pending_query_request_info_.reset();
 
   if (current_suggestion_ && should_block_auto_suggested_tabs) {
     blocklisted_suggestions_.insert(*current_suggestion_);
@@ -1062,9 +1069,15 @@ ContextualTasksComposeboxHandler::GetActiveTabContextId() {
 }
 
 void ContextualTasksComposeboxHandler::MaybeSendPendingQuery() {
-  if (pending_message_.has_value() && !IsAnyContextUploading()) {
-    web_ui_interface_->PostMessageToWebview(*pending_message_);
-    pending_message_.reset();
+  if (pending_query_request_info_ && !IsAnyContextUploading()) {
+    auto* session_handle = GetContextualSessionHandle();
+    if (session_handle) {
+      lens::ClientToAimMessage client_to_page_message =
+          session_handle->CreateClientToAimRequest(
+              std::move(pending_query_request_info_));
+      web_ui_interface_->PostMessageToWebview(client_to_page_message);
+    }
+    pending_query_request_info_.reset();
   }
 }
 
