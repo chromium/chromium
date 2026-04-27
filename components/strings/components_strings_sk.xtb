@@ -2152,6 +2152,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4318312030194671742">Služba na vytváranie ukážok vykreslenia</translation>
 <translation id="4318566738941496689">Názov a sieťová adresa vášho zariadenia</translation>
 <translation id="4320119221194966055">Osobné úvery</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Odkaz bol prijatý zo zariadenia <ph name="DEVICE_NAME" />}few{# odkazy boli prijaté zo zariadenia <ph name="DEVICE_NAME" />}many{# links received from <ph name="DEVICE_NAME" />}other{# odkazov bolo prijatých zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Zásobník č. 17</translation>
 <translation id="4325863107915753736">Článok sa nepodarilo nájsť</translation>
 <translation id="4326324639298822553">Skontrolujte dátum vypršania platnosti a skúste to znova</translation>
@@ -4979,6 +4980,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8758529215314160755">Svoje meno môžete upraviť v <ph name="BEGIN_LINK" />účte Google <ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Platnosť tejto karty vypršala</translation>
 <translation id="87601671197631245">Tento web používa zastaranú konfiguráciu zabezpečenia, ktorá môže odhaliť vaše informácie (napríklad heslá, správy alebo kreditné karty), keď ich naň odošlete.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Odkaz bol odoslaný zo zariadenia <ph name="DEVICE_NAME" />}few{# odkazy boli odoslané zo zariadenia <ph name="DEVICE_NAME" />}many{# links sent from <ph name="DEVICE_NAME" />}other{# odkazov bolo odoslaných zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Zariadenie USB</translation>
 <translation id="8763986294015493060">Zavrite všetky okná inkognito, ktoré sú momentálne otvorené</translation>
 <translation id="8766943070169463815">Hárok overenia poverenia zabezpečenej platby je otvorený</translation>

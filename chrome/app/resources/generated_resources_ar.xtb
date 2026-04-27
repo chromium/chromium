@@ -836,6 +836,7 @@
 <translation id="1567579616025300478">هذا الموقع الإلكتروني غير مسموح له بحفظ البيانات على جهازك.</translation>
 <translation id="156793199942386351">سبق وتم تخصيص مفتاح "<ph name="CURRENTKEY" />" للإجراء "<ph name="ACTION" />". يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏وحدة تحكم JavaScript</translation>
+<translation id="157005186601751931">فتح علامة التبويب في التطبيق</translation>
 <translation id="1570604804919108255">إعادة صوت الاشعارات</translation>
 <translation id="1570990174567554976">تم إنشاء مجلد إشارات مرجعية بعنوان "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">ما مِن كلمات مرور ضعيفة أو مستخدَمة لحساب آخر</translation>
@@ -6111,6 +6112,7 @@
 <translation id="5204967432542742771">إدخال كلمة المرور</translation>
 <translation id="5205484256512407285">عدم استخدام بيانات الجوّال للنقل مطلقًا</translation>
 <translation id="520568280985468584">تمت إضافة الشبكة. قد يستغرق تفعيل شبكة الجوّال بضع دقائق.</translation>
+<translation id="5207395053540207113">‏السماح لميزة البحث بالوصول إلى محتوى Drive؟</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="520840839826327499">‏تريد خدمة <ph name="SERVICE_NAME" /> التحقق من أنّك تستخدم جهازًا مؤهَّلاً يعمل بنظام التشغيل Chrome.</translation>
 <translation id="5208926629108082192">معلومات شبكة الجوّال على الجهاز</translation>
@@ -9028,6 +9030,7 @@
 <translation id="727595954130325265">التسوّق الآن</translation>
 <translation id="7277275452721470458">‏نشاطك في "وضع AI"</translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
+<translation id="7280265656690268844">‏خيار "تحسين JavaScript" غير مفعَّل</translation>
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7280683802406059877">تخصيص اختصارات لوحة المفاتيح</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>

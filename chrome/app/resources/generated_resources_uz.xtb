@@ -831,6 +831,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1567579616025300478">Bu sayt maʼlumotlarni qurilmada saqlashiga ruxsat berilmagan</translation>
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />” tugmasi allaqachon “<ph name="ACTION" />” amaliga biriktirilgan. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
 <translation id="1567993339577891801">JavaScript konsoli</translation>
+<translation id="157005186601751931">Varaqni ilovada ochish</translation>
 <translation id="1570604804919108255">Bildirishnomalar kelsin</translation>
 <translation id="1570990174567554976">“<ph name="BOOKMARK_TITLE" />” bukmarklar jildi yaratildi.</translation>
 <translation id="1571041387761170095">Kuchsiz yoki qayta ishlatilgan parollar yoʻq.</translation>
@@ -5650,6 +5651,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4881685975363383806">Boshqa eslatilmasin</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4882312758060467256">Bu saytga ruxsati bor</translation>
+<translation id="4882805770036405108">Tezkor tugmalar orqali oʻqish rejimini tezroq oching. Oʻqish rejimini yoqish yoki faolsizlantirish uchun ⌥ + ⌘ + R tugmalarini bosing.</translation>
 <translation id="4882848900607400156">Aniq joylashuvingizni ulashsangiz, Gemini savollaringizga aniqroq javob berishi mumkin. Maʼlumotlaringiz generativ AI modellarini yaxshilashda ishlatilmaydi.</translation>
 <translation id="4882919381756638075">Saytlar odatda video chat kabi aloqa xizmatlarida mikrofondan foydalanadi</translation>
 <translation id="4883436287898674711">Barcha <ph name="WEBSITE_1" /> saytlari</translation>
@@ -6107,6 +6109,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5204967432542742771">Parolni kiriting</translation>
 <translation id="5205484256512407285">Hech qachon mobil internetdan yuborilmasin</translation>
 <translation id="520568280985468584">Tarmoq kiritildi. Mobil tarmoq faollashtirilishi bir necha daqiqa vaqt oladi.</translation>
+<translation id="5207395053540207113">Qidiruvga Drive kontentiga kirish ruxsati berilsinmi?</translation>
 <translation id="5207949376430453814">Matn kiritish joyi ajratib ko‘rsatilsin</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> mos ChromeOS qurilmadan foydalanayotganingizni tekshirmoqchi.</translation>
 <translation id="5208926629108082192">Qurilmadagi mobil tarmoq axboroti</translation>
@@ -8889,6 +8892,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7186903260115204164">Yangi Chizish vositasi bilan erkin chizmalar, imzolar va asosiy joylarni belgilang</translation>
 <translation id="7186935534137027449">Ilova buyrugʻi</translation>
 <translation id="7188508872042490670">Qurilmada saqlangan sayt maʼlumotlari</translation>
+<translation id="7188755083797868960">Tezkor tugmalar orqali oʻqish rejimini tezroq oching. Oʻqish rejimini almashtirish uchun Alt+Shift+R tugmalarini bosing.</translation>
 <translation id="7189234443051076392">Qurilmangizda joy kam qolganga o‘xshaydi</translation>
 <translation id="7189451821249468368">Bu qurilmani qayd qilish uchun sizdagi DT litsenziyalari yetarli emas. Xarid qilish uchun savdo boʻlimiga murojaat qiling. Bu xabar xato boʻlsa, yordam xizmatiga murojaat qiling.</translation>
 <translation id="7189558282078169397">Boshqa qurilmalardan sinxronlangan varaqlar</translation>
@@ -9014,6 +9018,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="727595954130325265">Xarid qilish</translation>
 <translation id="7277275452721470458">AI rejimi faoliyati</translation>
 <translation id="727952162645687754">Yuklab olishda xatolik yuz berdi</translation>
+<translation id="7280265656690268844">JavaScript optimallash oʻchiq</translation>
 <translation id="7280649757394340890">Nutq sintezatori uchun ovoz sozlamalari</translation>
 <translation id="7280683802406059877">Klaviatura tezkor tugmalarini sozlash</translation>
 <translation id="7280877790564589615">Ruxsat so‘ralmoqda</translation>

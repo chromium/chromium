@@ -152,6 +152,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1228893227497259893">Obyekt identifikatori noto‘g‘ri</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (avtomatik aniqlandi)</translation>
 <translation id="1232569758102978740">Nomlanmagan</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> kiritilishi shart</translation>
 <translation id="1236081509407217141">VR ishlatishga ruxsat berilsinmi?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Qurilma nomi</translation>
@@ -471,6 +472,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1721424275792716183">* Bu maydoncha kiritilishi shart</translation>
 <translation id="1723636263173393300">Bu siyosat uchun ruxsat etilgan yorliqlar soni: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> yoki <ph name="FIELD_3" /> kiritilishi shart</translation>
 <translation id="1727613060316725209">Sertifikat yaroqli</translation>
 <translation id="1728677426644403582">Siz veb-sahifa kodini ko‘rmoqdasiz.</translation>
 <translation id="173080396488393970">Bunday karta hozirda ishlamaydi</translation>
@@ -1429,6 +1431,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3220264767789936523">Rasmiy kiyimlar</translation>
 <translation id="3223287115535306850">Ilova yuklanishi belgisi</translation>
 <translation id="3223425961342298674">Joylashuv axborotiga kirishga ruxsat berilmagan</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> yoki <ph name="FIELD_2" /> kiritilishi shart</translation>
 <translation id="3225319735946384299">Kodni imzolash</translation>
 <translation id="3225919329040284222">Serverdagi sertifikat ba’zi saytlardagi yuqori darajali havfsizlik ichki parametrlariga mos kelmaydi.</translation>
 <translation id="3226128629678568754">Ba’zi ma’lumotlarni qayta kiritish uchun sahifa yuklanishi kerak, “yangilash” tugmasini bosing.</translation>

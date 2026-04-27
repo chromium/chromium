@@ -834,6 +834,7 @@
 <translation id="1567579616025300478">不允許此網站在裝置上儲存資料。</translation>
 <translation id="156793199942386351">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制器</translation>
+<translation id="157005186601751931">在應用程式中開啟分頁</translation>
 <translation id="1570604804919108255">取消忽略通知</translation>
 <translation id="1570990174567554976">建立咗「<ph name="BOOKMARK_TITLE" />」書籤資料夾。</translation>
 <translation id="1571041387761170095">沒有安全性弱或重用的密碼</translation>
@@ -6117,6 +6118,7 @@
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5205484256512407285">一律不使用流動數據進行傳輸</translation>
 <translation id="520568280985468584">已成功新增網絡。流動網絡可能需時幾分鐘才能啟用。</translation>
+<translation id="5207395053540207113">要允許搜尋功能存取「雲端硬碟」內容嗎？</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想檢查您是否使用符合資格的 Chrome OS 裝置。</translation>
 <translation id="5208926629108082192">裝置流動網絡資料</translation>
@@ -9021,6 +9023,7 @@
 <translation id="727595954130325265">立即選購</translation>
 <translation id="7277275452721470458">AI 模式活動</translation>
 <translation id="727952162645687754">下載錯誤</translation>
+<translation id="7280265656690268844">JavaScript 優化功能已關閉</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7280683802406059877">自訂鍵盤快速鍵</translation>
 <translation id="7280877790564589615">已要求許可</translation>

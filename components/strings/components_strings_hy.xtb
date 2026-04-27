@@ -2162,6 +2162,7 @@
 <translation id="4318312030194671742">Paint-ի նախադիտումների գրաշարման ծառայություն</translation>
 <translation id="4318566738941496689">Ձեր սարքի անունը և ցանցի հասցեն</translation>
 <translation id="4320119221194966055">Սպառողական վարկեր</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{«<ph name="DEVICE_NAME" />» սարքից հղում է ստացվել}one{«<ph name="DEVICE_NAME" />» սարքից # հղում է ստացվել}other{«<ph name="DEVICE_NAME" />» սարքից # հղում է ստացվել}}</translation>
 <translation id="4325600325087822253">Դարակ 17</translation>
 <translation id="4325863107915753736">Չհաջողվեց գտնել հոդվածը</translation>
 <translation id="4326324639298822553">Ստուգեք սպառման ամսաթիվը և նորից փորձեք</translation>
@@ -4991,6 +4992,7 @@
 <translation id="8758529215314160755">Դուք կարող եք փոփոխել ձեր անունը <ph name="ACCOUNT" /> <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="8759274551635299824">Քարտի ժամկետը սպառվել է</translation>
 <translation id="87601671197631245">Այս կայքն օգտագործում է անվտանգության հնացած կազմաձևում, ինչի հետևանքով ձեր տեղեկությունները (օր.` գաղտնաբառերը, հաղորդագրությունները կամ վարկային քարտի տվյալները) այս կայքում լրացնելիս կարող են բացահայտվել։</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Հղումն ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}one{# հղում ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}other{# հղում ուղարկվել է «<ph name="DEVICE_NAME" />» սարքից}}</translation>
 <translation id="8763927697961133303">USB սարք</translation>
 <translation id="8763986294015493060">Փակել ընթացիկ բացված բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="8766943070169463815">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրանը բացված է</translation>

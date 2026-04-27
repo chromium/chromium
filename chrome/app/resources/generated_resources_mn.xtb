@@ -831,6 +831,7 @@
 <translation id="1567579616025300478">Энэ сайт таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрдөггүй.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
 <translation id="1567993339577891801">JavaScript консол</translation>
+<translation id="157005186601751931">Табыг аппад нээх</translation>
 <translation id="1570604804919108255">Мэдэгдлийн дууг нээх</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' хавчуургын фолдерыг үүсгэсэн.</translation>
 <translation id="1571041387761170095">Ямар ч сул эсвэл дахин ашигласан нууц үг байхгүй</translation>
@@ -6116,6 +6117,7 @@
 <translation id="5204967432542742771">Нууц үгээ оруулна уу</translation>
 <translation id="5205484256512407285">Шилжүүлэхийн тулд мобайл дата хэзээ ч бүү ашигла</translation>
 <translation id="520568280985468584">Сүлжээг амжилттай нэмлээ. Таны үүрэн холбооны сүлжээ идэвхтэй болоход хэдэн минут зарцуулж болзошгүй.</translation>
+<translation id="5207395053540207113">Хайлтад Драйвын контентод хандахыг зөвшөөрөх үү?</translation>
 <translation id="5207949376430453814">Текст оруулах тэмдгийг тодруулах</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> таныг эрх бүхий ChromeOS төхөөрөмж ашиглаж байгаа эсэхийг шалгах хүсэлтэй байна.</translation>
 <translation id="5208926629108082192">Төхөөрөмжийн хөдөлгөөнт холбооны сүлжээний мэдээлэл</translation>
@@ -9023,6 +9025,7 @@
 <translation id="727595954130325265">Одоо дэлгүүр хэсэх</translation>
 <translation id="7277275452721470458">ХОУ-ы горимын үйл ажиллагаа</translation>
 <translation id="727952162645687754">Татаж авч байх үед гарах алдаа</translation>
+<translation id="7280265656690268844">JavaScript-н оновчлол унтраалттай байна</translation>
 <translation id="7280649757394340890">Бичвэрийг ярианд хувиргах дуу хоолойны тохиргоо</translation>
 <translation id="7280683802406059877">Товчлуурын шууд холбоосыг тусгайлан өөрчлөх</translation>
 <translation id="7280877790564589615">Зөвшөөрөл хүссэн</translation>

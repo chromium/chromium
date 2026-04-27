@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">繪圖預覽建立服務</translation>
 <translation id="4318566738941496689">您的裝置名稱和網絡地址</translation>
 <translation id="4320119221194966055">私人貸款</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{收到來自「<ph name="DEVICE_NAME" />」的連結}other{收到 # 個來自「<ph name="DEVICE_NAME" />」的連結}}</translation>
 <translation id="4325600325087822253">紙匣 17</translation>
 <translation id="4325863107915753736">無法找到文章</translation>
 <translation id="4326324639298822553">請檢查您的到期日，然後再試一次</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755">你可以在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /> <ph name="ACCOUNT" /> 中編輯名稱</translation>
 <translation id="8759274551635299824">此信用卡已過期</translation>
 <translation id="87601671197631245">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼、訊息或信用卡資料) 可能會外洩。</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{收到「<ph name="DEVICE_NAME" />」發送的連結}other{收到 # 個「<ph name="DEVICE_NAME" />」發送的連結}}</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8763986294015493060">關閉目前開啟的所有無痕式視窗</translation>
 <translation id="8766943070169463815">開咗安全付款憑證驗證工作表</translation>

@@ -831,6 +831,7 @@
 <translation id="1567579616025300478">Този сайт няма разрешение да запазва данни на устройството ви.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
+<translation id="157005186601751931">Отваряне на раздела в приложението</translation>
 <translation id="1570604804919108255">Включване на известията</translation>
 <translation id="1570990174567554976">Папката с отметки „<ph name="BOOKMARK_TITLE" />“ бе създадена.</translation>
 <translation id="1571041387761170095">Няма ненадеждни или повторно използвани пароли</translation>
@@ -6118,6 +6119,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5204967432542742771">Въведете парола</translation>
 <translation id="5205484256512407285">За прехвърлянето никога няма да се използват мобилни данни</translation>
 <translation id="520568280985468584">Мобилната мрежа е добавена успешно. Активирането ѝ може да отнеме няколко минути.</translation>
+<translation id="5207395053540207113">Да се разреши ли на Търсене достъп до съдържанието в Диск?</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> иска да провери дали използвате отговарящо на условията устройство с Chrome OS.</translation>
 <translation id="5208926629108082192">Информация за мобилната мрежа на устройството</translation>
@@ -9027,6 +9029,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="727595954130325265">Купете сега</translation>
 <translation id="7277275452721470458">Активност в режима с AI</translation>
 <translation id="727952162645687754">Грешка при изтеглянето</translation>
+<translation id="7280265656690268844">Оптимизирането на JavaScript е изключено</translation>
 <translation id="7280649757394340890">Настройки за гласовете за синтезиран говор</translation>
 <translation id="7280683802406059877">Персонализиране на клавишната комбинация</translation>
 <translation id="7280877790564589615">Изисква се разрешение</translation>

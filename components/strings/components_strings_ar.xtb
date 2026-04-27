@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">‏خدمة Paint Preview Compositor</translation>
 <translation id="4318566738941496689">اسم جهازك وعنوان الشبكة</translation>
 <translation id="4320119221194966055">قروض شخصية</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{تم استلام رابط واحد من "<ph name="DEVICE_NAME" />"}zero{تم استلام # رابط من "<ph name="DEVICE_NAME" />"}two{تم استلام رابطَين من "<ph name="DEVICE_NAME" />"}few{تم استلام # روابط من "<ph name="DEVICE_NAME" />"}many{تم استلام # رابطًا من "<ph name="DEVICE_NAME" />"}other{تم استلام # رابط من "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="4325600325087822253">الدُرج 17</translation>
 <translation id="4325863107915753736">تعذّر العثور على المقالة</translation>
 <translation id="4326324639298822553">تحقق من تاريخ انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
@@ -4986,6 +4987,7 @@
 <translation id="8758529215314160755">‏يمكنك تعديل اسمك في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />‏ <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">هذه البطاقة منتهية الصلاحية</translation>
 <translation id="87601671197631245">يستخدم هذا الموقع الإلكتروني إعداد أمان غير محدَّث، وقد يكشف ذلك عن معلوماتك (مثل كلمات المرور أو الرسائل أو بطاقات الائتمان) عند إرسالها إلى هذا الموقع الإلكتروني.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{تم إرسال رابط واحد من "<ph name="DEVICE_NAME" />"}zero{تم إرسال # رابط من "<ph name="DEVICE_NAME" />"}two{تم إرسال رابطَين من "<ph name="DEVICE_NAME" />"}few{تم إرسال # روابط من "<ph name="DEVICE_NAME" />"}many{تم إرسال # رابطًا من "<ph name="DEVICE_NAME" />"}other{تم إرسال # رابط من "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="8763927697961133303">‏جهاز USB</translation>
 <translation id="8763986294015493060">إغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="8766943070169463815">تم فتح صفحة مصادقة بيانات اعتماد الدفع الآمن.</translation>

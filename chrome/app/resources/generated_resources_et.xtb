@@ -834,6 +834,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1567579616025300478">Sellel saidil ei ole lubatud teie seadmesse andmeid salvestada.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> on juba määratud toimingu „<ph name="ACTION" />” jaoks. Vajutage ükskõik millist klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScripti konsool</translation>
+<translation id="157005186601751931">Ava vaheleht rakenduses</translation>
 <translation id="1570604804919108255">Tühista märguannete summutus</translation>
 <translation id="1570990174567554976">Järjehoidjate kaust „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="1571041387761170095">Nõrku ega korduvalt kasutatud paroole pole</translation>
@@ -6112,6 +6113,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5204967432542742771">Sisestage parool</translation>
 <translation id="5205484256512407285">Mobiilset andmesidet ei kasutata ülekandmiseks kunagi</translation>
 <translation id="520568280985468584">Võrgu lisamine õnnestus. Teie mobiilsidevõrgu aktiveerimine võib võtta mitu minutit.</translation>
+<translation id="5207395053540207113">Kas lubada Otsingul Drive'i sisule juurde pääseda?</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="520840839826327499">Teenus <ph name="SERVICE_NAME" /> soovib kontrollida, kas kasutate sobilikku Chrome OS-i seadet.</translation>
 <translation id="5208926629108082192">Seadme mobiilsidevõrgu teave</translation>
@@ -9020,6 +9022,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="727595954130325265">Ostke kohe</translation>
 <translation id="7277275452721470458">AI-režiimi tegevus</translation>
 <translation id="727952162645687754">Viga allalaadimisel</translation>
+<translation id="7280265656690268844">JavaScripti optimeerimine on välja lülitatud</translation>
 <translation id="7280649757394340890">Kõnesünteesi hääle seaded</translation>
 <translation id="7280683802406059877">Kohanda klaviatuuri otseteed</translation>
 <translation id="7280877790564589615">Luba on taotletud</translation>

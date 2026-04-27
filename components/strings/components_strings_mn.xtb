@@ -2157,6 +2157,7 @@
 <translation id="4318312030194671742">Paint Preview нэгтгэгчийн үйлчилгээ</translation>
 <translation id="4318566738941496689">Таны төхөөрөмжийн нэр болон сүлжээний хаяг</translation>
 <translation id="4320119221194966055">Хувийн зээлүүд</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с холбоос хүлээн авсан}other{<ph name="DEVICE_NAME" />-с # холбоос хүлээн авсан}}</translation>
 <translation id="4325600325087822253">Тавиур 17</translation>
 <translation id="4325863107915753736">Өгүүллийг олж чадсангүй</translation>
 <translation id="4326324639298822553">Хүчингүй болох огноогоо шалгаад дахин оролдоно уу</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755">Та <ph name="ACCOUNT" /> <ph name="BEGIN_LINK" />Google Бүртгэлээсээ<ph name="END_LINK" /> нэрээ засах боломжтой</translation>
 <translation id="8759274551635299824">Энэ картны хугацаа дууссан байна</translation>
 <translation id="87601671197631245">Энэ сайт аюулгүй байдлын хуучирсан тохируулга ашиглаж байгаа тул таны мэдээллийг (жишээлбэл нууц үг, мессеж эсвэл кредит карт) энэ сайт руу илгээх үед задруулж болзошгүй.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с холбоос илгээсэн}other{<ph name="DEVICE_NAME" />-с # холбоос илгээсэн}}</translation>
 <translation id="8763927697961133303">USB төхөөрөмж</translation>
 <translation id="8763986294015493060">Одоогоор нээлттэй байгаа бүх нууцлалтай цонхыг хаагаарай</translation>
 <translation id="8766943070169463815">Аюулгүй төлбөрийн мандат үнэмлэхийг баталгаажуулах хүснэгтийг нээсэн</translation>
