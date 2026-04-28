@@ -38,6 +38,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 using ::download::DownloadDangerType;
@@ -675,6 +679,13 @@ TEST_F(DownloadBubbleUpdateServiceTest, DoesNotAddExpiredItems) {
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, PrunesExpiredItems) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::Time now = base::Time::Now();
   base::Time two_hours_ago = now - base::Hours(2);
   // Add some items that are currently recent enough to add.
@@ -714,6 +725,13 @@ TEST_F(DownloadBubbleUpdateServiceTest, PrunesExpiredItems) {
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, DoesNotBackfillIfNotForced) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   update_service_->set_max_num_items_to_show_for_testing(3);
   update_service_->set_extra_items_to_cache_for_testing(0);
   base::Time now = base::Time::Now();
@@ -759,6 +777,13 @@ TEST_F(DownloadBubbleUpdateServiceTest, DoesNotBackfillIfNotForced) {
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, BackfillsSynchronouslyIfForced) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   update_service_->set_max_num_items_to_show_for_testing(3);
   update_service_->set_extra_items_to_cache_for_testing(0);
   base::Time now = base::Time::Now();
@@ -793,6 +818,13 @@ TEST_F(DownloadBubbleUpdateServiceTest, BackfillsSynchronouslyIfForced) {
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, CachesExtraItems) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   update_service_->set_max_num_items_to_show_for_testing(3);
   // Cache an extra item.
   update_service_->set_extra_items_to_cache_for_testing(1);
