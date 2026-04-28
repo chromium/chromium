@@ -626,6 +626,15 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
       optimization_guide::proto::GlicContextualCueingMetadata>();
 
+  if (!web_state_) {
+    return;
+  }
+
+  // If the tab is not visible, do not attempt to update the UI.
+  if (!web_state_->IsVisible()) {
+    return;
+  }
+
   if (!latest_load_contextual_cueing_metadata_) {
     return;
   }
