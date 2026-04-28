@@ -25,7 +25,7 @@ namespace crypto::hpke {
 
 enum class KemType { kX25519HkdfSha256 };
 enum class KdfType { kHkdfSha256 };
-enum class AeadType { kChaCha20Poly1305 };
+enum class AeadType { kChaCha20Poly1305, kAes128Gcm };
 
 struct HpkeParams {
   KemType kem;
@@ -54,6 +54,28 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> AuthOpen(
     const HpkeParams& params,
     const crypto::keypair::PrivateKey& receiver,
     const crypto::keypair::PublicKey& sender,
+    base::span<const uint8_t> encrypted_data,
+    base::span<const uint8_t> info,
+    base::span<const uint8_t> ad);
+
+// One-shot encryption in Base mode.
+// Returns a vector containing the encapsulated shared secret followed by the
+// ciphertext, or nullopt on failure.
+CRYPTO_EXPORT std::optional<std::vector<uint8_t>> Seal(
+    const HpkeParams& params,
+    const crypto::keypair::PublicKey& recipient,
+    base::span<const uint8_t> plaintext,
+    base::span<const uint8_t> info,
+    base::span<const uint8_t> ad);
+
+// One-shot decryption in Base mode.
+// Returns the decrypted plaintext, or nullopt on failure.
+//
+// `encrypted_data` should contain the encapsulated shared secret (32 bytes)
+// followed by the ciphertext.
+CRYPTO_EXPORT std::optional<std::vector<uint8_t>> Open(
+    const HpkeParams& params,
+    const crypto::keypair::PrivateKey& receiver,
     base::span<const uint8_t> encrypted_data,
     base::span<const uint8_t> info,
     base::span<const uint8_t> ad);
