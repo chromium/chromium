@@ -622,7 +622,7 @@
 }
 
 /* Needed for space between header and composebox. */
-:host([is-side-panel]) #composebox:not([show-dropdown]) {
+:host([is-side-panel][is-zero-state]) #composebox:not([show-dropdown]) {
   margin-top: 24px;
 }
 
