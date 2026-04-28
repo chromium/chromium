@@ -62,6 +62,8 @@ const VIEWPORT_WIDTH_KEY = 'biw';
 const CHROME_TASK_PARAM_KEY = 'chrome_task_id';
 const DEBUG_PARAM_KEY = 'deb';
 
+const AIOH_URL_IDENTIFIER = 'aioh';
+
 // The extra padding to add to the occluders to ensure that the composebox is
 // fully visible. This helps to account for inconsistencies between the bounding
 // boxes of the element, and what is actually rendered (for example, box shadows
@@ -873,6 +875,11 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (inputRect !== undefined) {
       const composebox = this.composebox_!;
       const currentHeight = composebox.offsetHeight;
+      const currentUrl = this.$.threadFrame.src;
+      if (currentUrl.includes(AIOH_URL_IDENTIFIER) &&
+          this.forcedComposeboxBounds_ === null) {
+        this.playComposeboxAiohFadeInAnimation_();
+      }
       if (currentHeight !== inputRect.height) {
         // If the height that the client reports for the composebox is different
         // from the height that the server is reporting, update the server.
@@ -894,6 +901,23 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (occluders !== undefined) {
       this.occluders_ = occluders;
     }
+  }
+
+  private playComposeboxAiohFadeInAnimation_() {
+    const composebox = this.composebox_;
+    if (!composebox) {
+      return;
+    }
+    composebox.animate(
+        [
+          {opacity: 0},
+          {opacity: 1},
+        ],
+        {
+          duration: 150,
+          easing: 'ease-in-out',
+          fill: 'forwards',
+        });
   }
 
   protected isComposeboxHidden_(): boolean {
