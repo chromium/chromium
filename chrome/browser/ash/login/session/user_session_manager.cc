@@ -179,6 +179,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/sync/base/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "components/user_manager/common_types.h"
@@ -1542,6 +1543,13 @@ void UserSessionManager::InitProfilePreferences(
         accounts_mutator->SeedAccountInfo(gaia_id, user->GetDisplayEmail());
 
     // 3. Set it as the Primary Account.
+    if (is_new_profile) {
+      base::UmaHistogramBoolean(
+          "Signin.ChromeOS."
+          "IsEstimateNewSignInUsersWithFinchAvailablePopulationEnabled",
+          base::FeatureList::IsEnabled(
+              syncer::kEstimateNewSignInUsersWithFinchAvailablePopulation));
+    }
     const signin::PrimaryAccountMutator::PrimaryAccountError
         set_account_result =
             identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(

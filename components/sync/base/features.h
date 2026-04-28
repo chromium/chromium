@@ -242,6 +242,11 @@ BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
 // If enabled, Sync invalidations will bypass the scheduler on Android.
 BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Feature flag for ChromeOS only to estimate new sign-in users population.
+BASE_DECLARE_FEATURE(kEstimateNewSignInUsersWithFinchAvailablePopulation);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
