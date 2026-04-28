@@ -573,6 +573,7 @@ if (is_win || is_mac || is_linux) {
       "certificate_tag_internal.h",
       "tag.cc",
       "tag.h",
+      "tag_internal.h",
     ]
 
     deps = [ "//base" ]
@@ -922,6 +923,7 @@ if (is_win || is_mac || is_linux) {
       "policy/policy_manager_unittest.cc",
       "policy/service_unittest.cc",
       "prefs_unittest.cc",
+      "tag_fuzztest.cc",
       "tag_unittest.cc",
       "test/dm_policy_builder.cc",
       "test/dm_policy_builder.h",
@@ -976,6 +978,7 @@ if (is_win || is_mac || is_linux) {
       "//testing/gtest",
       "//third_party/abseil-cpp:absl",
       "//third_party/crashpad/crashpad/client",
+      "//third_party/fuzztest",
       "//third_party/re2",
       "//third_party/zlib/google:compression_utils",
       "//url",
@@ -1275,6 +1278,12 @@ if (is_win || is_mac || is_linux) {
     }
   }
 
+  updater_fuzztests = [
+    "TagFuzzTest.FuzzParseBroad",
+    "TagFuzzTest.FuzzParseShared",
+    "TagFuzzTest.FuzzReadTag",
+  ]
+
   # These tests are run serially since they mutate system state.
   test("updater_tests") {
     testonly = true
@@ -1284,6 +1293,8 @@ if (is_win || is_mac || is_linux) {
       "test/run_all_unittests.cc",
       "test/test_scope_user.cc",
     ]
+
+    fuzztests = updater_fuzztests
 
     deps = [
       ":base",
@@ -1324,6 +1335,8 @@ if (is_win || is_mac || is_linux) {
       "test/run_all_unittests.cc",
       "test/test_scope_system.cc",
     ]
+
+    fuzztests = updater_fuzztests
 
     deps = [
       ":base",

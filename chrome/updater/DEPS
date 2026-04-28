@@ -18,6 +18,7 @@ include_rules = [
   "+mojo",
   "+third_party/boringssl",
   "+third_party/crashpad",
+  "+third_party/fuzztest",
   "+third_party/re2",
   "+third_party/updater",
   "+third_party/wtl",
