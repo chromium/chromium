@@ -11,24 +11,22 @@ interface PageHandlerFactory {
   CreatePageHandler(pending_receiver<PageHandler> handler);
 };
 
-// Defines the properties for the watermark.
-struct WatermarkSettings {
+// Defines the visual style properties for the watermark.
+struct WatermarkStyle {
   // Opacity of the watermark's fill, from 0 to 100.
   int32 fill_opacity;
   // Opacity of the watermark's outline, from 0 to 100.
   int32 outline_opacity;
   // Font size of the watermark text in points.
   int32 font_size;
-  // Content of the watermark text.
-  string watermark_text;
 };
 
 // Implemented in the browser process to handle requests from the WebUI page.
 interface PageHandler {
-  // Sets the properties for the watermark. Called by the WebUI when the user
+  // Sets the style for the watermark. Called by the WebUI when the user
   // adjusts the watermark controls, allowing for real-time updates.
-  // @param settings The desired settings for the watermark.
-  SetWatermarkSettings(WatermarkSettings settings);
+  // @param style The desired style settings for the watermark.
+  SetWatermarkStyle(WatermarkStyle style);
 
   // Triggers a toast with text "Copied to clipboard" to show up.
   ShowNotificationToast();

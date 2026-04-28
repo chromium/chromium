@@ -15,14 +15,8 @@ export function getHtml(this: WatermarkAppElement) {
     <div class="controls-card">
       <div class="card-header">
         <div class="header-text">
-          <h1>Watermark Customization</h1>
-          <p>Customize the watermark style and text, and test it live</p>
-        </div>
-      </div>
-
-      <div class="card-header">
-        <div class="header-text">
-          <h2>Watermark style</h2>
+          <h1>Watermark testing</h1>
+          <p>Customize the watermark style and test it live</p>
         </div>
         <cr-button @click="${this.onCopyJsonClick_}">
             Copy style as JSON
@@ -89,25 +83,6 @@ export function getHtml(this: WatermarkAppElement) {
           </cr-slider>
           <span class="slider-percentage">${this.fillOpacity_}%</span>
         </div>
-      </div>
-
-      <div class="card-header">
-        <div class="header-text">
-          <h2>Watermark text</h2>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <cr-textarea
-            id="watermarkTextInput"
-            class="text-input"
-            aria-label="Watermark text"
-            rows="2"
-            .value="${this.watermarkText_}"
-            autogrow
-            maxlength="512"
-            @value-changed="${this.onWatermarkTextValueChanged_}">
-        </cr-textarea>
       </div>
     </div>
   `;

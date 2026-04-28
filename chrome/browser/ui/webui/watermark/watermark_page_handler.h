@@ -22,8 +22,7 @@ class WatermarkPageHandler : public watermark::mojom::PageHandler {
 
   ~WatermarkPageHandler() override;
 
-  void SetWatermarkSettings(
-      watermark::mojom::WatermarkSettingsPtr settings) override;
+  void SetWatermarkStyle(watermark::mojom::WatermarkStylePtr style) override;
 
   void ShowNotificationToast() override;
 

@@ -36,10 +36,6 @@
   margin-bottom: 24px;
 }
 
-.card-header:has(h2) {
-  margin-bottom: 16px;
-}
-
 .card-header cr-button {
   border-radius: 100px;
   flex-shrink: 0;
@@ -50,14 +46,8 @@
 }
 
 .header-text > h1 {
-  font-size: 18px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.header-text > h2 {
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 500;
   margin: 0;
 }
 
@@ -70,22 +60,14 @@
 .control-row {
   align-items: baseline;
   display: flex;
+  height: 40px;
   justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.control-row:last-of-type {
-  margin-bottom: 0;
 }
 
 .number-control-container {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-.control-row:has(button) {
-  height: 40px;
 }
 
 .control-row:has(cr-slider) {
@@ -192,15 +174,6 @@ cr-input.font-size-input::part(input)::-webkit-outer-spin-button {
 #fontSizeInputError > span {
   color: #dc6322;
   font-size: 11px;
-}
-
-cr-textarea.text-input {
-  --cr-input-background-color: #F0F0F0;
-  --cr-input-color: #1F1F1F;
-  --cr-input-border-radius: 8px;
-  --cr-input-border-bottom: 0px;
-  --cr-textarea-autogrow-max-height: 8lh;
-  width: 100%;
 }
 
 #values {

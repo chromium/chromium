@@ -66,12 +66,11 @@ struct WatermarkTextParams {
   const char* watermark_text;
 };
 
-struct WatermarkParams {
+struct WatermarkStyleParams {
   const char* test_suffix;
   int fill_opacity;
   int outline_opacity;
   int font_size;
-  const char* watermark_text;
 };
 
 constexpr SkColor kTestFillColor = SkColorSetARGB(0x2A, 0, 0, 0);
@@ -549,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
 // parameterized to test various style combinations.
 class WatermarkTestPageDynamicBrowserTest
     : public UiBrowserTest,
-      public testing::WithParamInterface<WatermarkParams> {
+      public testing::WithParamInterface<WatermarkStyleParams> {
  public:
   WatermarkTestPageDynamicBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(kEnableWatermarkTestPage);
@@ -584,30 +583,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkTestPageBrowserTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(WatermarkTestPageBrowserTest, InvalidUtf8WatermarkText) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIWatermarkURL)));
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* watermark_ui =
-      web_contents->GetWebUI()->GetController()->GetAs<WatermarkUI>();
-  ASSERT_TRUE(watermark_ui);
-  auto* page_handler = watermark_ui->GetPageHandlerForTesting();
-  ASSERT_TRUE(page_handler);
-
-  auto settings = watermark::mojom::WatermarkSettings::New();
-  settings->fill_opacity = 80;
-  settings->outline_opacity = 90;
-  settings->font_size = 24;
-  // \xFF is not a valid UTF-8 byte.
-  settings->watermark_text = "Invalid \xFF UTF-8 text";
-
-  EXPECT_DEATH_IF_SUPPORTED(
-      page_handler->SetWatermarkSettings(std::move(settings)),
-      "Check failed: base::IsStringUTF8");
-}
-
-IN_PROC_BROWSER_TEST_P(WatermarkTestPageDynamicBrowserTest, DynamicWatermark) {
+IN_PROC_BROWSER_TEST_P(WatermarkTestPageDynamicBrowserTest, DynamicStyle) {
   const auto& params = GetParam();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -620,12 +596,11 @@ IN_PROC_BROWSER_TEST_P(WatermarkTestPageDynamicBrowserTest, DynamicWatermark) {
   auto* page_handler = watermark_ui->GetPageHandlerForTesting();
   ASSERT_TRUE(page_handler);
 
-  auto settings = watermark::mojom::WatermarkSettings::New();
-  settings->fill_opacity = params.fill_opacity;
-  settings->outline_opacity = params.outline_opacity;
-  settings->font_size = params.font_size;
-  settings->watermark_text = params.watermark_text;
-  page_handler->SetWatermarkSettings(std::move(settings));
+  auto style = watermark::mojom::WatermarkStyle::New();
+  style->fill_opacity = params.fill_opacity;
+  style->outline_opacity = params.outline_opacity;
+  style->font_size = params.font_size;
+  page_handler->SetWatermarkStyle(std::move(style));
 
   ShowAndVerifyUi();
 }
@@ -634,21 +609,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WatermarkTestPageDynamicBrowserTest,
     testing::Values(
-        WatermarkParams{"HighOpacity", /*fill_opacity=*/80,
-                        /*outline_opacity=*/90, /*font_size=*/24,
-                        /*watermark_text=*/"Watermark"},
-        WatermarkParams{"LargeFont", /*fill_opacity=*/4,
-                        /*outline_opacity=*/6, /*font_size=*/72,
-                        /*watermark_text=*/"Watermark"},
-        WatermarkParams{"ZeroOpacity", /*fill_opacity=*/0,
-                        /*outline_opacity=*/0, /*font_size=*/24,
-                        /*watermark_text=*/"Watermark"},
-        WatermarkParams{"Multilingual", /*fill_opacity=*/80,
-                        /*outline_opacity=*/90, /*font_size=*/24,
-                        /*watermark_text=*/kMultilingualWatermarkMessage},
-        WatermarkParams{"LongLines", /*fill_opacity=*/80,
-                        /*outline_opacity=*/90, /*font_size=*/24,
-                        /*watermark_text=*/kLongLinesWatermarkMessage}));
+        WatermarkStyleParams{"HighOpacity", /*fill_opacity=*/80,
+                             /*outline_opacity=*/90, /*font_size=*/24},
+        WatermarkStyleParams{"LargeFont", /*fill_opacity=*/4,
+                             /*outline_opacity=*/6, /*font_size=*/72},
+        WatermarkStyleParams{"ZeroOpacity", /*fill_opacity=*/0,
+                             /*outline_opacity=*/0, /*font_size=*/24}));
 
 class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
                                      public testing::WithParamInterface<bool> {
