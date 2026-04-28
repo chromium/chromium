@@ -40,6 +40,45 @@ source_set("supervised_user") {
     "//url",
   ]
 
+  if (!is_android) {
+    public += [
+      "desktop/supervised_user_service_platform_delegate.h",
+      "supervised_user_verification_controller_client.h",
+    ]
+    public_deps += [
+      "//components/security_interstitials/content:security_interstitial_page",
+    ]
+  }
+
+  if (is_linux || is_mac || is_win) {
+    public += [
+      "linux_mac_windows/parent_access_dialog_result_observer.h",
+      "linux_mac_windows/parent_access_view.h",
+      "linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h",
+      "linux_mac_windows/supervised_user_web_content_handler_impl.h",
+      "supervised_user_verification_page.h",
+      "supervised_user_verification_page_blocked_sites.h",
+      "supervised_user_verification_page_youtube.h",
+    ]
+    public_deps += [
+      "//components/tabs:public",
+      "//ui/base/interaction",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    public += [
+      "chromeos/supervised_user_favicon_request_handler.h",
+      "chromeos/supervised_user_web_content_handler_impl.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/webui/ash/parent_access",
+      "//components/favicon_base",
+    ]
+  }
+
   if (enable_extensions_core) {
     public += [ "supervised_user_extensions_metrics_recorder.h" ]
     public_deps += [ "//extensions/browser" ]
@@ -101,7 +140,40 @@ source_set("impl") {
     ]
   }
 
+  if (!is_android) {
+    sources += [
+      "desktop/supervised_user_service_platform_delegate.cc",
+      "supervised_user_verification_controller_client.cc",
+    ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/security_interstitials/content:security_interstitial_page",
+    ]
+  }
+
+  if (is_linux || is_mac || is_win) {
+    sources += [
+      "linux_mac_windows/parent_access_dialog_result_observer.cc",
+      "linux_mac_windows/parent_access_view.cc",
+      "linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.cc",
+      "linux_mac_windows/supervised_user_web_content_handler_impl.cc",
+      "supervised_user_verification_page.cc",
+      "supervised_user_verification_page_blocked_sites.cc",
+      "supervised_user_verification_page_youtube.cc",
+    ]
+    deps += [
+      "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/color:color_headers",
+      "//components/constrained_window",
+    ]
+  }
+
   if (is_chromeos_ash) {
+    sources += [
+      "chromeos/supervised_user_favicon_request_handler.cc",
+      "chromeos/supervised_user_web_content_handler_impl.cc",
+    ]
     deps += [ "//chrome/browser/ash/profiles" ]
   }
 }

@@ -2532,10 +2532,6 @@ static_library("browser") {
       "profiles/profile_window.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
-      "supervised_user/desktop/supervised_user_service_platform_delegate.cc",
-      "supervised_user/desktop/supervised_user_service_platform_delegate.h",
-      "supervised_user/supervised_user_verification_controller_client.cc",
-      "supervised_user/supervised_user_verification_controller_client.h",
     ]
 
     sources += [
@@ -3098,10 +3094,6 @@ static_library("browser") {
       "memory/oom_kills_monitor.cc",
       "platform_util_ash.cc",
       "shell_integration_chromeos.cc",
-      "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
-      "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
-      "supervised_user/chromeos/supervised_user_web_content_handler_impl.cc",
-      "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
       "ui/ash/shelf/chrome_shelf_metrics_provider.h",
     ]
@@ -4416,20 +4408,6 @@ static_library("browser") {
     sources += [
       "profiles/guest_mode_policy_handler.cc",
       "profiles/guest_mode_policy_handler.h",
-      "supervised_user/linux_mac_windows/parent_access_dialog_result_observer.cc",
-      "supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h",
-      "supervised_user/linux_mac_windows/parent_access_view.cc",
-      "supervised_user/linux_mac_windows/parent_access_view.h",
-      "supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.cc",
-      "supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl.h",
-      "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.cc",
-      "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
-      "supervised_user/supervised_user_verification_page.cc",
-      "supervised_user/supervised_user_verification_page.h",
-      "supervised_user/supervised_user_verification_page_blocked_sites.cc",
-      "supervised_user/supervised_user_verification_page_blocked_sites.h",
-      "supervised_user/supervised_user_verification_page_youtube.cc",
-      "supervised_user/supervised_user_verification_page_youtube.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
