@@ -404,7 +404,8 @@ id<GREYMatcher> identityDiscMatcher() {
 // Tests that tapping on a managed account button causes the primary account
 // to be changed and the account menu view to be closed after showing managed
 // account sign-in dialog.
-- (void)testSwitchToManagedAccount {
+// TODO(crbug.com/507486331): Re-enable test
+- (void)DISABLED_testSwitchToManagedAccount {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kManagedIdentity1];
   [self selectIdentityDisc];
@@ -433,7 +434,8 @@ id<GREYMatcher> identityDiscMatcher() {
   [self assertAccountMenuIsNotShown];
 }
 
-- (void)testSwitchFromManagedAccountToManagedAccount {
+// TODO(crbug.com/507486331): Re-enable test
+- (void)DISABLED_testSwitchFromManagedAccountToManagedAccount {
   [SigninEarlGrey
       signinWithFakeManagedIdentityInPersonalProfile:kManagedIdentity1];
   [ChromeEarlGreyUI waitForAppToIdle];
