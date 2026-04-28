@@ -452,7 +452,8 @@ TEST_F(SecurityCurtainControllerImplTest,
   auto params = init_params();
   params.mute_audio_output_after = base::TimeDelta();
   security_curtain_controller().Enable(params);
-  task_environment()->RunUntilIdle();  // Audio is muted asynchronously.
+  // The zero-delay mute is still scheduled on a timer.
+  task_environment()->FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(IsAudioOutputMuted());
 
   security_curtain_controller().Disable();
