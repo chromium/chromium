@@ -10,10 +10,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 import android.os.Build;
@@ -92,6 +95,15 @@ public class LanguageSettingsTest {
                 "Failed to add a new language.",
                 originalAcceptLanguageCount + 1,
                 acceptLanguageList.getChildCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testContentLanguagesPreferenceNotFocusable() {
+        // The ContentLanguagesPreference container should not be focusable.
+        // Its internal elements (RecyclerView items, Add Language button) should be focusable.
+        onView(withChild(withId(R.id.add_language))).check(matches(not(isFocusable())));
+        onView(withId(R.id.add_language)).check(matches(isFocusable()));
     }
 
     @Test

@@ -16,6 +16,7 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
         android:key="preferred_languages"
         android:layout="@layout/languages_preference"
+        android:selectable="false"
         android:widgetLayout="@layout/accept_languages_list" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference

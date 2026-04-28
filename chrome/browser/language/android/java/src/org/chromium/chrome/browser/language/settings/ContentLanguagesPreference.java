@@ -170,6 +170,7 @@ public class ContentLanguagesPreference extends Preference {
 
     public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setSelectable(false);
     }
 
     /**

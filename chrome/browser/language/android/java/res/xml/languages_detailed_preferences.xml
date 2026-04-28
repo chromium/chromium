@@ -34,6 +34,7 @@ found in the LICENSE file.
             android:key="content_languages_preference"
             android:layout="@layout/languages_preference"
             android:order="4"
+            android:selectable="false"
             android:widgetLayout="@layout/accept_languages_list"
             tools:ignore="LineLength" />
 
