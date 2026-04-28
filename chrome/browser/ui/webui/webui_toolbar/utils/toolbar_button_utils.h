@@ -11,8 +11,6 @@
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
 
-class BrowserWindowInterface;
-
 namespace actions {
 class ActionItem;
 }  // namespace actions
@@ -22,10 +20,6 @@ namespace webui_toolbar {
 // Get the list of ElementIdentifiers for the WebUI-specific pinned toolbar
 // actions.
 std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds();
-
-// Gets the pin state from user prefs.
-bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    toolbar_ui_api::mojom::ToolbarButtonType type);
 
 // Convert Pinned Toolbar Action `action` into an ElementIdentifier.
 ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action);

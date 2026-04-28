@@ -158,9 +158,7 @@ void WebUISplitTabsControl::UpdateState() {
   auto s = webui_toolbar::ComputeTabSplitStatus(toolbar_view_->browser_);
   state->is_current_tab_split = s.is_split;
   state->location = s.location;
-  state->is_pinned = webui_toolbar::IsButtonPinned(
-      toolbar_view_->browser_,
-      toolbar_ui_api::mojom::ToolbarButtonType::kSplitTabs);
+  state->is_pinned = pin_state_.GetValue();
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   UpdateVisibility(state.get());
   toolbar_view_->OnSplitTabsControlStateChanged(std::move(state));

@@ -27,8 +27,6 @@ class BrowserControlsAdapter {
   virtual void NavigateHome(WindowOpenDisposition disposition) = 0;
   // These should probably be pulled to their own adapter.
   virtual webui_toolbar::TabSplitStatus ComputeSplitTabStatus() = 0;
-  virtual bool IsButtonPinned(
-      toolbar_ui_api::mojom::ToolbarButtonType type) = 0;
 };
 
 }  // namespace browser_controls_api

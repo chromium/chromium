@@ -98,20 +98,6 @@ std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
           webui_toolbar::kToolbarTaskManagerElementId};
 }
 
-bool IsButtonPinned(BrowserWindowInterface* browser_interface,
-                    toolbar_ui_api::mojom::ToolbarButtonType type) {
-  switch (type) {
-    case toolbar_ui_api::mojom::ToolbarButtonType::kSplitTabs:
-      return browser_interface->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kPinSplitTabButton);
-    case toolbar_ui_api::mojom::ToolbarButtonType::kHome:
-      return browser_interface->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kShowHomeButton);
-    case toolbar_ui_api::mojom::ToolbarButtonType::kUnspecified:
-      NOTREACHED() << "Unexpected ToolbarButtonType::kUnspecified.";
-  }
-}
-
 ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action) {
   if (auto id = pinned_toolbar_actions::GetElementIdentifierForAction(action)) {
     return id;

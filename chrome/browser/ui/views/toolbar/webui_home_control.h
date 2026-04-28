@@ -54,7 +54,9 @@ class WebUIHomeControl {
                            LongPressHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
                            PressAndDragDown);
-  void UpdateIsPinned(bool is_pinned);
+
+  void OnIsPinnedChanged();
+
   void UpdateState();
 
   // Displays the bubble confirming the home page was set.

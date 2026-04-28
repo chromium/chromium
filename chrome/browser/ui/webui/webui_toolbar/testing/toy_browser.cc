@@ -63,32 +63,12 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
     return status;
   }
 
-  bool IsButtonPinned(toolbar_ui_api::mojom::ToolbarButtonType type) override {
-    return toy_browser_->IsButtonPinned(type);
-  }
-
  private:
   raw_ptr<ToyBrowser> toy_browser_;
 };
 
 std::unique_ptr<BrowserControlsAdapter> ToyBrowser::GetAdapter() {
   return std::make_unique<ToyBrowserControlsAdapter>(this);
-}
-
-void ToyBrowser::PinButton(toolbar_ui_api::mojom::ToolbarButtonType type) {
-  pinned_buttons_.insert(type);
-}
-
-void ToyBrowser::UnpinButton(toolbar_ui_api::mojom::ToolbarButtonType type) {
-  auto found = pinned_buttons_.find(type);
-  if (found != pinned_buttons_.end()) {
-    pinned_buttons_.erase(found);
-  }
-}
-
-bool ToyBrowser::IsButtonPinned(
-    toolbar_ui_api::mojom::ToolbarButtonType type) const {
-  return pinned_buttons_.contains(type);
 }
 
 }  // namespace browser_controls_api::testing

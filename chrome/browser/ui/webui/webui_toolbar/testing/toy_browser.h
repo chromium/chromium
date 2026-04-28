@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_TESTING_TOY_BROWSER_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "chrome/app/chrome_command_ids.h"
@@ -45,7 +44,6 @@ class ToyBrowser {
   // Noop if the pin state doesn't change.
   void PinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
   void UnpinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
-  bool IsButtonPinned(toolbar_ui_api::mojom::ToolbarButtonType type) const;
 
   bool is_split_tab() const { return is_split_tab_; }
   bool is_back_button_hovered() const { return back_button_hovered_; }
@@ -53,7 +51,6 @@ class ToyBrowser {
  private:
   friend class ToyBrowserControlsAdapter;
   std::vector<ToyBrowserCommand> received_commands_;
-  std::set<toolbar_ui_api::mojom::ToolbarButtonType> pinned_buttons_;
   // True when split tab is created. This state currently sticks, with no way
   // to unset it.
   bool is_split_tab_ = false;

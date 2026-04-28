@@ -34,9 +34,10 @@ void WebUIHomeControl::Init() {
       webui_toolbar_web_view_->browser_->GetProfile()->GetPrefs();
 
   pin_state_.Init(prefs::kShowHomeButton, prefs,
-                  base::BindRepeating(&WebUIHomeControl::UpdateState,
+                  base::BindRepeating(&WebUIHomeControl::OnIsPinnedChanged,
                                       base::Unretained(this)));
 
+  OnIsPinnedChanged();
   UpdateState();
 }
 
@@ -88,18 +89,17 @@ void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
   ShowSetHomePageBubble(old_url, old_is_ntp);
 }
 
-void WebUIHomeControl::UpdateIsPinned(bool is_pinned) {
-  if (is_pinned_ != is_pinned) {
-    is_pinned_ = is_pinned;
-    webui_toolbar_web_view_->PreferredSizeChanged();
+void WebUIHomeControl::OnIsPinnedChanged() {
+  bool old_is_pinned = is_pinned_;
+  is_pinned_ = pin_state_.GetValue();
+  if (is_pinned_ == old_is_pinned) {
+    return;
   }
+  webui_toolbar_web_view_->PreferredSizeChanged();
+  UpdateState();
 }
 
 void WebUIHomeControl::UpdateState() {
-  UpdateIsPinned(webui_toolbar::IsButtonPinned(
-      webui_toolbar_web_view_->browser_,
-      toolbar_ui_api::mojom::ToolbarButtonType::kHome));
-
   auto state = toolbar_ui_api::mojom::HomeControlState::New();
   state->should_be_shown = is_pinned_;
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
