@@ -16,8 +16,7 @@ tests:
         binary: blink_unittests
         filter: CSSCalculationValue.DummyTest
     metadata:
-      # This was previously tagged with the "stable" tag, but that was
-      # removed as part of b/502322531 since Gemini 3 Flash did not
-      # pass sufficiently often.
+      tags:
+      - stable
       precompile_targets:
       - blink_unittests

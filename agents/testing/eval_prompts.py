@@ -221,6 +221,15 @@ def _perform_chromium_setup(force: bool, build: bool,
     if is_btrfs and not force:
         subprocess.run(['sudo', '-v'], check=True)
 
+    # Setting this causes siso to use virtual paths instead of absolute ones.
+    # This is necessary when using btrfs, as otherwise the snapshot will
+    # contain an output directory which contains siso files using absolute
+    # paths. These absolute paths cause compilation within that snapshot to
+    # erroneously no-op. This environment variable is left intentionally set
+    # so that any compilations during tests also use virtual paths.
+    if is_btrfs:
+        os.environ['SISO_USE_VIRTUAL_BUILD_PATH'] = '1'
+
     src_path = root_path / 'src'
     _check_uncommitted_changes(src_path)
     if build:
