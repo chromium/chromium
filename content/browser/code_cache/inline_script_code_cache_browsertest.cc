@@ -358,8 +358,14 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/498800334): Flaky.
+#define MAYBE_NotProducedForShortScript DISABLED_NotProducedForShortScript
+#else
+#define MAYBE_NotProducedForShortScript NotProducedForShortScript
+#endif
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       NotProducedForShortScript) {
+                       MAYBE_NotProducedForShortScript) {
   // Even after multiple page loads, the code cache should not be produced for
   // short scripts.
   const int num_tries = 3;
