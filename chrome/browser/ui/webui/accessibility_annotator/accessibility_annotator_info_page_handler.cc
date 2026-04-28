@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/accessibility_annotator/core/url_constants.h"
+#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -37,7 +39,9 @@ AccessibilityAnnotatorInfoPageHandler::AccessibilityAnnotatorInfoPageHandler(
 AccessibilityAnnotatorInfoPageHandler::
     ~AccessibilityAnnotatorInfoPageHandler() {
   if (callback_) {
-    std::move(callback_).Run(InfoDialogResult::kDismissed);
+    // If the callback hasn't run, the user dismissed the dialog without
+    // acknowledging it (e.g., by clicking outside or pressing Esc).
+    OnInfoDismissed();
   }
 }
 
@@ -76,12 +80,18 @@ void AccessibilityAnnotatorInfoPageHandler::GetAccountInfo(
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnInfoAcknowledged() {
+  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+                                InfoShowRequestResult::kAccepted);
+
   if (callback_) {
     std::move(callback_).Run(InfoDialogResult::kAcknowledged);
   }
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
+  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+                                InfoShowRequestResult::kDismissed);
+
   if (callback_) {
     std::move(callback_).Run(InfoDialogResult::kDismissed);
   }
@@ -121,6 +131,9 @@ void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
 
 void AccessibilityAnnotatorInfoPageHandler::ShowUi() {
   info_ui_->ShowUI();
+
+  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+                                InfoShowRequestResult::kShown);
 }
 
 }  // namespace accessibility_annotator::info

@@ -42,6 +42,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui/accessibility_annotator",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/first_run",
     "//content/public/browser",
     "//content/test:test_support",
     "//ui/events:test_support",

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/accessibility_annotator/core/url_constants.h"
+#include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -32,6 +33,9 @@
 
 namespace accessibility_annotator::info {
 namespace {
+
+constexpr char kDialogResultHistogramName[] =
+    "AccessibilityAnnotator.RemoteAnnotatorInfo";
 
 class AccessibilityAnnotatorInfoPageHandlerTest
     : public ChromeRenderViewHostTestHarness {
@@ -73,8 +77,9 @@ class AccessibilityAnnotatorInfoPageHandlerTest
   mojo::Remote<accessibility_annotator::info::mojom::PageHandler> page_handler_;
   std::unique_ptr<AccessibilityAnnotatorInfoUI> info_ui_;
   std::unique_ptr<AccessibilityAnnotatorInfoPageHandler> handler_;
-  InfoDialogResult result_ = InfoDialogResult::kDismissed;
+  std::optional<InfoDialogResult> result_;
   base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
   content::TestWebUI test_web_ui_;
 };
 
@@ -115,6 +120,56 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfoSignedOut) {
       }));
 
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnInfoAcknowledged) {
+  // Check callback was not run yet.
+  EXPECT_FALSE(result_.has_value());
+  histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
+
+  // User clicks "Acknowledge" on the dialog.
+  handler_->OnInfoAcknowledged();
+
+  // Check callback returned kAccepted and corresponding metrics were recorded.
+  EXPECT_TRUE(result_.has_value());
+  EXPECT_EQ(InfoDialogResult::kAcknowledged, result_);
+  histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
+                                       InfoShowRequestResult::kAccepted, 1);
+}
+
+// TODO(crbug.com/506117669): If no UI element for dismissal is added: delete
+// this test and simplify the name of `OnInfoDismissedOnFrameworkClosure` test.
+// Otherwise: use this test and drop this todo.
+TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
+       OnInfoDismissedByExplicitCall) {
+  // Check callback was not run yet.
+  EXPECT_FALSE(result_.has_value());
+  histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
+
+  // User closes the dialog using the dialog UI.
+  handler_->OnInfoDismissed();
+
+  // Check callback returned kDismissed and corresponding metrics were recorded.
+  EXPECT_TRUE(result_.has_value());
+  EXPECT_EQ(InfoDialogResult::kDismissed, result_);
+  histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
+                                       InfoShowRequestResult::kDismissed, 1);
+}
+
+TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
+       OnInfoDismissedOnFrameworkClosure) {
+  // Check callback was not run yet.
+  EXPECT_FALSE(result_.has_value());
+  histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
+
+  // User closes the dialog by an Esc press or an outside click.
+  handler_.reset();
+
+  // Check callback returned kDismissed and corresponding metrics were recorded.
+  EXPECT_TRUE(result_.has_value());
+  EXPECT_EQ(InfoDialogResult::kDismissed, result_);
+  histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
+                                       InfoShowRequestResult::kDismissed, 1);
 }
 
 TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
