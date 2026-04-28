@@ -25,9 +25,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace search_integrity {
 
@@ -83,6 +85,7 @@ bool IsDisallowedCustomSearchEngine(const TemplateURL* template_url) {
   if (!template_url) {
     return false;
   }
+
   return template_url->prepopulate_id() == 0 &&
          !template_url->CreatedByPolicy() &&
          template_url->starter_pack_id() ==
@@ -119,23 +122,16 @@ SearchIntegrity::~SearchIntegrity() = default;
 void SearchIntegrity::CheckSearchEngines() {
   // Asynchronously initialize the search engine allowlist on a background
   // thread to avoid blocking the UI thread.
+
+  // Get the JSON data from resources.
+  std::string json_data =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_SEARCH_ENGINE_PREPOPULATED_ENGINES_JSON);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          [](const base::FilePath& profile_path) {
-            // Construct the path to the prepopulated_engines.json file, which
-            // is a bundled resource.
-            base::FilePath json_path;
-            if (!base::PathService::Get(chrome::DIR_RESOURCES, &json_path)) {
-              return std::string();
-            }
-            json_path =
-                json_path.Append(FILE_PATH_LITERAL("third_party"))
-                    .Append(FILE_PATH_LITERAL("search_engines_data"))
-                    .Append(FILE_PATH_LITERAL("resources"))
-                    .Append(FILE_PATH_LITERAL("definitions"))
-                    .Append(FILE_PATH_LITERAL("prepopulated_engines.json"));
-
+          [](const base::FilePath& profile_path, const std::string& json_data) {
             // Construct the path to the bloom filter file, which is stored in
             // the user's profile directory.
             base::FilePath bloom_filter_path =
@@ -143,9 +139,9 @@ void SearchIntegrity::CheckSearchEngines() {
 
             // Load or build the bloom filter data.
             return SearchEngineAllowlist::LoadBloomFilterData(
-                json_path, bloom_filter_path);
+                json_data, bloom_filter_path);
           },
-          profile_->GetPath()),
+          profile_->GetPath(), std::move(json_data)),
 
       // Once the background task is complete, run OnAllowlistInitialized on the
       // original (UI) thread.

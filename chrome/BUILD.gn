@@ -184,11 +184,6 @@ if (!is_android && !is_mac) {
       deps += [ "//components/exo/wayland:ui_controls_protocol_stub" ]
     }
 
-    if (!is_mac) {
-      data_deps +=
-          [ "//third_party/search_engines_data:prepopulated_engines_file" ]
-    }
-
     if (is_win) {
       sources += [
         "app/chrome_exe.rc",
@@ -1217,9 +1212,6 @@ if (is_win) {
     if (!use_static_angle) {
       bundle_deps += [ ":angle_binaries" ]
     }
-
-    bundle_deps +=
-        [ "//third_party/search_engines_data:prepopulated_engines_bundle_data" ]
 
     configs += [ ":chrome_dll_symbol_order" ]
     if (!is_component_build && !using_sanitizer) {

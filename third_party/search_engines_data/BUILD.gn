@@ -35,18 +35,6 @@ json_to_struct("regional_settings") {
   ]
 }
 
-if (is_mac) {
-  bundle_data("prepopulated_engines_bundle_data") {
-    sources = [ "resources/definitions/prepopulated_engines.json" ]
-    outputs = [ "{{bundle_resources_dir}}/third_party/search_engines_data/resources/definitions/{{source_file_part}}" ]
-  }
-}
-
-copy("prepopulated_engines_file") {
-  sources = [ "resources/definitions/prepopulated_engines.json" ]
-  outputs = [ "$root_out_dir/resources/third_party/search_engines_data/resources/definitions/{{source_file_part}}" ]
-}
-
 if (enable_builtin_search_provider_assets) {
   group("resources") {
     public_deps = [ ":search_engines_scaled_resources" ]

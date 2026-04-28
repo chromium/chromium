@@ -24,9 +24,9 @@ class SearchEngineAllowlist {
   // Returns the singleton instance of the allowlist.
   static SearchEngineAllowlist* GetInstance();
 
-  // Loads the bloom filter data from disk or generates it from the JSON file.
+  // Loads the bloom filter data from disk or generates it from the JSON data.
   static std::string LoadBloomFilterData(
-      const base::FilePath& json_file_path,
+      const std::string& json_data,
       const base::FilePath& bloom_filter_path);
 
   // Initializes the allowlist with the provided bloom filter data.
