@@ -1334,10 +1334,6 @@ if (use_blink && !is_cronet_build) {
     }
   }
 
-  if (is_chrome_branded) {
-    _common_web_test_args += [ "--chrome-branded" ]
-  }
-
   if (is_android) {
     _common_web_test_args += [
       "--platform",

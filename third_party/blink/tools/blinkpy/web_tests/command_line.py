@@ -123,9 +123,6 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
-    group.add_argument('--chrome-branded',
-                       action='store_true',
-                       help='Set the configuration as chrome_branded.')
     group.add_argument('--no-xvfb',
                        action='store_false',
                        dest='use_xvfb',
