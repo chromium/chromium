@@ -233,6 +233,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/protocol_handler_throttle.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
@@ -381,6 +382,7 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/data_url.h"
+#include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_store.h"
@@ -4132,6 +4134,24 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
   }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
+  // To prevent a UI flicker when the CS param is enforcing dark mode, force set
+  // the blink renderer so the initial load respects the prefers-color-scheme
+  // media query.
+  // TODO(crbug.com/506209287): Investigate if there is a feature specific place
+  // to add this logic to prevent flick on initial render.
+  if (web_contents) {
+    GURL url = web_contents->GetVisibleURL();
+    if (url.SchemeIs(content::kChromeUIScheme) &&
+        url.host() == chrome::kChromeUIContextualTasksHost) {
+      std::optional<bool> is_dark_mode =
+          contextual_tasks::GetDarkModeFromUrl(url);
+      if (is_dark_mode.has_value()) {
+        preferred_color_scheme =
+            is_dark_mode.value() ? blink::mojom::PreferredColorScheme::kDark
+                                 : blink::mojom::PreferredColorScheme::kLight;
+      }
+    }
+  }
   return {preferred_color_scheme, preferred_root_scrollbar_color_scheme};
 }
 

@@ -22,6 +22,8 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -903,6 +905,31 @@ TEST_F(ContextualTasksUiTest, SetAimUrlWithoutThreadId) {
   handle->set_has_committed(true);
   handle->set_is_same_document(false);
   observer->DidFinishNavigation(handle.get());
+}
+
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_UpdatesThemeFromCsParam) {
+  MockTaskInfoDelegate delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+  GURL url("https://www.google.com/search?udm=50&cs=1");
+  content::WebContents* wc = embedded_web_contents_.get();
+  blink::web_pref::WebPreferences prefs = wc->GetOrCreateWebPreferences();
+  // Initialize to light mode to verify it changes to dark.
+  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
+  wc->SetWebPreferences(prefs);
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTask()).WillByDefault(Return(task));
+  auto handle = CreateMockNavigationHandle(url);
+  handle->set_has_committed(true);
+  handle->set_is_same_document(true);
+  observer->DidFinishNavigation(handle.get());
+  blink::web_pref::WebPreferences updated_prefs =
+      wc->GetOrCreateWebPreferences();
+  EXPECT_EQ(updated_prefs.preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
 }
 
 }  // namespace contextual_tasks
