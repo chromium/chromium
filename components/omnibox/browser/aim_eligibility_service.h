@@ -153,17 +153,25 @@ class AimEligibilityService
   // Virtual for testing purposes.
   virtual bool IsAimEligible() const;
 
+  // WARNING: This method is deprecated, will be removed soon, and should not be
+  // used.
   // Checks if user is eligible for Pdf Upload in AIM features.
   // Virtual for testing purposes.
   virtual bool IsPdfUploadEligible() const;
 
+  // WARNING: This method is deprecated, will be removed soon, and should not be
+  // used.
   // Checks if user is eligible for Deep Search in AIM features.
   virtual bool IsDeepSearchEligible() const;
 
+  // WARNING: This method is deprecated, will be removed soon, and should not be
+  // used.
   // Checks if user is eligible for Create Images in AIM features. Always
   // returns false for off-the-record profiles.
   virtual bool IsCreateImagesEligible() const;
 
+  // WARNING: This method is deprecated, will be removed soon, and should not be
+  // used.
   // Checks if user is eligible for Canvas in AIM features.
   virtual bool IsCanvasEligible() const;
 
