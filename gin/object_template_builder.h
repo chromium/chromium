@@ -147,7 +147,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
       WrappablePointerTag tag,
       v8::Local<v8::Name> property,
       v8::Local<v8::Value> value,
-      const v8::PropertyCallbackInfo<void>& info);
+      const v8::PropertyCallbackInfo<v8::Boolean>& info);
   static v8::Intercepted NamedPropertyQueryImpl(
       WrappablePointerTag tag,
       v8::Local<v8::Name> property,
@@ -166,7 +166,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
   static v8::Intercepted NamedPropertySetter(
       v8::Local<v8::Name> property,
       v8::Local<v8::Value> value,
-      const v8::PropertyCallbackInfo<void>& info) {
+      const v8::PropertyCallbackInfo<v8::Boolean>& info) {
     return NamedPropertySetterImpl(tag, property, value, info);
   }
   template <WrappablePointerTag tag>

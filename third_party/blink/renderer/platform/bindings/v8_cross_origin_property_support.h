@@ -24,7 +24,7 @@ struct CrossOriginAttributeTableEntry final {
   v8::FunctionCallback get_callback;
   v8::FunctionCallback set_callback;
   v8::NamedPropertyGetterCallback get_value;
-  v8::NamedPropertySetterCallback set_value;
+  v8::NamedPropertySetterCallbackV2 set_value;
 };
 
 struct CrossOriginOperationTableEntry final {

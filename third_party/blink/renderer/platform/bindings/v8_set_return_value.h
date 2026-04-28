@@ -115,9 +115,17 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<void>& info,
+    const v8::PropertyCallbackInfo<v8::Boolean>& info,
     IndexedPropertySetterResult value) {
-  // Setter callback is not expected to set the return value.
+  // IndexedPropertySetterResult can't express set operation failure yet.
+  switch (value) {
+    case IndexedPropertySetterResult::kIntercepted:
+      info.GetReturnValue().Set(true);
+      return;
+    case IndexedPropertySetterResult::kDidNotIntercept:
+      return;
+  }
+  NOTREACHED();
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
@@ -130,9 +138,17 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<void>& info,
+    const v8::PropertyCallbackInfo<v8::Boolean>& info,
     NamedPropertySetterResult value) {
-  // Setter callback is not expected to set the return value.
+  // NamedPropertySetterResult can't express set operation failure yet.
+  switch (value) {
+    case NamedPropertySetterResult::kIntercepted:
+      info.GetReturnValue().Set(true);
+      return;
+    case NamedPropertySetterResult::kDidNotIntercept:
+      return;
+  }
+  NOTREACHED();
 }
 
 PLATFORM_EXPORT inline void V8SetReturnValue(

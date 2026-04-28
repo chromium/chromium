@@ -104,7 +104,7 @@ void LastErrorGetter(v8::Local<v8::Name> property,
 // Allow script to set the last error property.
 void LastErrorSetter(v8::Local<v8::Name> property,
                      v8::Local<v8::Value> value,
-                     const v8::PropertyCallbackInfo<void>& info) {
+                     const v8::PropertyCallbackInfo<v8::Boolean>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Object> holder = info.Holder();

@@ -110,7 +110,7 @@ void ThrowDeprecatedAccessError(
 
 void EmptySetterCallback(v8::Local<v8::Name> name,
                          v8::Local<v8::Value> value,
-                         const v8::PropertyCallbackInfo<void>& info) {
+                         const v8::PropertyCallbackInfo<v8::Boolean>& info) {
   // Empty setter is required to keep the native data property in "accessor"
   // state even in case the value is updated by user code.
   // TODO(337075390): consider not using empty setter and let the property
