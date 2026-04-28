@@ -97,8 +97,9 @@ void TabEventTrackerImpl::OnDidFinishNavigation(
       (page_transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) == 0) {
     return;
   }
-  DCHECK(current_selection_.has_value());
-  if (current_selection_->tab_id == tab_id && !current_selection_->committed) {
+
+  if (current_selection_.has_value() && current_selection_->tab_id == tab_id &&
+      !current_selection_->committed) {
     current_selection_->committed = true;
     tab_id_selection_map_[tab_id].emplace_back(*current_selection_);
   }
