@@ -235,6 +235,12 @@ void ModelContext::registerTool(ScriptState* script_state,
                                 ModelContextTool* tool,
                                 ModelContextRegisterToolOptions* options,
                                 ExceptionState& exception_state) {
+  if (!document_->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The document is detached.");
+    return;
+  }
+
   if (tool_map_.find(tool->name()) != tool_map_.end()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Duplicate tool name");

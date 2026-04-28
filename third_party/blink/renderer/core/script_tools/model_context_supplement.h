@@ -17,16 +17,16 @@ class Navigator;
 
 class CORE_EXPORT ModelContextSupplement final
     : public GarbageCollected<ModelContextSupplement>,
-      public Supplement<Navigator> {
+      public Supplement<Document> {
  public:
   static const char kSupplementName[];
 
-  static ModelContextSupplement& From(Navigator&);
+  static ModelContextSupplement& From(Document&);
   static ModelContext* GetIfExists(Navigator&);
   static ModelContext* modelContext(Navigator&);
   static ModelContextTesting* modelContextTesting(Navigator&);
 
-  explicit ModelContextSupplement(Navigator&);
+  explicit ModelContextSupplement(Document&);
   ModelContextSupplement(const ModelContextSupplement&) = delete;
   ModelContextSupplement& operator=(const ModelContextSupplement&) = delete;
 
