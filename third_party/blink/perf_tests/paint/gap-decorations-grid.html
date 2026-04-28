@@ -33,6 +33,25 @@
     height: 10px;
     background-color: green;
   }
+
+  .spanner-col {
+    height: 10px;
+    background-color: orange;
+    grid-column: span 3;
+  }
+
+  .spanner-row {
+    height: 10px;
+    background-color: purple;
+    grid-row: span 2;
+  }
+
+  .spanner-both {
+    height: 10px;
+    background-color: red;
+    grid-column: span 2;
+    grid-row: span 2;
+  }
 </style>
 
 <div id="grid-container"></div>
@@ -47,7 +66,18 @@
 
       for (let i = 0; i < itemCount; ++i) {
         const div = document.createElement('div');
-        div.className = 'item';
+
+        const mod = i % 9;
+        if (mod === 0) {
+          div.className = 'spanner-col';
+        } else if (mod === 3) {
+          div.className = 'spanner-row';
+        } else if (mod === 6) {
+          div.className = 'spanner-both';
+        } else {
+          div.className = 'item';
+        }
+
         fragment.appendChild(div);
       }
 
