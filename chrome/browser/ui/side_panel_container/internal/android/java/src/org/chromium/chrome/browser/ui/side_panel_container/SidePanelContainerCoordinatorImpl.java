@@ -94,8 +94,10 @@ final class SidePanelContainerCoordinatorImpl
         // TODO(http://crbug.com/487414343): Refine the side panel width.
         @Px int sidePanelWidth = ViewUtils.dpToPx(mParentActivity, SIDE_PANEL_MIN_WIDTH_DP);
         mSideUiCoordinator.requestUpdateContainer(
-                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, sidePanelWidth));
-
+                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, sidePanelWidth),
+                suppressAnimations);
+        // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
+        //  finished.
         onAnimationFinishedCallback.onResult(null);
     }
 
@@ -105,7 +107,8 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "removeContentAndClose", mPanelType, suppressAnimations);
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.requestUpdateContainer(
-                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0));
+                new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0),
+                suppressAnimations);
         // TODO(crbug.com/496407828): Move this around so it actually runs after the animation is
         //  finished.
         onAnimationFinishedCallback.onResult(null);

@@ -102,8 +102,10 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      *
      * @param properties The {@link SideUiContainerProperties} that defines the new requested
      *     position for the registered {@link SideUiContainer}.
+     * @param suppressAnimations Whether animations should be suppressed for the container update.
+     *     If true, the update will happen immediately, without animations.
      */
-    void requestUpdateContainer(SideUiContainerProperties properties);
+    void requestUpdateContainer(SideUiContainerProperties properties, boolean suppressAnimations);
 
     /** Destroys all objects owned by this coordinator. */
     void destroy();

@@ -75,7 +75,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     }
 
     @Override
-    public void requestUpdateContainer(SideUiContainerProperties properties) {
+    public void requestUpdateContainer(
+            SideUiContainerProperties properties, boolean suppressAnimations) {
         // 1. Verify the request is valid.
         assert mSideUiContainer != null
                 : "#requestUpdateContainer called with null SideUiContainer.";
@@ -87,15 +88,22 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         //  widths, rather than just implicitly accepting the requested width. Determine the
         //  upcoming SideUiSpecs based on the accepted widths.
         @Px int acceptedWidth = properties.mWidth;
+        SideUiSpecs newSideUiSpecs =
+                new SideUiSpecs(
+                        properties.mAnchorSide == AnchorSide.START ? acceptedWidth : 0,
+                        properties.mAnchorSide == AnchorSide.END ? acceptedWidth : 0);
 
-        // 3. If animating, notify observers of the upcoming SideUiSpecs from the previous step.
-        // TODO(crbug.com/491606333): Use the new SideUiSpecs calculated in the previous step to
-        //  notify observers and collect animators. See the proposed event (#onPreSideUiSpecsChange)
-        //  in SideUiObserver.java for more details.
+        // 3. End any existing transitions still in progress.
 
-        // 4. Commit the new SideUiSpecs.
+        // 4. Ensure side UI container is attached and, if showing, starts offscreen with the
+        // accepted width.
+
+        // 5. If animating, notify observers of the upcoming SideUiSpecs from the previous step and
+        // gather their Transitions into a TransitionSet.
+
+        // 6. Commit the new SideUiSpecs.
         // TODO(crbug.com/478338737): Track accepted widths for all of the registered containers.
-        commitNewSideUiSpecs(properties.mAnchorSide, acceptedWidth);
+        commitNewSideUiSpecs(newSideUiSpecs, properties.mAnchorSide, acceptedWidth);
     }
 
     @Override
@@ -153,7 +161,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      * @param acceptedWidth The requesting container's accepted width in px.
      */
     @RequiresNonNull("mSideUiContainer")
-    private void commitNewSideUiSpecs(@AnchorSide int anchorSide, @Px int acceptedWidth) {
+    private void commitNewSideUiSpecs(
+            SideUiSpecs sideUiSpecs, @AnchorSide int anchorSide, @Px int acceptedWidth) {
         // TODO(crbug.com/491606333): Support dynamically updating/animating the changes. i.e.
         //  Rather than statically changing the SideUiContainers here, we would instead kick off
         //  animators to handle the width changes. We'd also defer 1) detaching the backing views
@@ -167,7 +176,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         }
         mSideUiContainer.setWidth(acceptedWidth);
 
-        notifySideUiSpecsChanged();
+        notifySideUiSpecsChanged(sideUiSpecs);
     }
 
     /**
@@ -244,10 +253,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      * containers and their views have reached their resting state (and {@link
      * #getCurrentSideUiSpecs()} represents this resting state).
      */
-    private void notifySideUiSpecsChanged() {
-        SideUiSpecs newSideUiSpecs = getCurrentSideUiSpecs();
+    private void notifySideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
         for (SideUiObserver observer : mSideUiObservers) {
-            observer.onSideUiSpecsChanged(newSideUiSpecs);
+            observer.onSideUiSpecsChanged(sideUiSpecs);
         }
     }
 
