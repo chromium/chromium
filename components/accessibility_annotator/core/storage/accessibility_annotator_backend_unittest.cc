@@ -9,6 +9,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -111,6 +112,17 @@ class AccessibilityAnnotatorBackendTest : public testing::Test {
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend_;
 };
 
+class AccessibilityAnnotatorBackendNoInitTest : public testing::Test {
+ public:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAccessibilityAnnotatorDatabaseStorage};
+  base::ScopedTempDir temp_dir_;
+};
+
 TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   history::VisitID visit_id(123);
   std::string page_title = "Test Page Title";
@@ -150,8 +162,15 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetContentAnnotationsCacheData) {
   EXPECT_EQ(cached_data->navigation_timestamp, GetTimeForTest());
 }
 
-TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataEmpty) {
-  base::Value result = backend_->GetDebugUICacheData();
+TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAccessibilityAnnotatorDatabaseStorage);
+
+  base::test::TestFuture<base::Value> future;
+  backend_->GetAnnotationsForDebugUI(future.GetCallback());
+  base::Value result = future.Take();
+
   ASSERT_TRUE(result.is_list());
   EXPECT_TRUE(result.GetList().empty());
 }
@@ -1139,7 +1158,8 @@ TEST_F(AccessibilityAnnotatorBackendTest,
 
 // Tests that adding a content annotation doesn't notify observers
 // when the database is not initialized.
-TEST_F(AccessibilityAnnotatorBackendTest, AddContentAnnotationBeforeInit) {
+TEST_F(AccessibilityAnnotatorBackendNoInitTest,
+       AddContentAnnotationBeforeInit) {
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(
           /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
@@ -1161,7 +1181,8 @@ TEST_F(AccessibilityAnnotatorBackendTest, AddContentAnnotationBeforeInit) {
 
 // Tests that deleting content annotations doesn't notify observers when the
 // database is not initialized.
-TEST_F(AccessibilityAnnotatorBackendTest, DeleteContentAnnotationsBeforeInit) {
+TEST_F(AccessibilityAnnotatorBackendNoInitTest,
+       DeleteContentAnnotationsBeforeInit) {
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(
           /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
@@ -1183,7 +1204,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, DeleteContentAnnotationsBeforeInit) {
 
 // Tests that clearing all content annotations doesn't notify
 // observers when the database is not initialized.
-TEST_F(AccessibilityAnnotatorBackendTest,
+TEST_F(AccessibilityAnnotatorBackendNoInitTest,
        ClearAllContentAnnotationsBeforeInit) {
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
       std::make_unique<AccessibilityAnnotatorBackendImpl>(

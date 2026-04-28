@@ -455,16 +455,6 @@ void AccessibilityAnnotatorBackendImpl::ClearContentAnnotationsCache() {
       &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsCleared);
 }
 
-base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
-  base::ListValue result;
-  for (const std::pair<history::VisitID, ContentAnnotationsData>& item :
-       content_annotations_cache_) {
-    result.Append(
-        FormatContentAnnotationsDataForDebugUI(item.first, item.second));
-  }
-  return base::Value(std::move(result));
-}
-
 void AccessibilityAnnotatorBackendImpl::GetAnnotationsForDebugUI(
     base::OnceCallback<void(base::Value)> callback) {
   if (base::FeatureList::IsEnabled(
@@ -476,7 +466,13 @@ void AccessibilityAnnotatorBackendImpl::GetAnnotationsForDebugUI(
     return;
   }
 
-  std::move(callback).Run(GetDebugUICacheData());
+  base::ListValue result;
+  for (const std::pair<history::VisitID, ContentAnnotationsData>& item :
+       content_annotations_cache_) {
+    result.Append(
+        FormatContentAnnotationsDataForDebugUI(item.first, item.second));
+  }
+  std::move(callback).Run(base::Value(std::move(result)));
 }
 
 base::Value
@@ -543,6 +539,16 @@ void AccessibilityAnnotatorBackendImpl::GetAllContentAnnotations(
 void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
     std::vector<history::VisitID> visit_ids,
     base::OnceCallback<void(bool)> callback) {
+  // TODO (crbug.com/496386554): Remove after cache is no longer used.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
+    RemoveContentAnnotationsCacheData(visit_ids);
+    if (callback) {
+      std::move(callback).Run(true);
+    }
+    return;
+  }
+
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::DeleteContentAnnotations)
       .WithArgs(std::move(visit_ids))
       .Then(base::BindOnce(
@@ -552,6 +558,16 @@ void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
 
 void AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations(
     base::OnceCallback<void(bool)> callback) {
+  // TODO (crbug.com/496386554): Remove after cache is no longer used.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
+    ClearContentAnnotationsCache();
+    if (callback) {
+      std::move(callback).Run(true);
+    }
+    return;
+  }
+
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::ClearAllContentAnnotations)
       .Then(base::BindOnce(
           &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsCleared,

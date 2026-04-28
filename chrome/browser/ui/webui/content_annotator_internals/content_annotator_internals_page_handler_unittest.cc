@@ -12,12 +12,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,10 +58,20 @@ class MockPage : public accessibility_annotator_internals::mojom::Page {
       this};
 };
 
-class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
+class ContentAnnotatorInternalsPageHandlerTest
+    : public testing::TestWithParam<bool> {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          accessibility_annotator::features::
+              kAccessibilityAnnotatorDatabaseStorage);
+    }
+
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
 
     // Set up the AccessibilityAnnotatorBackendFactory to use a real backend
     // with an in-memory store.
@@ -65,24 +79,41 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
         ->SetTestingFactoryAndUse(
             &profile_,
             base::BindRepeating(
-                [](base::FilePath path, content::BrowserContext* context)
+                [](os_crypt_async::OSCryptAsync* os_crypt_async,
+                   base::FilePath path, content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
                   return std::make_unique<
                       accessibility_annotator::
                           AccessibilityAnnotatorBackendImpl>(
-                      /*history_service=*/nullptr,
-                      /*os_crypt_async=*/nullptr,
+                      /*history_service=*/nullptr, os_crypt_async,
                       syncer::DataTypeStoreTestUtil::
                           FactoryForInMemoryStoreForTest(),
                       path.Append(
                           FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
                 },
-                temp_dir_.GetPath()));
+                os_crypt_async_.get(), temp_dir_.GetPath()));
 
     handler_ = std::make_unique<ContentAnnotatorInternalsPageHandler>(
         mojo::PendingReceiver<
             accessibility_annotator_internals::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), &profile_);
+  }
+
+  void SetContentAnnotationsData(
+      history::VisitID visit_id,
+      accessibility_annotator::AccessibilityAnnotatorBackend::
+          ContentAnnotationsData data) {
+    accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+        AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
+    ASSERT_TRUE(backend);
+    if (GetParam()) {
+      base::test::TestFuture<bool> future;
+      backend->AddContentAnnotation(visit_id, std::move(data),
+                                    future.GetCallback());
+      ASSERT_TRUE(future.Get());
+    } else {
+      backend->SetContentAnnotationsCacheData(visit_id, std::move(data));
+    }
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -92,13 +123,15 @@ class ContentAnnotatorInternalsPageHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   TestingProfile profile_;
   MockPage mock_page_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<ContentAnnotatorInternalsPageHandler> handler_;
 };
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentEmpty) {
+TEST_P(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentEmpty) {
   base::RunLoop run_loop;
   handler()->GetAnnotatedContent(
       base::BindLambdaForTesting([&](base::Value content) {
@@ -109,12 +142,9 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentEmpty) {
   run_loop.Run();
 }
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
+TEST_P(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   base::test::ScopedRestoreDefaultTimezone timezone("UTC");
-  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
-      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
-  ASSERT_TRUE(backend);
 
   base::DictValue classifier_results;
   classifier_results.Set("url_match_result", "test category");
@@ -139,8 +169,8 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   data.content_annotation = std::move(content_annotation);
   data.classifier_results = std::move(classifier_results);
 
-  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(123),
-                                          std::move(data));
+  SetContentAnnotationsData(static_cast<history::VisitID>(123),
+                            std::move(data));
 
   base::RunLoop run_loop;
   handler()->GetAnnotatedContent(
@@ -176,17 +206,12 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   run_loop.Run();
 }
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
-  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
-      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
-  ASSERT_TRUE(backend);
-
+TEST_P(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotations) {
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
   data.page_title = "Title";
   data.url = GURL("https://example.com");
-  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
-                                          std::move(data));
+  SetContentAnnotationsData(static_cast<history::VisitID>(1), std::move(data));
 
   // Verify data is present.
   {
@@ -200,7 +225,7 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
     run_loop.Run();
   }
 
-  // Clear cache.
+  // Clear data.
   {
     base::RunLoop run_loop;
     handler()->ClearAnnotatedContent(
@@ -211,7 +236,7 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
     run_loop.Run();
   }
 
-  // Verify cache is empty.
+  // Verify data is empty.
   {
     base::RunLoop run_loop;
     handler()->GetAnnotatedContent(
@@ -224,25 +249,19 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
   }
 }
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
-  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
-      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
-  ASSERT_TRUE(backend);
-
+TEST_P(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
   // Add two entries.
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data1;
   data1.page_title = "Title 1";
   data1.url = GURL("https://example.com/1");
-  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
-                                          std::move(data1));
+  SetContentAnnotationsData(static_cast<history::VisitID>(1), std::move(data1));
 
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data2;
   data2.page_title = "Title 2";
   data2.url = GURL("https://example.com/2");
-  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
-                                          std::move(data2));
+  SetContentAnnotationsData(static_cast<history::VisitID>(2), std::move(data2));
 
   // Verify data is present.
   {
@@ -287,14 +306,10 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
   }
 }
 
-TEST_F(ContentAnnotatorInternalsPageHandlerTest,
+TEST_P(ContentAnnotatorInternalsPageHandlerTest,
        OnContentAnnotationsAddedPushesToUI) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   base::test::ScopedRestoreDefaultTimezone timezone("UTC");
-
-  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
-      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
-  ASSERT_TRUE(backend);
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page(), OnContentAnnotationsAdded(Property(
@@ -310,10 +325,14 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest,
       data;
   data.page_title = "Title";
   data.url = GURL("https://example.com");
-  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(123),
-                                          std::move(data));
+  SetContentAnnotationsData(static_cast<history::VisitID>(123),
+                            std::move(data));
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContentAnnotatorInternalsPageHandlerTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace content_annotator_internals

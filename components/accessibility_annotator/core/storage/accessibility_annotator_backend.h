@@ -106,9 +106,6 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // Clears the Content Annotations cache.
   virtual void ClearContentAnnotationsCache() = 0;
 
-  // Pulls cache data into a base::Value for use in the debug UI.
-  virtual base::Value GetDebugUICacheData() const = 0;
-
   // Pulls data for the debug UI. If the database storage feature is enabled,
   // this will fetch from the database; otherwise, it will fetch from the cache.
   virtual void GetAnnotationsForDebugUI(

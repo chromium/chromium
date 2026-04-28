@@ -57,7 +57,6 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
               (base::span<const history::VisitID>),
               (override));
   MOCK_METHOD(void, ClearContentAnnotationsCache, (), (override));
-  MOCK_METHOD(base::Value, GetDebugUICacheData, (), (const, override));
   MOCK_METHOD(void,
               GetAnnotationsForDebugUI,
               (base::OnceCallback<void(base::Value)>),

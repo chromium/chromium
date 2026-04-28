@@ -79,7 +79,6 @@ class AccessibilityAnnotatorBackendImpl
   void RemoveContentAnnotationsCacheData(
       base::span<const history::VisitID> visit_ids) override;
   void ClearContentAnnotationsCache() override;
-  base::Value GetDebugUICacheData() const override;
   void GetAnnotationsForDebugUI(
       base::OnceCallback<void(base::Value)> callback) override;
   void AddContentAnnotation(history::VisitID visit_id,

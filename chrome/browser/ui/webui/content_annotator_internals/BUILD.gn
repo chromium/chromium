@@ -39,6 +39,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/accessibility_annotator/core/logging:mojo_bindings",
     "//components/accessibility_annotator/core/storage",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
     "//components/sync:test_support",
     "//components/version_info",
     "//content/test:test_support",

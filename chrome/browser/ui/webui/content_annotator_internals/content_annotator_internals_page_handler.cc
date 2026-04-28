@@ -41,7 +41,14 @@ void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsAdded(
   if (!backend) {
     return;
   }
-  page_->OnContentAnnotationsAdded(backend->GetDebugUICacheData());
+  backend->GetAnnotationsForDebugUI(base::BindOnce(
+      [](base::WeakPtr<ContentAnnotatorInternalsPageHandler> handler,
+         base::Value data) {
+        if (handler) {
+          handler->page_->OnContentAnnotationsAdded(std::move(data));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsDeleted(
@@ -63,7 +70,7 @@ void ContentAnnotatorInternalsPageHandler::GetAnnotatedContent(
     std::move(callback).Run(base::Value());
     return;
   }
-  std::move(callback).Run(backend->GetDebugUICacheData());
+  backend->GetAnnotationsForDebugUI(std::move(callback));
 }
 
 void ContentAnnotatorInternalsPageHandler::ClearAnnotatedContent(
@@ -74,8 +81,7 @@ void ContentAnnotatorInternalsPageHandler::ClearAnnotatedContent(
     std::move(callback).Run(false);
     return;
   }
-  backend->ClearContentAnnotationsCache();
-  std::move(callback).Run(true);
+  backend->ClearAllContentAnnotations(std::move(callback));
 }
 
 void ContentAnnotatorInternalsPageHandler::DeleteAnnotatedContent(
@@ -87,9 +93,7 @@ void ContentAnnotatorInternalsPageHandler::DeleteAnnotatedContent(
     std::move(callback).Run(false);
     return;
   }
-
-  backend->RemoveContentAnnotationsCacheData(visit_ids);
-  std::move(callback).Run(true);
+  backend->DeleteContentAnnotations(visit_ids, std::move(callback));
 }
 
 }  // namespace content_annotator_internals
