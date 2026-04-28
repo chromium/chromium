@@ -93,9 +93,9 @@ SyncReader::SyncReader(
 SyncReader::~SyncReader() {
   OutputGlitchCounter::LogStats log_stats = glitch_counter_->GetLogStats();
 
-  TRACE_EVENT_INSTANT2("audio", "~SyncReader", TRACE_EVENT_SCOPE_THREAD,
-                       "Missed callbacks", log_stats.miss_count_,
-                       "Total callbacks", log_stats.callback_count_);
+  TRACE_EVENT_INSTANT("audio", "~SyncReader", "Missed callbacks",
+                      log_stats.miss_count_, "Total callbacks",
+                      log_stats.callback_count_);
 
   log_callback_.Run(base::StringPrintf(
       "ASR: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
@@ -153,8 +153,8 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
           "ASR: No room in socket buffer.";
       PLOG(WARNING) << socket_send_failure_message;
       log_callback_.Run(socket_send_failure_message);
-      TRACE_EVENT_INSTANT0("audio", socket_send_failure_message,
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("audio",
+                          perfetto::StaticString(socket_send_failure_message));
     }
   } else {
     had_socket_error_ = false;
@@ -261,8 +261,7 @@ bool SyncReader::WaitUntilDataIsReady() {
   // Receive timed out or another error occurred.  Receive can timeout if the
   // renderer is unable to deliver audio data within the allotted time.
   if (!bytes_received || renderer_buffer_index != buffer_index_) {
-    TRACE_EVENT_INSTANT0("audio", "SyncReader::Read timed out",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "SyncReader::Read timed out");
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
     base::UmaHistogramCustomTimes("Media.AudioOutputControllerDataNotReady",

@@ -754,9 +754,9 @@ void GpuImageDecodeCache::ImageData::
     RecordSpeculativeDecodeRasterTaskTakeover() {
   if (speculative_decode_usage_stats_.has_value()) {
     speculative_decode_usage_stats_->raster_task_takeover = true;
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                         "SpeculativeImageDecodeRasterTaskTakeover",
-                         TRACE_EVENT_SCOPE_THREAD, "image_id", paint_image_id);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SpeculativeImageDecodeRasterTaskTakeover", "image_id",
+                        paint_image_id);
   }
 }
 
@@ -861,10 +861,10 @@ GpuImageDecodeCache::ImageData::ImageData(
     speculative_decode_usage_stats_.emplace();
     speculative_decode_usage_stats_->speculative_decode_mip_level =
         upload_scale_mip_level;
-    TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("loading"),
-                         "SpeculativeImageDecodeTaskCreated",
-                         TRACE_EVENT_SCOPE_THREAD, "image_id", paint_image_id,
-                         "speculative_mip_level", upload_scale_mip_level);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SpeculativeImageDecodeTaskCreated", "image_id",
+                        paint_image_id, "speculative_mip_level",
+                        upload_scale_mip_level);
   }
 }
 
@@ -879,9 +879,9 @@ GpuImageDecodeCache::ImageData::~ImageData() {
   DCHECK(!HasUploadedData());
   if (IsSpeculativeDecode() &&
       speculative_decode_usage_stats_->min_raster_mip_level == INT_MAX) {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                         "SpeculativeImageDecodeUnused",
-                         TRACE_EVENT_SCOPE_THREAD, "image_id", paint_image_id);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SpeculativeImageDecodeUnused", "image_id",
+                        paint_image_id);
   }
   speculative_decode_usage_stats_.reset();
 }
@@ -1966,9 +1966,9 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
   }
 
   if (image_data->IsSpeculativeDecode()) {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                         "SpeculativeImageDecodeRun", TRACE_EVENT_SCOPE_THREAD,
-                         "image_id", image_data->paint_image_id);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SpeculativeImageDecodeRun", "image_id",
+                        image_data->paint_image_id);
   }
   TRACE_EVENT1("cc,benchmark", "GpuImageDecodeCache::DecodeImage",
                "paint_image_id", image_data->paint_image_id);
@@ -2484,11 +2484,10 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
     scoped_refptr<ImageData>& image_data = found_in_use->second.image_data;
     if (image_data->IsSpeculativeDecode() && record_speculative_decode_stats) {
       if (!image_data->SpeculativeDecodeHasMatched()) {
-        TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("loading"),
-                             "SpeculativeImageDecodeInUseMatch",
-                             TRACE_EVENT_SCOPE_THREAD, "image_id",
-                             image_data->paint_image_id, "raster_mip_level",
-                             key.mip_level());
+        TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                            "SpeculativeImageDecodeInUseMatch", "image_id",
+                            image_data->paint_image_id, "raster_mip_level",
+                            key.mip_level());
       }
       image_data->RecordSpeculativeDecodeMatch(
           image_data->upload_scale_mip_level);
@@ -2508,22 +2507,20 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
       if (image_data->IsSpeculativeDecode() &&
           record_speculative_decode_stats) {
         if (first_match) {
-          TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("loading"),
-                               "SpeculativeImageDecodeCompatibleMatch",
-                               TRACE_EVENT_SCOPE_THREAD, "image_id",
-                               image_data->paint_image_id, "raster_mip_level",
-                               key.mip_level());
+          TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                              "SpeculativeImageDecodeCompatibleMatch",
+                              "image_id", image_data->paint_image_id,
+                              "raster_mip_level", key.mip_level());
         }
       }
       return image_data.get();
     } else {
       if (image_data->IsSpeculativeDecode() &&
           record_speculative_decode_stats) {
-        TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("loading"),
-                             "SpeculativeImageDecodeIncompatibleMatch",
-                             TRACE_EVENT_SCOPE_THREAD, "image_id",
-                             image_data->paint_image_id, "raster_mip_level",
-                             key.mip_level());
+        TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                            "SpeculativeImageDecodeIncompatibleMatch",
+                            "image_id", image_data->paint_image_id,
+                            "raster_mip_level", key.mip_level());
       }
       RemoveFromPersistentCache(found_persistent);
     }

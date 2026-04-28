@@ -1223,7 +1223,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   in_inertial_scrolling_ = false;
   switch (scroll_status.thread) {
     case ScrollThread::kScrollOnImplThread:
-      TRACE_EVENT_INSTANT0("input", "Handle On Impl", TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("input", "Handle On Impl");
       handling_gesture_on_impl_thread_ = true;
       if (input_handler_->IsCurrentlyScrollingViewport())
         client_->DidStartScrollingViewport();
@@ -1235,7 +1235,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
         result = DID_HANDLE;
       break;
     case ScrollThread::kScrollIgnored:
-      TRACE_EVENT_INSTANT0("input", "Ignore Scroll", TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("input", "Ignore Scroll");
       scroll_sequence_ignored_ = true;
       result = DROP_EVENT;
       break;
@@ -1267,8 +1267,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   const float provided_delta_y = gesture_event.data.scroll_update.delta_y;
 
   if (scroll_sequence_ignored_) {
-    TRACE_EVENT_INSTANT0("input", "Scroll Sequence Ignored",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "Scroll Sequence Ignored");
     return DROP_EVENT;
   }
 
@@ -1279,8 +1278,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   const auto scroll_state_data = CreateScrollStateDataForGesture(gesture_event);
   in_inertial_scrolling_ = scroll_state_data.is_in_inertial_phase;
 
-  TRACE_EVENT_INSTANT1(
-      "input", "DeltaUnits", TRACE_EVENT_SCOPE_THREAD, "unit",
+  TRACE_EVENT_INSTANT(
+      "input", "DeltaUnits", "unit",
       static_cast<int>(gesture_event.data.scroll_update.delta_units));
 
   const cc::ElementId latched_element_id =
@@ -1449,16 +1448,14 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
         input_handler_->EventListenerTypeForTouchStartOrMoveAt(
             viewport_touch_rect, &touch_action);
     if (allowed_touch_action && touch_action != cc::TouchAction::kAuto) {
-      TRACE_EVENT_INSTANT1("input", "Adding TouchAction",
-                           TRACE_EVENT_SCOPE_THREAD, "TouchAction",
-                           cc::TouchActionToString(touch_action));
+      TRACE_EVENT_INSTANT("input", "Adding TouchAction", "TouchAction",
+                          cc::TouchActionToString(touch_action));
       *allowed_touch_action &= touch_action;
     }
 
     if (event_listener_type !=
         cc::InputHandler::TouchStartOrMoveEventListenerType::kNoHandler) {
-      TRACE_EVENT_INSTANT1("input", "HaveHandler", TRACE_EVENT_SCOPE_THREAD,
-                           "Type", event_listener_type);
+      TRACE_EVENT_INSTANT("input", "HaveHandler", "Type", event_listener_type);
 
       *is_touching_scrolling_layer =
           event_listener_type ==
@@ -1470,12 +1467,10 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
       // from the compositor.
       if (allowed_touch_action &&
           *allowed_touch_action != cc::TouchAction::kNone) {
-        TRACE_EVENT_INSTANT0("input", "NonBlocking due to allowed touchaction",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("input", "NonBlocking due to allowed touchaction");
         result = DID_NOT_HANDLE_NON_BLOCKING;
       } else {
-        TRACE_EVENT_INSTANT0("input", "DidNotHandle due to no touchaction",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("input", "DidNotHandle due to no touchaction");
         result = DID_NOT_HANDLE;
       }
       break;
@@ -1486,8 +1481,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
   if (result == DROP_EVENT) {
     auto event_listener_class = input_handler_->GetEventListenerProperties(
         cc::EventListenerClass::kTouchStartOrMove);
-    TRACE_EVENT_INSTANT1("input", "DropEvent", TRACE_EVENT_SCOPE_THREAD,
-                         "listener", event_listener_class);
+    TRACE_EVENT_INSTANT("input", "DropEvent", "listener", event_listener_class);
     switch (event_listener_class) {
       case cc::EventListenerProperties::kPassive:
         result = DID_NOT_HANDLE_NON_BLOCKING;
@@ -1516,8 +1510,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
       (skip_touch_filter_all_ ||
        (skip_touch_filter_discrete_ &&
         touch_event.GetType() == WebInputEvent::Type::kTouchStart))) {
-    TRACE_EVENT_INSTANT0("input", "Non blocking due to skip filter",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "Non blocking due to skip filter");
     result = DID_NOT_HANDLE_NON_BLOCKING;
   }
 
@@ -1526,9 +1519,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
   // DID_NOT_HANDLE_NON_BLOCKING, DID_NOT_HANDLE).
   if (!touch_result_.has_value() || touch_result_ == DROP_EVENT ||
       result == DID_NOT_HANDLE) {
-    TRACE_EVENT_INSTANT2(
-        "input", "Update touch_result_", TRACE_EVENT_SCOPE_THREAD, "old",
-        (touch_result_ ? touch_result_.value() : -1), "new", result);
+    TRACE_EVENT_INSTANT("input", "Update touch_result_", "old",
+                        (touch_result_ ? touch_result_.value() : -1), "new",
+                        result);
     touch_result_ = result;
   }
 
@@ -1545,8 +1538,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
   cc::TouchAction allowed_touch_action = cc::TouchAction::kAuto;
   EventDisposition result = HitTestTouchEvent(
       touch_event, &is_touching_scrolling_layer, &allowed_touch_action);
-  TRACE_EVENT_INSTANT1("input", "HitTest", TRACE_EVENT_SCOPE_THREAD,
-                       "disposition", result);
+  TRACE_EVENT_INSTANT("input", "HitTest", "disposition", result);
 
   if (allowed_touch_action != cc::TouchAction::kNone &&
       touch_event.touches_length == 1) {
@@ -1576,8 +1568,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
   if (result == DROP_EVENT && input_handler_->GetEventListenerProperties(
                                   cc::EventListenerClass::kTouchEndOrCancel) !=
                                   cc::EventListenerProperties::kNone) {
-    TRACE_EVENT_INSTANT0("input", "NonBlocking due to TouchEnd handler",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "NonBlocking due to TouchEnd handler");
     result = DID_NOT_HANDLE_NON_BLOCKING;
   }
 
@@ -1591,15 +1582,14 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
     // TouchActionFilter::FilterGestureEvent for GestureScrollBegin). Ensure we
     // send back an allowed_touch_action that matches this non-blocking behavior
     // rather than treating it as if it'll block.
-    TRACE_EVENT_INSTANT0("input", "NonBlocking due to fling",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "NonBlocking due to fling");
     allowed_touch_action = cc::TouchAction::kAuto;
     result = DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING;
   }
 
-  TRACE_EVENT_INSTANT2(
-      "input", "Allowed TouchAction", TRACE_EVENT_SCOPE_THREAD, "TouchAction",
-      cc::TouchActionToString(allowed_touch_action), "disposition", result);
+  TRACE_EVENT_INSTANT("input", "Allowed TouchAction", "TouchAction",
+                      cc::TouchActionToString(allowed_touch_action),
+                      "disposition", result);
   client_->SetAllowedTouchAction(allowed_touch_action);
 
   return result;
@@ -1641,9 +1631,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
       result = HitTestTouchEvent(touch_event, &is_touching_scrolling_layer,
                                  &allowed_touch_action);
     }
-    TRACE_EVENT_INSTANT2(
-        "input", "Allowed TouchAction", TRACE_EVENT_SCOPE_THREAD, "TouchAction",
-        cc::TouchActionToString(allowed_touch_action), "disposition", result);
+    TRACE_EVENT_INSTANT("input", "Allowed TouchAction", "TouchAction",
+                        cc::TouchActionToString(allowed_touch_action),
+                        "disposition", result);
     client_->SetAllowedTouchAction(allowed_touch_action);
     return result;
   }

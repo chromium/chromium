@@ -62,10 +62,9 @@ void TraceConsoleMessageEvent(ConsoleMessage* message) {
   // tracing/tracing/metrics/console_error_metric.html.
   // See https://crbug.com/880432
   if (message->GetLevel() == ConsoleMessage::Level::kError) {
-    TRACE_EVENT_INSTANT2("blink.console", "ConsoleMessage::Error",
-                         TRACE_EVENT_SCOPE_THREAD, "source",
-                         MessageSourceToString(message->GetSource()), "message",
-                         MessageTracedValue(message));
+    TRACE_EVENT_INSTANT("blink.console", "ConsoleMessage::Error", "source",
+                        MessageSourceToString(message->GetSource()), "message",
+                        MessageTracedValue(message));
   }
 }
 }  // anonymous namespace

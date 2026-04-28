@@ -22,6 +22,7 @@
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
@@ -96,8 +97,8 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   }
 
   const char* name = start ? kQueueBuffer : kDequeueBuffer;
-  TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
-                       v4l2_buffer->type);
+  TRACE_EVENT_INSTANT(kTracingCategory, perfetto::StaticString(name), "type",
+                      v4l2_buffer->type);
 
   // TODO(mcasas): Consider using TimeValToTimeDelta().
   const int64_t timestamp = V4L2BufferTimestampInMilliseconds(v4l2_buffer);

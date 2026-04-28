@@ -44,9 +44,8 @@ void ReportErrorAndTraceEvent(
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::string& error_message,
     std::optional<SignedExchangeError::FieldIndexPair> error_field) {
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                       "SignedExchangeError", TRACE_EVENT_SCOPE_THREAD, "error",
-                       error_message);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                      "SignedExchangeError", "error", error_message);
   if (devtools_proxy)
     devtools_proxy->ReportError(error_message, std::move(error_field));
 }

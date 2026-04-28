@@ -827,8 +827,7 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
     base::ListValue arguments,
     bool wants_result,
     JavaScriptMethodExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("test_tracing", "JavaScriptMethodExecuteRequest");
 
   std::unique_ptr<WebV8ValueConverter> converter =
       Platform::Current()->CreateWebV8ValueConverter();
@@ -854,8 +853,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
     const String& javascript,
     bool wants_result,
     JavaScriptExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("test_tracing", "JavaScriptExecuteRequest");
 
   v8::HandleScope handle_scope(ToIsolate(frame_));
   v8::Local<v8::Value> result =
@@ -884,8 +882,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
     bool honor_js_content_settings,
     int32_t world_id,
     JavaScriptExecuteRequestForTestsCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequestForTests",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("test_tracing", "JavaScriptExecuteRequestForTests");
 
   // A bunch of tests expect to run code in the context of a user gesture, which
   // can grant additional privileges (e.g. the ability to create popups).
@@ -953,9 +950,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
     bool wants_result,
     int32_t world_id,
     JavaScriptExecuteRequestInIsolatedWorldCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing",
-                       "JavaScriptExecuteRequestInIsolatedWorld",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("test_tracing",
+                      "JavaScriptExecuteRequestInIsolatedWorld");
 
   if (world_id <= DOMWrapperWorld::kMainWorldId ||
       world_id > DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit) {
@@ -1340,8 +1336,7 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
   TRACE_EVENT2("renderer", "LocalFrame::UpdateBrowserControlsState",
                "Constraint", static_cast<int>(constraints), "Current",
                static_cast<int>(current));
-  TRACE_EVENT_INSTANT1("renderer", "is_animated", TRACE_EVENT_SCOPE_THREAD,
-                       "animated", animate);
+  TRACE_EVENT_INSTANT("renderer", "is_animated", "animated", animate);
 
   frame_->GetWidgetForLocalRoot()->UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);

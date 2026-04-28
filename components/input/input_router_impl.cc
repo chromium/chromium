@@ -168,7 +168,7 @@ void InputRouterImpl::SendGestureEvent(
   GestureEventWithLatencyInfo gesture_event(original_gesture_event);
 
   if (gesture_event_queue_.PassToFlingController(gesture_event)) {
-    TRACE_EVENT_INSTANT0("input", "FilteredForFling", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "FilteredForFling");
     // See the comment in `FilterAndSendWebInputEvent` about the order of the
     // callbacks here.
     std::move(dispatch_callback)
@@ -183,8 +183,7 @@ void InputRouterImpl::SendGestureEvent(
   FilterGestureEventResult result =
       touch_action_filter_.FilterGestureEvent(&gesture_event.event);
   if (result == FilterGestureEventResult::kDelayed) {
-    TRACE_EVENT_INSTANT0("input", "DeferredForTouchAction",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "DeferredForTouchAction");
     gesture_event_queue_.QueueDeferredEvents(gesture_event, dispatch_callback);
     return;
   }
@@ -198,8 +197,7 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
   TRACE_EVENT0("input", "InputRouterImpl::SendGestureEventWithoutQueueing");
   DCHECK_NE(existing_result, FilterGestureEventResult::kDelayed);
   if (existing_result == FilterGestureEventResult::kFiltered) {
-    TRACE_EVENT_INSTANT0("input", "FilteredForTouchAction",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "FilteredForTouchAction");
     // See the comment in `FilterAndSendWebInputEvent` about the order of the
     // callbacks here.
     std::move(dispatch_callback)
@@ -249,8 +247,7 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
 
   if (!gesture_event_queue_.DebounceOrForwardEvent(gesture_event,
                                                    dispatch_callback)) {
-    TRACE_EVENT_INSTANT0("input", "FilteredForDebounce",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "FilteredForDebounce");
     // Notify about input event before running the ack below.
     std::move(client_->GetDispatchToRendererCallback())
         .Run(gesture_event.event, DispatchToRendererResult::kNotDispatched);
@@ -653,8 +650,7 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
       client_->FilterInputEvent(input_event, latency_info);
 
   if (WasHandled(filtered_state)) {
-    TRACE_EVENT_INSTANT0("input", "InputEventFiltered",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "InputEventFiltered");
     std::move(dispatch_callback)
         .Run(input_event, DispatchToRendererResult::kNotDispatched);
     if (filtered_state != blink::mojom::InputEventResultState::kUnknown) {
@@ -670,8 +666,7 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
   std::unique_ptr<blink::WebCoalescedInputEvent> event =
       ScaleEvent(input_event, device_scale_factor_, latency_info);
   if (WebInputEventTraits::ShouldBlockEventStream(input_event)) {
-    TRACE_EVENT_INSTANT0("input", "InputEventSentBlocking",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "InputEventSentBlocking");
     client_->IncrementInFlightEventCount();
     blink::mojom::WidgetInputHandler::DispatchEventCallback renderer_callback =
         base::BindOnce(
@@ -727,8 +722,7 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
     // If the previous touch move event was not followed by a gesture scroll
     // update, dispatch it before storing the new touch move event.
     if (!store_touch_move_event || dispatch_last_event) {
-      TRACE_EVENT_INSTANT0("input", "InputEventSentNonBlocking",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("input", "InputEventSentNonBlocking");
       client_->GetWidgetInputHandler()->DispatchNonBlockingEvent(
           dispatch_last_event ? std::move(last_touch_move_event_.value())
                               : std::move(event));

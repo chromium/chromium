@@ -848,8 +848,8 @@ void SequenceManagerImpl::NotifyDidProcessTask(ExecutingTask* executing_task,
       recording_policy == TimeRecordingPolicy::DoRecord &&
       task_timing.wall_duration() > kLongTaskTraceEventThreshold &&
       main_thread_only().nesting_depth == 0) {
-    TRACE_EVENT_INSTANT1("blink", "LongTask", TRACE_EVENT_SCOPE_THREAD,
-                         "duration", task_timing.wall_duration().InSecondsF());
+    TRACE_EVENT_INSTANT("blink", "LongTask", "duration",
+                        task_timing.wall_duration().InSecondsF());
   }
 }
 

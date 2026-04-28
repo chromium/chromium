@@ -182,9 +182,8 @@ void RootFrameSink::ReclaimResources(
 
 void RootFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  TRACE_EVENT_INSTANT1("android_webview", "RootFrameSink::OnNeedsBeginFrames",
-                       TRACE_EVENT_SCOPE_THREAD, "needs_begin_frames",
-                       needs_begin_frames);
+  TRACE_EVENT_INSTANT("android_webview", "RootFrameSink::OnNeedsBeginFrames",
+                      "needs_begin_frames", needs_begin_frames);
   clients_need_begin_frames_ = needs_begin_frames;
 
   // Old heuristic doesn't need extra begin frames, so just forward client
@@ -325,8 +324,8 @@ bool RootFrameSink::BeginFrame(const viz::BeginFrameArgs& args,
   // it's state (e.g last invalidated begin frame args).
   bool invalidate = ProcessVisibleSurfacesInvalidation() || had_input_event;
 
-  TRACE_EVENT_INSTANT1("android_webview", "RootFrameSink::BeginFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "invalidate", invalidate);
+  TRACE_EVENT_INSTANT("android_webview", "RootFrameSink::BeginFrame",
+                      "invalidate", invalidate);
 
   if (clients_need_begin_frames_) {
     begin_frame_source_->OnBeginFrame(args);

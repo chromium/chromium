@@ -278,10 +278,9 @@ ExternalTexture CreateExternalTexture(
        media_video_frame->metadata().is_webgpu_compatible &&
        DstColorSpaceSupportedByZeroCopy(dst_predefined_color_space));
 
-  TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("webgpu"),
-                       "CreateExternalTexture", TRACE_EVENT_SCOPE_THREAD,
-                       "zero_copy", !!zero_copy, "video_frame",
-                       media_video_frame->AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("webgpu"), "CreateExternalTexture", "zero_copy",
+      !!zero_copy, "video_frame", media_video_frame->AsHumanReadableString());
   if (zero_copy) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromVideoFrame(

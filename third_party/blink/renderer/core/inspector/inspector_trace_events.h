@@ -145,12 +145,12 @@ class CORE_EXPORT InspectorTraceEvents
 // event (e.g. "MyEvent"), function name for writing event metadata (usually
 // my_event::Data) and the parameters to pass to the function (except the first
 // perfetto::TracedValue param, which will be appended by this macro.
-#define DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(           \
-    categories, event_name, function_name, ...)                          \
-  TRACE_EVENT_INSTANT1(categories, event_name, TRACE_EVENT_SCOPE_THREAD, \
-                       "data", [&](perfetto::TracedValue ctx) {          \
-                         function_name(std::move(ctx), __VA_ARGS__);     \
-                       })
+#define DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(      \
+    categories, event_name, function_name, ...)                     \
+  TRACE_EVENT_INSTANT(categories, event_name, "data",               \
+                      [&](perfetto::TracedValue ctx) {              \
+                        function_name(std::move(ctx), __VA_ARGS__); \
+                      })
 
 #define DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(categories, event_name, \
                                                       function_name, ...)     \

@@ -198,9 +198,9 @@ void WebContentsFrameTracker::SetCapturedContentSize(
 
   // For efficiency, this function should only be called when the captured
   // content size changes. The caller is responsible for enforcing that.
-  TRACE_EVENT_INSTANT1(
-      "gpu.capture", "WebContentsFrameTracker::SetCapturedContentSize",
-      TRACE_EVENT_SCOPE_THREAD, "content_size", content_size.ToString());
+  TRACE_EVENT_INSTANT("gpu.capture",
+                      "WebContentsFrameTracker::SetCapturedContentSize",
+                      "content_size", content_size.ToString());
 
   if (auto_scaler_) {
     auto_scaler_->SetCapturedContentSize(content_size);
@@ -258,10 +258,10 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
 
 void WebContentsFrameTracker::OnUtilizationReport(
     media::VideoCaptureFeedback feedback) {
-  TRACE_EVENT_INSTANT2(
-      "gpu.capture", "WebContentsFrameTracker::OnUtilizationReport",
-      TRACE_EVENT_SCOPE_THREAD, "utilization", feedback.resource_utilization,
-      "max_pixels", feedback.max_pixels);
+  TRACE_EVENT_INSTANT("gpu.capture",
+                      "WebContentsFrameTracker::OnUtilizationReport",
+                      "utilization", feedback.resource_utilization,
+                      "max_pixels", feedback.max_pixels);
   if (auto_scaler_) {
     auto_scaler_->OnUtilizationReport(std::move(feedback));
   }

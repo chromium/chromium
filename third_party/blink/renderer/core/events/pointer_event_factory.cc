@@ -767,9 +767,8 @@ int32_t PointerEventFactory::GetBlinkDeviceId(
   if (result.is_new_entry) {
     result.stored_value->value = current_device_id_++;
   }
-  TRACE_EVENT_INSTANT1("event", "PointerEventFactory::GetBlinkDeviceId",
-                       TRACE_EVENT_SCOPE_THREAD, "id",
-                       result.stored_value->value);
+  TRACE_EVENT_INSTANT("event", "PointerEventFactory::GetBlinkDeviceId", "id",
+                      result.stored_value->value);
   return result.stored_value->value;
 }
 

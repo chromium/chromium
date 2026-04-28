@@ -166,9 +166,9 @@ void KeyframeModel::SetRunState(RunState new_run_state,
   base::SpanPrintf(state_buffer, "%s->%s", old_run_state_name.c_str(),
                    new_run_state_name.c_str());
 
-  TRACE_EVENT_INSTANT2(
-      "cc", "ElementAnimations::SetRunState", TRACE_EVENT_SCOPE_THREAD, "Name",
-      TRACE_STR_COPY(name_buffer), "State", TRACE_STR_COPY(state_buffer));
+  TRACE_EVENT_INSTANT("cc", "ElementAnimations::SetRunState", "Name",
+                      TRACE_STR_COPY(name_buffer), "State",
+                      TRACE_STR_COPY(state_buffer));
 }
 
 bool KeyframeModel::InEffect(base::TimeTicks monotonic_time) const {

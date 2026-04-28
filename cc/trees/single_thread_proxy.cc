@@ -1068,15 +1068,14 @@ void SingleThreadProxy::BeginMainFrame(
   update_layers_requested_ = false;
 
   if (defer_main_frame_update_) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferBeginMainFrame",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "EarlyOut_DeferBeginMainFrame");
     BeginMainFrameAbortedOnImplThread(
         CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate);
     return;
   }
 
   if (!layer_tree_host_->IsVisible()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "EarlyOut_NotVisible");
 
     // Since the commit is deferred due to the page becoming invisible, the
     // metrics are not meaningful anymore (as the page might become visible in
@@ -1109,8 +1108,7 @@ void SingleThreadProxy::BeginMainFrame(
   // right now.
   if (defer_main_frame_update_ || IsDeferringCommits() ||
       begin_frame_args.animate_only) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit_InsideBeginMainFrame",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "EarlyOut_DeferCommit_InsideBeginMainFrame");
     BeginMainFrameAbortedOnImplThread(
         CommitEarlyOutReason::kAbortedDeferredCommit);
     layer_tree_host_->RecordEndOfFrameMetrics(frame_start_time,

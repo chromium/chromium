@@ -289,9 +289,9 @@ void DisplayScheduler::OnPresentationFeedback(
     // can detect this issue. It currently happens too often to emit a metric
     // or trace for.
     if (feedback.ready_timestamp > target_latch_time) {
-      TRACE_EVENT_INSTANT1("viz", "DisplayScheduler::ReadyAfterTargetLatch",
-                           TRACE_EVENT_SCOPE_THREAD, "delta",
-                           feedback.ready_timestamp - target_latch_time);
+      TRACE_EVENT_INSTANT("viz", "DisplayScheduler::ReadyAfterTargetLatch",
+                          "delta",
+                          feedback.ready_timestamp - target_latch_time);
     }
   }
 }
@@ -562,21 +562,19 @@ DisplayScheduler::AdjustedBeginFrameDeadlineMode() const {
 DisplayScheduler::BeginFrameDeadlineMode
 DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
   if (output_surface_lost_) {
-    TRACE_EVENT_INSTANT0("viz", "Lost output surface",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Lost output surface");
     return BeginFrameDeadlineMode::kImmediate;
   }
 
   const int max_pending_swaps = MaxPendingSwaps();
   if (pending_swaps_ >= max_pending_swaps) {
-    TRACE_EVENT_INSTANT2("viz", "Swap throttled", TRACE_EVENT_SCOPE_THREAD,
-                         "pending_swaps", pending_swaps_, "max_pending_swaps",
-                         max_pending_swaps);
+    TRACE_EVENT_INSTANT("viz", "Swap throttled", "pending_swaps",
+                        pending_swaps_, "max_pending_swaps", max_pending_swaps);
     return BeginFrameDeadlineMode::kLate;
   }
 
   if (damage_tracker_->root_frame_missing()) {
-    TRACE_EVENT_INSTANT0("viz", "Root frame missing", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Root frame missing");
     return BeginFrameDeadlineMode::kLate;
   }
 
@@ -597,25 +595,22 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
 
   if (all_surfaces_ready &&
       (needs_draw_ || allow_early_deadline_without_draw)) {
-    TRACE_EVENT_INSTANT0("viz", "All active surfaces ready",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "All active surfaces ready");
     return BeginFrameDeadlineMode::kImmediate;
   }
 
   if (!needs_draw_) {
-    TRACE_EVENT_INSTANT0("viz", "No damage yet", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "No damage yet");
     return BeginFrameDeadlineMode::kLate;
   }
 
   // TODO(mithro): Be smarter about resize deadlines.
   if (damage_tracker_->expecting_root_surface_damage_because_of_resize()) {
-    TRACE_EVENT_INSTANT0("viz", "Entire display damaged",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Entire display damaged");
     return BeginFrameDeadlineMode::kLate;
   }
 
-  TRACE_EVENT_INSTANT0("viz", "More damage expected soon",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("viz", "More damage expected soon");
   return BeginFrameDeadlineMode::kRegular;
 }
 
@@ -624,8 +619,7 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
 
   // We need to wait for the next BeginFrame before scheduling a deadline.
   if (!inside_begin_frame_deadline_interval_) {
-    TRACE_EVENT_INSTANT0("viz", "Waiting for next BeginFrame",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Waiting for next BeginFrame");
     DCHECK(!begin_frame_deadline_timer_.IsRunning());
     return;
   }
@@ -638,8 +632,7 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
   // Avoid re-scheduling the deadline if it's already correctly scheduled.
   if (begin_frame_deadline_timer_.IsRunning() &&
       desired_deadline == begin_frame_deadline_task_time_) {
-    TRACE_EVENT_INSTANT0("viz", "Using existing deadline",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Using existing deadline");
     return;
   }
 
@@ -648,8 +641,7 @@ void DisplayScheduler::ScheduleBeginFrameDeadline() {
   begin_frame_deadline_timer_.Stop();
 
   if (begin_frame_deadline_task_time_ == base::TimeTicks::Max()) {
-    TRACE_EVENT_INSTANT0("viz", "Using infinite deadline",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Using infinite deadline");
     return;
   }
 

@@ -103,13 +103,12 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   // triggered on the first pass of the event.
   if ([self isEventBeingRedispatched:event]) {
     // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
-    TRACE_EVENT_INSTANT0("ui", "IsRedispatch", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("ui", "IsRedispatch");
     ui::PerformKeyEquivalentResult result =
         [_delegate postPerformKeyEquivalent:event
                                      window:_owner
                                isRedispatch:YES];
-    TRACE_EVENT_INSTANT1("ui", "postPerformKeyEquivalent",
-                         TRACE_EVENT_SCOPE_THREAD, "result", result);
+    TRACE_EVENT_INSTANT("ui", "postPerformKeyEquivalent", "result", result);
     if (result == ui::PerformKeyEquivalentResult::kHandled)
       return YES;
     if (result == ui::PerformKeyEquivalentResult::kPassToMainMenu)

@@ -255,7 +255,7 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
           session_id);
 
   if (!device) {
-    TRACE_EVENT_INSTANT0("audio", "device not found", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "device not found");
     return;
   }
 

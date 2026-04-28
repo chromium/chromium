@@ -27,11 +27,11 @@ void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded() {
   // The property trees are already up-to-date, but the HUD layer is managed
   // outside the layer list sent to the LayerTreeHost and needs to have its
   // property tree state set.
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                       "PropertyTreeLayerListDelegate::"
-                       "UpdatePropertyTreesIfNeeded_ReceivedPropertyTrees",
-                       TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                       host()->property_trees()->AsTracedValue());
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                      "PropertyTreeLayerListDelegate::"
+                      "UpdatePropertyTreesIfNeeded_ReceivedPropertyTrees",
+                      "property_trees",
+                      host()->property_trees()->AsTracedValue());
 
   // Note that we can't cache the root_layer object because it's not
   // threadsafe to do so.
@@ -54,9 +54,9 @@ void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   auto& scroll_tree = host()->property_trees()->scroll_tree_mutable();
   auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
-  TRACE_EVENT_INSTANT2("cc", "NotifyDidScroll", TRACE_EVENT_SCOPE_THREAD,
-                       "cur_y", scroll_tree.current_scroll_offset(id).y(),
-                       "delta", delta.y());
+  TRACE_EVENT_INSTANT("cc", "NotifyDidScroll", "cur_y",
+                      scroll_tree.current_scroll_offset(id).y(), "delta",
+                      delta.y());
   if (auto* scroll_node = scroll_tree.FindNodeFromElementId(id)) {
     // This update closely follows
     // blink::PropertyTreeManager::DirectlyUpdateScrollOffsetTransform.

@@ -559,9 +559,8 @@ void VideoResourceUpdater::ObtainFrameResource(
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
-  TRACE_EVENT_INSTANT1("media", "VideoResourceUpdater::ObtainFrameResource",
-                       TRACE_EVENT_SCOPE_THREAD, "Timestamp",
-                       video_frame->timestamp().InMicroseconds());
+  TRACE_EVENT_INSTANT("media", "VideoResourceUpdater::ObtainFrameResource",
+                      "Timestamp", video_frame->timestamp().InMicroseconds());
 }
 
 void VideoResourceUpdater::ReleaseFrameResource() {

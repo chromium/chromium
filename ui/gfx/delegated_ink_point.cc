@@ -30,10 +30,9 @@ bool DelegatedInkPoint::MatchesDelegatedInkMetadata(
   // each direction.
   // TODO(crbug.com/338250110) Consider removing this tolerance.
   constexpr float kEpsilon = 1.4143f;
-  TRACE_EVENT_INSTANT2("delegated_ink_trails",
-                       "DelegatedInkPoint::MatchesDelegatedInkMetadata",
-                       TRACE_EVENT_SCOPE_THREAD, "metadata",
-                       metadata->ToString(), "point", ToString());
+  TRACE_EVENT_INSTANT("delegated_ink_trails",
+                      "DelegatedInkPoint::MatchesDelegatedInkMetadata",
+                      "metadata", metadata->ToString(), "point", ToString());
   return timestamp_ == metadata->timestamp() &&
          point_.IsWithinDistance(metadata->point(), kEpsilon);
 }

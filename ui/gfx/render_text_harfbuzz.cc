@@ -2256,10 +2256,9 @@ bool RenderTextHarfBuzz::ShapeRuns(
                         &fallback_fonts_already_tried);
       }
       if (runs.empty()) {
-        TRACE_EVENT_INSTANT2("ui", "RenderTextHarfBuzz::FallbackFont",
-                             TRACE_EVENT_SCOPE_THREAD, "font_name",
-                             TRACE_STR_COPY(font_name.c_str()),
-                             "primary_font_name", primary_font.GetFontName());
+        TRACE_EVENT_INSTANT("ui", "RenderTextHarfBuzz::FallbackFont",
+                            "font_name", TRACE_STR_COPY(font_name.c_str()),
+                            "primary_font_name", primary_font.GetFontName());
         RecordShapeRunsFallback(internal::ShapeRunFallback::FALLBACKS);
         return true;
       }

@@ -2425,8 +2425,8 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   if (!owner) {
     // This trace event is needed to detect the main frame of the
     // renderer in telemetry metrics. See crbug.com/692112#c11.
-    TRACE_EVENT_INSTANT1("loading", "markAsMainFrame", TRACE_EVENT_SCOPE_THREAD,
-                         "frame", GetFrameIdForTracing(frame_));
+    TRACE_EVENT_INSTANT("loading", "markAsMainFrame", "frame",
+                        GetFrameIdForTracing(frame_));
   }
 }
 

@@ -197,9 +197,8 @@ ServiceManager::~ServiceManager() {
 ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     const ServiceInstance& source_instance,
     const ServiceFilter& partial_target_filter) {
-  TRACE_EVENT_INSTANT1("service_manager", "ServiceManager::Connect",
-                       TRACE_EVENT_SCOPE_THREAD, "original_name",
-                       partial_target_filter.service_name());
+  TRACE_EVENT_INSTANT("service_manager", "ServiceManager::Connect",
+                      "original_name", partial_target_filter.service_name());
   if (partial_target_filter.service_name() == mojom::kServiceName)
     return service_manager_instance_;
 

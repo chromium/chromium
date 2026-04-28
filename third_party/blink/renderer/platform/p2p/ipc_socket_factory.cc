@@ -454,9 +454,8 @@ int IpcPacketSocket::SendToInternal(
   }
 
   if (data_size > send_bytes_available_) {
-    TRACE_EVENT_INSTANT1("p2p", "MaxPendingBytesWouldBlock",
-                         TRACE_EVENT_SCOPE_THREAD, "id",
-                         client_->GetSocketID());
+    TRACE_EVENT_INSTANT("p2p", "MaxPendingBytesWouldBlock", "id",
+                        client_->GetSocketID());
     if (!writable_signal_expected_) {
       blink::WebRtcLogMessage(base::StringPrintf(
           "IpcPacketSocket: sending is blocked. %d packets_in_flight.",

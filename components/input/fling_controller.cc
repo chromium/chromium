@@ -104,13 +104,12 @@ bool FlingController::ObserveAndMaybeConsumeGestureEvent(
   if (gesture_event.event.GetType() ==
           WebInputEvent::Type::kGestureFlingCancel &&
       !fling_curve_) {
-    TRACE_EVENT_INSTANT0("input", "NoActiveFling", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "NoActiveFling");
     return true;
   }
 
   if (ObserveAndFilterForTapSuppression(gesture_event)) {
-    TRACE_EVENT_INSTANT0("input", "FilterTapSuppression",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "FilterTapSuppression");
     return true;
   }
   if (gesture_event.event.GetType() ==

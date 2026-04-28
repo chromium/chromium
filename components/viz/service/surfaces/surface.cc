@@ -255,8 +255,7 @@ Surface::QueueFrameResult Surface::QueueFrame(
     base::ScopedClosureRunner frame_rejected_callback) {
   if (frame.size_in_pixels() != surface_info_.size_in_pixels() ||
       frame.device_scale_factor() != surface_info_.device_scale_factor()) {
-    TRACE_EVENT_INSTANT0("viz", "Surface invariants violation",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Surface invariants violation");
     return QueueFrameResult::REJECTED;
   }
 
@@ -272,9 +271,8 @@ Surface::QueueFrameResult Surface::QueueFrame(
     // Return oldest frame if uncommitted queue is full.
     DCHECK_LE(uncommitted_frames_.size(), max_uncommitted_frames_);
     if (uncommitted_frames_.size() == max_uncommitted_frames_) {
-      TRACE_EVENT_INSTANT1("viz", "DropUncommitedFrame",
-                           TRACE_EVENT_SCOPE_THREAD, "queue_length",
-                           uncommitted_frames_.size());
+      TRACE_EVENT_INSTANT("viz", "DropUncommitedFrame", "queue_length",
+                          uncommitted_frames_.size());
 
       UnrefFrameResourcesAndRunCallbacks(
           std::move(uncommitted_frames_.front()));
@@ -286,9 +284,8 @@ Surface::QueueFrameResult Surface::QueueFrame(
     // If we still have space in queue we should send ack the client because we
     // can receive another frame without dropping it.
     if (uncommitted_frames_.size() < max_uncommitted_frames_) {
-      TRACE_EVENT_INSTANT1("viz", "AckingUncommitedFrame",
-                           TRACE_EVENT_SCOPE_THREAD, "queue_length",
-                           uncommitted_frames_.size());
+      TRACE_EVENT_INSTANT("viz", "AckingUncommitedFrame", "queue_length",
+                          uncommitted_frames_.size());
       uncommitted_frames_.back().SendAckIfNeeded(surface_client_.get());
     }
 
@@ -511,10 +508,9 @@ void Surface::ActivatePendingFrame() {
 
   std::optional<base::TimeDelta> duration = deadline_->Cancel();
   if (duration.has_value()) {
-    TRACE_EVENT_INSTANT2("viz", "SurfaceSynchronizationEvent",
-                         TRACE_EVENT_SCOPE_THREAD, "surface_id",
-                         surface_info_.id().ToString(), "duration_ms",
-                         duration.value().InMilliseconds());
+    TRACE_EVENT_INSTANT("viz", "SurfaceSynchronizationEvent", "surface_id",
+                        surface_info_.id().ToString(), "duration_ms",
+                        duration.value().InMilliseconds());
   }
 
   ActivateFrame(std::move(frame_data));

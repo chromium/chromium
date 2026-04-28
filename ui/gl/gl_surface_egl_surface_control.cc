@@ -96,9 +96,8 @@ bool GLSurfaceEGLSurfaceControl::Initialize() {
 }
 
 void GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls() {
-  TRACE_EVENT_INSTANT0(
-      "gpu", "GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls",
-      TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT(
+      "gpu", "GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls");
   preserve_children_ = true;
 }
 
@@ -533,11 +532,10 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
       flags = 0u;
     }
 
-    TRACE_EVENT_INSTANT0(
+    TRACE_EVENT_INSTANT(
         "gpu",
         "GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks - "
-        "presentation_feedback",
-        TRACE_EVENT_SCOPE_THREAD);
+        "presentation_feedback");
     gfx::PresentationFeedback feedback(signal_time, base::TimeDelta(), flags);
     feedback.available_timestamp = pending_cb.available_time;
     feedback.ready_timestamp = pending_cb.ready_time;

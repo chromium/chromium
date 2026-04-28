@@ -140,8 +140,8 @@ TEST_F(TraceEventPerfTest, Submit_10000_TRACE_EVENT_with_TracedValue) {
   IterableStopwatch trace_sw(kMetricEventSubmitTimeMs);
   for (int lap = 0; lap < kNumRuns; lap++) {
     for (int i = 0; i < 10000; i++) {
-      TRACE_EVENT_INSTANT1("test_category", "event_with_value",
-          TRACE_EVENT_SCOPE_THREAD, "value", MakeTracedValue(i));
+      TRACE_EVENT_INSTANT("test_category", "event_with_value", "value",
+                          MakeTracedValue(i));
     }
     trace_sw.NextLap();
   }

@@ -200,8 +200,7 @@ void AudioRendererSinkCache::MaybeCacheSink(
     const std::string& device_id,
     scoped_refptr<media::AudioRendererSink> sink) {
   if (!SinkIsHealthy(sink.get())) {
-    TRACE_EVENT_INSTANT0("audio", "MaybeCacheSink: Unhealthy sink",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "MaybeCacheSink: Unhealthy sink");
     // Since |sink| is not cached, we must make sure to Stop it now.
     sink->Stop();
     return;

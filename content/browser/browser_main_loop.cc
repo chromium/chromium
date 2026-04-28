@@ -1446,8 +1446,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   bool should_post_task_to_launch_gpu_process =
       always_uses_gpu && !establish_gpu_channel;
   if (should_post_task_to_launch_gpu_process) {
-    TRACE_EVENT_INSTANT0("gpu", "Post task to launch GPU process",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("gpu", "Post task to launch GPU process");
     GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, true /* force_create */);
   }
 
@@ -1578,8 +1577,7 @@ void BrowserMainLoop::InitializeAudio() {
   // Iff |audio_manager_| is instantiated, the audio service will run
   // in-process. Complete the setup for that:
   if (audio_manager_) {
-    TRACE_EVENT_INSTANT0("startup", "Starting Audio service task runner",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("startup", "Starting Audio service task runner");
 #if BUILDFLAG(IS_MAC)
     // On Mac, the audio task runner must belong to the main thread.
     // See audio_thread_impl.cc and https://crbug.com/158170.

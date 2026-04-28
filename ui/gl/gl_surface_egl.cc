@@ -623,8 +623,7 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
           display_->GetDisplay(), surface_, oldFrameId,
           static_cast<EGLint>(supported_egl_timestamps_.size()),
           supported_egl_timestamps_.data(), egl_timestamps.data())) {
-    TRACE_EVENT_INSTANT0("gpu", "eglGetFrameTimestamps:Failed",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("gpu", "eglGetFrameTimestamps:Failed");
     return;
   }
 
@@ -653,8 +652,7 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
          supported_event_names_[i]});
   }
   if (tracePairs.empty()) {
-    TRACE_EVENT_INSTANT0("gpu", "TraceSwapEvents:NoValidTimestamps",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("gpu", "TraceSwapEvents:NoValidTimestamps");
     return;
   }
 

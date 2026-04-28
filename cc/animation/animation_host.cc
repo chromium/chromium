@@ -666,7 +666,7 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
     return false;
   }
 
-  TRACE_EVENT_INSTANT0("cc", "NeedsTickAnimations", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("cc", "NeedsTickAnimations");
 
   if (is_active_tree) {
     // We update triggers first since they affect whether an animation is in

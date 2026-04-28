@@ -378,10 +378,9 @@ void ResourceLoadObserverForFrame::DidFailLoading(
 void ResourceLoadObserverForFrame::DidChangeRenderBlockingBehavior(
     Resource* resource,
     const FetchParameters& params) {
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+  TRACE_EVENT_INSTANT(
       "devtools.timeline", "PreloadRenderBlockingStatusChange",
-      TRACE_EVENT_SCOPE_THREAD, base::TimeTicks::Now(), "data",
-      [&](perfetto::TracedValue ctx) {
+      base::TimeTicks::Now(), "data", [&](perfetto::TracedValue ctx) {
         inspector_change_render_blocking_behavior_event::Data(
             std::move(ctx), document_->Loader(),
             resource->GetResourceRequest().InspectorId(),

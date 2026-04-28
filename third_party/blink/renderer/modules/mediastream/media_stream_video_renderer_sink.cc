@@ -59,11 +59,10 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
                     base::TimeTicks /*current_time*/) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     DCHECK(frame);
-    TRACE_EVENT_INSTANT1("webrtc",
-                         "MediaStreamVideoRendererSink::"
-                         "FrameDeliverer::OnVideoFrame",
-                         TRACE_EVENT_SCOPE_THREAD, "timestamp",
-                         frame->timestamp().InMilliseconds());
+    TRACE_EVENT_INSTANT("webrtc",
+                        "MediaStreamVideoRendererSink::"
+                        "FrameDeliverer::OnVideoFrame",
+                        "timestamp", frame->timestamp().InMilliseconds());
 
     if (state_ != kStarted) {
       if (emit_frame_drop_events_) {

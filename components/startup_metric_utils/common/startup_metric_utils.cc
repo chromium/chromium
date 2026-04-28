@@ -119,8 +119,8 @@ void CommonStartupMetricRecorder::AddStartupEventsForTelemetry() {
     return;
   }
 
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
-      "startup", "Startup.BrowserMainEntryPoint", 0, chrome_main_entry_ticks_);
+  TRACE_EVENT_INSTANT("startup", "Startup.BrowserMainEntryPoint",
+                      chrome_main_entry_ticks_);
 }
 
 #if DCHECK_IS_ON()

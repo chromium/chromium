@@ -372,18 +372,18 @@ AuctionDownloader::AuctionDownloader(
                                               std::move(content_type).value());
   }
 
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
-      "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
-      base::TimeTicks::Now(), "data", [&](perfetto::TracedValue dest) {
-        auto dict = std::move(dest).WriteDictionary();
-        dict.Add("requestId", request_id_);
-        dict.Add("url", source_url_.spec());
-        // Value derived from CDP ResourceType enum:
-        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
-        // TODO: Import the enum strings directly
-        dict.Add("resourceType", "Other");
-        dict.Add("fetchPriorityHint", "auto");
-      });
+  TRACE_EVENT_INSTANT("devtools.timeline", "ResourceSendRequest",
+                      base::TimeTicks::Now(), "data",
+                      [&](perfetto::TracedValue dest) {
+                        auto dict = std::move(dest).WriteDictionary();
+                        dict.Add("requestId", request_id_);
+                        dict.Add("url", source_url_.spec());
+                        // Value derived from CDP ResourceType enum:
+                        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ResourceType
+                        // TODO: Import the enum strings directly
+                        dict.Add("resourceType", "Other");
+                        dict.Add("fetchPriorityHint", "auto");
+                      });
 
   // Abort on redirects.
   // TODO(mmenke): May want a browser-side proxy to block redirects instead.
@@ -625,9 +625,9 @@ void AuctionDownloader::OnResponseStarted(
     network_events_delegate_->OnNetworkResponseReceived(final_url,
                                                         response_head);
   }
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "ResourceReceiveResponse", TRACE_EVENT_SCOPE_THREAD,
-      "data", [&](perfetto::TracedValue dest) {
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "ResourceReceiveResponse", "data",
+      [&](perfetto::TracedValue dest) {
         perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", request_id_);
         if (response_head.headers) {
@@ -727,8 +727,8 @@ void AuctionDownloader::TraceResult(bool failure,
     base::UmaHistogramTimes("Ads.InterestGroup.Auction.DownloadThreadDelay",
                             base::TimeTicks::Now() - completion_time);
   }
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "ResourceFinish", TRACE_EVENT_SCOPE_THREAD, "data",
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "ResourceFinish", "data",
       [&](perfetto::TracedValue dest) {
         perfetto::TracedDictionary dict = std::move(dest).WriteDictionary();
         dict.Add("requestId", request_id_);

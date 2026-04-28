@@ -855,9 +855,8 @@ void VideoRendererImpl::UpdateStats_Locked(bool force_update) {
   }
 
   if (stats_.video_frames_dropped) {
-    TRACE_EVENT_INSTANT2("media", "VideoFramesDropped",
-                         TRACE_EVENT_SCOPE_THREAD, "count",
-                         stats_.video_frames_dropped, "id", player_id_);
+    TRACE_EVENT_INSTANT("media", "VideoFramesDropped", "count",
+                        stats_.video_frames_dropped, "id", player_id_);
   }
 
   const size_t memory_usage = algorithm_->GetMemoryUsage();

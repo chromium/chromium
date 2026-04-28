@@ -233,10 +233,10 @@ TEST_F(TraceEventAnalyzerTest, BooleanOperators) {
 
   BeginTracing();
   {
-    TRACE_EVENT_INSTANT1("cat1", "name1", TRACE_EVENT_SCOPE_THREAD, "num", 1);
-    TRACE_EVENT_INSTANT1("cat1", "name2", TRACE_EVENT_SCOPE_THREAD, "num", 2);
-    TRACE_EVENT_INSTANT1("cat2", "name3", TRACE_EVENT_SCOPE_THREAD, "num", 3);
-    TRACE_EVENT_INSTANT1("cat2", "name4", TRACE_EVENT_SCOPE_THREAD, "num", 4);
+    TRACE_EVENT_INSTANT("cat1", "name1", "num", 1);
+    TRACE_EVENT_INSTANT("cat1", "name2", "num", 2);
+    TRACE_EVENT_INSTANT("cat2", "name3", "num", 3);
+    TRACE_EVENT_INSTANT("cat2", "name4", "num", 4);
   }
   EndTracing();
 
@@ -322,15 +322,11 @@ TEST_F(TraceEventAnalyzerTest, ArithmeticOperators) {
   BeginTracing();
   {
     // These events are searched for:
-    TRACE_EVENT_INSTANT2("cat1", "math1", TRACE_EVENT_SCOPE_THREAD, "a", 10,
-                         "b", 5);
-    TRACE_EVENT_INSTANT2("cat1", "math2", TRACE_EVENT_SCOPE_THREAD, "a", 10,
-                         "b", 10);
+    TRACE_EVENT_INSTANT("cat1", "math1", "a", 10, "b", 5);
+    TRACE_EVENT_INSTANT("cat1", "math2", "a", 10, "b", 10);
     // Extra events that never match, for noise:
-    TRACE_EVENT_INSTANT2("noise", "math3", TRACE_EVENT_SCOPE_THREAD, "a", 1,
-                         "b", 3);
-    TRACE_EVENT_INSTANT2("noise", "math4", TRACE_EVENT_SCOPE_THREAD, "c", 10,
-                         "d", 5);
+    TRACE_EVENT_INSTANT("noise", "math3", "a", 1, "b", 3);
+    TRACE_EVENT_INSTANT("noise", "math4", "c", 10, "d", 5);
   }
   EndTracing();
 
@@ -382,10 +378,10 @@ TEST_F(TraceEventAnalyzerTest, StringPattern) {
 
   BeginTracing();
   {
-    TRACE_EVENT_INSTANT0("cat1", "name1", TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_INSTANT0("cat1", "name2", TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_INSTANT0("cat1", "no match", TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_INSTANT0("cat1", "name3x", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cat1", "name1");
+    TRACE_EVENT_INSTANT("cat1", "name2");
+    TRACE_EVENT_INSTANT("cat1", "no match");
+    TRACE_EVENT_INSTANT("cat1", "name3x");
   }
   EndTracing();
 
@@ -428,7 +424,7 @@ TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
     {
       TRACE_EVENT0("cat2", "name3");  // found by duration query
       // next event not searched for, just noise
-      TRACE_EVENT_INSTANT0("noise", "name4", TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("noise", "name4");
       base::PlatformThread::Sleep(kSleepTime);
       TRACE_EVENT0("cat2", "name5");  // not found (duration too short)
     }
@@ -462,7 +458,7 @@ TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocations) {
     TRACE_EVENT_END("cat1", perfetto::Track(0xA));  // no match / out of order
     TRACE_EVENT_BEGIN("cat1", "name1", perfetto::Track(0xB));
     TRACE_EVENT_BEGIN("cat1", "name1", perfetto::Track(0xC));
-    TRACE_EVENT_INSTANT0("cat1", "name1", TRACE_EVENT_SCOPE_THREAD);  // noise
+    TRACE_EVENT_INSTANT("cat1", "name1");                             // noise
     TRACE_EVENT0("cat1", "name1");                                    // noise
     TRACE_EVENT_END("cat1", perfetto::Track(0xB));
     TRACE_EVENT_END("cat1", perfetto::Track(0xC));
@@ -490,15 +486,15 @@ TEST_F(TraceEventAnalyzerTest, CustomAssociations) {
   BeginTracing();
   {
     // no begin match
-    TRACE_EVENT_INSTANT1("cat1", "end", TRACE_EVENT_SCOPE_THREAD, "id", 1);
+    TRACE_EVENT_INSTANT("cat1", "end", "id", 1);
     // end is cat4
-    TRACE_EVENT_INSTANT1("cat2", "begin", TRACE_EVENT_SCOPE_THREAD, "id", 2);
+    TRACE_EVENT_INSTANT("cat2", "begin", "id", 2);
     // end is cat5
-    TRACE_EVENT_INSTANT1("cat3", "begin", TRACE_EVENT_SCOPE_THREAD, "id", 3);
-    TRACE_EVENT_INSTANT1("cat4", "end", TRACE_EVENT_SCOPE_THREAD, "id", 2);
-    TRACE_EVENT_INSTANT1("cat5", "end", TRACE_EVENT_SCOPE_THREAD, "id", 3);
+    TRACE_EVENT_INSTANT("cat3", "begin", "id", 3);
+    TRACE_EVENT_INSTANT("cat4", "end", "id", 2);
+    TRACE_EVENT_INSTANT("cat5", "end", "id", 3);
     // no end match
-    TRACE_EVENT_INSTANT1("cat6", "begin", TRACE_EVENT_SCOPE_THREAD, "id", 1);
+    TRACE_EVENT_INSTANT("cat6", "begin", "id", 1);
   }
   EndTracing();
 

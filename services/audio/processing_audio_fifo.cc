@@ -179,8 +179,7 @@ void ProcessingAudioFifo::PushData(
                     "ProcessingAudioFifo space available", this, fifo_space);
 
   if (!data) {
-    TRACE_EVENT_INSTANT0("audio", "ProcessingAudioFifo::Overrun",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "ProcessingAudioFifo::Overrun");
     glitch_info_accumulator_.Add(media::AudioGlitchInfo{
         .duration = input_params_.GetBufferDuration(), .count = 1});
     return;  // Overrun.

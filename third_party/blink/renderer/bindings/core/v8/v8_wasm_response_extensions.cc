@@ -91,9 +91,8 @@ class WasmCodeCachingCallback {
 
   void OnMoreFunctionsCanBeSerialized(v8::CompiledWasmModule compiled_module) {
     // Called from V8 background thread.
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
-                         "url", response_url_.Utf8());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "v8.wasm.compiledModule", "url", response_url_.Utf8());
     v8::OwnedBuffer serialized_module;
     {
       // Use a standard milliseconds based timer (up to 10 seconds, 50 buckets),
@@ -105,9 +104,9 @@ class WasmCodeCachingCallback {
     if (serialized_module.size == 0)
       return;
 
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
-                         "producedCacheSize", serialized_module.size);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "v8.wasm.cachedModule", "producedCacheSize",
+                        serialized_module.size);
 
     v8::MemorySpan<const uint8_t> wire_bytes =
         compiled_module.GetWireBytesRef();
@@ -272,11 +271,15 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                     caching_interface.SetCachedCompiledModuleBytes(
                         {metadata.data(), metadata.size()});
                 if (!bytes_are_valid) {
-                  TRACE_EVENT_INSTANT0(
-                      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                      digest_matches ? "v8.wasm.moduleCacheInvalid"
-                                     : "v8.wasm.moduleCacheInvalidDigest",
-                      TRACE_EVENT_SCOPE_THREAD);
+                  if (digest_matches) {
+                    TRACE_EVENT_INSTANT(
+                        TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "v8.wasm.moduleCacheInvalid");
+                  } else {
+                    TRACE_EVENT_INSTANT(
+                        TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "v8.wasm.moduleCacheInvalidDigest");
+                  }
                   base::UmaHistogramEnumeration(
                       "V8.WasmCodeCaching",
                       WasmCodeCaching::kInvalidCacheEntry);
@@ -394,10 +397,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     }
     base::span<const uint8_t> metadata_with_digest = cached_module->Data();
 
-    TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
-                         "url", url_.Utf8(), "consumedCacheSize",
-                         metadata_with_digest.size());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "v8.wasm.moduleCacheHit", "url", url_.Utf8(),
+                        "consumedCacheSize", metadata_with_digest.size());
 
     streaming_->SetHasCompiledModuleBytes();
 
@@ -488,9 +490,8 @@ scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
 
 void StreamFromResponseCallback(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "v8.wasm.streamFromResponseCallback",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "v8.wasm.streamFromResponseCallback");
   std::shared_ptr<v8::WasmStreaming> streaming =
       v8::WasmStreaming::Unpack(args.GetIsolate(), args.Data());
 

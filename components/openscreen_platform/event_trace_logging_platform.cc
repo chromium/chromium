@@ -49,8 +49,8 @@ void EventTraceLoggingPlatform::LogTrace(
   // track the duration for profiling reasons as well as the error code, and
   // ignore the trace ID hierarchy (which is difficult to parse as a user
   // anyway).
-  TRACE_EVENT_INSTANT2(
-      kOpenscreenTraceLoggingCategory, event.name, TRACE_EVENT_SCOPE_THREAD,
+  TRACE_EVENT_INSTANT(
+      kOpenscreenTraceLoggingCategory, perfetto::StaticString(event.name),
       "event", event.ToString(), "duration",
       base::StrCat({base::NumberToString(total_runtime), "µs"}));
 }

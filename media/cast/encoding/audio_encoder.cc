@@ -134,10 +134,9 @@ class AudioEncoder::ImplBase
         DVLOG(1) << "Skipping RTP timestamp ahead to account for "
                  << num_frames_missed * samples_per_frame_
                  << " samples' worth of underrun.";
-        TRACE_EVENT_INSTANT2("cast.stream", "Audio Skip",
-                             TRACE_EVENT_SCOPE_THREAD, "frames missed",
-                             num_frames_missed, "samples dropped",
-                             samples_dropped_from_buffer_);
+        TRACE_EVENT_INSTANT("cast.stream", "Audio Skip", "frames missed",
+                            num_frames_missed, "samples dropped",
+                            samples_dropped_from_buffer_);
       }
     }
     frame_capture_time_ = recorded_time - buffer_fill_duration;

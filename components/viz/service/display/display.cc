@@ -185,9 +185,9 @@ void IssueDisplayRenderingStatsEvent() {
   record_data->SetInteger("frame_count", 1);
   // Please don't rename this trace event as it's used by tools. The benchmarks
   // search for events and their arguments by name.
-  TRACE_EVENT_INSTANT1(
-      "benchmark", "BenchmarkInstrumentation::DisplayRenderingStats",
-      TRACE_EVENT_SCOPE_THREAD, "data", std::move(record_data));
+  TRACE_EVENT_INSTANT("benchmark",
+                      "BenchmarkInstrumentation::DisplayRenderingStats", "data",
+                      std::move(record_data));
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -780,12 +780,12 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
 
   if (!current_surface_id_.is_valid()) {
-    TRACE_EVENT_INSTANT0("viz", "No root surface.", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "No root surface.");
     return false;
   }
 
   if (!output_surface_) {
-    TRACE_EVENT_INSTANT0("viz", "No output surface", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "No output surface");
     return false;
   }
 
@@ -865,11 +865,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   DebugDrawFrame(frame, resource_provider_);
 
   if (frame.delegated_ink_metadata) {
-    TRACE_EVENT_INSTANT1(
+    TRACE_EVENT_INSTANT(
         "delegated_ink_trails",
         "Delegated Ink Metadata was aggregated for DrawAndSwap.",
-        TRACE_EVENT_SCOPE_THREAD, "ink metadata",
-        frame.delegated_ink_metadata->ToString());
+        "ink metadata", frame.delegated_ink_metadata->ToString());
     renderer_->SetDelegatedInkMetadata(std::move(frame.delegated_ink_metadata));
   }
 
@@ -890,8 +889,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                           aggregate_timer.Elapsed().InMicroseconds());
 
   if (frame.render_pass_list.empty()) {
-    TRACE_EVENT_INSTANT0("viz", "Empty aggregated frame.",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Empty aggregated frame.");
     return false;
   }
 
@@ -902,7 +900,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   damage_tracker_->RunDrawCallbacks();
 
   if (output_surface_->capabilities().skips_draw) {
-    TRACE_EVENT_INSTANT0("viz", "Skip draw", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Skip draw");
     // Aggregation needs to happen before generating hit test for the unified
     // desktop display. After this point skip drawing anything for real.
     client_->DisplayWillDrawAndSwap(false, &frame.render_pass_list);
@@ -948,7 +946,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
   bool size_matches = surface_size == current_surface_size;
   if (!size_matches)
-    TRACE_EVENT_INSTANT0("viz", "Size mismatch.", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Size mismatch.");
 
   bool should_draw = have_copy_requests || (have_damage && size_matches);
   client_->DisplayWillDrawAndSwap(should_draw, &frame.render_pass_list);
@@ -982,7 +980,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                          std::move(frame.surface_damage_rect_list_));
     TRACE_EVENT_END("viz,benchmark", perfetto::Track(display_trace_id));
   } else {
-    TRACE_EVENT_INSTANT0("viz", "Draw skipped.", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Draw skipped.");
   }
 
   bool should_swap = !disable_swap_until_resize_ && should_draw && size_matches;
@@ -1121,7 +1119,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
     renderer_->SwapBuffers(std::move(swap_frame_data));
   } else {
-    TRACE_EVENT_INSTANT0("viz", "Swap skipped.", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Swap skipped.");
 
     if (have_damage && !size_matches)
       aggregator_->SetFullDamageForSurface(current_surface_id_);
@@ -1357,10 +1355,9 @@ void Display::DidReceivePresentationFeedback(
       "viz,benchmark",
       /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(presented_trace_id),
       copy_feedback.timestamp);
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
+  TRACE_EVENT_INSTANT(
       "benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"),
-      "Display::FrameDisplayed", TRACE_EVENT_SCOPE_THREAD,
-      copy_feedback.timestamp);
+      "Display::FrameDisplayed", copy_feedback.timestamp);
 
   if (renderer_->CompositeTimeTracingEnabled()) {
     if (copy_feedback.ready_timestamp.is_null()) {

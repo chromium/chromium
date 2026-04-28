@@ -484,7 +484,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
   Init(true /* actively downloading */, TYPE_ACTIVE_DOWNLOAD);
   allow_metered_ |= delegate_->IsActiveNetworkMetered();
 
-  TRACE_EVENT_INSTANT0("download", "DownloadStarted", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("download", "DownloadStarted");
 }
 
 // Constructing for the "Save Page As..." feature:
@@ -567,9 +567,9 @@ void DownloadItemImpl::ValidateDangerousDownload() {
 
   danger_type_ = DOWNLOAD_DANGER_TYPE_USER_VALIDATED;
 
-  TRACE_EVENT_INSTANT1("download", "DownloadItemSaftyStateUpdated",
-                       TRACE_EVENT_SCOPE_THREAD, "danger_type",
-                       GetDownloadDangerNames(danger_type_).c_str());
+  TRACE_EVENT_INSTANT("download", "DownloadItemSaftyStateUpdated",
+                      "danger_type",
+                      GetDownloadDangerNames(danger_type_).c_str());
 
   UpdateObservers();  // TODO(asanka): This is potentially unsafe. The download
                       // may not be in a consistent state or around at all after
@@ -1513,9 +1513,8 @@ void DownloadItemImpl::DestinationUpdate(
 
   UpdateProgress(bytes_so_far, bytes_per_sec);
   received_slices_ = received_slices;
-  TRACE_EVENT_INSTANT1("download", "DownloadItemUpdated",
-                       TRACE_EVENT_SCOPE_THREAD, "bytes_so_far",
-                       GetReceivedBytes());
+  TRACE_EVENT_INSTANT("download", "DownloadItemUpdated", "bytes_so_far",
+                      GetReceivedBytes());
 
   if (IsPaused() && destination_info_.received_bytes == bytes_so_far)
     return;
@@ -1605,9 +1604,8 @@ void DownloadItemImpl::Init(bool active,
                       "download_item", std::move(active_data));
     ukm_download_id_ = ukm::NoURLSourceId();
   } else {
-    TRACE_EVENT_INSTANT1("download", "DownloadItemActive",
-                         TRACE_EVENT_SCOPE_THREAD, "download_item",
-                         std::move(active_data));
+    TRACE_EVENT_INSTANT("download", "DownloadItemActive", "download_item",
+                        std::move(active_data));
   }
 
   DVLOG(20) << __func__ << "() " << DebugString(true);
@@ -2427,39 +2425,35 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
       DCHECK(GetFullPath() == GetTargetFilePath())
           << "Current output path must match target path.";
 
-      TRACE_EVENT_INSTANT2("download", "DownloadItemCompleting",
-                           TRACE_EVENT_SCOPE_THREAD, "bytes_so_far",
-                           GetReceivedBytes(), "final_hash",
-                           destination_info_.hash);
+      TRACE_EVENT_INSTANT("download", "DownloadItemCompleting", "bytes_so_far",
+                          GetReceivedBytes(), "final_hash",
+                          destination_info_.hash);
       break;
 
     case COMPLETE_INTERNAL:
-      TRACE_EVENT_INSTANT1("download", "DownloadItemFinished",
-                           TRACE_EVENT_SCOPE_THREAD, "auto_opened",
-                           auto_opened_ ? "yes" : "no");
+      TRACE_EVENT_INSTANT("download", "DownloadItemFinished", "auto_opened",
+                          auto_opened_ ? "yes" : "no");
       break;
 
     case INTERRUPTED_INTERNAL:
       DCHECK(!download_file_)
           << "Download file must be released prior to interruption.";
       DCHECK_NE(last_reason_, DOWNLOAD_INTERRUPT_REASON_NONE);
-      TRACE_EVENT_INSTANT2("download", "DownloadItemInterrupted",
-                           TRACE_EVENT_SCOPE_THREAD, "interrupt_reason",
-                           DownloadInterruptReasonToString(last_reason_),
-                           "bytes_so_far", GetReceivedBytes());
+      TRACE_EVENT_INSTANT("download", "DownloadItemInterrupted",
+                          "interrupt_reason",
+                          DownloadInterruptReasonToString(last_reason_),
+                          "bytes_so_far", GetReceivedBytes());
       break;
 
     case RESUMING_INTERNAL:
-      TRACE_EVENT_INSTANT2("download", "DownloadItemResumed",
-                           TRACE_EVENT_SCOPE_THREAD, "interrupt_reason",
-                           DownloadInterruptReasonToString(last_reason_),
-                           "bytes_so_far", GetReceivedBytes());
+      TRACE_EVENT_INSTANT("download", "DownloadItemResumed", "interrupt_reason",
+                          DownloadInterruptReasonToString(last_reason_),
+                          "bytes_so_far", GetReceivedBytes());
       break;
 
     case CANCELLED_INTERNAL:
-      TRACE_EVENT_INSTANT1("download", "DownloadItemCancelled",
-                           TRACE_EVENT_SCOPE_THREAD, "bytes_so_far",
-                           GetReceivedBytes());
+      TRACE_EVENT_INSTANT("download", "DownloadItemCancelled", "bytes_so_far",
+                          GetReceivedBytes());
       break;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
@@ -2496,9 +2490,9 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
 void DownloadItemImpl::SetDangerType(DownloadDangerType danger_type) {
   if (danger_type != danger_type_) {
-    TRACE_EVENT_INSTANT1("download", "DownloadItemSaftyStateUpdated",
-                         TRACE_EVENT_SCOPE_THREAD, "danger_type",
-                         GetDownloadDangerNames(danger_type).c_str());
+    TRACE_EVENT_INSTANT("download", "DownloadItemSaftyStateUpdated",
+                        "danger_type",
+                        GetDownloadDangerNames(danger_type).c_str());
   }
   danger_type_ = danger_type;
 }
@@ -2509,10 +2503,9 @@ void DownloadItemImpl::SetFullPath(const base::FilePath& new_path) {
             << DebugString(true);
   DCHECK(!new_path.empty());
 
-  TRACE_EVENT_INSTANT2("download", "DownloadItemRenamed",
-                       TRACE_EVENT_SCOPE_THREAD, "old_filename",
-                       destination_info_.current_path.AsUTF8Unsafe(),
-                       "new_filename", new_path.AsUTF8Unsafe());
+  TRACE_EVENT_INSTANT("download", "DownloadItemRenamed", "old_filename",
+                      destination_info_.current_path.AsUTF8Unsafe(),
+                      "new_filename", new_path.AsUTF8Unsafe());
 
   destination_info_.current_path = new_path;
 }

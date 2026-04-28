@@ -184,9 +184,9 @@ std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
 void CompositorThreadEventQueue::DidFinishDispatch() {
   backlog_count_ = queue_.size();
   if (backlog_count_) {
-    TRACE_EVENT_INSTANT1(
-        "input", "CompositorThreadEventQueue::DidFinishDispatch",
-        TRACE_EVENT_SCOPE_THREAD, "backlog_count", backlog_count_);
+    TRACE_EVENT_INSTANT("input",
+                        "CompositorThreadEventQueue::DidFinishDispatch",
+                        "backlog_count", backlog_count_);
   }
 }
 

@@ -674,8 +674,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("audio"),
                       "IAudioClient_queued_frames", this, num_queued_frames);
     if (!num_queued_frames) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "buffer empty",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"), "buffer empty");
     }
     num_available_frames = endpoint_buffer_size_frames_ - num_queued_frames;
   } else {
@@ -784,8 +783,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         if (position < last_position_) {
           // http://crbug.com/1473580: according to MS documentation |position|
           // is monotonic, but in practice it's not always so.
-          TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"),
-                               "position decrease", TRACE_EVENT_SCOPE_THREAD);
+          TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"),
+                              "position decrease");
         }
         // If |position_time_increase| is negative, it means we are likely to
         // have a larger |gap_duration| and to register a glitch. In reality,
@@ -834,8 +833,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         glitch_reporter_.UpdateStats(is_glitch ? gap_duration
                                                : base::TimeDelta());
         if (is_glitch) {
-          TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch",
-                               TRACE_EVENT_SCOPE_THREAD);
+          TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("audio"), "glitch");
           glitch_info_accumulator.Add(
               AudioGlitchInfo::SingleBoundedSystemGlitch(
                   gap_duration, AudioGlitchInfo::Direction::kRender));

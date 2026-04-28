@@ -2048,9 +2048,8 @@ ResourceFetcher::DetermineRevalidationPolicy(
       << "url = " << fetch_params.Url() << ", policy = " << GetNameFor(policy)
       << ", reason = \"" << reason << "\"";
 
-  TRACE_EVENT_INSTANT2("blink", "ResourceFetcher::DetermineRevalidationPolicy",
-                       TRACE_EVENT_SCOPE_THREAD, "policy", GetNameFor(policy),
-                       "reason", reason);
+  TRACE_EVENT_INSTANT("blink", "ResourceFetcher::DetermineRevalidationPolicy",
+                      "policy", GetNameFor(policy), "reason", reason);
   return policy;
 }
 

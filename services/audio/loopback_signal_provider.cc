@@ -65,10 +65,10 @@ base::TimeTicks LoopbackSignalProvider::PullLoopbackData(
         map_entry.second->SuggestLatestRenderTime(destination->frames());
     if (suggestion.value_or(delayed_capture_time) < delayed_capture_time) {
       const base::TimeDelta increase = delayed_capture_time - (*suggestion);
-      TRACE_EVENT_INSTANT2("audio", "PullLoopbackData Capture Delay Change",
-                           TRACE_EVENT_SCOPE_THREAD, "old capture delay (µs)",
-                           capture_delay_.InMicroseconds(), "change (µs)",
-                           increase.InMicroseconds());
+      TRACE_EVENT_INSTANT("audio", "PullLoopbackData Capture Delay Change",
+                          "old capture delay (µs)",
+                          capture_delay_.InMicroseconds(), "change (µs)",
+                          increase.InMicroseconds());
       delayed_capture_time = *suggestion;
       capture_delay_ += increase;
     }
@@ -113,9 +113,8 @@ void LoopbackSignalProvider::OnSourceAdded(LoopbackSource* source) {
     // to produce high-resolution timestamps. Since the buffer management logic
     // (to mitigate overruns/underruns) depends on them to function correctly,
     // simply return early (i.e., never start snooping on the `member`).
-    TRACE_EVENT_INSTANT0("audio",
-                         "LoopbackSignalProvider::AddLoopbackSource Rejected",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio",
+                        "LoopbackSignalProvider::AddLoopbackSource Rejected");
     return;
   }
 

@@ -125,9 +125,9 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
   } else {
     const base::TimeDelta delta = reference_time - write_reference_time_;
     if (delta < -input_skip_threshold_) {
-      TRACE_EVENT_INSTANT1("audio", "SnooperNode Discards Input",
-                           TRACE_EVENT_SCOPE_THREAD, "wait_time_remaining (μs)",
-                           (-delta).InMicroseconds());
+      TRACE_EVENT_INSTANT("audio", "SnooperNode Discards Input",
+                          "wait_time_remaining (μs)",
+                          (-delta).InMicroseconds());
       // It's illegal to back-track the `write_position_` and/or attempt to
       // "rewrite history" in the delay buffer. Thus, simply drop input until it
       // catches up. Events such as this are generally only caused by device-
@@ -135,9 +135,8 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
       // shift. http://crbug.com/934770
       return;
     } else if (delta > input_skip_threshold_) {
-      TRACE_EVENT_INSTANT1("audio", "SnooperNode Input Gap",
-                           TRACE_EVENT_SCOPE_THREAD, "gap (μs)",
-                           delta.InMicroseconds());
+      TRACE_EVENT_INSTANT("audio", "SnooperNode Input Gap", "gap (μs)",
+                          delta.InMicroseconds());
       // Skip the `write_position_` forward, which will create a zero-fill gap
       // in the delay buffer.
       write_position_ +=
@@ -262,9 +261,8 @@ void SnooperNode::Render(base::TimeTicks reference_time,
         // No correction necessary.
       }
     } else {  // Some type of rewind, fast-forward, or a rendering gap.
-      TRACE_EVENT_INSTANT1("audio", "SnooperNode Render Skip",
-                           TRACE_EVENT_SCOPE_THREAD, "delta (μs)",
-                           delta.InMicroseconds());
+      TRACE_EVENT_INSTANT("audio", "SnooperNode Render Skip", "delta (μs)",
+                          delta.InMicroseconds());
 
       // Rather than flush and re-prime the resampler, just seek to its next
       // read-from position.

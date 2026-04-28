@@ -1137,8 +1137,7 @@ bool AwContents::OnDraw(JNIEnv* env,
 
   gfx::Size view_size = browser_view_renderer_.size();
   if (view_size.IsEmpty()) {
-    TRACE_EVENT_INSTANT0("android_webview", "EarlyOut_EmptySize",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("android_webview", "EarlyOut_EmptySize");
     return false;
   }
 
@@ -1151,8 +1150,7 @@ bool AwContents::OnDraw(JNIEnv* env,
       SoftwareCanvasHolder::Create(canvas, scroll, view_size,
                                    force_auxiliary_bitmap_rendering);
   if (!canvas_holder || !canvas_holder->GetCanvas()) {
-    TRACE_EVENT_INSTANT0("android_webview", "EarlyOut_NoSoftwareCanvas",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("android_webview", "EarlyOut_NoSoftwareCanvas");
     return false;
   }
   return browser_view_renderer_.OnDrawSoftware(canvas_holder->GetCanvas());

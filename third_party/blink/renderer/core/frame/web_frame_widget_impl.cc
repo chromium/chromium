@@ -2669,11 +2669,10 @@ void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
     if (tap_delay_enabled) {
       UseCounter::Count(doc, WebFeature::kTapDelayEnabled);
     }
-    TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "BeginCommitCompositorFrame", TRACE_EVENT_SCOPE_THREAD,
-                         "frame",
-                         local_root_->GetFrame()->GetFrameIdForTracing(),
-                         "is_mobile_optimized", !tap_delay_enabled);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "BeginCommitCompositorFrame", "frame",
+                        local_root_->GetFrame()->GetFrameIdForTracing(),
+                        "is_mobile_optimized", !tap_delay_enabled);
   }
   if (ForMainFrame()) {
     View()->DidCommitCompositorFrameForLocalMainFrame();

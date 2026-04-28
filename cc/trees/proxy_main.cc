@@ -441,8 +441,7 @@ void ProxyMain::BeginMainFrame(
   } else {
     completion_event->Signal();
     layer_tree_host_->DidBeginMainFrame();
-    TRACE_EVENT_INSTANT0("cc,raf_investigation", "EarlyOut_NoUpdates",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc,raf_investigation", "EarlyOut_NoUpdates");
     TRACE_EVENT("cc,benchmark", "MainFrameAborted",
                 [&](perfetto::EventContext ctx) {
                   auto* pipeline = EmitMainFramePipelineStep(
@@ -635,8 +634,7 @@ void ProxyMain::SetNeedsAnimate(bool urgent) {
   DCHECK(IsMainThread());
   needs_begin_main_frame_ = true;
   if (SendCommitRequestToImplThreadIfNeeded(ANIMATE_PIPELINE_STAGE, urgent)) {
-    TRACE_EVENT_INSTANT1("cc", "ProxyMain::SetNeedsAnimate",
-                         TRACE_EVENT_SCOPE_THREAD, "urgent", urgent);
+    TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsAnimate", "urgent", urgent);
   }
 }
 
@@ -651,8 +649,7 @@ void ProxyMain::SetNeedsUpdateLayers() {
   }
   if (SendCommitRequestToImplThreadIfNeeded(UPDATE_LAYERS_PIPELINE_STAGE,
                                             /* urgent = */ false)) {
-    TRACE_EVENT_INSTANT0("cc", "ProxyMain::SetNeedsUpdateLayers",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsUpdateLayers");
   }
 }
 
@@ -668,8 +665,7 @@ void ProxyMain::SetNeedsCommit() {
   }
   if (SendCommitRequestToImplThreadIfNeeded(COMMIT_PIPELINE_STAGE,
                                             /* urgent = */ false)) {
-    TRACE_EVENT_INSTANT0("cc", "ProxyMain::SetNeedsCommit",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "ProxyMain::SetNeedsCommit");
   }
 }
 

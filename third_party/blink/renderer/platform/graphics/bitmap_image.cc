@@ -377,9 +377,8 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
                         ToSkiaRectConstraint(draw_options.clamping_mode));
 
   if (is_lazy_generated) {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
-                         "LazyPixelRef", stable_id);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "Draw LazyPixelRef", "LazyPixelRef", stable_id);
   }
 
   StartAnimation();

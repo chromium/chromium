@@ -77,8 +77,8 @@ void ScrollOffsetAnimationImpl::ScrollAnimationCreateInternal(
     ElementId element_id,
     std::unique_ptr<gfx::AnimationCurve> curve,
     base::TimeDelta animation_start_offset) {
-  TRACE_EVENT_INSTANT1("cc", "ScrollAnimationCreate", TRACE_EVENT_SCOPE_THREAD,
-                       "Duration", curve->Duration().InMillisecondsF());
+  TRACE_EVENT_INSTANT("cc", "ScrollAnimationCreate", "Duration",
+                      curve->Duration().InMillisecondsF());
 
   std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
       std::move(curve), AnimationIdProvider::NextKeyframeModelId(),
@@ -102,8 +102,7 @@ ScrollOffsetAnimationImpl::ScrollAnimationUpdateTarget(
     base::TimeDelta delayed_by) {
   DCHECK(scroll_offset_animation_);
   if (!scroll_offset_animation_->element_animations()) {
-    TRACE_EVENT_INSTANT0("cc", "No element animation exists",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "No element animation exists");
     return std::nullopt;
   }
 
@@ -111,8 +110,7 @@ ScrollOffsetAnimationImpl::ScrollAnimationUpdateTarget(
       scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
   if (!keyframe_model) {
     scroll_offset_animation_->DetachElement();
-    TRACE_EVENT_INSTANT0("cc", "No keyframe model exists",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "No keyframe model exists");
     return std::nullopt;
   }
 
@@ -141,9 +139,8 @@ ScrollOffsetAnimationImpl::ScrollAnimationUpdateTarget(
   trimmed -= delayed_by;
 
   curve->UpdateTarget(trimmed, new_target);
-  TRACE_EVENT_INSTANT1("cc", "ScrollAnimationUpdateTarget",
-                       TRACE_EVENT_SCOPE_THREAD, "UpdatedDuration",
-                       curve->Duration().InMillisecondsF());
+  TRACE_EVENT_INSTANT("cc", "ScrollAnimationUpdateTarget", "UpdatedDuration",
+                      curve->Duration().InMillisecondsF());
 
   return curve->target_value();
 }
@@ -153,22 +150,19 @@ void ScrollOffsetAnimationImpl::ScrollAnimationApplyAdjustment(
     const gfx::Vector2dF& adjustment) {
   DCHECK(scroll_offset_animation_);
   if (element_id != scroll_offset_animation_->element_id()) {
-    TRACE_EVENT_INSTANT0("cc", "no scroll adjustment different element_ids",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "no scroll adjustment different element_ids");
     return;
   }
 
   if (!scroll_offset_animation_->element_animations()) {
-    TRACE_EVENT_INSTANT0("cc", "no scroll adjustment no element animation",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "no scroll adjustment no element animation");
     return;
   }
 
   KeyframeModel* keyframe_model =
       scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
   if (!keyframe_model) {
-    TRACE_EVENT_INSTANT0("cc", "no scroll adjustment no keyframe model",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "no scroll adjustment no keyframe model");
     return;
   }
 
@@ -194,16 +188,15 @@ void ScrollOffsetAnimationImpl::ScrollAnimationApplyAdjustment(
 
   // Start a new one with the adjusment.
   scroll_offset_animation_->AddKeyframeModel(std::move(new_keyframe_model));
-  TRACE_EVENT_INSTANT0("cc", "scroll animation adjusted",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("cc", "scroll animation adjusted");
 }
 
 void ScrollOffsetAnimationImpl::ScrollAnimationAbort(bool needs_completion) {
   DCHECK(scroll_offset_animation_);
   scroll_offset_animation_->AbortKeyframeModelsWithProperty(
       TargetProperty::SCROLL_OFFSET, needs_completion);
-  TRACE_EVENT_INSTANT1("cc", "ScrollAnimationAbort", TRACE_EVENT_SCOPE_THREAD,
-                       "needs_completion", needs_completion);
+  TRACE_EVENT_INSTANT("cc", "ScrollAnimationAbort", "needs_completion",
+                      needs_completion);
   animation_is_autoscroll_ = false;
 }
 
@@ -220,8 +213,7 @@ void ScrollOffsetAnimationImpl::NotifyAnimationFinished(
   DCHECK(animation_host_->mutator_host_client());
   animation_host_->mutator_host_client()->ScrollOffsetAnimationFinished(
       scroll_offset_animation_->element_id());
-  TRACE_EVENT_INSTANT0("cc", "NotifyAnimationFinished",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("cc", "NotifyAnimationFinished");
 }
 
 bool ScrollOffsetAnimationImpl::IsAnimating() const {
@@ -259,13 +251,11 @@ void ScrollOffsetAnimationImpl::ReattachScrollOffsetAnimationIfNeeded(
     ElementId element_id) {
   if (scroll_offset_animation_->element_id() != element_id) {
     if (scroll_offset_animation_->element_id()) {
-      TRACE_EVENT_INSTANT0("cc", "scroll offset animation detached element",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "scroll offset animation detached element");
       scroll_offset_animation_->DetachElement();
     }
     if (element_id) {
-      TRACE_EVENT_INSTANT0("cc", "scroll offset animation attached element",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "scroll offset animation attached element");
       scroll_offset_animation_->AttachElement(element_id);
     }
   }

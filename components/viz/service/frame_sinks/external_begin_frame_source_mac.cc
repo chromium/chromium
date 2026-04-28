@@ -265,10 +265,9 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   }
 
   if (vsyncs_to_skip_ > 0) {
-    TRACE_EVENT_INSTANT0(
+    TRACE_EVENT_INSTANT(
         "viz",
-        "ExternalBeginFrameSourceMac::OnDisplayLinkCallback - skip_vsync",
-        TRACE_EVENT_SCOPE_THREAD);
+        "ExternalBeginFrameSourceMac::OnDisplayLinkCallback - skip_vsync");
     vsyncs_to_skip_--;
     return;
   }

@@ -70,15 +70,13 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
       base::ClampFloor((100.0 * matches_count_) / selector_count_);
   base::UmaHistogramPercentage(base::StrCat({uma_prefix, "MatchRate"}),
                                match_rate_percent);
-  TRACE_EVENT_INSTANT1("blink", "TextFragmentAnchorMetrics::ReportMetrics",
-                       TRACE_EVENT_SCOPE_THREAD, "match_rate",
-                       match_rate_percent);
+  TRACE_EVENT_INSTANT("blink", "TextFragmentAnchorMetrics::ReportMetrics",
+                      "match_rate", match_rate_percent);
 
   base::UmaHistogramBoolean(base::StrCat({uma_prefix, "AmbiguousMatch"}),
                             ambiguous_match_);
-  TRACE_EVENT_INSTANT1("blink", "TextFragmentAnchorMetrics::ReportMetrics",
-                       TRACE_EVENT_SCOPE_THREAD, "ambiguous_match",
-                       ambiguous_match_);
+  TRACE_EVENT_INSTANT("blink", "TextFragmentAnchorMetrics::ReportMetrics",
+                      "ambiguous_match", ambiguous_match_);
 
   if (!first_scroll_into_view_time_.is_null()) {
     DCHECK(first_scroll_into_view_time_ >= search_start_time_);
@@ -87,9 +85,9 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
                                              search_start_time_);
     base::UmaHistogramTimes(base::StrCat({uma_prefix, "TimeToScrollIntoView"}),
                             time_to_scroll_into_view);
-    TRACE_EVENT_INSTANT1("blink", "TextFragmentAnchorMetrics::ReportMetrics",
-                         TRACE_EVENT_SCOPE_THREAD, "time_to_scroll_into_view",
-                         time_to_scroll_into_view.InMilliseconds());
+    TRACE_EVENT_INSTANT("blink", "TextFragmentAnchorMetrics::ReportMetrics",
+                        "time_to_scroll_into_view",
+                        time_to_scroll_into_view.InMilliseconds());
   }
 
   base::UmaHistogramEnumeration("TextFragmentAnchor.LinkOpenSource",

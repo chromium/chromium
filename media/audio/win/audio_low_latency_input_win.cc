@@ -212,10 +212,10 @@ std::string GetOpenLogString(WASAPIAudioInputStream::StreamOpenResult result,
 
 void LogFakeAudioCaptureTimestamps(bool use_fake_audio_capture_timestamps,
                                    base::TimeDelta abs_delta_time) {
-  TRACE_EVENT_INSTANT2(
-      "audio", "AudioCaptureWinTimestamps", TRACE_EVENT_SCOPE_THREAD,
-      "use_fake_audio_capture_timestamps", use_fake_audio_capture_timestamps,
-      "abs_timestamp_diff_ms", abs_delta_time.InMilliseconds());
+  TRACE_EVENT_INSTANT("audio", "AudioCaptureWinTimestamps",
+                      "use_fake_audio_capture_timestamps",
+                      use_fake_audio_capture_timestamps,
+                      "abs_timestamp_diff_ms", abs_delta_time.InMilliseconds());
   base::UmaHistogramBoolean("Media.Audio.Capture.Win.FakeTimestamps",
                             use_fake_audio_capture_timestamps);
   base::UmaHistogramLongTimes("Media.Audio.Capture.Win.AbsTimestampDiffMs",
@@ -1742,8 +1742,7 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
       VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK, __uuidof(IAudioClient),
       &propvariant, completion_handler.Get(), &async_op);
   if (FAILED(hr)) {
-    TRACE_EVENT_INSTANT0("audio", "ActivateAudioInterfaceAsync failed",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "ActivateAudioInterfaceAsync failed");
     SendLogMessage(base::StrCat(
         {__func__, " => (ERROR: ActivateAudioInterfaceAsync::Run=[",
          ErrorToString(hr), "])"}));
@@ -1759,8 +1758,7 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
     base::UmaHistogramTimes("Media.Audio.Capture.Win.TimeToGetAudioClient",
                             timer.Elapsed());
   } else {
-    TRACE_EVENT_INSTANT0("audio", "GetAudioClient timed out",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("audio", "GetAudioClient timed out");
   }
 
   if (FAILED(hr)) {

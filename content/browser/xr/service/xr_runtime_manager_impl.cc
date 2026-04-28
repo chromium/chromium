@@ -611,7 +611,7 @@ void XRRuntimeManagerImpl::AddRuntime(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(runtimes_.find(id) == runtimes_.end());
 
-  TRACE_EVENT_INSTANT1("xr", "AddRuntime", TRACE_EVENT_SCOPE_THREAD, "id", id);
+  TRACE_EVENT_INSTANT("xr", "AddRuntime", "id", id);
 
   webxr::mojom::RuntimeInfoPtr runtime_added_record =
       webxr::mojom::RuntimeInfo::New();
@@ -637,8 +637,7 @@ void XRRuntimeManagerImpl::AddRuntime(
 
 void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {
   DVLOG(1) << __func__ << " id: " << id;
-  TRACE_EVENT_INSTANT1("xr", "RemoveRuntime", TRACE_EVENT_SCOPE_THREAD, "id",
-                       id);
+  TRACE_EVENT_INSTANT("xr", "RemoveRuntime", "id", id);
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = runtimes_.find(id);

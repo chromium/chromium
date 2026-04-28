@@ -1051,8 +1051,7 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     return Provide(number_of_frames, &audio_buffer_list_, time_stamp);
   }
 
-  TRACE_EVENT_INSTANT0("audio", "AudioUnitRender error",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("audio", "AudioUnitRender error");
 
   if (result == kAudioUnitErr_TooManyFramesToProcess ||
       result == kAudioUnitErr_CannotDoInCurrentContext) {
@@ -1131,8 +1130,8 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
                          input_params_.frames_per_buffer()) +
         1;
     DLOG(WARNING) << "Increasing FIFO capacity by " << blocks << " blocks";
-    TRACE_EVENT_INSTANT1("audio", "Increasing FIFO capacity",
-                         TRACE_EVENT_SCOPE_THREAD, "increased by", blocks);
+    TRACE_EVENT_INSTANT("audio", "Increasing FIFO capacity", "increased by",
+                        blocks);
     fifo_.IncreaseCapacity(blocks);
   }
 

@@ -17,7 +17,7 @@ namespace content {
 
 // Main routine for running as the Browser process.
 int BrowserMain(MainFunctionParams parameters) {
-  TRACE_EVENT_INSTANT0("startup", "BrowserMain", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("startup", "BrowserMain");
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_BROWSER);

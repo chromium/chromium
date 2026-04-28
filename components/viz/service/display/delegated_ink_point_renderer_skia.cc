@@ -106,9 +106,9 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
 
   std::vector<SkPoint> sk_points = GetPointsToDraw();
 
-  TRACE_EVENT_INSTANT1("delegated_ink_trails",
-                       "Filtered and predicted points for delegated ink trail",
-                       TRACE_EVENT_SCOPE_THREAD, "points", sk_points.size());
+  TRACE_EVENT_INSTANT("delegated_ink_trails",
+                      "Filtered and predicted points for delegated ink trail",
+                      "points", sk_points.size());
 
   // If there is only one point total after filtering and predicting, then it
   // will match the metadata point and therefore doesn't need to be drawn in
@@ -151,10 +151,9 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   damage_rect.Inset(-kRadius);
   damage_rect.Intersect(metadata_->presentation_area());
 
-  TRACE_EVENT_INSTANT1("delegated_ink_trails",
-                       "DelegatedInkPointRendererSkia::FinalizePathForDraw",
-                       TRACE_EVENT_SCOPE_THREAD, "damage_rect",
-                       damage_rect.ToString());
+  TRACE_EVENT_INSTANT("delegated_ink_trails",
+                      "DelegatedInkPointRendererSkia::FinalizePathForDraw",
+                      "damage_rect", damage_rect.ToString());
 
   SetDamageRect(damage_rect);
 }

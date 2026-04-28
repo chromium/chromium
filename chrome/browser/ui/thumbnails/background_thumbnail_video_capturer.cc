@@ -130,9 +130,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
     return;
   }
 
-  TRACE_EVENT_INSTANT1("ui", "Tab.Preview.VideoCaptureFrameReceived",
-                       TRACE_EVENT_SCOPE_THREAD, "frame_number",
-                       num_received_frames_);
+  TRACE_EVENT_INSTANT("ui", "Tab.Preview.VideoCaptureFrameReceived",
+                      "frame_number", num_received_frames_);
   ++num_received_frames_;
 
   uint64_t frame_id = base::trace_event::GetNextGlobalTraceId();

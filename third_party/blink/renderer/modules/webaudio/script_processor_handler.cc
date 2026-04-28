@@ -124,10 +124,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     base::AutoTryLock try_locker(buffer_lock_);
     if (!try_locker.is_acquired()) {
       // Failed to acquire the output buffer, so output silence.
-      TRACE_EVENT_INSTANT0(
+      TRACE_EVENT_INSTANT(
           TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-          "ScriptProcessorHandler::Process - tryLock failed (output)",
-          TRACE_EVENT_SCOPE_THREAD);
+          "ScriptProcessorHandler::Process - tryLock failed (output)");
       TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                        "ScriptProcessorHandler::Process");
       Output(0).Bus()->Zero();
@@ -196,10 +195,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
   // Update the buffer index for wrap-around.
   buffer_read_write_index_ =
       (buffer_read_write_index_ + frames_to_process) % BufferSize();
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-                       "ScriptProcessorHandler::Process",
-                       TRACE_EVENT_SCOPE_THREAD, "buffer_read_write_index_",
-                       buffer_read_write_index_);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                      "ScriptProcessorHandler::Process",
+                      "buffer_read_write_index_", buffer_read_write_index_);
 
   // Fire an event and swap buffers when `buffer_read_write_index_` wraps back
   // around to 0. It means the current input and output buffers are full.

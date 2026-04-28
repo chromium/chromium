@@ -303,9 +303,8 @@ bool InputSyncWriter::PushDataToFifo(
               (number_of_filled_segments_ + overflow_data_.size()) *
                   dropped_buffer_glitch_.duration);
   if (overflow_data_.size() == kMaxOverflowBusesSize) {
-    TRACE_EVENT_INSTANT0(
-        "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
-        TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(
+        "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data");
     if (fifo_full_count_ <= 50 && fifo_full_count_ % 10 == 0) {
       SendLogMessage("%s => (WARNING: no room in FIFO)", __func__);
       if (fifo_full_count_ == 50) {
@@ -377,9 +376,8 @@ bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
       had_socket_error_ = true;
       SendLogMessage("%s => (WARNING: no room in socket buffer, dropped data)",
                      __func__);
-      TRACE_EVENT_INSTANT0(
-          "audio", "InputSyncWriter: No room in socket buffer - dropped data",
-          TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT(
+          "audio", "InputSyncWriter: No room in socket buffer - dropped data");
     }
     return false;
   }

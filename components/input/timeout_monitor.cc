@@ -30,8 +30,7 @@ void TimeoutMonitor::Start(base::TimeDelta delay) {
   if (!IsRunning()) {
     TRACE_EVENT_BEGIN("renderer_host", "TimeoutMonitor",
                       perfetto::Track::FromPointer(this));
-    TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Start",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("renderer_host", "TimeoutMonitor::Start");
   }
 
   StartImpl(delay);
@@ -43,8 +42,7 @@ void TimeoutMonitor::Restart(base::TimeDelta delay) {
     return;
   }
 
-  TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Restart",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("renderer_host", "TimeoutMonitor::Restart");
   // Setting to null will cause StartTimeoutMonitor to restart the timer.
   time_when_considered_timed_out_ = TimeTicks();
   StartImpl(delay);
@@ -56,8 +54,7 @@ void TimeoutMonitor::Stop() {
 
   // We do not bother to stop the timeout_timer_ here in case it will be
   // started again shortly, which happens to be the common use case.
-  TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Stop",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("renderer_host", "TimeoutMonitor::Stop");
   TRACE_EVENT_END("renderer_host",
                   /* TimeoutMonitor */ perfetto::Track::FromPointer(this),
                   "result", "stopped");
@@ -99,8 +96,7 @@ void TimeoutMonitor::CheckTimedOut() {
   // If we have not waited long enough, then wait some more.
   TimeTicks now = TimeTicks::Now();
   if (now < time_when_considered_timed_out_) {
-    TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Reschedule",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("renderer_host", "TimeoutMonitor::Reschedule");
     StartImpl(time_when_considered_timed_out_ - now);
     return;
   }

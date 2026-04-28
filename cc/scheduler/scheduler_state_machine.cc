@@ -429,9 +429,8 @@ bool SchedulerStateMachine::ShouldActivateSyncTreeBeforeDraw() const {
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // There is nothing to activate.
   if (!has_pending_tree_) {
-    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "Not activating sync tree due to no pending tree",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "Not activating sync tree due to no pending tree");
     return false;
   }
 
@@ -439,9 +438,8 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // Even if we need to force activation of the pending tree, we should abort
   // drawing the active tree first.
   if (ShouldActivateSyncTreeBeforeDraw()) {
-    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "Not activating before drawing active first",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "Not activating before drawing active first");
     return false;
   }
 
@@ -452,9 +450,8 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // Note that paint worklets continue to paint when the page is not visible, so
   // any abort will eventually happen when they complete.
   if (processing_paint_worklets_for_pending_tree_) {
-    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "Not activating due to processing paint worklets",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "Not activating due to processing paint worklets");
     return false;
   }
 
@@ -464,17 +461,15 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // Delay pending tree activation until animation worklets have completed
   // their asynchronous updates to pick up initial values.
   if (processing_animation_worklets_for_pending_tree_) {
-    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "Not activating due to processing animation worklets",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "Not activating due to processing animation worklets");
     return false;
   }
 
   // At this point, only activate if we are ready to activate.
   if (!pending_tree_is_ready_for_activation_) {
-    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "Not activating because pending tree not ready",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "Not activating because pending tree not ready");
     return false;
   }
   return true;

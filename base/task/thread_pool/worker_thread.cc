@@ -409,7 +409,7 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
 
 void WorkerThread::RunWorker() {
   DCHECK_EQ(self_, this);
-  TRACE_EVENT_INSTANT0("base", "WorkerThread born", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("base", "WorkerThread born");
   TRACE_EVENT_BEGIN0("base", "WorkerThread active");
 
   if (worker_thread_observer_) {
@@ -509,7 +509,7 @@ void WorkerThread::RunWorker() {
   self_ = nullptr;
 
   TRACE_EVENT_END0("base", "WorkerThread active");
-  TRACE_EVENT_INSTANT0("base", "WorkerThread dead", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("base", "WorkerThread dead");
 }
 
 }  // namespace base::internal

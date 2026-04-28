@@ -157,9 +157,9 @@ void InspectorTraceEvents::WillSendRequest(
     RenderBlockingBehavior render_blocking_behavior,
     base::TimeTicks timestamp) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
-      "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
-      timestamp, "data", [&](perfetto::TracedValue ctx) {
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "ResourceSendRequest", timestamp, "data",
+      [&](perfetto::TracedValue ctx) {
         inspector_send_request_event::Data(
             std::move(ctx), execution_context, loader, request.InspectorId(),
             frame, request, resource_type, render_blocking_behavior,
@@ -231,12 +231,12 @@ void InspectorTraceEvents::MarkResourceAsCached(DocumentLoader* loader,
 void InspectorTraceEvents::Will(const probe::ExecuteScript&) {}
 
 void InspectorTraceEvents::Did(const probe::ExecuteScript& probe) {
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "UpdateCounters", TRACE_EVENT_SCOPE_THREAD, "data",
-                       [&](perfetto::TracedValue context) {
-                         inspector_update_counters_event::Data(
-                             std::move(context), probe.context->GetIsolate());
-                       });
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "UpdateCounters", "data",
+                      [&](perfetto::TracedValue context) {
+                        inspector_update_counters_event::Data(
+                            std::move(context), probe.context->GetIsolate());
+                      });
 }
 
 void InspectorTraceEvents::Will(const probe::ParseHTML& probe) {
@@ -256,9 +256,9 @@ void InspectorTraceEvents::Did(const probe::ParseHTML& probe) {
                          std::move(context),
                          probe.parser->LineNumber().ZeroBasedInt());
                    });
-  TRACE_EVENT_INSTANT1(
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
-      TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters", "data",
+      [&](perfetto::TracedValue context) {
         inspector_update_counters_event::Data(
             std::move(context), probe.document->GetAgent().isolate());
       });
@@ -269,12 +269,12 @@ void InspectorTraceEvents::Will(const probe::CallFunction& probe) {}
 void InspectorTraceEvents::Did(const probe::CallFunction& probe) {
   if (probe.depth)
     return;
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "UpdateCounters", TRACE_EVENT_SCOPE_THREAD, "data",
-                       [&](perfetto::TracedValue context) {
-                         inspector_update_counters_event::Data(
-                             std::move(context), probe.context->GetIsolate());
-                       });
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "UpdateCounters", "data",
+                      [&](perfetto::TracedValue context) {
+                        inspector_update_counters_event::Data(
+                            std::move(context), probe.context->GetIsolate());
+                      });
 }
 
 void InspectorTraceEvents::PaintTiming(Document* document,
@@ -291,9 +291,8 @@ void InspectorTraceEvents::PaintTiming(Document* document,
 }
 
 void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
-  TRACE_EVENT_INSTANT1("devtools.timeline", "FrameStartedLoading",
-                       TRACE_EVENT_SCOPE_THREAD, "frame",
-                       GetFrameIdForTracing(frame));
+  TRACE_EVENT_INSTANT("devtools.timeline", "FrameStartedLoading", "frame",
+                      GetFrameIdForTracing(frame));
 }
 
 namespace {

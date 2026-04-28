@@ -84,8 +84,8 @@ void PaintTimingVisualizer::DumpImageDebuggingRect(const LayoutObject& object,
 }
 
 void PaintTimingVisualizer::DumpTrace(std::unique_ptr<TracedValue> value) {
-  TRACE_EVENT_INSTANT1("loading", "PaintTimingVisualizer::LayoutObjectPainted",
-                       TRACE_EVENT_SCOPE_THREAD, "data", std::move(value));
+  TRACE_EVENT_INSTANT("loading", "PaintTimingVisualizer::LayoutObjectPainted",
+                      "data", std::move(value));
 }
 
 void PaintTimingVisualizer::RecordMainFrameViewport(
@@ -107,8 +107,8 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   CreateQuad(value.get(), "viewport_rect", gfx::QuadF(float_visual_rect));
   value->SetDouble("dpr", frame_view.GetFrame().DevicePixelRatio());
-  TRACE_EVENT_INSTANT1("loading", "PaintTimingVisualizer::Viewport",
-                       TRACE_EVENT_SCOPE_THREAD, "data", std::move(value));
+  TRACE_EVENT_INSTANT("loading", "PaintTimingVisualizer::Viewport", "data",
+                      std::move(value));
   need_recording_viewport = false;
 }
 

@@ -1300,10 +1300,10 @@ void SwapChainPresenter::RecordPresentationStatistics() {
   UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.VideoPresentationMode",
                             presentation_mode);
 
-  TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
-                       "SwapChain::Present", TRACE_EVENT_SCOPE_THREAD,
-                       "PixelFormat", DxgiFormatToString(swap_chain_format_),
-                       "ZeroCopy", !!decode_swap_chain_);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
+                      "SwapChain::Present", "PixelFormat",
+                      DxgiFormatToString(swap_chain_format_), "ZeroCopy",
+                      !!decode_swap_chain_);
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> swap_chain_media =
       GetSwapChainMedia();
   if (swap_chain_media) {
@@ -1324,9 +1324,8 @@ void SwapChainPresenter::RecordPresentationStatistics() {
       mode = stats.CompositionMode;
     }
     // Record CompositionMode as -1 if GetFrameStatisticsMedia() fails.
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
-                         "GetFrameStatisticsMedia", TRACE_EVENT_SCOPE_THREAD,
-                         "CompositionMode", mode);
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
+                        "GetFrameStatisticsMedia", "CompositionMode", mode);
   }
 }
 

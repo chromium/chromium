@@ -532,8 +532,7 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
   const CompositorFrameMetadata& metadata = surface->GetActiveFrameMetadata();
   if (!SurfaceModified(surface->surface_id(), metadata.begin_frame_ack,
                        GetHandleInteraction(metadata))) {
-    TRACE_EVENT_INSTANT0("viz", "Damage not visible.",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "Damage not visible.");
     surface->SendAckToClient();
   } else if (HasBlockedEmbedder(surface->surface_id().frame_sink_id())) {
     // If the Surface is a part of a blocked embedding group, Ack even if it is

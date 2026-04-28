@@ -481,9 +481,9 @@ void VideoFrameSubmitter::OnBeginFrame(
         base::TimeTicks::Now() + average_delta_between_receive_and_present_;
   }
 
-  TRACE_EVENT_INSTANT1("media", "FrameExpectedDisplayTime",
-                       TRACE_EVENT_SCOPE_THREAD, "frame_expected_display_time",
-                       frame_expected_display_time);
+  TRACE_EVENT_INSTANT("media", "FrameExpectedDisplayTime",
+                      "frame_expected_display_time",
+                      frame_expected_display_time);
 
   frame_trackers_.NotifyBeginImplFrame(args);
   frame_sorter_.AddNewFrame(args);

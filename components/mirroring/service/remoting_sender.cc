@@ -296,11 +296,10 @@ void RemotingSender::TrySendFrame() {
   base::UmaHistogramEnumeration(
       is_audio_ ? kHistogramAudioFrameDropped : kHistogramVideoFrameDropped,
       reason);
-  TRACE_EVENT_INSTANT2(
+  TRACE_EVENT_INSTANT(
       "cast.stream",
       is_audio_ ? "Remoting Audio Frame Drop" : "Remoting Video Frame Drop",
-      TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp", rtp_timestamp.lower_32_bits(),
-      "reason", reason);
+      "rtp_timestamp", rtp_timestamp.lower_32_bits(), "reason", reason);
 }
 
 void RemotingSender::OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer) {

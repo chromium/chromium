@@ -304,8 +304,7 @@ void ChildFrameInputHelper::GestureEventAckHelper(
     }
   }
 
-  TRACE_EVENT_INSTANT0("input", "Did_Ack_To_Frame_Connector",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "Did_Ack_To_Frame_Connector");
   DidAckGestureEvent(event, ack_result);
 }
 
@@ -372,8 +371,7 @@ bool ChildFrameInputHelper::BubbleScrollEvent(
       ->input_router()
       ->ForceSetTouchActionAuto();
 
-  TRACE_EVENT_INSTANT0("input", "Did_Bubble_To_InputEventRouter",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "Did_Bubble_To_InputEventRouter");
   return event_router->BubbleScrollEvent(parent_view, view_,
                                          resent_gesture_event);
 }

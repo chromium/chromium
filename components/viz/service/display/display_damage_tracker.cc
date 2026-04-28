@@ -156,15 +156,15 @@ bool DisplayDamageTracker::HasPendingSurfaces(
     if (SurfaceHasUnackedFrame(surface_id))
       continue;
 
-    TRACE_EVENT_INSTANT2("viz", "DisplayDamageTracker::HasPendingSurfaces",
-                         TRACE_EVENT_SCOPE_THREAD, "has_pending_surfaces", true,
-                         "pending_surface_id", surface_id.ToString());
+    TRACE_EVENT_INSTANT("viz", "DisplayDamageTracker::HasPendingSurfaces",
+                        "has_pending_surfaces", true, "pending_surface_id",
+                        surface_id.ToString());
 
     return true;
   }
 
-  TRACE_EVENT_INSTANT1("viz", "DisplayDamageTracker::HasPendingSurfaces",
-                       TRACE_EVENT_SCOPE_THREAD, "has_pending_surfaces", false);
+  TRACE_EVENT_INSTANT("viz", "DisplayDamageTracker::HasPendingSurfaces",
+                      "has_pending_surfaces", false);
 
   return false;
 }

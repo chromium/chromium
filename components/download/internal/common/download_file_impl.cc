@@ -191,8 +191,7 @@ DownloadFileImpl::DownloadFileImpl(
       download_id_(download_id),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       observer_(observer) {
-  TRACE_EVENT_INSTANT0("download", "DownloadFileCreated",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("download", "DownloadFileCreated");
   TRACE_EVENT_BEGIN("download", "DownloadFileActive",
                     perfetto::Track(download_id));
 
@@ -708,9 +707,8 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
   else
     NotifyObserver(source_stream, reason, state, should_terminate);
 
-  TRACE_EVENT_INSTANT2("download", "DownloadStreamDrained",
-                       TRACE_EVENT_SCOPE_THREAD, "stream_size",
-                       total_incoming_data_size, "num_buffers", num_buffers);
+  TRACE_EVENT_INSTANT("download", "DownloadStreamDrained", "stream_size",
+                      total_incoming_data_size, "num_buffers", num_buffers);
 }
 
 void DownloadFileImpl::OnStreamCompleted(SourceStream* source_stream) {

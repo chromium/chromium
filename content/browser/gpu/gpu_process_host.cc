@@ -916,7 +916,7 @@ GpuProcessHost::~GpuProcessHost() {
 bool GpuProcessHost::Init() {
   init_start_time_ = base::TimeTicks::Now();
 
-  TRACE_EVENT_INSTANT0("gpu", "LaunchGpuProcess", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("gpu", "LaunchGpuProcess");
 
   process_->GetHost()->CreateChannel();
 

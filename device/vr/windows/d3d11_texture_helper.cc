@@ -59,8 +59,8 @@ enum ErrorLocation {
 };
 
 void TraceDXError(ErrorLocation location, HRESULT hr) {
-  TRACE_EVENT_INSTANT2("xr", "TraceDXError", TRACE_EVENT_SCOPE_THREAD,
-                       "ErrorLocation", location, "hr", hr);
+  TRACE_EVENT_INSTANT("xr", "TraceDXError", "ErrorLocation", location, "hr",
+                      hr);
 }
 
 }  // namespace
@@ -81,9 +81,8 @@ void D3D11TextureHelper::SetSourceAndOverlayVisible(bool source_visible,
                                                     bool overlay_visible) {
   source_visible_ = source_visible;
   overlay_visible_ = overlay_visible;
-  TRACE_EVENT_INSTANT2("xr", "TextureHelper SetSourceAndOverlayVisible",
-                       TRACE_EVENT_SCOPE_THREAD, "source", source_visible,
-                       "overlay", overlay_visible);
+  TRACE_EVENT_INSTANT("xr", "TextureHelper SetSourceAndOverlayVisible",
+                      "source", source_visible, "overlay", overlay_visible);
 
   if (!source_visible_) {
     render_state_.source_.keyed_mutex_ = nullptr;

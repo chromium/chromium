@@ -71,10 +71,9 @@ void VideoRtpStream::InsertVideoFrame(
   }
 
   // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT2("cast_perf_test", "ConsumeVideoFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "timestamp",
-                       (reference_time - base::TimeTicks()).InMicroseconds(),
-                       "time_delta", video_frame->timestamp().InMicroseconds());
+  TRACE_EVENT_INSTANT("cast_perf_test", "ConsumeVideoFrame", "timestamp",
+                      (reference_time - base::TimeTicks()).InMicroseconds(),
+                      "time_delta", video_frame->timestamp().InMicroseconds());
 
   video_sender_->InsertRawVideoFrame(std::move(video_frame), reference_time);
 }

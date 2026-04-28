@@ -1238,7 +1238,7 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // to perform browser commands such as switching tabs. We only want to handle
   // key equivalents if we're first responder in the keyWindow.
   if (![[self window] isKeyWindow] || [[self window] firstResponder] != self) {
-    TRACE_EVENT_INSTANT0("browser", "NotKeyWindow", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("browser", "NotKeyWindow");
     return NO;
   }
 

@@ -404,8 +404,8 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   TRACE_EVENT0("toplevel", "BrowserCrApplication::sendEvent");
 
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/40113768.
-  TRACE_EVENT_INSTANT1("toplevel", "KeyWindow", TRACE_EVENT_SCOPE_THREAD,
-                       "KeyWin", [[NSApp keyWindow] windowNumber]);
+  TRACE_EVENT_INSTANT("toplevel", "KeyWindow", "KeyWin",
+                      [[NSApp keyWindow] windowNumber]);
 
   static crash_reporter::CrashKeyString<256> nseventKey("nsevent");
   crash_reporter::ScopedCrashKeyString scopedKey(&nseventKey,

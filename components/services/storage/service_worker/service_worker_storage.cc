@@ -252,10 +252,10 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForClientUrl,
           weak_factory_.GetWeakPtr(), client_url, key, std::move(callback)));
-      TRACE_EVENT_INSTANT1(
+      TRACE_EVENT_INSTANT(
           "ServiceWorker",
           "ServiceWorkerStorage::FindRegistrationForClientUrl:LazyInitialize",
-          TRACE_EVENT_SCOPE_THREAD, "URL", client_url.spec());
+          "URL", client_url.spec());
       return;
     case STORAGE_STATE_INITIALIZED:
       break;

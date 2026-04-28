@@ -190,16 +190,14 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
 
   if (target_element_id && (!scroll_state->main_thread_hit_tested_reasons() ||
                             scroll_state->is_scrollbar_interaction())) {
-    TRACE_EVENT_INSTANT0("cc", "Latched scroll node provided",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Latched scroll node provided");
     // If the caller passed in an element_id we can skip all the hit-testing
     // bits and provide a node straight-away.
     scrolling_node = scroll_tree.FindNodeFromElementId(target_element_id);
   } else {
     ScrollNode* starting_node = nullptr;
     if (target_element_id) {
-      TRACE_EVENT_INSTANT0("cc", "Unlatched scroll node provided",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "Unlatched scroll node provided");
       // We had an element id but we should still perform the walk up the
       // scroll tree from the targeted node to latch to a scroller that can
       // scroll in the given direction. This mode is only used when scroll
@@ -218,8 +216,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         return scroll_status;
       }
     } else {  // !target_element_id
-      TRACE_EVENT_INSTANT0("cc", "Hit Testing for ScrollNode",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "Hit Testing for ScrollNode");
       gfx::Point viewport_point(scroll_state->position_x(),
                                 scroll_state->position_y());
       gfx::PointF device_viewport_point =
@@ -238,8 +235,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         // enough information to target this scroll. The client should
         // perform a hit test in Blink and call this method again, with the
         // ElementId of the hit-tested scroll node.
-        TRACE_EVENT_INSTANT0("cc", "Request Main Thread Hit Test",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("cc", "Request Main Thread Hit Test");
         scroll_status.thread = InputHandler::ScrollThread::kScrollOnImplThread;
         DCHECK(scroll_hit_test.main_thread_hit_test_reasons);
         scroll_status.main_thread_hit_test_reasons =
@@ -272,9 +268,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       // OOPIFs or fenced frames never have a viewport scroll node so if we
       // can't scroll we need to be bubble up to the parent frame. This happens
       // by returning kScrollIgnored.
-      TRACE_EVENT_INSTANT0("cc",
-                           "Ignored - No ScrollNode (OOPIF or FencedFrame)",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc",
+                          "Ignored - No ScrollNode (OOPIF or FencedFrame)");
     } else {
       // If we didn't hit a layer above we'd usually fallback to the
       // viewport scroll node. However, there may not be one if a scroll
@@ -282,8 +277,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       // drops input until the first commit is received so this probably
       // can't happen in a typical browser session but there may still be
       // configurations where input is allowed prior to a commit.
-      TRACE_EVENT_INSTANT0("cc", "Ignored - No ScrollNode",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "Ignored - No ScrollNode");
     }
     scroll_status.thread = InputHandler::ScrollThread::kScrollIgnored;
     return scroll_status;
@@ -857,9 +851,8 @@ void InputHandler::PinchGestureBegin(const gfx::Point& anchor,
   pinch_gesture_active_ = true;
   pinch_gesture_end_should_clear_scrolling_node_ = !CurrentlyScrollingNode();
 
-  TRACE_EVENT_INSTANT1("cc", "SetCurrentlyScrollingNode PinchGestureBegin",
-                       TRACE_EVENT_SCOPE_THREAD, "isNull",
-                       !OuterViewportScrollNode());
+  TRACE_EVENT_INSTANT("cc", "SetCurrentlyScrollingNode PinchGestureBegin",
+                      "isNull", !OuterViewportScrollNode());
 
   // Some unit tests don't setup viewport scroll nodes but do initiate a pinch
   // zoom gesture. Ideally, those tests should either create the viewport
@@ -1769,7 +1762,7 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     if (!IsInitialScrollHitTestReliable(
             layer_impl, first_scrollable_or_opaque_to_hit_test_layer,
             node_to_scroll)) {
-      TRACE_EVENT_INSTANT0("cc", "Failed Hit Test", TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "Failed Hit Test");
       result.main_thread_hit_test_reasons =
           MainThreadScrollingReason::kFailedHitTest;
       return result;
@@ -1998,8 +1991,7 @@ gfx::Vector2dF InputHandler::ScrollNodeWithViewportSpaceDelta(
       scroll_tree.current_scroll_offset(scroll_node.element_id) -
       previous_offset;
 
-  TRACE_EVENT_INSTANT1("cc", "ConsumedDelta", TRACE_EVENT_SCOPE_THREAD, "y",
-                       scrolled.y());
+  TRACE_EVENT_INSTANT("cc", "ConsumedDelta", "y", scrolled.y());
 
   // Get the end point in the layer's content space so we can apply its
   // ScreenSpaceTransform.
@@ -2041,8 +2033,7 @@ gfx::Vector2dF InputHandler::ScrollNodeWithLocalDelta(
       previous_offset;
   gfx::Vector2dF consumed_scroll(scrolled.x(), scrolled.y());
   consumed_scroll.Scale(page_scale_factor);
-  TRACE_EVENT_INSTANT1("cc", "ConsumedDelta", TRACE_EVENT_SCOPE_THREAD, "y",
-                       consumed_scroll.y());
+  TRACE_EVENT_INSTANT("cc", "ConsumedDelta", "y", consumed_scroll.y());
 
   return consumed_scroll;
 }
@@ -2118,8 +2109,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
 
     if (ScrollNode* animating_scroll_node =
             GetAnimatingNodeForCurrentScrollingNode()) {
-      TRACE_EVENT_INSTANT0("cc", "UpdateExistingAnimation",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "UpdateExistingAnimation");
 
       // See comment in GetAnimatingNodeForCurrentScrollingNode for explanation
       // of this DCHECK.
@@ -2139,12 +2129,10 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
         // swap promise and we won't get any swap results.
         applied_delta = delta;
       } else {
-        TRACE_EVENT_INSTANT0("cc", "Didn't Update Animation",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("cc", "Didn't Update Animation");
       }
     } else {
-      TRACE_EVENT_INSTANT0("cc", "CreateNewAnimation",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "CreateNewAnimation");
       if (scroll_node.scrolls_outer_viewport) {
         auto result = GetViewport().ScrollAnimated(delta, delayed_by);
         applied_delta = result.consumed_delta;

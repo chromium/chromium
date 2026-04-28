@@ -551,8 +551,7 @@ void OnTransactionCompletedOnAnyThread(void* context,
 void OnTransactiOnCommittedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
-  TRACE_EVENT_INSTANT0("gpu,benchmark", "SurfaceControlTransaction committed",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("gpu,benchmark", "SurfaceControlTransaction committed");
 
   std::move(ack_ctx->latch_callback).Run();
   delete ack_ctx;

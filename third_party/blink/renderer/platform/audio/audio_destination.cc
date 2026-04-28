@@ -138,10 +138,10 @@ int AudioDestination::Render(base::TimeDelta delay,
   // or the requested render size is greater than FIFO size return here.
   // (crbug.com/692423)
   if (!fifo_ || fifo_->length() < number_of_frames) {
-    TRACE_EVENT_INSTANT1(
+    TRACE_EVENT_INSTANT(
         "webaudio",
         "AudioDestination::Render - FIFO not ready or the size is too small",
-        TRACE_EVENT_SCOPE_THREAD, "fifo length", fifo_ ? fifo_->length() : 0);
+        "fifo length", fifo_ ? fifo_->length() : 0);
     return 0;
   }
 

@@ -40,8 +40,8 @@ std::unique_ptr<VrDeviceT> EnableRuntime(
     device::mojom::IsolatedXRRuntimeProviderClient* client,
     base::OnceCallback<std::unique_ptr<VrDeviceT>()> create_device) {
   auto device = std::move(create_device).Run();
-  TRACE_EVENT_INSTANT1("xr", "HardwareAdded", TRACE_EVENT_SCOPE_THREAD, "id",
-                       static_cast<int>(device->GetId()));
+  TRACE_EVENT_INSTANT("xr", "HardwareAdded", "id",
+                      static_cast<int>(device->GetId()));
   // "Device" here refers to a runtime + hardware pair, not necessarily
   // a physical device.
   client->OnDeviceAdded(device->BindXRRuntime(), device->GetDeviceData(),
@@ -52,8 +52,8 @@ std::unique_ptr<VrDeviceT> EnableRuntime(
 template <typename VrDeviceT>
 void DisableRuntime(device::mojom::IsolatedXRRuntimeProviderClient* client,
                     std::unique_ptr<VrDeviceT> device) {
-  TRACE_EVENT_INSTANT1("xr", "HardwareRemoved", TRACE_EVENT_SCOPE_THREAD, "id",
-                       static_cast<int>(device->GetId()));
+  TRACE_EVENT_INSTANT("xr", "HardwareRemoved", "id",
+                      static_cast<int>(device->GetId()));
   // "Device" here refers to a runtime + hardware pair, not necessarily physical
   // device.
   client->OnDeviceRemoved(device->GetId());

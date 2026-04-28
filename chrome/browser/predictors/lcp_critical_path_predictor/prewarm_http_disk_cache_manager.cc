@@ -191,12 +191,11 @@ void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
   const auto& it = prewarm_history_.Peek(prewarm_job);
   if (it != prewarm_history_.end() && now - it->second < reprewarm_period_) {
     // Already processed recently.
-    TRACE_EVENT_INSTANT1("loading",
-                         "PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob"
-                         ".AlreadyPrewarmedRecently",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "duration_from_previous_prewarming_in_seconds",
-                         (now - it->second).InSeconds());
+    TRACE_EVENT_INSTANT("loading",
+                        "PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob"
+                        ".AlreadyPrewarmedRecently",
+                        "duration_from_previous_prewarming_in_seconds",
+                        (now - it->second).InSeconds());
     return;
   }
   queued_jobs_.push(prewarm_job);

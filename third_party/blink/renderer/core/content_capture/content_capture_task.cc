@@ -272,8 +272,7 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
     delay_task_.Stop();
 
   delay_task_.StartOneShot(delay, FROM_HERE);
-  TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
-                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
+  TRACE_EVENT_INSTANT("content_capture", "ScheduleTask", "reason", reason);
 }
 
 void ContentCaptureTask::Schedule(ScheduleReason reason) {

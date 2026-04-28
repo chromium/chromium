@@ -1135,17 +1135,15 @@ bool LayerTreeHostImpl::CanDraw() const {
   // NotifyIfCanDrawChanged test.
 
   if (!layer_tree_frame_sink_) {
-    TRACE_EVENT_INSTANT0("cc",
-                         "LayerTreeHostImpl::CanDraw no LayerTreeFrameSink",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc",
+                        "LayerTreeHostImpl::CanDraw no LayerTreeFrameSink");
     return false;
   }
 
   // TODO(boliu): Make draws without layers work and move this below
   // |resourceless_software_draw_| check. Tracked in crbug.com/264967.
   if (active_tree_->LayerListIsEmpty()) {
-    TRACE_EVENT_INSTANT0("cc", "LayerTreeHostImpl::CanDraw no root layer",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "LayerTreeHostImpl::CanDraw no root layer");
     return false;
   }
 
@@ -1156,22 +1154,19 @@ bool LayerTreeHostImpl::CanDraw() const {
   // Do not draw while evicted. Await the activation of a tree containing a
   // newer viz::Surface
   if (evicted_local_surface_id_.is_valid()) {
-    TRACE_EVENT_INSTANT0(
+    TRACE_EVENT_INSTANT(
         "cc",
-        "LayerTreeHostImpl::CanDraw viz::Surface evicted and not recreated",
-        TRACE_EVENT_SCOPE_THREAD);
+        "LayerTreeHostImpl::CanDraw viz::Surface evicted and not recreated");
     return false;
   }
 
   if (active_tree_->GetDeviceViewport().IsEmpty()) {
-    TRACE_EVENT_INSTANT0("cc", "LayerTreeHostImpl::CanDraw empty viewport",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "LayerTreeHostImpl::CanDraw empty viewport");
     return false;
   }
   if (EvictedUIResourcesExist()) {
-    TRACE_EVENT_INSTANT0(
-        "cc", "LayerTreeHostImpl::CanDraw UI resources evicted not recreated",
-        TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(
+        "cc", "LayerTreeHostImpl::CanDraw UI resources evicted not recreated");
     return false;
   }
   return true;
@@ -3076,7 +3071,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   if (frame->has_no_damage) {
     DCHECK(!resourceless_software_draw_);
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "EarlyOut_NoDamage");
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
 
     // Send updates to Viz even for no damage case when TreesInViz is enabled.
@@ -3348,10 +3343,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         debug_state_);
   }
 
-  TRACE_EVENT_INSTANT2("cc", "Scroll Delta This Frame",
-                       TRACE_EVENT_SCOPE_THREAD, "x",
-                       scroll_accumulated_this_frame_.x(), "y",
-                       scroll_accumulated_this_frame_.y());
+  TRACE_EVENT_INSTANT("cc", "Scroll Delta This Frame", "x",
+                      scroll_accumulated_this_frame_.x(), "y",
+                      scroll_accumulated_this_frame_.y());
   scroll_accumulated_this_frame_ = gfx::Vector2dF();
 
   bool is_new_trace;
@@ -5071,8 +5065,7 @@ bool LayerTreeHostImpl::ScrollAnimationCreate(const ScrollNode& scroll_node,
       std::abs(delta.x()) > kEpsilon || std::abs(delta.y()) > kEpsilon;
   if (!scroll_animated) {
     scroll_tree.ScrollBy(scroll_node, delta, active_tree());
-    TRACE_EVENT_INSTANT0("cc", "no scroll animation due to small delta",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "no scroll animation due to small delta");
     return false;
   }
 

@@ -62,9 +62,8 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         drm_data->SetInteger("frame_count", 1);
         drm_data->SetInteger("vblank.tv_sec", vblank.tv_sec);
         drm_data->SetInteger("vblank.tv_usec", vblank.tv_usec);
-        TRACE_EVENT_INSTANT1("benchmark,drm", "DrmEventFlipComplete",
-                             TRACE_EVENT_SCOPE_THREAD, "data",
-                             std::move(drm_data));
+        TRACE_EVENT_INSTANT("benchmark,drm", "DrmEventFlipComplete", "data",
+                            std::move(drm_data));
         // Warning: It is generally unsafe to manufacture TimeTicks values; but
         // here it is required for interfacing with libdrm. Assumption: libdrm
         // is providing the timestamp from the CLOCK_MONOTONIC POSIX clock.

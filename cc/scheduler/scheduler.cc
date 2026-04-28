@@ -341,8 +341,7 @@ void Scheduler::StartOrStopBeginFrames() {
 
 void Scheduler::CancelPendingBeginFrameTask() {
   if (pending_begin_frame_args_.IsValid()) {
-    TRACE_EVENT_INSTANT0("cc", "Scheduler::BeginFrameDropped",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Scheduler::BeginFrameDropped");
     SendDidNotProduceFrame(pending_begin_frame_args_,
                            FrameSkippedReason::kNoDamage);
     // Make pending begin frame invalid so that we don't accidentally use it.
@@ -374,8 +373,8 @@ void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
     return;
   }
   {
-    TRACE_EVENT_INSTANT1("cc", "Scheduler::SetBeginFrameSourcePaused",
-                         TRACE_EVENT_SCOPE_THREAD, "paused", paused);
+    TRACE_EVENT_INSTANT("cc", "Scheduler::SetBeginFrameSourcePaused", "paused",
+                        paused);
     state_machine_->SetBeginFrameSourcePaused(paused);
     client_->DidChangeBeginFrameSourcePaused(paused);
   }
@@ -405,8 +404,7 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
 
   // Drop the BeginFrame if we don't need one.
   if (!state_machine_->BeginFrameNeeded()) {
-    TRACE_EVENT_INSTANT0("cc", "Scheduler::BeginFrameDropped",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Scheduler::BeginFrameDropped");
     // Since we don't use the BeginFrame, we may later receive the same
     // BeginFrame again. Thus, we can't confirm it at this point, even though we
     // don't have any updates right now.
@@ -437,8 +435,7 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
     // frame calls, but we only want to process the last one. Saving the args,
     // and posting a task achieves that.
     if (pending_begin_frame_args_.IsValid()) {
-      TRACE_EVENT_INSTANT0("cc", "Scheduler::BeginFrameDropped",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("cc", "Scheduler::BeginFrameDropped");
       SendDidNotProduceFrame(pending_begin_frame_args_,
                              FrameSkippedReason::kRecoverLatency);
     }
@@ -525,8 +522,7 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   // ignore BeginFrame deadlines.
   if (!settings_.wait_for_all_pipeline_stages_before_draw &&
       args.type == viz::BeginFrameArgs::MISSED && args.deadline < now) {
-    TRACE_EVENT_INSTANT0("cc", "Scheduler::MissedBeginFrameDropped",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Scheduler::MissedBeginFrameDropped");
     skipped_last_frame_missed_exceeded_deadline_ = true;
     SendDidNotProduceFrame(args, FrameSkippedReason::kRecoverLatency);
     return;

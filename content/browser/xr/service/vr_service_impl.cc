@@ -775,8 +775,7 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
     return;
   }
 
-  TRACE_EVENT_INSTANT1("xr", "GetRuntimeForOptions", TRACE_EVENT_SCOPE_THREAD,
-                       "id", request.runtime_id);
+  TRACE_EVENT_INSTANT("xr", "GetRuntimeForOptions", "id", request.runtime_id);
 
   auto runtime_options = GetRuntimeOptions(request.options.get());
   // Make the resolved enabled features available to the runtime.

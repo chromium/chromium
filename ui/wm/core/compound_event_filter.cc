@@ -189,10 +189,9 @@ void CompoundEventFilter::SetMouseEventsEnableStateOnEvent(aura::Window* target,
   aura::client::CursorClient* client =
       aura::client::GetCursorClient(target->GetRootWindow());
   if (!client) {
-    TRACE_EVENT_INSTANT0(
+    TRACE_EVENT_INSTANT(
         "ui,input",
-        "CompoundEventFilter::SetMouseEventsEnableStateOnEvent - No Client",
-        TRACE_EVENT_SCOPE_THREAD);
+        "CompoundEventFilter::SetMouseEventsEnableStateOnEvent - No Client");
     return;
   }
 

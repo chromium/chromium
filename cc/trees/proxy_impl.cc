@@ -393,8 +393,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     commit_timestamps->start = start_time;
 
   if (!host_impl_) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoLayerTree",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "EarlyOut_NoLayerTree");
     completion_event->Signal();
     return;
   }
@@ -596,8 +595,7 @@ void ProxyImpl::DidActivateSyncTree() {
   DCHECK(IsImplThread());
 
   if (activation_completion_event_) {
-    TRACE_EVENT_INSTANT0("cc", "ReleaseCommitbyActivation",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "ReleaseCommitbyActivation");
     activation_completion_event_ = nullptr;
   }
 }
@@ -820,7 +818,7 @@ void ProxyImpl::ScheduledActionCommit() {
     // For some layer types in impl-side painting, the commit is held until the
     // sync tree is activated.  It's also possible that the sync tree has
     // already activated if there was no work to be done.
-    TRACE_EVENT_INSTANT0("cc", "HoldCommit", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "HoldCommit");
     activation_completion_event_ =
         std::move(data_for_commit_->commit_completion_event);
   }

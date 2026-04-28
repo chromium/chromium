@@ -1571,8 +1571,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       DCHECK(session_ != XR_NULL_HANDLE);
       // TODO(https://crbug.com/1335240): Properly handle Instance Loss Pending.
       LOG(ERROR) << "Received Instance Loss Event";
-      TRACE_EVENT_INSTANT0("xr", "InstanceLossPendingEvent",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("xr", "InstanceLossPendingEvent");
       Uninitialize();
       return XR_ERROR_INSTANCE_LOST;
     } else if (event_data.type ==
@@ -1628,14 +1627,12 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       }
     } else {
       DVLOG(1) << __func__ << " Unhandled event type: " << event_data.type;
-      TRACE_EVENT_INSTANT1("xr", "UnandledXrEvent", TRACE_EVENT_SCOPE_THREAD,
-                           "type", event_data.type);
+      TRACE_EVENT_INSTANT("xr", "UnandledXrEvent", "type", event_data.type);
     }
 
     if (XR_FAILED(xr_result)) {
-      TRACE_EVENT_INSTANT2("xr", "EventProcessingFailed",
-                           TRACE_EVENT_SCOPE_THREAD, "type", event_data.type,
-                           "xr_result", xr_result);
+      TRACE_EVENT_INSTANT("xr", "EventProcessingFailed", "type",
+                          event_data.type, "xr_result", xr_result);
       Uninitialize();
       return xr_result;
     }
@@ -1646,8 +1643,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
 
   // This catches the error where we failed to poll events only.
   if (XR_FAILED(xr_result)) {
-    TRACE_EVENT_INSTANT1("xr", "EventPollingFailed", TRACE_EVENT_SCOPE_THREAD,
-                         "xr_result", xr_result);
+    TRACE_EVENT_INSTANT("xr", "EventPollingFailed", "xr_result", xr_result);
     Uninitialize();
   }
   return xr_result;

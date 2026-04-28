@@ -804,8 +804,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
 
   // Ensure no CopyOutputRequests have been submitted if they are banned.
   if (!allow_copy_output_requests_ && frame.HasCopyOutputRequests()) {
-    TRACE_EVENT_INSTANT0("viz", "CopyOutputRequests not allowed",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("viz", "CopyOutputRequests not allowed");
     return SubmitResult::COPY_OUTPUT_REQUESTS_NOT_ALLOWED;
   }
 
@@ -832,10 +831,9 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       // lower than a full frame interval.
       if ((last_known_frame_interval_ - preferred_frame_interval).magnitude() >
           base::Milliseconds(2)) {
-        TRACE_EVENT_INSTANT2("viz", "Set sink framerate",
-                             TRACE_EVENT_SCOPE_THREAD, "interval",
-                             preferred_frame_interval, "sourceid",
-                             frame.metadata.begin_frame_ack.frame_id.source_id);
+        TRACE_EVENT_INSTANT("viz", "Set sink framerate", "interval",
+                            preferred_frame_interval, "sourceid",
+                            frame.metadata.begin_frame_ack.frame_id.source_id);
         last_known_frame_interval_ = preferred_frame_interval;
         // Only throttle simple cadences.
         throttler_.SetCadenceThrottleInterval(preferred_frame_interval);
@@ -889,16 +887,14 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     if (local_surface_id.embed_token() ==
             last_created_local_surface_id.embed_token() &&
         !monotonically_increasing_id) {
-      TRACE_EVENT_INSTANT0("viz", "LocalSurfaceId decreased",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("viz", "LocalSurfaceId decreased");
       return SubmitResult::SURFACE_ID_DECREASED;
     }
 
     // Don't recreate a surface that was previously evicted. Drop the
     // CompositorFrame and return all its resources.
     if (IsEvicted(local_surface_id)) {
-      TRACE_EVENT_INSTANT0("viz", "Submit rejected to evicted surface",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("viz", "Submit rejected to evicted surface");
       return SubmitResult::ACCEPTED;
     }
 
@@ -950,8 +946,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     }
 
     if (!create_surface_return.has_value()) {
-      TRACE_EVENT_INSTANT0("viz", "Surface belongs to another client",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("viz", "Surface belongs to another client");
 
       static auto* const crash_key_local_surface_id =
           base::debug::AllocateCrashKeyString(
@@ -1022,8 +1017,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       std::move(frame), frame_index, std::move(frame_rejected_callback));
   switch (result) {
     case Surface::QueueFrameResult::REJECTED:
-      TRACE_EVENT_INSTANT0("viz", "QueueFrame failed",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT("viz", "QueueFrame failed");
       return SubmitResult::SIZE_MISMATCH;
     case Surface::QueueFrameResult::ACCEPTED_PENDING:
       // Pending frames are processed in OnSurfaceCommitted.
@@ -1134,8 +1128,7 @@ void CompositorFrameSinkSupport::DidRejectCompositorFrame(
     uint32_t frame_token,
     std::vector<TransferableResource> frame_resource_list,
     std::vector<ui::LatencyInfo> latency_info) {
-  TRACE_EVENT_INSTANT0("viz", "DidRejectCompositorFrame",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("viz", "DidRejectCompositorFrame");
   // TODO(eseckler): Should these be stored and attached to the next successful
   // frame submission instead?
   for (ui::LatencyInfo& info : latency_info) {

@@ -526,7 +526,7 @@ void MainThreadEventQueue::HandleEvent(
 
   HandledEventCallback event_callback;
   if (is_blocking) {
-    TRACE_EVENT_INSTANT0("input", "Blocking", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "Blocking");
     event_callback = std::move(callback);
   }
 

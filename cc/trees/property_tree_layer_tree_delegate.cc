@@ -28,11 +28,11 @@ void PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded() {
   TRACE_EVENT0("cc",
                "PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded");
   PropertyTreeBuilder::BuildPropertyTrees(host());
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                       "PropertyTreeLayerTreeDelegate::"
-                       "UpdatePropertyTreesIfNeeded_BuiltPropertyTrees",
-                       TRACE_EVENT_SCOPE_THREAD, "property_trees",
-                       host()->property_trees()->AsTracedValue());
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                      "PropertyTreeLayerTreeDelegate::"
+                      "UpdatePropertyTreesIfNeeded_BuiltPropertyTrees",
+                      "property_trees",
+                      host()->property_trees()->AsTracedValue());
 }
 
 void PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(

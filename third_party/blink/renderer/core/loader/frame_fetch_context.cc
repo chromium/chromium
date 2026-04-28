@@ -1046,10 +1046,9 @@ bool FrameFetchContext::StartSpeculativeImageDecode(Resource* resource) {
             image_resource->GetContent()->MaxInterpolationQuality()),
         matrix, PaintImage::kDefaultFrameIndex);
     auto paint_image_id = image->paint_image_id();
-    TRACE_EVENT_INSTANT2(
+    TRACE_EVENT_INSTANT(
         TRACE_DISABLED_BY_DEFAULT("loading"), "SpeculativeImageDecodeStarted",
-        TRACE_EVENT_SCOPE_THREAD, "url", resource->Url().GetString().Utf8(),
-        "image_id", paint_image_id);
+        "url", resource->Url().GetString().Utf8(), "image_id", paint_image_id);
     document_->GetFrame()->GetChromeClient().RequestDecode(
         document_->GetFrame(), draw_image, base::DoNothingAs<void(bool)>(),
         /*speculative*/ true);

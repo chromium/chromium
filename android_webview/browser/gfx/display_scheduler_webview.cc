@@ -52,11 +52,10 @@ void DisplaySchedulerWebView::DidSwapBuffers() {
       it = damaged_frames_.erase(it);
     } else {
       if (!needs_draw) {
-        TRACE_EVENT_INSTANT2(
+        TRACE_EVENT_INSTANT(
             "android_webview",
             "DisplaySchedulerWebView::DidSwapBuffers first needs_draw",
-            TRACE_EVENT_SCOPE_THREAD, "frame_sink_id", it->first.ToString(),
-            "damage_count", it->second);
+            "frame_sink_id", it->first.ToString(), "damage_count", it->second);
       }
       needs_draw = true;
       ++it;
@@ -90,10 +89,10 @@ void DisplaySchedulerWebView::OnDisplayDamaged(viz::SurfaceId surface_id) {
       !IsFrameSinkOverlayed(surface_id.frame_sink_id())) {
     int count = damaged_frames_[surface_id.frame_sink_id()] + 1;
 
-    TRACE_EVENT_INSTANT2(
-        "android_webview", "DisplaySchedulerWebView::OnDisplayDamaged",
-        TRACE_EVENT_SCOPE_THREAD, "frame_sink_id",
-        surface_id.frame_sink_id().ToString(), "damage_count", count);
+    TRACE_EVENT_INSTANT("android_webview",
+                        "DisplaySchedulerWebView::OnDisplayDamaged",
+                        "frame_sink_id", surface_id.frame_sink_id().ToString(),
+                        "damage_count", count);
 
     // Clamp value to max two frames. Two is enough to keep invalidation
     // working, but will prevent number going too high in case if kModeDraw

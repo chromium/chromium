@@ -117,8 +117,7 @@ void MouseWheelPhaseHandler::DispatchPendingWheelEndEvent() {
   if (!mouse_wheel_end_dispatch_timer_.IsRunning())
     return;
 
-  TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler Dispatched",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler Dispatched");
   mouse_wheel_end_dispatch_timer_.FireNow();
 }
 
@@ -126,14 +125,12 @@ void MouseWheelPhaseHandler::IgnorePendingWheelEndEvent() {
   if (!mouse_wheel_end_dispatch_timer_.IsRunning())
     return;
 
-  TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler Ignored",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler Ignored");
   mouse_wheel_end_dispatch_timer_.Stop();
 }
 
 void MouseWheelPhaseHandler::ResetTouchpadScrollSequence() {
-  TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler Reset",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler Reset");
   touchpad_scroll_phase_state_ = TOUCHPAD_SCROLL_STATE_UNKNOWN;
 }
 
@@ -146,8 +143,7 @@ void MouseWheelPhaseHandler::SendWheelEndForTouchpadScrollingIfNeeded(
       return;
     }
 
-    TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler Sent touchpad end",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler Sent touchpad end");
     SendSyntheticWheelEventWithPhaseEnded(should_route_event);
   }
 
@@ -162,8 +158,7 @@ void MouseWheelPhaseHandler::TouchpadScrollingMayBegin() {
     DispatchPendingWheelEndEvent();
   }
 
-  TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler May Begin",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler May Begin");
   touchpad_scroll_phase_state_ = TOUCHPAD_SCROLL_MAY_BEGIN;
 }
 
@@ -197,8 +192,7 @@ void MouseWheelPhaseHandler::SendSyntheticWheelEventWithPhaseEnded(
 void MouseWheelPhaseHandler::ScheduleMouseWheelEndDispatching(
     bool should_route_event,
     const base::TimeDelta timeout) {
-  TRACE_EVENT_INSTANT0("input", "MouseWheelPhaseHandler timer started",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("input", "MouseWheelPhaseHandler timer started");
   mouse_wheel_end_dispatch_timer_.Start(
       FROM_HERE, timeout,
       base::BindOnce(

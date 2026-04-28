@@ -206,9 +206,9 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   // Send the swap parameters to the browser.
   if (frame.completion_callback) {
     gfx::CALayerParams params;
-    TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
-                         "GLImpl", static_cast<int>(gl::GetGLImplementation()),
-                         "width", pixel_size_.width());
+    TRACE_EVENT_INSTANT("test_gpu", "SwapBuffers", "GLImpl",
+                        static_cast<int>(gl::GetGLImplementation()), "width",
+                        pixel_size_.width());
     if (allow_remote_layers_) {
       params.ca_context_id = [ca_context_ contextId];
     } else {

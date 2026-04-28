@@ -39,8 +39,7 @@ class PenIdStatics {
             RuntimeClass_Windows_Devices_Input_PenDevice)
             .Get(),
         IID_PPV_ARGS(&pen_device_statics_));
-    TRACE_EVENT_INSTANT0("event", "PenIdStatics::PenIdStatics",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("event", "PenIdStatics::PenIdStatics");
   }
 
   static PenIdStatics* GetInstance() {
@@ -106,8 +105,7 @@ std::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   // Return std::nullopt if we are not in a testing environment and the
   // pen device statics haven't loaded or if statics are null.
   if (!pen_device_statics) {
-    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid no statics",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("event", "PenIdHandler::TryGetGuid no statics");
     return std::nullopt;
   }
 
@@ -115,22 +113,19 @@ std::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   HRESULT hr = pen_device_statics->GetFromPointerId(pointer_id, &pen_device);
   // `pen_device` is null if the pen does not support a unique ID.
   if (FAILED(hr) || !pen_device) {
-    TRACE_EVENT_INSTANT0("event",
-                         "PenIdHandler::TryGetGuid GetFromPointerId failed",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("event",
+                        "PenIdHandler::TryGetGuid GetFromPointerId failed");
     return std::nullopt;
   }
 
   GUID pen_device_guid;
   hr = pen_device->get_PenId(&pen_device_guid);
   if (FAILED(hr)) {
-    TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid get_PenId failed",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("event", "PenIdHandler::TryGetGuid get_PenId failed");
     return std::nullopt;
   }
 
-  TRACE_EVENT_INSTANT0("event", "PenIdHandler::TryGetGuid successful",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("event", "PenIdHandler::TryGetGuid successful");
   return base::WideToUTF8(base::win::WStringFromGUID(pen_device_guid));
 }
 

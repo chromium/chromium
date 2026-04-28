@@ -83,9 +83,8 @@ void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
   if (reason != CastStreamingFrameDropReason::kNotDropped) {
     number_of_frames_dropped_++;
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
-    TRACE_EVENT_INSTANT2("cast.stream", "Audio Frame Drop (raw frame)",
-                         TRACE_EVENT_SCOPE_THREAD, "duration",
-                         next_frame_duration, "reason", reason);
+    TRACE_EVENT_INSTANT("cast.stream", "Audio Frame Drop (raw frame)",
+                        "duration", next_frame_duration, "reason", reason);
     return;
   }
 
@@ -146,9 +145,9 @@ void AudioSender::OnEncodedAudioFrame(
   if (reason != CastStreamingFrameDropReason::kNotDropped) {
     number_of_frames_dropped_++;
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
-    TRACE_EVENT_INSTANT2("cast.stream", "Audio Frame Drop (already encoded)",
-                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason", reason);
+    TRACE_EVENT_INSTANT("cast.stream", "Audio Frame Drop (already encoded)",
+                        "rtp_timestamp", rtp_timestamp.lower_32_bits(),
+                        "reason", reason);
   }
 }
 

@@ -439,9 +439,9 @@ void TracingAgent::EditTraceDataForFrontend() {
   process_data->EndDictionary();
 
   process_data->EndArray();
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "TracingStartedInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(process_data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "TracingStartedInBrowser", "data",
+                      std::move(process_data));
 
   // Browser devtools make sure the SetLayerTreeId trace event has the same
   // layertreeid as the layertreeid from the frame trace events 'DrawFrame' and
@@ -451,9 +451,8 @@ void TracingAgent::EditTraceDataForFrontend() {
   auto layer_tree_data = std::make_unique<base::trace_event::TracedValue>();
   layer_tree_data->SetString("frame", "ui_devtools_browser_frame");
   layer_tree_data->SetInteger("layerTreeId", 1);
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "SetLayerTreeId", TRACE_EVENT_SCOPE_THREAD, "data",
-                       std::move(layer_tree_data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "SetLayerTreeId", "data", std::move(layer_tree_data));
 }
 
 void TracingAgent::SetupTimer(double usage_reporting_interval) {

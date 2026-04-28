@@ -944,10 +944,9 @@ void VideoCaptureImpl::OnBufferReady(
   // TODO(qiangchen): Change the metric name to "reference_time" and
   // "timestamp", so that we have consistent naming everywhere.
   // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT2("cast_perf_test", "OnBufferReceived",
-                       TRACE_EVENT_SCOPE_THREAD, "timestamp",
-                       (reference_time - base::TimeTicks()).InMicroseconds(),
-                       "time_delta", buffer->info->timestamp.InMicroseconds());
+  TRACE_EVENT_INSTANT("cast_perf_test", "OnBufferReceived", "timestamp",
+                      (reference_time - base::TimeTicks()).InMicroseconds(),
+                      "time_delta", buffer->info->timestamp.InMicroseconds());
 
   const int buffer_id = buffer->buffer_id;
   // Process the `buffer` to convert it into a media::VideoFrame directly or via

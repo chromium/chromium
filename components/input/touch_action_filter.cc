@@ -65,22 +65,22 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     return FilterGestureEventResult::kAllowed;
 
   if (has_deferred_events_) {
-    TRACE_EVENT_INSTANT0("input", "Has Deferred", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "Has Deferred");
     return FilterGestureEventResult::kDelayed;
   }
 
-  TRACE_EVENT_INSTANT1(
-      "input", "active_action", TRACE_EVENT_SCOPE_THREAD, "action",
+  TRACE_EVENT_INSTANT(
+      "input", "active_action", "action",
       (active_touch_action_.has_value()
            ? cc::TouchActionToString(active_touch_action_.value())
            : "n/a"));
-  TRACE_EVENT_INSTANT1(
-      "input", "allowed_action", TRACE_EVENT_SCOPE_THREAD, "action",
+  TRACE_EVENT_INSTANT(
+      "input", "allowed_action", "action",
       (allowed_touch_action_.has_value()
            ? cc::TouchActionToString(allowed_touch_action_.value())
            : "n/a"));
-  TRACE_EVENT_INSTANT1(
-      "input", "compositor_allowed_action", TRACE_EVENT_SCOPE_THREAD, "action",
+  TRACE_EVENT_INSTANT(
+      "input", "compositor_allowed_action", "action",
       cc::TouchActionToString(compositor_allowed_touch_action_));
 
   cc::TouchAction touch_action = active_touch_action_.has_value()
@@ -100,8 +100,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       // around this by resetting the compositor allowed touch action in this
       // case as well but we should investigate not filtering the TapDown.
       if (!gesture_sequence_in_progress_) {
-        TRACE_EVENT_INSTANT0("input", "No Sequence at GSB!",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("input", "No Sequence at GSB!");
         gesture_sequence_in_progress_ = true;
         if (allowed_touch_action_.has_value()) {
           active_touch_action_ = allowed_touch_action_;
@@ -121,8 +120,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       } else if (active_touch_action_.has_value()) {
         res = FilterGestureEventResult::kFiltered;
       } else {
-        TRACE_EVENT_INSTANT0("input", "Deferring Events",
-                             TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("input", "Deferring Events");
         has_deferred_events_ = true;
         res = FilterGestureEventResult::kDelayed;
       }
@@ -131,7 +129,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
 
     case WebInputEvent::Type::kGestureScrollUpdate: {
       if (drop_scroll_events_) {
-        TRACE_EVENT_INSTANT0("input", "Drop Events", TRACE_EVENT_SCOPE_THREAD);
+        TRACE_EVENT_INSTANT("input", "Drop Events");
         return FilterGestureEventResult::kFiltered;
       }
 
@@ -146,8 +144,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       if (IsYAxisActionDisallowed(touch_action)) {
         if (!active_touch_action_.has_value() &&
             gesture_event->data.scroll_update.delta_y != 0) {
-          TRACE_EVENT_INSTANT0("input", "Defer Due to YAxis",
-                               TRACE_EVENT_SCOPE_THREAD);
+          TRACE_EVENT_INSTANT("input", "Defer Due to YAxis");
           has_deferred_events_ = true;
           return FilterGestureEventResult::kDelayed;
         }
@@ -155,8 +152,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       } else if (IsXAxisActionDisallowed(touch_action)) {
         if (!active_touch_action_.has_value() &&
             gesture_event->data.scroll_update.delta_x != 0) {
-          TRACE_EVENT_INSTANT0("input", "Defer Due to XAxis",
-                               TRACE_EVENT_SCOPE_THREAD);
+          TRACE_EVENT_INSTANT("input", "Defer Due to XAxis");
           has_deferred_events_ = true;
           return FilterGestureEventResult::kDelayed;
         }

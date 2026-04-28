@@ -190,9 +190,8 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
       is_using_fake_sink_ = true;
     }
 
-    TRACE_EVENT_INSTANT0(
-        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Start()",
-        TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(
+        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Start()");
     fake_sink_.Start(base::BindRepeating(
         [](SilentSinkSuspender* suspender, base::TimeDelta frozen_delay,
            base::TimeTicks frozen_delay_timestamp, base::TimeTicks ideal_time,
@@ -205,9 +204,8 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
         },
         this, latest_output_delay_, latest_output_delay_timestamp_));
   } else {
-    TRACE_EVENT_INSTANT0(
-        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Stop()",
-        TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT(
+        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Stop()");
     fake_sink_.Stop();
 
     // Despite the fake sink having a synchronous Stop(), if this transition

@@ -82,9 +82,8 @@ OpenXrRenderLoop::~OpenXrRenderLoop() {
 
 void OpenXrRenderLoop::ExitPresent(ExitXrPresentReason reason) {
   DVLOG(1) << __func__ << " reason=" << std::to_underlying(reason);
-  TRACE_EVENT_INSTANT1("xr", "OpenXrRenderLoop::ExitPresent",
-                       TRACE_EVENT_SCOPE_THREAD, "reason",
-                       std::to_underlying(reason));
+  TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::ExitPresent", "reason",
+                      std::to_underlying(reason));
   if (!is_presenting_) {
     return;
   }
@@ -202,9 +201,8 @@ void OpenXrRenderLoop::GetFrameData(
           current_stage_parameters_.Clone();
     }
   } else {
-    TRACE_EVENT_INSTANT0("xr",
-                         "OpenXrRenderLoop::GetFrameData Missing FrameData",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("xr",
+                        "OpenXrRenderLoop::GetFrameData Missing FrameData");
   }
 
   // Yield here to let the event queue process pending mojo messages,
@@ -337,8 +335,7 @@ void OpenXrRenderLoop::StartRuntimeFinish(
     mojom::XRRuntimeSessionOptionsPtr options,
     bool success) {
   if (!success) {
-    TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("xr", "Failed to start runtime");
     MaybeRejectSessionCallback();
     return;
   }
@@ -373,8 +370,7 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   if (graphics_binding_->IsWebGPUSession() &&
       !graphics_binding_->IsUsingSharedImages()) {
     // WebGPU sessions must use shared images. If not fail session creation.
-    TRACE_EVENT_INSTANT0("xr", "Failed to start WebGPU-compatible runtime",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("xr", "Failed to start WebGPU-compatible runtime");
     MaybeRejectSessionCallback();
     return;
   }
@@ -495,10 +491,10 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
     webxr_gpu_time_.AddSample(pending_frame_->frame_ready_time_ -
                               pending_frame_->submit_frame_time_);
 
-    TRACE_EVENT_INSTANT2(
-        "gpu", "WebXR frame time (ms)", TRACE_EVENT_SCOPE_THREAD, "javascript",
-        webxr_js_time_.GetAverage().InMillisecondsF(), "rendering",
-        webxr_gpu_time_.GetAverage().InMillisecondsF());
+    TRACE_EVENT_INSTANT("gpu", "WebXR frame time (ms)", "javascript",
+                        webxr_js_time_.GetAverage().InMillisecondsF(),
+                        "rendering",
+                        webxr_gpu_time_.GetAverage().InMillisecondsF());
     fps_meter_.AddFrame(base::TimeTicks::Now());
     TRACE_COUNTER1("gpu", "WebXR FPS", fps_meter_.GetFPS());
   }
@@ -507,8 +503,8 @@ void OpenXrRenderLoop::MaybeCompositeAndSubmit(
     // Tell WebVR that we are done with the texture (if we got a texture)
     submit_client_->OnSubmitFrameTransferred(copy_successful, updated_layers);
     submit_client_->OnSubmitFrameRendered();
-    TRACE_EVENT_INSTANT1("xr", "SubmitClientNotified", TRACE_EVENT_SCOPE_THREAD,
-                         "success", copy_successful);
+    TRACE_EVENT_INSTANT("xr", "SubmitClientNotified", "success",
+                        copy_successful);
   }
 
   if (pending_frame_->overlay_submitted_ && overlay_submit_callback_) {
@@ -550,8 +546,7 @@ bool OpenXrRenderLoop::MarkFrameSubmitted(int16_t frame_index) {
 void OpenXrRenderLoop::SubmitFrameMissing(int16_t frame_index,
                                           const gpu::SyncToken& sync_token) {
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
-  TRACE_EVENT_INSTANT0("xr", "OpenXrRenderLoop::SubmitFrameMissing",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::SubmitFrameMissing");
   if (pending_frame_) {
     // WebXR for this frame is hidden.
     pending_frame_->waiting_for_webxr_ = false;
@@ -600,8 +595,7 @@ void OpenXrRenderLoop::SubmitOverlayTexture(
     const gfx::RectF& left_bounds,
     const gfx::RectF& right_bounds,
     SubmitOverlayTextureCallback overlay_submit_callback) {
-  TRACE_EVENT_INSTANT0("xr", "OpenXrRenderLoop::SubmitOverlay",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::SubmitOverlay");
   DCHECK(overlay_visible_);
   overlay_submit_callback_ = std::move(overlay_submit_callback);
   if (!pending_frame_) {
@@ -628,8 +622,7 @@ void OpenXrRenderLoop::RequestNextOverlayPose(
   DVLOG(3) << __func__;
   // We will only request poses while the overlay is visible.
   DCHECK(overlay_visible_);
-  TRACE_EVENT_INSTANT0("xr", "OpenXrRenderLoop::RequestOverlayPose",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::RequestOverlayPose");
 
   // Ensure we have a pending frame.
   StartPendingFrame();
@@ -641,9 +634,8 @@ void OpenXrRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
                                                     bool webxr_visible) {
   DVLOG(1) << __func__ << " overlay_visible=" << overlay_visible
            << " webxr_visible=" << webxr_visible;
-  TRACE_EVENT_INSTANT2("xr", "OpenXrRenderLoop::SetOverlayAndWebXRVisibility",
-                       TRACE_EVENT_SCOPE_THREAD, "overlay", overlay_visible,
-                       "webxr", webxr_visible);
+  TRACE_EVENT_INSTANT("xr", "OpenXrRenderLoop::SetOverlayAndWebXRVisibility",
+                      "overlay", overlay_visible, "webxr", webxr_visible);
   // Update state.
   webxr_visible_ = webxr_visible;
   overlay_visible_ = overlay_visible;

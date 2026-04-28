@@ -306,7 +306,7 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
   }
   if (final_top_shown_ratio == TopControlsShownRatio() &&
       final_bottom_shown_ratio == BottomControlsShownRatio()) {
-    TRACE_EVENT_INSTANT0("cc", "Ratios Unchanged", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Ratios Unchanged");
     ResetAnimations();
     return;
   }

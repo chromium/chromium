@@ -182,10 +182,10 @@ struct CC_BASE_EXPORT ScopedLayerObjectTracker
 
 inline void CC_BASE_EXPORT DidActivateLayerTree(int layer_tree_host_id,
                                                 int frame_id) {
-  TRACE_EVENT_INSTANT2(internal::CategoryName::kTimelineFrame,
-                       internal::kActivateLayerTree, TRACE_EVENT_SCOPE_THREAD,
-                       internal::kLayerTreeId, layer_tree_host_id,
-                       internal::kFrameId, frame_id);
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kActivateLayerTree),
+                      internal::kLayerTreeId, layer_tree_host_id,
+                      internal::kFrameId, frame_id);
 }
 
 inline void CC_BASE_EXPORT DidBeginFrame(int layer_tree_host_id,
@@ -200,16 +200,16 @@ inline void CC_BASE_EXPORT DidBeginFrame(int layer_tree_host_id,
 
 inline void CC_BASE_EXPORT DidDrawFrame(int layer_tree_host_id,
                                         uint64_t sequence_number) {
-  TRACE_EVENT_INSTANT2(internal::CategoryName::kTimelineFrame,
-                       internal::kDrawFrame, TRACE_EVENT_SCOPE_THREAD,
-                       internal::kLayerTreeId, layer_tree_host_id,
-                       internal::kFrameSequenceNumber, sequence_number);
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kDrawFrame),
+                      internal::kLayerTreeId, layer_tree_host_id,
+                      internal::kFrameSequenceNumber, sequence_number);
 }
 
 inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {
-  TRACE_EVENT_INSTANT1(
-      internal::CategoryName::kTimelineFrame, internal::kRequestMainThreadFrame,
-      TRACE_EVENT_SCOPE_THREAD, internal::kLayerTreeId, layer_tree_host_id);
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kRequestMainThreadFrame),
+                      internal::kLayerTreeId, layer_tree_host_id);
 }
 
 inline void CC_BASE_EXPORT
@@ -235,10 +235,10 @@ BeginMainThreadFrameData(int frame_id) {
 
 inline void CC_BASE_EXPORT WillBeginMainThreadFrame(int layer_tree_host_id,
                                                     int frame_id) {
-  TRACE_EVENT_INSTANT2(
-      internal::CategoryName::kTimelineFrame, internal::kBeginMainThreadFrame,
-      TRACE_EVENT_SCOPE_THREAD, internal::kLayerTreeId, layer_tree_host_id,
-      internal::kData, BeginMainThreadFrameData(frame_id));
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kBeginMainThreadFrame),
+                      internal::kLayerTreeId, layer_tree_host_id,
+                      internal::kData, BeginMainThreadFrameData(frame_id));
 }
 
 inline std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
@@ -251,10 +251,10 @@ NeedsBeginFrameData(bool needs_begin_frame) {
 
 inline void CC_BASE_EXPORT NeedsBeginFrameChanged(int layer_tree_host_id,
                                                   bool new_value) {
-  TRACE_EVENT_INSTANT2(
-      internal::CategoryName::kTimelineFrame, internal::kNeedsBeginFrameChanged,
-      TRACE_EVENT_SCOPE_THREAD, internal::kLayerTreeId, layer_tree_host_id,
-      internal::kData, NeedsBeginFrameData(new_value));
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kNeedsBeginFrameChanged),
+                      internal::kLayerTreeId, layer_tree_host_id,
+                      internal::kData, NeedsBeginFrameData(new_value));
 }
 
 }  // namespace devtools_instrumentation

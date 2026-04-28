@@ -561,7 +561,7 @@ struct NSEdgeAndCornerThicknesses {
 
   // Let CommandDispatcher check if this is a redispatched event.
   if ([_commandDispatcher preSendEvent:event]) {
-    TRACE_EVENT_INSTANT0("browser", "StopSendEvent", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("browser", "StopSendEvent");
     return;
   }
 

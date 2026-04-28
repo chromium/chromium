@@ -400,8 +400,7 @@ void VisualViewport::SetSize(const gfx::Size& size) {
                "height", size.height());
   size_ = size;
 
-  TRACE_EVENT_INSTANT1("loading", "viewport", TRACE_EVENT_SCOPE_THREAD, "data",
-                       ViewportToTracedValue());
+  TRACE_EVENT_INSTANT("loading", "viewport", "data", ViewportToTracedValue());
 
   if (!IsActiveViewport())
     return;
@@ -613,8 +612,7 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
 
   needs_paint_property_update_ = true;
   if (notify_page_scale_factor_changed) {
-    TRACE_EVENT_INSTANT1("loading", "viewport", TRACE_EVENT_SCOPE_THREAD,
-                         "data", ViewportToTracedValue());
+    TRACE_EVENT_INSTANT("loading", "viewport", "data", ViewportToTracedValue());
   }
   return true;
 }

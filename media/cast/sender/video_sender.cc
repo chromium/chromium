@@ -147,10 +147,9 @@ void VideoSender::InsertRawVideoFrame(
                             rtp_timestamp);
 
   // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
-  TRACE_EVENT_INSTANT2("cast_perf_test", "InsertRawVideoFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "timestamp",
-                       (reference_time - base::TimeTicks()).InMicroseconds(),
-                       "rtp_timestamp", rtp_timestamp.lower_32_bits());
+  TRACE_EVENT_INSTANT("cast_perf_test", "InsertRawVideoFrame", "timestamp",
+                      (reference_time - base::TimeTicks()).InMicroseconds(),
+                      "rtp_timestamp", rtp_timestamp.lower_32_bits());
 
   {
     const bool new_low_latency_mode =
@@ -171,10 +170,9 @@ void VideoSender::InsertRawVideoFrame(
       (rtp_timestamp <= last_enqueued_frame_rtp_timestamp_ ||
        reference_time <= last_enqueued_frame_reference_time_)) {
     VLOG(1) << "Dropping video frame: RTP or reference time did not increase.";
-    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop",
-                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason",
-                         "time did not increase");
+    TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop", "rtp_timestamp",
+                        rtp_timestamp.lower_32_bits(), "reason",
+                        "time did not increase");
     return;
   }
 
@@ -235,9 +233,9 @@ void VideoSender::InsertRawVideoFrame(
 
     number_of_frames_dropped_++;
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
-    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop (raw frame)",
-                         TRACE_EVENT_SCOPE_THREAD, "duration",
-                         duration_added_by_next_frame, "reason", reason);
+    TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop (raw frame)",
+                        "duration", duration_added_by_next_frame, "reason",
+                        reason);
     return;
   }
 
@@ -282,9 +280,8 @@ void VideoSender::InsertRawVideoFrame(
     last_enqueued_frame_reference_time_ = reference_time;
   } else {
     VLOG(1) << "Encoder rejected a frame.  Skipping...";
-    TRACE_EVENT_INSTANT1("cast.stream", "Video Encode Reject",
-                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits());
+    TRACE_EVENT_INSTANT("cast.stream", "Video Encode Reject", "rtp_timestamp",
+                        rtp_timestamp.lower_32_bits());
   }
 }
 
@@ -383,9 +380,9 @@ void VideoSender::OnEncodedVideoFrame(
     video_encoder_->GenerateKeyFrame();
 
     base::UmaHistogramEnumeration(kHistogramFrameDropped, reason);
-    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop (already encoded)",
-                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
-                         rtp_timestamp.lower_32_bits(), "reason", reason);
+    TRACE_EVENT_INSTANT("cast.stream", "Video Frame Drop (already encoded)",
+                        "rtp_timestamp", rtp_timestamp.lower_32_bits(),
+                        "reason", reason);
   }
 }
 

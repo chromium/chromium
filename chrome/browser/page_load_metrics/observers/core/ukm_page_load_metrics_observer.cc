@@ -1547,13 +1547,12 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
       page_load_metrics::LayoutShiftUmaValue(
           metrics::GetPseudoMetricsSample(layout_shift_score)));
 
-  TRACE_EVENT_INSTANT1("loading", "CumulativeShiftScore::AllFrames::UMA",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       CumulativeShiftScoreTraceData(
-                           GetDelegate().GetPageRenderData().layout_shift_score,
-                           GetDelegate()
-                               .GetPageRenderData()
-                               .layout_shift_score_before_input_or_scroll));
+  TRACE_EVENT_INSTANT("loading", "CumulativeShiftScore::AllFrames::UMA", "data",
+                      CumulativeShiftScoreTraceData(
+                          GetDelegate().GetPageRenderData().layout_shift_score,
+                          GetDelegate()
+                              .GetPageRenderData()
+                              .layout_shift_score_before_input_or_scroll));
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
@@ -1855,18 +1854,17 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
           .MergeMainFrameAndSubframes();
 
   if (paint.ContainsValidTime()) {
-    TRACE_EVENT_INSTANT2(
+    TRACE_EVENT_INSTANT(
         "loading",
-        "NavStartToLargestContentfulPaint::Candidate::AllFrames::UKM",
-        TRACE_EVENT_SCOPE_THREAD, "data", paint.DataAsTraceValue(),
-        "main_frame_tree_node_id",
+        "NavStartToLargestContentfulPaint::Candidate::AllFrames::UKM", "data",
+        paint.DataAsTraceValue(), "main_frame_tree_node_id",
         GetDelegate().GetLargestContentfulPaintHandler().MainFrameTreeNodeId());
   } else {
-    TRACE_EVENT_INSTANT1(
+    TRACE_EVENT_INSTANT(
         "loading",
         "NavStartToLargestContentfulPaint::"
         "Invalidate::AllFrames::UKM",
-        TRACE_EVENT_SCOPE_THREAD, "main_frame_tree_node_id",
+        "main_frame_tree_node_id",
         GetDelegate().GetLargestContentfulPaintHandler().MainFrameTreeNodeId());
   }
 
@@ -1876,24 +1874,23 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
               .GetExperimentalLargestContentfulPaintHandler()
               .MergeMainFrameAndSubframes();
   if (experimental_largest_contentful_paint.ContainsValidTime()) {
-    TRACE_EVENT_INSTANT2(
+    TRACE_EVENT_INSTANT(
         "loading",
         "NavStartToExperimentalLargestContentfulPaint::Candidate::AllFrames::"
         "UKM",
-        TRACE_EVENT_SCOPE_THREAD, "data",
-        experimental_largest_contentful_paint.DataAsTraceValue(),
+        "data", experimental_largest_contentful_paint.DataAsTraceValue(),
         "main_frame_tree_node_id",
         GetDelegate()
             .GetExperimentalLargestContentfulPaintHandler()
             .MainFrameTreeNodeId());
   } else {
-    TRACE_EVENT_INSTANT1("loading",
-                         "NavStartToExperimentalLargestContentfulPaint::"
-                         "Invalidate::AllFrames::UKM",
-                         TRACE_EVENT_SCOPE_THREAD, "main_frame_tree_node_id",
-                         GetDelegate()
-                             .GetExperimentalLargestContentfulPaintHandler()
-                             .MainFrameTreeNodeId());
+    TRACE_EVENT_INSTANT("loading",
+                        "NavStartToExperimentalLargestContentfulPaint::"
+                        "Invalidate::AllFrames::UKM",
+                        "main_frame_tree_node_id",
+                        GetDelegate()
+                            .GetExperimentalLargestContentfulPaintHandler()
+                            .MainFrameTreeNodeId());
   }
 }
 

@@ -81,9 +81,8 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     }
 
     if (!state.ShouldAnimate()) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                           "ShouldAnimate - early out",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                          "ShouldAnimate - early out");
       continue;
     }
 
@@ -93,9 +92,8 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
       images_animated_on_sync_tree_.insert(image_id);
     }
 
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "AnimationState", TRACE_EVENT_SCOPE_THREAD, "state",
-                         state.ToString());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "AnimationState",
+                        "state", state.ToString());
     // Update the next invalidation time to the earliest time at which we need
     // a frame to animate an image.
     // Note its important to check ShouldAnimate() here again since advancing to
@@ -334,7 +332,7 @@ bool ImageAnimationController::AnimationState::AdvanceFrame(
   if (enable_image_animation_resync &&
       args.frame_time - current_state_.next_desired_frame_time >
           kAnimationResyncCutoff) {
-    TRACE_EVENT_INSTANT0("cc", "Resync - early out", TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "Resync - early out");
     DCHECK_EQ(current_state_.pending_index, active_index_);
     current_state_.next_desired_frame_time =
         args.frame_time + frames_[current_state_.pending_index].duration;
@@ -373,10 +371,10 @@ ImageAnimationController::AnimationState::AdvanceAnimationState(
     size_t next_frame_index =
         NextFrameIndex(animation_advancement_state.pending_index);
     elapsed_time += frames_[next_frame_index].duration;
-    TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                         "FrameDurationIndex", TRACE_EVENT_SCOPE_THREAD,
-                         "frame_index", next_frame_index, "duration",
-                         frames_[next_frame_index].duration.InMillisecondsF());
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                        "FrameDurationIndex", "frame_index", next_frame_index,
+                        "duration",
+                        frames_[next_frame_index].duration.InMillisecondsF());
     base::TimeTicks next_desired_frame_time =
         animation_advancement_state.next_desired_frame_time +
         frames_[next_frame_index].duration;

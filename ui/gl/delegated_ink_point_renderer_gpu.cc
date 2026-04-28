@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -30,13 +31,12 @@ constexpr uint64_t kMaximumNumberOfPointerIds = 10;
 // Note that this returns true if the HRESULT is anything other than S_OK,
 // meaning that it returns true when an event is traced (because of a
 // failure).
-bool TraceEventOnFailure(HRESULT hr, const char* name) {
+bool TraceEventOnFailure(HRESULT hr, perfetto::StaticString name) {
   if (SUCCEEDED(hr)) {
     return false;
   }
 
-  TRACE_EVENT_INSTANT1("delegated_ink_trails", name, TRACE_EVENT_SCOPE_THREAD,
-                       "hr", hr);
+  TRACE_EVENT_INSTANT("delegated_ink_trails", name, "hr", hr);
   return true;
 }
 
@@ -447,9 +447,8 @@ void DelegatedInkPointRendererGpu::DrawSavedTrailPoints() {
       }
     }
   } else {
-    TRACE_EVENT_INSTANT0("delegated_ink_trails",
-                         "DrawSavedTrailPoints failed - no pointer id",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("delegated_ink_trails",
+                        "DrawSavedTrailPoints failed - no pointer id");
   }
 }
 

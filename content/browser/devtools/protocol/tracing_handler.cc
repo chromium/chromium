@@ -183,9 +183,8 @@ void SendProcessReadyInBrowserEvent(const base::UnguessableToken& frame_token,
   auto data = std::make_unique<base::trace_event::TracedValue>();
   data->SetString("frame", frame_token.ToString());
   data->SetInteger("processId", static_cast<int>(host->GetProcess().Pid()));
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "ProcessReadyInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "ProcessReadyInBrowser", "data", std::move(data));
 }
 
 void FillFrameData(base::trace_event::TracedValue* data,
@@ -1133,9 +1132,8 @@ void TracingHandler::EmitFrameTree() {
     });
     data->EndArray();
   }
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "TracingStartedInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "TracingStartedInBrowser", "data", std::move(data));
 }
 
 void TracingHandler::WillInitiatePrerender(FrameTreeNode* frame_tree_node) {
@@ -1145,9 +1143,8 @@ void TracingHandler::WillInitiatePrerender(FrameTreeNode* frame_tree_node) {
   auto data = std::make_unique<base::trace_event::TracedValue>();
   FillFrameData(data.get(), frame_tree_node->current_frame_host(),
                 frame_tree_node->current_url());
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "FrameCommittedInBrowser", "data", std::move(data));
 }
 
 void TracingHandler::ReadyToCommitNavigation(
@@ -1157,9 +1154,8 @@ void TracingHandler::ReadyToCommitNavigation(
   auto data = std::make_unique<base::trace_event::TracedValue>();
   RenderFrameHostImpl* frame_host = navigation_request->GetRenderFrameHost();
   FillFrameData(data.get(), frame_host, navigation_request->GetURL());
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "FrameCommittedInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "FrameCommittedInBrowser", "data", std::move(data));
   if (frame_host->IsOutermostMainFrame()) {
     video_consumer_->SetFrameSinkId(navigation_request->GetRenderFrameHost()
                                         ->GetRenderWidgetHost()
@@ -1180,9 +1176,8 @@ void TracingHandler::FrameDeleted(FrameTreeNodeId frame_tree_node_id) {
   auto data = std::make_unique<base::trace_event::TracedValue>();
   data->SetString(
       "frame", node->current_frame_host()->devtools_frame_token().ToString());
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "FrameDeletedInBrowser", TRACE_EVENT_SCOPE_THREAD,
-                       "data", std::move(data));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "FrameDeletedInBrowser", "data", std::move(data));
 }
 
 // static

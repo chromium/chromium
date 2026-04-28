@@ -2476,10 +2476,10 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
       area, metadata->frame_time(), metadata->is_hovering(),
       render_pass_with_delegated_ink.GetUnsafeValue());
 
-  TRACE_EVENT_INSTANT2(
+  TRACE_EVENT_INSTANT(
       "viz", "SurfaceAggregator::TransformAndStoreDelegatedInkMetadata",
-      TRACE_EVENT_SCOPE_THREAD, "original metadata", metadata->ToString(),
-      "transformed metadata", delegated_ink_metadata_->ToString());
+      "original metadata", metadata->ToString(), "transformed metadata",
+      delegated_ink_metadata_->ToString());
 }
 
 void SurfaceAggregator::DebugLogSurface(const Surface* surface,

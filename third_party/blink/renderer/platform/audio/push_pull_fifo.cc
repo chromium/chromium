@@ -103,10 +103,9 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
                    << ", inputFrames=" << input_bus_length
                    << ", fifoLength=" << fifo_length_ << ")";
     }
-    TRACE_EVENT_INSTANT2("webaudio", "PushPullFIFO overrun",
-                         TRACE_EVENT_SCOPE_THREAD, "extra frames",
-                         input_bus_length + frames_available_ - fifo_length_,
-                         "overflow_count_", overflow_count_);
+    TRACE_EVENT_INSTANT("webaudio", "PushPullFIFO overrun", "extra frames",
+                        input_bus_length + frames_available_ - fifo_length_,
+                        "overflow_count_", overflow_count_);
   }
 
   // Update the number of frames available in FIFO.
@@ -202,10 +201,9 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
                    << ", requestedFrames=" << frames_requested
                    << ", fifoLength=" << fifo_length_ << ")";
     }
-    TRACE_EVENT_INSTANT2("webaudio", "PushPullFIFO::Pull underrun",
-                         TRACE_EVENT_SCOPE_THREAD, "missing frames",
-                         frames_requested - frames_to_fill, "underflow_count_",
-                         underflow_count_);
+    TRACE_EVENT_INSTANT("webaudio", "PushPullFIFO::Pull underrun",
+                        "missing frames", frames_requested - frames_to_fill,
+                        "underflow_count_", underflow_count_);
   }
 
   // Update the number of frames in FIFO.
@@ -254,10 +252,9 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmarkedFrames(
                    << ", fifoLength=" << fifo_length_ << ")";
     }
 
-    TRACE_EVENT_INSTANT2("webaudio",
-                         "PushPullFIFO::PullAndUpdateEarmarkedFrames underrun",
-                         TRACE_EVENT_SCOPE_THREAD, "missing frames",
-                         missing_frames, "underflow_count_", underflow_count_);
+    TRACE_EVENT_INSTANT(
+        "webaudio", "PushPullFIFO::PullAndUpdateEarmarkedFrames underrun",
+        "missing frames", missing_frames, "underflow_count_", underflow_count_);
 
     // We assume that the next `frames_requested` from `AudioOutputDevice` will
     // be the same.

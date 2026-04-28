@@ -143,8 +143,7 @@ void MessagePumpForUI::ScheduleWork() {
 
   // Clarify that we didn't really insert.
   native_msg_scheduled_.store(false, std::memory_order_relaxed);
-  TRACE_EVENT_INSTANT0("base", "Chrome.MessageLoopProblem.MESSAGE_POST_ERROR",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("base", "Chrome.MessageLoopProblem.MESSAGE_POST_ERROR");
 }
 
 void MessagePumpForUI::ScheduleDelayedWork(
@@ -543,8 +542,7 @@ void MessagePumpForUI::ScheduleNativeTimer(
     // full). Since we only use ScheduleNativeTimer() in native nested loops
     // this likely means this pump will not be given a chance to run application
     // tasks until the nested loop completes.
-    TRACE_EVENT_INSTANT0("base", "Chrome.MessageLoopProblem.SET_TIMER_ERROR",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("base", "Chrome.MessageLoopProblem.SET_TIMER_ERROR");
   }
 }
 
@@ -632,9 +630,8 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
     // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
     // MessageLoop has its own quit mechanism, so WM_QUIT is generally
     // unexpected.
-    TRACE_EVENT_INSTANT0("base",
-                         "Chrome.MessageLoopProblem.RECEIVED_WM_QUIT_ERROR",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("base",
+                        "Chrome.MessageLoopProblem.RECEIVED_WM_QUIT_ERROR");
     return true;
   }
 
@@ -802,9 +799,8 @@ void MessagePumpForIO::ScheduleWork() {
 
   native_msg_scheduled_.store(
       false, std::memory_order_relaxed);  // Clarify that we didn't succeed.
-  TRACE_EVENT_INSTANT0("base",
-                       "Chrome.MessageLoopProblem.COMPLETION_POST_ERROR",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("base",
+                      "Chrome.MessageLoopProblem.COMPLETION_POST_ERROR");
 }
 
 void MessagePumpForIO::ScheduleDelayedWork(

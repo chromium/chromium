@@ -2085,9 +2085,8 @@ void ScrollTree::CollectScrollDeltas(
     // snap targets is during the next frame. This makes it possible for the
     // scroll delta to be zero.
     if (!scroll_delta.IsZero() || snap_target_ids) {
-      TRACE_EVENT_INSTANT2("cc", "CollectScrollDeltas",
-                           TRACE_EVENT_SCOPE_THREAD, "x", scroll_delta.x(), "y",
-                           scroll_delta.y());
+      TRACE_EVENT_INSTANT("cc", "CollectScrollDeltas", "x", scroll_delta.x(),
+                          "y", scroll_delta.y());
       CompositorCommitData::ScrollUpdateInfo update(id, scroll_delta,
                                                     snap_target_ids);
       if (id == inner_viewport_scroll_element_id) {

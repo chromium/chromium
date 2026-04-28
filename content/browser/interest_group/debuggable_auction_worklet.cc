@@ -79,12 +79,11 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
 DebuggableAuctionWorklet::~DebuggableAuctionWorklet() {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyDestroyed(this);
   if (pid_.has_value()) {
-    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "AuctionWorkletDoneWithProcess",
-                         TRACE_EVENT_SCOPE_THREAD, "data",
-                         [&](perfetto::TracedValue trace_context) {
-                           TraceProcessData(std::move(trace_context));
-                         });
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                        "AuctionWorkletDoneWithProcess", "data",
+                        [&](perfetto::TracedValue trace_context) {
+                          TraceProcessData(std::move(trace_context));
+                        });
   }
 }
 
@@ -105,12 +104,11 @@ void DebuggableAuctionWorklet::OnHavePid(base::ProcessId process_id) {
   pid_ = process_id;
   // TODO(caseq): move all timeline-specific tracing logic to
   // devtools side (i.e. AuctionWorkletDevToolsAgentHost).
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "AuctionWorkletRunningInProcess",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       [&](perfetto::TracedValue trace_context) {
-                         TraceProcessData(std::move(trace_context));
-                       });
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      "AuctionWorkletRunningInProcess", "data",
+                      [&](perfetto::TracedValue trace_context) {
+                        TraceProcessData(std::move(trace_context));
+                      });
 }
 
 void DebuggableAuctionWorklet::TraceProcessData(

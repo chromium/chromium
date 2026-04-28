@@ -1463,9 +1463,8 @@ void RecordRenderSurfaceReasonsForTracing(
       render_surface_list->size() <= 1)
     return;
 
-  TRACE_EVENT_INSTANT1("cc", "RenderSurfaceReasonCount",
-                       TRACE_EVENT_SCOPE_THREAD, "total",
-                       render_surface_list->size());
+  TRACE_EVENT_INSTANT("cc", "RenderSurfaceReasonCount", "total",
+                      render_surface_list->size());
 
   // kTest is the last value which is not included for tracing.
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
@@ -1478,8 +1477,8 @@ void RecordRenderSurfaceReasonsForTracing(
   for (size_t i = 0; i < kNumReasons; i++) {
     if (!reason_counts[i])
       continue;
-    TRACE_EVENT_INSTANT1(
-        "cc", "RenderSurfaceReasonCount", TRACE_EVENT_SCOPE_THREAD,
+    TRACE_EVENT_INSTANT(
+        "cc", "RenderSurfaceReasonCount",
         RenderSurfaceReasonToString(static_cast<RenderSurfaceReason>(i)),
         reason_counts[i]);
   }

@@ -1055,8 +1055,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   }
 
   if (event_disposition == InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST) {
-    TRACE_EVENT_INSTANT0("input", "PostingHitTestToMainThread",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "PostingHitTestToMainThread");
     DCHECK_EQ(event->Event().GetType(),
               WebInputEvent::Type::kGestureScrollBegin);
     DCHECK(input_handler_proxy_);
@@ -1175,8 +1174,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
 
   std::optional<cc::TouchAction> touch_action_for_ack = touch_action_from_main;
   if (!touch_action_for_ack.has_value()) {
-    TRACE_EVENT_INSTANT0("input", "Using allowed_touch_action",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "Using allowed_touch_action");
     touch_action_for_ack = touch_action_from_compositor;
   }
 
@@ -1188,8 +1186,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
   // If there is a compositor task runner and the current thread isn't the
   // compositor thread proxy it over to the compositor thread.
   if (compositor_thread_default_task_runner_ && !is_compositor_thread) {
-    TRACE_EVENT_INSTANT0("input", "PostingToCompositor",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("input", "PostingToCompositor");
     compositor_thread_default_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(CallCallback, std::move(callback), ack_state,
                                   latency_info, std::move(overscroll_params),

@@ -427,9 +427,8 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     bool is_copy) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(current_frame_lock_);
-  TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::EnqueueFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "Timestamp",
-                       frame->timestamp().InMicroseconds());
+  TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::EnqueueFrame",
+                      "Timestamp", frame->timestamp().InMicroseconds());
   ++total_frame_count_;
   ++frame_enqueued_since_last_vsync_;
   std::optional<uint32_t> enqueue_frame_rtp_timestamp;
@@ -599,9 +598,9 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerMSCompositor::GetCurrentFrame() {
   if (!current_frame_)
     return nullptr;
 
-  TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::GetCurrentFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "Timestamp",
-                       current_frame_->timestamp().InMicroseconds());
+  TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::GetCurrentFrame",
+                      "Timestamp",
+                      current_frame_->timestamp().InMicroseconds());
   if (!render_started_)
     return nullptr;
 
@@ -795,11 +794,10 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
     const base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta diff_from_deadline_min = now - last_deadline_min_;
     base::TimeDelta diff_from_deadline_max = now - last_deadline_max_;
-    TRACE_EVENT_INSTANT2("media",
-                         "RenderWithoutAlgorithm Difference From Deadline",
-                         TRACE_EVENT_SCOPE_THREAD, "diff_from_deadline_min",
-                         diff_from_deadline_min, "diff_from_deadline_max",
-                         diff_from_deadline_max);
+    TRACE_EVENT_INSTANT("media",
+                        "RenderWithoutAlgorithm Difference From Deadline",
+                        "diff_from_deadline_min", diff_from_deadline_min,
+                        "diff_from_deadline_max", diff_from_deadline_max);
     SetCurrentFrame(std::move(frame), is_copy, last_deadline_max_);
   }
   if (video_frame_provider_client_)
@@ -977,9 +975,8 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   TRACE_EVENT("media", "SetCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
-  TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::SetCurrentFrame",
-                       TRACE_EVENT_SCOPE_THREAD, "Timestamp",
-                       frame->timestamp().InMicroseconds());
+  TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::SetCurrentFrame",
+                      "Timestamp", frame->timestamp().InMicroseconds());
 
   if (base::FeatureList::IsEnabled(
           media::kMediaStreamAccurateDroppedFrameCount)) {
@@ -1048,10 +1045,10 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   last_preferred_render_interval_ = GetPreferredRenderInterval();
   ++presented_frames_;
 
-  TRACE_EVENT_INSTANT2("media", "SetCurrentFrame Timestamps",
-                       TRACE_EVENT_SCOPE_THREAD, "presentation_time",
-                       (last_presentation_time_), "last_expected_display_time",
-                       (last_expected_display_time_));
+  TRACE_EVENT_INSTANT("media", "SetCurrentFrame Timestamps",
+                      "presentation_time", (last_presentation_time_),
+                      "last_expected_display_time",
+                      (last_expected_display_time_));
 
   OnNewFramePresentedCB presented_frame_cb;
   {

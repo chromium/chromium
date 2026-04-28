@@ -206,10 +206,9 @@ float WebContentsAutoScaler::DetermineMaxScaleOverride() {
     }
   }
 
-  TRACE_EVENT_INSTANT2(
+  TRACE_EVENT_INSTANT(
       "gpu.capture", "WebContentsAutoScaler::DetermineMaxScaleOverride",
-      TRACE_EVENT_SCOPE_THREAD, "max_scale_override",
-      max_capture_scale_override_, "constraints",
+      "max_scale_override", max_capture_scale_override_, "constraints",
       base::StrCat(
           {"max_pixels=", base::NumberToString(capture_feedback_->max_pixels),
            ", utilization=",

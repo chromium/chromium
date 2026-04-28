@@ -51,9 +51,8 @@ void ExternalBeginFrameSourceWin::OnVSyncOnSequence(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   vsync_interval_ = vsync_interval;
   if (skip_next_vsync_) {
-    TRACE_EVENT_INSTANT0("gpu",
-                         "ExternalBeginFrameSourceWin::OnVSync - skip_vsync",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("gpu",
+                        "ExternalBeginFrameSourceWin::OnVSync - skip_vsync");
     skip_next_vsync_ = false;
     return;
   }

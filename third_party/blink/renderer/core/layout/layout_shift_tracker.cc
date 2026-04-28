@@ -683,8 +683,8 @@ void LayoutShiftTracker::ReportShift(double score_delta,
 
   SubmitPerformanceEntry(score_delta, had_recent_input);
 
-  TRACE_EVENT_INSTANT2(
-      "loading", "LayoutShift", TRACE_EVENT_SCOPE_THREAD, "data",
+  TRACE_EVENT_INSTANT(
+      "loading", "LayoutShift", "data",
       PerFrameTraceData(score_delta, weighted_score_delta, had_recent_input),
       "frame", GetFrameIdForTracing(&frame));
 

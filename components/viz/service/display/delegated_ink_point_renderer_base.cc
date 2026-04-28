@@ -166,9 +166,8 @@ void DelegatedInkPointRendererBase::PredictPoints(
 void DelegatedInkPointRendererBase::ResetPrediction() {
   for (auto& it : pointer_ids_)
     it.second.Reset();
-  TRACE_EVENT_INSTANT0("delegated_ink_trails",
-                       "Delegated ink prediction reset.",
-                       TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT("delegated_ink_trails",
+                      "Delegated ink prediction reset.");
 }
 
 void DelegatedInkPointRendererBase::ReportPointsDrawn() {

@@ -28,6 +28,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -381,10 +382,9 @@ DrawRectToTraceValue(const gfx::Vector2dF& pos,
 
 #define DBG_DEFAULT_UV 0
 
-#define DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)            \
-  TRACE_EVENT_INSTANT1(                                               \
-      TRACE_DISABLED_BY_DEFAULT(VIZ_DEBUGGER_TRACING_CATEGORY), anno, \
-      TRACE_EVENT_FLAG_NONE, "args",                                  \
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)                    \
+  TRACE_EVENT_INSTANT(                                                        \
+      TRACE_DISABLED_BY_DEFAULT(VIZ_DEBUGGER_TRACING_CATEGORY), anno, "args", \
       viz::DrawRectToTraceValue(pos, size, text))
 
 #define DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(anno, option, pos, size, id, uv, \
@@ -392,7 +392,7 @@ DrawRectToTraceValue(const gfx::Vector2dF& pos,
   std::ignore = option;                                                      \
   std::ignore = id;                                                          \
   std::ignore = uv;                                                          \
-  DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)
+  DBG_VIZ_DEBUGGER_TRACE_IMPL(perfetto::StaticString(anno), pos, size, text)
 
 #define DBG_COMPLETE_BUFFERS(buff_id, buffer) \
   std::ignore = buff_id;                      \

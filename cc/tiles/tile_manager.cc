@@ -680,8 +680,7 @@ bool TileManager::PrepareTiles(
                prepare_tiles_count_);
 
   if (!tile_task_manager_) {
-    TRACE_EVENT_INSTANT0("cc", "PrepareTiles aborted",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "PrepareTiles aborted");
     return false;
   }
 
@@ -715,8 +714,7 @@ bool TileManager::PrepareTiles(
   // Schedule tile tasks.
   ScheduleTasks(std::move(prioritized_work));
 
-  TRACE_EVENT_INSTANT1("cc", "DidPrepareTiles", TRACE_EVENT_SCOPE_THREAD,
-                       "state", BasicStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "DidPrepareTiles", "state", BasicStateAsValue());
   return true;
 }
 
@@ -724,8 +722,7 @@ bool TileManager::PrepareToDraw() {
   TRACE_EVENT0("cc", "TileManager::PrepareToDraw");
 
   if (!tile_task_manager_) {
-    TRACE_EVENT_INSTANT0("cc", "TileManager::PrepareToDrawAborted",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT("cc", "TileManager::PrepareToDrawAborted");
     // TODO(zmo): Audit if returning true is the right thing to do when
     // TreesInViz is enabled for UI and tile_task_manager_ may not exist.
     return true;
@@ -743,9 +740,9 @@ bool TileManager::PrepareToDraw() {
     client_->SetIsLikelyToRequireADraw(false);
   }
 
-  TRACE_EVENT_INSTANT1(
-      "cc", "TileManager::PrepareToDrawFinished", TRACE_EVENT_SCOPE_THREAD,
-      "stats", RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));
+  TRACE_EVENT_INSTANT(
+      "cc", "TileManager::PrepareToDrawFinished", "stats",
+      RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));
   raster_task_completion_stats_ = RasterTaskCompletionStats();
   return is_ready_to_draw;
 }
@@ -908,9 +905,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     TilePriority priority = prioritized_tile.priority();
 
     if (TilePriorityViolatesMemoryPolicy(priority)) {
-      TRACE_EVENT_INSTANT0(
-          "cc", "TileManager::AssignGpuMemory tile violates memory policy",
-          TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT(
+          "cc", "TileManager::AssignGpuMemory tile violates memory policy");
       break;
     }
 

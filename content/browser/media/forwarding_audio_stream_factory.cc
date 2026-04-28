@@ -161,8 +161,8 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
 void ForwardingAudioStreamFactory::Core::SetMuted(bool muted) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_NE(muted, !!muter_);
-  TRACE_EVENT_INSTANT2("audio", "SetMuted", TRACE_EVENT_SCOPE_THREAD, "group",
-                       group_id_.GetLowForSerialization(), "muted", muted);
+  TRACE_EVENT_INSTANT("audio", "SetMuted", "group",
+                      group_id_.GetLowForSerialization(), "muted", muted);
 
   if (!muted) {
     muter_.reset();
@@ -347,9 +347,9 @@ media::mojom::AudioStreamFactory*
 ForwardingAudioStreamFactory::Core::GetFactory() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!remote_factory_) {
-    TRACE_EVENT_INSTANT1(
-        "audio", "ForwardingAudioStreamFactory: Binding new factory",
-        TRACE_EVENT_SCOPE_THREAD, "group", group_id_.GetLowForSerialization());
+    TRACE_EVENT_INSTANT("audio",
+                        "ForwardingAudioStreamFactory: Binding new factory",
+                        "group", group_id_.GetLowForSerialization());
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BindStreamFactoryFromUIThread,
@@ -376,9 +376,9 @@ void ForwardingAudioStreamFactory::Core::ResetRemoteFactoryPtrIfIdle() {
 void ForwardingAudioStreamFactory::Core::ResetRemoteFactoryPtr() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (remote_factory_) {
-    TRACE_EVENT_INSTANT1(
-        "audio", "ForwardingAudioStreamFactory: Resetting factory",
-        TRACE_EVENT_SCOPE_THREAD, "group", group_id_.GetLowForSerialization());
+    TRACE_EVENT_INSTANT("audio",
+                        "ForwardingAudioStreamFactory: Resetting factory",
+                        "group", group_id_.GetLowForSerialization());
   }
   remote_factory_.reset();
   // The stream brokers will call a callback to be deleted soon, give them a
