@@ -197,6 +197,11 @@ void URLRequest::Delegate::OnSSLCertificateError(URLRequest* request,
   request->Cancel();
 }
 
+void URLRequest::Delegate::OnPlatformLocalNetworkAccessPermissionRequired(
+    URLRequest* request) {
+  request->CancelWithError(ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+}
+
 void URLRequest::Delegate::OnResponseStarted(URLRequest* request,
                                              int net_error) {
   NOTREACHED();
@@ -1020,6 +1025,26 @@ void URLRequest::ContinueDespiteLastError() {
   job_->ContinueDespiteLastError();
 }
 
+void URLRequest::SetPlatformLocalNetworkAccessGranted() {
+  CHECK(job_.get());
+
+  // Matches the call in NotifyPlatformLocalNetworkAccessPermissionRequired.
+  OnCallToDelegateComplete();
+
+  status_ = ERR_IO_PENDING;
+  job_->SetPlatformLocalNetworkAccessGranted();
+}
+
+void URLRequest::CancelPlatformLocalNetworkAccessRequest() {
+  DCHECK(job_.get());
+
+  // Matches the call in NotifyPlatformLocalNetworkAccessPermissionRequired.
+  OnCallToDelegateComplete();
+
+  status_ = ERR_IO_PENDING;
+  job_->CancelPlatformLocalNetworkAccessRequest();
+}
+
 void URLRequest::AbortAndCloseConnection() {
   DCHECK_EQ(OK, status_);
   DCHECK(!has_notified_completion_);
@@ -1202,6 +1227,15 @@ void URLRequest::NotifyCertificateRequested(
 
   OnCallToDelegate(NetLogEventType::URL_REQUEST_DELEGATE_CERTIFICATE_REQUESTED);
   delegate_->OnCertificateRequested(this, cert_request_info);
+}
+
+void URLRequest::NotifyPlatformLocalNetworkAccessPermissionRequired() {
+  status_ = OK;
+
+  OnCallToDelegate(
+      NetLogEventType::
+          URL_REQUEST_DELEGATE_PLATFORM_LOCAL_NETWORK_ACCESS_PERMISSION_REQUIRED);
+  delegate_->OnPlatformLocalNetworkAccessPermissionRequired(this);
 }
 
 void URLRequest::NotifySSLCertificateError(int net_error,

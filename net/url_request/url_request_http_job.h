@@ -195,6 +195,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void ContinueWithCertificate(
       scoped_refptr<X509Certificate> client_cert,
       scoped_refptr<SSLPrivateKey> client_private_key) override;
+  void SetPlatformLocalNetworkAccessGranted() override;
+  void CancelPlatformLocalNetworkAccessRequest() override;
   void ContinueDespiteLastError() override;
   int ReadRawData(IOBuffer* buf, int buf_size) override;
   base::ByteSize GetTotalReceivedBytes() const override;

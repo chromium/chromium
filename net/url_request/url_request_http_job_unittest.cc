@@ -2943,6 +2943,194 @@ TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
   }
 }
 
+TEST_F(URLRequestHttpJobTest,
+       PlatformLocalNetworkAccessPermissionGranted_Sync) {
+  MockConnect mock_connect(SYNCHRONOUS, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 7\r\n\r\n"),
+                      MockRead("Success")};
+  StaticSocketDataProvider success_data(reads, base::span<MockWrite>());
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+  socket_factory.AddSocketDataProvider(&success_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kGrant);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+
+  // The request should not have completed yet because
+  // SetPlatformLocalNetworkAccessGranted() posts a task to call
+  // OnStartCompleted() when the restart completes synchronously.
+  EXPECT_FALSE(delegate.response_completed());
+
+  delegate.RunUntilComplete();
+
+  EXPECT_EQ("Success", delegate.data_received());
+  EXPECT_EQ(OK, delegate.request_status());
+}
+
+TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessPermissionDenied_Sync) {
+  MockConnect mock_connect(SYNCHRONOUS, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kDeny);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(),
+              IsError(ERR_LOCAL_NETWORK_PERMISSION_MISSING));
+}
+
+TEST_F(URLRequestHttpJobTest,
+       PlatformLocalNetworkAccessPermissionGranted_Async) {
+  MockConnect mock_connect(ASYNC, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 7\r\n\r\n"),
+                      MockRead("Success")};
+  StaticSocketDataProvider success_data(reads, base::span<MockWrite>());
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+  socket_factory.AddSocketDataProvider(&success_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kGrant);
+  delegate.set_async_platform_local_network_access_decision(true);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_EQ("Success", delegate.data_received());
+  EXPECT_EQ(OK, delegate.request_status());
+}
+
+TEST_F(URLRequestHttpJobTest,
+       PlatformLocalNetworkAccessPermissionDenied_Async) {
+  MockConnect mock_connect(ASYNC, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kDeny);
+  delegate.set_async_platform_local_network_access_decision(true);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(),
+              IsError(ERR_LOCAL_NETWORK_PERMISSION_MISSING));
+}
+
+TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessDefault_Sync) {
+  MockConnect mock_connect(SYNCHRONOUS, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  // TestDelegate::OnPlatformLocalNetworkAccessPermissionRequired will call the
+  // default implementation when behavior is kDefault.
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kDefault);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(),
+              IsError(ERR_LOCAL_NETWORK_PERMISSION_MISSING));
+}
+
+TEST_F(URLRequestHttpJobTest, PlatformLocalNetworkAccessDefault_Async) {
+  MockConnect mock_connect(ASYNC, ERR_LOCAL_NETWORK_PERMISSION_MISSING);
+  StaticSocketDataProvider socket_data;
+  socket_data.set_connect_data(mock_connect);
+
+  MockClientSocketFactory socket_factory;
+  socket_factory.AddSocketDataProvider(&socket_data);
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_client_socket_factory_for_testing(&socket_factory);
+  context_builder->DisableHttpCache();
+  auto context = context_builder->Build();
+
+  TestDelegate delegate;
+  delegate.set_platform_network_access_behavior(
+      TestDelegate::PlatformNetworkAccessBehavior::kDefault);
+  delegate.set_async_platform_local_network_access_decision(true);
+
+  std::unique_ptr<URLRequest> req(
+      context->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
+                             &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(),
+              IsError(ERR_LOCAL_NETWORK_PERMISSION_MISSING));
+}
+
 }  // namespace net
 
 #if BUILDFLAG(IS_ANDROID)

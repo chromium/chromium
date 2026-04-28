@@ -213,6 +213,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
                                        const SSLInfo& ssl_info,
                                        bool fatal);
 
+    // Called when a request is blocked because the platform local network
+    // permission is required. The delegate should call
+    // SetPlatformLocalNetworkAccessGranted() or
+    // CancelPlatformLocalNetworkAccessRequest() to continue or cancel the
+    // request.
+    virtual void OnPlatformLocalNetworkAccessPermissionRequired(
+        URLRequest* request);
+
     // After calling Start(), the delegate will receive an OnResponseStarted
     // callback when the request has completed. |net_error| will be set to OK
     // or an actual net error. On success, all redirects have been
@@ -743,6 +751,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void ContinueWithCertificate(scoped_refptr<X509Certificate> client_cert,
                                scoped_refptr<SSLPrivateKey> client_private_key);
 
+  // Instructs this URLRequest to continue with the request because the local
+  // network access permission has been granted.
+  void SetPlatformLocalNetworkAccessGranted();
+
+  // Instructs this URLRequest to cancel the request because the local
+  // network access permission has been denied.
+  void CancelPlatformLocalNetworkAccessRequest();
+
   // This method can be called after some error notifications to instruct this
   // URLRequest to ignore the current error and continue with the request. To
   // cancel the request instead, call Cancel().
@@ -1072,6 +1088,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
                       CompletionOnceCallback callback);
   void NotifyAuthRequired(std::unique_ptr<AuthChallengeInfo> auth_info);
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);
+  void NotifyPlatformLocalNetworkAccessPermissionRequired();
   void NotifySSLCertificateError(int net_error,
                                  const SSLInfo& ssl_info,
                                  bool fatal);

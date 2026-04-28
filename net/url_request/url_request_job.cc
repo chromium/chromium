@@ -248,6 +248,16 @@ void URLRequestJob::ContinueWithCertificate(
   NOTREACHED();
 }
 
+void URLRequestJob::SetPlatformLocalNetworkAccessGranted() {
+  // The derived class should implement this!
+  NOTREACHED();
+}
+
+void URLRequestJob::CancelPlatformLocalNetworkAccessRequest() {
+  // The derived class should implement this!
+  NOTREACHED();
+}
+
 void URLRequestJob::ContinueDespiteLastError() {
   // Implementations should know how to recover from errors they generate.
   // If this code was reached, we are trying to recover from an error that
@@ -402,6 +412,10 @@ int URLRequestJob::NotifyConnected(const TransportInfo& info,
 void URLRequestJob::NotifyCertificateRequested(
     SSLCertRequestInfo* cert_request_info) {
   request_->NotifyCertificateRequested(cert_request_info);
+}
+
+void URLRequestJob::NotifyPlatformLocalNetworkAccessPermissionRequired() {
+  request_->NotifyPlatformLocalNetworkAccessPermissionRequired();
 }
 
 void URLRequestJob::NotifySSLCertificateError(int net_error,

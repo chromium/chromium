@@ -216,6 +216,37 @@ void TestDelegate::OnSSLCertificateError(URLRequest* request,
     request->Cancel();
 }
 
+void TestDelegate::OnPlatformLocalNetworkAccessPermissionRequired(
+    URLRequest* request) {
+  base::OnceClosure callback;
+  switch (platform_network_access_behavior_) {
+    case TestDelegate::PlatformNetworkAccessBehavior::kGrant:
+      callback =
+          base::BindOnce(&URLRequest::SetPlatformLocalNetworkAccessGranted,
+                         base::Unretained(request));
+      break;
+    case TestDelegate::PlatformNetworkAccessBehavior::kDeny:
+      callback =
+          base::BindOnce(&URLRequest::CancelPlatformLocalNetworkAccessRequest,
+                         base::Unretained(request));
+      break;
+    case TestDelegate::PlatformNetworkAccessBehavior::kDefault:
+      break;
+  }
+
+  if (callback) {
+    if (async_platform_local_network_access_decision_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
+    } else {
+      std::move(callback).Run();
+    }
+  } else {
+    URLRequest::Delegate::OnPlatformLocalNetworkAccessPermissionRequired(
+        request);
+  }
+}
+
 void TestDelegate::OnResponseStarted(URLRequest* request, int net_error) {
   // It doesn't make sense for the request to have IO pending at this point.
   DCHECK_NE(ERR_IO_PENDING, net_error);

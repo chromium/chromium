@@ -1295,6 +1295,8 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     NotifyCertificateRequested(
         transaction_->GetResponseInfo()->cert_request_info.get());
+  } else if (result == ERR_LOCAL_NETWORK_PERMISSION_MISSING) {
+    NotifyPlatformLocalNetworkAccessPermissionRequired();
   } else if (result == ERR_DNS_NAME_HTTPS_ONLY) {
     // If DNS indicated the name is HTTPS-only, synthesize a redirect to either
     // HTTPS or WSS.
@@ -1736,6 +1738,32 @@ void URLRequestHttpJob::ContinueWithCertificate(
   TaskRunner(priority_)->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
                                 weak_factory_.GetWeakPtr(), rv));
+}
+
+void URLRequestHttpJob::SetPlatformLocalNetworkAccessGranted() {
+  DCHECK(transaction_);
+
+  DCHECK(!response_info_) << "should not have a response yet";
+  DCHECK(!override_response_headers_);
+  receive_headers_end_ = base::TimeTicks();
+
+  ResetTimer();
+
+  int rv = transaction_->RestartIgnoringLastError(base::BindOnce(
+      &URLRequestHttpJob::OnStartCompleted, base::Unretained(this)));
+  // RestartIgnoringLastError() always returns ERR_IO_PENDING. See
+  // HttpNetworkTransaction.
+  CHECK_EQ(rv, ERR_IO_PENDING);
+}
+
+void URLRequestHttpJob::CancelPlatformLocalNetworkAccessRequest() {
+  DCHECK(transaction_);
+
+  DCHECK(!response_info_) << "should not have a response yet";
+  DCHECK(!override_response_headers_);
+  receive_headers_end_ = base::TimeTicks();
+
+  NotifyStartError(ERR_LOCAL_NETWORK_PERMISSION_MISSING);
 }
 
 void URLRequestHttpJob::ContinueDespiteLastError() {

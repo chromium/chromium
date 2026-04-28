@@ -206,6 +206,14 @@ class NET_EXPORT URLRequestJob {
       scoped_refptr<X509Certificate> client_cert,
       scoped_refptr<SSLPrivateKey> client_private_key);
 
+  // Instructs this URLRequestJob to continue with the request because the local
+  // network access permission has been granted.
+  virtual void SetPlatformLocalNetworkAccessGranted();
+
+  // Instructs this URLRequestJob to cancel the request because the local
+  // network access permission has been denied.
+  virtual void CancelPlatformLocalNetworkAccessRequest();
+
   // Continue processing the request ignoring the last error.
   virtual void ContinueDespiteLastError();
 
@@ -299,6 +307,9 @@ class NET_EXPORT URLRequestJob {
 
   // Notifies the job that a certificate is requested.
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);
+
+  // Notifies the job that a local network access permission is required.
+  void NotifyPlatformLocalNetworkAccessPermissionRequired();
 
   // Notifies the job about an SSL certificate error.
   void NotifySSLCertificateError(int net_error,
