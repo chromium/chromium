@@ -147,29 +147,37 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
     if (added_count >= kRecentlyClosedCount) {
       break;
     }
-    if (entry->type == sessions::tab_restore::Type::WINDOW) {
-      bool added = AddWindowEntryToMenu(
-          static_cast<sessions::tab_restore::Window*>(entry.get()), menu,
-          kRecentlyClosed, index);
-      if (added) {
-        ++index;
-        ++added_count;
+    switch (entry->type) {
+      case sessions::tab_restore::Type::WINDOW: {
+        bool added = AddWindowEntryToMenu(
+            static_cast<sessions::tab_restore::Window*>(entry.get()), menu,
+            kRecentlyClosed, index);
+        if (added) {
+          ++index;
+          ++added_count;
+        }
+        break;
       }
-    } else if (entry->type == sessions::tab_restore::Type::TAB) {
-      const auto& tab = static_cast<sessions::tab_restore::Tab&>(*entry);
-      std::unique_ptr<HistoryItem> item =
-          HistoryItemForTab(tab, /*attach_group_icon=*/true);
-      if (item) {
-        AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
-        ++added_count;
+      case sessions::tab_restore::Type::TAB: {
+        const auto& tab = static_cast<sessions::tab_restore::Tab&>(*entry);
+        std::unique_ptr<HistoryItem> item =
+            HistoryItemForTab(tab, /*attach_group_icon=*/true);
+        if (item) {
+          AddItemToMenu(std::move(item), menu, kRecentlyClosed, index);
+          ++index;
+          ++added_count;
+        }
+        break;
       }
-    } else if (entry->type == sessions::tab_restore::Type::GROUP) {
-      bool added = AddGroupEntryToMenu(
-          static_cast<sessions::tab_restore::Group*>(entry.get()), menu,
-          kRecentlyClosed, index);
-      if (added) {
-        ++index;
-        ++added_count;
+      case sessions::tab_restore::Type::GROUP: {
+        bool added = AddGroupEntryToMenu(
+            static_cast<sessions::tab_restore::Group*>(entry.get()), menu,
+            kRecentlyClosed, index);
+        if (added) {
+          ++index;
+          ++added_count;
+        }
+        break;
       }
     }
   }

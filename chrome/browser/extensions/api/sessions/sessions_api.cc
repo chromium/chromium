@@ -329,6 +329,7 @@ api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
     case sessions::tab_restore::Type::GROUP:
       group = CreateGroupModel(
           static_cast<const sessions::tab_restore::Group&>(entry));
+      break;
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
                                   std::move(window), std::move(group));
