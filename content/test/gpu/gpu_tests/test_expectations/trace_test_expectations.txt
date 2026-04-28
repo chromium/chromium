@@ -226,11 +226,8 @@ crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
-# Win/AMD RX 5500XT Failures
-crbug.com/402989071 [ win11 amd-0x7340 ] TraceTest_MediaFoundationD3D11VideoCapture [ RetryOnFailure ]
-
-# Win/AMD RX 7600 failures
-crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
+# Win/AMD RX 7600 / RX 5500XT failures
+crbug.com/402989071 [ win11 amd ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 
 # Win/AMD 780M failures
 # Commented out until full procurement is ready since UAT is done.
