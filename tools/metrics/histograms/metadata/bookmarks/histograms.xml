@@ -1131,19 +1131,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PowerBookmarks.{Function}.Success" enum="BooleanSuccess"
-    expires_after="2025-03-02">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-collections@google.com</owner>
-  <summary>Tracks the success of a power bookmark api call.</summary>
-  <token key="Function">
-    <variant name="PowerCreated"/>
-    <variant name="PowerDeleted"/>
-    <variant name="PowersDeletedForURL"/>
-    <variant name="PowerUpdated"/>
-  </token>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
