@@ -46,11 +46,6 @@ class AutofillOfferManager : public KeyedService,
   // Invoked when the navigation happens.
   void OnDidNavigateFrame(AutofillClient& client);
 
-  // Gets a mapping between credit card's guid id and eligible card-linked
-  // offers on the `last_committed_primary_main_frame_url`.
-  CardLinkedOffersMap GetCardLinkedOffersMap(
-      const GURL& last_committed_primary_main_frame_url) const;
-
   // Returns true only if the domain of `last_committed_primary_main_frame_url`
   // has an offer.
   bool IsUrlEligible(const GURL& last_committed_primary_main_frame_url);

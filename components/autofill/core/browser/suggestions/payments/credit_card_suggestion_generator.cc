@@ -139,14 +139,11 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   }
 
   std::vector<Suggestion> suggestions;
-  std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(client);
 
   for (const CreditCard& credit_card : cards_to_suggest) {
     Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
-        card_linked_offers_map.contains(credit_card.guid()),
         summary.metadata_logging_context);
     suggestions.push_back(suggestion);
   }

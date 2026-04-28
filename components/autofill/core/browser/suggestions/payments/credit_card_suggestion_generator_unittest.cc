@@ -252,10 +252,6 @@ class PaymentsSuggestionGeneratorTest
     mock_payments_autofill_client_ = mock_payments_autofill_client.get();
     autofill_client().set_payments_autofill_client(
         std::move(mock_payments_autofill_client));
-    payments_autofill_client().set_autofill_offer_manager(
-        std::make_unique<AutofillOfferManager>(&autofill_client()
-                                                    .GetPersonalDataManager()
-                                                    .payments_data_manager()));
     CreateAutofillDriver();
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
@@ -470,8 +466,7 @@ class AutofillCreditCardBenefitsLabelTest
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
     CreateCreditCardSuggestionForTest(
         card(), autofill_client(), CREDIT_CARD_NUMBER,
-        /*virtual_card_option=*/false,
-        /*card_linked_offer_available=*/false, &metadata_logging_context);
+        /*virtual_card_option=*/false, &metadata_logging_context);
 
     base::flat_map<int64_t, std::string>
         expected_instrument_ids_to_available_benefit_sources = {
@@ -500,8 +495,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
   if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
@@ -519,8 +513,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   autofill_client().ResetAutofillOptimizationGuideDecider();
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
   ASSERT_FALSE(autofill_client().GetAutofillOptimizationGuideDecider());
   if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
@@ -540,8 +533,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_Fpan) {
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
   if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_EQ(suggestion.iph_metadata.feature, nullptr);
@@ -555,10 +547,9 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // virtual card suggestions with benefits labels.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_VirtualCard) {
-  EXPECT_EQ(CreateCreditCardSuggestionForTest(
-                card(), autofill_client(), CREDIT_CARD_NUMBER,
-                /*virtual_card_option=*/true,
-                /*card_linked_offer_available=*/false)
+  EXPECT_EQ(CreateCreditCardSuggestionForTest(card(), autofill_client(),
+                                              CREDIT_CARD_NUMBER,
+                                              /*virtual_card_option=*/true)
                 .iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 }
@@ -573,8 +564,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       .WillByDefault(testing::Return(true));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   if (std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_EQ(suggestion.iph_metadata.feature, nullptr);
@@ -595,8 +585,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard) {
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/true,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/true);
   if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
@@ -619,8 +608,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   EXPECT_THAT(
       CreateCreditCardSuggestionForTest(virtual_card, autofill_client(),
                                         CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false)
+                                        /*virtual_card_option=*/true)
           .labels,
       ElementsAre(std::vector<Suggestion::Text>{
           Suggestion::Text(l10n_util::GetStringUTF16(
@@ -659,8 +647,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       GURL("https://random-url.com"));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // Merchant benefit description is not returned.
   EXPECT_TRUE(suggestion.labels.empty());
@@ -682,8 +669,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // Category benefit description is not returned.
   EXPECT_TRUE(suggestion.labels.empty());
@@ -699,8 +685,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       .WillByDefault(testing::Return(true));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // Benefit description is not returned for flat rate benefits.
   if (std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
@@ -1079,56 +1064,6 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetServerCardForLocalCard) {
   payments_data().ClearCreditCards();
   payments_data().AddServerCreditCard(server_card);
   EXPECT_FALSE(payments_data().GetServerCardForLocalCard(&local_card));
-}
-
-// The suggestions of credit cards with card linked offers are moved to the
-// front. This test checks that the order of the other cards remains stable.
-TEST_F(PaymentsSuggestionGeneratorTest,
-       GetCreditCardOrCvcFieldSuggestions_StableSortBasedOnOffer) {
-  // Create three server cards.
-  payments_data().ClearCreditCards();
-  payments_data().AddServerCreditCard(CreateServerCard(
-      /*guid=*/"00000000-0000-0000-0000-000000000001",
-      /*server_id=*/"server_id1", /*instrument_id=*/1));
-  payments_data().AddServerCreditCard(CreateServerCard(
-      /*guid=*/"00000000-0000-0000-0000-000000000002",
-      /*server_id=*/"server_id2", /*instrument_id=*/2));
-  payments_data().AddServerCreditCard(CreateServerCard(
-      /*guid=*/"00000000-0000-0000-0000-000000000003",
-      /*server_id=*/"server_id3", /*instrument_id=*/3));
-
-  // Create a card linked offer and attach it to server_card2.
-  AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
-  offer_data.SetMerchantOriginForTesting({GURL("https://www.example1.com")});
-  offer_data.SetEligibleInstrumentIdForTesting({2});
-  autofill_client().set_last_committed_primary_main_frame_url(
-      GURL("https://www.example1.com"));
-  payments_data().AddAutofillOfferData(offer_data);
-
-  FormBundle form_bundle =
-      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
-
-  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
-      *form_bundle.trigger_autofill_field, autofill_client(),
-      /*four_digit_combinations_in_dom=*/{},
-      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
-      credit_card_form_event_logger(),
-      AutofillMetrics::PaymentsSigninState::kUnknown,
-      /*exclude_virtual_cards=*/false);
-
-  ASSERT_EQ(suggestions.size(), 5U);
-  // The suggestion with card linked offer available should be ranked to the
-  // top.
-  EXPECT_EQ(suggestions[0].GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("00000000-0000-0000-0000-000000000002"));
-  // The other suggestions should have their relative ranking unchanged.
-  EXPECT_EQ(suggestions[1].GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("00000000-0000-0000-0000-000000000003"));
-  EXPECT_EQ(suggestions[2].GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-  EXPECT_THAT(suggestions,
-              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
 // Ensures we appropriately generate suggestions for virtual cards on a
@@ -1673,8 +1608,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                 EqualsSuggestion(CreateCreditCardSuggestionForTest(
                     card, autofill_client(), CREDIT_CARD_NUMBER,
                     /*virtual_card_option=*/card.record_type() ==
-                        CreditCard::RecordType::kVirtualCard,
-                    /*card_linked_offer_available=*/false)));
+                        CreditCard::RecordType::kVirtualCard)));
   }
   EXPECT_THAT(updated_suggestions[current_suggestion_index++],
               EqualsSuggestion(SuggestionType::kSeparator));
@@ -1794,8 +1728,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                 EqualsSuggestion(CreateCreditCardSuggestionForTest(
                     card, autofill_client(), CREDIT_CARD_NUMBER,
                     /*virtual_card_option=*/card.record_type() ==
-                        CreditCard::RecordType::kVirtualCard,
-                    /*card_linked_offer_available=*/false)));
+                        CreditCard::RecordType::kVirtualCard)));
   }
 
   EXPECT_EQ(updated_suggestions[current_suggestion_index++].type,
@@ -3782,8 +3715,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   Suggestion virtual_card_name_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NAME_FULL,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/true);
 
 #if BUILDFLAG(IS_ANDROID)
   // For the keyboard accessory, the "Virtual card" label is added as a prefix
@@ -3842,8 +3774,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   Suggestion virtual_card_number_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/true);
 
 #if BUILDFLAG(IS_IOS)
   // Only card number is displayed on the first line.
@@ -3892,8 +3823,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   Suggestion real_card_name_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NAME_FULL,
-                                        /*virtual_card_option=*/false,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/false);
 
   // Only the name is displayed on the first line.
   EXPECT_EQ(real_card_name_field_suggestion.main_text.value, u"Elvis Presley");
@@ -3931,8 +3861,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   Suggestion real_card_number_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/false,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/false);
 
 #if BUILDFLAG(IS_IOS)
   // Only the card number is displayed on the first line.
@@ -4169,8 +4098,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // From the credit card number field, the suggestion should show the card type
   // and number and the label should show the expiration date.
@@ -4179,8 +4107,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NAME_FULL,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // From the credit card name field, the suggestion should show the full name
   // and the label should show the card type and number.
@@ -4190,8 +4117,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_EXP_MONTH,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   // From a credit card expiry field, the suggestion should show the expiration
   // date and the label should show the card type and number.
@@ -4202,8 +4128,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   server_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/true,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/true);
 
   // From a virtual credit card, the suggestion should show the card name and
   // the label should show the card's virtual status, type and number.
@@ -4258,8 +4183,7 @@ TEST_P(
   Suggestion virtual_card_name_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NAME_FULL,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/true);
 
   // `IsAcceptable()` returns false only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_name_field_suggestion.IsAcceptable(),
@@ -4322,8 +4246,7 @@ TEST_P(
   Suggestion virtual_card_number_field_suggestion =
       CreateCreditCardSuggestionForTest(server_card, autofill_client(),
                                         CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/true,
-                                        /*card_linked_offer_available=*/false);
+                                        /*virtual_card_option=*/true);
 
   // `IsAcceptable()` returns false only when flag is enabled and merchant has
   // opted out of VCN.
@@ -4382,8 +4305,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion virtual_card_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/true,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/true);
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
@@ -4394,8 +4316,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
@@ -4411,8 +4332,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
       local_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
@@ -4439,8 +4359,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion virtual_card_suggestion = CreateCreditCardSuggestionForTest(
       local_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/true,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/true);
 
   EXPECT_EQ(virtual_card_suggestion.type,
             SuggestionType::kVirtualCreditCardEntry);
@@ -4451,8 +4370,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
 
   Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
       local_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
@@ -4596,106 +4514,6 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
             !card_has_capital_one_icon());
 }
 
-class PaymentsSuggestionGeneratorTestForOffer
-    : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PaymentsSuggestionGeneratorTestForOffer() {
-#if BUILDFLAG(IS_ANDROID)
-    keyboard_accessory_offer_enabled_ = GetParam();
-    if (keyboard_accessory_offer_enabled_) {
-      scoped_feature_keyboard_accessory_offer_.InitWithFeatures(
-          {features::kAutofillEnableOffersInClankKeyboardAccessory}, {});
-    } else {
-      scoped_feature_keyboard_accessory_offer_.InitWithFeatures(
-          {}, {features::kAutofillEnableOffersInClankKeyboardAccessory});
-    }
-#endif
-  }
-  ~PaymentsSuggestionGeneratorTestForOffer() override = default;
-
-  bool keyboard_accessory_offer_enabled() {
-#if BUILDFLAG(IS_ANDROID)
-    return keyboard_accessory_offer_enabled_;
-#else
-    return false;
-#endif
-  }
-
-#if BUILDFLAG(IS_ANDROID)
- private:
-  bool keyboard_accessory_offer_enabled_;
-  base::test::ScopedFeatureList scoped_feature_keyboard_accessory_offer_;
-#endif
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaymentsSuggestionGeneratorTestForOffer,
-                         testing::Bool());
-
-// Test to make sure the suggestion gets populated with the right content if the
-// card has card linked offer available.
-TEST_P(PaymentsSuggestionGeneratorTestForOffer,
-       CreateCreditCardSuggestion_ServerCardWithOffer) {
-  // Create a server card.
-  CreditCard server_card1 =
-      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
-
-  Suggestion virtual_card_suggestion = CreateCreditCardSuggestionForTest(
-      server_card1, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/true,
-      /*card_linked_offer_available=*/true);
-
-  EXPECT_EQ(virtual_card_suggestion.type,
-            SuggestionType::kVirtualCreditCardEntry);
-  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-
-  size_t expected_labels_size;
-#if BUILDFLAG(IS_ANDROID)
-  // For credit card number field, the expiration date is not shown as a
-  // suggestion label when the virtual card metadata flag is enabled on Android
-  // OS.
-  expected_labels_size = 0;
-#elif BUILDFLAG(IS_IOS)
-  // For iOS, the expiration date is shown as a suggestion label.
-  expected_labels_size = 1;
-#else
-  // For virtual cards, expiration date is not shown as a suggestion label.
-  expected_labels_size = 0;
-#endif
-  EXPECT_EQ(virtual_card_suggestion.labels.size(), expected_labels_size);
-
-  Suggestion real_card_suggestion = CreateCreditCardSuggestionForTest(
-      server_card1, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/true);
-
-  EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
-  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::Guid>(),
-            Suggestion::Guid("00000000-0000-0000-0000-000000000001"));
-
-  if (keyboard_accessory_offer_enabled()) {
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(real_card_suggestion.labels.size(), 1U);
-    EXPECT_EQ(real_card_suggestion.iph_metadata.feature,
-              &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
-#endif
-  } else {
-#if BUILDFLAG(IS_IOS)
-    ASSERT_EQ(real_card_suggestion.labels.size(), 2U);
-    ASSERT_EQ(real_card_suggestion.labels[1].size(), 1U);
-    EXPECT_EQ(real_card_suggestion.labels[1][0].value,
-              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
-#elif !BUILDFLAG(IS_ANDROID)
-    ASSERT_EQ(real_card_suggestion.labels.size(), 1U);
-    ASSERT_EQ(real_card_suggestion.labels[0].size(), 1U);
-    EXPECT_EQ(real_card_suggestion.labels[0][0].value,
-              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
-#endif
-  }
-}
-
 // Tests that PaymentsSuggestionGenerator correctly returns virtual cards with
 // usage data and VCN last four for a standalone cvc field.
 TEST_F(
@@ -4823,8 +4641,7 @@ TEST_P(SuggestionIphBubbleTest,
 
   Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   EXPECT_EQ(
       card_info_retrieval_enrollment_state() ==
@@ -4859,8 +4676,7 @@ TEST_P(SuggestionIphBubbleTest,
 
   Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   EXPECT_EQ(
       card_info_retrieval_enrollment_state() ==
@@ -4940,8 +4756,7 @@ TEST_P(DownstreamCardAwarenessIphTest,
 
   Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
       server_card, autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
+      /*virtual_card_option=*/false);
 
   bool should_show_iph =
       is_downstream_card_awareness_iph_enabled() &&

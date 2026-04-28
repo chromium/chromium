@@ -32,7 +32,6 @@ class BnplManager;
 }  // namespace payments
 
 class AutofillClient;
-class AutofillOfferData;
 class BrowserAutofillManager;
 class CreditCard;
 class FormFieldData;
@@ -197,9 +196,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.
-// `card_linked_offer_available` indicates whether a card-linked offer is
-// attached to the `credit_card`. `metadata_logging_context` contains card
-// metadata related information used for metrics logging.
+// `metadata_logging_context` contains card metadata related information used
+// for metrics logging.
 // TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
 // Keyboard Accessory.
 Suggestion CreateCreditCardSuggestion(
@@ -207,7 +205,6 @@ Suggestion CreateCreditCardSuggestion(
     const AutofillClient& client,
     FieldType trigger_field_type,
     bool virtual_card_option,
-    bool card_linked_offer_available,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
 // Returns a mapping of credit card guid values to virtual card last fours for
@@ -236,7 +233,6 @@ Suggestion CreateCreditCardSuggestionForTest(
     const AutofillClient& client,
     FieldType trigger_field_type,
     bool virtual_card_option,
-    bool card_linked_offer_available,
     base::optional_ref<autofill_metrics::CardMetadataLoggingContext>
         metadata_logging_context = std::nullopt);
 
@@ -310,11 +306,6 @@ Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
 
 // Returns true if the new FOP (form-of-payment) display is enabled.
 bool ShouldUseNewFopDisplay();
-
-// Returns the card-linked offers map with credit card guid as the key and the
-// pointer to the linked AutofillOfferData as the value.
-std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
-    const AutofillClient& autofill_client);
 
 // Returns the obfuscation length to be used for credit cards during suggestion
 // generation.

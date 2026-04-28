@@ -38,8 +38,6 @@ const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 const char kTestGuid2[] = "00000000-0000-0000-0000-000000000002";
 const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
-const char kTestUrlWithParam[] =
-    "http://www.example.com/en/payments?name=checkout";
 const char kOfferDetailsUrl[] = "http://pay.google.com";
 
 }  // namespace
@@ -129,69 +127,6 @@ class AutofillOfferManagerTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 };
-
-// Verify that a card linked offer is returned for an eligible url.
-TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_EligibleCashback) {
-  CreditCard card = CreateCreditCard(kTestGuid);
-  AutofillOfferData offer = CreateCreditCardOfferForCard(card, "5%");
-  payments_data_manager().AddAutofillOfferData(offer);
-
-  auto card_linked_offer_map =
-      autofill_offer_manager_->GetCardLinkedOffersMap(GURL(kTestUrlWithParam));
-
-  EXPECT_THAT(card_linked_offer_map,
-              ElementsAre(Pair(card.guid(), Pointee(offer))));
-}
-
-// Verify that not expired offers are returned.
-TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_ExpiredOffer) {
-  CreditCard card = CreateCreditCard(kTestGuid);
-  payments_data_manager().AddAutofillOfferData(
-      CreateCreditCardOfferForCard(card, "5%", /*expired=*/true));
-
-  auto card_linked_offer_map =
-      autofill_offer_manager_->GetCardLinkedOffersMap(GURL(kTestUrlWithParam));
-  EXPECT_TRUE(card_linked_offer_map.empty());
-}
-
-// Verify that not offers are returned for a mismatching URL.
-TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_WrongUrl) {
-  CreditCard card = CreateCreditCard(kTestGuid);
-  payments_data_manager().AddAutofillOfferData(
-      CreateCreditCardOfferForCard(card, "5%"));
-
-  auto card_linked_offer_map = autofill_offer_manager_->GetCardLinkedOffersMap(
-      GURL("http://wrongurl.com/"));
-  EXPECT_TRUE(card_linked_offer_map.empty());
-}
-
-// Verify the card linked offer map returned contains only card linked offers,
-// and no other types of offer (i.e. promo code offer).
-TEST_F(AutofillOfferManagerTest, GetCardLinkedOffersMap_OnlyCardLinkedOffers) {
-  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
-  CreditCard card2 = CreateCreditCard(kTestGuid, "4111111111111111", 101);
-
-  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
-      card1, "5%", /*expired=*/false,
-      /*merchant_origins=*/
-      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
-  AutofillOfferData offer2 = CreateCreditCardOfferForCard(
-      card2, "10%", /*expired=*/false,
-      /*merchant_origins=*/
-      {GURL("http://www.example.com"), GURL("http://www.example2.com")});
-  AutofillOfferData offer3 =
-      CreatePromoCodeOffer(/*merchant_origins=*/
-                           {GURL("http://www.example.com"),
-                            GURL("http://www.example2.com")});
-  payments_data_manager().AddAutofillOfferData(offer1);
-  payments_data_manager().AddAutofillOfferData(offer2);
-  payments_data_manager().AddAutofillOfferData(offer3);
-
-  auto card_linked_offer_map = autofill_offer_manager_->GetCardLinkedOffersMap(
-      GURL("http://www.example.com"));
-  ASSERT_EQ(card_linked_offer_map.size(), 1U);
-  EXPECT_EQ(*card_linked_offer_map.at(card2.guid()), offer2);
-}
 
 // Verify that URLs with card linked offers available are marked as eligible.
 TEST_F(AutofillOfferManagerTest, IsUrlEligible) {

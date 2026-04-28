@@ -906,18 +906,6 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
       event);
 }
 
-bool CreditCardFormEventLogger::DoesCardHaveOffer(
-    const CreditCard& credit_card) {
-  auto* offer_manager =
-      client().GetPaymentsAutofillClient()->GetAutofillOfferManager();
-  if (!offer_manager)
-    return false;
-
-  auto card_linked_offer_map = offer_manager->GetCardLinkedOffersMap(
-      client().GetLastCommittedPrimaryMainFrameURL());
-  return card_linked_offer_map.contains(credit_card.guid());
-}
-
 bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   auto is_virtual_card = [](const Suggestion& suggestion) {
     return suggestion.type == SuggestionType::kVirtualCreditCardEntry;

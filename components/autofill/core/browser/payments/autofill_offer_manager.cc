@@ -39,47 +39,6 @@ void AutofillOfferManager::OnDidNavigateFrame(AutofillClient& client) {
   notification_handler_.UpdateOfferNotificationVisibility(client);
 }
 
-AutofillOfferManager::CardLinkedOffersMap
-AutofillOfferManager::GetCardLinkedOffersMap(
-    const GURL& last_committed_primary_main_frame_url) const {
-  GURL last_committed_primary_main_frame_origin =
-      last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL();
-
-  if (!eligible_merchant_domains_.contains(
-          last_committed_primary_main_frame_origin)) {
-    return {};
-  }
-
-  const std::vector<const CreditCard*> cards =
-      payments_data_manager_->GetCreditCards();
-  AutofillOfferManager::CardLinkedOffersMap card_linked_offers_map;
-
-  for (const AutofillOfferData* offer :
-       payments_data_manager_->GetAutofillOffers()) {
-    // Ensure the offer is valid.
-    if (!offer->IsActiveAndEligibleForOrigin(
-            last_committed_primary_main_frame_origin)) {
-      continue;
-    }
-
-    // Ensure the offer is a card-linked offer.
-    if (!offer->IsCardLinkedOffer()) {
-      continue;
-    }
-
-    for (const CreditCard* card : cards) {
-      // If card has an offer, add the card's guid id to the map. There is
-      // currently a one-to-one mapping between cards and offer data.
-      if (std::ranges::contains(offer->GetEligibleInstrumentIds(),
-                                card->instrument_id())) {
-        card_linked_offers_map[card->guid()] = offer;
-      }
-    }
-  }
-
-  return card_linked_offers_map;
-}
-
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
   return eligible_merchant_domains_.contains(
