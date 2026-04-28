@@ -186,7 +186,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
    protected:  // For testing
     std::optional<TypeForMetrics> type() const { return type_; }
     const base::TimeTicks& start_time() const { return start_time_; }
-    size_t id() const { return id_; }
+    uint64_t id() const { return id_; }
 
    private:
     friend class IDBRequest;
@@ -195,7 +195,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     base::TimeTicks start_time_;
 
     // Uniquely generated ID that ties an async trace's begin and end events.
-    size_t id_ = 0;
+    uint64_t id_ = 0;
   };
 
   static IDBRequest* Create(ScriptState*,

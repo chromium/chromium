@@ -28,12 +28,12 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 
-#include <atomic>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
@@ -181,10 +181,9 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
 
 IDBRequest::AsyncTraceState::AsyncTraceState(TypeForMetrics type)
     : type_(type), start_time_(base::TimeTicks::Now()) {
-  static std::atomic<size_t> counter(0);
-  id_ = counter.fetch_add(1, std::memory_order_relaxed);
+  id_ = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT_BEGIN("IndexedDB",
-                    perfetto::DynamicString(RequestTypeToName(type)),
+                    perfetto::StaticString(RequestTypeToName(type)),
                     perfetto::Track(id_));
 }
 
