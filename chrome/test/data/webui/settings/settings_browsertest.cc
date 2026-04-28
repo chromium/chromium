@@ -1034,6 +1034,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngineIcon) {
   RunTest("settings/search_engine_icon_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngineListDialog) {
+  RunTest("settings/search_engine_list_dialog_test.js", "mocha.run()");
+}
+
 // TODO(crbug.com/448517054): Flaky on Linux debug builds.
 #if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_SearchEngines DISABLED_SearchEngines
