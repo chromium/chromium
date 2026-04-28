@@ -702,7 +702,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
   }
 
   const base::DictValue* custom_icon = entry.FindDict(kCustomIconKey);
-  if (custom_icon && custom_icon) {
+  if (custom_icon) {
     const std::string* icon_url = custom_icon->FindString(kCustomIconURLKey);
     if (icon_url) {
       GURL icon_gurl = GURL(*icon_url);
