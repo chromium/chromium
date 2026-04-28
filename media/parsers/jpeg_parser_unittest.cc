@@ -15,21 +15,9 @@
 
 namespace media {
 
-class JpegParserTest : public testing::TestWithParam<bool> {
- public:
-  JpegParserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(kUseRustJpegParser);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(kUseRustJpegParser);
-    }
-  }
+class JpegParserTest : public testing::Test {};
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(JpegParserTest, Parsing) {
+TEST_F(JpegParserTest, Parsing) {
   base::FilePath data_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
 
@@ -97,7 +85,7 @@ TEST_P(JpegParserTest, Parsing) {
   EXPECT_EQ(121358u, result.image_size);
 }
 
-TEST_P(JpegParserTest, TrailingZerosShouldBeIgnored) {
+TEST_F(JpegParserTest, TrailingZerosShouldBeIgnored) {
   base::FilePath data_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
   base::FilePath file_path =
@@ -120,7 +108,7 @@ TEST_P(JpegParserTest, TrailingZerosShouldBeIgnored) {
   EXPECT_EQ(121358u, result.image_size);
 }
 
-TEST_P(JpegParserTest, CodedSizeNotEqualVisibleSize) {
+TEST_F(JpegParserTest, CodedSizeNotEqualVisibleSize) {
   base::FilePath data_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
 
@@ -145,48 +133,10 @@ TEST_P(JpegParserTest, CodedSizeNotEqualVisibleSize) {
   EXPECT_EQ(2, result.frame_header.components[0].vertical_sampling_factor);
 }
 
-TEST_P(JpegParserTest, ParsingFail) {
+TEST_F(JpegParserTest, ParsingFail) {
   const uint8_t data[] = {0, 1, 2, 3};  // not jpeg
   JpegParseResult result;
   ASSERT_FALSE(ParseJpegPicture(data, &result));
-}
-
-INSTANTIATE_TEST_SUITE_P(All, JpegParserTest, testing::Bool());
-
-TEST(JpegParserRobustnessTest, JpegHuffmanTableEqualityRobustness) {
-  JpegHuffmanTable table1{};
-  table1.valid = true;
-  table1.code_length.fill(255);  // sum = 16 * 255 = 4080 > 162
-  table1.code_value.fill(0);
-
-  JpegHuffmanTable table2 = table1;
-
-  // This should not crash even though num_codes > 162.
-  EXPECT_TRUE(table1 == table2);
-}
-
-TEST(JpegParserRobustnessTest, JpegFrameHeaderEqualityRobustness) {
-  JpegFrameHeader header1{};
-  header1.visible_width = 100;
-  header1.visible_height = 100;
-  header1.coded_width = 100;
-  header1.coded_height = 100;
-  header1.num_components = 10;  // > kJpegMaxComponents (4)
-
-  JpegFrameHeader header2 = header1;
-
-  // This should not crash even though num_components > 4.
-  EXPECT_TRUE(header1 == header2);
-}
-
-TEST(JpegParserRobustnessTest, JpegScanHeaderEqualityRobustness) {
-  JpegScanHeader scan1{};
-  scan1.num_components = 10;  // > kJpegMaxComponents (4)
-
-  JpegScanHeader scan2 = scan1;
-
-  // This should not crash even though num_components > 4.
-  EXPECT_TRUE(scan1 == scan2);
 }
 
 }  // namespace media

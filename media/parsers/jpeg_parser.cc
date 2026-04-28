@@ -9,33 +9,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/span_reader.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "media/base/media_switches.h"
-#include "media/parsers/parse_jpeg_wrapper.h"
-
-#define READ_U8_OR_RETURN_FALSE(out)                                       \
-  do {                                                                     \
-    uint8_t _out;                                                          \
-    if (!reader.ReadU8BigEndian(_out)) {                                   \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return false;                                                        \
-    }                                                                      \
-    out = _out;                                                            \
-  } while (0)
-
-#define READ_U16_OR_RETURN_FALSE(out)                                      \
-  do {                                                                     \
-    uint16_t _out;                                                         \
-    if (!reader.ReadU16BigEndian(_out)) {                                  \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return false;                                                        \
-    }                                                                      \
-    out = _out;                                                            \
-  } while (0)
+#include "media/parsers/parse_jpeg.rs.h"
 
 namespace media {
 
@@ -124,475 +99,97 @@ constexpr JpegQuantizationTable kDefaultQuantTable[2] = {
     },
 };
 
-static bool InRange(int value, int a, int b) {
-  return a <= value && value <= b;
-}
-
-// Round up |value| to multiple of |mul|. |value| must be non-negative.
-// |mul| must be positive.
-static int RoundUp(int value, int mul) {
-  DCHECK_GE(value, 0);
-  DCHECK_GE(mul, 1);
-  return (value + mul - 1) / mul * mul;
-}
-
-// |frame_header| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOF(base::span<const uint8_t> buffer,
-                     JpegFrameHeader* frame_header) {
-  // Spec B.2.2 Frame header syntax
-  DCHECK(frame_header);
-  auto reader = base::SpanReader(buffer);
-
-  uint8_t precision;
-  READ_U8_OR_RETURN_FALSE(precision);
-  READ_U16_OR_RETURN_FALSE(frame_header->visible_height);
-  READ_U16_OR_RETURN_FALSE(frame_header->visible_width);
-  READ_U8_OR_RETURN_FALSE(frame_header->num_components);
-
-  if (precision != 8) {
-    DLOG(ERROR) << "Only support 8-bit precision, not "
-                << static_cast<int>(precision) << " bit for baseline";
-    return false;
-  }
-  if (!InRange(frame_header->num_components, 1,
-               std::size(frame_header->components))) {
-    DLOG(ERROR) << "num_components="
-                << static_cast<int>(frame_header->num_components)
-                << " is not supported";
-    return false;
-  }
-
-  int max_h_factor = 0;
-  int max_v_factor = 0;
-  for (size_t i = 0; i < frame_header->num_components; i++) {
-    JpegComponent& component = frame_header->components[i];
-    READ_U8_OR_RETURN_FALSE(component.id);
-    if (component.id > frame_header->num_components) {
-      DLOG(ERROR) << "component id (" << static_cast<int>(component.id)
-                  << ") should be <= num_components ("
-                  << static_cast<int>(frame_header->num_components) << ")";
-      return false;
-    }
-    uint8_t hv;
-    READ_U8_OR_RETURN_FALSE(hv);
-    component.horizontal_sampling_factor = hv / 16;
-    component.vertical_sampling_factor = hv % 16;
-    if (component.horizontal_sampling_factor > max_h_factor)
-      max_h_factor = component.horizontal_sampling_factor;
-    if (component.vertical_sampling_factor > max_v_factor)
-      max_v_factor = component.vertical_sampling_factor;
-    if (!InRange(component.horizontal_sampling_factor, 1, 4)) {
-      DVLOG(1) << "Invalid horizontal sampling factor "
-               << static_cast<int>(component.horizontal_sampling_factor);
-      return false;
-    }
-    if (!InRange(component.vertical_sampling_factor, 1, 4)) {
-      DVLOG(1) << "Invalid vertical sampling factor "
-               << static_cast<int>(component.horizontal_sampling_factor);
-      return false;
-    }
-    READ_U8_OR_RETURN_FALSE(component.quantization_table_selector);
-    if (component.quantization_table_selector >= kJpegMaxQuantizationTableNum) {
-      DVLOG(1) << "Invalid quantization table selector "
-               << static_cast<int>(component.quantization_table_selector);
-      return false;
-    }
-  }
-
-  // The size of data unit is 8*8 and the coded size should be extended
-  // to complete minimum coded unit, MCU. See Spec A.2.
-  frame_header->coded_width =
-      RoundUp(frame_header->visible_width, max_h_factor * 8);
-  frame_header->coded_height =
-      RoundUp(frame_header->visible_height, max_v_factor * 8);
-
-  return true;
-}
-
-// |q_table| is already initialized to 0 in ParseJpegPicture.
-static bool ParseDQT(base::span<const uint8_t> buffer,
-                     base::span<JpegQuantizationTable> q_table) {
-  // Spec B.2.4.1 Quantization table-specification syntax
-  DCHECK(!q_table.empty());
-  auto reader = base::SpanReader(buffer);
-  while (reader.remaining() > 0u) {
-    uint8_t precision_and_table_id;
-    READ_U8_OR_RETURN_FALSE(precision_and_table_id);
-    uint8_t precision = precision_and_table_id / 16;
-    uint8_t table_id = precision_and_table_id % 16;
-    if (!InRange(precision, 0, 1)) {
-      DVLOG(1) << "Invalid precision " << static_cast<int>(precision);
-      return false;
-    }
-    if (precision == 1) {  // 1 means 16-bit precision
-      DLOG(ERROR) << "An 8-bit DCT-based process shall not use a 16-bit "
-                  << "precision quantization table";
-      return false;
-    }
-    if (table_id >= kJpegMaxQuantizationTableNum) {
-      DLOG(ERROR) << "Quantization table id (" << static_cast<int>(table_id)
-                  << ") exceeded " << kJpegMaxQuantizationTableNum;
-      return false;
-    }
-
-    if (!reader.ReadCopy(q_table[table_id].value)) {
-      return false;
-    }
-    q_table[table_id].valid = true;
-  }
-  return true;
-}
-
-// |dc_table| and |ac_table| are already initialized to 0 in ParseJpegPicture.
-static bool ParseDHT(base::span<const uint8_t> buffer,
-                     base::span<JpegHuffmanTable> dc_table,
-                     base::span<JpegHuffmanTable> ac_table) {
-  // Spec B.2.4.2 Huffman table-specification syntax
-  DCHECK(!dc_table.empty());
-  DCHECK(!ac_table.empty());
-  auto reader = base::SpanReader(buffer);
-  while (reader.remaining() > 0u) {
-    uint8_t table_class_and_id;
-    READ_U8_OR_RETURN_FALSE(table_class_and_id);
-    int table_class = table_class_and_id / 16;
-    int table_id = table_class_and_id % 16;
-    if (!InRange(table_class, 0, 1)) {
-      DVLOG(1) << "Invalid table class " << table_class;
-      return false;
-    }
-    if (table_id >= 2) {
-      DLOG(ERROR) << "Table id(" << table_id
-                  << ") >= 2 is invalid for baseline profile";
-      return false;
-    }
-
-    JpegHuffmanTable* table;
-    if (table_class == 1)
-      table = &ac_table[table_id];
-    else
-      table = &dc_table[table_id];
-
-    size_t count = 0u;
-    if (!reader.ReadCopy(table->code_length)) {
-      return false;
-    }
-    for (uint8_t code_len : table->code_length) {
-      count += code_len;
-    }
-
-    if (!InRange(count, 0u, sizeof(table->code_value))) {
-      DVLOG(1) << "Invalid code count " << count;
-      return false;
-    }
-    if (!reader.ReadCopy(base::span(table->code_value).first(count))) {
-      return false;
-    }
-    table->valid = true;
-  }
-  return true;
-}
-
-static bool ParseDRI(base::span<const uint8_t> buffer,
-                     uint16_t* restart_interval) {
-  // Spec B.2.4.4 Restart interval definition syntax
-  DCHECK(restart_interval);
-  if (buffer.size() != 2) {
-    return false;
-  }
-  *restart_interval = base::U16FromBigEndian(buffer.first<2>());
-  return true;
-}
-
-// |scan| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOS(base::span<const uint8_t> buffer,
-                     const JpegFrameHeader& frame_header,
-                     JpegScanHeader* scan) {
-  // Spec B.2.3 Scan header syntax
-  DCHECK(scan);
-  auto reader = base::SpanReader(buffer);
-  READ_U8_OR_RETURN_FALSE(scan->num_components);
-  if (scan->num_components != frame_header.num_components) {
-    DLOG(ERROR) << "The number of scan components ("
-                << static_cast<int>(scan->num_components)
-                << ") mismatches the number of image components ("
-                << static_cast<int>(frame_header.num_components) << ")";
-    return false;
-  }
-
-  for (int i = 0; i < scan->num_components; i++) {
-    JpegScanHeader::Component* component = &scan->components[i];
-    READ_U8_OR_RETURN_FALSE(component->component_selector);
-    uint8_t dc_and_ac_selector;
-    READ_U8_OR_RETURN_FALSE(dc_and_ac_selector);
-    component->dc_selector = dc_and_ac_selector / 16;
-    component->ac_selector = dc_and_ac_selector % 16;
-    if (component->component_selector != frame_header.components[i].id) {
-      DLOG(ERROR) << "component selector mismatches image component id";
-      return false;
-    }
-    if (component->dc_selector >= kJpegMaxHuffmanTableNumBaseline) {
-      DLOG(ERROR) << "DC selector (" << static_cast<int>(component->dc_selector)
-                  << ") should be 0 or 1 for baseline mode";
-      return false;
-    }
-    if (component->ac_selector >= kJpegMaxHuffmanTableNumBaseline) {
-      DLOG(ERROR) << "AC selector (" << static_cast<int>(component->ac_selector)
-                  << ") should be 0 or 1 for baseline mode";
-      return false;
-    }
-  }
-
-  // Unused fields, only for value checking.
-  uint8_t spectral_selection_start;
-  uint8_t spectral_selection_end;
-  uint8_t point_transform;
-  READ_U8_OR_RETURN_FALSE(spectral_selection_start);
-  READ_U8_OR_RETURN_FALSE(spectral_selection_end);
-  READ_U8_OR_RETURN_FALSE(point_transform);
-  if (spectral_selection_start != 0 || spectral_selection_end != 63) {
-    DLOG(ERROR) << "Spectral selection should be 0,63 for baseline mode";
-    return false;
-  }
-  if (point_transform != 0) {
-    DLOG(ERROR) << "Point transform should be 0 for baseline mode";
-    return false;
-  }
-
-  return true;
-}
-
-// |eoi_begin_ptr| will point to the beginning of the EOI marker (the FF byte)
-// and |eoi_end_ptr| will point to the end of image (right after the end of the
-// EOI marker) after search succeeds. Returns true on EOI marker found, or false
-// otherwise.
-static bool SearchEOI(base::span<const uint8_t> buffer,
-                      const unsigned char** eoi_begin_ptr,
-                      const unsigned char** eoi_end_ptr) {
-  DCHECK(eoi_begin_ptr);
-  DCHECK(eoi_end_ptr);
-  auto reader = base::SpanReader(buffer);
-  uint8_t marker2;
-
-  while (reader.remaining() > 0u) {
-    size_t marker1_in_buffer;
-    {
-      auto search_span = reader.remaining_span();
-      auto it = std::ranges::find(search_span, JPEG_MARKER_PREFIX);
-      if (it == search_span.end()) {
-        return false;
-      }
-      size_t found_offset = it - search_span.begin();
-      marker1_in_buffer = reader.num_read() + found_offset;
-      reader.Skip(found_offset + 1u);
-    }
-
-    do {
-      READ_U8_OR_RETURN_FALSE(marker2);
-    } while (marker2 == JPEG_MARKER_PREFIX);  // skip fill bytes
-
-    switch (marker2) {
-      // Compressed data escape.
-      case 0x00:
-        break;
-      // Restart
-      case JPEG_RST0:
-      case JPEG_RST1:
-      case JPEG_RST2:
-      case JPEG_RST3:
-      case JPEG_RST4:
-      case JPEG_RST5:
-      case JPEG_RST6:
-      case JPEG_RST7:
-        break;
-      case JPEG_EOI: {
-        *eoi_begin_ptr = &buffer[marker1_in_buffer];
-        *eoi_end_ptr = reader.remaining_span().data();
-        return true;
-      }
-      default:
-        // Skip for other markers.
-        uint16_t size;
-        READ_U16_OR_RETURN_FALSE(size);
-        if (size < sizeof(size)) {
-          DLOG(ERROR) << "Ill-formed JPEG. Segment size (" << size
-                      << ") is smaller than size field (" << sizeof(size)
-                      << ")";
-          return false;
-        }
-        size -= sizeof(size);
-
-        if (!reader.Skip(size)) {
-          DLOG(ERROR) << "Ill-formed JPEG. Remaining size ("
-                      << reader.remaining()
-                      << ") is smaller than header specified (" << size << ")";
-          return false;
-        }
-        break;
-    }
-  }
-  return false;
-}
-
-// |result| is already initialized to 0 in ParseJpegPicture.
-static bool ParseSOI(base::span<const uint8_t> buffer,
-                     JpegParseResult* result) {
-  // Spec B.2.1 High-level syntax
-  DCHECK(result);
-  uint8_t marker1;
-  uint8_t marker2;
-  bool has_marker_dqt = false;
-  bool has_marker_sos = false;
-
-  // Once reached SOS, all necessary data are parsed.
-  auto reader = base::SpanReader(buffer);
-  while (!has_marker_sos) {
-    READ_U8_OR_RETURN_FALSE(marker1);
-    if (marker1 != JPEG_MARKER_PREFIX)
-      return false;
-
-    do {
-      READ_U8_OR_RETURN_FALSE(marker2);
-    } while (marker2 == JPEG_MARKER_PREFIX);  // skip fill bytes
-
-    uint16_t size;
-    READ_U16_OR_RETURN_FALSE(size);
-    // The size includes the size field itself.
-    if (size < sizeof(size)) {
-      DLOG(ERROR) << "Ill-formed JPEG. Segment size (" << size
-                  << ") is smaller than size field (" << sizeof(size) << ")";
-      return false;
-    }
-    size -= sizeof(size);
-
-    if (reader.remaining() < size) {
-      DLOG(ERROR) << "Ill-formed JPEG. Remaining size (" << reader.remaining()
-                  << ") is smaller than header specified (" << size << ")";
-      return false;
-    }
-
-    switch (marker2) {
-      case JPEG_SOF0:
-        if (!ParseSOF(reader.remaining_span().first(size),
-                      &result->frame_header)) {
-          DLOG(ERROR) << "ParseSOF failed";
-          return false;
-        }
-        break;
-      case JPEG_SOF1:
-      case JPEG_SOF2:
-      case JPEG_SOF3:
-      case JPEG_SOF5:
-      case JPEG_SOF6:
-      case JPEG_SOF7:
-      case JPEG_SOF9:
-      case JPEG_SOF10:
-      case JPEG_SOF11:
-      case JPEG_SOF13:
-      case JPEG_SOF14:
-      case JPEG_SOF15:
-        DLOG(ERROR) << "Only SOF0 (baseline) is supported, but got SOF"
-                    << (marker2 - JPEG_SOF0);
-        return false;
-      case JPEG_DQT:
-        if (!ParseDQT(reader.remaining_span().first(size), result->q_table)) {
-          DLOG(ERROR) << "ParseDQT failed";
-          return false;
-        }
-        has_marker_dqt = true;
-        break;
-      case JPEG_DHT:
-        if (!ParseDHT(reader.remaining_span().first(size), result->dc_table,
-                      result->ac_table)) {
-          DLOG(ERROR) << "ParseDHT failed";
-          return false;
-        }
-        break;
-      case JPEG_DRI:
-        if (!ParseDRI(reader.remaining_span().first(size),
-                      &result->restart_interval)) {
-          DLOG(ERROR) << "ParseDRI failed";
-          return false;
-        }
-        break;
-      case JPEG_SOS:
-        if (!ParseSOS(reader.remaining_span().first(size), result->frame_header,
-                      &result->scan)) {
-          DLOG(ERROR) << "ParseSOS failed";
-          return false;
-        }
-        has_marker_sos = true;
-        break;
-      default:
-        DVLOG(4) << "unknown marker " << static_cast<int>(marker2);
-        break;
-    }
-    reader.Skip(size);
-  }
-
-  if (!has_marker_dqt) {
-    DLOG(ERROR) << "No DQT marker found";
-    return false;
-  }
-
-  // Scan data follows scan header immediately.
-  result->data = reader.remaining_span();
-  return true;
-}
-
-bool ParseJpegPictureLegacy(base::span<const uint8_t> buffer,
-                            JpegParseResult* result) {
-  DCHECK(result);
-
-  auto reader = base::SpanReader(buffer);
-  *result = {};
-
-  uint8_t marker1;
-  uint8_t marker2;
-  READ_U8_OR_RETURN_FALSE(marker1);
-  READ_U8_OR_RETURN_FALSE(marker2);
-  if (marker1 != JPEG_MARKER_PREFIX || marker2 != JPEG_SOI) {
-    DLOG(ERROR) << "Not a JPEG";
-    return false;
-  }
-
-  if (!ParseSOI(reader.remaining_span(), result)) {
-    return false;
-  }
-
-  // Update the sizes: |result->data| should not include the EOI marker or
-  // beyond.
-  const unsigned char* eoi_begin_ptr = nullptr;
-  const unsigned char* eoi_end_ptr = nullptr;
-  if (!SearchEOI(result->data, &eoi_begin_ptr, &eoi_end_ptr)) {
-    DLOG(ERROR) << "SearchEOI failed";
-    return false;
-  }
-  DCHECK(eoi_begin_ptr);
-  DCHECK(eoi_end_ptr);
-
-  ptrdiff_t scan_data_size = eoi_begin_ptr - result->data.data();
-  CHECK_GE(scan_data_size, 0);
-  result->data = result->data.first(base::checked_cast<size_t>(scan_data_size));
-  result->image_size = eoi_end_ptr - buffer.data();
-  return true;
-}
-
 bool ParseJpegPicture(base::span<const uint8_t> buffer,
                       JpegParseResult* result) {
   CHECK(result);
-  if (base::FeatureList::IsEnabled(kUseRustJpegParser)) {
-    return ParseJpegPictureRust(buffer, result);
+  if (buffer.empty()) {
+    return false;
   }
-  return ParseJpegPictureLegacy(buffer, result);
-}
+  auto ffi_res = parsers::parse_jpeg_picture_ffi(
+      rust::Slice<const uint8_t>(buffer.data(), buffer.size()));
+  if (ffi_res.error_code != parsers::JpegParserError::Ok) {
+    DLOG(ERROR) << "JPEG parser error: "
+                << static_cast<int>(ffi_res.error_code);
+    return false;
+  }
 
-bool JpegParseResult::operator==(const JpegParseResult& other) const {
-  return frame_header == other.frame_header &&
-         std::ranges::equal(dc_table, other.dc_table) &&
-         std::ranges::equal(ac_table, other.ac_table) &&
-         std::ranges::equal(q_table, other.q_table) &&
-         restart_interval == other.restart_interval && scan == other.scan &&
-         std::ranges::equal(data, other.data) && image_size == other.image_size;
+  *result = {};
+
+  result->frame_header.visible_width = ffi_res.frame_header.visible_width;
+  result->frame_header.visible_height = ffi_res.frame_header.visible_height;
+  result->frame_header.coded_width = ffi_res.frame_header.coded_width;
+  result->frame_header.coded_height = ffi_res.frame_header.coded_height;
+  result->frame_header.num_components = ffi_res.frame_header.num_components;
+
+  const size_t num_components = std::min<size_t>(
+      ffi_res.frame_header.components.size(), kJpegMaxComponents);
+  for (size_t i = 0; i < num_components; ++i) {
+    const auto& src = ffi_res.frame_header.components[i];
+    auto& dst = result->frame_header.components[i];
+    dst.id = src.id;
+    dst.horizontal_sampling_factor = src.horizontal_sampling_factor;
+    dst.vertical_sampling_factor = src.vertical_sampling_factor;
+    dst.quantization_table_selector = src.quantization_table_selector;
+  }
+
+  auto dc_tables = base::span(result->dc_table);
+  const size_t num_dc_tables =
+      std::min<size_t>(std::size(ffi_res.dc_table), dc_tables.size());
+  for (size_t i = 0; i < num_dc_tables; ++i) {
+    const auto& src = ffi_res.dc_table[i];
+    auto& dst = dc_tables[i];
+    dst.valid = src.valid;
+    if (dst.valid) {
+      dst.code_length = src.code_length;
+      dst.code_value = src.code_value;
+    }
+  }
+
+  auto ac_tables = base::span(result->ac_table);
+  const size_t num_ac_tables =
+      std::min<size_t>(std::size(ffi_res.ac_table), ac_tables.size());
+  for (size_t i = 0; i < num_ac_tables; ++i) {
+    const auto& src = ffi_res.ac_table[i];
+    auto& dst = ac_tables[i];
+    dst.valid = src.valid;
+    if (dst.valid) {
+      dst.code_length = src.code_length;
+      dst.code_value = src.code_value;
+    }
+  }
+
+  auto q_tables = base::span(result->q_table);
+  const size_t num_q_tables =
+      std::min<size_t>(std::size(ffi_res.q_table), q_tables.size());
+  for (size_t i = 0; i < num_q_tables; ++i) {
+    const auto& src = ffi_res.q_table[i];
+    auto& dst = q_tables[i];
+    dst.valid = src.valid;
+    if (dst.valid) {
+      base::span(dst.value).copy_from(base::span(src.value));
+    }
+  }
+
+  result->restart_interval = ffi_res.restart_interval;
+
+  result->scan.num_components = ffi_res.scan.num_components;
+  const size_t num_scan_components =
+      std::min<size_t>(ffi_res.scan.components.size(), kJpegMaxComponents);
+  for (size_t i = 0; i < num_scan_components; ++i) {
+    const auto& src = ffi_res.scan.components[i];
+    auto& dst = result->scan.components[i];
+    dst.component_selector = src.component_selector;
+    dst.dc_selector = src.dc_selector;
+    dst.ac_selector = src.ac_selector;
+  }
+
+  if (ffi_res.data_offset + ffi_res.data_length > buffer.size()) {
+    return false;
+  }
+  result->data = buffer.subspan(ffi_res.data_offset, ffi_res.data_length);
+  result->image_size = ffi_res.image_size;
+
+  return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const JpegParseResult& result) {
