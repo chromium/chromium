@@ -487,7 +487,7 @@ String ListedElement::CustomValidationMessage() const {
 void ListedElement::SetCustomValidationMessage(const String& message) {
   // \r\n and \r should be replaced with \n:
   // https://github.com/whatwg/html/pull/10350.
-  custom_validation_message_ = NormalizeLineEndingsToLF(message);
+  custom_validation_message_ = NormalizeLineEndingsToLf(message);
 }
 
 String ListedElement::validationMessage() const {

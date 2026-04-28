@@ -339,7 +339,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       }
     } else {
       std::string encoded_value =
-          Encode(NormalizeLineEndingsToCRLF(entry->Value()));
+          Encode(NormalizeLineEndingsToCrLf(entry->Value()));
       form_data->AppendData(encoded_value);
     }
     form_data->AppendData(base::span_from_cstring("\r\n"));

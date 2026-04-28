@@ -200,7 +200,7 @@ String TypingCommand::NormalizeTextForInsertion(const String& text) {
   // Normalize CRLF and standalone CR to LF for consistent newline handling.
   // See https://infra.spec.whatwg.org/#normalize-newlines
   return RuntimeEnabledFeatures::NormalizeLineEndingsInInsertTextEnabled()
-             ? NormalizeLineEndingsToLF(text)
+             ? NormalizeLineEndingsToLf(text)
              : text;
 }
 

@@ -9,16 +9,16 @@
 
 namespace blink {
 
-TEST(LineEndingTest, NormalizeLineEndingsToCRLF) {
-  EXPECT_EQ(String(""), NormalizeLineEndingsToCRLF(""));
-  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCRLF("\n"));
-  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCRLF("\r\n"));
-  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCRLF("\r"));
+TEST(LineEndingTest, NormalizeLineEndingsToCrLf) {
+  EXPECT_EQ(String(""), NormalizeLineEndingsToCrLf(""));
+  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCrLf("\n"));
+  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCrLf("\r\n"));
+  EXPECT_EQ(String("\r\n"), NormalizeLineEndingsToCrLf("\r"));
 
-  EXPECT_EQ(String("abc\r\ndef\r\n"), NormalizeLineEndingsToCRLF("abc\rdef\n"));
+  EXPECT_EQ(String("abc\r\ndef\r\n"), NormalizeLineEndingsToCrLf("abc\rdef\n"));
 }
 
-TEST(LineEndingTest, NormalizeLineEndingsToLF) {
+TEST(LineEndingTest, NormalizeLineEndingsToLf) {
   const struct {
     const char* const test;
     const char* const expected;
@@ -31,18 +31,18 @@ TEST(LineEndingTest, NormalizeLineEndingsToLF) {
   };
 
   for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.expected, NormalizeLineEndingsToLF(test.test));
+    EXPECT_EQ(test.expected, NormalizeLineEndingsToLf(test.test));
   }
 
   for (const auto& test : kTestCases) {
     Vector<char> out;
-    NormalizeLineEndingsToLF(test.test, out);
+    NormalizeLineEndingsToLf(test.test, out);
     EXPECT_EQ(std::string_view(test.expected), base::as_string_view(out));
   }
 
   // If no modification is needed, we should get the same StringImpl back.
   String no_change("foo\nbar\nbaz\n");
-  EXPECT_EQ(no_change.Impl(), NormalizeLineEndingsToLF(no_change).Impl());
+  EXPECT_EQ(no_change.Impl(), NormalizeLineEndingsToLf(no_change).Impl());
 }
 
 }  // namespace blink

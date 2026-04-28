@@ -43,7 +43,7 @@ namespace blink {
 namespace {
 
 template <typename CharType>
-wtf_size_t RequiredSizeForCRLF(base::span<const CharType> data) {
+wtf_size_t RequiredSizeForCrLf(base::span<const CharType> data) {
   wtf_size_t new_len = 0;
   wtf_size_t index = 0;
   while (index < data.size()) {
@@ -68,7 +68,7 @@ wtf_size_t RequiredSizeForCRLF(base::span<const CharType> data) {
 }
 
 template <typename CharType>
-void NormalizeToCRLF(base::span<const CharType> src, base::span<CharType> dst) {
+void NormalizeToCrLf(base::span<const CharType> src, base::span<CharType> dst) {
   wtf_size_t src_length = src.size();
   wtf_size_t index = 0, index_out = 0;
 
@@ -92,7 +92,7 @@ void NormalizeToCRLF(base::span<const CharType> src, base::span<CharType> dst) {
 }
 
 template <typename CharType>
-std::optional<wtf_size_t> RequiredSizeForLF(base::span<const CharType> src) {
+std::optional<wtf_size_t> RequiredSizeForLf(base::span<const CharType> src) {
   bool need_change = false;
   wtf_size_t new_len = 0;
   wtf_size_t index = 0;
@@ -113,7 +113,7 @@ std::optional<wtf_size_t> RequiredSizeForLF(base::span<const CharType> src) {
 }
 
 template <typename CharType>
-void NormalizeToLF(base::span<const CharType> src, base::span<CharType> dst) {
+void NormalizeToLf(base::span<const CharType> src, base::span<CharType> dst) {
   wtf_size_t index = 0;
   wtf_size_t index_out = 0;
   while (index < src.size()) {
@@ -131,9 +131,9 @@ void NormalizeToLF(base::span<const CharType> src, base::span<CharType> dst) {
 }
 
 #if BUILDFLAG(IS_WIN)
-void InternalNormalizeLineEndingsToCRLF(const std::string& from,
+void InternalNormalizeLineEndingsToCrLf(const std::string& from,
                                         Vector<char>& buffer) {
-  size_t new_len = RequiredSizeForCRLF(base::span(from));
+  size_t new_len = RequiredSizeForCrLf(base::span(from));
   if (new_len < from.length())
     return;
 
@@ -144,17 +144,17 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
 
   wtf_size_t old_buffer_size = buffer.size();
   buffer.Grow(old_buffer_size + new_len);
-  NormalizeToCRLF(base::span(from),
+  NormalizeToCrLf(base::span(from),
                   base::span(buffer).subspan(old_buffer_size));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
-void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
+void NormalizeLineEndingsToLf(const std::string& from, Vector<char>& result) {
   // Compute the new length. Use byte-spans to avoid unnecessary instances.
   std::optional<wtf_size_t> new_len =
-      RequiredSizeForLF(base::as_byte_span(from));
+      RequiredSizeForLf(base::as_byte_span(from));
 
   // If no need to fix the string, just copy the string over.
   if (!new_len) {
@@ -167,51 +167,51 @@ void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
   auto dst = base::as_writable_byte_span(result).subspan(old_result_size);
 
   // Copy and normalize.
-  NormalizeToLF(base::as_byte_span(from), dst);
+  NormalizeToLf(base::as_byte_span(from), dst);
 }
 
-String NormalizeLineEndingsToLF(const String& src) {
+String NormalizeLineEndingsToLf(const String& src) {
   if (src.empty()) {
     return src;
   }
   return VisitCharacters(src, [&src](auto chars) {
-    std::optional<wtf_size_t> new_length = RequiredSizeForLF(chars);
+    std::optional<wtf_size_t> new_length = RequiredSizeForLf(chars);
     if (!new_length) {
       return src;
     }
     using CharType = decltype(chars)::value_type;
     StringBuffer<CharType> buffer(*new_length);
-    NormalizeToLF(chars, buffer.Span());
+    NormalizeToLf(chars, buffer.Span());
     return String::Adopt(buffer);
   });
 }
 
-String NormalizeLineEndingsToCRLF(const String& src) {
+String NormalizeLineEndingsToCrLf(const String& src) {
   wtf_size_t length = src.length();
   if (length == 0)
     return src;
   if (src.Is8Bit()) {
-    wtf_size_t new_length = RequiredSizeForCRLF(src.Span8());
+    wtf_size_t new_length = RequiredSizeForCrLf(src.Span8());
     if (new_length == length)
       return src;
     StringBuffer<LChar> buffer(new_length);
-    NormalizeToCRLF(src.Span8(), buffer.Span());
+    NormalizeToCrLf(src.Span8(), buffer.Span());
     return String::Adopt(buffer);
   }
-  wtf_size_t new_length = RequiredSizeForCRLF(src.Span16());
+  wtf_size_t new_length = RequiredSizeForCrLf(src.Span16());
   if (new_length == length)
     return src;
   StringBuffer<UChar> buffer(new_length);
-  NormalizeToCRLF(src.Span16(), buffer.Span());
+  NormalizeToCrLf(src.Span16(), buffer.Span());
   return String::Adopt(buffer);
 }
 
 void NormalizeLineEndingsToNative(const std::string& from,
                                   Vector<char>& result) {
 #if BUILDFLAG(IS_WIN)
-  InternalNormalizeLineEndingsToCRLF(from, result);
+  InternalNormalizeLineEndingsToCrLf(from, result);
 #else
-  NormalizeLineEndingsToLF(from, result);
+  NormalizeLineEndingsToLf(from, result);
 #endif
 }
 

@@ -614,7 +614,7 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   if (text.empty())
     return fragment;
 
-  String string = NormalizeLineEndingsToLF(text);
+  String string = NormalizeLineEndingsToLf(text);
 
   if (!IsRichlyEditablePosition(context.StartPosition()) ||
       ShouldPreserveNewline(context)) {
