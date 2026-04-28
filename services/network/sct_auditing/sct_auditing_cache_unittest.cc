@@ -136,7 +136,8 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   const net::HostPortPair host_port_pair2("example2.com", 443);
   const net::HostPortPair host_port_pair3("example3.com", 443);
 
-  net::HashValue first_key(net::HASH_VALUE_SHA256);
+  std::array<uint8_t, crypto::hash::kSha256Size> zero_hash = {0};
+  net::HashValue first_key(net::HASH_VALUE_SHA256, zero_hash);
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
