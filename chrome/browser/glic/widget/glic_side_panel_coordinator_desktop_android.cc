@@ -147,7 +147,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::OnGlicEnabledChanged() {
 SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
     SidePanelEntryScope& scope) {
   if (!cobrowse_views_bridge_) {
-    cobrowse_views_bridge_ = std::make_unique<CoBrowseViewsBridge>(*tab_);
+    cobrowse_views_bridge_ = std::make_unique<CoBrowseViewsBridge>(
+        *tab_, context_sharing::TabBottomSheetClientType::kGlic);
     cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get());
   }
   auto view = cobrowse_views_bridge_->GetView();

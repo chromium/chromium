@@ -19,7 +19,10 @@ using base::android::AttachCurrentThread;
 
 namespace glic {
 
-CoBrowseViewsBridge::CoBrowseViewsBridge(tabs::TabInterface& tab) : tab_(tab) {}
+CoBrowseViewsBridge::CoBrowseViewsBridge(
+    tabs::TabInterface& tab,
+    context_sharing::TabBottomSheetClientType client_type)
+    : tab_(tab), client_type_(client_type) {}
 
 CoBrowseViewsBridge::~CoBrowseViewsBridge() {
   if (java_co_browse_views_) {
@@ -46,8 +49,7 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
-      env, window_android, web_contents,
-      /*show_fusebox=*/false));
+      env, window_android, web_contents, static_cast<int>(client_type_)));
 
   return !java_co_browse_views_.is_null();
 }

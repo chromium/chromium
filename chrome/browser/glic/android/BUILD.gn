@@ -120,6 +120,7 @@ source_set("jni_bridges") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/android:client_type_java_enum",
     "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
     "//components/tabs:public",
     "//content/public/browser",

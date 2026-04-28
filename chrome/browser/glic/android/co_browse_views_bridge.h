@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
 
 namespace content {
 class WebContents;
@@ -21,7 +22,9 @@ namespace glic {
 // Bridge for managing CoBrowseViews on Android from C++.
 class CoBrowseViewsBridge {
  public:
-  explicit CoBrowseViewsBridge(tabs::TabInterface& tab);
+  explicit CoBrowseViewsBridge(
+      tabs::TabInterface& tab,
+      context_sharing::TabBottomSheetClientType client_type);
   ~CoBrowseViewsBridge();
 
   CoBrowseViewsBridge(const CoBrowseViewsBridge&) = delete;
@@ -39,6 +42,7 @@ class CoBrowseViewsBridge {
 
  private:
   const raw_ref<tabs::TabInterface> tab_;
+  const context_sharing::TabBottomSheetClientType client_type_;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
 };
 
