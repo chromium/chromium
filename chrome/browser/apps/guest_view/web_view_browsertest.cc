@@ -116,7 +116,6 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -5191,8 +5190,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
   auto* guest_process = guest->GetProcess();
-  EXPECT_FALSE(process_map->Contains(guest_process->GetID()));
-  EXPECT_FALSE(process_map->GetExtensionIdForProcess(guest_process->GetID()));
+  EXPECT_FALSE(process_map->Contains(guest_process->GetDeprecatedID()));
+  EXPECT_FALSE(
+      process_map->GetExtensionIdForProcess(guest_process->GetDeprecatedID()));
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
@@ -5200,7 +5200,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
       registry->enabled_extensions().GetByID(guest_url.GetHost());
   EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
             process_map->GetMostLikelyContextType(
-                extension, guest_process->GetID(), &guest_url));
+                extension, guest_process->GetDeprecatedID(), &guest_url));
 }
 
 // Tests that a WebView can reload a WebView accessible resource. See
@@ -6704,9 +6704,9 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   // considered an extension process and does not have the privileged webstore
   // API.
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
-  EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetID()));
-  EXPECT_FALSE(
-      process_map->GetExtensionIdForProcess(guest->GetProcess()->GetID()));
+  EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetDeprecatedID()));
+  EXPECT_FALSE(process_map->GetExtensionIdForProcess(
+      guest->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
 }
 

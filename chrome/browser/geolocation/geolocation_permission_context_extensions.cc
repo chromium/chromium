@@ -15,7 +15,6 @@
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/permission_result.h"
-#include "content/public/common/child_process_id.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -92,9 +91,10 @@ GeolocationPermissionContextExtensions::DecidePermission(
             extensions::mojom::APIPermissionID::kGeolocation, extension,
             web_contents->GetPrimaryMainFrame())) {
       // Make sure the extension is in the calling process.
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       if (extensions::ProcessMap::Get(profile_)->Contains(
-              extension->id(),
-              request_id.global_render_frame_host_id().child_id)) {
+              extension->id(), request_id.global_render_frame_host_id()
+                                   .child_id.GetUnsafeValue())) {
         return Decision{
             .permission_set = true,
             .decision = permissions::PermissionPromptDecision{

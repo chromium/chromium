@@ -13,7 +13,6 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map_factory.h"
@@ -39,30 +38,27 @@ namespace extensions {
 namespace {
 
 // Returns true if `process_id` is associated with a WebUI process.
-bool ProcessHasWebUIBindings(content::ChildProcessId process_id) {
+bool ProcessHasWebUIBindings(int process_id) {
   // TODO(crbug.com/40676401): HasWebUIBindings does not always return true for
   // WebUIs. This should be changed to use something else.
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   return content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      process_id.GetUnsafeValue());
+      process_id);
 }
 
 // Returns true if `process_id` is associated with a webview owned by the
 // extension with the specified `extension_id`.
-bool IsWebViewProcessForExtension(content::ChildProcessId process_id,
+bool IsWebViewProcessForExtension(int process_id,
                                   const ExtensionId& extension_id) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!web_view_state->IsGuest(process_id.GetUnsafeValue())) {
+  if (!web_view_state->IsGuest(process_id)) {
     return false;
   }
 
   std::string webview_owner;
   int owner_process_id = -1;
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  bool found_info = web_view_state->GetOwnerInfo(
-      process_id.GetUnsafeValue(), &owner_process_id, &webview_owner);
+  bool found_info = web_view_state->GetOwnerInfo(process_id, &owner_process_id,
+                                                 &webview_owner);
   return found_info && webview_owner == extension_id;
 #else
   return false;
@@ -86,27 +82,22 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
   return ProcessMapFactory::GetForBrowserContext(browser_context);
 }
 
-bool ProcessMap::Insert(const ExtensionId& extension_id,
-                        content::ChildProcessId process_id) {
+bool ProcessMap::Insert(const ExtensionId& extension_id, int process_id) {
   return items_.emplace(process_id, extension_id).second;
 }
 
-int ProcessMap::Remove(content::ChildProcessId process_id) {
+int ProcessMap::Remove(int process_id) {
   return items_.erase(process_id);
 }
 
 bool ProcessMap::Contains(const ExtensionId& extension_id_in,
-                          content::ChildProcessId process_id) const {
+                          int process_id) const {
   auto* extension_id = base::FindOrNull(items_, process_id);
   return extension_id && *extension_id == extension_id_in;
 }
 
-bool ProcessMap::Contains(content::ChildProcessId process_id) const {
-  return items_.contains(process_id);
-}
-
 bool ProcessMap::Contains(int process_id) const {
-  return Contains(content::ChildProcessId::FromUnsafeValue(process_id));
+  return items_.contains(process_id);
 }
 
 bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
@@ -116,7 +107,7 @@ bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
 }
 
 const Extension* ProcessMap::GetEnabledExtensionByProcessID(
-    content::ChildProcessId process_id) const {
+    int process_id) const {
   auto* extension_id = base::FindOrNull(items_, process_id);
   return extension_id ? ExtensionRegistry::Get(browser_context_)
                             ->enabled_extensions()
@@ -125,13 +116,12 @@ const Extension* ProcessMap::GetEnabledExtensionByProcessID(
 }
 
 std::optional<ExtensionId> ProcessMap::GetExtensionIdForProcess(
-    content::ChildProcessId process_id) const {
+    int process_id) const {
   return base::OptionalFromPtr(base::FindOrNull(items_, process_id));
 }
 
-bool ProcessMap::IsPrivilegedExtensionProcess(
-    const Extension& extension,
-    content::ChildProcessId process_id) {
+bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
+                                              int process_id) {
   return Contains(extension.id(), process_id) &&
          // Hosted apps aren't considered privileged extension processes...
          (!extension.is_hosted_app() ||
@@ -145,7 +135,7 @@ bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
     mojom::ContextType context_type) {
-  const content::ChildProcessId process_id = process.GetID();
+  const int process_id = process.GetDeprecatedID();
   switch (context_type) {
     case mojom::ContextType::kUnspecified:
       // We never consider unspecified contexts valid. Even though they would be
@@ -194,7 +184,7 @@ bool ProcessMap::CanProcessHostContextType(
 
 mojom::ContextType ProcessMap::GetMostLikelyContextType(
     const Extension* extension,
-    content::ChildProcessId process_id,
+    int process_id,
     const GURL* url) const {
   // WARNING: This logic must match ScriptContextSet::ClassifyJavaScriptContext,
   // as much as possible.

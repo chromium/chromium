@@ -223,7 +223,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_zoom.h"
@@ -2653,7 +2652,8 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
           requesting_frame);
   if (owner_extension &&
       process_map->IsPrivilegedExtensionProcess(
-          *owner_extension, requesting_frame->GetProcess()->GetID())) {
+          *owner_extension,
+          requesting_frame->GetProcess()->GetDeprecatedID())) {
     return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
   return blink::ProtocolHandlerSecurityLevel::kStrict;
@@ -3710,8 +3710,9 @@ bool Browser::ShouldCreateBackgroundContents(
   // Ensure that we're trying to open this from the extension's process.
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile_);
   if (!source_site_instance->HasProcess() ||
-      !process_map->Contains(extension->id(),
-                             source_site_instance->GetProcess()->GetID())) {
+      !process_map->Contains(
+          extension->id(),
+          source_site_instance->GetProcess()->GetDeprecatedID())) {
     return false;
   }
 

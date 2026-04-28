@@ -14,7 +14,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
@@ -78,10 +77,9 @@ void RendererFreezer::OnRenderProcessLaunched(content::RenderProcessHost* rph) {
   // iterate over all the extensions in the newly created process and take the
   // appropriate action based on whether we find an extension using GCM.
   content::BrowserContext* context = rph->GetBrowserContext();
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (const extensions::Extension* extension =
           extensions::ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
-              content::ChildProcessId::FromUnsafeValue(rph_id))) {
+              rph_id)) {
     if (extension->permissions_data()->HasAPIPermission(
             extensions::mojom::APIPermissionID::kGcm)) {
       // This renderer has an extension that is using GCM.  Make sure it is not

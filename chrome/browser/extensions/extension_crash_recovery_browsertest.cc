@@ -20,7 +20,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -108,7 +107,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     extensions::ProcessMap* process_map =
         extensions::ProcessMap::Get(profile());
     ASSERT_TRUE(process_map->Contains(
-        extension_id, extension_host->render_process_host()->GetID()));
+        extension_id,
+        extension_host->render_process_host()->GetDeprecatedID()));
   }
 
   void LoadTestExtension() {

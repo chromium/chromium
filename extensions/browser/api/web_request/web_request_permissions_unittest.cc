@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -265,10 +264,8 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
   // If the origin is labeled by the WebStoreAppId, it becomes protected.
   {
     const int kWebstoreProcessId = 42;
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     ProcessMap::Get(browser_context())
-        ->Insert(extensions::kWebStoreAppId,
-                 content::ChildProcessId::FromUnsafeValue(kWebstoreProcessId));
+        ->Insert(extensions::kWebStoreAppId, kWebstoreProcessId);
     WebRequestInfo sensitive_request_info(create_request_params(
         non_sensitive_url, WebRequestResourceType::SCRIPT, kWebstoreProcessId));
     EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,

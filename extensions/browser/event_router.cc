@@ -412,7 +412,7 @@ void EventRouter::AddListenerForMainThread(
     // web page's process).
     bool is_authorized_extension_process =
         ProcessMap::Get(browser_context_)
-            ->Contains(extension_id, process->GetID());
+            ->Contains(extension_id, process->GetDeprecatedID());
     bool has_injected_content_script =
         ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
             *process, extension_id);
@@ -471,7 +471,7 @@ void EventRouter::AddListenerForServiceWorker(
   }
 
   if (!ProcessMap::Get(browser_context_)
-           ->Contains(extension_id, process->GetID())) {
+           ->Contains(extension_id, process->GetDeprecatedID())) {
     receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedExtensionID);
     return;
   }
@@ -1125,8 +1125,8 @@ void EventRouter::DispatchEventToProcess(
       service_worker_version_id == blink::mojom::kInvalidServiceWorkerVersionId
           ? &listener_url
           : nullptr;
-  mojom::ContextType target_context =
-      process_map->GetMostLikelyContextType(extension, process->GetID(), url);
+  mojom::ContextType target_context = process_map->GetMostLikelyContextType(
+      extension, process->GetDeprecatedID(), url);
 
   // Feature availability must be checked here for lazy events (`did_enqueue ==
   // true`) because it requires the `RenderProcessHost`, which is unavailable at

@@ -25,7 +25,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -147,7 +146,7 @@ void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
   }
 
   ProcessMap::Get(browser_main_parts_->browser_context())
-      ->Insert(extension->id(), site_instance->GetProcess()->GetID());
+      ->Insert(extension->id(), site_instance->GetProcess()->GetDeprecatedID());
 }
 
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(

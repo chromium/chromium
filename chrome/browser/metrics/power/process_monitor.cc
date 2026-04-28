@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -115,7 +114,7 @@ ProcessInfo::Key GetMonitoredProcessInfoKeyForRenderProcess(
 
   const extensions::Extension* extension =
       extensions::ProcessMap::Get(browser_context)
-          ->GetEnabledExtensionByProcessID(host->GetID());
+          ->GetEnabledExtensionByProcessID(host->GetDeprecatedID());
   if (!extension) {
     return {MonitoredProcessType::kRenderer, std::nullopt};
   }

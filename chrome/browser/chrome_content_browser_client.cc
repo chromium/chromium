@@ -361,7 +361,6 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/buildflags.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1045,7 +1044,7 @@ void SetApplicationLocaleOnIOThread(const std::string& locale) {
 bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
                                extensions::ExtensionRegistry* registry,
                                const GURL& url,
-                               content::ChildProcessId render_process_id,
+                               int render_process_id,
                                APIPermissionID permission) {
   // Includes web URLs that are part of an extension's web extent.
   const Extension* extension =
@@ -4416,7 +4415,7 @@ bool ChromeContentBrowserClient::IsPopupBypassAllowed(
 
   // Allow if it is an authorized extension process.
   const extensions::Extension* extension =
-      process_map->GetEnabledExtensionByProcessID(process->GetID());
+      process_map->GetEnabledExtensionByProcessID(process->GetID().value());
   if (process_map->CanProcessHostContextType(
           extension, *process,
           extensions::mojom::ContextType::kPrivilegedExtension)) {
@@ -4505,7 +4504,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     if (!URLHasExtensionPermission(process_map, registry, opener_url,
-                                   opener->GetProcess()->GetID(),
+                                   opener->GetProcess()->GetDeprecatedID(),
                                    APIPermissionID::kBackground)) {
       return false;
     }
@@ -7801,10 +7800,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return URLHasExtensionPermission(extensions::ProcessMap::Get(profile),
-                                     registry, url,
-                                     render_frame_host->GetProcess()->GetID(),
-                                     APIPermissionID::kClipboardRead);
+    return URLHasExtensionPermission(
+        extensions::ProcessMap::Get(profile), registry, url,
+        render_frame_host->GetProcess()->GetDeprecatedID(),
+        APIPermissionID::kClipboardRead);
   }
 
   // or (4) origination from a process that at least might be running a

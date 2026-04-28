@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_id.h"
 #include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
@@ -271,7 +270,7 @@ bool EventDispatchHelper::DispatchEventToActiveListener(
                         ? &listener->listener_url()
                         : nullptr;
   auto context_type = listener_process_map->GetMostLikelyContextType(
-      extension, process->GetID(), url);
+      extension, process->GetDeprecatedID(), url);
 
   if (!CheckPermissions(extension, event, *listener_context, context_type) ||
       !CheckFeatureAvailability(event, extension, listener->listener_url(),

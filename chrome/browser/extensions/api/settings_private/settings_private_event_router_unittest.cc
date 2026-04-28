@@ -11,7 +11,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_router_factory.h"
@@ -29,10 +28,9 @@ class ProcessMapFake : public ProcessMap {
   explicit ProcessMapFake(content::BrowserContext* browser_context)
       : ProcessMap(browser_context) {}
 
-  mojom::ContextType GetMostLikelyContextType(
-      const Extension* extension,
-      content::ChildProcessId process_id,
-      const GURL* url) const override {
+  mojom::ContextType GetMostLikelyContextType(const Extension* extension,
+                                              int process_id,
+                                              const GURL* url) const override {
     return mojom::ContextType::kWebUi;
   }
 };

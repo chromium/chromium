@@ -25,7 +25,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -552,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
       web_contents->GetPrimaryMainFrame()->GetProcess();
   if (GetParam() == kWebstoreURL) {
     EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-        extensions::kWebStoreAppId, new_process_host->GetID()));
+        extensions::kWebStoreAppId, new_process_host->GetDeprecatedID()));
   }
 
   // Verify that Webstore is isolated in a separate renderer process.
@@ -597,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
     content::RenderProcessHost* render_process_host =
         web_contents->GetPrimaryMainFrame()->GetProcess();
     EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-        extensions::kWebStoreAppId, render_process_host->GetID()));
+        extensions::kWebStoreAppId, render_process_host->GetDeprecatedID()));
   }
 }
 

@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/common/child_process_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
@@ -95,16 +94,11 @@ class ProcessMap : public KeyedService {
 
   size_t size() const { return items_.size(); }
 
-  bool Insert(const ExtensionId& extension_id,
-              content::ChildProcessId process_id);
+  bool Insert(const ExtensionId& extension_id, int process_id);
 
-  int Remove(content::ChildProcessId process_id);
+  int Remove(int process_id);
 
-  bool Contains(const ExtensionId& extension_id,
-                content::ChildProcessId process_id) const;
-  bool Contains(content::ChildProcessId process_id) const;
-
-  // TODO(crbug.com/379869738) Remove this override.
+  bool Contains(const ExtensionId& extension_id, int process_id) const;
   bool Contains(int process_id) const;
 
   // Returns true if an extension with the given `extension_id` has any
@@ -113,11 +107,9 @@ class ProcessMap : public KeyedService {
 
   // Returns a pointer to an enabled extension running in `process_id` or
   // nullptr.
-  const Extension* GetEnabledExtensionByProcessID(
-      content::ChildProcessId process_id) const;
+  const Extension* GetEnabledExtensionByProcessID(int process_id) const;
 
-  std::optional<ExtensionId> GetExtensionIdForProcess(
-      content::ChildProcessId process_id) const;
+  std::optional<ExtensionId> GetExtensionIdForProcess(int process_id) const;
 
   // Returns true if the given `process_id` is considered a privileged context
   // for the given `extension`. That is, if it would *probably* correspond to a
@@ -132,8 +124,7 @@ class ProcessMap : public KeyedService {
   // boundary between an extension's offscreen document and other frames, and
   // extension sandboxed frames behave slightly differently than sandboxed pages
   // on the web.
-  bool IsPrivilegedExtensionProcess(const Extension& extension,
-                                    content::ChildProcessId process_id);
+  bool IsPrivilegedExtensionProcess(const Extension& extension, int process_id);
 
   // Returns true if the given `context_type` - associated with the given
   // `extension`, if provided - is valid for the given `process`.
@@ -209,11 +200,13 @@ class ProcessMap : public KeyedService {
   //   - For anything else, `kWebPage`.
   virtual mojom::ContextType GetMostLikelyContextType(
       const Extension* extension,
-      content::ChildProcessId process_id,
+      int process_id,
       const GURL* url) const;
 
  private:
-  base::flat_map<content::ChildProcessId, ExtensionId> items_;
+  using ProcessId = int;
+
+  base::flat_map<ProcessId, ExtensionId> items_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 };

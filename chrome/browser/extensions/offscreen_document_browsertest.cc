@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -138,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   {
     mojom::ContextType context_type =
         ProcessMap::Get(profile())->GetMostLikelyContextType(
-            extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            extension,
+            contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
             &offscreen_url);
     // TODO(crbug.com/40849649): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);

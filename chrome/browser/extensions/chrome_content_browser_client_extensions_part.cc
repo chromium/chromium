@@ -42,7 +42,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -192,7 +191,7 @@ const Extension* GetServiceWorkerBasedExtensionForScope(
 // pose a risk that normal web processes will be overly constrained by the
 // browser's process limit.
 size_t GetExtensionBackgroundProcessCount() {
-  std::set<content::ChildProcessId> process_ids;
+  std::set<int> process_ids;
 
   // Go through all profiles to ensure we have total count of extension
   // processes containing background pages, otherwise one profile can
@@ -204,7 +203,7 @@ size_t GetExtensionBackgroundProcessCount() {
     if (!epm)
       continue;
     for (ExtensionHost* host : epm->background_hosts())
-      process_ids.insert(host->render_process_host()->GetID());
+      process_ids.insert(host->render_process_host()->GetDeprecatedID());
   }
   return process_ids.size();
 }
@@ -404,7 +403,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   // commit. This accounts for cases where an extension might have multiple
   // processes, such as incognito split mode.
   ProcessMap* process_map = ProcessMap::Get(process_host->GetBrowserContext());
-  if (process_map->Contains(extension->id(), process_host->GetID())) {
+  if (process_map->Contains(extension->id(), process_host->GetDeprecatedID())) {
     return true;
   }
 
@@ -475,8 +474,8 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
   // SiteInstances for both extensions and hosted apps.
   const Extension* extension =
       GetEnabledExtensionFromSiteURL(profile, site_url);
-  if (extension &&
-      !process_map->Contains(extension->id(), process_host->GetID())) {
+  if (extension && !process_map->Contains(extension->id(),
+                                          process_host->GetDeprecatedID())) {
     return false;
   }
 
@@ -484,7 +483,7 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
   // map to an enabled extension. For example, this prevents a reload of an
   // extension or app that has just been disabled from staying in the
   // privileged extension process.
-  if (!extension && process_map->Contains(process_host->GetID())) {
+  if (!extension && process_map->Contains(process_host->GetDeprecatedID())) {
     return false;
   }
 
@@ -598,7 +597,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   ProcessMap* process_map = ProcessMap::Get(site_instance->GetBrowserContext());
   if (is_dest_url_for_webstore_app && site_instance->HasProcess() &&
       !process_map->Contains(dest_extension->id(),
-                             site_instance->GetProcess()->GetID())) {
+                             site_instance->GetProcess()->GetDeprecatedID())) {
     return true;
   }
 
@@ -798,8 +797,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   // unrelated tabs. This call will ignore duplicate insertions, which is fine,
   // since we only need to track if the extension is in the process, rather
   // than how many instances it has in that process.
-  ProcessMap::Get(context)->Insert(extension->id(),
-                                   site_instance->GetProcess()->GetID());
+  ProcessMap::Get(context)->Insert(
+      extension->id(), site_instance->GetProcess()->GetDeprecatedID());
 }
 
 bool ChromeContentBrowserClientExtensionsPart::
@@ -900,8 +899,9 @@ void ChromeContentBrowserClientExtensionsPart::
     return;
   }
 
-  if (auto* extension = ProcessMap::Get(process.GetBrowserContext())
-                            ->GetEnabledExtensionByProcessID(process.GetID())) {
+  if (auto* extension =
+          ProcessMap::Get(process.GetBrowserContext())
+              ->GetEnabledExtensionByProcessID(process.GetDeprecatedID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
 
     // Blink usually initializes the main-thread Isolate in background mode for

@@ -10,7 +10,6 @@
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/child_process_id.h"
 #include "content/public/common/socket_permission_request.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
@@ -133,7 +132,8 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
   // model.
   if (const extensions::Extension* extension =
           extensions::ProcessMap::Get(rfh.GetBrowserContext())
-              ->GetEnabledExtensionByProcessID(rfh.GetProcess()->GetID())) {
+              ->GetEnabledExtensionByProcessID(
+                  rfh.GetProcess()->GetDeprecatedID())) {
     return ValidateAddressAndPortForChromeApp(extension, request);
   }
 #endif
