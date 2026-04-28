@@ -56,7 +56,7 @@ target("component", "cpp") {
     "trace_startup_config.h",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "perfetto/trace_packet_tokenizer.cc",
       "perfetto/trace_packet_tokenizer.h",
