@@ -4,125 +4,69 @@
 
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_ui_service_delegate_android.h"
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_bridge.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "ui/android/window_android.h"
-#include "ui/base/base_window.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "url/gurl.h"
-
-// Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/contextual_tasks/jni_headers/ContextualTasksUiServiceDelegate_jni.h"
 
 namespace contextual_tasks {
 
 ContextualTasksUiServiceDelegateAndroid::
     ContextualTasksUiServiceDelegateAndroid(Profile* profile)
-    : ContextualTasksUiServiceDelegate(), profile_(profile) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_delegate_.Reset(env,
-                       Java_ContextualTasksUiServiceDelegate_create(
-                           env, reinterpret_cast<intptr_t>(this), profile));
-}
+    : ContextualTasksUiServiceDelegate(), profile_(profile) {}
 
 ContextualTasksUiServiceDelegateAndroid::
-    ~ContextualTasksUiServiceDelegateAndroid() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_clearNativePtr(env, java_delegate_);
-}
+    ~ContextualTasksUiServiceDelegateAndroid() = default;
 
 void ContextualTasksUiServiceDelegateAndroid::OpenFeedbackUi(
     BrowserWindowInterface* browser_window_interface,
     const GURL& page_url) {
-  if (!browser_window_interface || !browser_window_interface->GetWindow() ||
-      !browser_window_interface->GetWindow()->GetNativeWindow()) {
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
+  if (!bridge) {
     return;
   }
-  ui::WindowAndroid* window_android =
-      browser_window_interface->GetWindow()->GetNativeWindow();
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_openFeedbackUi(
-      env, java_delegate_, window_android, page_url.spec());
+  bridge->NotifyOpenFeedbackUi(page_url);
 }
 
 void ContextualTasksUiServiceDelegateAndroid::OnWebUIReady(
     const base::Uuid& task_id,
     content::WebContents* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_onWebUIReady(
-      env, java_delegate_, task_id.AsLowercaseString(), web_contents);
+  auto* bridge = ContextualTasksBridge::From(
+      webui::GetBrowserWindowInterface(web_contents));
+  if (!bridge) {
+    return;
+  }
+  bridge->NotifyWebUIReady(task_id, web_contents);
 }
 
 void ContextualTasksUiServiceDelegateAndroid::OnWebUIDestroyed(
     BrowserWindowInterface* browser_window_interface,
     const std::optional<base::Uuid>& task_id) {
-  ui::WindowAndroid* window_android =
-      GetWindowAndroid(browser_window_interface);
-  if (!window_android) {
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
+  if (!bridge) {
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_onWebUIDestroyed(
-      env, java_delegate_, window_android,
-      task_id.has_value() ? task_id->AsLowercaseString() : std::string());
+  bridge->NotifyWebUIDestroyed(task_id);
 }
 
 void ContextualTasksUiServiceDelegateAndroid::OnTaskChanged(
     BrowserWindowInterface* browser_window_interface,
     const std::optional<base::Uuid>& old_task_id,
     const std::optional<base::Uuid>& new_task_id) {
-  ui::WindowAndroid* window_android =
-      GetWindowAndroid(browser_window_interface);
-  if (!window_android) {
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
+  if (!bridge) {
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_onTaskChanged(
-      env, java_delegate_, window_android,
-      old_task_id.has_value() ? old_task_id->AsLowercaseString()
-                              : std::string(),
-      new_task_id.has_value() ? new_task_id->AsLowercaseString()
-                              : std::string());
+  bridge->NotifyTaskChanged(old_task_id, new_task_id);
 }
 
 void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
-  ui::WindowAndroid* window_android =
-      GetWindowAndroid(browser_window_interface);
-  if (!window_android) {
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
+  if (!bridge) {
     return;
   }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksUiServiceDelegate_showUndoSnackbar(
-      env, java_delegate_, window_android,
-      reinterpret_cast<intptr_t>(browser_window_interface));
-}
-
-ui::WindowAndroid* ContextualTasksUiServiceDelegateAndroid::GetWindowAndroid(
-    BrowserWindowInterface* browser_window_interface) {
-  if (!browser_window_interface || !browser_window_interface->GetWindow() ||
-      !browser_window_interface->GetWindow()->GetNativeWindow()) {
-    return nullptr;
-  }
-  return browser_window_interface->GetWindow()->GetNativeWindow();
-}
-
-void ContextualTasksUiServiceDelegateAndroid::UndoClose(
-    JNIEnv* env,
-    int64_t browser_window_ptr) {
-  auto* browser_window =
-      reinterpret_cast<BrowserWindowInterface*>(browser_window_ptr);
-  if (browser_window) {
-    auto* controller = ContextualTasksPanelController::From(browser_window);
-    if (controller) {
-      controller->Show();
-    }
-  }
+  bridge->NotifyShowUndoSnackbar();
 }
 
 }  // namespace contextual_tasks
-
-DEFINE_JNI(ContextualTasksUiServiceDelegate)

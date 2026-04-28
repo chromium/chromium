@@ -10,10 +10,6 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -40,7 +36,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /** Implementation of {@link ContextualTasksFuseboxManager}. */
-@JNINamespace("contextual_tasks")
 @NullMarked
 public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFuseboxManager {
     private final Activity mActivity;
@@ -184,8 +179,7 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
     }
 
     private @Nullable String getTaskIdForTab(@Nullable Tab tab) {
-        if (tab == null || tab.getWebContents() == null) return null;
-        return ContextualTasksFuseboxManagerImplJni.get().getTaskIdForTab(tab.getWebContents());
+        return ContextualTasksBridge.getTaskIdForTab(tab);
     }
 
     private void updateFuseboxVisibility(@Nullable Tab currentTab) {
@@ -206,7 +200,7 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
     }
 
     private boolean isContextualTasksUrl(GURL url) {
-        return ContextualTasksFuseboxManagerImplJni.get().isContextualTasksUrl(url);
+        return ContextualTasksBridge.isContextualTasksUrl(url);
     }
 
     private void setFuseboxVisible(boolean visible) {
@@ -247,14 +241,5 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
         }
         mTaskSessionMap.clear();
         mFuseboxDataProvider.destroy();
-    }
-
-    @NativeMethods
-    public interface Natives {
-        @Nullable
-        @JniType("std::string")
-        String getTaskIdForTab(@JniType("content::WebContents*") WebContents webContents);
-
-        boolean isContextualTasksUrl(@JniType("GURL") GURL url);
     }
 }

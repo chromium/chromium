@@ -7,12 +7,20 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class BrowserWindowInterface;
+class GURL;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace contextual_tasks {
 
@@ -24,6 +32,8 @@ class EntryPointEligibilityManager;
 // Owned by the Java ContextualTasksBridge.
 class ContextualTasksBridge {
  public:
+  DECLARE_USER_DATA(ContextualTasksBridge);
+
   ContextualTasksBridge(JNIEnv* env,
                         const jni_zero::JavaRef<jobject>& obj,
                         BrowserWindowInterface* window,
@@ -34,7 +44,22 @@ class ContextualTasksBridge {
   ContextualTasksBridge(const ContextualTasksBridge&) = delete;
   ContextualTasksBridge& operator=(const ContextualTasksBridge&) = delete;
 
+  // Returns the ContextualTasksBridge for the given |window|, if one exists.
+  static ContextualTasksBridge* From(BrowserWindowInterface* window);
+
   void Destroy(JNIEnv* env);
+
+  // Called from Java via JNI to undo the closure of the sheet.
+  void UndoClose(JNIEnv* env);
+
+  // Notification methods to call into Java.
+  void NotifyWebUIReady(const base::Uuid& task_id,
+                        content::WebContents* web_contents);
+  void NotifyWebUIDestroyed(const std::optional<base::Uuid>& task_id);
+  void NotifyTaskChanged(const std::optional<base::Uuid>& old_task_id,
+                         const std::optional<base::Uuid>& new_task_id);
+  void NotifyShowUndoSnackbar();
+  void NotifyOpenFeedbackUi(const GURL& page_url);
 
  private:
   // Factory to emulate browser_window_features.cc's functionality for browser-
@@ -60,6 +85,10 @@ class ContextualTasksBridge {
   std::unique_ptr<ContextualTasksPanelController> controller_;
 
   jni_zero::ScopedJavaGlobalRef<jobject> java_obj_;
+
+  // Handles the registration and discovery of this bridge via the window's
+  // UnownedUserDataHost.
+  ui::ScopedUnownedUserData<ContextualTasksBridge> scoped_unowned_user_data_;
 };
 
 }  // namespace contextual_tasks

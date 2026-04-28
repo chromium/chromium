@@ -100,6 +100,9 @@ TEST_F(ContextualTasksBridgeTest, InitPopulatesUserData) {
   EXPECT_NE(nullptr,
             EntryPointEligibilityManager::Get(unowned_user_data_host_));
   EXPECT_NE(nullptr, ActiveTaskContextProvider::Get(unowned_user_data_host_));
+
+  // Verify Get() works.
+  EXPECT_EQ(&bridge, ContextualTasksBridge::From(&mock_browser));
 }
 
 }  // namespace contextual_tasks

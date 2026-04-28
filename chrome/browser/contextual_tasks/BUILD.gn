@@ -93,7 +93,6 @@ source_set("impl") {
     sources += [
       "android/contextual_tasks_bridge.cc",
       "android/contextual_tasks_bridge.h",
-      "android/contextual_tasks_fusebox_utils.cc",
       "android/contextual_tasks_ui_service_delegate_android.cc",
       "android/contextual_tasks_ui_service_delegate_android.h",
     ]
@@ -150,6 +149,7 @@ source_set("impl") {
   if (is_android) {
     deps += [
       ":jni_headers",
+      "//chrome/browser/ui/webui:webui_util",
       "//ui/android",
     ]
   }
@@ -576,7 +576,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImpl.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
     ]
 
     deps = [
@@ -602,17 +601,13 @@ if (is_android) {
   }
 
   generate_jni("jni_headers") {
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImpl.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java" ]
   }
 
   robolectric_library("junit") {
     sources = [
+      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridgeTest.java",
       "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImplTest.java",
-      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java",
     ]
     deps = [
       ":java",
@@ -627,6 +622,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/omnibox:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/messages/android:java",
       "//components/browser_ui/styles/android:java",
       "//content/public/android:content_java",

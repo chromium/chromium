@@ -5,18 +5,14 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 
-#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
 class Profile;
 
-namespace ui {
-class WindowAndroid;
-}
-
 namespace contextual_tasks {
+
 class ContextualTasksUiServiceDelegateAndroid
     : public ContextualTasksUiServiceDelegate {
  public:
@@ -27,9 +23,6 @@ class ContextualTasksUiServiceDelegateAndroid
       const ContextualTasksUiServiceDelegateAndroid&) = delete;
   ContextualTasksUiServiceDelegateAndroid& operator=(
       const ContextualTasksUiServiceDelegateAndroid&) = delete;
-
-  // Called from Java via JNI to undo the closure of the sheet.
-  void UndoClose(JNIEnv* env, int64_t browser_window_ptr);
 
   // ContextualTasksUiServiceDelegate overrides:
   void OpenFeedbackUi(BrowserWindowInterface* browser,
@@ -48,11 +41,7 @@ class ContextualTasksUiServiceDelegateAndroid
   Profile* profile() const { return profile_; }
 
  private:
-  ui::WindowAndroid* GetWindowAndroid(
-      BrowserWindowInterface* browser_window_interface);
-
   raw_ptr<Profile> profile_;
-  base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
 };
 
 }  // namespace contextual_tasks

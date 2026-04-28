@@ -41,8 +41,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ContextualTasksFuseboxManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,7 +55,7 @@ public class ContextualTasksFuseboxManagerImplTest {
     @Mock private WebContents mWebContents;
     @Mock private FuseboxSessionState mSessionState;
     @Mock private ComposeboxQueryControllerBridge mBridge;
-    @Mock private ContextualTasksFuseboxManagerImpl.Natives mMockJni;
+    @Mock private ContextualTasksBridge.Natives mMockJni;
     @Mock private Profile mProfile;
 
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
@@ -71,12 +69,11 @@ public class ContextualTasksFuseboxManagerImplTest {
 
     private static final String TASK_ID_1 = "task-id-1";
     private static final String TASK_ID_2 = "task-id-2";
-    private static final GURL CONTEXTUAL_TASKS_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Before
     public void setUp() {
         SemanticColorUtils.setDefaultBgColorForTesting(Color.WHITE);
-        ContextualTasksFuseboxManagerImplJni.setInstanceForTesting(mMockJni);
+        ContextualTasksBridgeJni.setInstanceForTesting(mMockJni);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mSessionState.getComposeboxQueryControllerBridge()).thenReturn(mBridge);
         mProfileSupplier.set(mProfile);

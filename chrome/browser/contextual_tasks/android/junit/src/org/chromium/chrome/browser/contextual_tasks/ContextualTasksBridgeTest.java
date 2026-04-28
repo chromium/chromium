@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.contextual_tasks;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,37 +33,41 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/** Unit tests for {@link ContextualTasksUiServiceDelegate}. */
+/** Unit tests for {@link ContextualTasksBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ContextualTasksUiServiceDelegateUnitTest {
+public class ContextualTasksBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
-    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private ContextualTasksUiServiceDelegate.Natives mMockJni;
+    @Mock private ContextualTasksBridge.Natives mMockJni;
     @Mock private HelpAndFeedbackLauncher mMockHelpAndFeedbackLauncher;
     @Mock private Activity mMockActivity;
     @Mock private ContextualTasksFuseboxManager mFuseboxManager;
     @Mock private WebContents mWebContents;
 
-    private ContextualTasksUiServiceDelegate mDelegate;
+    private ContextualTasksBridge mBridge;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
 
     private static final String TEST_URL = "https://example.com";
     private static final String TEST_TASK_ID = "test-task-id";
-    private static final long NATIVE_DELEGATE_PTR = 1234L;
     private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
+    private static final long TEST_NATIVE_BRIDGE_PTR = 1234L;
 
     @Before
     public void setUp() {
-        ContextualTasksUiServiceDelegateJni.setInstanceForTesting(mMockJni);
-        mDelegate = ContextualTasksUiServiceDelegate.create(NATIVE_DELEGATE_PTR, mProfile);
+        ContextualTasksBridgeJni.setInstanceForTesting(mMockJni);
+        when(mMockJni.init(any(), eq(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR), eq(mProfile)))
+                .thenReturn(TEST_NATIVE_BRIDGE_PTR);
+        mBridge = new ContextualTasksBridge(mProfile, mWindowAndroid);
+        mBridge.onAddedToTask(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
+
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);
@@ -72,7 +78,7 @@ public class ContextualTasksUiServiceDelegateUnitTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         ContextualTasksFuseboxManager.KEY.attachToHost(mUserDataHost, mFuseboxManager);
 
-        mDelegate.onWebUIReady(TEST_TASK_ID, mWebContents);
+        mBridge.onWebUIReady(TEST_TASK_ID, mWebContents);
 
         verify(mFuseboxManager).onWebUIReady(eq(TEST_TASK_ID), eq(mWebContents));
     }
@@ -81,7 +87,7 @@ public class ContextualTasksUiServiceDelegateUnitTest {
     public void testOnWebUIDestroyed() {
         ContextualTasksFuseboxManager.KEY.attachToHost(mUserDataHost, mFuseboxManager);
 
-        mDelegate.onWebUIDestroyed(mWindowAndroid, TEST_TASK_ID);
+        mBridge.onWebUIDestroyed(TEST_TASK_ID);
 
         verify(mFuseboxManager).onWebUIDestroyed(eq(TEST_TASK_ID));
     }
@@ -92,7 +98,7 @@ public class ContextualTasksUiServiceDelegateUnitTest {
         String oldTaskId = "old-task-id";
         String newTaskId = "new-task-id";
 
-        mDelegate.onTaskChanged(mWindowAndroid, oldTaskId, newTaskId);
+        mBridge.onTaskChanged(oldTaskId, newTaskId);
 
         verify(mFuseboxManager).onTaskChanged(eq(oldTaskId), eq(newTaskId));
     }
@@ -101,7 +107,7 @@ public class ContextualTasksUiServiceDelegateUnitTest {
     public void testShowUndoSnackbar() {
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
 
-        mDelegate.showUndoSnackbar(mWindowAndroid, TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
+        mBridge.showUndoSnackbar();
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
     }
@@ -110,7 +116,7 @@ public class ContextualTasksUiServiceDelegateUnitTest {
     public void testUndoActionCallsNative() {
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
 
-        mDelegate.showUndoSnackbar(mWindowAndroid, TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
+        mBridge.showUndoSnackbar();
 
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
@@ -118,24 +124,23 @@ public class ContextualTasksUiServiceDelegateUnitTest {
         Snackbar snackbar = snackbarCaptor.getValue();
         snackbar.getController().onAction(snackbar.getActionData());
 
-        verify(mMockJni)
-                .undoClose(eq(NATIVE_DELEGATE_PTR), eq(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR));
+        verify(mMockJni).undoClose(eq(TEST_NATIVE_BRIDGE_PTR));
     }
 
     @Test
     public void testOpenFeedbackUi() {
-        mDelegate.openFeedbackUi(mWindowAndroid, TEST_URL);
+        mBridge.openFeedbackUi(TEST_URL);
 
         verify(mMockHelpAndFeedbackLauncher)
                 .showFeedback(eq(mMockActivity), eq(TEST_URL), eq("cobrowse"));
     }
 
     @Test
-    public void testUndoActionClickedAfterDelegateDestroyed() {
+    public void testUndoActionClickedAfterBridgeDestroyed() {
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);
-        mDelegate.showUndoSnackbar(mWindowAndroid, TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
+        mBridge.showUndoSnackbar();
 
-        mDelegate.clearNativePtr();
+        mBridge.onFeatureRemoved();
 
         // Trigger action after clearing.
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
@@ -144,6 +149,6 @@ public class ContextualTasksUiServiceDelegateUnitTest {
         snackbar.getController().onAction(snackbar.getActionData());
 
         // Should NOT call native.
-        verify(mMockJni, org.mockito.Mockito.never()).undoClose(any(Long.class), any(Long.class));
+        verify(mMockJni, never()).undoClose(anyLong());
     }
 }

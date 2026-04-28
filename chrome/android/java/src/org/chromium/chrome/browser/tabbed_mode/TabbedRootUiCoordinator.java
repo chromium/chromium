@@ -894,7 +894,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mContextualTasksBridge != null) {
-            mContextualTasksBridge.destroy();
             mContextualTasksBridge = null;
         }
 
@@ -1215,11 +1214,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
-            mContextualTasksBridge =
-                    new ContextualTasksBridge(
-                            mProfileSupplier.asNonNull().get().getOriginalProfile(),
-                            mChromeAndroidTaskSupplier.get());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)
+                && mChromeAndroidTaskSupplier.get() != null) {
+            Profile profile = mProfileSupplier.asNonNull().get().getOriginalProfile();
+            mContextualTasksBridge = new ContextualTasksBridge(profile, mWindowAndroid);
+            mChromeAndroidTaskSupplier
+                    .get()
+                    .addFeature(
+                            new ChromeAndroidTaskFeatureKey(
+                                    ContextualTasksBridge.class, profile, mWindowAndroid),
+                            () -> mContextualTasksBridge);
         }
 
         initiateTabBottomSheetManagers();
