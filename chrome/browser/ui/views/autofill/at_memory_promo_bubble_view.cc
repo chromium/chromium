@@ -128,9 +128,8 @@ std::u16string AtMemoryPromoBubbleView::GetWindowTitle() const {
 
 void AtMemoryPromoBubbleView::AddedToWidget() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view =
-      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
-          IDR_AUTOFILL_AT_MEMORY_PROMO_HEADER_OPTED_IN));
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_AT_MEMORY_PROMO_HEADER));
   image_view->GetViewAccessibility().SetIsInvisible(true);
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
