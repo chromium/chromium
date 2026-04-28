@@ -182,9 +182,7 @@ component("gpu") {
       "aaudio",
       "mediandk",
     ]
-    deps += [
-      "//third_party/libgav1:libgav1_parser",
-    ]
+    deps += [ "//third_party/libgav1:libgav1_parser" ]
     if (enable_vulkan) {
       deps += [ "//gpu/vulkan" ]
     }
