@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.most_visited_tiles.MvtSettingsCoordinator;
@@ -187,9 +186,7 @@ public class NtpCustomizationCoordinator {
         if (mBottomSheetType == MAIN) {
             // The click listener for each list item in the main bottom sheet should be registered
             // before calling renderListContent().
-            if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
-                mMediator.registerClickListener(MVT, getOptionClickListener(MVT));
-            }
+            mMediator.registerClickListener(MVT, getOptionClickListener(MVT));
             mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
             mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
             if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {

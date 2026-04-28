@@ -31,7 +31,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -81,7 +80,6 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     private final List<Integer> mListContent;
     private final Supplier<@Nullable Profile> mProfileSupplier;
     private final @Nullable PropertyModel mContainerPropertyModel;
-    private final boolean mNtpCustomizationForMvtFeatureEnabled;
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
     private @Nullable Profile mProfile;
@@ -110,8 +108,6 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mTypeToListenersMap = new HashMap<>();
         mContext = context;
         mListContent = buildListContent(context);
-        mNtpCustomizationForMvtFeatureEnabled =
-                ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled();
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -202,8 +198,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
             updateFeedSectionSubtitle(getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE));
 
             boolean isMvtVisible =
-                    mNtpCustomizationForMvtFeatureEnabled
-                            && NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
+                    NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
             updateMvtSectionSubtitle(isMvtVisible);
         }
     }
@@ -315,9 +310,8 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         maybeRegisterTemplateUrlServiceObserver(mProfile);
 
         List<Integer> content = new ArrayList<>();
-        if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
-            content.add(MVT);
-        }
+        content.add(MVT);
+
         if (!NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop()) {
             content.add(NTP_CARDS);
         }

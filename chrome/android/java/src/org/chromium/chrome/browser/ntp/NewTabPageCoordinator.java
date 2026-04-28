@@ -644,10 +644,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mMostVisitedTilesCoordinator.initWithNative(
                 profile, mManager, tileGroupDelegate, touchEnabledDelegate);
-
-        if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
-            mMostVisitedTilesCoordinator.updateMvtVisibility();
-        }
+        mMostVisitedTilesCoordinator.updateMvtVisibility();
     }
 
     private void initializeSigninPromoCoordinator() {

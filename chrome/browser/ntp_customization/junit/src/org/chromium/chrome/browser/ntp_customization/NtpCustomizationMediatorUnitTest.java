@@ -409,10 +409,7 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_IncludesTheme() {
         // Condition Check:
         // 1. Feature Flag V2: Enabled via @EnableFeatures
@@ -428,10 +425,7 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_ExcludesThemeWhenE2EDisabled() {
         // Release the token so E2E returns false
         mE2EProvider.releaseSetDecorFitsSystemWindowToken(0);
@@ -445,10 +439,7 @@ public class NtpCustomizationMediatorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT
-    })
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_IncludesThemeWhenE2EDisabled_tablet() {
         // Release the token so E2E returns false
         mE2EProvider.releaseSetDecorFitsSystemWindowToken(0);
@@ -466,13 +457,6 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT})
-    public void testBuildListContentWhenProfileIsNotReadyAsNtpCustomizationForMvtFeatureDisabled() {
-        List<Integer> listContent = mMediator.buildListContent(mContext);
-        assertEquals(List.of(NTP_CARDS, THEME), listContent);
-    }
-
-    @Test
     @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testBuildListContent() {
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
@@ -487,23 +471,6 @@ public class NtpCustomizationMediatorUnitTest {
 
         assertFalse(FeedFeatures.isFeedEnabled(mProfile));
         assertEquals(List.of(MVT, NTP_CARDS, THEME), mMediator.buildListContent(mContext));
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
-    public void testBuildListContentWithNtpCustomizationForMvtFeatureDisabled() {
-        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
-        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
-
-        assertTrue(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(NTP_CARDS, FEED, THEME), mMediator.buildListContent(mContext));
-
-        // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
-
-        assertFalse(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(NTP_CARDS, THEME), mMediator.buildListContent(mContext));
     }
 
     @Test
