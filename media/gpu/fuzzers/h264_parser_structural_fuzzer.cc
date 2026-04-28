@@ -375,7 +375,8 @@ void BuildSliceHeader(FuzzedDataProvider& fdp,
   // log2_max_frame_num_minus4 was fuzzed out of range.
   // We must ensure num_bits <= 64 for AppendBits.
   size_t frame_num_bits = sps.log2_max_frame_num_minus4 + 4;
-  builder.AppendBits(frame_num_bits, fdp.ConsumeIntegral<uint32_t>());
+  builder.AppendBits(frame_num_bits,
+                     fdp.ConsumeIntegralInRange<uint32_t>(0, 32));
 
   bool field_pic_flag = false;
   if (!sps.frame_mbs_only_flag) {
