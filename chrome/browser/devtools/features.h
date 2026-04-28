@@ -78,6 +78,8 @@ extern const base::FeatureParam<DevToolsFreestylerUserTier>
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceAccessibilityAgent);
 
+BASE_DECLARE_FEATURE(kDevToolsAiAssistanceStorageAgent);
+
 BASE_DECLARE_FEATURE(kDevToolsAiCodeCompletion);
 extern const base::FeatureParam<std::string> kDevToolsAiCodeCompletionModelId;
 extern const base::FeatureParam<double> kDevToolsAiCodeCompletionTemperature;

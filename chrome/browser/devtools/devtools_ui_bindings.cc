@@ -806,7 +806,9 @@ bool IsAnyAidaPoweredFeatureEnabled() {
          base::FeatureList::IsEnabled(
              ::features::kDevToolsAiCodeCompletionStyles) ||
          base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiAssistanceAccessibilityAgent);
+             ::features::kDevToolsAiAssistanceAccessibilityAgent) ||
+         base::FeatureList::IsEnabled(
+             ::features::kDevToolsAiAssistanceStorageAgent);
 }
 }  // namespace
 
@@ -1888,6 +1890,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
     response_dict.Set("devToolsAiAssistanceAccessibilityAgent",
                       std::move(accessibility_agent_dict));
   }
+
+  response_dict.Set(
+      "devToolsAiAssistanceStorageAgent",
+      base::DictValue().Set(
+          "enabled", base::FeatureList::IsEnabled(
+                         ::features::kDevToolsAiAssistanceStorageAgent)));
 
   if (base::FeatureList::IsEnabled(
           ::features::kDevToolsAiAssistancePerformanceAgent)) {

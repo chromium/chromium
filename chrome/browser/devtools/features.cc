@@ -111,6 +111,10 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 BASE_FEATURE(kDevToolsAiAssistanceAccessibilityAgent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the DevTools AI Assistance Storage Agent is enabled.
+BASE_FEATURE(kDevToolsAiAssistanceStorageAgent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the DevTools AI Code Completion is enabled.
 BASE_FEATURE(kDevToolsAiCodeCompletion, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiCodeCompletionModelId{
