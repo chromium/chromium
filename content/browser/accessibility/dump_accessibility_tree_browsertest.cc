@@ -3794,6 +3794,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("select-listbox-modes.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       SelectionOverEditableWithFocus) {
+  RunHtmlTest(FILE_PATH_LITERAL("selection-over-editable-with-focus.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       SelectionOverEditableWithoutFocus) {
+  RunHtmlTest(FILE_PATH_LITERAL("selection-over-editable-without-focus.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
   RunHtmlTest(FILE_PATH_LITERAL("span.html"));
 }

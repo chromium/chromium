@@ -1,0 +1,7 @@
+[document web] selection_start=0 selection_end=4
+++[paragraph] selection_start=5 selection_end=10
+++++[static] name='Paragraph1' selection_start=5 selection_end=10
+++[entry] selectable-text selection_start=0 selection_end=12
+++[entry] selectable-text selection_start=0 selection_end=12
+++[paragraph] selection_start=0 selection_end=7
+++++[static] name='Paragraph2' selection_start=0 selection_end=7

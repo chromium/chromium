@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Paragraph1' TreeData.textSelStartOffset=5
+++++++++++inlineTextBox name='Paragraph1'
+++++++textField value='EditableText' textSelStart=0 textSelEnd=0
+++++++++genericContainer
+++++++++++staticText name='EditableText'
+++++++++++++inlineTextBox name='EditableText'
+++++++textField value='EditableText' textSelStart=0 textSelEnd=0
+++++++++genericContainer
+++++++++++staticText name='EditableText'
+++++++++++++inlineTextBox name='EditableText'
+++++++paragraph
+++++++++staticText name='Paragraph2' TreeData.textSelEndOffset=7
+++++++++++inlineTextBox name='Paragraph2'

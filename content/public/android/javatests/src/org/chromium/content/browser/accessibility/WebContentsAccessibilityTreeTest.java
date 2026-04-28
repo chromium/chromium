@@ -2733,6 +2733,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_selectionOverEditableWithFocus() {
+        performHtmlTest("selection-over-editable-with-focus.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_selectionOverEditableWithoutFocus() {
+        performHtmlTest("selection-over-editable-without-focus.html");
+    }
+
+    @Test
+    @SmallTest
     @DisabledTest(message = "https://crbug.com/1280713")
     public void test_selectmenu() {
         performHtmlTest("selectmenu.html");

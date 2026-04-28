@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView interesting name='Paragraph1'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='EditableText' input_type=1 text_change_added_count=12
+++android.widget.EditText clickable editable_text focusable has_non_empty_value interesting name='EditableText' input_type=1 text_change_added_count=12
+++android.widget.TextView interesting name='Paragraph2'

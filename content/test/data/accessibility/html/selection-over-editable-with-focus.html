@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+@AURALINUX-ALLOW:selection_start
+@AURALINUX-ALLOW:selection_end
+@BLINK-ALLOW:*textSel*
+@MAC-ALLOW:AXSelectedText*
+@WIN-ALLOW:selection_start
+@WIN-ALLOW:selection_end
+@WIN-ALLOW:n_selections
+-->
+<html>
+<body>
+<p id="paragraph1">Paragraph1</p>
+<input id='input1' type='text' value='EditableText'>
+<input id='input2' type='text' value='EditableText'>
+<p id="paragraph2">Paragraph2</p>
+</body>
+
+<script>
+  var selectionRange = document.createRange();
+  var input1 = document.getElementById('input1')
+  input1.focus();
+
+  var selection = window.getSelection();
+  var start = document.getElementById('paragraph1')
+  var end = document.getElementById('paragraph2')
+  selectionRange.setStart(start.firstChild,5);
+  selectionRange.setEnd(end.firstChild, 7);
+  selection.removeAllRanges();
+  selection.addRange(selectionRange);
+</script>
+</html>

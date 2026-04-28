@@ -1,0 +1,17 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Paragraph1'
+++++++++++UNKNOWN label='Paragraph1'
+++++++TEXT_FIELD focusable has_input_focus actions='{DEFAULT, SET_VALUE}' value='EditableText'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='EditableText'
+++++++++++++UNKNOWN label='EditableText'
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='EditableText'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='EditableText'
+++++++++++++UNKNOWN label='EditableText'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Paragraph2'
+++++++++++UNKNOWN label='Paragraph2'

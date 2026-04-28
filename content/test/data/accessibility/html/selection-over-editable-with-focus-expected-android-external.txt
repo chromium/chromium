@@ -1,0 +1,5 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Paragraph1" viewIdResName:"paragraph1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"] extendedSelectionStart:5
+++EditText text:"EditableText" viewIdResName:"input1" clickable editable focusable focused inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
+++EditText text:"EditableText" viewIdResName:"input2" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300"]
+++TextView text:"Paragraph2" viewIdResName:"paragraph2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"] extendedSelectionEnd:7
