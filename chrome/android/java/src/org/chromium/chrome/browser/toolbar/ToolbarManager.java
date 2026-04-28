@@ -1127,7 +1127,8 @@ public class ToolbarManager
                             this::onHomeButtonMenuClick,
                             HomepagePolicyManager::isHomepageLocationManaged,
                             browsingModeThemeColorProviderWithAdjustableTint,
-                            mIncognitoStateProvider);
+                            mIncognitoStateProvider,
+                            mActionRegistry);
         }
 
         ChromeImageButton backButton = mControlContainer.findViewById(R.id.back_button);

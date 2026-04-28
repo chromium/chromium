@@ -1985,6 +1985,7 @@ android_library("chrome_unit_test_java_various") {
 
   deps = [
     ":common_unit_test_deps_java",
+    "//chrome/browser/ui/android/actions:java",
     "//components/omnibox/common:features_java",
   ]
 }

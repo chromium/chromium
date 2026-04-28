@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -20,12 +21,15 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.HomeActionProperties;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
-import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.RectProvider;
 
@@ -48,6 +52,10 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
     private MVCListAdapter.@Nullable ModelList mMenuList;
     private @Nullable ListMenuDelegate mListMenuDelegate;
 
+    private final @Nullable NullableObservableSupplier<PropertyModel> mHomeActionModelSupplier;
+    private final Callback<@Nullable PropertyModel> mModelCallback = this::onModelChanged;
+    private final ClickWithMetaStateCallback mClickCallback;
+
     /**
      * @param context The Android context used for various view operations.
      * @param homeButton The concrete {@link View} class for this MVC component.
@@ -56,6 +64,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
      * @param isHomepageMenuDisabledSupplier Supplier for whether the home button menu is enabled.
      * @param themeColorProvider a provider that notifies about theme changes.
      * @param incognitoStateProvider a provider that notifies about incognito state changes.
+     * @param homeActionModelSupplier Supplier for the Home action property model.
      */
     public HomeButtonCoordinator(
             Context context,
@@ -64,48 +73,74 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
             Callback<Context> onMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
             ThemeColorProvider themeColorProvider,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            @Nullable ActionRegistry actionRegistry) {
         super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
+        // TODO(crbug.com/493273525): Make toolbar buttons use ActionRegistry.
         mHomeButton = (HomeButton) homeButton;
         mOnMenuClickCallback = onMenuClickCallback;
         mIsHomeButtonMenuDisabled = isHomepageMenuDisabledSupplier;
+        mClickCallback = clickCallback;
+        mHomeActionModelSupplier =
+                actionRegistry != null ? actionRegistry.get(ActionId.HOME_BUTTON) : null;
+
         mHomeButton.setOnLongClickListener(this::onLongClickHomeButton);
         mHomeButton.setClickCallback(clickCallback);
+
+        initializeMenuDelegate();
+        if (mHomeActionModelSupplier != null) {
+            mHomeActionModelSupplier.addSyncObserverAndCallIfNonNull(mModelCallback);
+        }
+    }
+
+    private void initializeMenuDelegate() {
+        mListMenuDelegate =
+                new ListMenuDelegate() {
+                    private @Nullable ListMenu mListMenu;
+                    private @Nullable RectProvider mRectProvider;
+
+                    @Override
+                    public ListMenu getListMenu() {
+                        if (mListMenu == null) {
+                            mMenuList = new MVCListAdapter.ModelList();
+                            mMenuList.add(
+                                    new ListItemBuilder()
+                                            .withTitleRes(R.string.options_homepage_edit_title)
+                                            .withMenuId(ID_SETTINGS)
+                                            .withStartIconRes(R.drawable.ic_edit_24dp)
+                                            .build());
+                            mListMenu =
+                                    BrowserUiListMenuUtils.getBasicListMenu(
+                                            mContext,
+                                            mMenuList,
+                                            (model, unusedView) ->
+                                                    mOnMenuClickCallback.onResult(mContext));
+                        }
+                        return mListMenu;
+                    }
+
+                    @Override
+                    public RectProvider getRectProvider(View listMenuButton) {
+                        if (mRectProvider == null) {
+                            // TODO(crbug.com/505443678): Polish for bottom bar item.
+                            mRectProvider = MenuBuilderHelper.getRectProvider(listMenuButton);
+                        }
+                        return mRectProvider;
+                    }
+                };
+        mHomeButton.setDelegate(mListMenuDelegate, false);
+    }
+
+    private void onModelChanged(@Nullable PropertyModel model) {
+        if (model == null) return;
+        model.set(HomeActionProperties.CLICK_WITH_META_CALLBACK, mClickCallback);
+        model.set(HomeActionProperties.LONG_PRESS_MENU_DELEGATE, mListMenuDelegate);
     }
 
     @VisibleForTesting
     boolean onLongClickHomeButton(View view) {
         if (view != mHomeButton || mIsHomeButtonMenuDisabled.get()) return false;
-
-        if (mListMenuDelegate == null) {
-            RectProvider rectProvider = MenuBuilderHelper.getRectProvider(mHomeButton);
-            mMenuList = new MVCListAdapter.ModelList();
-            mMenuList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.options_homepage_edit_title)
-                            .withMenuId(ID_SETTINGS)
-                            .withStartIconRes(R.drawable.ic_edit_24dp)
-                            .build());
-            BasicListMenu listMenu =
-                    BrowserUiListMenuUtils.getBasicListMenu(
-                            mContext,
-                            mMenuList,
-                            (model, unusedView) -> mOnMenuClickCallback.onResult(mContext));
-            mListMenuDelegate =
-                    new ListMenuDelegate() {
-                        @Override
-                        public ListMenu getListMenu() {
-                            return listMenu;
-                        }
-
-                        @Override
-                        public RectProvider getRectProvider(View listMenuButton) {
-                            return rectProvider;
-                        }
-                    };
-            mHomeButton.setDelegate(mListMenuDelegate, false);
-        }
         mHomeButton.showMenu();
         return true;
     }

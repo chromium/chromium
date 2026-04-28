@@ -106,7 +106,8 @@ public class HomeButtonTest {
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false,
                                     mThemeColorProvider,
-                                    mIncognitoStateProvider);
+                                    mIncognitoStateProvider,
+                                    /* actionRegistry= */ null);
                     SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     content.addView(homeButton);
