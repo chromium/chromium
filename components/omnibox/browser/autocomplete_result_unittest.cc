@@ -375,6 +375,48 @@ void AutocompleteResultTest::SortMatchesAndVerifyOrder(
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }
 
+class AutocompleteResultTimeTest : public testing::Test {
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_F(AutocompleteResultTimeTest, ResultReadyTime) {
+  AutocompleteResult result;
+  EXPECT_TRUE(result.result_ready_time().is_null());
+}
+
+TEST_F(AutocompleteResultTimeTest, RefreshReadyState) {
+  AutocompleteResult result;
+
+  auto now = task_environment_.NowTicks();
+  result.RefreshReadyState();
+  EXPECT_EQ(result.result_ready_time(), now);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  result.RefreshReadyState();
+  EXPECT_EQ(result.result_ready_time(), now + base::Seconds(1));
+}
+
+TEST_F(AutocompleteResultTimeTest, ResultReadyTimeSwapAndCopy) {
+  AutocompleteResult r1;
+  AutocompleteResult r2;
+
+  r1.RefreshReadyState();
+  r2.RefreshReadyState();
+
+  auto r1_time = r1.result_ready_time();
+  auto r2_time = r2.result_ready_time();
+
+  r1.SwapMatchesWith(&r2);
+  EXPECT_EQ(r1.result_ready_time(), r2_time);
+  EXPECT_EQ(r2.result_ready_time(), r1_time);
+
+  AutocompleteResult r3;
+  r3.CopyMatchesFrom(r1);
+  EXPECT_EQ(r3.result_ready_time(), r1.result_ready_time());
+}
+
 // Assertion testing for AutocompleteResult::SwapMatchesWith.
 TEST_F(AutocompleteResultTest, SwapMatches) {
   AutocompleteResult r1;
