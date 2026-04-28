@@ -75,6 +75,9 @@ const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam{
 // following that of the OmniboxEditModel.
 BASE_FEATURE(kWebUIOmniboxPopupSelectionControl, DISABLED);
 
+// If enabled, animates the caret in the omnibox.
+BASE_FEATURE(kOmniboxAnimatedCaret, ENABLED);
+
 // If enabled, enables energy effect in the omnibox.
 BASE_FEATURE(kEnergyEffectInOmnibox, ENABLED);
 

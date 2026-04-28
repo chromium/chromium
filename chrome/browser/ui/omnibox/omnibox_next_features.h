@@ -45,6 +45,8 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
+// Caret animation for omnibox
+BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
 // Enables energy effect in the omnibox.
 BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
