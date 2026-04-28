@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -90,9 +91,9 @@ class FamilyUserChromeActivityMetricsTest
         chrome.get());
 
     // Expect no Browsers at the beginning.
-    EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
     InitTestBrowserWithAuraWindow();
-    EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
     // Set the app active. If the app is active, it should be started, running,
     // and visible.
@@ -188,7 +189,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   params.window = another_browser_window.release();
   auto another_browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   PushChromeAppInstance(another_browser->window()->GetNativeWindow(),
                         apps::InstanceState::kActive);
@@ -243,7 +244,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
   PushChromeAppInstance(test_browser_->window()->GetNativeWindow(),
                         apps::InstanceState::kDestroyed);
   test_browser_.reset();
-  EXPECT_EQ(0U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
   DestroyFamilyUserChromeActivityMetrics();
 
   histogram_tester.ExpectTotalCount(

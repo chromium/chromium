@@ -284,8 +284,9 @@ using MediaAppIntegrationWithFilesAppAllProfilesTest =
 
 // Waits for the number of active Browsers in the test process to reach `count`.
 void WaitForBrowserCount(size_t count) {
-  EXPECT_LE(chrome::GetTotalBrowserCount(), count) << "Too many browsers";
-  while (chrome::GetTotalBrowserCount() < count) {
+  EXPECT_LE(GlobalBrowserCollection::GetInstance()->GetSize(), count)
+      << "Too many browsers";
+  while (GlobalBrowserCollection::GetInstance()->GetSize() < count) {
     ui_test_utils::BrowserCreatedObserver().Wait();
   }
 }
@@ -500,9 +501,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   BrowserWindowInterface* const system_app_browser =
       browser_created_observer.Wait();
 
-  EXPECT_EQ(
-      2u,
-      chrome::GetTotalBrowserCount());  // 1 extra for the browser test browser.
+  EXPECT_EQ(2u,
+            GlobalBrowserCollection::GetInstance()
+                ->GetSize());  // 1 extra for the browser test browser.
 
   content::TitleWatcher watcher(
       system_app_browser->GetTabStripModel()->GetActiveWebContents(),
@@ -521,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAndWait(pdf_params);
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
-  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   Browser* const pdf_img_browser = browser_created_observer.Wait();
   Browser* const pdf_tall_browser =

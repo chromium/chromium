@@ -888,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
 
   aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   ASSERT_TRUE(settings_window);
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Give the settings app a known position.
   const gfx::Rect settings_bounds(100, 100, 600, 400);
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
 
   // We launch a new browser window, but not a new settings app. Verify that the
   // window has been moved to the right place and stacked at the bottom.
-  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(settings_window));
   EXPECT_EQ(settings_bounds, settings_window->bounds());
   ASSERT_THAT(settings_window->parent()->children(),
@@ -1187,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
 
   // Close the browser and verify that all browser windows are closed.
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Set the template we created and launch the template.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
   BrowserWindowInterface* const new_browser =
       FindLaunchedBrowserByURLs({GURL(kAboutBlankUrl), GURL(kNewTabPageUrl)});
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 // Tests that browser windows created from a template have the correct bounds
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
 
   // There are two browser windows currently, the default one and the one we
   // just created.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
@@ -1523,7 +1523,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
 
   // There are a total of four browser windows now. The two initial ones and the
   // two created from our template.
-  EXPECT_EQ(4u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(4u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Test that the created browser has the same tabs and the same active tab.
   BrowserWindowInterface* const new_browser = FindLaunchedBrowserByURLs(urls);
@@ -1608,7 +1608,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
   BrowserWindowInterface* new_browser = browser_created_observer->Wait();
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_FALSE(split_view_controller->IsWindowInSplitView(window));
 
   // Our snapped window should have the similar bounds as it did when it was
@@ -1831,7 +1831,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   aura::Window* parent = settings_window->parent();
   ASSERT_TRUE(settings_window);
   ASSERT_TRUE(help_window);
-  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Give the settings app a known position, and maximize the help app.
   const gfx::Rect settings_bounds(100, 100, 600, 400);
@@ -1879,7 +1879,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   content::RunAllTasksUntilIdle();
   const BrowserWindowInterface* new_browser = browser_created_observer.Wait();
 
-  EXPECT_EQ(4u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(4u, GlobalBrowserCollection::GetInstance()->GetSize());
   aura::Window* new_browser_window =
       new_browser->GetWindow()->GetNativeWindow();
 
@@ -2337,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Reenter overview and launch the template we saved.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -2347,7 +2347,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ClickFirstTemplateItem();
   BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
@@ -2881,7 +2881,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureEmptyFloatingWorkspaceDesk) {
   // Close the browser.
   CloseBrowserSynchronously(browser());
-  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Now capture the desk and verify that we get a valid template with no apps
   // to restore.
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -3001,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Send a key to OK the close dialog. Wait for the Browser to close and its
   // NativeWindow to be destroyed (which may occur async and independently to
@@ -3015,7 +3015,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
     waiter.Wait();
   }
 
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Verify that we are in the library and that there's one saved desk.
   auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
@@ -3038,7 +3038,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Send escape to cancel the dialog (keep the browser running).
   SendKey(ui::VKEY_ESCAPE);
@@ -3046,7 +3046,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 
   ash::SavedDeskPresenterTestApi::FireWindowWatcherTimer();
 
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // We should be in overview mode.
   ASSERT_TRUE(ash::Shell::Get()->overview_controller()->overview_session());
@@ -3078,7 +3078,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   const gfx::Rect w2_bounds_before_restore = w2->GetBoundsInScreen();
   const float snap_ratio1 = window_state1->snap_ratio().value();
   const float snap_ratio2 = window_state2->snap_ratio().value();
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Open overview and save the desk as a template.
   ash::ToggleOverview();
@@ -3092,7 +3092,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   BrowserWindowInterface* const new_browser1 = browser_created_observer.Wait();
   BrowserWindowInterface* const new_browser2 =
       ui_test_utils::GetBrowserNotInSet({new_browser1, browser2, browser()});
-  ASSERT_EQ(4u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(4u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();

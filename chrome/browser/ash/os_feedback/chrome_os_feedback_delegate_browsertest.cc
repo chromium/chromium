@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetApplicationLocale) {
 
 // Test GetLastActivePageUrl returns last active page url if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetLastActivePageUrl) {
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(GetLastActivePageUrl()->spec(), "about:blank");
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kPageUrl)));

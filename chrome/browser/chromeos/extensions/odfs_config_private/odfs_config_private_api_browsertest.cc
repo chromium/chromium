@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -289,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
                                    ->GetVisibleURL());
 
   // The old M365 window was not changed, so there are now 3 browsers.
-  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
       existing_m365_browser, ash::kMicrosoft365AppId));
   EXPECT_EQ(GURL(kMicrosoft365PWAStartUrl),

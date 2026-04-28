@@ -121,6 +121,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -3670,7 +3671,7 @@ void CheckAppMenu(ChromeShelfController* controller,
 
 // Check that browsers get reflected correctly in the shelf menu.
 TEST_F(ChromeShelfControllerTest, BrowserMenuGeneration) {
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   chrome::NewTab(browser());
 
   InitShelfController();
@@ -3753,7 +3754,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 // Note that the extension matching logic is tested by the extension system
 // and does not need a separate test here.
 TEST_F(ChromeShelfControllerTest, V1AppMenuGeneration) {
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
 
   InitShelfControllerWithBrowser();

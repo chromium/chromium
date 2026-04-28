@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -183,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest, StartSession) {
   StartUserLogIn(true /*wait_for_active_session*/);
 
   // Check that the startup pages specified in policy were opened.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_TRUE(browser());
 
   TabStripModel* const tabs = browser()->GetTabStripModel();

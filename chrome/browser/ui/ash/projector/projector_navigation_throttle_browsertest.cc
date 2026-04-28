@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -150,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   GURL gurl(url);
 
   // Prior to navigation, there is only one browser available.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // We have to listen for both the browser being removed AND the new browser
   // being added.
@@ -180,7 +181,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   // During the navigation, we closed the previous browser to prevent dangling
   // about:blank pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), navigate_target_blank() ? 2u : 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            navigate_target_blank() ? 2u : 1u);
   // Set the default browser to the swa browser.
   SetBrowser(swa_browser);
   Browser* app_browser =
@@ -275,7 +277,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
                        NoBlankTab) {
   SetUpMockClock(GetParam() == LinkCapturingFeatureVersion::kV2DefaultOff);
   // Prior to navigation, there is only one browser available.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   // Suppose the user clicks a link like https://screencast.apps.chrome in
   // gchat. The redirect URL actually looks like the below.
@@ -301,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   // During the navigation, we closed the previous browser to prevent dangling
   // blank redirect pages and opened a new app browser for the Projector SWA.
   // There is still only one browser available.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Set the default browser to the swa browser.
   SetBrowser(swa_browser);
   Browser* app_browser =

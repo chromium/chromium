@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -201,7 +202,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
 // already open. The launch event should recycle the existing window and should
 // not open a new window.
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
-  const size_t starting_browser_count = chrome::GetTotalBrowserCount();
+  const size_t starting_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   auto* profile = browser()->profile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
@@ -215,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   Browser* app_browser1 =
       FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser1);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            starting_browser_count + 1);
 
   content::WebContents* tab =
       app_browser1->tab_strip_model()->GetActiveWebContents();
@@ -232,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
       FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
   // Launching the app with files should not open a new window.
   EXPECT_EQ(app_browser1, app_browser2);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            starting_browser_count + 1);
 
   tab = app_browser2->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);

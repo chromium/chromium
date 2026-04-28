@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -163,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginLaunch) {
 // Launches a browser with the expected tabs when the post login coral chip is
 // clicked.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
-  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 0u);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   // TODO(zxdan): These tabs and apps are currently hardcoded in ash for
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
-  ASSERT_EQ(chrome::GetTotalBrowserCount(), 4u);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 4u);
   const std::vector<BrowserWindowInterface*> browsers =
       ui_test_utils::FindMatchingBrowsers(
           [](BrowserWindowInterface* browser) { return true; });

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, CloseBrowserIfReOpen) {
   browser.window()->Show();
   ui_test_utils::BrowserDestroyedObserver observer(&browser);
   observer.Wait();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {

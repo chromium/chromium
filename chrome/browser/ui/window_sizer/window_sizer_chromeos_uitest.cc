@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -84,11 +85,11 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
   EnsureShelfInitialization();
 
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   // Close the browser window so that clicking the icon creates a new window.
   CloseBrowserSynchronously(
       GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
 
   auto browser_created_observer =
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   display::Screen* screen = display::Screen::Get();
   std::pair<display::Display, display::Display> displays =
       ui_test_utils::GetDisplays(screen);
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(
       displays.second.id(),
       screen
@@ -111,14 +112,14 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   // Close the browser window so that clicking the icon creates a new window.
   CloseBrowserSynchronously(new_browser);
   new_browser = nullptr;
-  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   browser_created_observer.emplace();
   OpenBrowserUsingShelfOnRootWindow(root_windows[0]);
   new_browser = browser_created_observer->Wait();
 
   // A new browser window should be opened on the 1st display.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(
       displays.first.id(),
       screen

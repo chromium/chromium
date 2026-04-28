@@ -836,12 +836,14 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
 
   // Attempt to create a new browser window and verify it gets closed.
-  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  size_t original_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   const base::WeakPtr<Browser> browser_weak_ptr =
       Browser::Create(Browser::CreateParams(profile(), /*user_gesture=*/true))
           ->AsWeakPtr();
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), original_browser_count);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            original_browser_count);
   EXPECT_FALSE(browser_weak_ptr);
 }
 
@@ -865,10 +867,12 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   ASSERT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
 
   // Attempt to create a new browser window and verify it is closed.
-  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  size_t original_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   CreateBrowser(profile());
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            original_browser_count + 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
@@ -891,11 +895,13 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   ASSERT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
 
   // Attempt to create a new popup and verify window tracker picks it up.
-  size_t original_browser_count = chrome::GetTotalBrowserCount();
+  size_t original_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
   Browser* const popup_browser = Browser::Create(Browser::CreateParams(
       Browser::TYPE_APP_POPUP, profile(), /*user_gesture=*/true));
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), original_browser_count + 1);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            original_browser_count + 1);
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());

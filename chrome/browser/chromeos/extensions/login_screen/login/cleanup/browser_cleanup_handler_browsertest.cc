@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, Cleanup) {
   OpenNewBrowserPage("/unload.html", WindowOpenDisposition::NEW_WINDOW);
   OpenNewBrowserPage("/title1.html", WindowOpenDisposition::NEW_WINDOW);
 
-  ASSERT_EQ(3U, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(5, GetHistorySize());
 
   RunBrowserCleanupHandler();

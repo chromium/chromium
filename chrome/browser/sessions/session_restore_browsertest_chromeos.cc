@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -183,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 // verifies that the fourth window is visible on all desks after being restored.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
                        RestoreBrowserWindowsToDesks) {
-  ASSERT_EQ(3u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // The first, second and third browser should restore to the first, second
   // and third desk, consecutively.
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
   // Check that there are two browsers, the default one and the visible on all
   // desks browser.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   TurnOnSessionRestore();
 }
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
                        RestoreAllDesksBrowserWindow) {
   // There should be two browsers restored, the default browser and the all
   // desks browser.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Check that the visible on all desks browser is restored properly.
   BrowserWindowInterface* const visible_on_all_desks_browser =
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
 
   // Should have one SWA window and one default browser window.
   EXPECT_TRUE(ash::FindSystemWebAppBrowser(browser()->profile(), GetAppType()));
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   SessionStartupPref::SetStartupPref(
       browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
@@ -503,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   // web app utils like `FindSystemWebAppBrowser` might not recognize such
   // windows as a SWA browser window. Therefore we count the number of browser
   // windows here instead of trying to find one.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

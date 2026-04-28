@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -343,7 +344,7 @@ void CloseAppWindow(const KioskApp& app) {
     }
     case KioskAppType::kWebApp:
     case KioskAppType::kIsolatedWebApp: {
-      EXPECT_GE(chrome::GetTotalBrowserCount(), 1u);
+      EXPECT_GE(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
       BrowserWindowInterface* web_app_browser = nullptr;
       // TODO(crbug.com/444072535): Picking a Browser from the global browser
       // list is flaky and very test dependent. This should be updated to

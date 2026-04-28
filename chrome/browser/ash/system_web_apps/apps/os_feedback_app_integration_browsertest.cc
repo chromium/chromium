@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -72,7 +73,7 @@ class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
     // We now have two browsers, one for the chrome window, one for the Feedback
     // app.
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
     Browser* app_browser = FindFeedbackAppBrowser();
     EXPECT_TRUE(app_browser);
     EXPECT_EQ(feedback_url_, FindActiveUrl(app_browser));
@@ -86,7 +87,7 @@ class OSFeedbackAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     EXPECT_EQ(old_url, FindActiveUrl(browser()));
 
     // We now still have one browser.
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
     EXPECT_EQ(nullptr, FindFeedbackAppBrowser());
   }

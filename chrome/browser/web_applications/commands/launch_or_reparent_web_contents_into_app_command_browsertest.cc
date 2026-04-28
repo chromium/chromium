@@ -7,6 +7,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -32,7 +33,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  size_t initial_browser_count = chrome::GetTotalBrowserCount();
+  size_t initial_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   ui_test_utils::BrowserCreatedObserver observer;
 
@@ -47,7 +49,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Verify that a new browser was created.
-  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(initial_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Find the new browser and verify it is for the app.
   Browser* app_browser = observer.Wait();
@@ -68,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  size_t initial_browser_count = chrome::GetTotalBrowserCount();
+  size_t initial_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
 
   ui_test_utils::BrowserCreatedObserver observer;
 
@@ -83,7 +87,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Verify that a new browser was created.
-  EXPECT_EQ(initial_browser_count + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(initial_browser_count + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Find the new browser and verify it is for the app.
   Browser* app_browser = observer.Wait();

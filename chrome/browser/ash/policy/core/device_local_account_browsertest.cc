@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
@@ -1050,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
   WaitForSessionStart();
 
   // Check that the startup pages specified in policy were opened.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -1082,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, FullscreenAllowed) {
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   WaitForSessionStart();
 
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -1601,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   EXPECT_EQ(1U, app_window_registry->app_windows().size());
 
   // Close the only open browser window.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser);
@@ -1615,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a browser window.
   BrowserWindowInterface* first_browser = CreateBrowser(profile);
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the app window.
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -1630,12 +1631,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a second browser window.
   BrowserWindowInterface* second_browser = CreateBrowser(profile);
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the first browser window.
   CloseBrowserAndVerifyDestruction(first_browser);
   first_browser = nullptr;
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Verify that the logout confirmation dialog is not showing because a browser
   // window is still open.
@@ -1657,7 +1658,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Open a browser window.
   browser = CreateBrowser(profile);
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Close the browser window.
   CloseBrowserAndVerifyDestruction(browser);
@@ -2899,7 +2900,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, PRE_ReportUkmOnShutdown) {
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
   // A browser is opened by default in MGS.
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Delete all UKM to check metrics reported during the shutdown.
   ukm_test_helper.PurgeData();
@@ -2932,7 +2933,7 @@ class AmbientAuthenticationManagedGuestSessionTest
     int policy_value = device_local_account_policy_.payload()
                            .ambientauthenticationinprivatemodesenabled()
                            .value();
-    EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
     Profile* const regular_profile =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile()->GetProfile();
     Profile* const incognito_profile =

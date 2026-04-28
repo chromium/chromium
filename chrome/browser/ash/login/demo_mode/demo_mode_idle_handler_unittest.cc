@@ -175,7 +175,7 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
       Browser::CreateParams(profile(), /*user_gesture=*/true));
   std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
       Browser::CreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
 
   // Trigger close all browsers by being idle for
   // `kReLuanchDemoAppIdleDuration`.

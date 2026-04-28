@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
   ChromeSearchResult* result = FindResult("help-app://updates");
 
   // Open the search result. This should open the help app at the expected url.
-  size_t num_browsers = chrome::GetTotalBrowserCount();
+  size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
   const GURL expected_url("chrome://help-app/updates");
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -244,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   navigation_observer.Wait();
 
-  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(num_browsers + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(expected_url, GlobalBrowserCollection::GetInstance()
                               ->GetLastActiveBrowser()
                               ->GetTabStripModel()
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   // Open the search result. This should open the help app at the expected url
   // and log a metric indicating what content was launched.
-  const size_t num_browsers = chrome::GetTotalBrowserCount();
+  const size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
   const GURL expected_url("chrome://help-app/help/id/test");
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -320,7 +321,8 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
       /*launch_as_default=*/false);
   navigation_observer.Wait();
 
-  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(num_browsers + 1,
+            GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(expected_url, GlobalBrowserCollection::GetInstance()
                               ->GetLastActiveBrowser()
                               ->GetTabStripModel()

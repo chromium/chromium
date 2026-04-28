@@ -136,6 +136,9 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
+  "os_feedback_app_integration_browsertest\.cc": [
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
+  ],
   ".*test.*\\.cc": [
     "+chrome/browser/ui/browser.h",
   ],

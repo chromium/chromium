@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -180,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   // Install completed, but reparenting should not have happened yet.
   // Initially we have 1 browser.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_TRUE(saved_reparent_closure);
 
   // Now run the closure.
@@ -190,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Now we should have 2 browsers.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
   // And the app browser should be for this app.
   BrowserWindowInterface* app_browser =
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
 
   // Verify that we have 3 browsers (original + 2 app windows).
   // TODO(crbug.com/503823045): Verify the exact expected behavior.
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {

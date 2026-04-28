@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -52,7 +53,7 @@ GURL GetGoogleURL() {
 
 // Verifies that new browser is not opened for Signin profile.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
@@ -76,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
 
   // The page should not be opened, and the browser should still sit at the
   // default about:blank page.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
@@ -90,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
 
   // The original browser should still be at the same page, but the newly
   // opened browser should sit on the chrome:version page.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
 
   // The original browser should still be at the same page, but the newly
   // opened browser should sit on the chrome:version page.
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
                        Disposition_Settings_UseIncognitoWindow) {
   Browser* incognito_browser = CreateIncognitoBrowser();
 
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
 
@@ -247,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
   ash::NewWindowDelegate::GetInstance()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false);
 
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(primary_user_profile)
           ->GetLastActiveBrowser();
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     window_manager->ShowWindowForUser(
         browser->GetWindow()->GetNativeWindow()->GetToplevelWindow(),
         kSecondaryAccountId);
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
     // Navigate to the settings page from the primary user's browser.
     NavigateParams params(MakeNavigateParams(browser));
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
     params.browser = browser;
     auto navigated = Navigate(&params);
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
     // Verify the created window is shown on the secondary user's desktop.
     aura::Window* created_window =
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
     params.browser = browser;
     auto navigated = Navigate(&params);
-    EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 
     // The created window should be at the primary user's desktop now.
     aura::Window* created_window =

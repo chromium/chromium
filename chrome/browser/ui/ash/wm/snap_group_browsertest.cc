@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_observer.h"
@@ -303,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
   event_generator.MoveMouseTo(end_point);
   event_generator.ReleaseLeftButton();
 
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 }
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
   ASSERT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   TabStripRegionView* tab_strip_view =
       BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
@@ -343,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
 
   // Verify that dragging a tab between `window1` and `window2` results in
   // `window1` and `window2` still belonging to the Snap Group.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 }
@@ -409,5 +410,5 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
   // within a Snap Group are in incognito mode.
   EXPECT_TRUE(ash::IsInOverviewSession());
   EXPECT_EQ(1u, overview_grid->item_list().size());
-  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 }

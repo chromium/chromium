@@ -51,4 +51,7 @@ specific_include_rules = {
     "+chrome/test/supervised_user",
     "+chrome/test/views",
   ],
+  "family_user_chrome_activity_metrics_unittest\.cc": [
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
+  ],
 }

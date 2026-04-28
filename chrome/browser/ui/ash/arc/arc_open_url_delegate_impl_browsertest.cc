@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
     ArcOpenUrlDelegateImpl::GetForTesting()->OpenWebAppFromArc(url);
     observer->WaitForNavigationFinished();
 
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_NE(GetLastActiveBrowser()->GetType(),
               BrowserWindowInterface::TYPE_APP);
     content::WebContents* contents =
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
     ArcOpenUrlDelegateImpl::GetForTesting()->OpenWebAppFromArc(app_url);
     observer->WaitForNavigationFinished();
 
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_EQ(GetLastActiveBrowser()->GetType(),
               BrowserWindowInterface::TYPE_APP);
     content::WebContents* contents =
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
         url, std::move(intent));
     observer->WaitForNavigationFinished();
 
-    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_NE(GetLastActiveBrowser()->GetType(),
               BrowserWindowInterface::TYPE_APP);
     content::WebContents* contents =
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
         app_url, std::move(intent));
     observer->WaitForNavigationFinished();
 
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_EQ(GetLastActiveBrowser()->GetType(),
               BrowserWindowInterface::TYPE_APP);
     content::WebContents* contents =
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
         app_url, std::move(intent));
     observer->WaitForNavigationFinished();
 
-    EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+    EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
     EXPECT_EQ(GetLastActiveBrowser()->GetType(),
               BrowserWindowInterface::TYPE_APP);
     content::WebContents* contents =

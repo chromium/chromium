@@ -21,6 +21,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_navigator_params.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/test/test_browser_closed_waiter.h",
     "+chrome/test/base/interactive_test_utils.h",
     "+chrome/test/base/ui_test_utils.h",
