@@ -1,7 +1,7 @@
 Name: extensions-xr
 Short Name: extensions-xr
-URL: https://dl.google.com/dl/android/maven2/com/android/extensions/xr/extensions-xr/1.3.0-alpha02/extensions-xr-1.3.0-alpha02.jar
-Version: 1.3.0-alpha02
+URL: https://dl.google.com/dl/android/maven2/com/android/extensions/xr/extensions-xr/1.3.0/extensions-xr-1.3.0.jar
+Version: 1.3.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

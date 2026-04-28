@@ -1307,7 +1307,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.3.0-alpha02"
+        "version": "1.3.0"
     },
     {
         "name": "layoutlib-api",
@@ -1982,27 +1982,27 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0-rc02"
     },
     {
         "name": "kotlinx-coroutines-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0-rc02"
     },
     {
         "name": "kotlinx-coroutines-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0-rc02"
     },
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0-rc02"
     },
     {
         "name": "kotlinx-coroutines-guava",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0-rc02"
     },
     {
         "name": "kotlinx-coroutines-play-services",
