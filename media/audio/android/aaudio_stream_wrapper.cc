@@ -34,8 +34,6 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kCloseDelay = base::Seconds(1);
-
 constexpr char kAAudioBufferSizeInFramesMetricsPrefix[] =
     "Media.Audio.Android.AAudioBufferSizeInFrames.";
 constexpr char kAAudioFramesPerDataCallbackMetricsPrefix[] =
@@ -183,23 +181,9 @@ class LOCKABLE AAudioDestructionHelper {
 
   ~AAudioDestructionHelper() {
     CHECK(is_closing_);
-    CHECK(!aaudio_stream_);
-  }
-
-  // Called on the default sequence.
-  static void CloseStreamAndDestroySoon(
-      std::unique_ptr<AAudioDestructionHelper> helper) {
-    // `AAudioStream_requestStop()` should have been called at least
-    // `kCloseDelay` ago, and callbacks should have hopefully stopped.
-    helper->CloseStream();
-
-    // Further delay destroying `helper` by a moderate amount, out of an
-    // abundance of caution, in case calling `AAudioStream_close()` is really
-    // the way to stop callbacks on older version of android.
-    constexpr base::TimeDelta kDestructionDelay = kCloseDelay / 4;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(helper)),
-        kDestructionDelay);
+    if (aaudio_stream_) {
+      AAudioStream_close(aaudio_stream_);
+    }
   }
 
   AAudioStreamWrapper* GetAndLockWrapper() EXCLUSIVE_LOCK_FUNCTION() {
@@ -209,8 +193,6 @@ class LOCKABLE AAudioDestructionHelper {
 
   void UnlockWrapper() UNLOCK_FUNCTION() { lock_.Release(); }
 
-  // Saves `stream` to be closed later. `CloseStream()` must be called
-  // explicitly before the helper is destroyed.
   void DeferStreamClosure(AAudioStream* stream) {
     base::AutoLock al(lock_);
     CHECK(!is_closing_);
@@ -218,19 +200,6 @@ class LOCKABLE AAudioDestructionHelper {
     is_closing_ = true;
     wrapper_ = nullptr;
     aaudio_stream_ = stream;
-  }
-
-  void CloseStream() {
-    // Do not call this method from the destructor. See crbug.com/501331457.
-    raw_ptr<AAudioStream> stream_to_close = nullptr;
-    {
-      base::AutoLock al(lock_);
-      stream_to_close = aaudio_stream_;
-      aaudio_stream_ = nullptr;
-    }
-    if (stream_to_close) {
-      AAudioStream_close(stream_to_close);
-    }
   }
 
  private:
@@ -456,24 +425,21 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
 
   CHECK(!aaudio_stream_);
 
-  // On Android S+, `destruction_helper_` can be destroyed as part of the
+  // On Android S+, |destruction_helper_| can be destroyed as part of the
   // normal class teardown.
   if (__builtin_available(android 31, *)) {
-    destruction_helper_->CloseStream();
     return;
   }
 
   // In R and earlier, it is possible for callbacks to still be running even
-  // after calling `AAudioStream_close()`. The code below is a mitigation to
+  // after calling AAudioStream_close(). The code below is a mitigation to
   // work around this issue. See crbug.com/1183255.
 
-  // Keep `destruction_helper_` alive longer than `this`, so the `user_data`
+  // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid, until the callbacks stop.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AAudioDestructionHelper::CloseStreamAndDestroySoon,
-                     std::move(destruction_helper_)),
-      kCloseDelay);
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(destruction_helper_)),
+      base::Seconds(1));
 }
 
 bool AAudioStreamWrapper::Open() {
@@ -603,12 +569,10 @@ void AAudioStreamWrapper::Close() {
 
   Stop();
 
-  // `destruction_helper_->GetStreamAndLock()` will return nullptr after this.
-  // `aaudio_stream_`'s closure will be scheduled in the destructor, to give
-  // additional time for `AAudioStream_requestStop()` to complete.
+  // |destruction_helper_->GetStreamAndLock()| will return nullptr after this.
   destruction_helper_->DeferStreamClosure(aaudio_stream_);
 
-  // We shouldn't use `aaudio_stream_` after it's stopped.
+  // We shouldn't be accessing |aaudio_stream_| after it's stopped.
   aaudio_stream_ = nullptr;
 
   is_closed_ = true;
