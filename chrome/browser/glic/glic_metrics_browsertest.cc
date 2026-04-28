@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -77,6 +78,13 @@ class GlicMetricsBrowserTestWithMessageFirstFre
       : GlicMetricsBrowserTest({features::kGlicMessageFirstFre}, {}) {}
 };
 
+class GlicMetricsBrowserTestWithMessageFirstFreDisabled
+    : public GlicMetricsBrowserTest {
+ public:
+  GlicMetricsBrowserTestWithMessageFirstFreDisabled()
+      : GlicMetricsBrowserTest({}, {features::kGlicMessageFirstFre}) {}
+};
+
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
                        GlicFreShown_MessageFirstFreEnabled) {
   base::UserActionTester user_action_tester;
@@ -111,8 +119,12 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
-                       ToggleAndOpenSourceMetrics_SidePanel) {
+// Test with message first FRE disabled.
+// Expected behavior: Normal toggle flow. Logs ToggleSource on both open and
+// close.
+IN_PROC_BROWSER_TEST_F(
+    GlicMetricsBrowserTestWithMessageFirstFreDisabled,
+    ToggleAndOpenSourceMetrics_SidePanel_MessageFirstFreDisabled) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -139,6 +151,52 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsButton, 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Close"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 2);
+}
+
+// Test with message first FRE enabled.
+// Expected behavior:
+// 1. The first call to ToggleUI() (to open the panel) is intercepted because
+//    the user hasn't completed FRE. It redirects to the Invoke flow, which
+//    logs OpenSource but NOT ToggleSource.
+// 2. The second call to ToggleUI() (to close the panel) proceeds normally
+//    because the panel is already open. This logs ToggleSource as expected.
+IN_PROC_BROWSER_TEST_F(
+    GlicMetricsBrowserTestWithMessageFirstFre,
+    ToggleAndOpenSourceMetrics_SidePanel_MessageFirstFreEnabled) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // Open the side panel. Since FRE is not completed and GlicMessageFirstFre is
+  // enabled, this calls Invoke instead of normal Toggle.
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  // ToggleSource is NOT logged for the first call because it went through
+  // Invoke.
+  histogram_tester.ExpectTotalCount("Glic.Instance.SidePanel.ToggleSource", 0);
+  // Toggle action is also not logged.
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 0);
+
+  // OpenSource and Open action ARE logged by Invoke.
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
+
+  // Close the side panel. Now that the panel is open, MaybeInvoke returns
+  // false, and it proceeds to normal Toggle flow to close it.
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  // Now ToggleSource SHOULD be logged (1 sample).
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.ToggleSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Toggle"), 1);
+
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Close"), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,

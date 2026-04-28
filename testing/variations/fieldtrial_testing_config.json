@@ -11683,6 +11683,24 @@
             ]
         }
     ],
+    "GlicMessageFirstOnboarding": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260427",
+                    "enable_features": [
+                        "GlicMessageFirstFre"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicPdfSummarizeButton": [
         {
             "platforms": [
