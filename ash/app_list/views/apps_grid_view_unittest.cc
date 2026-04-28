@@ -51,6 +51,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/root_window_controller.h"
@@ -339,7 +340,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       helper->ShowAppList();
     }
     // Wait for any show animations to complete.
-    base::RunLoop().RunUntilIdle();
+    AppListTestApi().WaitForAppListShowAnimation(
+        /*is_bubble_window=*/!create_as_tablet_mode_);
 
     // Cache view pointers to make tests more concise.
     if (!create_as_tablet_mode_) {
@@ -363,6 +365,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       page_flip_waiter_ =
           std::make_unique<PageFlipWaiter>(GetPaginationModel());
     }
+    ASSERT_TRUE(base::test::RunUntil(
+        [this] { return search_box_view_->search_box()->HasFocus(); }));
 
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view_);
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
