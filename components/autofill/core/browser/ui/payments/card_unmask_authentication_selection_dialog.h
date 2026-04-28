@@ -11,6 +11,7 @@ namespace autofill {
 // CardUnmaskAuthenticationSelectionDialogControllerImpl.
 class CardUnmaskAuthenticationSelectionDialog {
  public:
+  virtual ~CardUnmaskAuthenticationSelectionDialog() = default;
 
   // Method to safely close this dialog (this also includes the case where the
   // controller is destroyed first). |user_closed_dialog| indicates whether the

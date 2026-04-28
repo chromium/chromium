@@ -28,7 +28,7 @@ class AuthenticatorSelectionDialogViewAndroid
  public:
   explicit AuthenticatorSelectionDialogViewAndroid(
       CardUnmaskAuthenticationSelectionDialogController* controller);
-  virtual ~AuthenticatorSelectionDialogViewAndroid();
+  ~AuthenticatorSelectionDialogViewAndroid() override;
 
   AuthenticatorSelectionDialogViewAndroid(
       const AuthenticatorSelectionDialogViewAndroid&) = delete;

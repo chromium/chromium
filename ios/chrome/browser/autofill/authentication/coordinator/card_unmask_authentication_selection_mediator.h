@@ -37,7 +37,7 @@ class CardUnmaskAuthenticationSelectionMediator
   const CardUnmaskAuthenticationSelectionMediator& operator=(
       CardUnmaskAuthenticationSelectionMediator&) = delete;
 
-  virtual ~CardUnmaskAuthenticationSelectionMediator();
+  ~CardUnmaskAuthenticationSelectionMediator() override;
 
   // CardUnmaskAuthenticationSelectionMutator methods
   void DidSelectChallengeOption(CardUnmaskChallengeOptionIOS* option) override;
