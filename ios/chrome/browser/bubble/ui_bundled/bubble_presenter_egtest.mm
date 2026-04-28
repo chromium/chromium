@@ -84,13 +84,12 @@ void ReloadFromOmnibox() {
   MakeFirstRunRecent();
   [ChromeEarlGrey
       resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
-}
-
-- (void)tearDownHelper {
-  [ChromeEarlGrey closeAllExtraWindows];
-  [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
-  ResetFirstRunRecency();
-  [super tearDownHelper];
+  [self addTeardownBlock:^{
+    GREYWaitForAppToIdle(@"App failed to idle");
+    [ChromeEarlGrey closeAllExtraWindows];
+    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+    ResetFirstRunRecency();
+  }];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -110,15 +109,10 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is attempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-// TODO(crbug.com/440549642): This test is flaky.
-- (void)
-    FLAKY_testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 26.0, *)) {
-      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-      // Test uses "split screen" (multiwindow) to force compact width.
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
+- (void)testPullToRefreshIPHAfterReloadFromOmniboxAndDisappearsAfterNavigation {
+  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnIOS26OrLater()) {
+    // Test uses "split screen" (multiwindow) to force compact width.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
@@ -175,21 +169,11 @@ void ReloadFromOmnibox() {
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
-// TODO(crbug.com/427699033): This is also failing on older iOS versions
-// when building with Xcode 26.
-// TODO(crbug.com/463351924): Test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
-  testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
-#else
-#define MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid \
-  DISABLED_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid
-#endif
-- (void)MAYBE_testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/427699033): Re-enable test when fixed with Xcode 26.
+- (void)testPullToRefreshIPHShouldDisappearOnEnteringTabGrid {
+  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnIOS26OrLater()) {
     // Test uses "split screen" (multiwindow) to force compact width.
-    EARL_GREY_TEST_DISABLED(@"Test disabled when building with Xcode 26.");
+    EARL_GREY_TEST_DISABLED(@"Test disabled when running on iPad 26 since "
+                            @"split screen does not force compact width.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
@@ -243,8 +227,7 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH is atttempted when user taps the omnibox
 // to reload the same page, and disappears after the user navigates away.
-// TODO(crbug.com/459498160): This test is flaky.
-- (void)FLAKY_testPullToRefreshIPHShouldNotShowOnRegularXRegular {
+- (void)testPullToRefreshIPHShouldNotShowOnRegularXRegular {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
   }
@@ -285,13 +268,10 @@ void ReloadFromOmnibox() {
 
 // Tests that the pull-to-refresh IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user pulls down on the IPH.
-- (void)DISABLED_testPullToRefreshPerformAction {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    if (@available(iOS 26.0, *)) {
-      // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-      // Test uses "split screen" (multiwindow) to force compact width.
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
+- (void)testPullToRefreshPerformAction {
+  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnIOS26OrLater()) {
+    // Test uses "split screen" (multiwindow) to force compact width.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
                          /*safari_switcher=*/YES);
