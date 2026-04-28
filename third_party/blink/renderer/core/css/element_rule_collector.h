@@ -286,7 +286,7 @@ class CORE_EXPORT ElementRuleCollector {
 
   void DidMatchRule(const RuleData*,
                     uint16_t layer_order,
-                    const ContainerQuery*,
+                    const ContainerQuerySet*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
                     int style_sheet_index);

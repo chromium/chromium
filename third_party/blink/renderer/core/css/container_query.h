@@ -19,11 +19,9 @@ class CORE_EXPORT ContainerQuery final
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
-  const ContainerQuery* Parent() const { return parent_.Get(); }
-
-  ContainerQuery* CopyWithParent(const ContainerQuery*) const;
 
   String ToString() const;
+  void Serialize(StringBuilder&) const;
 
   void Trace(Visitor*) const;
 
@@ -37,7 +35,6 @@ class CORE_EXPORT ContainerQuery final
 
   ContainerSelector selector_;
   Member<const ConditionalExpNode> query_;
-  Member<const ContainerQuery> parent_;
 };
 
 }  // namespace blink

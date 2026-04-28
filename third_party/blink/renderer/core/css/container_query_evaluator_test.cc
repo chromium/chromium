@@ -52,7 +52,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     if (!style_rule) {
       return nullptr;
     }
-    return &style_rule->GetContainerQuery();
+    return style_rule->GetContainerQuerySet().SingleQuery();
   }
 
   ContainerQueryEvaluator* CreateEvaluatorForType(unsigned container_type) {

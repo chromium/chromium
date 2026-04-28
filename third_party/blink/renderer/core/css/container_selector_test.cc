@@ -24,7 +24,7 @@ class ContainerSelectorTest : public testing::Test {
     if (!style_rule) {
       return nullptr;
     }
-    return &style_rule->GetContainerQuery();
+    return style_rule->GetContainerQuerySet().SingleQuery();
   }
 };
 

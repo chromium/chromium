@@ -229,35 +229,42 @@ const CSSSyntaxDefinition* FindOrNull(
 // The `container_tree_scope` is the tree scope holding the @container
 // rule being evaluated. For @container rules within @function, this is
 // the same tree scope as the enclosing @function is defined in.
-bool EvaluateContainerQuery(Element& element,
-                            PseudoId pseudo_id,
-                            const ContainerQuery& query,
-                            const TreeScope* container_tree_scope,
-                            Element* nearest_size_container,
-                            MatchResult& match_result) {
-  const ContainerSelector& selector = query.Selector();
-  if (!selector.SelectsAnyContainer()) {
-    return false;
-  }
-  // TODO(crbug.com/394500600): Calling SetDependencyFlags here works,
-  // but it's arguably a bit late when considering that MatchResult
-  // is supposed to be the output of ElementRuleCollector.
-  // Consider refactoring.
-  ContainerQueryEvaluator::SetDependencyFlags(query, match_result);
+bool EvaluateContainerQueries(Element& element,
+                              PseudoId pseudo_id,
+                              const ContainerQuerySet& queries,
+                              const TreeScope* container_tree_scope,
+                              Element* nearest_size_container,
+                              MatchResult& match_result) {
+  for (const ContainerQuery* query : queries.Queries()) {
+    const ContainerSelector& selector = query->Selector();
+    if (!selector.SelectsAnyContainer()) {
+      continue;
+    }
+    // TODO(crbug.com/394500600): Calling SetDependencyFlags here works,
+    // but it's arguably a bit late when considering that MatchResult
+    // is supposed to be the output of ElementRuleCollector.
+    // Consider refactoring.
+    ContainerQueryEvaluator::SetDependencyFlags(*query, match_result);
 
-  Element* starting_element = ContainerQueryEvaluator::DetermineStartingElement(
-      element, pseudo_id, selector, nearest_size_container);
-  Element* container = ContainerQueryEvaluator::FindContainer(
-      starting_element, selector, container_tree_scope);
-  if (!container) {
-    return false;
+    Element* starting_element =
+        ContainerQueryEvaluator::DetermineStartingElement(
+            element, pseudo_id, selector, nearest_size_container);
+    Element* container = ContainerQueryEvaluator::FindContainer(
+        starting_element, selector, container_tree_scope);
+    if (!container) {
+      continue;
+    }
+    ContainerQueryEvaluator& evaluator =
+        container->EnsureContainerQueryEvaluator();
+    using Change = ContainerQueryEvaluator::Change;
+    Change change = starting_element == container
+                        ? Change::kNearestContainer
+                        : Change::kDescendantContainers;
+    if (evaluator.EvalAndAdd(*query, change, match_result)) {
+      return true;
+    }
   }
-  ContainerQueryEvaluator& evaluator =
-      container->EnsureContainerQueryEvaluator();
-  using Change = ContainerQueryEvaluator::Change;
-  Change change = starting_element == container ? Change::kNearestContainer
-                                                : Change::kDescendantContainers;
-  return evaluator.EvalAndAdd(query, change, match_result);
+  return false;
 }
 
 bool IsVariableNameOnly(StringView str) {
@@ -1248,10 +1255,10 @@ StyleCascade::MakeFunctionContextFromMixinAndResolveSubstitutions(
     // and apply it.
     for (const MixinParameterBindings::CQDependentValue& candidate :
          base::Reversed(candidates)) {
-      if (EvaluateContainerQuery(state_.GetElement(), state_.GetPseudoId(),
-                                 *candidate.container_query, tree_scope,
-                                 state_.NearestSizeContainer(),
-                                 match_result_)) {
+      if (EvaluateContainerQueries(state_.GetElement(), state_.GetPseudoId(),
+                                   *candidate.container_queries, tree_scope,
+                                   state_.NearestSizeContainer(),
+                                   match_result_)) {
         locals_after_cq.Set(name, candidate.data);
         break;
       }
@@ -2277,9 +2284,9 @@ void StyleCascade::FlattenFunctionBody(
     } else if (auto* container_rule =
                    DynamicTo<StyleRuleContainer>(child.Get())) {
       state_.StyleBuilder().SetHasContainerRelativeValue();
-      if (EvaluateContainerQuery(
+      if (EvaluateContainerQueries(
               state_.GetElement(), state_.GetPseudoId(),
-              container_rule->GetContainerQuery(), function_tree_scope,
+              container_rule->GetContainerQuerySet(), function_tree_scope,
               state_.NearestSizeContainer(), match_result_)) {
         FlattenFunctionBody(*container_rule, function_tree_scope, result,
                             locals);

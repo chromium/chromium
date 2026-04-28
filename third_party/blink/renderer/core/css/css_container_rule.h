@@ -13,6 +13,7 @@ namespace blink {
 
 class CSSContainerCondition;
 class ContainerQuery;
+class ContainerQuerySet;
 class ContainerSelector;
 class StyleRuleContainer;
 
@@ -37,7 +38,8 @@ class CORE_EXPORT CSSContainerRule final : public CSSConditionRule {
 
  private:
   CSSRule::Type GetType() const override { return kContainerRule; }
-  const class ContainerQuery& ContainerQuery() const;
+  const ContainerQuerySet& GetContainerQuerySet() const;
+  const ContainerQuery* SingleContainerQuery() const;
 
   Member<FrozenArray<CSSContainerCondition>> conditions_;
 };

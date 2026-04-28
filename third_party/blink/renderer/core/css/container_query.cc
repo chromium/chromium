@@ -18,8 +18,7 @@ ContainerQuery::ContainerQuery(ContainerSelector selector,
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
     : selector_(other.selector_), query_(other.query_) {}
 
-String ContainerQuery::ToString() const {
-  StringBuilder result;
+void ContainerQuery::Serialize(StringBuilder& result) const {
   String name = selector_.Name();
   if (!name.empty()) {
     SerializeIdentifier(name, result);
@@ -30,19 +29,16 @@ String ContainerQuery::ToString() const {
   if (query_) {
     result.Append(query_->Serialize());
   }
+}
+
+String ContainerQuery::ToString() const {
+  StringBuilder result;
+  Serialize(result);
   return result.ReleaseString();
 }
 
 void ContainerQuery::Trace(Visitor* visitor) const {
   visitor->Trace(query_);
-  visitor->Trace(parent_);
-}
-
-ContainerQuery* ContainerQuery::CopyWithParent(
-    const ContainerQuery* parent) const {
-  ContainerQuery* copy = MakeGarbageCollected<ContainerQuery>(*this);
-  copy->parent_ = parent;
-  return copy;
 }
 
 }  // namespace blink

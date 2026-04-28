@@ -376,7 +376,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                   const MediaQueryEvaluator& medium,
                   const MixinMap& mixins,
                   AddRuleFlags add_rule_flags,
-                  const ContainerQuery* container_query,
+                  const ContainerQuerySet* container_queries,
                   CascadeLayer* cascade_layer,
                   const StyleScope* style_scope,
                   ApplyMixinsStack& apply_mixins_stack);
@@ -391,7 +391,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                     const MixinMap& mixins,
                     AddRuleFlags add_rule_flags,
                     ApplyMixinsStack& apply_mixins_stack,
-                    const ContainerQuery* container_query = nullptr,
+                    const ContainerQuerySet* container_queries = nullptr,
                     CascadeLayer* cascade_layer = nullptr,
                     const StyleScope* style_scope = nullptr);
 
@@ -584,7 +584,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // start_position (exclusive) share some property:
   //
   //   - If T = CascadeLayer, belong to the given layer.
-  //   - If T = ContainerQuery, are predicated on the given container query.
+  //   - If T = ContainerQuerySet, are predicated on the given container query.
   //   - If T = StyleScope, are declared in the given @style scope.
   //
   // We do this instead of putting the data directly onto the RuleData,
@@ -608,7 +608,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Interval<CascadeLayer>>& LayerIntervals() const {
     return layer_intervals_;
   }
-  const HeapVector<Interval<ContainerQuery>>& ContainerQueryIntervals() const {
+  const HeapVector<Interval<ContainerQuerySet>>& ContainerQueryIntervals()
+      const {
     return container_query_intervals_;
   }
   const HeapVector<Interval<StyleScope>>& ScopeIntervals() const {
@@ -656,14 +657,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const MediaQueryEvaluator& medium,
                      const MixinMap& mixins,
                      AddRuleFlags,
-                     const ContainerQuery*,
+                     const ContainerQuerySet*,
                      CascadeLayer*,
                      const StyleScope*,
                      ApplyMixinsStack& apply_mixins_stack);
   void FlattenMixinLocals(
       base::span<const Member<StyleRuleBase>> rules,
       const MediaQueryEvaluator& medium,
-      const ContainerQuery* container_query,
+      const ContainerQuerySet* container_queries,
       HeapHashMap<String, Member<CSSVariableData>>& locals,
       HeapHashMap<String, HeapVector<MixinParameterBindings::CQDependentValue>>&
           cq_dependent_locals);
@@ -681,7 +682,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,
-               const ContainerQuery*,
+               const ContainerQuerySet*,
                const CascadeLayer*,
                const StyleScope*);
 
@@ -820,7 +821,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Empty vector if the stylesheet doesn't explicitly declare any layer.
   HeapVector<Interval<CascadeLayer>> layer_intervals_;
   // Empty vector if the stylesheet doesn't use any container queries.
-  HeapVector<Interval<ContainerQuery>> container_query_intervals_;
+  HeapVector<Interval<ContainerQuerySet>> container_query_intervals_;
   // Empty vector if the stylesheet doesn't use any @scopes.
   HeapVector<Interval<StyleScope>> scope_intervals_;
 
@@ -851,7 +852,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::RuleSet::Interval<blink::CascadeLayer>)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::RuleSet::Interval<blink::ContainerQuery>)
+    blink::RuleSet::Interval<blink::ContainerQuerySet>)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::RuleSet::Interval<blink::StyleScope>)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::RuleSet::ApplyingMixin)

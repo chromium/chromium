@@ -29,6 +29,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/container_query_set.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -547,13 +548,15 @@ class StyleRuleSupports : public StyleRuleCondition {
 
 class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
  public:
-  StyleRuleContainer(const ContainerQuery&,
+  StyleRuleContainer(const ContainerQuerySet&,
                      HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleContainer(const StyleRuleContainer&) = delete;
   StyleRuleContainer(const StyleRuleContainer&,
                      HeapVector<Member<StyleRuleBase>> rules);
 
-  const ContainerQuery& GetContainerQuery() const { return *container_query_; }
+  const ContainerQuerySet& GetContainerQuerySet() const {
+    return *container_query_set_;
+  }
 
   void SetConditionText(const ExecutionContext*,
                         StyleSheetContents* parent_contents,
@@ -562,7 +565,7 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<const ContainerQuery> container_query_;
+  Member<const ContainerQuerySet> container_query_set_;
 };
 
 class StyleRuleNavigation : public StyleRuleCondition {

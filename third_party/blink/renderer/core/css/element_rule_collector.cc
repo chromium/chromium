@@ -281,19 +281,26 @@ unsigned LinkMatchTypeFromInsideLink(EInsideLink inside_link) {
 bool EvaluateAndAddContainerQueries(
     Element& element,
     PseudoId pseudo_id,
-    const ContainerQuery& container_query,
+    const ContainerQuerySet& container_query_set,
     const StyleRecalcContext& style_recalc_context,
     ContainerSelectorCache& container_selector_cache,
     MatchResult& result) {
-  for (const ContainerQuery* current = &container_query; current;
-       current = current->Parent()) {
-    Element* starting_element =
-        ContainerQueryEvaluator::DetermineStartingElement(
-            element, pseudo_id, current->Selector(),
-            /*nearest_size_container=*/style_recalc_context.size_container);
-    if (!ContainerQueryEvaluator::EvalAndAdd(
-            starting_element, style_recalc_context, *current,
-            container_selector_cache, result)) {
+  for (const ContainerQuerySet* current_set = &container_query_set; current_set;
+       current_set = current_set->Parent()) {
+    bool match = false;
+    for (const ContainerQuery* current : current_set->Queries()) {
+      Element* starting_element =
+          ContainerQueryEvaluator::DetermineStartingElement(
+              element, pseudo_id, current->Selector(),
+              /*nearest_size_container=*/style_recalc_context.size_container);
+      if (ContainerQueryEvaluator::EvalAndAdd(
+              starting_element, style_recalc_context, *current,
+              container_selector_cache, result)) {
+        match = true;
+        break;
+      }
+    }
+    if (!match) {
       return false;
     }
   }
@@ -546,7 +553,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const SelectorChecker& checker,
     ContextWithStyleScopeFrame& context) {
   CascadeLayerSeeker layer_seeker(rule_set, context.layer_map);
-  Seeker<ContainerQuery> container_query_seeker(
+  Seeker<ContainerQuerySet> container_query_seeker(
       rule_set->ContainerQueryIntervals());
   Seeker<StyleScope> scope_seeker(rule_set->ScopeIntervals());
 
@@ -666,9 +673,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     if (stop_at_first_match) {
       return true;
     }
-    const ContainerQuery* container_query =
+    const ContainerQuerySet* container_query_set =
         container_query_seeker.Seek(rule_data.GetPosition());
-    if (container_query) {
+    if (container_query_set) {
       // If we are matching pseudo-elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
       // container will be the originating element or not. There is not enough
@@ -680,7 +687,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
           result.dynamic_pseudo == kPseudoIdNone) {
         if (!EvaluateAndAddContainerQueries(
                 context_.GetElement(), pseudo_style_request_.pseudo_id,
-                *container_query, style_recalc_context_,
+                *container_query_set, style_recalc_context_,
                 container_selector_cache_, result_)) {
           if (AffectsAnimations(rule_data)) {
             result_.SetConditionallyAffectsAnimations();
@@ -692,9 +699,11 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         // when not actually matching style for the pseudo-element itself. Still
         // we need to keep track of size/style query dependencies since query
         // changes may cause pseudo-elements to start being generated.
-        for (const ContainerQuery* current = container_query; current;
-             current = current->Parent()) {
-          ContainerQueryEvaluator::SetDependencyFlags(*current, result_);
+        for (const ContainerQuerySet* current_set = container_query_set;
+             current_set; current_set = current_set->Parent()) {
+          for (const ContainerQuery* current : current_set->Queries()) {
+            ContainerQueryEvaluator::SetDependencyFlags(*current, result_);
+          }
         }
       }
     }
@@ -704,7 +713,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.SetDidMatch();
     }
     unsigned layer_order = layer_seeker.SeekLayerOrder(rule_data.GetPosition());
-    DidMatchRule(&rule_data, layer_order, container_query, result.proximity,
+    DidMatchRule(&rule_data, layer_order, container_query_set, result.proximity,
                  result, style_sheet_index);
   }
 
@@ -1356,7 +1365,7 @@ void CountPseudoElementUsage(const Element& element, PseudoId id) {
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
     uint16_t layer_order,
-    const ContainerQuery* container_query,
+    const ContainerQuerySet* container_query_set,
     unsigned proximity,
     const SelectorChecker::MatchResult& result,
     int style_sheet_index) {
@@ -1413,7 +1422,7 @@ void ElementRuleCollector::DidMatchRule(
             selector.TagQName().Prefix() == g_star_atom;
       }
 
-      if (!universal || container_query != nullptr) {
+      if (!universal || container_query_set != nullptr) {
         result_.SetHasNonUniversalHighlightPseudoStyles();
       }
 
@@ -1421,7 +1430,7 @@ void ElementRuleCollector::DidMatchRule(
         result_.SetHasNonUaHighlightPseudoStyles();
       }
 
-      if (container_query) {
+      if (container_query_set) {
         result_.SetHighlightsDependOnSizeContainerQueries();
       }
 
@@ -1430,7 +1439,7 @@ void ElementRuleCollector::DidMatchRule(
         result_.AddCustomHighlightName(
             AtomicString(result.custom_highlight_name));
       }
-    } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {
+    } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query_set) {
       result_.SetFirstLineDependsOnSizeContainerQueries();
     }
   } else {

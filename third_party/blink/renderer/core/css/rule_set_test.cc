@@ -672,13 +672,13 @@ TEST(RuleSetTest, RuleDataPositionLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned selector_index = 0;
-  const ContainerQuery* container_query = nullptr;
+  const ContainerQuerySet* container_query_set = nullptr;
   const CascadeLayer* cascade_layer = nullptr;
   const StyleScope* style_scope = nullptr;
 
   auto* rule_set = MakeGarbageCollected<RuleSet>();
   for (int i = 0; i < (1 << RuleData::kPositionBits) + 1; ++i) {
-    rule_set->AddRule(rule, selector_index, flags, container_query,
+    rule_set->AddRule(rule, selector_index, flags, container_query_set,
                       cascade_layer, style_scope);
   }
   EXPECT_EQ(1u << RuleData::kPositionBits, rule_set->RuleCount());
@@ -693,7 +693,7 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   StyleRule* rule = CreateDummyStyleRule();
 
   // Add with valid selector_index=0.
-  rule_set->AddRule(rule, 0, flags, nullptr /* container_query */,
+  rule_set->AddRule(rule, 0, flags, nullptr /* container_query_set */,
                     nullptr /* cascade_layer */, nullptr /* scope */);
   EXPECT_EQ(1u, rule_set->RuleCount());
 

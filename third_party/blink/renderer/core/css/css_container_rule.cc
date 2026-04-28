@@ -23,13 +23,15 @@ String CSSContainerRule::cssText() const {
   StringBuilder result;
   result.Append("@container");
   result.Append(' ');
-  result.Append(ContainerQuery().ToString());
+  GetContainerQuerySet().Serialize(result);
   AppendCSSTextForItems(result);
   return result.ReleaseString();
 }
 
 const ContainerSelector& CSSContainerRule::SelectorForInspector() const {
-  return ContainerQuery().Selector();
+  // TODO(41491726): This only considers a single query and returns the selector
+  // for the first query in a comma separated list.
+  return GetContainerQuerySet().Queries()[0]->Selector();
 }
 
 void CSSContainerRule::SetConditionText(
@@ -44,36 +46,47 @@ void CSSContainerRule::SetConditionText(
 }
 
 String CSSContainerRule::containerName() const {
-  StringBuilder result;
-  String name = ContainerQuery().Selector().Name();
-  if (!name.empty()) {
-    SerializeIdentifier(name, result);
-  }
-  return result.ReleaseString();
-}
-
-String CSSContainerRule::containerQuery() const {
-  if (const ConditionalExpNode* query = ContainerQuery().Query()) {
-    return query->Serialize();
+  if (const ContainerQuery* query = SingleContainerQuery()) {
+    String name = query->Selector().Name();
+    if (!name.empty()) {
+      StringBuilder result;
+      SerializeIdentifier(name, result);
+      return result.ReleaseString();
+    }
   }
   return String();
 }
 
-const ContainerQuery& CSSContainerRule::ContainerQuery() const {
-  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery();
+String CSSContainerRule::containerQuery() const {
+  if (const ContainerQuery* query = SingleContainerQuery()) {
+    if (const ConditionalExpNode* query_exp = query->Query()) {
+      return query_exp->Serialize();
+    }
+  }
+  return String();
+}
+
+const ContainerQuerySet& CSSContainerRule::GetContainerQuerySet() const {
+  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuerySet();
+}
+
+const ContainerQuery* CSSContainerRule::SingleContainerQuery() const {
+  return GetContainerQuerySet().SingleQuery();
 }
 
 const FrozenArray<CSSContainerCondition>& CSSContainerRule::conditions() {
   if (!conditions_) {
     FrozenArray<CSSContainerCondition>::VectorType condition_array;
-    CSSContainerCondition* condition = CSSContainerCondition::Create();
-    condition->setName(ContainerQuery().Selector().Name());
-    if (const ConditionalExpNode* query = ContainerQuery().Query()) {
-      condition->setQuery(query->Serialize());
-    } else {
-      condition->setQuery(g_empty_string);
+    for (const ContainerQuery* query : GetContainerQuerySet().Queries()) {
+      CSSContainerCondition* condition = CSSContainerCondition::Create();
+      condition->setName(query->Selector().Name());
+      if (const ConditionalExpNode* query_exp = query->Query()) {
+        condition->setQuery(query_exp->Serialize());
+      } else {
+        condition->setQuery(g_empty_string);
+      }
+      condition_array.push_back(condition);
     }
-    condition_array.push_back(condition);
     conditions_ = MakeGarbageCollected<FrozenArray<CSSContainerCondition>>(
         std::move(condition_array));
   }

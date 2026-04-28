@@ -684,8 +684,8 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kContainer: {
       StyleRuleContainer* container_rule = To<StyleRuleContainer>(this);
       return MakeGarbageCollected<StyleRuleContainer>(
-          *MakeGarbageCollected<ContainerQuery>(
-              container_rule->GetContainerQuery()),
+          *MakeGarbageCollected<ContainerQuerySet>(
+              container_rule->GetContainerQuerySet()),
           CloneRules(container_rule->ChildRules(), new_parent,
                      mixin_parameter_bindings));
     }
@@ -1064,30 +1064,39 @@ void StyleRuleSupports::SetConditionText(
   }
 }
 
-StyleRuleContainer::StyleRuleContainer(const ContainerQuery& container_query,
-                                       HeapVector<Member<StyleRuleBase>> rules)
+StyleRuleContainer::StyleRuleContainer(
+    const ContainerQuerySet& container_query_set,
+    HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleCondition(kContainer,
-                         container_query.ToString(),
+                         container_query_set.ToString(),
                          std::move(rules)),
-      container_query_(&container_query) {}
+      container_query_set_(&container_query_set) {}
 
 StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& other,
                                        HeapVector<Member<StyleRuleBase>> rules)
-    : StyleRuleContainer(*other.container_query_, std::move(rules)) {}
+    : StyleRuleContainer(*other.container_query_set_, std::move(rules)) {}
 
 void StyleRuleContainer::SetConditionText(
     const ExecutionContext* execution_context,
     StyleSheetContents* parent_sheet_contents,
     String value) {
+  const ContainerQuery* query = container_query_set_->SingleQuery();
+  if (!query) {
+    return;
+  }
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   ContainerQueryParser parser(*context);
 
   if (const ConditionalExpNode* exp_node = parser.ParseCondition(value)) {
     condition_text_ = exp_node->Serialize();
 
-    ContainerSelector selector(container_query_->Selector().Name(), exp_node);
-    container_query_ =
-        MakeGarbageCollected<ContainerQuery>(std::move(selector), exp_node);
+    ContainerSelector selector(query->Selector().Name(), exp_node);
+
+    HeapVector<Member<const ContainerQuery>> queries;
+    queries.push_back(
+        MakeGarbageCollected<ContainerQuery>(std::move(selector), exp_node));
+    container_query_set_ =
+        MakeGarbageCollected<ContainerQuerySet>(std::move(queries));
 
     if (parent_sheet_contents) {
       parent_sheet_contents->NotifyRuleChanged(this);
@@ -1096,7 +1105,7 @@ void StyleRuleContainer::SetConditionText(
 }
 
 void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(container_query_);
+  visitor->Trace(container_query_set_);
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
 
@@ -1243,7 +1252,7 @@ bool MixinParameterBindings::operator==(
 
 void MixinParameterBindings::CQDependentValue::Trace(Visitor* visitor) const {
   visitor->Trace(data);
-  visitor->Trace(container_query);
+  visitor->Trace(container_queries);
 }
 
 }  // namespace blink

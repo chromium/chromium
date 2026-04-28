@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class ContainerQuery;
+class ContainerQuerySet;
 
 // A set of custom mixin bindings at some given point in the stylesheet,
 // i.e., which variable has which value (and which type is it supposed
@@ -57,7 +57,7 @@ class MixinParameterBindings : public GarbageCollected<MixinParameterBindings> {
     DISALLOW_NEW();
 
     Member<CSSVariableData> data;
-    Member<ContainerQuery> container_query;
+    Member<ContainerQuerySet> container_queries;
 
     void Trace(Visitor* visitor) const;
   };

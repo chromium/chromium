@@ -2210,31 +2210,16 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     StyleRule* parent_rule_for_nesting) {
   // Consume the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  ContainerQueryParser query_parser(*context_);
 
-  // <container-name>
-  AtomicString name;
-  if (stream.Peek().GetType() == kIdentToken) {
-    CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForAtRules();
-    auto* ident = DynamicTo<CSSCustomIdentValue>(
-        css_parsing_utils::ConsumeSingleContainerName(stream, *context_,
-                                                      local_context));
-    if (ident) {
-      name = ident->Value();
-    }
-  }
-
-  const ConditionalExpNode* query = query_parser.ParseCondition(stream);
-  if (!query &&
-      (name.IsNull() || !RuntimeEnabledFeatures::ContainerNameOnlyEnabled())) {
+  const ContainerQuerySet* container_query_set =
+      ContainerQueryParser::ParseContainerQuerySet(stream, *context_);
+  if (!container_query_set) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleContainer);
     return nullptr;
   }
-  ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
-      ContainerSelector(std::move(name), query), query);
 
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(
           stream, CSSAtRuleID::kCSSAtRuleContainer)) {
     return nullptr;
@@ -2259,7 +2244,7 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 
   // NOTE: There will be a copy of rules here, to deal with the different inline
   // size.
-  return MakeGarbageCollected<StyleRuleContainer>(*container_query,
+  return MakeGarbageCollected<StyleRuleContainer>(*container_query_set,
                                                   std::move(rules));
 }
 

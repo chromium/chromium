@@ -5,9 +5,14 @@
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
+#include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/container_query_set.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -248,6 +253,52 @@ const ConditionalExpNode* ContainerQueryParser::ConsumeFeature(
   MediaQueryParser media_query_parser(MediaQueryParser::kMediaQuerySetParser,
                                       context_.GetExecutionContext());
   return media_query_parser.ConsumeFeature(stream, feature_set);
+}
+
+const ContainerQuery* ContainerQueryParser::ConsumeContainerQuery(
+    CSSParserTokenStream& stream) {
+  // <container-name>
+  AtomicString name;
+  if (stream.Peek().GetType() == kIdentToken) {
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForAtRules();
+    auto* ident = DynamicTo<CSSCustomIdentValue>(
+        css_parsing_utils::ConsumeSingleContainerName(stream, context_,
+                                                      local_context));
+    if (ident) {
+      name = ident->Value();
+    }
+  }
+
+  const ConditionalExpNode* query = ParseCondition(stream);
+  if (query ||
+      (!name.IsNull() && RuntimeEnabledFeatures::ContainerNameOnlyEnabled())) {
+    return MakeGarbageCollected<ContainerQuery>(
+        ContainerSelector(std::move(name), query), query);
+  }
+  return nullptr;
+}
+
+const ContainerQuerySet* ContainerQueryParser::ParseContainerQuerySet(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  ContainerQueryParser query_parser(context);
+
+  HeapVector<Member<const ContainerQuery>> queries;
+
+  do {
+    if (const ContainerQuery* query =
+            query_parser.ConsumeContainerQuery(stream)) {
+      queries.push_back(query);
+    } else {
+      return nullptr;
+    }
+    stream.ConsumeWhitespace();
+  } while (!stream.AtEnd() &&
+           RuntimeEnabledFeatures::CommaSeparatedContainerQueriesEnabled() &&
+           css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
+
+  return MakeGarbageCollected<ContainerQuerySet>(std::move(queries));
 }
 
 }  // namespace blink
