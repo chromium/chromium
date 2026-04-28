@@ -1112,3 +1112,6 @@ BASE_FEATURE(kOpenEditGroupViewByTappingTitle,
 bool IsOpenEditGroupViewByTappingTitleEnabled() {
   return base::FeatureList::IsEnabled(kOpenEditGroupViewByTappingTitle);
 }
+
+BASE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons,
+             base::FEATURE_DISABLED_BY_DEFAULT);
