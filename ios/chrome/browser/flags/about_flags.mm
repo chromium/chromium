@@ -2888,6 +2888,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"app-store-in-app-events", flag_descriptions::kAppStoreInAppEventsName,
      flag_descriptions::kAppStoreInAppEventsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreInAppEvents)},
+    {"use-ui-graphics-image-renderer-for-fallback-icons",
+     flag_descriptions::kUseUIGraphicsImageRendererForFallbackIconsName,
+     flag_descriptions::kUseUIGraphicsImageRendererForFallbackIconsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseUIGraphicsImageRendererForFallbackIcons)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

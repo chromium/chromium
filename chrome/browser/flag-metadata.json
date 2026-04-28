@@ -9468,6 +9468,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-ui-graphics-image-renderer-for-fallback-icons",
+    "owners": [
+      "stkhapugin@chromium.org",
+      "bling-flags@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "use-unexportable-key-service-in-browser-process",
     "owners": ["andrikopouslos@google.com"],
     "expiry_milestone": 150

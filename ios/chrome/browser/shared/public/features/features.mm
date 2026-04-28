@@ -1233,3 +1233,6 @@ BASE_FEATURE(kAssistantAimMinimizedState, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAssistantAimMinimizedStateEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
 }
+
+BASE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons,
+             base::FEATURE_DISABLED_BY_DEFAULT);
