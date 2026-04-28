@@ -808,9 +808,19 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
+        AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, obfuscatedChildAt::set);
                     mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+        CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
+        assertThat(obfuscatedChildAt.get(), is(-1));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
                     mModel.get(BAR_ITEMS)
                             .set(
                                     new BarItem[] {
@@ -831,8 +841,8 @@ public class KeyboardAccessoryViewTest {
                                         createSheetOpener()
                                     });
                 });
-        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-        CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
+        onViewWaiting(withText("Item 1 - very long text to fill width"));
+        CriteriaHelper.pollUiThread(() -> obfuscatedChildAt.get() > -1);
 
         // Scroll the view manually
         ThreadUtils.runOnUiThreadBlocking(() -> view.mBarItemsView.scrollBy(500, 0));
