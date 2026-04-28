@@ -157,6 +157,7 @@ enum InstallerStage {
 namespace switches {
 
 extern const char kAllowDowngrade[];
+inline constexpr char kBrowserVersionSwitch[] = "browser-version";
 extern const char kChannel[];
 extern const char kConfigureUserSettings[];
 extern const char kCreateShortcuts[];

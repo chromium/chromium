@@ -16,6 +16,7 @@ namespace base {
 
 class CommandLine;
 class FilePath;
+class Version;
 
 }  // namespace base
 
@@ -45,8 +46,11 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
 // |crx_path|. The returned |proc_handle| is a process handle that is valid for
 // the |caller_proc_id| process, or the current process if |caller_proc_id| is
 // 0. |unpacked_under_path| is expected to be eventually deleted by the caller.
+// |min_crx_version| represents the minimum version of the CRX manifest allowed,
+// to prevent version rollback attacks.
 HRESULT RunCRX(const base::FilePath& crx_path,
                const base::CommandLine& args,
+               const base::Version& min_crx_version,
                const crx_file::VerifierFormat& crx_format,
                const std::vector<uint8_t>& crx_hash,
                const base::FilePath& unpack_under_path,

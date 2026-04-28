@@ -3,5 +3,6 @@ include_rules = [
   "+chrome/installer/util",
   "+chrome/windows_services/service_program",
   "+components/crx_file",
+  "+components/update_client",
   "+third_party/zlib",
 ]

@@ -23,10 +23,14 @@
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
+#include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/update_client/utils.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -317,10 +321,41 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   if (FAILED(hr))
     return hr;
 
+  // Read version autonomously from secured HKLM machine registries based on
+  // AppID.
+  base::win::RegKey key(
+      HKEY_LOCAL_MACHINE,
+      install_static::GetClientsKeyPath(browser_appid.c_str()).c_str(),
+      KEY_QUERY_VALUE);
+  std::wstring registry_version;
+  if (key.ReadValue(FILE_PATH_LITERAL("version"), &registry_version) !=
+      ERROR_SUCCESS) {
+    // Fall back on RPC caller version if registry read fails. Registry keys
+    // may be missing or corrupted on severely broken environments that recovery
+    // specifically targets. Note that deliberately modifying the HKLM version
+    // is something that only administrators can do, and medium integrity
+    // attackers cannot natively bypass floor checks by clearing those keys.
+    registry_version = browser_version;
+  }
+  const base::Version registry_version_parsed(
+      base::WideToASCII(registry_version));
+  if (!registry_version_parsed.IsValid()) {
+    return E_FAIL;
+  }
+
+  // Trapping attacks by returning E_ACCESSDENIED on discrepancies.
+  const base::Version browser_version_parsed(
+      base::WideToASCII(browser_version));
+  if (!browser_version_parsed.IsValid() ||
+      browser_version_parsed != registry_version_parsed) {
+    return E_ACCESSDENIED;
+  }
+
   base::CommandLine args(base::CommandLine::NO_PROGRAM);
   if (!browser_appid.empty())
     args.AppendSwitchNative("appguid", browser_appid);
-  args.AppendSwitchNative("browser-version", browser_version);
+  args.AppendSwitchNative(installer::switches::kBrowserVersionSwitch,
+                          browser_version);
   args.AppendSwitchNative("sessionid", session_id);
   args.AppendSwitch("system");
 
@@ -329,7 +364,7 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   if (FAILED(hr))
     return hr;
 
-  return RunCRX(crx_path, args,
+  return RunCRX(crx_path, args, browser_version_parsed,
                 crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
                 GetRecoveryCRXHash(), unpack_dir,
                 base::FilePath(kRecoveryExeName), caller_proc_id, proc_handle);
@@ -337,6 +372,7 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
 
 HRESULT RunCRX(const base::FilePath& crx_path,
                const base::CommandLine& args,
+               const base::Version& min_crx_version,
                const crx_file::VerifierFormat& crx_format,
                const std::vector<uint8_t>& crx_hash,
                const base::FilePath& unpack_under_path,
@@ -360,6 +396,24 @@ HRESULT RunCRX(const base::FilePath& crx_path,
                             &unpacked_crx_dir);
   if (FAILED(hr))
     return hr;
+
+  const auto manifest = update_client::ReadManifest(unpacked_crx_dir.GetPath());
+  if (!manifest) {
+    return E_FAIL;
+  }
+  const std::string* manifest_version_str = manifest->FindString("version");
+  if (!manifest_version_str) {
+    return E_FAIL;
+  }
+  const base::Version manifest_version(*manifest_version_str);
+  if (!manifest_version.IsValid()) {
+    return E_FAIL;
+  }
+
+  // Trapping attacks by mapping E_ACCESSDENIED on rollbacks.
+  if (manifest_version < min_crx_version) {
+    return E_ACCESSDENIED;
+  }
 
   const base::FilePath path_and_name =
       unpacked_crx_dir.GetPath().Append(exe_filename);

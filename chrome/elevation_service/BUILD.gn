@@ -66,6 +66,7 @@ source_set("lib") {
     "//chrome/installer/util:isolation_support",
     "//chrome/windows_services/service_program:common",
     "//components/crx_file",
+    "//components/update_client",
     "//content/public/common:static_switches",
     "//third_party/zlib/google:zip",
   ]

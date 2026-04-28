@@ -25,6 +25,7 @@
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "components/version_info/version_info.h"
 
 namespace component_updater {
@@ -114,7 +115,8 @@ class RecoveryComponentActionHandlerWin
 base::CommandLine RecoveryComponentActionHandlerWin::MakeCommandLine(
     const base::FilePath& unpack_path) const {
   base::CommandLine command_line(unpack_path.Append(kRecoveryFileName));
-  command_line.AppendSwitchASCII("browser-version", GetBrowserVersion());
+  command_line.AppendSwitchASCII(installer::switches::kBrowserVersionSwitch,
+                                 GetBrowserVersion());
   command_line.AppendSwitchASCII("sessionid", session_id());
   const auto app_guid = GetBrowserAppId();
   if (!app_guid.empty()) {
