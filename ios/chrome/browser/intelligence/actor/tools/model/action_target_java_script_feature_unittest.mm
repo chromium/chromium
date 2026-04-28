@@ -92,6 +92,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsUnexpectedType) {
 
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
   EXPECT_EQ(result.error().internal_code().value(),
             InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 }
@@ -103,7 +104,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsError) {
                                          base::SysUTF8ToNSString(R"(
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
-            return {success: false, message: 'Custom JS Error'};
+            return {resultCode: 1, message: 'Custom JS Error'};
           }
         ); true;
       )"),
@@ -120,9 +121,8 @@ TEST_F(ActionTargetJavaScriptFeatureTest, JsReturnsError) {
 
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(
-      result.error().internal_code().value(),
-      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
+  EXPECT_EQ(result.error().code(),
+            mojom::ActionResultCode::kCoordinatesOutOfBounds);
   EXPECT_EQ(result.error().message().value(), "Custom JS Error");
 }
 
@@ -135,7 +135,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetsMainFrame_Success) {
                                          base::SysUTF8ToNSString(R"(
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
-            return {success: true};
+            return {resultCode: 0};
           }
         ); true;
       )"),
@@ -168,7 +168,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
             return {
-              'success': true,
+              'resultCode': 0,
               'childFrame': {
                 'remoteFrameToken': '%s'
               }
@@ -189,6 +189,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
 
   auto result = first_call.Get();
   EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
   EXPECT_EQ(result.error().internal_code().value(),
             InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 
@@ -197,7 +198,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
             return {
-              'success': true,
+              'resultCode': 0,
               'childFrame': {
                 'frameX': 10.0,
                 'frameY': 10.0
@@ -217,6 +218,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
 
   result = second_call.Get();
   EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
   EXPECT_EQ(result.error().internal_code().value(),
             InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 }
@@ -237,7 +239,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
             return {
-              'success': true,
+              'resultCode': 0,
               'childFrame': {
                 'remoteFrameToken': '%s',
                 'frameX': 10.0,
@@ -261,8 +263,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest,
 
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().internal_code().value(),
-            InternalToolErrorCode::kActorTargetFrameNotRegistered);
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ActionTargetJavaScriptFeatureTest, TargetsIframe_FrameIdNotRegistered) {
@@ -286,7 +287,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetsIframe_FrameIdNotRegistered) {
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
             return {
-              'success': true,
+              'resultCode': 0,
               'childFrame': {
                 'remoteFrameToken': '%s',
                 'frameX': 10.0,
@@ -310,8 +311,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetsIframe_FrameIdNotRegistered) {
 
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().internal_code().value(),
-            InternalToolErrorCode::kActorTargetFrameNotFoundById);
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(ActionTargetJavaScriptFeatureTest, TargetIframe_ByCoordinate_Success) {
@@ -358,7 +358,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, TargetIframe_ByCoordinate_Success) {
         __gCrWeb.getRegisteredApi('action_target').addFunction(
           'resolveTargetIframe', function() {
             return {
-              'success': true,
+              'resultCode': 0,
               'childFrame': {
                 'remoteFrameToken': '%s',
                 'frameX': 10.0,
@@ -451,8 +451,7 @@ TEST_F(ActionTargetJavaScriptFeatureTest, MaxDepthExceeded) {
 
   auto result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().internal_code().value(),
-            InternalToolErrorCode::kActorTargetMaxDepthExceeded);
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kToolTimeout);
 }
 
 }  // namespace

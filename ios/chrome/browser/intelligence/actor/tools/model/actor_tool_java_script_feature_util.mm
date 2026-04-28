@@ -33,4 +33,31 @@ void ParseJavaScriptResult(ToolExecutionCallback callback,
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
+ToolExecutionResult ParseJavaScriptResultWithResultCode(
+    base::FunctionRef<mojom::ActionResultCode(int)> resultCodeTranslator,
+    const base::Value* result) {
+  if (!result) {
+    // `result` is nullptr if the JavaScript function call timed out. See
+    // https://source.chromium.org/chromium/chromium/src/+/main:ios/web/public/js_messaging/web_frame.h;l=65-68;drc=2acee4f42bc58706d4ec89a8c5323e90b454ab3c.
+    return ToolExecutionResult(mojom::ActionResultCode::kToolTimeout);
+  }
+  if (!result->is_dict()) {
+    return ToolExecutionResult(
+        InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  }
+  const base::DictValue& result_dict = result->GetDict();
+  std::optional<double> error_code_double =
+      result_dict.FindDouble("resultCode");
+  if (!error_code_double) {
+    return ToolExecutionResult(
+        InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  }
+  int error_code = static_cast<int>(*error_code_double);
+  if (const std::string* message = result_dict.FindString("message"); message) {
+    return ToolExecutionResult(resultCodeTranslator(error_code), *message);
+  } else {
+    return ToolExecutionResult(resultCodeTranslator(error_code));
+  }
+}
+
 }  // namespace actor

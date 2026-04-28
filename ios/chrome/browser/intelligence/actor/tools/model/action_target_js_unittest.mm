@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -20,9 +21,9 @@ constexpr int kPageHeight = 400;
 constexpr int kIframeX = 50;
 constexpr int kIframeY = 200;
 
-class ActionTargetJavascriptTest : public web::JavascriptTest {
+class ActionTargetJavaScriptTest : public web::JavascriptTest {
  public:
-  ActionTargetJavascriptTest() {
+  ActionTargetJavaScriptTest() {
     scoped_feature_list_.InitAndEnableFeature(
         web::features::kAssertOnJavaScriptErrors);
     web_view().frame = CGRectMake(0.0, 0.0, kPageWidth, kPageHeight);
@@ -61,9 +62,10 @@ class ActionTargetJavascriptTest : public web::JavascriptTest {
   net::EmbeddedTestServer test_server_;
 };
 
-TEST_F(ActionTargetJavascriptTest, TargetOnIframe_ReturnsChildFrameInfo) {
+TEST_F(ActionTargetJavaScriptTest, TargetOnIframe_ReturnsChildFrameInfo) {
   NSDictionary* result = GetTargetFrame(kIframeX, kIframeY, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(actor::ActionTargetResultCode::kOk));
   NSDictionary* childFrame = result[@"childFrame"];
   EXPECT_TRUE(childFrame);
   EXPECT_TRUE(childFrame[@"remoteFrameToken"]);
@@ -71,18 +73,21 @@ TEST_F(ActionTargetJavascriptTest, TargetOnIframe_ReturnsChildFrameInfo) {
   EXPECT_TRUE(childFrame[@"frameY"]);
 }
 
-TEST_F(ActionTargetJavascriptTest,
+TEST_F(ActionTargetJavaScriptTest,
        TargetOnMainFrame_ReturnsSuccessWithoutChildFrameInfo) {
   // The iframe is at (50, 200).
   NSDictionary* result = GetTargetFrame(/*x=*/10, /*y=*/10, /*pixelType=*/1);
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(actor::ActionTargetResultCode::kOk));
   EXPECT_FALSE(result[@"childFrame"]);
 }
 
-TEST_F(ActionTargetJavascriptTest, InvalidCoordinates_Fails) {
+TEST_F(ActionTargetJavaScriptTest, InvalidCoordinates_Fails) {
   NSDictionary* result =
       GetTargetFrame(kPageWidth + 1, kPageHeight + 1, /*pixelType=*/1);
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ(
+      [result[@"resultCode"] intValue],
+      static_cast<int>(actor::ActionTargetResultCode::kCoordinatesOutOfBounds));
   EXPECT_TRUE([result[@"message"]
       containsString:@"No element found at the target coordinates."]);
 }

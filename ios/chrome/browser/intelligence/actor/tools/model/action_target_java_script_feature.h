@@ -24,6 +24,15 @@ class WebState;
 
 namespace actor {
 
+// LINT.IfChange(ActionTargetResultCode)
+enum class ActionTargetResultCode {
+  // The function call was successful.
+  kOk = 0,
+  // The coordinates provided to the function were not in the viewport.
+  kCoordinatesOutOfBounds = 1,
+};
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/action_target.ts:ActionTargetResultCode)
+
 // A JS feature to help find the target elements for web actuation.
 class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
  public:

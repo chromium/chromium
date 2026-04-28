@@ -83,28 +83,6 @@ INSTANTIATE_TEST_SUITE_P(
             mojom::ActionResultCode::kArgumentsInvalid,
             "The JavaScriptFeature failed when executing the JavaScript."},
         ToolExecutionResultTestCase{
-            InternalToolErrorCode::kActorTargetWebStateDestroyed,
-            mojom::ActionResultCode::kTabWentAway,
-            "The WebState was destroyed while looking for actor target."},
-        ToolExecutionResultTestCase{
-            InternalToolErrorCode::kActorTargetInvalidRemoteFrameToken,
-            mojom::ActionResultCode::kArgumentsInvalid,
-            "Failed to deserialize remote frame token."},
-        ToolExecutionResultTestCase{
-            InternalToolErrorCode::kActorTargetFrameNotRegistered,
-            mojom::ActionResultCode::kArgumentsInvalid,
-            "The target frame was not registered with the "
-            "ChildFrameRegistrar."},
-        ToolExecutionResultTestCase{
-            InternalToolErrorCode::kActorTargetFrameNotFoundById,
-            mojom::ActionResultCode::kArgumentsInvalid,
-            "Could not find target frame in WebFramesManager by the frame ID."},
-        ToolExecutionResultTestCase{
-            InternalToolErrorCode::kActorTargetMaxDepthExceeded,
-            mojom::ActionResultCode::kToolTimeout,
-            "The ActorToolTargetJavaScriptFeature reached the maximum "
-            "recursion depth."},
-        ToolExecutionResultTestCase{
             InternalToolErrorCode::kActorTargetWebFrameInvalidated,
             mojom::ActionResultCode::kFrameWentAway,
             "The target WebFrame was invalidated before the JavaScript "
@@ -148,16 +126,6 @@ INSTANTIATE_TEST_SUITE_P(
         case InternalToolErrorCode::
             kJavascriptFeatureFailedInJavaScriptExecution:
           return "kJavascriptFeatureFailedInJavaScriptExecution";
-        case InternalToolErrorCode::kActorTargetWebStateDestroyed:
-          return "kActorTargetWebStateDestroyed";
-        case InternalToolErrorCode::kActorTargetInvalidRemoteFrameToken:
-          return "kActorTargetInvalidRemoteFrameToken";
-        case InternalToolErrorCode::kActorTargetFrameNotRegistered:
-          return "kActorTargetFrameNotRegistered";
-        case InternalToolErrorCode::kActorTargetFrameNotFoundById:
-          return "kActorTargetFrameNotFoundById";
-        case InternalToolErrorCode::kActorTargetMaxDepthExceeded:
-          return "kActorTargetMaxDepthExceeded";
         case InternalToolErrorCode::kActorTargetWebFrameInvalidated:
           return "kActorTargetWebFrameInvalidated";
         case InternalToolErrorCode::kNavigationInvalidURL:

@@ -52,19 +52,6 @@ enum class InternalToolErrorCode {
   // TODO(crbug.com/505037793): Make each TS script file use a real error code
   // by making them coordinate failure modes with their JavaScriptFeature class.
   kJavascriptFeatureFailedInJavaScriptExecution = 202,
-  // The ActorToolTargetJavaScriptFeature failed because the WebState was
-  // destroyed while trying to find the target frame.
-  kActorTargetWebStateDestroyed = 203,
-  // The ActorToolTargetJavaScriptFeature received a remote frame token that
-  // could not be deserialized.
-  kActorTargetInvalidRemoteFrameToken = 204,
-  // The target frame was not registered with the ChildFrameRegistrar.
-  kActorTargetFrameNotRegistered = 205,
-  // The target frame could not be found in the WebFramesManager after
-  // registration.
-  kActorTargetFrameNotFoundById = 206,
-  // The ActorToolTargetJavaScriptFeature reached the maximum recursion depth.
-  kActorTargetMaxDepthExceeded = 207,
   // The target WebFrame was invalidated before the JavaScript function could
   // be called.
   kActorTargetWebFrameInvalidated = 208,

@@ -50,17 +50,6 @@ ToolExecutionResult::ToolExecutionResult(InternalToolErrorCode internal_code,
       // this case, or Bling-specific errors more generally.
       external_code = mojom::ActionResultCode::kArgumentsInvalid;
       break;
-    case InternalToolErrorCode::kActorTargetWebStateDestroyed:
-      external_code = mojom::ActionResultCode::kTabWentAway;
-      break;
-    case InternalToolErrorCode::kActorTargetInvalidRemoteFrameToken:
-    case InternalToolErrorCode::kActorTargetFrameNotRegistered:
-    case InternalToolErrorCode::kActorTargetFrameNotFoundById:
-      external_code = mojom::ActionResultCode::kArgumentsInvalid;
-      break;
-    case InternalToolErrorCode::kActorTargetMaxDepthExceeded:
-      external_code = mojom::ActionResultCode::kToolTimeout;
-      break;
     case InternalToolErrorCode::kActorTargetWebFrameInvalidated:
       external_code = mojom::ActionResultCode::kFrameWentAway;
       break;
@@ -119,19 +108,6 @@ std::string GetToolExecutionResultMessage(const ToolExecutionResult& result) {
         return "The JavaScriptFeature::CallJavaScriptFunction call failed.";
       case InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution:
         return "The JavaScriptFeature failed when executing the JavaScript.";
-      case InternalToolErrorCode::kActorTargetWebStateDestroyed:
-        return "The WebState was destroyed while looking for actor target.";
-      case InternalToolErrorCode::kActorTargetInvalidRemoteFrameToken:
-        return "Failed to deserialize remote frame token.";
-      case InternalToolErrorCode::kActorTargetFrameNotRegistered:
-        return "The target frame was not registered with the "
-               "ChildFrameRegistrar.";
-      case InternalToolErrorCode::kActorTargetFrameNotFoundById:
-        return "Could not find target frame in WebFramesManager by the frame "
-               "ID.";
-      case InternalToolErrorCode::kActorTargetMaxDepthExceeded:
-        return "The ActorToolTargetJavaScriptFeature reached the maximum "
-               "recursion depth.";
       case InternalToolErrorCode::kActorTargetWebFrameInvalidated:
         return "The target WebFrame was invalidated before the JavaScript "
                "function could be called.";

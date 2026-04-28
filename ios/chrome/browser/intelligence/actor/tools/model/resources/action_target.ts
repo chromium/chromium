@@ -10,6 +10,15 @@ import {registerChildFrame} from '//components/autofill/ios/form_util/resources/
 import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
+// LINT.IfChange(ActionTargetResultCode)
+enum ActionTargetResultCode {
+  // The function call was successful.
+  OK = 0,
+  // The coordinates provided to the function were not in the viewport.
+  COORDINATES_OUT_OF_BOUNDS = 1,
+}
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h:ActionTargetResultCode)
+
 /**
  * Resolves the target iframe at the given coordinates.
  *
@@ -26,7 +35,7 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
  * @return An object containing the result of the resolution attempt.
  */
 function resolveTargetIframe(x: number, y: number, pixelType: number): {
-  success: boolean,
+  resultCode: number,
   message?: string,
   childFrame?: {
     remoteFrameToken: string,
@@ -38,7 +47,7 @@ function resolveTargetIframe(x: number, y: number, pixelType: number): {
 
   if (!element) {
     return {
-      success: false,
+      resultCode: ActionTargetResultCode.COORDINATES_OUT_OF_BOUNDS,
       message: 'No element found at the target coordinates.',
     };
   }
@@ -51,7 +60,7 @@ function resolveTargetIframe(x: number, y: number, pixelType: number): {
     const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
     const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
     return {
-      success: true,
+      resultCode: ActionTargetResultCode.OK,
       childFrame: {
         remoteFrameToken: token,
         frameX: clientX - rect.left - borderLeft - paddingLeft,
@@ -60,7 +69,7 @@ function resolveTargetIframe(x: number, y: number, pixelType: number): {
     };
   }
   return {
-    success: true,
+    resultCode: ActionTargetResultCode.OK,
   };
 }
 
