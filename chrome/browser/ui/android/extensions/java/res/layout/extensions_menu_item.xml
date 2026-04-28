@@ -14,7 +14,6 @@ found in the LICENSE file.
     android:layout_marginTop="2dp"
     android:layout_marginBottom="2dp"
     android:orientation="vertical"
-    android:paddingStart="@dimen/extensions_menu_horizontal_padding"
     android:paddingEnd="@dimen/extensions_menu_horizontal_padding"
     tools:ignore="UnusedResources" >
 
@@ -29,6 +28,7 @@ found in the LICENSE file.
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
+            android:paddingStart="@dimen/extensions_menu_horizontal_padding"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -88,7 +88,7 @@ found in the LICENSE file.
         android:id="@+id/extensions_menu_item_site_permissions_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="60dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:background="?android:attr/selectableItemBackground"
