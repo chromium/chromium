@@ -39,9 +39,18 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
       return false;
     }
     if (transition_token) {
+      if (data.local_id() ==
+          viz::ViewTransitionElementResourceId::kInvalidLocalId) {
+        return false;
+      }
       *out = viz::ViewTransitionElementResourceId(
           *transition_token, data.local_id(), data.for_scope_snapshot());
     } else {
+      if (data.local_id() !=
+              viz::ViewTransitionElementResourceId::kInvalidLocalId ||
+          data.for_scope_snapshot()) {
+        return false;
+      }
       *out = viz::ViewTransitionElementResourceId();
     }
     return true;

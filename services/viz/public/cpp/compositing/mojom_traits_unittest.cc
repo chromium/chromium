@@ -708,6 +708,31 @@ TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
           mojom::ViewTransitionElementResourceId>(valid_id, valid_output_id));
   ASSERT_TRUE(valid_output_id.IsValid());
   ASSERT_EQ(valid_output_id, valid_id);
+
+  // Fuzzer found crash: transition token present but local_id is 0.
+  auto mojom_id = mojom::ViewTransitionElementResourceId::New();
+  mojom_id->transition_token = blink::ViewTransitionToken();
+  mojom_id->local_id = ViewTransitionElementResourceId::kInvalidLocalId;
+  ViewTransitionElementResourceId output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::ViewTransitionElementResourceId>(mojom_id, output));
+
+  // Also test transition token NOT present but local_id is NOT 0.
+  output = ViewTransitionElementResourceId();
+  mojom_id = mojom::ViewTransitionElementResourceId::New();
+  mojom_id->transition_token = std::nullopt;
+  mojom_id->local_id = 1u;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::ViewTransitionElementResourceId>(mojom_id, output));
+
+  // Also test transition token NOT present and for_scope_snapshot is true.
+  output = ViewTransitionElementResourceId();
+  mojom_id = mojom::ViewTransitionElementResourceId::New();
+  mojom_id->transition_token = std::nullopt;
+  mojom_id->local_id = ViewTransitionElementResourceId::kInvalidLocalId;
+  mojom_id->for_scope_snapshot = true;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               mojom::ViewTransitionElementResourceId>(mojom_id, output));
 }
 
 TEST_F(StructTraitsTest, SurfaceInfo) {
