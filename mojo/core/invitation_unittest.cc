@@ -66,6 +66,9 @@ const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 // TODO(crbug.com/40900578): Flaky on Tsan.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_InvitationTest DISABLED_InvitationTest
+#elif BUILDFLAG(IS_CHROMEOS)
+// TODO(https://crbug.com/498954838): Flaky on CrOS.
+#define MAYBE_InvitationTest DISABLED_InvitationTest
 #else
 #define MAYBE_InvitationTest InvitationTest
 #endif
