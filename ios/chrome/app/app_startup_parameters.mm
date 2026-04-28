@@ -226,6 +226,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
     case SEARCH_PASSWORDS:
     case CREDENTIAL_EXCHANGE_IMPORT:
+    case TRIGGER_GEMINI_PROMO:
       return YES;
 
       // Lens action are valid on empty URLs, in addition to

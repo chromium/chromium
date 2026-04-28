@@ -27182,6 +27182,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileExternalActionURLOpenedWithAppStoreGeminiPromo">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when the application was launched via an External Action URL with
+    the AppStoreGeminiPromo action. iOS only.
+  </description>
+</action>
+
 <action name="MobileExternalActionURLOpenedWithDefaultBrowserSettings">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>

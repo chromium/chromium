@@ -222,6 +222,10 @@ inline constexpr char kGeminiPageContentSharingURL[] =
 // URL for the Gemini Extensions Settings row.
 inline constexpr char kGeminiExtensionsURL[] = "https://gemini.google.com/apps";
 
+// URL navigated to after the Gemini App Store External Actions event.
+inline constexpr char kGeminiAppStorePromoURL[] =
+    "https://www.google.com/chrome/ai-innovations/";
+
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
 inline constexpr std::array<std::string_view, 22> kChromeHostURLs = {
     commerce::kChromeUICommerceInternalsHost,

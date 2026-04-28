@@ -2107,6 +2107,11 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
       } else {
         NOTREACHED() << "Credential import is available on iOS 26+ only.";
       }
+    case TRIGGER_GEMINI_PROMO:
+      if (IsAppStoreInAppEventsEnabled()) {
+        // TODO(crbug.com/506473258): Implement Gemini FRE on app startup.
+      }
+      return nil;
     default:
       return nil;
   }

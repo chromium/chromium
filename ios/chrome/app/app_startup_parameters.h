@@ -49,6 +49,7 @@ enum TabOpeningPostOpeningAction {
   EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
   START_LENS_FROM_SHARE_EXTENSION,
   CREDENTIAL_EXCHANGE_IMPORT,
+  TRIGGER_GEMINI_PROMO,
 };
 
 // Represents the status of a request to change the application mode.

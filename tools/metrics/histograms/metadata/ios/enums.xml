@@ -598,6 +598,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Open NTP"/>
   <int value="2" label="Default Browser Settings"/>
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
+  <int value="4" label="App Store Event For Gemini Promo"/>
 </enum>
 
 <enum name="IOSFilePickerDriveAccountSelection">
