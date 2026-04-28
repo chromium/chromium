@@ -43,6 +43,9 @@ declare_args() {
   # defaults to off.
   enable_iterator_debugging = false
 
+  # If false, build using C++20; otherwise, build using C++23.
+  use_cxx23 = true
+
   # Build atomic support from in-tree compiler-rt.
   #
   # Apple platforms provide the intrinsics from a different library, and the
@@ -95,6 +98,9 @@ declare_args() {
       clang_modules_platform_supported && using_tested_sysroot &&
       # reclient and icecc don't handle headers in modulemap config.
       !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc" &&
+      # Due to libc++ headers having different dependencies in different
+      # language modes, see crbug.com/507307601
+      use_cxx23 &&
       # TODO: crbug.com/440481921 - Fix conflicting function types when enabling
       # fuzzer & coverage with modules.
       !(use_clang_coverage && use_libfuzzer)
