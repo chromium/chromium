@@ -9,12 +9,14 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -196,6 +198,7 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
 }
 
+// TODO(b/505825633): Refine ResponseMessage errors for experimental triggering.
 void GlicExperimentalTriggeringMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
@@ -223,27 +226,47 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
                                                          /*create=*/false);
   CHECK(glic_service);
 
-  auto options = CreateInvokeOptions(request, active_tab);
-
-  if (message.has_server_channel_configuration()) {
-    std::optional<int64_t> last_seen_sequence_number;
-    if (request.has_task_metadata() &&
-        request.task_metadata().has_sender_sequence_number()) {
-      last_seen_sequence_number =
-          request.task_metadata().sender_sequence_number();
-    }
-
-    options.on_client_connected = base::BindOnce(
-        &GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates,
-        weak_ptr_factory_.GetWeakPtr(),
-        std::move(*message.mutable_server_channel_configuration()),
-        last_seen_sequence_number);
+  if (!request.has_request()) {
+    DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
+                     "request payload.";
+    std::move(done_callback).Run(nullptr);
+    return;
   }
 
-  glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      std::move(options));
+  if (request.request().has_stop_actuation_request()) {
+    ProcessStopActionRequest(std::move(message), active_tab, glic_service,
+                             std::move(done_callback));
+    return;
+  }
 
+  if (request.request().has_trigger_actuation_request()) {
+    auto options = CreateInvokeOptions(request, active_tab);
+    if (message.has_server_channel_configuration()) {
+      std::optional<int64_t> last_seen_sequence_number;
+      if (request.has_task_metadata() &&
+          request.task_metadata().has_sender_sequence_number()) {
+        last_seen_sequence_number =
+            request.task_metadata().sender_sequence_number();
+      }
+
+      options.on_client_connected = base::BindOnce(
+          &GlicExperimentalTriggeringMessageHandler::
+              OnClientConnectedForUpdates,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::move(*message.mutable_server_channel_configuration()),
+          last_seen_sequence_number);
+    }
+
+    glic_service->InvokeWithAutoSubmit(
+        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+        std::move(options));
+
+    std::move(done_callback).Run(nullptr);
+    return;
+  }
+
+  DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
+                   "actionable request.";
   std::move(done_callback).Run(nullptr);
 }
 
@@ -263,4 +286,74 @@ void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
                                                    std::move(server_channel),
                                                    last_seen_sequence_number),
                  std::move(listener_receiver));
+}
+
+void GlicExperimentalTriggeringMessageHandler::ProcessStopActionRequest(
+    components_sharing_message::SharingMessage message,
+    tabs::TabInterface* active_tab,
+    glic::GlicKeyedService* glic_service,
+    DoneCallback done_callback) {
+  const auto& request = message.glic_experimental_triggering();
+
+  glic::GlicInstance* instance = glic_service->GetInstanceForTab(active_tab);
+  if (!instance) {
+    DLOG(WARNING) << "GlicInstance not found for active tab, cannot stop task.";
+    std::move(done_callback).Run(nullptr);
+    return;
+  }
+
+  bool stopped = false;
+  if (!request.has_task_metadata() || !request.task_metadata().has_task_id()) {
+    DLOG(WARNING)
+        << "Missing task metadata or task ID in StopActuationRequest.";
+  } else {
+    int task_id_int = 0;
+    if (!base::StringToInt(request.task_metadata().task_id(), &task_id_int)) {
+      DLOG(WARNING) << "Invalid task ID format: "
+                    << request.task_metadata().task_id();
+    } else {
+      instance->host().instance_delegate().StopActorTask(
+          actor::TaskId(task_id_int),
+          glic::mojom::ActorTaskStopReason::kStoppedByUser);
+      stopped = true;
+    }
+  }
+
+  if (message.has_server_channel_configuration() && message_sender_) {
+    components_sharing_message::SharingMessage response_message;
+    auto* triggering_response =
+        response_message.mutable_glic_experimental_triggering();
+    auto* response = triggering_response->mutable_response();
+    auto* task_update = response->mutable_task_update();
+
+    if (stopped) {
+      task_update->set_state(
+          components_sharing_message::GlicExperimentalTriggering::
+              ExperimentalTriggeringResponse::TaskUpdate::STOPPED);
+    } else {
+      task_update->set_state(
+          components_sharing_message::GlicExperimentalTriggering::
+              ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+      task_update->set_data_type(
+          components_sharing_message::GlicExperimentalTriggering::
+              ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+      task_update->set_data(
+          "Failed to stop task due to missing or invalid metadata.");
+    }
+
+    message_sender_->SendMessageToServerTarget(
+        message.server_channel_configuration(), kUpdateMessageTimeout,
+        std::move(response_message), SharingMessageSender::DelegateType::kFCM,
+        base::BindOnce(
+            [](SharingSendMessageResult result,
+               std::unique_ptr<components_sharing_message::ResponseMessage>
+                   response) {
+              if (result != SharingSendMessageResult::kSuccessful) {
+                DLOG(WARNING) << "Failed to send response to server. Result: "
+                              << static_cast<int>(result);
+              }
+            }));
+  }
+
+  std::move(done_callback).Run(nullptr);
 }
