@@ -40,10 +40,6 @@ inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
 #if BUILDFLAG(IS_ANDROID)
-// Ensure that the legacy search engine promos don't trigger on out of
-// scope device types.
-BASE_DECLARE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors);
-
 // Obtains the active regional program directly from the device instead of
 // deriving it from the profile country. Kill switch, enabled by default.
 BASE_DECLARE_FEATURE(kResolveRegionalCapabilitiesFromDevice);

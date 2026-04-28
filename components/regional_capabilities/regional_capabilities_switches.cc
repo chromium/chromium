@@ -11,9 +11,6 @@
 namespace switches {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
