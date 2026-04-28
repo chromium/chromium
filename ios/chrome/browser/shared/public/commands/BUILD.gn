@@ -9,6 +9,7 @@ source_set("commands") {
     "activity_service_share_url_command.h",
     "activity_service_share_url_command.mm",
     "add_contacts_commands.h",
+    "app_bar_commands.h",
     "auto_deletion_commands.h",
     "autofill_commands.h",
     "bookmarks_commands.h",

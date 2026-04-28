@@ -40,6 +40,12 @@
 // Unhides the spotlight anchor view if `shouldShow`.
 - (void)toggleSpotlightView:(BOOL)shouldShow;
 
+// Shows the blue-ish background with a circular gradient.
+- (void)showIPHBackground;
+
+// Hides the blue-ish background.
+- (void)hideIPHBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_VIEW_CONTROLLER_H_

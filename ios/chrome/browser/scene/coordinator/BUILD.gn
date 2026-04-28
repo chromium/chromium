@@ -12,6 +12,8 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
@@ -23,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/app/profile:first_run_profile_agent",
     "//ios/chrome/browser/ai_prototyping/coordinator",
     "//ios/chrome/browser/app_bar/coordinator",
+    "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/assistant/coordinator",
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
@@ -83,16 +86,27 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "scene_coordinator_unittest.mm" ]
+  sources = [
+    "scene_coordinator_unittest.mm",
+    "scene_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feature_engagement/test:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/test_support",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/scene/ui",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
     "//ios/chrome/browser/shared/coordinator/scene/state",
@@ -100,6 +114,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",

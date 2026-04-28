@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
@@ -64,6 +65,9 @@ constexpr CGFloat kStackViewLandscapeVerticalOffset = 2;
 // The inner padding of the buttons.
 constexpr CGFloat kButtonHorizontalPadding = 4;
 constexpr CGFloat kButtonVerticalPadding = 12;
+
+// Duration of the IPH show/hide animation.
+constexpr CGFloat kIPHAnimationDuration = 0.3;
 
 // Returns the color to be used as foreground color for the buttons.
 UIColor* ButtonsForegroundColor() {
@@ -146,6 +150,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIView* _tabGridPreviewContainer;
   // The alpha for the titles of the buttons.
   CGFloat _buttonsTitleAlpha;
+  // Background view for the IPH.
+  AppBarIPHBackgroundView* _IPHBackgroundView;
 }
 
 #pragma mark - Accessors & Mutators
@@ -179,6 +185,32 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)toggleSpotlightView:(BOOL)shouldShow {
   CHECK(IsBestOfAppGuidedTourEnabled());
   _spotlightView.hidden = !shouldShow;
+}
+
+- (void)showIPHBackground {
+  if (!_IPHBackgroundView) {
+    _IPHBackgroundView = [[AppBarIPHBackgroundView alloc] init];
+    _IPHBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    _IPHBackgroundView.alpha = 0;
+    [_backgroundView insertSubview:_IPHBackgroundView atIndex:0];
+
+    AddSameConstraints(_backgroundView, _IPHBackgroundView);
+  }
+
+  UIView* background = _IPHBackgroundView;
+
+  [UIView animateWithDuration:kIPHAnimationDuration
+                   animations:^{
+                     background.alpha = 1.0;
+                   }];
+}
+
+- (void)hideIPHBackground {
+  UIView* background = _IPHBackgroundView;
+  [UIView animateWithDuration:kIPHAnimationDuration
+                   animations:^{
+                     background.alpha = 0.0;
+                   }];
 }
 
 #pragma mark - UIViewController

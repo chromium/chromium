@@ -520,6 +520,7 @@ should be able to be added at any place in this file.
       summary="For iOSLensOverlayEscapeHatchTip IPH feature"/>
   <variant name="_iOSLensPromoDesktop"
       summary="For iOSLensPromoDesktop feature"/>
+  <variant name="_iOSNewIAPromoFeature" summary="For New IA promo on startup."/>
   <variant name="_iOSOneTimeDefaultBrowserNotification"
       summary="For iOSOneTimeDefaultBrowserNotification feature"/>
   <variant name="_iOSOverflowMenuCustomization"

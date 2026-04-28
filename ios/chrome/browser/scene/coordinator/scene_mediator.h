@@ -7,14 +7,28 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/scene/ui/scene_mutator.h"
+
+namespace feature_engagement {
+class Tracker;
+}
+
+enum class AppBarPosition;
 @protocol FullscreenUIElement;
 class FullscreenController;
+@protocol SceneConsumer;
 
 // Mediator for the Scene coordinate.
-@interface SceneMediator : NSObject
+@interface SceneMediator : NSObject <SceneMutator>
 
 // The consumer of this mediator.
-@property(nonatomic, weak) id<FullscreenUIElement> consumer;
+@property(nonatomic, weak) id<FullscreenUIElement, SceneConsumer> consumer;
+
+// The feature engagement tracker.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
+
+// The position of the App Bar. Only set at startup, not updated after.
+@property(nonatomic, assign) AppBarPosition appBarPositionAtLaunch;
 
 // Initializes the mediator.
 - (instancetype)initWithRegularFullscreenController:

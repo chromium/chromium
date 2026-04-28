@@ -355,6 +355,9 @@ chromium-metrics-reviews@google.com.
       summary="IOS Lens overlay Escape Hatch"/>
   <variant name="IPH_iOSLensPromoDesktop"
       summary="showing the iOS lens promo on desktop"/>
+  <variant name="IPH_iOSNewIAPromoFeature"
+      summary="showing the IPH when the user is starting the app with the new
+               IA for the first time"/>
   <variant name="IPH_iOSOneTimeDefaultBrowserNotification"
       summary="scheduling the One Time Default Browser notification on iOS"/>
   <variant name="IPH_iOSOverflowMenuCustomization"

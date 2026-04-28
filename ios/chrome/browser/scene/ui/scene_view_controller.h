@@ -9,17 +9,21 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/scene/ui/scene_consumer.h"
 
 @class AssistantContainerViewController;
 @protocol BWGCommands;
 @protocol SceneViewControllerDelegate;
 @class LayoutGuideCenter;
 @class LayoutState;
+@protocol SceneMutator;
+@protocol AppBarCommands;
 
 // A view controller that can act as the `rootViewController` for a scene's
 // window.
-@interface SceneViewController
-    : UIViewController <AssistantContainerPresenter, FullscreenUIElement>
+@interface SceneViewController : UIViewController <AssistantContainerPresenter,
+                                                   FullscreenUIElement,
+                                                   SceneConsumer>
 
 // The layout state to observe.
 @property(nonatomic, weak) LayoutState* layoutState;
@@ -30,6 +34,11 @@
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // Delegate for this view controller.
 @property(nonatomic, weak) id<SceneViewControllerDelegate> delegate;
+// Mutator for this view controller.
+@property(nonatomic, weak) id<SceneMutator> mutator;
+
+// Handler for App Bar commands.
+@property(nonatomic, weak) id<AppBarCommands> appBarHandler;
 
 // Sets the app bar.
 - (void)setAppBar:(UIViewController*)appBar;

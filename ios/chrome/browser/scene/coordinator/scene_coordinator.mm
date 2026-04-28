@@ -31,6 +31,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
@@ -80,6 +81,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -281,6 +283,13 @@ void OnListFamilyMembersResponse(
                                                 _regularBrowser.get())
               incognitoFullscreenController:FullscreenController::FromBrowser(
                                                 _incognitoBrowser.get())];
+    _sceneMediator.tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
+    if (IsChromeNextIaEnabled()) {
+      _sceneMediator.appBarPositionAtLaunch =
+          AppBarPositionForView(_viewController.view);
+    }
+    _viewController.mutator = _sceneMediator;
     _sceneMediator.consumer = _viewController;
   }
 
@@ -290,6 +299,8 @@ void OnListFamilyMembersResponse(
               incognitoBrowser:_incognitoBrowser.get()];
     [_appBarCoordinator start];
     [_viewController setAppBar:_appBarCoordinator.viewController];
+    _viewController.appBarHandler = HandlerForProtocol(
+        _regularBrowser->GetCommandDispatcher(), AppBarCommands);
   }
 
   if (IsAssistantContainerEnabled()) {

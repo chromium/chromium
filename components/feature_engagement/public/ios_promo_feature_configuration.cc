@@ -510,6 +510,18 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     // rules.
     config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     return config;
+  } else if (kIPHiOSNewIAPromoFeature.name == feature->name) {
+    // Promo should show only once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.used =
+        EventConfig("new_ia_promo_used", Comparator(ANY, 0), 365, 365);
+    config.trigger = EventConfig("new_ia_promo_trigger", Comparator(EQUAL, 0),
+                                 feature_engagement::kMaxStoragePeriod,
+                                 feature_engagement::kMaxStoragePeriod);
+    return config;
   } else if (kIPHiOSDefaultBrowserOffCyclePromoFeature.name == feature->name) {
     // A config for a feature to handle the off-cycle generic default browser
     // promo.

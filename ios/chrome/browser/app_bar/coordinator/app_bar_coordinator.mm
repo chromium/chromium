@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
@@ -34,7 +35,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @interface AppBarCoordinator () <AccountMenuCoordinatorDelegate,
-                                 GuidedTourCommands>
+                                 GuidedTourCommands,
+                                 AppBarCommands>
 @end
 
 @implementation AppBarCoordinator {
@@ -73,6 +75,11 @@
       HandlerForProtocol(regularDispatcher, LensCommands);
   id<BWGCommands> geminiHandler =
       HandlerForProtocol(regularDispatcher, BWGCommands);
+
+  [regularDispatcher startDispatchingToTarget:self
+                                  forProtocol:@protocol(AppBarCommands)];
+  [incognitoDispatcher startDispatchingToTarget:self
+                                    forProtocol:@protocol(AppBarCommands)];
 
   _viewController = [[AppBarViewController alloc] init];
   _viewController.sceneHandler = sceneHandler;
@@ -159,6 +166,10 @@
   _mediator = nil;
   [_containerMediator disconnect];
   _containerMediator = nil;
+  [_regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  if (_incognitoBrowser) {
+    [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  }
   _viewController = nil;
   _regularBrowser = nullptr;
   _incognitoBrowser = nullptr;
@@ -205,6 +216,11 @@
           ? HandlerForProtocol(incognitoDispatcher, TabGroupsCommands)
           : nil;
 
+  if (incognitoDispatcher) {
+    [incognitoDispatcher startDispatchingToTarget:self
+                                      forProtocol:@protocol(AppBarCommands)];
+  }
+
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent* incognitoAgent =
         incognitoBrowser ? FullscreenBrowserAgent::FromBrowser(incognitoBrowser)
@@ -243,6 +259,16 @@
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator.delegate = nil;
   _accountMenuCoordinator = nil;
+}
+
+#pragma mark - AppBarCommands
+
+- (void)showIPHBackground {
+  [_viewController showIPHBackground];
+}
+
+- (void)hideIPHBackground {
+  [_viewController hideIPHBackground];
 }
 
 @end
