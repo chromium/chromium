@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Пам’ять заповнена</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1190609913194133056">Центр сповіщень</translation>
+<translation id="1199631150313925648">Ввести вручну</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{{count} закладку збережено в папці "{title}" у вашому обліковому записі ({email}).}few{{count} закладки збережено в папці "{title}" у вашому обліковому записі ({email}).}many{{count} закладок збережено в папці "{title}" у вашому обліковому записі ({email}).}other{{count} закладки збережено в папці "{title}" у вашому обліковому записі ({email}).}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Примітка про конфіденційність</translation>
 <translation id="4420409367264901497">Редагувати закладку</translation>
 <translation id="4425365312778464779">Обліковим записом керує адміністратор</translation>
+<translation id="443008484043213881">Інструменти</translation>
 <translation id="4430277756566635951">Зараз вибрано: <ph name="EMAIL" />. Виберіть обліковий запис.</translation>
 <translation id="4430505936695785931">Користуйтеся збереженими паролями в інших додатках</translation>
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">Запитати в режимі ШІ</translation>
 <translation id="5585019845078534178">Картки</translation>
 <translation id="5591526871732898147">Вкладене зображення {index}</translation>
+<translation id="5594597292424622277">Призупинити відео</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="559567008082979829">Налаштуйте автоматичне видалення завантажених файлів через місяць.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">Відкривайте посилання з інших додатків в анонімному режимі</translation>
 <translation id="8529767659511976195">Нове</translation>
 <translation id="8531572740963685410">Файли PDF</translation>
+<translation id="8532059953132740592">Відтворити відео</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>
 <translation id="8534481786647257214">Опубліковано в Google+</translation>

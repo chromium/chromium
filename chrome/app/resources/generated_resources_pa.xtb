@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ।</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ਨੂੰ ਪਹਿਲਾਂ ਹੀ '<ph name="ACTION" />' ਕਾਰਵਾਈ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। <ph name="RESPONSE" /> ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="157005186601751931">ਐਪ ਵਿੱਚ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="1570604804919108255">ਸੂਚਨਾਵਾਂ ਨੂੰ ਅਣਮਿਊਟ ਕਰੋ</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਬਣਾਇਆ ਗਿਆ।</translation>
 <translation id="1571041387761170095">ਕੋਈ ਵੀ ਕਮਜ਼ੋਰ ਜਾਂ ਮੁੜ-ਵਰਤਿਆ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
@@ -2328,7 +2329,6 @@
 <translation id="2565214867520763227">ਸਕ੍ਰੀਨ ਰੀਡਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> ਅਤੇ <ph name="NUM_OTHER_MEMBERS" /> ਹੋਰ ਵਿਅਕਤੀਆਂ ਨਾਲ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="256726287944589768">'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ 'ਤੇ ਪਦਲੇਖ ਦਿਖਾਓ</translation>
-<translation id="2567313753132089780">ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 12 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਵੱਡੇ ਅਤੇ ਛੋਟੇ ਅੱਖਰ, ਸੰਖਿਆਵਾਂ ਅਤੇ ਚਿੰਨ੍ਹ ਸ਼ਾਮਲ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ</translation>
 <translation id="2568774940984945469">ਇੰਫੋਬਾਰ ਕੰਟੇਨਰ</translation>
 <translation id="2569972178052279830">ਵਿਕਰੇਤਾ ਦਾ ਨਾਮ</translation>
 <translation id="257088987046510401">ਵਿਸ਼ੇ</translation>
@@ -3179,7 +3179,6 @@
 <translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="3158033540161634471">ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="3158203338449343164">ਟੈਬ ਖੋਜ ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
-<translation id="3158732900546890991">ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 8 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤਿਆਂ ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਦੋ ਚੀਜ਼ਾਂ ਹੋਣੀਆਂ ਚਾਹੀਦੀਆਂ ਹਨ: ਵੱਡੇ ਅੱਖਰ, ਛੋਟੇ ਅੱਖਰ, ਸੰਖਿਆਵਾਂ ਜਾਂ ਚਿੰਨ੍ਹ</translation>
 <translation id="3158770568048368350">ਇਸ ਨਾਲ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਡਿਸਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="3159335509547415276">ਬਲਾਕ ਕੀਤੇ ਖਾਤਿਆਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="3159493096109238499">ਬੇਜ</translation>
@@ -6122,6 +6121,7 @@
 <translation id="5204967432542742771">ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ</translation>
 <translation id="5205484256512407285">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ ਕਦੇ ਵੀ ਮੋਬਾਈਲ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਨਾ ਕਰੋ</translation>
 <translation id="520568280985468584">ਨੈੱਟਵਰਕ ਨੂੰ ਸਫਲਤਾਪੂਰਬਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਲਈ ਕਈ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="5207395053540207113">ਕੀ Search ਨੂੰ Drive ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ਸੇਵਾ ਇਹ ਜਾਂਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ ਕਿ ਕੀ ਤੁਸੀਂ ਯੋਗ ChromeOS ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="5208926629108082192">ਡੀਵਾਈਸ ਦੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ</translation>
@@ -9031,6 +9031,7 @@
 <translation id="727595954130325265">ਹੁਣੇ ਖਰੀਦੋ</translation>
 <translation id="7277275452721470458">AI ਮੋਡ ਸੰਬੰਧੀ ਸਰਗਰਮੀ</translation>
 <translation id="727952162645687754">ਡਾਊਨਲੋਡ ਗੜਬੜ</translation>
+<translation id="7280265656690268844">JavaScript ਸੁਯੋਗਕਰਨ ਬੰਦ ਹੈ</translation>
 <translation id="7280649757394340890">ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਲਈ ਅਵਾਜ਼ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7280683802406059877">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7280877790564589615">ਅਨੁਮਤੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ</translation>

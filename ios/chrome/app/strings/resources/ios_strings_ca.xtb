@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">El teu emmagatzematge és ple</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
+<translation id="1199631150313925648">Introdueix manualment</translation>
 <translation id="1199963004393929848">Tema verd</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1204075260022434100">{count,plural, =1{L'adreça d'interès s'ha desat a {title} al teu compte, {email}}other{{count} adreces d'interès s'han desat a {title} al teu compte, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Avís de privadesa</translation>
 <translation id="4420409367264901497">Edita l'adreça d'interès</translation>
 <translation id="4425365312778464779">Aquest és un compte gestionat</translation>
+<translation id="443008484043213881">Eines</translation>
 <translation id="4430277756566635951">Selecció actual: <ph name="EMAIL" />. Tria un compte.</translation>
 <translation id="4430505936695785931">Obtén les contrasenyes desades en altres aplicacions</translation>
 <translation id="4431224949908513835">Selecciona una forma de pagament per emplenar.</translation>
@@ -1294,6 +1296,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5581786858144165447">Pregunta al mode IA</translation>
 <translation id="5585019845078534178">Targetes</translation>
 <translation id="5591526871732898147">Imatge adjunta {index}</translation>
+<translation id="5594597292424622277">Posa el vídeo en pausa</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="559567008082979829">Configura les baixades perquè se suprimeixin al cap d'un mes.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -2163,6 +2166,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8528009254289981965">Obre els enllaços d'altres aplicacions en mode d'incògnit</translation>
 <translation id="8529767659511976195">Novetat</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">Reprodueix el vídeo</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">La funció Navegació segura està activada</translation>
 <translation id="8534481786647257214">S'ha completat la publicació a Google+.</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">तपाईंको भण्डारण भरिएको छ</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
+<translation id="1199631150313925648">म्यानुअल रूपमा हाल्नुहोस्</translation>
 <translation id="1199963004393929848">हरियो थिम</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1204075260022434100">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिएको छ}other{तपाईंको खाता ({email}) मा भएको "{title}" मा {count} वटा बुकमार्क सेभ गरिएका छन्}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">गोपनीयता सूचना</translation>
 <translation id="4420409367264901497">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="4425365312778464779">यो खाता व्यवस्थापन गरिन्छ</translation>
+<translation id="443008484043213881">उपकरणहरू</translation>
 <translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4430505936695785931">अन्य एपहरूमा सेभ गरिएका पासवर्डहरू प्राप्त गर्नुहोस्</translation>
 <translation id="4431224949908513835">आफूले हाल्न चाहेको भुक्तानी विधि चयन गर्नुहोस्।</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">AI मोडलाई सोध्नुहोस्</translation>
 <translation id="5585019845078534178">कार्डहरू</translation>
 <translation id="5591526871732898147">एट्याच गरिएको फोटो {index}</translation>
+<translation id="5594597292424622277">भिडियो पज गर्नुहोस्</translation>
 <translation id="5595485650161345191">ठेगाना बदल्नुहोस्</translation>
 <translation id="559567008082979829">डाउनलोड गरिएका सामग्री एक महिनापछि मेटाउने सेटिङ तय गर्नुहोस्।</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">अन्य एपका लिंकहरू इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="8529767659511976195">नयाँ</translation>
 <translation id="8531572740963685410">PDF हरू</translation>
+<translation id="8532059953132740592">भिडियो प्ले गर्नुहोस्</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534481786647257214">Google+ पोस्ट पूरा भयो।</translation>

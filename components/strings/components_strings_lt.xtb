@@ -2157,6 +2157,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4318312030194671742">Piešinio peržiūros rengyklės paslauga</translation>
 <translation id="4318566738941496689">Įrenginio pavadinimas ir tinklo adresas</translation>
 <translation id="4320119221194966055">Asmeninės paskolos</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Nuoroda gauta iš „<ph name="DEVICE_NAME" />“}one{# nuoroda gauta iš „<ph name="DEVICE_NAME" />“}few{# nuorodos gautos iš „<ph name="DEVICE_NAME" />“}many{# nuorodos gauta iš „<ph name="DEVICE_NAME" />“}other{# nuorodų gauta iš „<ph name="DEVICE_NAME" />“}}</translation>
 <translation id="4325600325087822253">Septynioliktas dėklas</translation>
 <translation id="4325863107915753736">Nepavyko rasti straipsnio</translation>
 <translation id="4326324639298822553">Patikrinkite galiojimo pabaigos datą ir bandykite dar kartą</translation>
@@ -4985,6 +4986,7 @@ Papildoma išsami informacija:
 <translation id="8758529215314160755">Galite redaguoti vardą <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Ši kortelė nebegalioja</translation>
 <translation id="87601671197631245">Šioje svetainėje naudojama pasenusi saugos konfigūracija, todėl gali būti atskleista į šią svetainę siunčiama informacija (pvz., slaptažodžiai, pranešimai ar kredito kortelių duomenys).</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Nuoroda išsiųsta iš „<ph name="DEVICE_NAME" />“}one{# nuoroda išsiųsta iš „<ph name="DEVICE_NAME" />“}few{# nuorodos išsiųstos iš „<ph name="DEVICE_NAME" />“}many{# nuorodos išsiųsta iš „<ph name="DEVICE_NAME" />“}other{# nuorodų išsiųsta iš „<ph name="DEVICE_NAME" />“}}</translation>
 <translation id="8763927697961133303">USB įrenginys</translation>
 <translation id="8763986294015493060">Uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="8766943070169463815">Saugaus mokėjimo prisijungimo duomenų autentifikavimo lapas atidarytas</translation>

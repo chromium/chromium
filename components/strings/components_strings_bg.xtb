@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Грешен идентификатор на обект</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматично установено)</translation>
 <translation id="1232569758102978740">Неозаглавен</translation>
+<translation id="1234539281285007945">Полето „<ph name="FIELD_1" />“ е задължително</translation>
 <translation id="1236081509407217141">Да се разреши ли VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Името на устройството ви</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Полето е задължително</translation>
 <translation id="1723636263173393300">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> преки пътя.</translation>
 <translation id="1725591448053514783">Плик You 6</translation>
+<translation id="172754119609519423">Изисква се <ph name="FIELD_1" />, <ph name="FIELD_2" /> или <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">Сертификатът е валиден</translation>
 <translation id="1728677426644403582">Преглеждате изходния код на уеб страница</translation>
 <translation id="173080396488393970">Този тип карта не се поддържа</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">Официално облекло</translation>
 <translation id="3223287115535306850">Индикатор за стартиращо се приложение</translation>
 <translation id="3223425961342298674">Достъпът до местоположението не е разрешен</translation>
+<translation id="3225277284238802910">Изисква се <ph name="FIELD_1" /> или <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Подписване на код</translation>
 <translation id="3225919329040284222">Сървърът предостави сертификат, който не съответства на вградените очаквания. Те са включени за определени уебсайтове с голяма степен на сигурност, за да ви предпазим.</translation>
 <translation id="3226128629678568754">Натиснете бутона за презареждане, за да изпратите отново данните, необходими за отварянето на страницата.</translation>

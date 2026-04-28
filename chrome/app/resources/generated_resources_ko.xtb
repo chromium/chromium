@@ -834,6 +834,7 @@
 <translation id="1567579616025300478">이 사이트에서는 기기에 데이터를 저장할 수 없습니다.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
+<translation id="157005186601751931">앱에서 탭 열기</translation>
 <translation id="1570604804919108255">알림 숨기기 취소</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' 북마크 폴더가 생성되었습니다.</translation>
 <translation id="1571041387761170095">취약하거나 재사용된 비밀번호 없음</translation>
@@ -2329,7 +2330,6 @@
 <translation id="2565214867520763227">스크린 리더 사용 설정</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
 <translation id="256726287944589768">새 탭 페이지에 바닥글 표시</translation>
-<translation id="2567313753132089780">비밀번호는 12자 이상(영문 기준)이어야 하며 대문자, 소문자, 숫자, 기호를 포함해야 합니다.</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="2569972178052279830">소매업체 이름</translation>
 <translation id="257088987046510401">테마</translation>
@@ -3179,7 +3179,6 @@
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158033540161634471">지문 설정</translation>
 <translation id="3158203338449343164">탭 검색 고정 해제</translation>
-<translation id="3158732900546890991">비밀번호는 8자 이상(영문 기준)이어야 하며 대문자, 소문자, 숫자 또는 기호 중 2가지 이상을 포함해야 합니다.</translation>
 <translation id="3158770568048368350">이로 인해 모바일 네트워크의 연결이 잠깐 끊어질 수 있습니다.</translation>
 <translation id="3159335509547415276">차단된 계정에 관해 자세히 알아보기</translation>
 <translation id="3159493096109238499">베이지</translation>
@@ -6121,6 +6120,7 @@
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
+<translation id="5207395053540207113">Google 검색이 Drive 콘텐츠에 액세스하도록 허용하시겠습니까?</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208926629108082192">기기 모바일 네트워크 정보</translation>
@@ -9029,6 +9029,7 @@
 <translation id="727595954130325265">지금 구매</translation>
 <translation id="7277275452721470458">AI 모드 활동</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
+<translation id="7280265656690268844">JavaScript 최적화 사용 중지됨</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>
 <translation id="7280683802406059877">키보드 단축키 맞춤설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>

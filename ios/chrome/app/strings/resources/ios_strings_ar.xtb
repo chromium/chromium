@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">مساحة التخزين ممتلئة</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
+<translation id="1199631150313925648">إدخال البيانات يدويًا</translation>
 <translation id="1199963004393929848">مظهر باللون الأخضر</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">إشعار الخصوصية</translation>
 <translation id="4420409367264901497">تعديل الإشارة المرجعية</translation>
 <translation id="4425365312778464779">هذا الحساب مُدار</translation>
+<translation id="443008484043213881">الأدوات</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
 <translation id="4430505936695785931">أصبح بإمكانك الآن ملء كلمات المرور المحفوظة في تطبيقات أخرى</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>

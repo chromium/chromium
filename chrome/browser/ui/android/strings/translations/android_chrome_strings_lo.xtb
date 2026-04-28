@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">ທ່ານຈະເຫັນແຖບຫຼ້າສຸດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="3444179773590444986">ແບ່ງປັນຄຳຕິຊົມກ່ຽວກັບຮູບແບບສີສັນມືດສຳລັບເວັບໄຊບໍ?</translation>
-<translation id="3448874648066942074">ສະຫຼຸບໜ້າດ້ວຍ AI</translation>
 <translation id="3452832259067974318">ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, Chrome ຈະບໍ່ຕື່ມຂໍ້ມູນລະຫັດຜ່ານຂອງທ່ານໃສ່ຊ່ອງຂໍ້ມູນນີ້ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="3474624961160222204">ສືບຕໍ່ໃຊ້ໃນຊື່ <ph name="NAME" /></translation>
 <translation id="3478363558367712427">ທ່ານສາມາດເລືອກລະບົບການຊອກຫາຂອງທ່ານໄດ້</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">ທີ່ນຳໃຊ້ຢູ່ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">ຮູບ ແລະໄຟລ໌ທີ່ແຄຊ໌ແລ້ວ</translation>
 <translation id="4710167854527459075">ຈັດຮຽງຈາກໃໝ່ສຸດ</translation>
-<translation id="4718044610319080485">ເອີ້ນໃຊ້ຜູ້ຊ່ວຍ AI</translation>
 <translation id="4719927025381752090">ໃຫ້ການແປພາສາ</translation>
 <translation id="4720556299488643018">ຍົກເລີກການສະໝັກຮັບຂໍ້ມູນ</translation>
 <translation id="4732120983431207637">ຕົວມາຍສະແຕັກ</translation>
@@ -1661,7 +1659,6 @@
 <translation id="7914399737746719723">ຕິດຕັ້ງແອັບແລ້ວ</translation>
 <translation id="7917574899775263813">ຂ້າມໄປຫາແຖບສຸດທ້າຍ</translation>
 <translation id="7919123827536834358">ແປພາສາເຫຼົ່ານີ້ໂດຍອັດຕະໂນມັດ</translation>
-<translation id="7921782882718083488">ສະຫຼຸບໜ້ານີ້</translation>
 <translation id="7926975587469166629">ຊື່ຫຼິ້ນບັດ</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome ຈະລຶບການອະນຸຍາດອອກຈາກເວັບໄຊທີ່ມີການແຈ້ງເຕືອນທີ່ເຮັດໃຫ້ເຂົ້າໃຈຜິດ ຫຼື ທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້ໂດຍອັດຕະໂນມັດ</translation>
@@ -1825,7 +1822,6 @@
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, ແຖບການສະແດງຜົນຊ້ອນກັນທີ່ປັກໝຸດ ແລະ ເລືອກໄວ້ຫຼາຍແຖບ</translation>
 <translation id="8540136935098276800">ປ້ອນ URL ທີ່ມີຮູບແບບຖືກຕ້ອງ</translation>
 <translation id="854522910157234410">ເປີດໜ້ານີ້</translation>
-<translation id="8547466829003330976">ກວດສອບ PDF ດ້ວຍ AI</translation>
 <translation id="8551513938758868521">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານອອກຈາກ Chrome</translation>
 <translation id="8559961053328923750">Chrome ຈໍາກັດຈໍານວນຂໍ້ມູນທັງໝົດທີ່ເວັບໄຊສາມາດແບ່ງປັນຜ່ານໂປຣແກຣມທ່ອງເວັບເພື່ອວັດແທກປະສິດທິພາບການໂຄສະນາ</translation>
 <translation id="8559990750235505898">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>

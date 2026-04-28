@@ -2154,6 +2154,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4318312030194671742">Kompositionsdienst für Zeichnungsvorschau</translation>
 <translation id="4318566738941496689">Gerätename und Netzwerkadresse</translation>
 <translation id="4320119221194966055">Privatkredite</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link von <ph name="DEVICE_NAME" /> erhalten}other{# Links von <ph name="DEVICE_NAME" /> erhalten}}</translation>
 <translation id="4325600325087822253">Fach 17</translation>
 <translation id="4325863107915753736">Der Artikel wurde nicht gefunden.</translation>
 <translation id="4326324639298822553">Prüfe das Ablaufdatum und versuche es dann erneut</translation>
@@ -4982,6 +4983,7 @@ Weitere Details:
 <translation id="8758529215314160755">Du kannst deinen Namen in deinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> „<ph name="ACCOUNT" />“ bearbeiten</translation>
 <translation id="8759274551635299824">Diese Karte ist abgelaufen</translation>
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link von <ph name="DEVICE_NAME" /> gesendet}other{# Links von <ph name="DEVICE_NAME" /> gesendet}}</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8763986294015493060">Alle geöffneten Inkognitofenster schließen</translation>
 <translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>

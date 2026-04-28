@@ -830,6 +830,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1567579616025300478">Ky sajt nuk lejohet të ruajë të dhëna në pajisjen tënde.</translation>
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp një tast çfarëdo për të <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Paneli i JavaScript</translation>
+<translation id="157005186601751931">Hap skedën në aplikacion</translation>
 <translation id="1570604804919108255">Aktivizo njoftimet</translation>
 <translation id="1570990174567554976">Dosja e faqeshënuesve "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
 <translation id="1571041387761170095">Nuk ka fjalëkalime të dobëta ose të ripërdorura</translation>
@@ -2311,7 +2312,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
 <translation id="2566146433999774844">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /> dhe <ph name="NUM_OTHER_MEMBERS" /> të tjerë</translation>
 <translation id="256726287944589768">Shfaq fundin e faqes në faqen e skedës së re</translation>
-<translation id="2567313753132089780">Fjalëkalimi duhet të ketë të paktën 12 karaktere dhe të përfshijë shkronja të mëdha dhe të vogla, numra dhe simbole</translation>
 <translation id="2568774940984945469">Mbajtësi i shiritit të informacionit</translation>
 <translation id="2569972178052279830">Emri i shitësit me pakicë</translation>
 <translation id="257088987046510401">Temat</translation>
@@ -3161,7 +3161,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158033540161634471">Konfiguro gjurmën e gishtit</translation>
 <translation id="3158203338449343164">Zhgozhdo "Kërkimin e skedës"</translation>
-<translation id="3158732900546890991">Fjalëkalimi duhet të ketë të paktën 8 karaktere dhe të përfshijë të paktën dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole</translation>
 <translation id="3158770568048368350">Kjo mund të shkaktojë shkëputjen e shkurtër të rrjetit tënd celular</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
 <translation id="3159493096109238499">Bezhë</translation>
@@ -6104,6 +6103,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5204967432542742771">Fut fjalëkalimin</translation>
 <translation id="5205484256512407285">Mos përdor asnjëherë të dhënat celulare për të transferuar</translation>
 <translation id="520568280985468584">Rrjeti është shtuar me sukses. Mund të duhen disa minuta që rrjeti yt celular të bëhet aktiv.</translation>
+<translation id="5207395053540207113">Të lejohet që "Kërko" të ketë qasje te përmbajtjet e "Diskut"?</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> dëshiron të kontrollojë nëse po përdor një pajisje të përshtatshme me ChromeOS.</translation>
 <translation id="5208926629108082192">Informacionet e rrjetit celular të pajisjes</translation>
@@ -9010,6 +9010,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="727595954130325265">Bli tani</translation>
 <translation id="7277275452721470458">Aktiviteti i "Modalitetit të IA-së"</translation>
 <translation id="727952162645687754">Gabim në shkarkim</translation>
+<translation id="7280265656690268844">Optimizimi i JavaScript është joaktiv</translation>
 <translation id="7280649757394340890">Cilësimet e zërit për tekstin në ligjërim</translation>
 <translation id="7280683802406059877">Personalizo shkurtoren e tastierës</translation>
 <translation id="7280877790564589615">Kërkohet leje</translation>

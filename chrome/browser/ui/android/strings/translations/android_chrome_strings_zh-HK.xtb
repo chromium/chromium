@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題提供意見嗎？</translation>
-<translation id="3448874648066942074">使用 AI 撮要頁面內容</translation>
 <translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">已啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4710167854527459075">按最新日期排序</translation>
-<translation id="4718044610319080485">啟動 AI 助理</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720556299488643018">取消訂閱</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1661,7 +1659,6 @@
 <translation id="7914399737746719723">已安裝應用程式</translation>
 <translation id="7917574899775263813">跳至最後一個分頁</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
-<translation id="7921782882718083488">撮要頁面內容</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">如果網站濫用通知或你最近未瀏覽，Chrome 都會自動移除權限</translation>
@@ -1825,7 +1822,6 @@
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />，複選咗已固定嘅畫中畫分頁</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟此頁</translation>
-<translation id="8547466829003330976">使用 AI 檢查 PDF</translation>
 <translation id="8551513938758868521">離開 Chrome 時鎖定無痕式分頁</translation>
 <translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的總資料量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>

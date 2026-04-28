@@ -2156,6 +2156,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4318312030194671742">Shërbimi i krijuesit të Versionit paraprak të Paint</translation>
 <translation id="4318566738941496689">Emri i pajisjes dhe adresa e rrjetit</translation>
 <translation id="4320119221194966055">Kreditë personale</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Lidhja u mor nga <ph name="DEVICE_NAME" />}other{# lidhje u morën nga <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Tabakaja 17</translation>
 <translation id="4325863107915753736">Dështoi në gjetjen e artikullit</translation>
 <translation id="4326324639298822553">Kontrollo datën e skadimit dhe provo përsëri</translation>
@@ -4981,6 +4982,7 @@ Detaje shtesë:
 <translation id="8758529215314160755">Mund ta modifikosh emrin tënd në <ph name="BEGIN_LINK" />Llogarinë tënde të Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Kjo kartë ka skaduar</translation>
 <translation id="87601671197631245">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimet, mesazhet ose kartat e kreditit) kur dërgohen te ky sajt.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Lidhja u dërgua nga <ph name="DEVICE_NAME" />}other{# lidhje u dërguan nga <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Pajisja USB</translation>
 <translation id="8763986294015493060">Mbylli të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
 <translation id="8766943070169463815">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e hapur</translation>

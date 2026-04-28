@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Ο αποθηκευτικός χώρος είναι πλήρης</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
+<translation id="1199631150313925648">Μη αυτόματη εισαγωγή</translation>
 <translation id="1199963004393929848">Πράσινο θέμα</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1204075260022434100">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title} στον λογαριασμό {email}}other{{count} σελιδοδείκτες αποθηκεύτηκαν στον φάκελο {title} στον λογαριασμό {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Σημείωση απορρήτου</translation>
 <translation id="4420409367264901497">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="4425365312778464779">Αυτός ο λογαριασμός είναι διαχειριζόμενος</translation>
+<translation id="443008484043213881">Εργαλεία</translation>
 <translation id="4430277756566635951">Τρέχουσα επιλογή: <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="4430505936695785931">Λάβετε τους αποθηκευμένους κωδικούς πρόσβασης σε άλλες εφαρμογές</translation>
 <translation id="4431224949908513835">Επιλέξτε έναν τρόπο πληρωμής για συμπλήρωση.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">Ερώτηση στη Λειτουργία AI</translation>
 <translation id="5585019845078534178">Κάρτες</translation>
 <translation id="5591526871732898147">Συνημμένη εικόνα {index}</translation>
+<translation id="5594597292424622277">Παύση του βίντεο</translation>
 <translation id="5595485650161345191">Επεξεργασία διεύθυνσης</translation>
 <translation id="559567008082979829">Ορίστε τη λειτουργία διαγραφής των λήψεων σας μετά από έναν μήνα.</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
@@ -2164,6 +2167,7 @@
 <translation id="8528009254289981965">Άνοιγμα συνδέσμων από άλλες εφαρμογές σε κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="8529767659511976195">Νέο</translation>
 <translation id="8531572740963685410">Αρχεία PDF</translation>
+<translation id="8532059953132740592">Αναπαραγωγή του βίντεο</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Η Ασφαλής περιήγηση είναι ενεργή.</translation>
 <translation id="8534481786647257214">Η ανάρτηση Google+ ολοκληρώθηκε.</translation>

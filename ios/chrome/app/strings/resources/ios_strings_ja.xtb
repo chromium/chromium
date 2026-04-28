@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">空き容量がありません</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1190609913194133056">通知センター</translation>
+<translation id="1199631150313925648">手動で入力</translation>
 <translation id="1199963004393929848">グリーンのテーマ</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1204075260022434100">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{{count} 件のブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">プライバシーに関するお知らせ</translation>
 <translation id="4420409367264901497">ブックマークを編集</translation>
 <translation id="4425365312778464779">このアカウントは管理対象です</translation>
+<translation id="443008484043213881">ツール</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> が現在選択されています。アカウントを選択してください。</translation>
 <translation id="4430505936695785931">保存したパスワードを他のアプリで使用</translation>
 <translation id="4431224949908513835">入力するお支払い方法を選択してください。</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">AI モードに質問</translation>
 <translation id="5585019845078534178">カード</translation>
 <translation id="5591526871732898147">添付された画像 {index}</translation>
+<translation id="5594597292424622277">動画を一時停止</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="559567008082979829">ダウンロードを 1 か月後に削除するよう設定します。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">他のアプリからのリンクをシークレット モードで開く</translation>
 <translation id="8529767659511976195">新規</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">動画を再生</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>
 <translation id="8534481786647257214">Google+への投稿が完了しました。</translation>

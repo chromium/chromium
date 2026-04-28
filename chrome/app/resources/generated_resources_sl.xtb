@@ -2330,7 +2330,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2565214867520763227">Vklop bralnika zaslona</translation>
 <translation id="2566146433999774844">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /> in še <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Prikaži nogo na strani »Nov zavihek«</translation>
-<translation id="2567313753132089780">Geslo mora imeti najmanj 12 znakov ter vsebovati velike in male črke, številke in simbole</translation>
 <translation id="2568774940984945469">Vsebnik informacijske vrstice</translation>
 <translation id="2569972178052279830">Ime prodajalca</translation>
 <translation id="257088987046510401">Teme</translation>
@@ -3180,7 +3179,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158033540161634471">Nastavite prstni odtis</translation>
 <translation id="3158203338449343164">Odpni iskanje zavihkov</translation>
-<translation id="3158732900546890991">Geslo mora imeti najmanj 8 znakov in vsebovati vsaj dve od naslednjih vrst znakov: velike črke, male črke, številke ali simbole</translation>
 <translation id="3158770568048368350">Zaradi tega bo mobilno omrežje za kratek čas prekinilo povezavo.</translation>
 <translation id="3159335509547415276">Preberite več o blokiranih računih</translation>
 <translation id="3159493096109238499">Bež</translation>
@@ -5667,6 +5665,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4881685975363383806">Ne opomni me naslednjič</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4882312758060467256">Ima dostop do tega spletnega mesta</translation>
+<translation id="4882805770036405108">Hitreje odprite bralni način z bližnjico. Pritisnite ⌥ + ⌘ + R, če želite preklopiti bralni način.</translation>
 <translation id="4882848900607400156">Ko delite natančno lokacijo, lahko Gemini natančneje odgovori na vaša vprašanja. Vaši podatki se ne uporabljajo za izboljšanje modelov generativne umetne inteligence.</translation>
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883436287898674711">Vsa spletna mesta <ph name="WEBSITE_1" /></translation>
@@ -8915,6 +8914,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7186903260115204164">Z novim orodjem za risanje dodajte prostoročne risbe, podpise in oznake</translation>
 <translation id="7186935534137027449">Ukaz za aplikacijo</translation>
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
+<translation id="7188755083797868960">Hitreje odprite bralni način z bližnjico. Pritisnite Alt + Shift + R, če želite preklopiti bralni način.</translation>
 <translation id="7189234443051076392">Poskrbite, da je v napravi dovolj prostora</translation>
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="7189558282078169397">Zavihki iz drugih naprav</translation>

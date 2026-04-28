@@ -2329,7 +2329,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2565214867520763227">I-on ang screen reader</translation>
 <translation id="2566146433999774844">Sumali sa grupo ng tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUM_OTHER_MEMBERS" /> pang iba</translation>
 <translation id="256726287944589768">Ipakita ang footer sa page na Bagong Tab</translation>
-<translation id="2567313753132089780">Hindi dapat bababa sa 12 character ang password at mayroon dapat itong mga malaki at maliit na titik, numero, at simbolo</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Pangalan ng Retailer</translation>
 <translation id="257088987046510401">Mga tema</translation>
@@ -3179,7 +3178,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3157931365184549694">Ipanumbalik</translation>
 <translation id="3158033540161634471">I-set up ang iyong fingerprint</translation>
 <translation id="3158203338449343164">I-unpin ang Paghahanap sa Tab</translation>
-<translation id="3158732900546890991">Hindi dapat bababa sa 8 character ang password at mayroon dapat itong kahit dalawa sa mga sumusunod: mga malaking titik, maliit na titik, numero, o simbolo</translation>
 <translation id="3158770568048368350">Posibleng maging dahilan ito panandaliang pagdiskonekta ng iyong mobile network</translation>
 <translation id="3159335509547415276">Matuto tungkol sa mga naka-block na account</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -5666,6 +5664,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4881685975363383806">Huwag nang ipaalala sa akin sa susunod</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4882312758060467256">May access sa site na ito</translation>
+<translation id="4882805770036405108">Mas mabilis na buksan ang reading mode gamit ang isang shortcut. Pindutin ang ⌥ + ⌘ + R para i-toggle ang reading mode.</translation>
 <translation id="4882848900607400156">Kapag na-share mo ang iyong eksaktong lokasyon, mas tumpak na masasagot ng Gemini ang mga tanong mo. Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="4882919381756638075">Karaniwang ginagamit ng mga site ang iyong mikropono para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="4883436287898674711">Lahat ng site ng <ph name="WEBSITE_1" /></translation>
@@ -8909,6 +8908,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7186903260115204164">Magdagdag ng mga freehand na drawing, signature, at highlight gamit ang bagong Draw tool</translation>
 <translation id="7186935534137027449">App Command</translation>
 <translation id="7188508872042490670">On-device na data ng site</translation>
+<translation id="7188755083797868960">Mas mabilis na buksan ang reading mode gamit ang isang shortcut. Pindutin ang Alt + Shift + R para i-toggle ang reading mode.</translation>
 <translation id="7189234443051076392">Tiyaking may sapat na espasyo sa iyong device</translation>
 <translation id="7189451821249468368">Wala kang sapat na mga upgrade para i-enroll ang device na ito. Makipag-ugnayan sa sales para bumili ng higit pa. Kung naniniwala kang nakikita mo ang mensaheng ito dahil sa error, makipag-ugnayan sa suporta.</translation>
 <translation id="7189558282078169397">Mga tab mula sa ibang device</translation>

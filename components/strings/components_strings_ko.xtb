@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">페인트 미리보기 합성 서비스</translation>
 <translation id="4318566738941496689">기기 이름 및 네트워크 주소</translation>
 <translation id="4320119221194966055">개인 대출</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 링크 수신됨}other{<ph name="DEVICE_NAME" />에서 링크 #개 수신됨}}</translation>
 <translation id="4325600325087822253">트레이 17</translation>
 <translation id="4325863107915753736">도움말을 찾지 못했습니다.</translation>
 <translation id="4326324639298822553">만료일을 확인한 후 다시 시도해 주세요.</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" /> <ph name="ACCOUNT" />에서 이름을 수정할 수 있습니다</translation>
 <translation id="8759274551635299824">만료된 카드입니다.</translation>
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 링크 전송됨}other{<ph name="DEVICE_NAME" />에서 링크 #개 전송됨}}</translation>
 <translation id="8763927697961133303">USB 기기</translation>
 <translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>
 <translation id="8766943070169463815">보안 결제 사용자 인증 정보 승인 시트가 열림</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">存储空间已满</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1199631150313925648">手动输入</translation>
 <translation id="1199963004393929848">绿色主题</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1204075260022434100">{count,plural, =1{书签已保存到账号 {email} 中的“{title}”}other{{count} 个书签已保存到账号 {email} 中的“{title}”}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">隐私权声明</translation>
 <translation id="4420409367264901497">修改书签</translation>
 <translation id="4425365312778464779">此账号处于受管理状态</translation>
+<translation id="443008484043213881">工具</translation>
 <translation id="4430277756566635951">目前选择的是：<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="4430505936695785931">获取其他应用中已保存的密码</translation>
 <translation id="4431224949908513835">选择要填充的付款方式。</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">问问 AI 模式</translation>
 <translation id="5585019845078534178">卡片</translation>
 <translation id="5591526871732898147">附加图片 {index}</translation>
+<translation id="5594597292424622277">暂停视频</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="559567008082979829">设置为在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">在无痕模式下打开来自其他应用的链接</translation>
 <translation id="8529767659511976195">新功能</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">播放视频</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>

@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
-<translation id="3448874648066942074">利用 AI 总结页面</translation>
 <translation id="3452832259067974318">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">活跃（<ph name="ITEM_COUNT" /> 个）</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4710167854527459075">按从新到旧排序</translation>
-<translation id="4718044610319080485">启动 AI 助理</translation>
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="4720556299488643018">退订</translation>
 <translation id="4732120983431207637">堆栈展开程序</translation>
@@ -1659,7 +1657,6 @@
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7917574899775263813">跳转到最后一个标签页</translation>
 <translation id="7919123827536834358">自动翻译以下语言</translation>
-<translation id="7921782882718083488">总结此页面</translation>
 <translation id="7926975587469166629">卡的别名</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">对于滥用通知的网站或您近期未访问的网站，Chrome 会自动移除其权限</translation>
@@ -1823,7 +1820,6 @@
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />，多选状态下固定的画中画标签页</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
 <translation id="854522910157234410">打开此网页</translation>
-<translation id="8547466829003330976">利用 AI 审核 PDF 文件</translation>
 <translation id="8551513938758868521">在您退出 Chrome 时锁定无痕式标签页</translation>
 <translation id="8559961053328923750">Chrome 会限制网站为衡量广告效果而通过浏览器分享的数据总量</translation>
 <translation id="8559990750235505898">询问是否翻译其他语言版本的网页</translation>

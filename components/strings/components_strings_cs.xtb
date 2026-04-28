@@ -2152,6 +2152,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">Název zařízení a síťová adresa</translation>
 <translation id="4320119221194966055">Osobní půjčky</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Byl přijat odkaz ze zařízení <ph name="DEVICE_NAME" />}few{Byly přijaty # odkazy ze zařízení <ph name="DEVICE_NAME" />}many{Bylo přijato # odkazu ze zařízení <ph name="DEVICE_NAME" />}other{Bylo přijato # odkazů ze zařízení <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Přihrádka 17</translation>
 <translation id="4325863107915753736">Článek nebyl nalezen</translation>
 <translation id="4326324639298822553">Zkontrolujte datum konce platnosti a zkuste to znovu.</translation>
@@ -4978,6 +4979,7 @@ Další podrobnosti:
 <translation id="8758529215314160755">Své jméno můžete upravit ve svém <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Platnost této karty vypršela</translation>
 <translation id="87601671197631245">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla, zprávy nebo kreditní karty) vystavuje riziku odhalení.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Odkaz odeslaný ze zařízení <ph name="DEVICE_NAME" />}few{# odkazy odeslané ze zařízení <ph name="DEVICE_NAME" />}many{# odkazu odeslaného ze zařízení <ph name="DEVICE_NAME" />}other{# odkazů odeslaných ze zařízení <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Zařízení USB</translation>
 <translation id="8763986294015493060">Zavřít všechna aktuálně otevřená anonymní okna</translation>
 <translation id="8766943070169463815">List ověření identifikačních údajů pro zabezpečené platby je otevřený</translation>

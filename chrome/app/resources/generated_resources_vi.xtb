@@ -834,6 +834,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1567579616025300478">Trang web này không được phép lưu dữ liệu trên thiết bị của bạn.</translation>
 <translation id="156793199942386351">Phím "<ph name="CURRENTKEY" />" đã được gán cho thao tác "<ph name="ACTION" />". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Bảng điều khiển JavaScript</translation>
+<translation id="157005186601751931">Mở thẻ trong ứng dụng</translation>
 <translation id="1570604804919108255">Hiển thị thông báo</translation>
 <translation id="1570990174567554976">Đã tạo thư mục dấu trang "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Không có mật khẩu yếu hoặc mật khẩu trùng lặp</translation>
@@ -2327,7 +2328,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2565214867520763227">Bật trình đọc màn hình</translation>
 <translation id="2566146433999774844">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
 <translation id="256726287944589768">Hiện chân trang trên trang Thẻ mới</translation>
-<translation id="2567313753132089780">Mật khẩu phải có ít nhất 12 ký tự và bao gồm cả chữ cái viết hoa, chữ cái viết thường, số và ký hiệu</translation>
 <translation id="2568774940984945469">Bộ chứa Thanh thông tin</translation>
 <translation id="2569972178052279830">Tên nhà bán lẻ</translation>
 <translation id="257088987046510401">Chủ đề</translation>
@@ -3177,7 +3177,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158033540161634471">Thiết lập vân tay</translation>
 <translation id="3158203338449343164">Bỏ ghim tính năng tìm thẻ</translation>
-<translation id="3158732900546890991">Mật khẩu phải có ít nhất 8 ký tự và bao gồm ít nhất 2 trong số các loại ký tự sau: chữ cái viết hoa, chữ cái viết thường, số hoặc ký hiệu</translation>
 <translation id="3158770568048368350">Quy trình này có thể khiến mạng di động bị ngắt kết nối trong chốc lát</translation>
 <translation id="3159335509547415276">Tìm hiểu về tài khoản bị chặn</translation>
 <translation id="3159493096109238499">Màu be</translation>
@@ -6121,6 +6120,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5204967432542742771">Nhập mật khẩu</translation>
 <translation id="5205484256512407285">Không bao giờ dùng dữ liệu di động để chuyển</translation>
 <translation id="520568280985468584">Đã thêm mạng thành công. Có thể mất ít phút để kích hoạt mạng di động của bạn.</translation>
+<translation id="5207395053540207113">Cho phép Google Tìm kiếm truy cập vào nội dung trên Drive?</translation>
 <translation id="5207949376430453814">Đánh dấu điểm chèn văn bản</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> muốn kiểm tra xem thiết bị ChromeOS bạn đang sử dụng có đủ điều kiện hay không.</translation>
 <translation id="5208926629108082192">Thông tin về mạng di động của thiết bị</translation>
@@ -9031,6 +9031,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="727595954130325265">Mua ngay</translation>
 <translation id="7277275452721470458">Hoạt động trong Chế độ AI</translation>
 <translation id="727952162645687754">Lỗi tải xuống</translation>
+<translation id="7280265656690268844">Tính năng tối ưu hoá JavaScript đang tắt</translation>
 <translation id="7280649757394340890">Cài đặt giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="7280683802406059877">Tuỳ chỉnh phím tắt</translation>
 <translation id="7280877790564589615">Đã yêu cầu quyền</translation>

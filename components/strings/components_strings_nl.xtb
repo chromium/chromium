@@ -2150,6 +2150,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4318312030194671742">Samenstellerservice voor Paint-voorbeelden</translation>
 <translation id="4318566738941496689">De naam en het netwerkadres van je apparaat</translation>
 <translation id="4320119221194966055">Persoonlijke leningen</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link ontvangen van <ph name="DEVICE_NAME" />}other{# links ontvangen van <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Lade 17</translation>
 <translation id="4325863107915753736">Kan artikel niet vinden</translation>
 <translation id="4326324639298822553">Controleer de vervaldatum en probeer het opnieuw</translation>
@@ -4976,6 +4977,7 @@ Aanvullende informatie:
 <translation id="8758529215314160755">Je kunt je naam bewerken in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Deze pas is verlopen</translation>
 <translation id="87601671197631245">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden, berichten of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link gestuurd vanaf <ph name="DEVICE_NAME" />}other{# links gestuurd vanaf <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-apparaat</translation>
 <translation id="8763986294015493060">Alle momenteel geopende incognitovensters sluiten</translation>
 <translation id="8766943070169463815">Blad voor beveiligde verificatie van betalingsgegevens is geopend</translation>

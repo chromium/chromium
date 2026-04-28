@@ -2156,6 +2156,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4318312030194671742">Huduma ya Paint Preview Compositor</translation>
 <translation id="4318566738941496689">Jina la kifaa chako na anwani ya mtandao</translation>
 <translation id="4320119221194966055">Mikopo ya Binafsi</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Umepokea kiungo kutoka <ph name="DEVICE_NAME" />}other{Umepokea viungo # kutoka <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Trei ya 17</translation>
 <translation id="4325863107915753736">Haikupata makala</translation>
 <translation id="4326324639298822553">Angalia tarehe kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
@@ -4980,6 +4981,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8758529215314160755">Unaweza kuhariri jina lako katika <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Muda wa matumizi wa kadi hii umekwisha</translation>
 <translation id="87601671197631245">Tovuti hii inatumia mipangilio ya usalama iliyopitwa na wakati, hali ambayo inaweza kuonyesha taarifa zako (kwa mfano, manenosiri, ujumbe au kadi za mikopo) zikitumwa kwenye tovuti hii.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Umetumiwa kiungo kutoka <ph name="DEVICE_NAME" />}other{Umetumiwa viungo # kutoka <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Kifaa cha USB</translation>
 <translation id="8763986294015493060">Funga madirisha yote fiche yaliyofunguliwa kwa sasa</translation>
 <translation id="8766943070169463815">Laha ya uthibitishaji wa kitambulisho cha malipo salama imefunguliwa</translation>

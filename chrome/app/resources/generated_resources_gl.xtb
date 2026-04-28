@@ -832,6 +832,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1567579616025300478">Este sitio non ten permiso para gardar datos no teu dispositivo.</translation>
 <translation id="156793199942386351">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">consola de JavaScript</translation>
+<translation id="157005186601751931">Abrir pestana na aplicación</translation>
 <translation id="1570604804919108255">Deixar de silenciar notificacións</translation>
 <translation id="1570990174567554976">Cartafol de marcadores creado: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Non se atopou ningún contrasinal pouco seguro nin reutilizado</translation>
@@ -2313,7 +2314,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2565214867520763227">Activa o lector de pantalla</translation>
 <translation id="2566146433999774844">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> persoas máis</translation>
 <translation id="256726287944589768">Mostrar pé de páxina en Nova pestana</translation>
-<translation id="2567313753132089780">O contrasinal debe ter polo menos 12 caracteres e incluír letras maiúsculas e minúsculas, números e símbolos</translation>
 <translation id="2568774940984945469">Contedor da barra de información</translation>
 <translation id="2569972178052279830">Nome do punto de venda</translation>
 <translation id="257088987046510401">Temas</translation>
@@ -3163,7 +3163,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar a túa impresión dixital</translation>
 <translation id="3158203338449343164">Deixar de fixar Busca de pestanas</translation>
-<translation id="3158732900546890991">O contrasinal debe ter polo menos 8 caracteres e incluír, como mínimo, dúas das seguintes opcións: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="3158770568048368350">Esta acción pode provocar que se desconecte a rede de telefonía móbil durante uns instantes</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
 <translation id="3159493096109238499">Beixe</translation>
@@ -6110,6 +6109,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5204967432542742771">Introduce o contrasinal</translation>
 <translation id="5205484256512407285">Non utilizar nunca os datos móbiles para realizar transferencias</translation>
 <translation id="520568280985468584">Engadiuse a rede correctamente. Pode que a rede de telefonía móbil tarde varios minutos en activarse.</translation>
+<translation id="5207395053540207113">Queres permitir que a Busca acceda ao contido de Drive?</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quere comprobar se usas un dispositivo Chrome OS compatible.</translation>
 <translation id="5208926629108082192">Información da rede de telefonía móbil do dispositivo</translation>
@@ -9014,6 +9014,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="727595954130325265">Comprar agora</translation>
 <translation id="7277275452721470458">Actividade do modo IA</translation>
 <translation id="727952162645687754">Erro de descarga</translation>
+<translation id="7280265656690268844">A optimización de JavaScript está desactivada</translation>
 <translation id="7280649757394340890">Configuración da conversión de texto a voz</translation>
 <translation id="7280683802406059877">Personalizar atallo de teclado</translation>
 <translation id="7280877790564589615">Solicitouse permiso</translation>

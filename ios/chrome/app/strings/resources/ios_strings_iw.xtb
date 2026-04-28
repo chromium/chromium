@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">נפח האחסון שלך מלא</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
+<translation id="1199631150313925648">סריקה ידנית</translation>
 <translation id="1199963004393929848">עיצוב ירוק</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1204075260022434100">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}‘ בחשבון שלך, {email}}one{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}two{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}other{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">הודעת פרטיות</translation>
 <translation id="4420409367264901497">עריכת סימנייה</translation>
 <translation id="4425365312778464779">החשבון הזה מנוהל</translation>
+<translation id="443008484043213881">כלים</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4430505936695785931">גישה לסיסמאות שמורות באפליקציות אחרות</translation>
 <translation id="4431224949908513835">צריך לבחור אמצעי תשלום למילוי.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">‏מצב AI: רוצה לשאול משהו?</translation>
 <translation id="5585019845078534178">כרטיסיות</translation>
 <translation id="5591526871732898147">‏תמונה מצורפת {index}</translation>
+<translation id="5594597292424622277">השהיית הסרטון</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="559567008082979829">אפשר להגדיר שההורדות יימחקו אחרי חודש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">פתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
 <translation id="8529767659511976195">חדש</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">הפעלת הסרטון</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">הגלישה הבטוחה מופעלת</translation>
 <translation id="8534481786647257214">‏הפרסום ב-‏Google+‎ בוצע.</translation>

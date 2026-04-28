@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
+<translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199963004393929848">سبز تھیم</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1204075260022434100">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{‫{count} بُک مارکس کو آپ کے اکاؤنٹ، {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">رازداری نوٹس</translation>
 <translation id="4420409367264901497">بُک مارک میں ترمیم کریں</translation>
 <translation id="4425365312778464779">یہ اکاؤنٹ نظم کردہ ہے</translation>
+<translation id="443008484043213881">ٹولز</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="4430505936695785931">دیگر ایپس میں محفوظ کردہ پاس ورڈز حاصل کریں</translation>
 <translation id="4431224949908513835">پُر کرنے کیلئے ادائیگی کا طریقہ منتخب کریں۔</translation>
@@ -1294,6 +1296,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5581786858144165447">‏‫AI وضع سے پوچھیں</translation>
 <translation id="5585019845078534178">کارڈز</translation>
 <translation id="5591526871732898147">‏منسلک کردہ تصویر {index}</translation>
+<translation id="5594597292424622277">ویڈیو موقوف کریں</translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="559567008082979829">اپنے ڈاؤن لوڈز کو ایک ماہ کے بعد حذف ہونے کیلئے سیٹ کریں۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
@@ -2163,6 +2166,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>
 <translation id="8529767659511976195">نئی</translation>
 <translation id="8531572740963685410">PDFs</translation>
+<translation id="8532059953132740592">ویڈیو چلائیں</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>
 <translation id="8534481786647257214">‏Google+‎ اشاعت مکمل ہوگئی۔</translation>

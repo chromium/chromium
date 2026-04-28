@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Сервіс компонування перегляду малюнків</translation>
 <translation id="4318566738941496689">Назва пристрою й адреса мережі</translation>
 <translation id="4320119221194966055">Кредити фізичним особам</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Отримано посилання з пристрою "<ph name="DEVICE_NAME" />"}one{Отримано # посилання з пристрою "<ph name="DEVICE_NAME" />"}few{Отримано # посилання з пристрою "<ph name="DEVICE_NAME" />"}many{Отримано # посилань із пристрою "<ph name="DEVICE_NAME" />"}other{Отримано # посилання з пристрою "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="4325600325087822253">Лоток 17</translation>
 <translation id="4325863107915753736">Статтю не знайдено</translation>
 <translation id="4326324639298822553">Перевірте дату закінчення терміну дії та повторіть спробу</translation>
@@ -4984,6 +4985,7 @@
 <translation id="8758529215314160755">Ви можете змінити ім’я у своєму <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Термін дії цієї картки минув</translation>
 <translation id="87601671197631245">На цьому сайті використовується застаріла конфігурація безпеки. Якщо ви надсилатимете на нього ваші дані (як-от паролі, повідомлення й інформацію про кредитні картки), їх може бути розкрито.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Надіслано посилання з пристрою "<ph name="DEVICE_NAME" />"}one{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}few{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}many{Надіслано # посилань із пристрою "<ph name="DEVICE_NAME" />"}other{Надіслано # посилання з пристрою "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8763986294015493060">Закрийте всі відкриті вікна в режимі анонімного перегляду</translation>
 <translation id="8766943070169463815">Екран автентифікації облікових даних для безпечних платежів відкрито</translation>

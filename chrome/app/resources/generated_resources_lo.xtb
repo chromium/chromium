@@ -832,6 +832,7 @@
 <translation id="1567579616025300478">ເວັບໄຊນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="156793199942386351">ມີການມອບໝາຍ '<ph name="CURRENTKEY" />' ໃສ່ຄຳສັ່ງ '<ph name="ACTION" />' ຢູ່ກ່ອນແລ້ວ. ກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="157005186601751931">ເປີດແຖບໃນແອັບ</translation>
 <translation id="1570604804919108255">ເຊົາປິດສຽງການແຈ້ງເຕືອນ</translation>
 <translation id="1570990174567554976">ສ້າງໂຟນເດີບຸກມາກ '<ph name="BOOKMARK_TITLE" />' ແລ້ວ.</translation>
 <translation id="1571041387761170095">ບໍ່ມີລະຫັດຜ່ານທີ່ອ່ອນແອ ຫຼື ລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ</translation>
@@ -2326,7 +2327,6 @@
 <translation id="2565214867520763227">ເປີດໂປຣແກຣມອ່ານໜ້າຈໍ</translation>
 <translation id="2566146433999774844">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ <ph name="NUM_OTHER_MEMBERS" /> ຄົນ</translation>
 <translation id="256726287944589768">ສະແດງສ່ວນທ້າຍຢູ່ໜ້າແຖບໃໝ່</translation>
-<translation id="2567313753132089780">ລະຫັດຜ່ານຕ້ອງມີຕົວອັກສອນຢ່າງໜ້ອຍ 12 ຕົວ ແລະ ຕ້ອງມີທັງຕົວພິມໃຫຍ່ ແລະ ຕົວພິມນ້ອຍ, ຕົວເລກ ແລະ ສັນຍະລັກ</translation>
 <translation id="2568774940984945469">ພາຊະນະບັນຈຸແຖບຂໍ້ມູນ</translation>
 <translation id="2569972178052279830">ຊື່ຜູ້ຂາຍຍ່ອຍ</translation>
 <translation id="257088987046510401">ເທມ</translation>
@@ -3176,7 +3176,6 @@
 <translation id="3157931365184549694">ເອົາຄືນມາ</translation>
 <translation id="3158033540161634471">ຕັ້ງຄ່າລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="3158203338449343164">ຖອນໝຸດການຊອກຫາແຖບ</translation>
-<translation id="3158732900546890991">ລະຫັດຜ່ານຕ້ອງມີຕົວອັກສອນຢ່າງໜ້ອຍ 8 ຕົວ ແລະ ຕ້ອງມີຕົວອັກສອນຕໍ່ໄປນີ້ຢ່າງໜ້ອຍ 2 ປະເພດຄື: ຕົວພິມໃຫຍ່, ຕົວພິມນ້ອຍ, ຕົວເລກ ຫຼື ສັນຍະລັກ</translation>
 <translation id="3158770568048368350">ນີ້ອາດເຮັດໃຫ້ເຄືອຂ່າຍມືຖືຂອງທ່ານຕັດການເຊື່ອມຕໍ່ເປັນເວລາສັ້ນໆ</translation>
 <translation id="3159335509547415276">ສຶກສາກ່ຽວກັບບັນຊີທີ່ຖືກບລັອກ</translation>
 <translation id="3159493096109238499">ສີເບຈ</translation>
@@ -6120,6 +6119,7 @@
 <translation id="5204967432542742771">ໃສ່​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5205484256512407285">ຢ່າໃຊ້ອິນເຕີເນັດມືຖືເພື່ອໂອນຍ້າຍ</translation>
 <translation id="520568280985468584">ເພີ່ມເຄືອຂ່າຍສຳເລັດແລ້ວ. ມັນອາດໃຊ້ເວລາຫຼາຍນາທີເພື່ອເປີດນຳໃຊ້ເຄືອຂ່າຍມືຖືຂອງທ່ານ.</translation>
+<translation id="5207395053540207113">ອະນຸຍາດໃຫ້ຊອກຫາເຂົ້າເຖິງເນື້ອຫາໃນ Drive ບໍ?</translation>
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ຕ້ອງການກວດເບິ່ງວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນ ChromeOS ທີ່ມີສິດຫຼືບໍ່.</translation>
 <translation id="5208926629108082192">ຂໍ້ມູນເຄືອຂ່າຍມືຖືອຸປະກອນ</translation>
@@ -9026,6 +9026,7 @@
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
 <translation id="7277275452721470458">ການເຄື່ອນໄຫວໂໝດ AI</translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
+<translation id="7280265656690268844">ການເພີ່ມປະສິດທິພາບ JavaScript ປິດຢູ່</translation>
 <translation id="7280649757394340890">ການຕັ້ງຄ່າສຽງສຳລັບການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="7280683802406059877">ປັບແຕ່ງຄີລັດ</translation>
 <translation id="7280877790564589615">ຂໍ​ເອົາການອະ​ນຸ​ຍາດ​ແລ້ວ</translation>

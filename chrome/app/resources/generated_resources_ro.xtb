@@ -834,6 +834,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1567579616025300478">Acest site nu are permisiunea de a salva date pe dispozitiv.</translation>
 <translation id="156793199942386351">Tasta <ph name="CURRENTKEY" /> a fost deja asociată acțiunii „<ph name="ACTION" />”. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consolă JavaScript</translation>
+<translation id="157005186601751931">Deschide fila în aplicație</translation>
 <translation id="1570604804919108255">Activează sunetul notificărilor</translation>
 <translation id="1570990174567554976">S-a creat dosarul de marcaje <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nu există parole slabe sau refolosite</translation>
@@ -2315,7 +2316,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2565214867520763227">Activează cititorul de ecran</translation>
 <translation id="2566146433999774844">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă <ph name="NUM_OTHER_MEMBERS" /> persoane</translation>
 <translation id="256726287944589768">Afișează subsolul în pagina Filă nouă</translation>
-<translation id="2567313753132089780">Parola trebuie să aibă cel puțin 12 caractere și să includă majuscule și minuscule, cifre și simboluri.</translation>
 <translation id="2568774940984945469">Container bară de informații</translation>
 <translation id="2569972178052279830">Numele comerciantului</translation>
 <translation id="257088987046510401">Teme</translation>
@@ -3165,7 +3165,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158033540161634471">Adaugă amprenta</translation>
 <translation id="3158203338449343164">Anulează fixarea Căutării filelor</translation>
-<translation id="3158732900546890991">Parola trebuie să aibă cel puțin opt caractere și să includă cel puțin două dintre următoarele: majuscule, minuscule, cifre sau simboluri.</translation>
 <translation id="3158770568048368350">Poate cauza deconectarea temporară de la rețeaua mobilă</translation>
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
 <translation id="3159493096109238499">Bej</translation>
@@ -6107,6 +6106,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5204967432542742771">Introdu parola</translation>
 <translation id="5205484256512407285">Nu folosi niciodată date mobile pentru transfer</translation>
 <translation id="520568280985468584">Rețeaua a fost adăugată. Este posibil ca activarea rețelei de date mobile să dureze câteva minute.</translation>
+<translation id="5207395053540207113">Permiți ca serviciul Căutare să acceseze conținutul din Drive?</translation>
 <translation id="5207949376430453814">Evidențiază cursorul pentru text</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> dorește să verifice dacă folosești un dispozitiv cu sistemul de operare Chrome eligibil.</translation>
 <translation id="5208926629108082192">Informații despre rețeaua mobilă a dispozitivului</translation>
@@ -9016,6 +9016,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="727595954130325265">Cumpără acum</translation>
 <translation id="7277275452721470458">Activitatea în Modul AI</translation>
 <translation id="727952162645687754">Eroare la descărcare</translation>
+<translation id="7280265656690268844">Optimizarea JavaScript este dezactivată</translation>
 <translation id="7280649757394340890">Setări ale vocii pentru redarea vocală a textului</translation>
 <translation id="7280683802406059877">Personalizează comanda rapidă de la tastatură</translation>
 <translation id="7280877790564589615">Permisiune solicitată</translation>

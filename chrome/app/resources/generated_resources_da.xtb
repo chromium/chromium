@@ -835,6 +835,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1567579616025300478">Dette website har ikke tilladelse til at gemme data på din enhed.</translation>
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" er allerede tildelt handlingen "<ph name="ACTION" />". Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
+<translation id="157005186601751931">Åbn fane i app</translation>
 <translation id="1570604804919108255">Slå lyden til for notifikationer</translation>
 <translation id="1570990174567554976">Bogmærkemappen "<ph name="BOOKMARK_TITLE" />" er oprettet.</translation>
 <translation id="1571041387761170095">Ingen svage eller genbrugte adgangskoder</translation>
@@ -2329,7 +2330,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2565214867520763227">Slå skærmlæseren til</translation>
 <translation id="2566146433999774844">Deltag i fangegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> andre</translation>
 <translation id="256726287944589768">Vis sidefod på siden Ny fane</translation>
-<translation id="2567313753132089780">Adgangskoden skal være på mindst 12 tegn og indeholde store og små bogstaver, tal og symboler</translation>
 <translation id="2568774940984945469">Container til oplysningsbjælke</translation>
 <translation id="2569972178052279830">Forhandlernavn</translation>
 <translation id="257088987046510401">Temaer</translation>
@@ -3179,7 +3179,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158033540161634471">Konfigurer dit fingeraftryk</translation>
 <translation id="3158203338449343164">Frigør Fanesøgning</translation>
-<translation id="3158732900546890991">Adgangskoden skal være på mindst 8 tegn og indeholde mindst to af følgende: Store bogstaver, små bogstaver, tal eller symboler</translation>
 <translation id="3158770568048368350">Dette kan kortvarigt afbryde dit mobilnetværk</translation>
 <translation id="3159335509547415276">Få flere oplysninger om blokerede konti</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6123,6 +6122,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5204967432542742771">Angiv adgangskode</translation>
 <translation id="5205484256512407285">Brug aldrig mobildata til overførsler</translation>
 <translation id="520568280985468584">Netværket er tilføjet. Der kan gå nogle minutter, før dit mobilnetværk er aktivt.</translation>
+<translation id="5207395053540207113">Vil du give Søgning adgang til Drev-indhold?</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vil gerne tjekke, om du bruger en kvalificeret ChromeOS-enhed.</translation>
 <translation id="5208926629108082192">Oplysninger om enhedens mobilnetværk</translation>
@@ -9033,6 +9033,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="727595954130325265">Shop nu</translation>
 <translation id="7277275452721470458">Aktivitet i AI-tilstand</translation>
 <translation id="727952162645687754">Downloadfejl</translation>
+<translation id="7280265656690268844">JavaScript-optimering er deaktiveret</translation>
 <translation id="7280649757394340890">Taleindstillinger for oplæsning</translation>
 <translation id="7280683802406059877">Tilpas tastaturgenvej</translation>
 <translation id="7280877790564589615">Der er anmodet om tilladelse</translation>

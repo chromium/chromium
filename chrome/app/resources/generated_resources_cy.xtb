@@ -837,6 +837,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1567579616025300478">Ni chaniateir i'r wefan hon gadw data ar eich dyfais.</translation>
 <translation id="156793199942386351">Mae '<ph name="CURRENTKEY" />' wedi'i haseinio i'r weithred '<ph name="ACTION" />' yn barod. Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consol JavaScript</translation>
+<translation id="157005186601751931">Agor tab yn yr ap</translation>
 <translation id="1570604804919108255">Dad-ddistewi Hysbysebion</translation>
 <translation id="1570990174567554976">Crëwyd y Ffolder nodau tudalen '<ph name="BOOKMARK_TITLE" />'.</translation>
 <translation id="1571041387761170095">Dim cyfrineiriau gwan neu rai sydd wedi'u hailddefnyddio</translation>
@@ -2330,7 +2331,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2565214867520763227">Troi'r darllenydd sgrîn ymlaen</translation>
 <translation id="2566146433999774844">Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> arall</translation>
 <translation id="256726287944589768">Dangos troedyn ar dudalen Tab Newydd</translation>
-<translation id="2567313753132089780">Rhaid i'r cyfrinair fod o leiaf 12 nod o hyd a chynnwys priflythrennau a llythrennau bach, rhifau a symbolau</translation>
 <translation id="2568774940984945469">Cynhwysydd bar gwybodaeth</translation>
 <translation id="2569972178052279830">Enw'r Adwerthwr</translation>
 <translation id="257088987046510401">Themâu</translation>
@@ -3180,7 +3180,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158033540161634471">Gosod eich ôl bys</translation>
 <translation id="3158203338449343164">Dad-binio Chwilio Tabiau</translation>
-<translation id="3158732900546890991">Rhaid i'r cyfrinair fod o leiaf 8 nod o hyd a chynnwys o leiaf ddau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau</translation>
 <translation id="3158770568048368350">Mae'n bosib y bydd hyn yn achosi i'ch rhwydwaith symudol ddatgysylltu am gyfnod byr</translation>
 <translation id="3159335509547415276">Dysgu am gyfrifon sydd wedi'u rhwystro</translation>
 <translation id="3159493096109238499">Gwlanen</translation>
@@ -6124,6 +6123,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5204967432542742771">Rhowch eich cyfrinair</translation>
 <translation id="5205484256512407285">Peidiwch byth â defnyddio data symudol i drosglwyddo</translation>
 <translation id="520568280985468584">Ychwanegwyd rhwydwaith yn llwyddiannus. Gall gymryd sawl munud i'ch rhwydwaith symudol weithredu.</translation>
+<translation id="5207395053540207113">Caniatáu i Chwilio gael mynediad at gynnwys Drive?</translation>
 <translation id="5207949376430453814">Amlygu caret testun</translation>
 <translation id="520840839826327499">Mae <ph name="SERVICE_NAME" /> eisiau gwirio a ydych yn defnyddio dyfais ChromeOS cymwys.</translation>
 <translation id="5208926629108082192">Gwybodaeth rhwydwaith symudol dyfais</translation>
@@ -9039,6 +9039,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="727595954130325265">Siopa Nawr</translation>
 <translation id="7277275452721470458">Gweithgarwch Dull AI</translation>
 <translation id="727952162645687754">Gwall lawrlwytho</translation>
+<translation id="7280265656690268844">Mae optimeiddio JavaScript wedi'i ddiffodd</translation>
 <translation id="7280649757394340890">Gosodiadau llais Testun i Leferydd</translation>
 <translation id="7280683802406059877">Addasu llwybr byr bysellfwrdd</translation>
 <translation id="7280877790564589615">Gofynnwyd am ganiatâd</translation>

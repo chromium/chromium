@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">আপোনাৰ ষ্ট’ৰেজ ভৰি পৰিছে</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1190609913194133056">জাননী কেন্দ্ৰ</translation>
+<translation id="1199631150313925648">মেনুৱেলী দিয়ক</translation>
 <translation id="1199963004393929848">সেউজীয়া থীম</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1204075260022434100">{count,plural, =1{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে}one{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">গোপনীয়তাৰ জাননী</translation>
 <translation id="4420409367264901497">বুকমাৰ্ক সম্পাদনা কৰক</translation>
 <translation id="4425365312778464779">এই একাউণ্টটো পৰিচালনা কৰা হয়</translation>
+<translation id="443008484043213881">সঁজুলি</translation>
 <translation id="4430277756566635951">বর্তমান <ph name="EMAIL" /> বাছনি কৰা হৈছে। এটা একাউণ্ট বাছনি কৰক।</translation>
 <translation id="4430505936695785931">অন্য এপ্‌সমূহত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ লাভ কৰক</translation>
 <translation id="4431224949908513835">পূৰ কৰিবলৈ এটা পৰিশোধ পদ্ধতি বাছনি কৰক।</translation>

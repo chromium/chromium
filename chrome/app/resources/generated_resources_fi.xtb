@@ -834,6 +834,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1567579616025300478">Tämä sivusto ei saa tallentaa dataa laitteellesi.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> liittyy jo toimintoon (<ph name="ACTION" />). <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="1567993339577891801">JavaScript-konsoli</translation>
+<translation id="157005186601751931">Avaa välilehti sovelluksessa</translation>
 <translation id="1570604804919108255">Poista ilmoitusten mykistys</translation>
 <translation id="1570990174567554976">Kirjanmerkkikansio "<ph name="BOOKMARK_TITLE" />" luotu.</translation>
 <translation id="1571041387761170095">Ei heikkoja tai uudelleenkäytettyjä salasanoja</translation>
@@ -2326,7 +2327,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2565214867520763227">Laita näytönlukuohjelma päälle</translation>
 <translation id="2566146433999774844">Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on ja <ph name="NUM_OTHER_MEMBERS" /> muuta</translation>
 <translation id="256726287944589768">Näytä alaviite Uusi välilehti ‑sivulla</translation>
-<translation id="2567313753132089780">Salasanassa on oltava vähintään 12 merkkiä, joihin kuuluu isoja ja pieniä kirjaimia, numeroita ja symboleita</translation>
 <translation id="2568774940984945469">Tietopalkki</translation>
 <translation id="2569972178052279830">Jälleenmyyjän nimi</translation>
 <translation id="257088987046510401">Teemat</translation>
@@ -3176,7 +3176,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158033540161634471">Määritä sormenjälki</translation>
 <translation id="3158203338449343164">Irrota välilehtihaku</translation>
-<translation id="3158732900546890991">Salasanassa on oltava vähintään kahdeksan merkkiä, ja siinä on oltava vähintään kaksi isoa kirjainta, pientä kirjainta, numeroa tai symbolia</translation>
 <translation id="3158770568048368350">Tämä voi saada mobiiliverkkoyhteyden katkeamaan hetkeksi</translation>
 <translation id="3159335509547415276">Lue lisää estetyistä tileistä</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6117,6 +6116,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5204967432542742771">Lisää salasana</translation>
 <translation id="5205484256512407285">Älä koskaan käytä mobiilidataa siirtoihin</translation>
 <translation id="520568280985468584">Verkko on lisätty. Voi kestää useita minuutteja ennen kuin mobiiliverkkosi on käytettävissä.</translation>
+<translation id="5207395053540207113">Sallitaanko Haulle pääsy Drive-sisältöön?</translation>
 <translation id="5207949376430453814">Korosta tekstikursori</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> haluaa tarkistaa, että käytät yhteensopivaa Chrome-käyttöjärjestelmää käyttävää laitetta.</translation>
 <translation id="5208926629108082192">Laitteen mobiiliverkon tiedot</translation>
@@ -9025,6 +9025,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="727595954130325265">Osta nyt</translation>
 <translation id="7277275452721470458">Tekoälytilan käyttö</translation>
 <translation id="727952162645687754">Latausvirhe</translation>
+<translation id="7280265656690268844">JavaScript-optimointi on poissa päältä</translation>
 <translation id="7280649757394340890">Tekstistä puheeksi ‑ääniasetukset</translation>
 <translation id="7280683802406059877">Muokkaa pikanäppäintä</translation>
 <translation id="7280877790564589615">Käyttölupapyyntö</translation>

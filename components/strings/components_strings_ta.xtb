@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">தவறான உட்பொருள் அடையாளங்காட்டி</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (தானாகக் கண்டறியப்பட்டது)</translation>
 <translation id="1232569758102978740">தலைப்பிடாதது</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> அவசியம்</translation>
 <translation id="1236081509407217141">VRரை அனுமதிக்கவா?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">உங்கள் சாதனப் பெயர்</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* அவசியமான புலம்</translation>
 <translation id="1723636263173393300">இந்தக் கொள்கையில் <ph name="MAX_ITEMS_LIMIT" /> ஷார்ட்கட்களுக்கு மேல் இருக்கக்கூடாது.</translation>
 <translation id="1725591448053514783">என்வெலப் யூ 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> அல்லது <ph name="FIELD_3" /> அவசியம்</translation>
 <translation id="1727613060316725209">சான்றிதழ் சரியானது</translation>
 <translation id="1728677426644403582">இணையப் பக்கத்தின் மூலத்தைப் பார்க்கிறீர்கள்</translation>
 <translation id="173080396488393970">இந்தக் கார்டு வகை ஆதரிக்கப்படவில்லை</translation>
@@ -1429,6 +1431,7 @@
 <translation id="3220264767789936523">ஃபார்மல் உடை</translation>
 <translation id="3223287115535306850">ஆப்ஸ் துவக்கி லோடிங் ஐகான்</translation>
 <translation id="3223425961342298674">இருப்பிட அனுமதி வழங்கப்படவில்லை</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> அல்லது <ph name="FIELD_2" /> அவசியம்</translation>
 <translation id="3225319735946384299">குறியீடு கையொப்பமிடல்</translation>
 <translation id="3225919329040284222">உள்ளமைந்த எதிர்பார்ப்புகளுடன் பொருந்தாத சான்றிதழை சேவையகம் வழங்கியது. சில உயர்-பாதுகாப்பு வலைத்தளங்களில் உங்களைப் பாதுகாக்கவே இந்த எதிர்பார்ப்புகள் சேர்க்கப்படுகின்றன.</translation>
 <translation id="3226128629678568754">பக்கத்தை ஏற்ற தேவைப்படும் தரவை மறுமுறைச் சமர்ப்பிப்பதற்கு மீண்டும் ஏற்று என்ற பட்டனை அழுத்துக.</translation>

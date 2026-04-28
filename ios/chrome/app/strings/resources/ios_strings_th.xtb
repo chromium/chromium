@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">พื้นที่เก็บข้อมูลเต็ม</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
+<translation id="1199631150313925648">ป้อนด้วยตนเอง</translation>
 <translation id="1199963004393929848">ธีมสีเขียว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1204075260022434100">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว</translation>
 <translation id="4420409367264901497">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="4425365312778464779">บัญชีนี้มีการจัดการ</translation>
+<translation id="443008484043213881">เครื่องมือ</translation>
 <translation id="4430277756566635951">เลือก <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
 <translation id="4430505936695785931">เรียกดูรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ</translation>
 <translation id="4431224949908513835">เลือกวิธีการชำระเงินเพื่อกรอก</translation>

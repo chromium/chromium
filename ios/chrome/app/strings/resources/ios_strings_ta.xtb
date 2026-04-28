@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">சேமிப்பகம் நிரம்பிவிட்டது</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1190609913194133056">அறிவிப்பு மையம்</translation>
+<translation id="1199631150313925648">நீங்களே ஸ்கேன் செய்யுங்கள்</translation>
 <translation id="1199963004393929848">பச்சை தீம்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1204075260022434100">{count,plural, =1{{email} என்ற உங்கள் கணக்கில் உள்ள “{title}” ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{{email} என்ற உங்கள் கணக்கில் உள்ள “{title}” ஃபோல்டரில் {count} புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">தனியுரிமை அறிக்கை</translation>
 <translation id="4420409367264901497">புக்மார்க்கை மாற்று</translation>
 <translation id="4425365312778464779">இந்தக் கணக்கு நிர்வகிக்கப்படுகிறது</translation>
+<translation id="443008484043213881">கருவிகள்</translation>
 <translation id="4430277756566635951">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="EMAIL" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
 <translation id="4430505936695785931">சேமித்த கடவுச்சொற்களைப் பிற ஆப்ஸில் பயன்படுத்தலாம்</translation>
 <translation id="4431224949908513835">நிரப்புவதற்கு ஒரு பேமெண்ட் முறையைத் தேர்ந்தெடுக்கவும்.</translation>

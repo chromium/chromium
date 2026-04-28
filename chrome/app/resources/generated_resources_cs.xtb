@@ -835,6 +835,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1567579616025300478">Tento web nemá povoleno ukládat data do vašeho zařízení.</translation>
 <translation id="156793199942386351">Klávesa <ph name="CURRENTKEY" /> je už přiřazena k akci <ph name="ACTION" />. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="1567993339577891801">Konzole JavaScriptu</translation>
+<translation id="157005186601751931">Otevřít kartu v aplikaci</translation>
 <translation id="1570604804919108255">Zapnout zvuk oznámení</translation>
 <translation id="1570990174567554976">Byla vytvořena složka záložek <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nebyla nalezena žádná slabá ani opakovaně použitá hesla</translation>
@@ -2316,7 +2317,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2565214867520763227">Zapnutí čtečky obrazovky</translation>
 <translation id="2566146433999774844">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a <ph name="NUM_OTHER_MEMBERS" /> dalšími</translation>
 <translation id="256726287944589768">Zobrazovat na stránce Nová karta zápatí</translation>
-<translation id="2567313753132089780">Heslo musí mít alespoň 12 znaků a musí obsahovat velká i malá písmena, číslice a symboly</translation>
 <translation id="2568774940984945469">Kontejner informačního panelu</translation>
 <translation id="2569972178052279830">Název prodejce</translation>
 <translation id="257088987046510401">Motivy</translation>
@@ -3166,7 +3166,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3157931365184549694">Obnovit</translation>
 <translation id="3158033540161634471">Nastavení otisku prstu</translation>
 <translation id="3158203338449343164">Odepnout vyhledávání v kartách</translation>
-<translation id="3158732900546890991">Heslo musí mít alespoň 8 znaků a musí obsahovat znaky z alespoň dvou z následujících kategorií: velká písmena, malá písmena, číslice nebo symboly</translation>
 <translation id="3158770568048368350">Tato akce může vést k chvilkovému odpojení od mobilní sítě.</translation>
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
 <translation id="3159493096109238499">Bledě béžová</translation>
@@ -6106,6 +6105,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5204967432542742771">Zadejte heslo</translation>
 <translation id="5205484256512407285">K přenosu nikdy nepoužívat mobilní data</translation>
 <translation id="520568280985468584">Mobilní síť byla úspěšně přidána. Může trvat několik minut, než se aktivuje.</translation>
+<translation id="5207395053540207113">Povolit Vyhledávání přístup k obsahu na Disku?</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="520840839826327499">Služba <ph name="SERVICE_NAME" /> chce ověřit, zda používáte vhodné zařízení se systémem ChromeOS.</translation>
 <translation id="5208926629108082192">Informace o mobilní síti zařízení</translation>
@@ -9014,6 +9014,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="727595954130325265">Koupit</translation>
 <translation id="7277275452721470458">Aktivita v režimu AI</translation>
 <translation id="727952162645687754">Chyba při stahování</translation>
+<translation id="7280265656690268844">Optimalizace JavaScriptu je vypnutá</translation>
 <translation id="7280649757394340890">Nastavení hlasu převodu textu na řeč</translation>
 <translation id="7280683802406059877">Přizpůsobit klávesovou zkratku</translation>
 <translation id="7280877790564589615">Jsou požadována oprávnění</translation>

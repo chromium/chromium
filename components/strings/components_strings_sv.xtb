@@ -152,6 +152,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1228893227497259893">Fel enhetsidentifierare</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatiskt identifierad)</translation>
 <translation id="1232569758102978740">Namnlös</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> måste anges</translation>
 <translation id="1236081509407217141">Vill du tillåta VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Ditt enhetsnamn</translation>
@@ -472,6 +473,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1721424275792716183">* Fältet är obligatoriskt</translation>
 <translation id="1723636263173393300">Principen får ha högst <ph name="MAX_ITEMS_LIMIT" /> genvägar.</translation>
 <translation id="1725591448053514783">You 6-kuvert</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> eller <ph name="FIELD_3" /> krävs</translation>
 <translation id="1727613060316725209">Certifikatet är giltigt</translation>
 <translation id="1728677426644403582">Du visar källkoden till en webbsida</translation>
 <translation id="173080396488393970">Denna korttyp stöds inte</translation>
@@ -1432,6 +1434,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3220264767789936523">Högtidskläder</translation>
 <translation id="3223287115535306850">Ikon för appstart</translation>
 <translation id="3223425961342298674">Plats tillåts inte</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> eller <ph name="FIELD_2" /> krävs</translation>
 <translation id="3225319735946384299">Kodsignering</translation>
 <translation id="3225919329040284222">Ett certifikat som inte överensstämmer med inbyggda förväntningar presenterades på servern. Förväntningarna gäller för webbplatser med hög säkerhet för att skydda dig.</translation>
 <translation id="3226128629678568754">Om du på nytt vill skicka datan som behövs för att läsa in sidan trycker du på knappen Läs in igen.</translation>

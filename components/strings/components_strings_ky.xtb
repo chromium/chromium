@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">Сүрөттү алдын ала көрүп курамалоо кызматы</translation>
 <translation id="4318566738941496689">Түзмөгүңүздүн аты жана тармактын дареги</translation>
 <translation id="4320119221194966055">Жеке насыялар</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн шилтеме алынды}other{<ph name="DEVICE_NAME" /> түзмөгүнөн # шилтеме алынды}}</translation>
 <translation id="4325600325087822253">17-түпкүч</translation>
 <translation id="4325863107915753736">Макала табылбай койду</translation>
 <translation id="4326324639298822553">Мөөнөтү аяктоочу күндү текшерип, кайталап көрүңүз</translation>
@@ -4981,6 +4982,7 @@
 <translation id="8758529215314160755">Аты-жөнүңүздү <ph name="BEGIN_LINK" />Google аккаунтуңузда<ph name="END_LINK" /> (<ph name="ACCOUNT" />) түзөтө аласыз</translation>
 <translation id="8759274551635299824">Бул карточканын мөөнөтү бүткөн</translation>
 <translation id="87601671197631245">Бул сайт эскирген коопсуздук конфигурациясын колдонуп жатат. Маалыматыңыз (мисалы, сырсөздөр, билдирүүлөр же насыя карталары) ушул сайтка жөнөтүлгөндө ачык көрүнүп калышы мүмкүн.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн шилтеме жөнөтүлдү}other{<ph name="DEVICE_NAME" /> түзмөгүнөн # шилтеме жөнөтүлдү}}</translation>
 <translation id="8763927697961133303">USB түзмөгү</translation>
 <translation id="8763986294015493060">Учурда ачылып турган бардык Жашыруун терезелерди жабыңыз</translation>
 <translation id="8766943070169463815">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы ачылды</translation>

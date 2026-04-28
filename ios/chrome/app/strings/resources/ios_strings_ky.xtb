@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Сактагыч толуп калды</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
+<translation id="1199631150313925648">Кол менен киргизүү</translation>
 <translation id="1199963004393929848">Жашыл тема</translation>
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1204075260022434100">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{{count} кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Купуялык эскертүүсү</translation>
 <translation id="4420409367264901497">Кыстарманы түзөтүү</translation>
 <translation id="4425365312778464779">Бул аккаунт тескелет</translation>
+<translation id="443008484043213881">Куралдар</translation>
 <translation id="4430277756566635951">Учурда <ph name="EMAIL" /> тандалды. Аккаунт тандаңыз.</translation>
 <translation id="4430505936695785931">Башка колдонмолордо сакталган сырсөздөрдү алуу</translation>
 <translation id="4431224949908513835">Толтуруу үчүн төлөм ыкмасын тандаңыз.</translation>
@@ -1294,6 +1296,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5581786858144165447">ЖИден суроо режими</translation>
 <translation id="5585019845078534178">Карточкалар</translation>
 <translation id="5591526871732898147">{index} сүрөтү тиркелди</translation>
+<translation id="5594597292424622277">Видеону тындыруу</translation>
 <translation id="5595485650161345191">Даректи өзгөртүү</translation>
 <translation id="559567008082979829">Жүктөлүп алынгандар бир айдан кийин өчүрүлгөндөй кылып тууралаңыз</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
@@ -2163,6 +2166,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8528009254289981965">Башка колдонмолордун шилтемелерин Жашыруун режимде ачуу</translation>
 <translation id="8529767659511976195">Жаңы</translation>
 <translation id="8531572740963685410">PDF файлдары</translation>
+<translation id="8532059953132740592">Видеону ойнотуу</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Коопсуз серептөө күйүк</translation>
 <translation id="8534481786647257214">Google+ жайгаштырылды.</translation>

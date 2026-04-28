@@ -2156,6 +2156,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4318312030194671742">Paint Preview-komposisjonstjeneste</translation>
 <translation id="4318566738941496689">Navnet og nettverksadressen til enheten din</translation>
 <translation id="4320119221194966055">Personlige lån</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link er mottatt fra <ph name="DEVICE_NAME" />}other{# linker er mottatt fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Skuff 17</translation>
 <translation id="4325863107915753736">Artikkelen ble ikke funnet</translation>
 <translation id="4326324639298822553">Kontroller utløpsdatoen, og prøv igjen</translation>
@@ -4982,6 +4983,7 @@ Mer informasjon:
 <translation id="8758529215314160755">Du kan endre navnet ditt i <ph name="BEGIN_LINK" />Google-kontoen din<ph name="END_LINK" />, <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Dette kortet er utløpt</translation>
 <translation id="87601671197631245">Dette nettstedet bruker en utdatert sikkerhetskonfigurasjon, som betyr at informasjonen din (for eksempel passord, meldinger eller kredittkort) kan bli avslørt når den sendes til dette nettstedet.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link er sendt fra <ph name="DEVICE_NAME" />}other{# linker er sendt fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8763986294015493060">Lukk alle åpne inkognitovinduer</translation>
 <translation id="8766943070169463815">Ark for sikker autentisering av betalingslegitimasjon er åpnet</translation>

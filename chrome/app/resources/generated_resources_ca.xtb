@@ -833,6 +833,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1567579616025300478">Aquest lloc web no té permís per desar dades al dispositiu.</translation>
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
+<translation id="157005186601751931">Obre la pestanya a l'aplicació</translation>
 <translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
 <translation id="1570990174567554976">S'ha creat la carpeta d'adreces d'interès "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">No tens cap contrasenya poc segura o reutilitzada</translation>
@@ -2314,7 +2315,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2565214867520763227">Activa el lector de pantalla</translation>
 <translation id="2566146433999774844">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> persones més</translation>
 <translation id="256726287944589768">Mostra el peu de pàgina a la pàgina Pestanya nova</translation>
-<translation id="2567313753132089780">La contrasenya ha de tenir com a mínim 12 caràcters i incloure lletres majúscules i minúscules, números i símbols</translation>
 <translation id="2568774940984945469">Contenidor de la barra d'informació</translation>
 <translation id="2569972178052279830">Nom del comerç al detall</translation>
 <translation id="257088987046510401">Temes</translation>
@@ -3164,7 +3164,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158033540161634471">Configura l'empremta digital</translation>
 <translation id="3158203338449343164">Deixa de fixar la cerca de pestanyes</translation>
-<translation id="3158732900546890991">La contrasenya ha de tenir com a mínim 8 caràcters i incloure almenys dos dels elements següents: lletres majúscules, lletres minúscules, números o símbols</translation>
 <translation id="3158770568048368350">Això pot fer que la xarxa mòbil es desconnecti breument</translation>
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
 <translation id="3159493096109238499">Beix</translation>
@@ -6104,6 +6103,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5204967432542742771">Escriviu la contrasenya</translation>
 <translation id="5205484256512407285">Mai no utilitzis dades mòbils per fer transferències</translation>
 <translation id="520568280985468584">La xarxa s'ha afegit correctament. La xarxa mòbil pot tardar uns quants minuts a estar activa.</translation>
+<translation id="5207395053540207113">Vols permetre que la Cerca accedeixi al contingut de Drive?</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vol comprovar si fas servir un dispositiu Chrome OS apte.</translation>
 <translation id="5208926629108082192">Informació de la xarxa mòbil del dispositiu</translation>
@@ -9010,6 +9010,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="727595954130325265">Compra ara</translation>
 <translation id="7277275452721470458">Activitat del mode IA</translation>
 <translation id="727952162645687754">Error de baixada</translation>
+<translation id="7280265656690268844">L'optimització de JavaScript està desactivada</translation>
 <translation id="7280649757394340890">Configuració de la veu de text a parla</translation>
 <translation id="7280683802406059877">Personalitza les tecles de drecera</translation>
 <translation id="7280877790564589615">Permís sol·licitat</translation>

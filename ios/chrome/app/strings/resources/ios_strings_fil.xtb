@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Puno na ang iyong storage</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1190609913194133056">Notification Center</translation>
+<translation id="1199631150313925648">Manual na ilagay</translation>
 <translation id="1199963004393929848">Berdeng tema</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1204075260022434100">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang {count} bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang {count} na bookmark sa "{title}" sa iyong account, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Notification ng Privacy</translation>
 <translation id="4420409367264901497">I-edit ang Bookmark</translation>
 <translation id="4425365312778464779">Pinapamahalaan ang account na ito</translation>
+<translation id="443008484043213881">Mga Tool</translation>
 <translation id="4430277756566635951">Kasalukuyang pinili ang <ph name="EMAIL" />. Pumili ng account.</translation>
 <translation id="4430505936695785931">Makuha ang mga naka-save na password sa iba pang app</translation>
 <translation id="4431224949908513835">Pumili ng paraan ng pagbabayad na pupunan.</translation>

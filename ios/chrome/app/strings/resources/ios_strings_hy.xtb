@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Տարածքը լցված է</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
+<translation id="1199631150313925648">Մուտքագրել ձեռքով</translation>
 <translation id="1199963004393929848">Կանաչ թեմա</translation>
 <translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Գաղտնիության ծանուցագիր</translation>
 <translation id="4420409367264901497">Փոփոխել էջանիշը</translation>
 <translation id="4425365312778464779">Սա կառավարվող հաշիվ է</translation>
+<translation id="443008484043213881">Գործիքներ</translation>
 <translation id="4430277756566635951">Ներկայումս ընտրված է <ph name="EMAIL" /> հաշիվը։ Ընտրեք հաշիվ։</translation>
 <translation id="4430505936695785931">Ստացեք պահված գաղտնաբառերը այլ հավելվածներում</translation>
 <translation id="4431224949908513835">Ընտրեք, թե վճարման որ եղանակն օգտագործել։</translation>
@@ -1294,6 +1296,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5581786858144165447">«Հարցնել ԱԲ-ին» ռեժիմ</translation>
 <translation id="5585019845078534178">Քարտեր</translation>
 <translation id="5591526871732898147">Կցված պատկեր {index}</translation>
+<translation id="5594597292424622277">Դադարեցնել տեսանյութը</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="559567008082979829">Ջնջել ավելի քան մեկ ամիս առաջ ներբեռնված ֆայլերը։</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
@@ -2163,6 +2166,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8528009254289981965">Այլ հավելվածներից հղումներ բացեք ինկոգնիտո ռեժիմում</translation>
 <translation id="8529767659511976195">Նոր</translation>
 <translation id="8531572740963685410">PDF ֆայլեր</translation>
+<translation id="8532059953132740592">Նվագարկել տեսանյութը</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8534481786647257214">Google+ ցանցում փակցնումն ավարտվեց:</translation>

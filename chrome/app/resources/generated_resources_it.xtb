@@ -833,6 +833,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1567579616025300478">Questo sito non è autorizzato a salvare dati sul dispositivo.</translation>
 <translation id="156793199942386351">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
+<translation id="157005186601751931">Apri scheda nell'app</translation>
 <translation id="1570604804919108255">Riattiva audio notifiche</translation>
 <translation id="1570990174567554976">Cartella Preferiti "<ph name="BOOKMARK_TITLE" />" creata.</translation>
 <translation id="1571041387761170095">Nessuna password inefficace o riutilizzata</translation>
@@ -2313,7 +2314,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2565214867520763227">Attiva lo screen reader</translation>
 <translation id="2566146433999774844">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e <ph name="NUM_OTHER_MEMBERS" /> altre persone</translation>
 <translation id="256726287944589768">Mostra il piè di pagina nella pagina Nuova scheda</translation>
-<translation id="2567313753132089780">La password deve contenere almeno 12 caratteri e includere lettere maiuscole e minuscole, numeri e simboli</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Nome del rivenditore</translation>
 <translation id="257088987046510401">Temi</translation>
@@ -3163,7 +3163,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158033540161634471">Imposta la tua impronta</translation>
 <translation id="3158203338449343164">Stacca ricerca di schede</translation>
-<translation id="3158732900546890991">La password deve contenere almeno 8 caratteri e includere almeno due dei seguenti elementi: lettere maiuscole, lettere minuscole, numeri o simboli</translation>
 <translation id="3158770568048368350">La tua rete mobile potrebbe scollegarsi per qualche istante</translation>
 <translation id="3159335509547415276">Scopri di più sugli account bloccati</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6106,6 +6105,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5204967432542742771">Inserisci la password</translation>
 <translation id="5205484256512407285">Non utilizzare mai i dati mobili per il trasferimento</translation>
 <translation id="520568280985468584">La rete è stata aggiunta. Potrebbero occorrere diversi minuti per attivare la rete mobile.</translation>
+<translation id="5207395053540207113">Consentire a Ricerca di accedere ai contenuti di Drive?</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> chiede di controllare che tu stia utilizzando un dispositivo ChromeOS idoneo.</translation>
 <translation id="5208926629108082192">Informazioni sulla rete mobile del dispositivo</translation>
@@ -9011,6 +9011,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="727595954130325265">Acquista ora</translation>
 <translation id="7277275452721470458">Attività di AI Mode</translation>
 <translation id="727952162645687754">Errore di download</translation>
+<translation id="7280265656690268844">L'ottimizzazione di JavaScript è disattivata</translation>
 <translation id="7280649757394340890">Impostazioni voce per sintesi vocale</translation>
 <translation id="7280683802406059877">Personalizza scorciatoia da tastiera</translation>
 <translation id="7280877790564589615">Richiesta di autorizzazione</translation>

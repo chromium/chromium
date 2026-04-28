@@ -152,6 +152,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1228893227497259893">Maling tagatukoy ng entity</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (awtomatikong na-detect)</translation>
 <translation id="1232569758102978740">Walang pamagat</translation>
+<translation id="1234539281285007945">Nire-require ang <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">Payagan ang VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Ang pangalan ng iyong device</translation>
@@ -472,6 +473,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1721424275792716183">Kinakailangan ang field na may *</translation>
 <translation id="1723636263173393300">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) shortcut ang patakarang ito.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423">Nire-require ang <ph name="FIELD_1" />, <ph name="FIELD_2" />, o <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">Valid ang certificate na ito</translation>
 <translation id="1728677426644403582">Pinagmulan ng isang web page ang tinitingnan mo</translation>
 <translation id="173080396488393970">Hindi sinusuportahan ang uri ng card na ito</translation>
@@ -1432,6 +1434,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3220264767789936523">Pormal na Kasuotan</translation>
 <translation id="3223287115535306850">Throbber ng paglulunsad ng app</translation>
 <translation id="3223425961342298674">Hindi pinapayagan ang lokasyon</translation>
+<translation id="3225277284238802910">Nire-require ang <ph name="FIELD_1" /> o <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">Pag-sign sa Code</translation>
 <translation id="3225919329040284222">Nagpakita ang server ng certificate na hindi tumutugma sa mga built-in na inaasahan. Ang mga inaasahang ito ay isinama para sa ilang partikular na website na may mataas na antas ng seguridad upang maprotektahan ka.</translation>
 <translation id="3226128629678568754">Pindutin ang button na i-reload upang isumiteng muli ang data na kailangan upang ma-load ang pahina.</translation>

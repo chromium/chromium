@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">這裡會顯示最近關閉的分頁</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要針對網站的深色主題提供意見嗎？</translation>
-<translation id="3448874648066942074">使用 AI 歸納網頁摘要</translation>
 <translation id="3452832259067974318">為保護個人隱私，Chrome 不會在這個欄位中自動填入密碼。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4710167854527459075">由新到舊排序</translation>
-<translation id="4718044610319080485">啟動 AI 助理</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720556299488643018">取消訂閱</translation>
 <translation id="4732120983431207637">堆疊回溯器</translation>
@@ -1661,7 +1659,6 @@
 <translation id="7914399737746719723">應用程式已安裝</translation>
 <translation id="7917574899775263813">前往最後一個分頁</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
-<translation id="7921782882718083488">歸納本頁摘要</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome 會將濫用通知或最近未造訪的網站，自動移除權限</translation>
@@ -1825,7 +1822,6 @@
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />，多選且已固定的子母畫面分頁</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟以下網頁</translation>
-<translation id="8547466829003330976">使用 AI 審查 PDF</translation>
 <translation id="8551513938758868521">退出 Chrome 時鎖定無痕分頁</translation>
 <translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>

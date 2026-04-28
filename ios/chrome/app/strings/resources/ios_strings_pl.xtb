@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Pamięć jest pełna</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
+<translation id="1199631150313925648">Wpisz ręcznie</translation>
 <translation id="1199963004393929848">Motyw zielony</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1204075260022434100">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Informacje na temat ochrony prywatności</translation>
 <translation id="4420409367264901497">Edytuj zakładkę</translation>
 <translation id="4425365312778464779">To konto jest zarządzane</translation>
+<translation id="443008484043213881">Narzędzia</translation>
 <translation id="4430277756566635951">Obecnie wybrana liczba osób: <ph name="EMAIL" />. Wybierz konto.</translation>
 <translation id="4430505936695785931">Uzyskaj dostęp do zapisanych haseł w innych aplikacjach</translation>
 <translation id="4431224949908513835">Wybierz formę płatności, której dane chcesz podać.</translation>
@@ -1294,6 +1296,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5581786858144165447">Zapytaj w Trybie AI</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5591526871732898147">Dołączony obraz {index}</translation>
+<translation id="5594597292424622277">Wstrzymaj film</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="559567008082979829">Ustaw pobierane pliki tak, aby były usuwane po miesiącu.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -2163,6 +2166,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8528009254289981965">Otwieraj linki z innych aplikacji w trybie incognito</translation>
 <translation id="8529767659511976195">Nowość</translation>
 <translation id="8531572740963685410">Pliki PDF</translation>
+<translation id="8532059953132740592">Odtwórz film</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpieczne przeglądanie jest włączone</translation>
 <translation id="8534481786647257214">Post w Google+ opublikowany.</translation>

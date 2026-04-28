@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Paint Preview Compositor サービス</translation>
 <translation id="4318566738941496689">デバイスの名前とネットワーク アドレス</translation>
 <translation id="4320119221194966055">個人ローン</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> からリンクを受信しました}other{<ph name="DEVICE_NAME" /> から # 件のリンクを受信しました}}</translation>
 <translation id="4325600325087822253">トレイ 17</translation>
 <translation id="4325863107915753736">記事が見つかりませんでした</translation>
 <translation id="4326324639298822553">有効期限の「日」を確認してもう一度お試しください</translation>
@@ -4984,6 +4985,7 @@
 <translation id="8758529215314160755">名前は <ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />（<ph name="ACCOUNT" />）で編集できます。</translation>
 <translation id="8759274551635299824">このカードは有効期限が切れています</translation>
 <translation id="87601671197631245">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワード、メッセージ、クレジット カードなどの情報を送信すると流出する恐れがあります。</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> からリンクが送信されました}other{<ph name="DEVICE_NAME" /> から # 件のリンクが送信されました}}</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8763986294015493060">現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="8766943070169463815">保護されたお支払い認証情報の認証シートが開いています</translation>

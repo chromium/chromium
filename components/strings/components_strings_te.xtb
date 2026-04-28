@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ఎంటిటీ ఐడెంటిఫైయర్ చెల్లదు</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ఆటోమేటిక్‌గా గుర్తించబడింది)</translation>
 <translation id="1232569758102978740">శీర్షికలేనిది</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> అవసరం</translation>
 <translation id="1236081509407217141">VRను అనుమతించాలా?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">మీ పరికరం పేరు</translation>
@@ -467,6 +468,7 @@
 <translation id="1721424275792716183">* అవసరమైన ఫీల్డ్</translation>
 <translation id="1723636263173393300">ఈ పాలసీలో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ షార్ట్‌కట్‌లు ఉండకూడదు.</translation>
 <translation id="1725591448053514783">ఎన్వలప్ యూ 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> లేదా <ph name="FIELD_3" /> అవసరం</translation>
 <translation id="1727613060316725209">సర్టిఫికెట్ చెల్లుబాటు అవుతుంది</translation>
 <translation id="1728677426644403582">మీరు వెబ్ పేజీ యొక్క మూలాధారాన్ని వీక్షిస్తున్నారు</translation>
 <translation id="173080396488393970">ఈ రకమైన కార్డ్‌కి మద్దతు లేదు</translation>
@@ -1427,6 +1429,7 @@
 <translation id="3220264767789936523">ఆఫీస్‌కు వేసుకు వెళ్లే దుస్తులు</translation>
 <translation id="3223287115535306850">యాప్ ప్రారంభాన్ని సూచించే చిహ్నాన్ని లోడ్ చేస్తోంది</translation>
 <translation id="3223425961342298674">లొకేషన్ అనుమతించబడలేదు</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> లేదా <ph name="FIELD_2" /> అవసరం</translation>
 <translation id="3225319735946384299">కోడ్ సైనింగ్</translation>
 <translation id="3225919329040284222">అంతర్గత అంచనాలకు సరిపోలని ఒక ధృవీకరణ డాక్యుమెంట్‌ను సర్వర్ సమర్పించింది. మిమ్మల్ని సంరక్షించే దిశగా నిర్దిష్ట, ఉన్నత స్ధాయి భద్రతా వెబ్‌సైట్‌ల కోసం ఈ అంచనాలు చేర్చబడ్డాయి.</translation>
 <translation id="3226128629678568754">పేజీని లోడ్ చేయడానికి అవసరమైన డేటాను మళ్లీ సమర్పించడం కోసం 'మళ్లీ లోడ్ చేయి' బటన్ క్లిక్ చేయండి.</translation>

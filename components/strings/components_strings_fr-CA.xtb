@@ -2156,6 +2156,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4318312030194671742">Service de composition d'aperçus Paint</translation>
 <translation id="4318566738941496689">Le nom et l'adresse réseau de votre appareil</translation>
 <translation id="4320119221194966055">Prêts personnels</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Lien reçu de <ph name="DEVICE_NAME" />}one{# lien reçu de <ph name="DEVICE_NAME" />}other{# liens reçus de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bac 17</translation>
 <translation id="4325863107915753736">Article non trouvé</translation>
 <translation id="4326324639298822553">Vérifiez la date d'expiration et réessayez</translation>
@@ -4982,6 +4983,7 @@ Détails supplémentaires :
 <translation id="8758529215314160755">Vous pouvez modifier votre nom dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Cette carte a expiré</translation>
 <translation id="87601671197631245">Ce site utilise une configuration de sécurité obsolète qui pourrait exposer vos données personnelles (par exemple, vos mots de passe, vos messages ou vos numéros de carte de crédit) lorsqu'elles sont envoyées à ce site.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Lien envoyé à partir de <ph name="DEVICE_NAME" />}one{# lien envoyé à partir de <ph name="DEVICE_NAME" />}other{# liens envoyés à partir de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Appareil USB</translation>
 <translation id="8763986294015493060">Fermer toutes les fenêtres de navigation privée qui sont actuellement ouvertes</translation>
 <translation id="8766943070169463815">La fiche d'authentification de l'authentifiant de paiement sécurisé est ouverte</translation>

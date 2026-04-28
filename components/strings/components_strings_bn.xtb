@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ভুল সত্তা সনাক্তকারী</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (অটোমেটিক শনাক্ত হয়েছে)</translation>
 <translation id="1232569758102978740">শিরোনামহীন</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> ফাঁকা রাখা যাবে না</translation>
 <translation id="1236081509407217141">ভিআর (VR) ব্যবহার করার অনুমতি দেবেন?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">আপনার ডিভাইসের নাম</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* এই ফিল্ডে কিছু লেখা প্রয়োজন</translation>
 <translation id="1723636263173393300">এই নীতিতে <ph name="MAX_ITEMS_LIMIT" />টির বেশি শর্টকাট থাকা যাবে না।</translation>
 <translation id="1725591448053514783">এনভেলপ ইউ ৬</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> অথবা <ph name="FIELD_3" /> ফাঁকা রাখা যাবে না</translation>
 <translation id="1727613060316725209">সার্টিফিকেটটি সঠিক</translation>
 <translation id="1728677426644403582">আপনি একটি ওয়েব পৃষ্ঠার উৎস কোড দেখছেন</translation>
 <translation id="173080396488393970">এখানে এই ধরনের কার্ড কাজ করে না</translation>
@@ -1433,6 +1435,7 @@
 <translation id="3220264767789936523">ফর্মাল পোশাক</translation>
 <translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
 <translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> বা <ph name="FIELD_2" /> ফাঁকা রাখা যাবে না</translation>
 <translation id="3225319735946384299">Code Signing</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
 <translation id="3226128629678568754">পৃষ্ঠা লোড করার জন্য প্রয়োজনীয় ডেটা আবার জমা দিতে রিলোড বোতামটি টিপুন৷</translation>

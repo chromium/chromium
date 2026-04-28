@@ -2153,6 +2153,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4318312030194671742">Servizio compositore dell'anteprima</translation>
 <translation id="4318566738941496689">Il nome e l'indirizzo di rete del dispositivo</translation>
 <translation id="4320119221194966055">Prestiti personali</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Hai ricevuto un link da <ph name="DEVICE_NAME" />}other{Hai ricevuto # link da <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Vassoio 17</translation>
 <translation id="4325863107915753736">Impossibile trovare l'articolo</translation>
 <translation id="4326324639298822553">Controlla la data di scadenza e riprova</translation>
@@ -4979,6 +4980,7 @@ Ulteriori dettagli:
 <translation id="8758529215314160755">Puoi modificare il tuo nome nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">La carta è scaduta</translation>
 <translation id="87601671197631245">Le tue informazioni (ad esempio password, messaggi o numeri di carte di credito) inviate a questo sito potrebbero essere a rischio, poiché il sito utilizza una configurazione di sicurezza obsoleta.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link inviato da <ph name="DEVICE_NAME" />}other{# link inviati da <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Chiudi tutte le finestre Incognito aperte al momento</translation>
 <translation id="8766943070169463815">Il foglio per l'autenticazione delle credenziali di pagamento sicure è aperto</translation>

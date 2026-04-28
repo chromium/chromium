@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Услуга за создавање преглед во Paint</translation>
 <translation id="4318566738941496689">Името на уредот и мрежната адреса</translation>
 <translation id="4320119221194966055">Лични заеми</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Примен е линк од <ph name="DEVICE_NAME" />}one{Примени се # линк од <ph name="DEVICE_NAME" />}other{Примени се # линка од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Фиока 17</translation>
 <translation id="4325863107915753736">Пронаоѓањето на написот не успеа</translation>
 <translation id="4326324639298822553">Проверете го датумот на истекување и обидете се повторно</translation>
@@ -4982,6 +4983,7 @@
 <translation id="8758529215314160755">Може да го измените вашето име во вашата <ph name="BEGIN_LINK" />сметка на Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Картичкава е истечена</translation>
 <translation id="87601671197631245">Сајтов користи застарена конфигурација за безбедност, што може да ги изложи вашите податоци (на пример, лозинките, пораките или кредитните картички) кога се испраќаат на овој сајт.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Испратен е линк од <ph name="DEVICE_NAME" />}one{Испратени се # линк од <ph name="DEVICE_NAME" />}other{Испратени се # линка од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8763986294015493060">Затворете ги сите прозорци „Инкогнито“ што се отворени во моментов</translation>
 <translation id="8766943070169463815">Листот за проверка на акредитиви за безбедно плаќање е отворен</translation>

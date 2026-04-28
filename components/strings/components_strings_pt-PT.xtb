@@ -152,6 +152,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1228893227497259893">Identificador de entidade errado</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detetado automaticamente)</translation>
 <translation id="1232569758102978740">Sem nome</translation>
+<translation id="1234539281285007945">O campo <ph name="FIELD_1" /> é obrigatório</translation>
 <translation id="1236081509407217141">Permitir a RV?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">O nome do dispositivo</translation>
@@ -472,6 +473,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1721424275792716183">* Campo de preenchimento obrigatório</translation>
 <translation id="1723636263173393300">Esta política não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> atalhos.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423">Os campos <ph name="FIELD_1" />, <ph name="FIELD_2" /> ou <ph name="FIELD_3" /> são obrigatórios</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Está a ver a fonte de uma página Web</translation>
 <translation id="173080396488393970">Este tipo de cartão não é suportado</translation>
@@ -1432,6 +1434,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3220264767789936523">Vestuário formal</translation>
 <translation id="3223287115535306850">Ícone de iniciação da app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
+<translation id="3225277284238802910">Os campos <ph name="FIELD_1" /> ou <ph name="FIELD_2" /> são obrigatórios</translation>
 <translation id="3225319735946384299">Assinatura de código</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não corresponde às expectativas existentes. Estas expectativas são incluídas para determinados Web sites de alta segurança para sua proteção.</translation>
 <translation id="3226128629678568754">Prima o botão de atualização para enviar novamente os dados necessários para carregar a página.</translation>

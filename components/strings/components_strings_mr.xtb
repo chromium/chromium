@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">चुकीचा अस्तित्व ओळखकर्ता</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ऑटो-डिटेक्ट केली आहे)</translation>
 <translation id="1232569758102978740">अशीर्षकांकित</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> आवश्यक आहे</translation>
 <translation id="1236081509407217141">VR ला अनुमती द्यायची का?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">तुमच्या डिव्हाइसचे नाव</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* फील्ड आवश्यक आहे</translation>
 <translation id="1723636263173393300">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त शॉर्टकट असू शकत नाहीत.</translation>
 <translation id="1725591448053514783">एन्व्हलप यू ६</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> किंवा <ph name="FIELD_3" /> आवश्यक आहे</translation>
 <translation id="1727613060316725209">सर्टिफिकेट योग्य आहे</translation>
 <translation id="1728677426644403582">तुम्ही वेब पेजचा स्रोत पाहत आहात</translation>
 <translation id="173080396488393970">या प्रकारच्या कार्डला सहाय्य नाही</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">फॉर्मल कपडे</translation>
 <translation id="3223287115535306850">ॲप लाँचिंग थ्रॉबर</translation>
 <translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> किंवा <ph name="FIELD_2" /> आवश्यक आहे</translation>
 <translation id="3225319735946384299">कोड साइनिंग</translation>
 <translation id="3225919329040284222">सर्व्हरने असे सर्टिफिकेट सादर केले आहे जे अंगभूत अपेक्षांशी जुळत नाही. या अपेक्षा तुम्हाला संरक्षित करण्यासाठी विशिष्ट, उच्च सुरक्षिततेच्या वेबसाइटसाठी समाविष्ट केल्या आहेत.</translation>
 <translation id="3226128629678568754">पेज लोड करण्यास आवश्यक असलेला डेटा पुन्हा सबमिट करण्यासाठी रीलोड बटण प्रेस करा.</translation>

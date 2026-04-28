@@ -831,6 +831,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1567579616025300478">Tovuti hii hairuhusiwi kuhifadhi data kwenye kifaa chako.</translation>
 <translation id="156793199942386351">Tayari '<ph name="CURRENTKEY" />' imekabidhiwa kwenye kitendo cha '<ph name="ACTION" />'. Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Kidhibiti JavaScript</translation>
+<translation id="157005186601751931">Fungua kichupo kwenye programu</translation>
 <translation id="1570604804919108255">Rejesha Sauti ya Arifa</translation>
 <translation id="1570990174567554976">Folda ya alamisho la '<ph name="BOOKMARK_TITLE" />' imeundwa.</translation>
 <translation id="1571041387761170095">Hakuna manenosiri dhaifu au ambayo yametumiwa kwingine</translation>
@@ -2324,7 +2325,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2565214867520763227">Washa kisoma skrini</translation>
 <translation id="2566146433999774844">Jiunge na kikundi cha vichupo kilicho na <ph name="OWNER_FIRST_NAME" /> na wengine <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Onyesha kijachini kwenye ukurasa wa Kichupo Kipya</translation>
-<translation id="2567313753132089780">Ni sharti nenosiri liwe na angalau herufi 12 na lijumuishe herufi kubwa na ndogo, namba na alama</translation>
 <translation id="2568774940984945469">Hifadhi ya Upau wa Maelezo</translation>
 <translation id="2569972178052279830">Jina la Muuzaji wa Rejareja</translation>
 <translation id="257088987046510401">Mandhari</translation>
@@ -3174,7 +3174,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3157931365184549694">Rejesha</translation>
 <translation id="3158033540161634471">Weka mipangilio ya alama ya kidole</translation>
 <translation id="3158203338449343164">Bandua Utafutaji kwenye Vichupo</translation>
-<translation id="3158732900546890991">Ni sharti nenosiri liwe na angalau herufi 8 na lijumuishe angalau vipengee viwili kati ya vifuatavyo: herufi kubwa na ndogo, namba au alama</translation>
 <translation id="3158770568048368350">Huenda hatua hii ikasababisha mtandao wako wa simu ukatike kwa muda mfupi</translation>
 <translation id="3159335509547415276">Pata maelezo kuhusu akaunti zilizozuiwa</translation>
 <translation id="3159493096109238499">Kahawia Hafifu</translation>
@@ -6116,6 +6115,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5204967432542742771">Weka nenosiri</translation>
 <translation id="5205484256512407285">Kamwe usitumie data ya mtandao wa simu kuhamisha</translation>
 <translation id="520568280985468584">Mtandao umewekwa. Huenda ikachukua dakika kadhaa kabla ya mtandao wako wa simu kuanza kutumika.</translation>
+<translation id="5207395053540207113">Ungependa kuruhusu huduma ya Tafuta ifikie maudhui kwenye Hifadhi?</translation>
 <translation id="5207949376430453814">Angazia kareti ya maandishi</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> inataka kuthibitisha kama unatumia kifaa kinachostahiki cha Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="5208926629108082192">Maelezo ya mtandao wa simu wa kifaa</translation>
@@ -9024,6 +9024,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="727595954130325265">Nunua Sasa</translation>
 <translation id="7277275452721470458">Shughuli kwenye Modi ya AI</translation>
 <translation id="727952162645687754">Hitilafu ya upakuaji</translation>
+<translation id="7280265656690268844">Umezima kipengele cha kuboresha JavaScript</translation>
 <translation id="7280649757394340890">Mipangilio ya sauti ya Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7280683802406059877">Badilisha mikato ya kibodi upendavyo</translation>
 <translation id="7280877790564589615">Ruhusa imeombwa</translation>

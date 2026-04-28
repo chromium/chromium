@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">আপনার স্টোরেজ ভর্তি হয়ে গেছে</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
+<translation id="1199631150313925648">ম্যানুয়ালি লিখুন</translation>
 <translation id="1199963004393929848">গ্রিন থিম</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1204075260022434100">{count,plural, =1{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}other{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">গোপনীয়তা বিজ্ঞপ্তি</translation>
 <translation id="4420409367264901497">বুকমার্ক এডিট করুন</translation>
 <translation id="4425365312778464779">এটি একটি ম্যানেজ করা অ্যাকাউন্ট</translation>
+<translation id="443008484043213881">টুল</translation>
 <translation id="4430277756566635951">বর্তমানে <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="4430505936695785931">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পান</translation>
 <translation id="4431224949908513835">সম্পূর্ণ করার জন্য পেমেন্ট পদ্ধতি বেছে নিন।</translation>

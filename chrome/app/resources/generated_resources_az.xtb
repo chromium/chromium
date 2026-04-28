@@ -833,6 +833,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1567579616025300478">Bu sayta cihazda datanı yadda saxlamaq icazəsi verilməyib.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' artıq '<ph name="ACTION" />' əməliyyatına təyin edilib. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
 <translation id="1567993339577891801">JavaScript Konsolu</translation>
+<translation id="157005186601751931">Tətbiqdə tabı açın</translation>
 <translation id="1570604804919108255">Bildirişləri səssiz rejimdən çıxarın</translation>
 <translation id="1570990174567554976">"<ph name="BOOKMARK_TITLE" />" əlfəcin qovluğu yaradıldı.</translation>
 <translation id="1571041387761170095">Zəif və ya təkrar işlənən parol yoxdur</translation>
@@ -2317,7 +2318,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2565214867520763227">Ekran oxuyucusunu aktiv edin</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> və digər <ph name="NUM_OTHER_MEMBERS" /> şəxs ilə tab qrupuna qoşulun</translation>
 <translation id="256726287944589768">Yeni Tab səhifəsində alt sərlövhəni göstərin</translation>
-<translation id="2567313753132089780">Parol ən azı 12 simvoldan ibarət olmalı, böyük və kiçik hərflər, rəqəmlər və simvollar daxil edilməlidir</translation>
 <translation id="2568774940984945469">Məlumat paneli konteyneri</translation>
 <translation id="2569972178052279830">Pərakəndə Satıcının Adı</translation>
 <translation id="257088987046510401">Temalar</translation>
@@ -3167,7 +3167,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3157931365184549694">Bərpa edin</translation>
 <translation id="3158033540161634471">Barmaq izi ayarlayın</translation>
 <translation id="3158203338449343164">Tab Axtarışının bərkidilməsini ləğv edin</translation>
-<translation id="3158732900546890991">Parol ən azı 8 simvoldan ibarət olmalı və aşağıdakılardan ən azı ikisini əhatə etməlidir: böyük hərflər, kiçik hərflər, rəqəmlər və ya simvollar</translation>
 <translation id="3158770568048368350">Bu, mobil şəbəkənizin qısa müddətə kəsilməsinə səbəb ola bilər</translation>
 <translation id="3159335509547415276">Bloklanmış hesablar haqqında məlumat əldə edin</translation>
 <translation id="3159493096109238499">Bej</translation>
@@ -6109,6 +6108,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5204967432542742771">Şifrəni daxil edin</translation>
 <translation id="5205484256512407285">Ötürmək üçün heç vaxt mobil data istifadə etməyin</translation>
 <translation id="520568280985468584">Şəbəkə uğurla əlavə edildi. Mobil şəbəkənizin aktiv olması bir neçə dəqiqə çəkə bilər.</translation>
+<translation id="5207395053540207113">Axtarışa Disk kontentinə daxil olmaq icazəsi verilsin?</translation>
 <translation id="5207949376430453814">Mətn karetini vurğulayın</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> uyğun ChromeOS cihazı istifadə edib-etmədiyinizi yoxlamaq istəyir.</translation>
 <translation id="5208926629108082192">Cihazın mobil şəbəkə məlumatı</translation>
@@ -9014,6 +9014,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="727595954130325265">İndi alış-veriş edin</translation>
 <translation id="7277275452721470458">Sİ rejimi fəaliyyəti</translation>
 <translation id="727952162645687754">Xətanı endirin</translation>
+<translation id="7280265656690268844">JavaScript optimallaşdırılması deaktivdir</translation>
 <translation id="7280649757394340890">Mətndən-Nitqə səs ayarları</translation>
 <translation id="7280683802406059877">Klaviatura qısayolunu fərdiləşdirin</translation>
 <translation id="7280877790564589615">İcazə sorğusu göndərildi</translation>

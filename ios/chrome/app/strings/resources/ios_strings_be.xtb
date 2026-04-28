@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Сховішча запоўнена</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1190609913194133056">Цэнтр апавяшчэнняў</translation>
+<translation id="1199631150313925648">Увесці ўручную</translation>
 <translation id="1199963004393929848">Зялёная тэма</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладка захавана ў папцы "{title}" ва ўліковым запісе {email}}one{{count} закладка захавана ў папцы "{title}" ва ўліковым запісе {email}}few{{count} закладкі захаваны ў папцы "{title}" ва ўліковым запісе {email}}many{{count} закладак захавана ў папцы "{title}" ва ўліковым запісе {email}}other{{count} закладкі захавана ў папцы "{title}" ва ўліковым запісе {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Паведамленне аб прыватнасці</translation>
 <translation id="4420409367264901497">Рэдагаваць закладку</translation>
 <translation id="4425365312778464779">Гэты ўліковы запіс знаходзіцца пад кіраваннем</translation>
+<translation id="443008484043213881">Інструменты</translation>
 <translation id="4430277756566635951">Зараз выбрана: <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="4430505936695785931">Выкарыстоўвайце паролі, захаваныя ў іншых праграмах</translation>
 <translation id="4431224949908513835">Выберыце спосаб аплаты для аўтазапаўнення.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">Спытаць у рэжыме AI</translation>
 <translation id="5585019845078534178">Карткі</translation>
 <translation id="5591526871732898147">Далучаны відарыс {index}</translation>
+<translation id="5594597292424622277">Прыпыніць відэа</translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
 <translation id="559567008082979829">Наладзьце, каб спампоўкі выдаляліся праз адзін месяц.</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">Адкрыццё спасылак, размешчаных у іншых праграмах, у рэжыме інкогніта</translation>
 <translation id="8529767659511976195">Новае</translation>
 <translation id="8531572740963685410">Файлы PDF</translation>
+<translation id="8532059953132740592">Прайграць відэа</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>
 <translation id="8534481786647257214">Публікацыя ў Google+ выканана.</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
+<translation id="1199631150313925648">Introduzir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204075260022434100">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{{count} marcadores guardados em "{title}" na sua conta, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Aviso de Privacidade</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta conta é gerida</translation>
+<translation id="443008484043213881">Ferramentas</translation>
 <translation id="4430277756566635951">Seleção atual: <ph name="EMAIL" />. Selecione uma conta.</translation>
 <translation id="4430505936695785931">Aceda a palavras-passe guardadas noutras apps</translation>
 <translation id="4431224949908513835">Selecione um método de pagamento para preencher.</translation>

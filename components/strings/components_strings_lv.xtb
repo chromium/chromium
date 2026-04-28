@@ -2154,6 +2154,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4318312030194671742">Paint priekšskatījuma burtliča pakalpojums</translation>
 <translation id="4318566738941496689">Jūsu ierīces nosaukums un tīkla adrese</translation>
 <translation id="4320119221194966055">Aizdevumi privātpersonām</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Saņemta saite no ierīces “<ph name="DEVICE_NAME" />”}zero{Saņemtas # saites no ierīces “<ph name="DEVICE_NAME" />”}one{Saņemta # saite no ierīces “<ph name="DEVICE_NAME" />”}other{Saņemtas # saites no ierīces “<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="4325600325087822253">17. paplāte</translation>
 <translation id="4325863107915753736">Rakstu neizdevās atrast.</translation>
 <translation id="4326324639298822553">Pārbaudiet derīguma termiņa datumu un mēģiniet vēlreiz.</translation>
@@ -4982,6 +4983,7 @@ Papildu informācija:
 <translation id="8758529215314160755">Varat rediģēt savu vārdu savā <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /> (<ph name="ACCOUNT" />).</translation>
 <translation id="8759274551635299824">Kartes derīguma termiņš ir beidzies</translation>
 <translation id="87601671197631245">Šajā vietnē tiek izmantota novecojusi drošības konfigurācija, tādēļ var tikt atklāta jūsu informācija (piemēram, paroles, ziņojumi vai kredītkaršu dati), kad tā tiek nosūtīta uz šo vietni.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Nosūtīta saite no ierīces “<ph name="DEVICE_NAME" />”}zero{Nosūtītas # saites no ierīces “<ph name="DEVICE_NAME" />”}one{Nosūtīta # saite no ierīces “<ph name="DEVICE_NAME" />”}other{Nosūtītas # saites no ierīces “<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="8763927697961133303">USB ierīce</translation>
 <translation id="8763986294015493060">Aizveriet visus atvērtos inkognito režīma logus.</translation>
 <translation id="8766943070169463815">Ir atvērta drošu maksājumu akreditācijas datu autentifikācijas lapa</translation>

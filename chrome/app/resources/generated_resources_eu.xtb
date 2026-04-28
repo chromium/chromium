@@ -833,6 +833,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1567579616025300478">Webguneak ez du baimenik gailuan datuak gordetzeko.</translation>
 <translation id="156793199942386351">"<ph name="ACTION" />" ekintzari esleitu zaio dagoeneko "<ph name="CURRENTKEY" />". Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-en kontsola</translation>
+<translation id="157005186601751931">Ireki fitxa aplikazioan</translation>
 <translation id="1570604804919108255">Erakutsi jakinarazpenak</translation>
 <translation id="1570990174567554976">Laster-marken <ph name="BOOKMARK_TITLE" /> karpeta sortu da.</translation>
 <translation id="1571041387761170095">Ez da aurkitu segurua ez den edo beste nonbait erabili den pasahitzik</translation>
@@ -2313,7 +2314,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2565214867520763227">Aktibatu pantaila-irakurgailua</translation>
 <translation id="2566146433999774844">Sartu fitxa taldean <ph name="OWNER_FIRST_NAME" /> eta beste <ph name="NUM_OTHER_MEMBERS" /> erabiltzailerekin</translation>
 <translation id="256726287944589768">Erakutsi orri-oina fitxa berriaren orrian</translation>
-<translation id="2567313753132089780">Pasahitzak gutxienez 12 karaktere izan behar ditu, eta letra maiuskulak eta minuskulak, zenbakiak eta ikurrak eduki behar ditu</translation>
 <translation id="2568774940984945469">Informazio-barraren edukiontzia</translation>
 <translation id="2569972178052279830">Saltzailearen izena</translation>
 <translation id="257088987046510401">Gaiak</translation>
@@ -3163,7 +3163,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158033540161634471">Konfiguratu hatz-marka</translation>
 <translation id="3158203338449343164">Kendu aingura fitxa-bilaketari</translation>
-<translation id="3158732900546890991">Pasahitzak gutxienez 8 karaktere izan behar ditu, eta hauetako 2 gutxienez: maiuskulak, minuskulak, zenbakiak edo ikurrak</translation>
 <translation id="3158770568048368350">Baliteke horren ondorioz sare mugikorra une batez deskonektatzea</translation>
 <translation id="3159335509547415276">Lortu blokeatutako kontuei buruzko informazioa</translation>
 <translation id="3159493096109238499">Beixa</translation>
@@ -5647,6 +5646,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4881685975363383806">Ez gogorarazi hurrengoan</translation>
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4882312758060467256">Webgunerako sarbidea du</translation>
+<translation id="4882805770036405108">Ireki irakurtzeko modua bizkorrago lasterbide batekin. Irakurtzeko modua aktibatzeko/desaktibatzeko, sakatu ⌥ + ⌘ + R.</translation>
 <translation id="4882848900607400156">Kokapen zehatza partekatzen duzunean, Gemini-k zehatzago erantzun diezaieke zure galderei. Zure datuak ez dira erabiltzen AA generatiboko ereduak hobetzeko.</translation>
 <translation id="4882919381756638075">Webguneek mikrofonoa erabili ohi dute bideodeiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> webguneak.</translation>
@@ -6104,6 +6104,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5204967432542742771">Idatzi pasahitza</translation>
 <translation id="5205484256512407285">Ez erabili inoiz datu-konexioa transferentziak egiteko</translation>
 <translation id="520568280985468584">Gehitu da sarea. Minutu batzuk beharko dira sare mugikorra aktibatzeko.</translation>
+<translation id="5207395053540207113">Drive-ko edukia atzitzeko baimena eman nahi diozu Bilaketa zerbitzuari?</translation>
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-ko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
 <translation id="5208926629108082192">Gailuaren sare mugikorraren informazioa</translation>
@@ -8882,6 +8883,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7186903260115204164">Gehitu eskuz egindako marrazkiak, sinadurak eta nabarmentzeak marrazketa-tresna berriarekin</translation>
 <translation id="7186935534137027449">Aplikazioaren agindua</translation>
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
+<translation id="7188755083797868960">Ireki irakurtzeko modua bizkorrago lasterbide batekin. Irakurtzeko modua aktibatzeko/desaktibatzeko, sakatu Alt + Maius + R.</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
 <translation id="7189558282078169397">Beste gailu batzuetako fitxak</translation>
@@ -9007,6 +9009,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="727595954130325265">Arakatu produktuak</translation>
 <translation id="7277275452721470458">AA moduko jarduerak</translation>
 <translation id="727952162645687754">Deskarga-errorea</translation>
+<translation id="7280265656690268844">JavaScript-en optimizazioa desaktibatuta dago</translation>
 <translation id="7280649757394340890">Testua ahots bihurtzeko eginbidearen ahots-ezarpenak</translation>
 <translation id="7280683802406059877">Pertsonalizatu lasterbidea</translation>
 <translation id="7280877790564589615">Baimena behar da</translation>

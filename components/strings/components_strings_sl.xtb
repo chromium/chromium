@@ -152,6 +152,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1228893227497259893">Napačni identifikator subjekta</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (samodejno zaznano)</translation>
 <translation id="1232569758102978740">Brez naslova</translation>
+<translation id="1234539281285007945">Polje <ph name="FIELD_1" /> je obvezno</translation>
 <translation id="1236081509407217141">Želite omogočiti VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Ime vaše naprave</translation>
@@ -472,6 +473,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1721424275792716183">*Polje je obvezno</translation>
 <translation id="1723636263173393300">V tem pravilniku je lahko največ toliko bližnjic: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Kuverta 6</translation>
+<translation id="172754119609519423">Polje <ph name="FIELD_1" />, <ph name="FIELD_2" /> ali <ph name="FIELD_3" /> je obvezno</translation>
 <translation id="1727613060316725209">Potrdilo je veljavno</translation>
 <translation id="1728677426644403582">Ogledujete si izvorno kodo spletne strani</translation>
 <translation id="173080396488393970">Ta vrsta kartice ni podprta</translation>
@@ -1432,6 +1434,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3220264767789936523">Formalna oblačila</translation>
 <translation id="3223287115535306850">Animirana ikona ob zagonu aplikacije</translation>
 <translation id="3223425961342298674">Lokacija ni dovoljena</translation>
+<translation id="3225277284238802910">Polje <ph name="FIELD_1" /> ali <ph name="FIELD_2" /> je obvezno</translation>
 <translation id="3225319735946384299">Podpisovanje kode</translation>
 <translation id="3225919329040284222">Strežnik je poslal potrdilo, ki se ne ujema z vgrajenimi pričakovanji. Ta pričakovanja so zaradi vaše varnosti vključena za nekatera strogo zavarovana spletna mesta.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za vnovično nalaganje, da znova pošljete podatke za nalaganje strani.</translation>

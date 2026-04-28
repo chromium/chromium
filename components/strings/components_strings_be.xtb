@@ -2156,6 +2156,7 @@
 <translation id="4318312030194671742">Сэрвіс стварэння перадпраглядаў Paint</translation>
 <translation id="4318566738941496689">Сеткавы адрас і назва прылады</translation>
 <translation id="4320119221194966055">Асабістыя крэдыты</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Атрымана спасылка з прылады "<ph name="DEVICE_NAME" />"}one{Атрымана # спасылка з прылады "<ph name="DEVICE_NAME" />"}few{Атрымана # спасылкі з прылады "<ph name="DEVICE_NAME" />"}many{Атрымана # спасылак з прылады "<ph name="DEVICE_NAME" />"}other{Атрымана # спасылкі з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="4325600325087822253">Латок 17</translation>
 <translation id="4325863107915753736">Не ўдалося знайсці артыкул</translation>
 <translation id="4326324639298822553">Праверце тэрмін дзеяння і паўтарыце спробу</translation>
@@ -3186,6 +3187,7 @@
 <translation id="5968400720580217226">Рэжым AI</translation>
 <translation id="5969199813874624822">Захаваць і ўключыць адсочванне цаны</translation>
 <translation id="5969933937005244170">Адпаведныя адкрытыя ўкладкі будуць выкарыстоўвацца толькі ў тым выпадку, калі вы абагуліце іх у ланцужку</translation>
+<translation id="5972020793760134803">Пераключыцца на ўкладку</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шосты рулон</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
@@ -4981,6 +4983,7 @@
 <translation id="8758529215314160755">Вы можаце змяніць імя ва <ph name="BEGIN_LINK" />Уліковым запісе Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Тэрмін дзеяння гэтай карткі скончыўся</translation>
 <translation id="87601671197631245">Гэты сайт выкарыстоўвае ўстарэлую канфігурацыю бяспекі, таму звесткі пра вас (напрыклад, паролі, паведамленні або нумары крэдытных картак) пры іх адпраўцы на гэты сайт могуць быць раскрыты.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Адпраўлена спасылка з прылады "<ph name="DEVICE_NAME" />"}one{Адпраўлена # спасылка з прылады "<ph name="DEVICE_NAME" />"}few{Адпраўлена # спасылкі з прылады "<ph name="DEVICE_NAME" />"}many{Адпраўлена # спасылак з прылады "<ph name="DEVICE_NAME" />"}other{Адпраўлена # спасылкі з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="8763927697961133303">Прылада USB</translation>
 <translation id="8763986294015493060">Закрыць усе адкрытыя вокны ў рэжыме інкогніта</translation>
 <translation id="8766943070169463815">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў адкрыты</translation>

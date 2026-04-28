@@ -833,6 +833,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1567579616025300478">Este sitio no tiene permiso para guardar datos en tu dispositivo.</translation>
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ya está asignada a la acción <ph name="ACTION" />. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola JavaScript</translation>
+<translation id="157005186601751931">Abrir pestaña en la aplicación</translation>
 <translation id="1570604804919108255">Activar sonido de notificaciones</translation>
 <translation id="1570990174567554976">Carpeta de marcadores "<ph name="BOOKMARK_TITLE" />" creada.</translation>
 <translation id="1571041387761170095">No hay contraseñas poco seguras ni reutilizadas</translation>
@@ -2315,7 +2316,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
 <translation id="2566146433999774844">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
 <translation id="256726287944589768">Mostrar pie de página en la página Nueva pestaña</translation>
-<translation id="2567313753132089780">La contraseña debe tener al menos 12 caracteres e incluir letras mayúsculas y minúsculas, números y símbolos</translation>
 <translation id="2568774940984945469">Contenedor de barra de información</translation>
 <translation id="2569972178052279830">Nombre del comercio</translation>
 <translation id="257088987046510401">Temas</translation>
@@ -3165,7 +3165,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura la huella digital</translation>
 <translation id="3158203338449343164">Desfijar búsqueda en pestañas</translation>
-<translation id="3158732900546890991">La contraseña debe tener al menos 8 caracteres e incluir al menos dos de los siguientes elementos: letras mayúsculas, letras minúsculas, números o símbolos</translation>
 <translation id="3158770568048368350">Esto puede hacer que tu red móvil se desconecte brevemente</translation>
 <translation id="3159335509547415276">Más información sobre las cuentas bloqueadas</translation>
 <translation id="3159493096109238499">Beis</translation>
@@ -5650,6 +5649,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4881685975363383806">No me lo recuerdes la próxima vez</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tiene acceso a este sitio web</translation>
+<translation id="4882805770036405108">Abre el modo Lectura más rápido con una combinación de teclas. Pulsa ⌥ + ⌘ + R para alternar el modo Lectura.</translation>
 <translation id="4882848900607400156">Si compartes tu ubicación precisa, Gemini podrá responder a tus preguntas con más precisión. Tus datos no se usan para mejorar modelos de IA generativa.</translation>
 <translation id="4882919381756638075">Los sitios suelen acceder al micrófono para utilizarlo en funciones relacionadas con la comunicación, como el chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos los sitios de <ph name="WEBSITE_1" /></translation>
@@ -6107,6 +6107,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5204967432542742771">Escribe tu contraseña</translation>
 <translation id="5205484256512407285">No usar nunca datos móviles para hacer transferencias</translation>
 <translation id="520568280985468584">Se ha añadido la red correctamente. Es posible que la red móvil tarde varios minutos en activarse.</translation>
+<translation id="5207395053540207113">¿Permitir que la Búsqueda acceda al contenido de Drive?</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás utilizando un dispositivo ChromeOS apto.</translation>
 <translation id="5208926629108082192">Información de redes móviles del dispositivo</translation>
@@ -8889,6 +8890,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7186903260115204164">Añade dibujos a mano alzada, firmas y contenido resaltado con la nueva herramienta de dibujo</translation>
 <translation id="7186935534137027449">Comando de aplicación</translation>
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
+<translation id="7188755083797868960">Abre el modo Lectura más rápido con una combinación de teclas. Pulsa Alt + Mayús + R para alternar el modo Lectura.</translation>
 <translation id="7189234443051076392">Deja suficiente espacio en tu dispositivo</translation>
 <translation id="7189451821249468368">No tienes las licencias necesarias para registrar este dispositivo. Ponte en contacto con el departamento de ventas para comprar más. Si crees que este mensaje ha aparecido por error, ponte en contacto con el servicio de asistencia.</translation>
 <translation id="7189558282078169397">Pestañas de otros dispositivos</translation>
@@ -9014,6 +9016,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="727595954130325265">Ver ahora</translation>
 <translation id="7277275452721470458">Actividad del Modo IA</translation>
 <translation id="727952162645687754">Error de descarga</translation>
+<translation id="7280265656690268844">La optimización de JavaScript está desactivada</translation>
 <translation id="7280649757394340890">Ajustes de voz de conversión de texto a voz</translation>
 <translation id="7280683802406059877">Personalizar combinación de teclas</translation>
 <translation id="7280877790564589615">Permiso solicitado</translation>

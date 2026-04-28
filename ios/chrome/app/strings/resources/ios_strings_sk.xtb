@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Priestor je plný</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1190609913194133056">Centrum upozornení</translation>
+<translation id="1199631150313925648">Zadať manuálne</translation>
 <translation id="1199963004393929848">Zelený motív</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1204075260022434100">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{{count} záložky boli uložené do priečinka {title} vo vašom účte {email}}many{{count} bookmarks saved to "{title}" in your account, {email}}other{{count} záložiek bolo uložených do priečinka {title} vo vašom účte {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Oznámenie o ochrane súkromia</translation>
 <translation id="4420409367264901497">Upraviť záložku</translation>
 <translation id="4425365312778464779">Tento účet je spravovaný</translation>
+<translation id="443008484043213881">Nástroje</translation>
 <translation id="4430277756566635951">Aktuálne vybrané: <ph name="EMAIL" />. Vyberte účet.</translation>
 <translation id="4430505936695785931">Získajte uložené heslá v iných aplikáciách</translation>
 <translation id="4431224949908513835">Vyberte spôsob platby, ktorý chcete vyplniť.</translation>
@@ -1294,6 +1296,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5581786858144165447">Spýtať sa režimu umelej inteligencie</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5591526871732898147">Priložený obrázok {index}</translation>
+<translation id="5594597292424622277">Pozastaviť video</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="559567008082979829">Nastavte, aby sa vaše stiahnuté súbory po mesiaci odstraňovali.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
@@ -2163,6 +2166,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8528009254289981965">Otváranie odkazov z iných aplikácií v režime inkognito</translation>
 <translation id="8529767659511976195">Nové</translation>
 <translation id="8531572740963685410">Súbory PDF</translation>
+<translation id="8532059953132740592">Prehrať video</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpečné prehliadanie je zapnuté</translation>
 <translation id="8534481786647257214">Príspevok bol uverejnený v Google+.</translation>

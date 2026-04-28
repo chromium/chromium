@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">Сајтов нема дозвола за зачувување податоци на уредот.</translation>
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
+<translation id="157005186601751931">Отвори ја картичката во апликацијата</translation>
 <translation id="1570604804919108255">Вклучете го звукот на известувањата</translation>
 <translation id="1570990174567554976">Папката со обележувачи „<ph name="BOOKMARK_TITLE" />“ е создадена.</translation>
 <translation id="1571041387761170095">Нема слаби или повторно употребени лозинки</translation>
@@ -2328,7 +2329,6 @@
 <translation id="2565214867520763227">Вклучување читач на екран</translation>
 <translation id="2566146433999774844">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Прикажи го подножјето на страницата во нова картичка</translation>
-<translation id="2567313753132089780">Лозинката мора да има најмалку 12 знака и да опфаќа големи и мали букви, бројки и симболи</translation>
 <translation id="2568774940984945469">Контејнер на лента со информации</translation>
 <translation id="2569972178052279830">Име на продавачот на мало</translation>
 <translation id="257088987046510401">Теми</translation>
@@ -3178,7 +3178,6 @@
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3158033540161634471">Поставете го отпечатокот</translation>
 <translation id="3158203338449343164">Откачи го пребарувањето картички</translation>
-<translation id="3158732900546890991">Лозинката мора да има најмалку 8 знака и да опфаќа најмалку две од следниве: големи букви, мали букви, бројки или симболи</translation>
 <translation id="3158770568048368350">Ова може да предизвика краток прекин на врската на вашата мобилна мрежа</translation>
 <translation id="3159335509547415276">Дознајте повеќе за блокираните сметки</translation>
 <translation id="3159493096109238499">Беж</translation>
@@ -6122,6 +6121,7 @@
 <translation id="5204967432542742771">Внеси лозинка</translation>
 <translation id="5205484256512407285">Никогаш не користи мобилен интернет за пренос</translation>
 <translation id="520568280985468584">Мрежата е успешно додадена. Може да поминат неколку минути пред мобилната мрежа да стане активна.</translation>
+<translation id="5207395053540207113">Да ѝ се дозволи на „Пребарување“ да пристапува до содржините на Drive?</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> сака да провери дали користите уред со Chrome OS што ги исполнува условите.</translation>
 <translation id="5208926629108082192">Податоци за мобилната мрежа на уредот</translation>
@@ -9031,6 +9031,7 @@
 <translation id="727595954130325265">Купете сега</translation>
 <translation id="7277275452721470458">Активност на „AI-режим“</translation>
 <translation id="727952162645687754">Грешка при преземање</translation>
+<translation id="7280265656690268844">Оптимизацијата на JavaScript е исклучена</translation>
 <translation id="7280649757394340890">Гласовни поставки за „Од текст во говор“</translation>
 <translation id="7280683802406059877">Приспособете ја кратенката од тастатура</translation>
 <translation id="7280877790564589615">Побарана е дозвола</translation>

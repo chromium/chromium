@@ -837,6 +837,7 @@
 <translation id="1567579616025300478">Цьому сайту заборонено зберігати дані на вашому пристрої.</translation>
 <translation id="156793199942386351">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
+<translation id="157005186601751931">Відкрити вкладку в додатку</translation>
 <translation id="1570604804919108255">Увімкнути звук сповіщень</translation>
 <translation id="1570990174567554976">Створено папку закладок "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Немає ненадійних або повторно використаних паролів</translation>
@@ -2330,7 +2331,6 @@
 <translation id="2565214867520763227">Увімкніть програму зчитування з екрана</translation>
 <translation id="2566146433999774844">Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще стільки користувачів: <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Показувати нижній колонтитул на сторінці нової вкладки</translation>
-<translation id="2567313753132089780">Пароль має містити щонайменше 12 символів, зокрема великі й малі літери, цифри та символи</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
 <translation id="2569972178052279830">Ім’я або назва продавця</translation>
 <translation id="257088987046510401">Теми</translation>
@@ -3180,7 +3180,6 @@
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3158033540161634471">Налаштуйте відбиток</translation>
 <translation id="3158203338449343164">Відкріпити пошук на вкладках</translation>
-<translation id="3158732900546890991">Пароль має містити щонайменше 8 символів і включати щонайменше два з таких елементів: великі літери, малі літери, цифри або символи</translation>
 <translation id="3158770568048368350">Можливо, пристрій ненадовго від’єднається від мобільної мережі</translation>
 <translation id="3159335509547415276">Докладніше про заблоковані облікові записи</translation>
 <translation id="3159493096109238499">Бежевий</translation>
@@ -6123,6 +6122,7 @@
 <translation id="5204967432542742771">Введіть пароль</translation>
 <translation id="5205484256512407285">Ніколи не використовувати мобільний трафік для передавання</translation>
 <translation id="520568280985468584">Мобільну мережу додано. Для її активації може знадобитися кілька хвилин.</translation>
+<translation id="5207395053540207113">Надати Пошуку доступ до контенту на Диску?</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> хоче перевірити, чи користуєтеся ви придатним пристроєм з ОС Chrome.</translation>
 <translation id="5208926629108082192">Інформація про мобільну мережу пристрою</translation>
@@ -9033,6 +9033,7 @@
 <translation id="727595954130325265">Купити зараз</translation>
 <translation id="7277275452721470458">Дії в режимі ШІ</translation>
 <translation id="727952162645687754">Помилка завантаження</translation>
+<translation id="7280265656690268844">Оптимізацію JavaScript вимкнено</translation>
 <translation id="7280649757394340890">Налаштування голосу для синтезу мовлення</translation>
 <translation id="7280683802406059877">Налаштувати комбінацію клавіш</translation>
 <translation id="7280877790564589615">Потрібен дозвіл</translation>

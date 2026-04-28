@@ -555,7 +555,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3439276997620616816">여기에서 최근 탭을 확인할 수 있습니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
-<translation id="3448874648066942074">AI로 페이지 요약</translation>
 <translation id="3452832259067974318">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
@@ -855,7 +854,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4698757800236023795">활성(<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4710167854527459075">최신 기준 정렬</translation>
-<translation id="4718044610319080485">AI 어시스턴트 호출</translation>
 <translation id="4719927025381752090">번역 옵션 제공</translation>
 <translation id="4720556299488643018">수신 거부</translation>
 <translation id="4732120983431207637">스택 언와인더</translation>
@@ -1661,7 +1659,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7914399737746719723">앱이 설치됨</translation>
 <translation id="7917574899775263813">마지막 탭으로 이동</translation>
 <translation id="7919123827536834358">자동 번역할 언어</translation>
-<translation id="7921782882718083488">이 페이지 요약</translation>
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">알림을 악용하거나 최근에 방문하지 않은 사이트의 권한을 Chrome에서 자동으로 삭제합니다.</translation>
@@ -1825,7 +1822,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, 다중 선택되고 고정된 PIP 모드 탭</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
-<translation id="8547466829003330976">AI로 PDF 검토</translation>
 <translation id="8551513938758868521">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="8559961053328923750">Chrome은 사이트에서 광고 실적을 측정하기 위해 브라우저를 통해 공유할 수 있는 데이터의 총량을 제한합니다.</translation>
 <translation id="8559990750235505898">다른 언어로 된 페이지의 번역 옵션 제공</translation>

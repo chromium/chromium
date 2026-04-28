@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">तुमचे स्टोरेज पूर्ण भरले आहे</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1199631150313925648">मॅन्‍युअली एंटर करा</translation>
 <translation id="1199963004393929848">ग्रीन थीम</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1204075260022434100">{count,plural, =1{बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केले आहेत}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">गोपनीयता सूचना</translation>
 <translation id="4420409367264901497">बुकमार्क संपादित करा</translation>
 <translation id="4425365312778464779">हे खाते व्यवस्थापित केले जात आहे</translation>
+<translation id="443008484043213881">साधने</translation>
 <translation id="4430277756566635951">सध्या <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
 <translation id="4430505936695785931">इतर ॲप्समध्ये सेव्ह केलेले पासवर्ड मिळवा</translation>
 <translation id="4431224949908513835">भरण्यासाठी पेमेंट पद्धत निवडा.</translation>

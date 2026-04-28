@@ -835,6 +835,7 @@
 <translation id="1567579616025300478">Կայքը չի կարող տվյալներ պահել ձեր սարքում։</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="157005186601751931">Բացել ներդիրը հավելվածում</translation>
 <translation id="1570604804919108255">Միացնել ծանուցումների ձայնը</translation>
 <translation id="1570990174567554976">«<ph name="BOOKMARK_TITLE" />» էջանիշների պանակը ստեղծված է։</translation>
 <translation id="1571041387761170095">Թույլ կամ կրկնվող գաղտնաբառեր չեն հայտնաբերվել</translation>
@@ -2314,7 +2315,6 @@
 <translation id="2565214867520763227">Միացրեք էկրանի ընթերցիչը</translation>
 <translation id="2566146433999774844">Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUM_OTHER_MEMBERS" /> օգտատեր</translation>
 <translation id="256726287944589768">Ցույց տալ էջատակը Նոր ներդիր էջում</translation>
-<translation id="2567313753132089780">Գաղտնաբառը պետք է պարունակի առնվազն 12 նիշ և ներառի մեծատառ ու փոքրատառ տառեր, թվեր և նշաններ</translation>
 <translation id="2568774940984945469">Տեղեկագոտու կոնտեյներ</translation>
 <translation id="2569972178052279830">Խանութի անվանումը</translation>
 <translation id="257088987046510401">Թեմաներ</translation>
@@ -3164,7 +3164,6 @@
 <translation id="3157931365184549694">Վերականգնել</translation>
 <translation id="3158033540161634471">Մատնահետքի կարգավորում</translation>
 <translation id="3158203338449343164">Ապամրացնել ներդիրների որոնումը</translation>
-<translation id="3158732900546890991">Գաղտնաբառը պետք է առնվազն 8 նիշ պարունակի և ներառի հետևյալներից առնվազն երկուսը՝ մեծատառեր, փոքրատառեր, թվեր կամ նշաններ</translation>
 <translation id="3158770568048368350">Բջջային կապը կարող է կարճ ժամանակով անջատվել</translation>
 <translation id="3159335509547415276">Իմանալ ավելին արգելափակված հաշիվների մասին</translation>
 <translation id="3159493096109238499">Բեժ</translation>
@@ -6106,6 +6105,7 @@
 <translation id="5204967432542742771">Մուտքագրեք գաղտնաբառը</translation>
 <translation id="5205484256512407285">Փոխանցելու համար երբեք չօգտագործել բջջային ինտերնետ</translation>
 <translation id="520568280985468584">Ցանցն ավելացվեց։ Կարող է մի քանի րոպե տևել, մինչև բջջային ցանցն ակտիվանա։</translation>
+<translation id="5207395053540207113">Թույլատրե՞լ Որոնմանը օգտագործել Drive-ի բովանդակությունը</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="520840839826327499">«<ph name="SERVICE_NAME" />» ծառայությունը ցանկանում է տեղեկություններ ստանալ ChromeOS սարքի մասին։</translation>
 <translation id="5208926629108082192">Տեղեկություններ սարքի բջջային ցանցի մասին</translation>
@@ -9011,6 +9011,7 @@
 <translation id="727595954130325265">Գնել</translation>
 <translation id="7277275452721470458">ԱԲ ռեժիմի պատմություն</translation>
 <translation id="727952162645687754">Ներբեռնման սխալ</translation>
+<translation id="7280265656690268844">JavaScript-ի օպտիմալացումն անջատված է</translation>
 <translation id="7280649757394340890">Տեքստի հնչեցման կարգա­վորումներ</translation>
 <translation id="7280683802406059877">Կարգավորել ստեղնային դյուրանցումը</translation>
 <translation id="7280877790564589615">Թույլտվության հարցումն ուղարկված է</translation>

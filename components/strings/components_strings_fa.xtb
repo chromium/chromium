@@ -2041,7 +2041,7 @@
 <translation id="4171400957073367226">امضای تأیید نامناسب</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4171557247032367596">قفل و کلیدسازی</translation>
-<translation id="4172051516777682613">همیشه نشان داده شود</translation>
+<translation id="4172051516777682613">همیشه نشان دادن</translation>
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> مورد دیگر}one{<ph name="ITEM_COUNT" /> مورد دیگر}other{<ph name="ITEM_COUNT" /> مورد دیگر}}</translation>
 <translation id="4176463684765177261">غیرفعال شد</translation>
@@ -2052,7 +2052,7 @@
 <translation id="4190446002599583608">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="4191334393248735295">طول</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
-<translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
+<translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
 <translation id="4199637363739172710">ساعت</translation>
 <translation id="4202554117186904723">رول پنجم</translation>
@@ -2157,6 +2157,7 @@
 <translation id="4318312030194671742">سرویس ترکیب‌کننده پیش‌نمایش نقاشی</translation>
 <translation id="4318566738941496689">نام دستگاه و نشانی شبکه شما</translation>
 <translation id="4320119221194966055">وام شخصی</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{پیوند از <ph name="DEVICE_NAME" /> دریافت شد}one{‫# پیوند از <ph name="DEVICE_NAME" /> دریافت شد}other{‫# پیوند از <ph name="DEVICE_NAME" /> دریافت شد}}</translation>
 <translation id="4325600325087822253">سینی ۱۷</translation>
 <translation id="4325863107915753736">مقاله یافت نشد.</translation>
 <translation id="4326324639298822553">تاریخ انقضا را بررسی و دوباره امتحان کنید</translation>
@@ -4984,6 +4985,7 @@
 <translation id="8758529215314160755">‏می‌توانید نامتان را در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود (<ph name="ACCOUNT" />) ویرایش کنید</translation>
 <translation id="8759274551635299824">کارت منقضی شده است</translation>
 <translation id="87601671197631245">پیکربندی امنیتی این سایت قدیمی است و ممکن است اطلاعاتتان (برای مثال، گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) هنگام ارسال شدن به این سایت، درمعرض خطر قرار گیرد.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{پیوند از <ph name="DEVICE_NAME" /> ارسال شد}one{‫# پیوند از <ph name="DEVICE_NAME" /> ارسال شد}other{‫# پیوند از <ph name="DEVICE_NAME" /> ارسال شد}}</translation>
 <translation id="8763927697961133303">‏دستگاه USB</translation>
 <translation id="8763986294015493060">بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند</translation>
 <translation id="8766943070169463815">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن باز شد</translation>

@@ -2156,6 +2156,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4318312030194671742">Veebilehe eelvaate koostamisteenus</translation>
 <translation id="4318566738941496689">Teie seadme nimi ja võrguaadress</translation>
 <translation id="4320119221194966055">Eraisikulaenud</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link võeti seadmest <ph name="DEVICE_NAME" /> vastu.}other{# linki võeti seadmest <ph name="DEVICE_NAME" /> vastu.}}</translation>
 <translation id="4325600325087822253">Salv 17</translation>
 <translation id="4325863107915753736">Artiklit ei leitud</translation>
 <translation id="4326324639298822553">Kontrollige aegumiskuupäeva ja proovige uuesti</translation>
@@ -4983,6 +4984,7 @@ Lisateave:
 <translation id="8758529215314160755">Nime saate muuta <ph name="BEGIN_LINK" />oma Google’i kontol<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">See kaart on aegunud</translation>
 <translation id="87601671197631245">See sait kasutab vananenud turvaseadistust, mis võib paljastada teie teabe (näiteks paroolid, sõnumid või krediitkaardid), kui see saadetakse sellele saidile.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link saadeti seadmest <ph name="DEVICE_NAME" />.}other{# linki saadeti seadmest <ph name="DEVICE_NAME" />.}}</translation>
 <translation id="8763927697961133303">USB-seade</translation>
 <translation id="8763986294015493060">Suletakse kõik praegu avatud inkognito aknad</translation>
 <translation id="8766943070169463815">Turvalise maksemandaadi autentimisleht on avatud</translation>

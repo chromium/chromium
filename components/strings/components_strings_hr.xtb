@@ -2155,6 +2155,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4318312030194671742">Usluga za slaganje za pregled u Paintu</translation>
 <translation id="4318566738941496689">Naziv uređaja i mrežna adresa</translation>
 <translation id="4320119221194966055">Osobni krediti</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Primljena je veza s uređaja <ph name="DEVICE_NAME" />}one{Primljena je # veza s uređaja <ph name="DEVICE_NAME" />}few{Primljene su # veze s uređaja <ph name="DEVICE_NAME" />}other{Primljeno je # veza s uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Ladica 17</translation>
 <translation id="4325863107915753736">Članak nije pronađen</translation>
 <translation id="4326324639298822553">Provjerite datum isteka, pa pokušajte ponovo</translation>
@@ -4983,6 +4984,7 @@ Dodatne pojedinosti:
 <translation id="8758529215314160755">Ime možete urediti na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ta je kartica istekla</translation>
 <translation id="87601671197631245">Ova web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke, poruke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Veza je poslana s uređaja <ph name="DEVICE_NAME" />}one{# veza je poslana s uređaja <ph name="DEVICE_NAME" />}few{# veze su poslane s uređaja <ph name="DEVICE_NAME" />}other{# veza je poslano s uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve anonimne prozore koji su trenutačno otvoreni</translation>
 <translation id="8766943070169463815">Otvoren je list s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>

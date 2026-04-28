@@ -834,6 +834,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1567579616025300478">Den här webbplatsen får inte spara data på din enhet.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> har redan tilldelats åtgärden <ph name="ACTION" />. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
+<translation id="157005186601751931">Öppna fliken i appen</translation>
 <translation id="1570604804919108255">Slå på ljudet för aviseringar</translation>
 <translation id="1570990174567554976">Bokmärkesmappen <ph name="BOOKMARK_TITLE" /> har skapats.</translation>
 <translation id="1571041387761170095">Inga svaga eller återanvända lösenord</translation>
@@ -2327,7 +2328,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2565214867520763227">Aktivera skärmläsaren</translation>
 <translation id="2566146433999774844">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och <ph name="NUM_OTHER_MEMBERS" /> till</translation>
 <translation id="256726287944589768">Visa sidfot på sidan Ny flik</translation>
-<translation id="2567313753132089780">Lösenordet måste bestå av minst 12 tecken och innehålla en blandning av versaler, gemener, siffror och symboler</translation>
 <translation id="2568774940984945469">Infobar-behållare</translation>
 <translation id="2569972178052279830">Återförsäljarens namn</translation>
 <translation id="257088987046510401">Teman</translation>
@@ -3177,7 +3177,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3158033540161634471">Konfigurera fingeravtryck</translation>
 <translation id="3158203338449343164">Lossa Sök bland flikar</translation>
-<translation id="3158732900546890991">Lösenordet måste bestå av minst åtta tecken och innehålla minst två av följande: versaler, gemener, siffror eller symboler</translation>
 <translation id="3158770568048368350">Mobilnätverket kan kopplas från tillfälligt</translation>
 <translation id="3159335509547415276">Läs mer om blockerade konton</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -5664,6 +5663,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4881685975363383806">Påminn mig inte nästa gång</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4882312758060467256">Har åtkomst till webbplatsen</translation>
+<translation id="4882805770036405108">Öppna läsläget snabbare med en genväg. Tryck på ⌥ + ⌘ + R för att aktivera eller inaktivera läsläget.</translation>
 <translation id="4882848900607400156">Gemini kan ge mer exakta svar på dina frågor om du delar din plats. Din data används inte för att förbättra generativa AI-modeller.</translation>
 <translation id="4882919381756638075">Åtkomst till mikrofonen brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="4883436287898674711">Alla <ph name="WEBSITE_1" />-webbplatser</translation>
@@ -6121,6 +6121,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5204967432542742771">Ange lösenord</translation>
 <translation id="5205484256512407285">Överför aldrig via mobildata</translation>
 <translation id="520568280985468584">Nätverket har lagts till. Det kan ta flera minuter innan mobilnätverket blir aktivt.</translation>
+<translation id="5207395053540207113">Vill du ge Sök åtkomst till Drive-innehåll?</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kontrollera om du använder en ChromeOS-enhet som uppfyller villkoren.</translation>
 <translation id="5208926629108082192">Information om enhetens mobilnätverk</translation>
@@ -8904,6 +8905,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7186903260115204164">Lägg till frihandsteckningar, signaturer och markeringar med det nya ritverktyget</translation>
 <translation id="7186935534137027449">Appkommando</translation>
 <translation id="7188508872042490670">Webbplatsdata på enheten</translation>
+<translation id="7188755083797868960">Öppna läsläget snabbare med en genväg. Tryck på Alt + Skift + R för att aktivera eller inaktivera läsläget.</translation>
 <translation id="7189234443051076392">Kontrollera att det finns tillräckligt mycket utrymme på enheten</translation>
 <translation id="7189451821249468368">Du har inte tillräckligt med uppgraderingar för att registrera enheten. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="7189558282078169397">Flikar från andra enheter</translation>
@@ -9029,6 +9031,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="727595954130325265">Köp nu</translation>
 <translation id="7277275452721470458">Aktivitet i AI-läget</translation>
 <translation id="727952162645687754">Nedladdningsfel</translation>
+<translation id="7280265656690268844">JavaScript-optimering är inaktiverat</translation>
 <translation id="7280649757394340890">Röstinställningar för text till tal</translation>
 <translation id="7280683802406059877">Anpassa kortkommando</translation>
 <translation id="7280877790564589615">Tillstånd begärt</translation>

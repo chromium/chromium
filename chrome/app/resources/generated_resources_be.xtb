@@ -836,6 +836,7 @@
 <translation id="1567579616025300478">Гэтаму сайту забаронена захоўваць даныя на вашай прыладзе.</translation>
 <translation id="156793199942386351">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />". Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
 <translation id="1567993339577891801">Кансоль JavaScript</translation>
+<translation id="157005186601751931">Адкрыць укладку ў праграме</translation>
 <translation id="1570604804919108255">Уключыць гук апавяшчэнняў</translation>
 <translation id="1570990174567554976">Створана папка закладак "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Няма слабых або ўжытых раней пароляў</translation>
@@ -2314,7 +2315,6 @@
 <translation id="2565214867520763227">Уключыце праграму чытання з экрана</translation>
 <translation id="2566146433999774844">Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ некалькі (<ph name="NUM_OTHER_MEMBERS" />) карыстальнікаў</translation>
 <translation id="256726287944589768">Паказваць ніжні калонтытул на старонцы новай укладкі</translation>
-<translation id="2567313753132089780">Пароль павінен змяшчаць не менш за 12 сімвалаў, у тым ліку вялікія і малыя літары, лічбы і спецыяльныя сімвалы</translation>
 <translation id="2568774940984945469">Кантэйнер панэлі інфармацыі</translation>
 <translation id="2569972178052279830">Імя ці назва рознічнага прадаўца</translation>
 <translation id="257088987046510401">Тэмы</translation>
@@ -3164,7 +3164,6 @@
 <translation id="3157931365184549694">Аднавіць</translation>
 <translation id="3158033540161634471">Наладжванне адбітка пальца</translation>
 <translation id="3158203338449343164">Адмацаваць пошук па ўкладках</translation>
-<translation id="3158732900546890991">Пароль павінен змяшчаць не менш за 8 сімвалаў, у тым ліку як мінімум двух з наступных тыпаў: вялікія літары, малыя літары, лічбы або спецыяльныя сімвалы</translation>
 <translation id="3158770568048368350">Гэта можа прывесці да кароткачасовага адключэння мабільнай сеткі</translation>
 <translation id="3159335509547415276">Даведацца больш пра заблакіраваныя ўліковыя запісы</translation>
 <translation id="3159493096109238499">Бэжавы</translation>
@@ -6106,6 +6105,7 @@
 <translation id="5204967432542742771">Увядзіце пароль</translation>
 <translation id="5205484256512407285">Ніколі не выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="520568280985468584">Сотавая сетка дададзена. Яе актывацыя можа заняць некалькі хвілін.</translation>
+<translation id="5207395053540207113">Дазволіць Пошуку доступ да змесціва Дыска?</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> запытвае дазвол праверыць, ці выкарыстоўваеце вы прыдатную прыладу Chrome OS.</translation>
 <translation id="5208926629108082192">Інфармацыя аб мабільнай сетцы прылады</translation>
@@ -9018,6 +9018,7 @@
 <translation id="727595954130325265">Купіць</translation>
 <translation id="7277275452721470458">Дзеянні ў рэжыме AI</translation>
 <translation id="727952162645687754">Памылка спампоўкі</translation>
+<translation id="7280265656690268844">Аптымізацыя JavaScript выключана</translation>
 <translation id="7280649757394340890">Налады голасу для сінтэзу маўлення</translation>
 <translation id="7280683802406059877">Наладзіць спалучэнне клавіш</translation>
 <translation id="7280877790564589615">Дазвол запытаны</translation>

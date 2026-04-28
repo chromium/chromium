@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Lagringsplassen din er full</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
+<translation id="1199631150313925648">Angi manuelt</translation>
 <translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din ({email})}other{{count} bokmerker er lagret i «{title}» i kontoen din ({email})}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Merknad om personvern</translation>
 <translation id="4420409367264901497">Rediger bokmerke</translation>
 <translation id="4425365312778464779">Denne kontoen administreres</translation>
+<translation id="443008484043213881">Verktøy</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt. Velg en konto.</translation>
 <translation id="4430505936695785931">Få tilgang til lagrede passord i andre apper</translation>
 <translation id="4431224949908513835">Velg betalingsmåten du vil fylle ut.</translation>

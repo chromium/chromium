@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Неверный идентификатор объекта</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (определен автоматически)</translation>
 <translation id="1232569758102978740">Без имени</translation>
+<translation id="1234539281285007945">Поле "<ph name="FIELD_1" />" обязательно для заполнения.</translation>
 <translation id="1236081509407217141">Разрешить VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Название вашего устройства</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">*Обязательное поле</translation>
 <translation id="1723636263173393300">Максимальное число ярлыков для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
+<translation id="172754119609519423">Необходимо заполнить поле "<ph name="FIELD_1" />", "<ph name="FIELD_2" />" или "<ph name="FIELD_3" />".</translation>
 <translation id="1727613060316725209">Действительный сертификат</translation>
 <translation id="1728677426644403582">Вы просматриваете код страницы</translation>
 <translation id="173080396488393970">Этот тип карты не поддерживается.</translation>
@@ -1431,6 +1433,7 @@
 <translation id="3220264767789936523">Официальная одежда</translation>
 <translation id="3223287115535306850">Троббер запуска приложения</translation>
 <translation id="3223425961342298674">Доступ к данным о местоположении запрещен</translation>
+<translation id="3225277284238802910">Необходимо заполнить поле "<ph name="FIELD_1" />" или "<ph name="FIELD_2" />".</translation>
 <translation id="3225319735946384299">Подписывание кода</translation>
 <translation id="3225919329040284222">Сертификат не соответствует встроенным параметрам определенных сайтов с высоким уровнем безопасности.</translation>
 <translation id="3226128629678568754">Чтобы повторно ввести данные, необходимые для загрузки страницы, нажмите "Обновить".</translation>

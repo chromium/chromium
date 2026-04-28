@@ -2156,6 +2156,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4318312030194671742">Verfvoorskou-samestellerdiens</translation>
 <translation id="4318566738941496689">Jou toestelnaam en netwerkadres</translation>
 <translation id="4320119221194966055">Persoonlike lenings</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Skakel is van <ph name="DEVICE_NAME" /> af ontvang}other{# skakels is van <ph name="DEVICE_NAME" /> af ontvang}}</translation>
 <translation id="4325600325087822253">Laai 17</translation>
 <translation id="4325863107915753736">Kon nie artikel vind nie</translation>
 <translation id="4326324639298822553">Gaan jou vervaldatum na en probeer weer</translation>
@@ -4982,6 +4983,7 @@ Bykomende besonderhede:
 <translation id="8758529215314160755">Jy kan jou naam wysig in jou <ph name="BEGIN_LINK" />Google-rekening <ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Hierdie kaart het verval</translation>
 <translation id="87601671197631245">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde, boodskappe of kredietkaarte) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Skakel is van <ph name="DEVICE_NAME" /> af gestuur}other{# skakels is van <ph name="DEVICE_NAME" /> af gestuur}}</translation>
 <translation id="8763927697961133303">USB-toestel</translation>
 <translation id="8763986294015493060">Maak alle Incognito-vensters wat tans oop is, toe</translation>
 <translation id="8766943070169463815">Veilige betaling se eiebewysstawingblad is oop</translation>

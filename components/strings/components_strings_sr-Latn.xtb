@@ -152,6 +152,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1228893227497259893">Pogrešan identifikator entiteta</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatski otkriveno)</translation>
 <translation id="1232569758102978740">Bez naslova</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> je obavezno polje</translation>
 <translation id="1236081509407217141">Dozvolićete VR?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">Naziv uređaja</translation>
@@ -472,6 +473,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1721424275792716183">* Polje je obavezno</translation>
 <translation id="1723636263173393300">Maksimalni broj prečica koji ove smernice mogu da imaju je <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Koverta You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> ili <ph name="FIELD_3" /> je obavezno polje</translation>
 <translation id="1727613060316725209">Sertifikat je važeći</translation>
 <translation id="1728677426644403582">Pregledate izvor veb-stranice.</translation>
 <translation id="173080396488393970">Ovaj tip kartice nije podržan</translation>
@@ -1432,6 +1434,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3220264767789936523">Svečana odeća</translation>
 <translation id="3223287115535306850">Ikona za učitavanje pri pokretanju aplikacije</translation>
 <translation id="3223425961342298674">Lokacija nije dozvoljena</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> ili <ph name="FIELD_2" /> je obavezno polje</translation>
 <translation id="3225319735946384299">Potpisivanje koda</translation>
 <translation id="3225919329040284222">Server je prikazao sertifikat koji se ne podudara sa ugrađenim očekivanjima. Ta očekivanja su obuhvaćena za određene veb-sajtove sa jakim bezbednosnim merama kako bi vas zaštitila.</translation>
 <translation id="3226128629678568754">Pritisnite dugme Ponovo učitaj da biste ponovo poslali podatke potrebne za učitavanje stranice.</translation>
@@ -2156,6 +2159,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4318312030194671742">Usluga slaganja za prikaz u Paint-u</translation>
 <translation id="4318566738941496689">Naziv i mrežna adresa uređaja</translation>
 <translation id="4320119221194966055">Lične pozajmice</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Primili ste link sa uređaja <ph name="DEVICE_NAME" />}one{Primili ste # link sa uređaja <ph name="DEVICE_NAME" />}few{Primili ste # linka sa uređaja <ph name="DEVICE_NAME" />}other{Primili ste # linkova sa uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">17. fioka</translation>
 <translation id="4325863107915753736">Nismo uspeli da pronađemo članak</translation>
 <translation id="4326324639298822553">Proverite datum isteka i probajte ponovo</translation>
@@ -4983,6 +4987,7 @@ Dodatni detalji:
 <translation id="8758529215314160755">Možete da izmenite ime na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ova kartica je istekla</translation>
 <translation id="87601671197631245">Ovaj sajt koristi zastarelu bezbednosnu konfiguraciju koja može da otkrije vaše informacije (na primer, lozinke, poruke ili kreditne kartice) kada se šalju tom sajtu.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link je poslat sa uređaja <ph name="DEVICE_NAME" />}one{# link je poslat sa uređaja <ph name="DEVICE_NAME" />}few{# linka su poslata sa uređaja <ph name="DEVICE_NAME" />}other{# linkova je poslato sa uređaja <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8763986294015493060">Zatvorite sve prozore bez arhiviranja koji su trenutno otvoreni</translation>
 <translation id="8766943070169463815">Tabela za potvrdu akreditiva za bezbedno plaćanje je otvorena</translation>

@@ -835,6 +835,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1567579616025300478">Ova web-lokacija ne smije spremati podatke na vaš uređaj</translation>
 <translation id="156793199942386351">Tipka <ph name="CURRENTKEY" /> već je dodijeljena radnji <ph name="ACTION" />. Pritisnite bilo koju tipku za <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konzola JavaScripta</translation>
+<translation id="157005186601751931">Otvori karticu u aplikaciji</translation>
 <translation id="1570604804919108255">Uključi zvuk obavijesti</translation>
 <translation id="1570990174567554976">Izrađena je mapa oznaka <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nema slabih ili višestruko korištenih zaporki</translation>
@@ -2317,7 +2318,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2565214867520763227">Uključite čitač zaslona</translation>
 <translation id="2566146433999774844">Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još ovoliko osoba: <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="256726287944589768">Prikaži podnožje na stranici Nova kartica</translation>
-<translation id="2567313753132089780">Zaporka mora imati najmanje 12 znakova te uključivati velika i mala slova, brojeve i simbole</translation>
 <translation id="2568774940984945469">Spremnik infotrake</translation>
 <translation id="2569972178052279830">Naziv prodavača</translation>
 <translation id="257088987046510401">Teme</translation>
@@ -3167,7 +3167,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavljanje otiska prsta</translation>
 <translation id="3158203338449343164">Otkvači pretraživanje kartica</translation>
-<translation id="3158732900546890991">Zaporka mora imati najmanje osam znakova i uključivati najmanje dvije od sljedećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">Veza s mobilnom mrežom može se nakratko prekinuti</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
 <translation id="3159493096109238499">Bež</translation>
@@ -6109,6 +6108,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5204967432542742771">Unesite zaporku</translation>
 <translation id="5205484256512407285">Nikad ne upotrebljavaj mobilne podatke za prijenos</translation>
 <translation id="520568280985468584">Mreža je uspješno dodana. Može proteći nekoliko minuta dok vaša mobilna mreža postane aktivna.</translation>
+<translation id="5207395053540207113">Želite li dopustiti Pretraživanju da pristupa sadržaju Diska?</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> želi provjeriti upotrebljavate li uređaj s Chrome OS-om koji ispunjava kriterije.</translation>
 <translation id="5208926629108082192">Informacije o mobilnoj mreži uređaja</translation>
@@ -9017,6 +9017,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="727595954130325265">Kupite odmah</translation>
 <translation id="7277275452721470458">Aktivnost AI načina</translation>
 <translation id="727952162645687754">Pogreška preuzimanja</translation>
+<translation id="7280265656690268844">Optimizacija JavaScripta je isključena</translation>
 <translation id="7280649757394340890">Postavke glasa za pretvaranje teksta u govor</translation>
 <translation id="7280683802406059877">Prilagodba tipkovnog prečaca</translation>
 <translation id="7280877790564589615">Traženje dopuštenja</translation>

@@ -555,7 +555,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3439276997620616816">Suas guias recentes serão mostradas aqui</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
 <translation id="3444179773590444986">Enviar feedback sobre o tema escuro para sites?</translation>
-<translation id="3448874648066942074">Resumir página com IA</translation>
 <translation id="3452832259067974318">Para proteger sua privacidade, o Chrome não vai preencher a senha automaticamente neste campo.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Você pode escolher seu mecanismo de pesquisa</translation>
@@ -856,7 +855,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4698757800236023795">Guias ativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4710167854527459075">Ordenar por mais recente</translation>
-<translation id="4718044610319080485">Aciona o assistente de IA</translation>
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
 <translation id="4720556299488643018">Cancelar inscrição</translation>
 <translation id="4732120983431207637">Recuperador de pilha</translation>
@@ -1662,7 +1660,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7914399737746719723">App instalado</translation>
 <translation id="7917574899775263813">Acessar a última guia</translation>
 <translation id="7919123827536834358">Traduzir estes idiomas automaticamente</translation>
-<translation id="7921782882718083488">Resumir esta página</translation>
 <translation id="7926975587469166629">Apelido do cartão</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">O Chrome remove automaticamente permissões de sites que enviam muitas notificações ou sem visitas recentes</translation>
@@ -1826,7 +1823,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, guia picture-in-picture fixada com várias seleções</translation>
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
-<translation id="8547466829003330976">Revisar PDF com IA</translation>
 <translation id="8551513938758868521">Bloquear guias anônimas ao sair do Chrome</translation>
 <translation id="8559961053328923750">O Chrome limita a quantidade total de dados que os sites podem compartilhar pelo navegador para medir a performance de anúncios</translation>
 <translation id="8559990750235505898">Oferecer para traduzir páginas em outros idiomas</translation>

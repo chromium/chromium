@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1190609913194133056">Център за известия</translation>
+<translation id="1199631150313925648">Ръчно въвеждане</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1204075260022434100">{count,plural, =1{Отметката е запазена в папката „{title}“ в профила ви {email}}other{{count} отметки са запазени в папката „{title}“ в профила ви {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Съобщение за поверителност</translation>
 <translation id="4420409367264901497">Редактиране на отметката</translation>
 <translation id="4425365312778464779">Този профил е управляван</translation>
+<translation id="443008484043213881">Инструменти</translation>
 <translation id="4430277756566635951">Понастоящем сте избрали: <ph name="EMAIL" />. Изберете профил.</translation>
 <translation id="4430505936695785931">Получавайте запазени пароли в други приложения</translation>
 <translation id="4431224949908513835">Изберете начин на плащане, който да се попълни.</translation>

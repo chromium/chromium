@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Tes o espazo de almacenamento cheo</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
+<translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204075260022434100">{count,plural, =1{Gardouse o marcador no cartafol "{title}" da túa conta ({email})}other{Gardáronse {count} marcadores no cartafol "{title}" da túa conta ({email})}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Aviso de privacidade</translation>
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4425365312778464779">Esta conta está xestionada</translation>
+<translation id="443008484043213881">Ferramentas</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Escolle unha conta.</translation>
 <translation id="4430505936695785931">Accede a contrasinais gardados noutras aplicacións</translation>
 <translation id="4431224949908513835">Selecciona un método de pago para inserilo.</translation>
@@ -1294,6 +1296,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5581786858144165447">Pregunta co modo IA</translation>
 <translation id="5585019845078534178">Tarxetas</translation>
 <translation id="5591526871732898147">Imaxe anexa {index}</translation>
+<translation id="5594597292424622277">Pausar o vídeo</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="559567008082979829">Configura as descargas para que se eliminen ao cabo dun mes.</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
@@ -2163,6 +2166,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8528009254289981965">Abre ligazóns desde outras aplicacións no modo de incógnito</translation>
 <translation id="8529767659511976195">Novidade</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">Reproducir o vídeo</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="8534481786647257214">Completouse a publicación en Google+.</translation>

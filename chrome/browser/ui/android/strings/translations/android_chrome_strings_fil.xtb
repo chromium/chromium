@@ -555,7 +555,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
 <translation id="3444179773590444986">Magbahagi ng feedback sa madilim na tema para sa mga site?</translation>
-<translation id="3448874648066942074">Ibuod ang page gamit ang AI</translation>
 <translation id="3452832259067974318">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang password mo sa field na ito.</translation>
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puwede mong piliin ang iyong search engine</translation>
@@ -855,7 +854,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4698757800236023795">Aktibo (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4710167854527459075">Ayon sa pinakabago</translation>
-<translation id="4718044610319080485">Ini-invoke ang AI Assistant</translation>
 <translation id="4719927025381752090">Mag-alok na magsalin</translation>
 <translation id="4720556299488643018">Mag-unsubscribe</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1661,7 +1659,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7914399737746719723">Na-install ang app</translation>
 <translation id="7917574899775263813">Pumunta sa huling tab</translation>
 <translation id="7919123827536834358">Awtomatikong isalin ang mga wikang ito</translation>
-<translation id="7921782882718083488">Ibuod ang page na ito</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Awtomatikong inaalis ng Chrome ang mga pahintulot sa mga site na inaabuso ang mga notification o hindi mo binisita kamakailan</translation>
@@ -1825,7 +1822,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin na Picture-in-Picture na Tab</translation>
 <translation id="8540136935098276800">Maglagay ng URL na tama ang pag-format</translation>
 <translation id="854522910157234410">Buksan ang page na ito</translation>
-<translation id="8547466829003330976">Suriin ang PDF gamit ang AI</translation>
 <translation id="8551513938758868521">I-lock ang mga tab na Incognito kapag lumabas ka sa Chrome</translation>
 <translation id="8559961053328923750">Nililimitahan ng Chrome ang kabuuang dami ng data na puwedeng i-share ng mga site sa pamamagitan ng browser para masukat ang performance ng ad</translation>
 <translation id="8559990750235505898">Mag-alok na magsalin ng mga page sa iba pang wika</translation>

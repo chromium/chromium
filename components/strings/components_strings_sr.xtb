@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Погрешан идентификатор ентитета</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (аутоматски откривено)</translation>
 <translation id="1232569758102978740">Без наслова</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> је обавезно поље</translation>
 <translation id="1236081509407217141">Дозволићете ВР?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">Назив уређаја</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Поље је обавезно</translation>
 <translation id="1723636263173393300">Максимални број пречица који ове смернице могу да имају је <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Коверта You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> или <ph name="FIELD_3" /> је обавезно поље</translation>
 <translation id="1727613060316725209">Сертификат је важећи</translation>
 <translation id="1728677426644403582">Прегледате извор веб-странице.</translation>
 <translation id="173080396488393970">Овај тип картице није подржан</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">Свечана одећа</translation>
 <translation id="3223287115535306850">Икона за учитавање при покретању апликације</translation>
 <translation id="3223425961342298674">Локација није дозвољена</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> или <ph name="FIELD_2" /> је обавезно поље</translation>
 <translation id="3225319735946384299">Потписивање кода</translation>
 <translation id="3225919329040284222">Сервер је приказао сертификат који се не подудара са уграђеним очекивањима. Та очекивања су обухваћена за одређене веб-сајтове са јаким безбедносним мерама како би вас заштитила.</translation>
 <translation id="3226128629678568754">Притисните дугме Поново учитај да бисте поново послали податке потребне за учитавање странице.</translation>
@@ -2156,6 +2159,7 @@
 <translation id="4318312030194671742">Услуга слагања за приказ у Paint-у</translation>
 <translation id="4318566738941496689">Назив и мрежна адреса уређаја</translation>
 <translation id="4320119221194966055">Личне позајмице</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Примили сте линк са уређаја <ph name="DEVICE_NAME" />}one{Примили сте # линк са уређаја <ph name="DEVICE_NAME" />}few{Примили сте # линка са уређаја <ph name="DEVICE_NAME" />}other{Примили сте # линкова са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">17. фиока</translation>
 <translation id="4325863107915753736">Нисмо успели да пронађемо чланак</translation>
 <translation id="4326324639298822553">Проверите датум истека и пробајте поново</translation>
@@ -4983,6 +4987,7 @@
 <translation id="8758529215314160755">Можете да измените име на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Ова картица је истекла</translation>
 <translation id="87601671197631245">Овај сајт користи застарелу безбедносну конфигурацију која може да открије ваше информације (на пример, лозинке, поруке или кредитне картице) када се шаљу том сајту.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Линк је послат са уређаја <ph name="DEVICE_NAME" />}one{# линк је послат са уређаја <ph name="DEVICE_NAME" />}few{# линка су послата са уређаја <ph name="DEVICE_NAME" />}other{# линкова је послато са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8763986294015493060">Затворите све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="8766943070169463815">Табела за потврду акредитива за безбедно плаћање је отворена</translation>

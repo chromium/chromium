@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">የመሣያ ቅድመ ዕይታ አቀናባሪ አገልግሎት</translation>
 <translation id="4318566738941496689">የእርስዎ መሣሪያ ስም እና የአውታረ መረብ አድራሻ</translation>
 <translation id="4320119221194966055">የግል ብድሮች</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{ከ<ph name="DEVICE_NAME" /> የደረሰ አገናኝ}one{ከ<ph name="DEVICE_NAME" /> የደረሰ # አገናኝ}other{ከ<ph name="DEVICE_NAME" /> የደረሰ # አገናኝ}}</translation>
 <translation id="4325600325087822253">መሳቢያ 17</translation>
 <translation id="4325863107915753736">ጽሑፉን ማግኘት አልተቻለም</translation>
 <translation id="4326324639298822553">የእርስዎን የአገልግሎት ማብቂያ ቀን ይመልከቱ እና እንደገና ይሞክሩ</translation>
@@ -4983,6 +4984,7 @@
 <translation id="8758529215314160755">የእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> <ph name="ACCOUNT" /> ውስጥ ስምዎን ማርትዕ ይችላሉ።</translation>
 <translation id="8759274551635299824">ይህ ካርድ የአገልግሎት ጊዜው አብቅቷል</translation>
 <translation id="87601671197631245">ይህ ጣቢያ ጊዜ ያለፈበት የደህንነት ውቅረትን ይጠቀማል፣ ይህ ወደዚህ ጣቢያ ሲላክ መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት፣ መልዕክቶች ወይም ክሬዲት ካርዶች) ሊያጋልጥ ይችላል።</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{ከ<ph name="DEVICE_NAME" /> የተላከ አገናኝ}one{ከ<ph name="DEVICE_NAME" /> የተላከ # አገናኝ}other{ከ<ph name="DEVICE_NAME" /> የተላኩ # አገናኞች}}</translation>
 <translation id="8763927697961133303">የዩኤስቢ መሣሪያ</translation>
 <translation id="8763986294015493060">በአሁኑ ጊዜ ክፍት የሆኑ ሁሉንም ማንነትን የማያሳውቁ መስኮቶች ይዝጉ</translation>
 <translation id="8766943070169463815">ደህንነቱ የተጠበቀ የክፍያ ማስረጃ ማረጋገጫ ሉህ ተከፍቷል</translation>

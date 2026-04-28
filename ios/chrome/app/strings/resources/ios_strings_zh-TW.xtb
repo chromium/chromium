@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">儲存空間已滿</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199963004393929848">綠色主題</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1204075260022434100">{count,plural, =1{這個書籤已儲存到帳戶 ({email}) 中的「{title}」}other{{count} 個書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">隱私權聲明</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
 <translation id="4425365312778464779">這是代管帳戶</translation>
+<translation id="443008484043213881">工具</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4430505936695785931">取得在其他應用程式中儲存的密碼</translation>
 <translation id="4431224949908513835">請選取要填入的付款方式。</translation>
@@ -1294,6 +1296,7 @@
 <translation id="5581786858144165447">問問 AI 模式</translation>
 <translation id="5585019845078534178">資訊卡</translation>
 <translation id="5591526871732898147">附加的圖片 {index}</translation>
+<translation id="5594597292424622277">暫停播放影片</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="559567008082979829">下載內容會在一個月後刪除。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -2163,6 +2166,7 @@
 <translation id="8528009254289981965">在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="8529767659511976195">新功能</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">播放影片</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>

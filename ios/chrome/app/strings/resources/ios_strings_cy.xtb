@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Mae'ch storfa yn llawn</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
+<translation id="1199631150313925648">Rhoi yn bwrpasol</translation>
 <translation id="1199963004393929848">Thema werdd</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1204075260022434100">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}two{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}few{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}many{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}other{Mae {count} nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}.}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Hysbysiad Preifatrwydd</translation>
 <translation id="4420409367264901497">Golygu Nod Tudalen</translation>
 <translation id="4425365312778464779">Rheolir y cyfrif hwn</translation>
+<translation id="443008484043213881">Offer</translation>
 <translation id="4430277756566635951">Mae <ph name="EMAIL" /> wedi'i ddewis ar hyn o bryd. Dewis cyfrif.</translation>
 <translation id="4430505936695785931">Sicrhewch gyfrineiriau sydd wedi'u cadw mewn apiau eraill</translation>
 <translation id="4431224949908513835">Dewiswch ddull talu i'w lenwi.</translation>
@@ -1294,6 +1296,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5581786858144165447">Modd Gofyn i AI</translation>
 <translation id="5585019845078534178">Cardiau</translation>
 <translation id="5591526871732898147">Llun atodedig {index}</translation>
+<translation id="5594597292424622277">Seibio'r fideo</translation>
 <translation id="5595485650161345191">Golygu cyfeiriad</translation>
 <translation id="559567008082979829">Gosodwch eich lawrlwythiadau i gael eu dileu ar ôl un mis.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
@@ -2163,6 +2166,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8528009254289981965">Agor dolenni o apiau eraill yn Anhysbys</translation>
 <translation id="8529767659511976195">Newydd</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">Chwarae'r fideo</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="8534481786647257214">Postiad Google+ wedi'i gwblhau.</translation>

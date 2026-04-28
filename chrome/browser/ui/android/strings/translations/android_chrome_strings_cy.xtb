@@ -556,7 +556,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3439276997620616816">Byddwch yn gweld eich tabiau diweddar yma</translation>
 <translation id="3443221991560634068">Ail-lwytho'r dudalen bresennol</translation>
 <translation id="3444179773590444986">Rhannu adborth am y thema dywyll ar gyfer gwefannau?</translation>
-<translation id="3448874648066942074">Crynhoi'r dudalen gydag AI</translation>
 <translation id="3452832259067974318">Er mwyn amddiffyn eich preifatrwydd, ni fydd Chrome yn awtolenwi eich cyfrinair yn y maes hwn.</translation>
 <translation id="3474624961160222204">Parhau fel <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Gallwch ddewis eich peiriant chwilio</translation>
@@ -856,7 +855,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4698757800236023795">Gweithredol (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Lluniau a ffeiliau sydd wedi'u storio dros dro</translation>
 <translation id="4710167854527459075">Trefnu yn ôl newydd</translation>
-<translation id="4718044610319080485">Yn galw ar Gymorth AI</translation>
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
 <translation id="4720556299488643018">Dad-danysgrifio</translation>
 <translation id="4732120983431207637">Dadweindiwr pentyrrau</translation>
@@ -1662,7 +1660,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7914399737746719723">Gosodwyd ap</translation>
 <translation id="7917574899775263813">Neidio i'r tab olaf</translation>
 <translation id="7919123827536834358">Cyfieithu'r ieithoedd hyn yn awtomatig</translation>
-<translation id="7921782882718083488">Crynhoi'r dudalen hon</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Mae Chrome yn tynnu caniatadau yn awtomatig o wefannau sy'n camddefnyddio hysbysiadau neu wefannau nad ydych chi wedi ymweld â nhw'n ddiweddar</translation>
@@ -1826,7 +1823,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, Tab Llun-mewn-Llun wedi'i Binio a Aml-ddewiswyd</translation>
 <translation id="8540136935098276800">Rhowch URL sydd wedi'i fformatio'n gywir</translation>
 <translation id="854522910157234410">Agor y dudalen hon</translation>
-<translation id="8547466829003330976">Adolygu PDF gydag AI</translation>
 <translation id="8551513938758868521">Cloi tabiau Anhysbys pan fyddwch yn cau Chrome</translation>
 <translation id="8559961053328923750">Mae Chrome yn cyfyngu ar gyfanswm y data y gall gwefannau eu rhannu drwy'r porwr er mwyn mesur perfformiad hysbysebion</translation>
 <translation id="8559990750235505898">Cynnig cyfieithu tudalennau mewn ieithoedd eraill</translation>

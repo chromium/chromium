@@ -555,7 +555,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3439276997620616816">Jy sal jou onlangse oortjies hier kry</translation>
 <translation id="3443221991560634068">Herlaai die huidige bladsy</translation>
 <translation id="3444179773590444986">Deel terugvoer oor donkertema vir werwe?</translation>
-<translation id="3448874648066942074">Som bladsy op met KI</translation>
 <translation id="3452832259067974318">Om jou privaatheid te beskerm, sal Chrome nie outomaties jou wagwoord in hierdie veld invul nie.</translation>
 <translation id="3474624961160222204">Gaan voort as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Jy kan jou soekenjin kies</translation>
@@ -737,7 +736,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4232376164796433044">Wagwoorde en outovul</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
-<translation id="4255841059940367080">Intydse, AI-aangedrewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
+<translation id="4255841059940367080">Intydse, KI-aangedrewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
 <translation id="4256782883801055595">Oopbronlisensies</translation>
 <translation id="426652736638196239">Hierdie IBAN sal net op hierdie toestel gestoor word</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
@@ -855,7 +854,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4698757800236023795">Aktief (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Gekaste prente en lêers</translation>
 <translation id="4710167854527459075">Rangskik volgens nuutste</translation>
-<translation id="4718044610319080485">Roep KI-assistent aan</translation>
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
 <translation id="4720556299488643018">Teken uit</translation>
 <translation id="4732120983431207637">Stapellosdraaier</translation>
@@ -1661,7 +1659,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7914399737746719723">App is geïnstalleer</translation>
 <translation id="7917574899775263813">Spring na die laaste oortjie</translation>
 <translation id="7919123827536834358">Vertaal hierdie tale outomaties</translation>
-<translation id="7921782882718083488">Som hierdie bladsy op</translation>
 <translation id="7926975587469166629">Kaart se bynaam</translation>
 <translation id="7927073875790626822">UR</translation>
 <translation id="7929587383660661825">Chrome verwyder outomaties toestemmings van werwe wat kennisgewings misbruik of wat jy nie onlangs besoek het nie</translation>
@@ -1825,7 +1822,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, multigekose vasgespelde prent-in-prent-oortjie</translation>
 <translation id="8540136935098276800">Voer 'n URL in wat reg geformateer is</translation>
 <translation id="854522910157234410">Maak hierdie bladsy oop</translation>
-<translation id="8547466829003330976">Hersien PDF met KI</translation>
 <translation id="8551513938758868521">Sluit Incognito-oortjies wanneer jy Chrome verlaat</translation>
 <translation id="8559961053328923750">Chrome beperk die totale hoeveelheid data wat werwe deur die blaaier kan deel om advertensiewerkverrigting te meet</translation>
 <translation id="8559990750235505898">Aanbieding om bladsye in ander tale te vertaal</translation>

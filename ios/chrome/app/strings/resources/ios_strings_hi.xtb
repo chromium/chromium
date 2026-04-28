@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">स्टोरेज भर गया है</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1199631150313925648">मैन्युअल तरीके से डालें</translation>
 <translation id="1199963004393929848">हरे रंग वाली थीम</translation>
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1204075260022434100">{count,plural, =1{आपके खाते ({email}) में मौजूद "{title}" में बुकमार्क सेव किया गया}one{आपके खाते ({email}) में मौजूद "{title}" में {count} बुकमार्क सेव किया गया}other{आपके खाते ({email}) में मौजूद "{title}" में {count} बुकमार्क सेव किए गए}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">निजता सूचना</translation>
 <translation id="4420409367264901497">बुकमार्क में बदलाव करें</translation>
 <translation id="4425365312778464779">इस खाते को एंटरप्राइज़ नीतियों के तहत मैनेज किया जा रहा है</translation>
+<translation id="443008484043213881">टूल</translation>
 <translation id="4430277756566635951">फ़िलहाल, <ph name="EMAIL" /> को चुना गया है. खाता चुनें.</translation>
 <translation id="4430505936695785931">सेव किए गए पासवर्ड को अन्य ऐप्लिकेशन में इस्तेमाल करें</translation>
 <translation id="4431224949908513835">भरने के लिए पेमेंट का तरीका चुनें.</translation>

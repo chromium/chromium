@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ভুল বস্তু চিনাক্তকাৰী</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা)</translation>
 <translation id="1232569758102978740">শিৰোনামবিহীন</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" />ৰ আৱশ্যক</translation>
 <translation id="1236081509407217141">VRৰ অনুমতি দিবনে?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">আপোনাৰ ডিভাইচৰ নাম</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ক্ষেত্ৰটো আৱশ্যকীয়</translation>
 <translation id="1723636263173393300">এই নীতিটোত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক শ্বৰ্টকাট থাকিব নালাগে।</translation>
 <translation id="1725591448053514783">এনভেল’প আপুনি ৬</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> বা <ph name="FIELD_3" />ৰ আৱশ্যক</translation>
 <translation id="1727613060316725209">প্ৰমাণপত্ৰখন মান্য</translation>
 <translation id="1728677426644403582">আপুনি কোনো ৱেব পৃষ্ঠাৰ উৎস চাই আছে</translation>
 <translation id="173080396488393970">এই ধৰণৰ কার্ড সমর্থন নকৰে</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3220264767789936523">আনুষ্ঠানিক সাজ-পোছাক</translation>
 <translation id="3223287115535306850">এপ্ লঞ্চ কৰাটো ল'ড হোৱাৰ চিহ্ন</translation>
 <translation id="3223425961342298674">অৱস্থানৰ অনুমতি নাই</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> বা <ph name="FIELD_2" />ৰ আৱশ্যক</translation>
 <translation id="3225319735946384299">ক’ড ছাইনিং</translation>
 <translation id="3225919329040284222">ছাৰ্ভাৰটোৱে এনে এখন প্ৰমাণপত্ৰ দিছে যিখন বিল্ট-ইন কৰি ৰখা প্ৰত্যাশা সৈতে মিলা নাই। এই প্ৰত্যাশাসমূহ আপোনাক সুৰক্ষিত ৰাখিবলৈ কিছুমান নিৰ্দিষ্ট, উচ্চ-সুৰক্ষা সম্পন্ন ৱেবছাইটত অন্তৰ্ভুক্ত কৰা হয়।</translation>
 <translation id="3226128629678568754">পৃষ্ঠাটো ল'ড হ'বলৈ প্ৰয়োজন হোৱা ডেটা পুনৰ দাখিল কৰিবলৈ 'পুনৰ ল'ড কৰক' বুটামটো টিপক।</translation>

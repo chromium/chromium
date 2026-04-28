@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Хранилище заполнено</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
+<translation id="1199631150313925648">Ввести вручную</translation>
 <translation id="1199963004393929848">Зеленая тема</translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте {email}.}one{{count} закладка сохранена в папке "{title}" в вашем аккаунте {email}.}few{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}many{{count} закладок сохранено в папке "{title}" в вашем аккаунте {email}.}other{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Примечание о конфиденциальности</translation>
 <translation id="4420409367264901497">Изменить закладку</translation>
 <translation id="4425365312778464779">Это управляемый аккаунт.</translation>
+<translation id="443008484043213881">Инструменты</translation>
 <translation id="4430277756566635951">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" />.</translation>
 <translation id="4430505936695785931">Вводите сохраненные пароли в других приложениях.</translation>
 <translation id="4431224949908513835">Выберите, какой способ оплаты использовать.</translation>

@@ -555,7 +555,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
-<translation id="3448874648066942074">Résumer la page avec l'IA</translation>
 <translation id="3452832259067974318">Pour protéger votre confidentialité, Chrome ne saisit pas automatiquement votre mot de passe dans ce champ.</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
@@ -855,7 +854,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4698757800236023795">Actives (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4710167854527459075">Trier par le plus récent</translation>
-<translation id="4718044610319080485">Appelle l'assistant IA</translation>
 <translation id="4719927025381752090">Proposer de traduire</translation>
 <translation id="4720556299488643018">Désabonner</translation>
 <translation id="4732120983431207637">Dérouleur de pile</translation>
@@ -1661,7 +1659,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7914399737746719723">Appli installée</translation>
 <translation id="7917574899775263813">Accéder au dernier onglet</translation>
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
-<translation id="7921782882718083488">Résumer cette page</translation>
 <translation id="7926975587469166629">Nom donné à la carte</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome supprime automatiquement les autorisations des sites qui abusent des notifications ou que vous n'avez pas consultés récemment</translation>
@@ -1825,7 +1822,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, onglet épinglé multisélectionné en Picture-in-picture</translation>
 <translation id="8540136935098276800">Saisissez une URL dont le format est correct</translation>
 <translation id="854522910157234410">Ouvrir cette page</translation>
-<translation id="8547466829003330976">Examiner un PDF avec l'IA</translation>
 <translation id="8551513938758868521">Verrouiller les onglets de navigation privée quand vous fermez Chrome</translation>
 <translation id="8559961053328923750">Chrome limite la quantité totale de données que les sites peuvent partager via le navigateur pour mesurer les performances des annonces</translation>
 <translation id="8559990750235505898">Proposer de traduire les pages dans d'autres langues</translation>

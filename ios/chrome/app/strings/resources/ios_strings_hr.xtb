@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavijesti</translation>
+<translation id="1199631150313925648">Unesi ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1204075260022434100">{count,plural, =1{Oznaka je spremljena u mapu {title} na vašem računu, {email}}one{{count} oznaka spremljena je u mapu {title} na vašem računu, {email}}few{{count} oznake spremljene su u mapu {title} na vašem računu, {email}}other{{count} oznaka spremljeno je u mapu {title} na vašem računu, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Obavijest o privatnosti</translation>
 <translation id="4420409367264901497">Uređivanje oznake</translation>
 <translation id="4425365312778464779">Ovo je upravljani račun</translation>
+<translation id="443008484043213881">Alati</translation>
 <translation id="4430277756566635951">Trenutačno je odabrano: <ph name="EMAIL" />. Odaberite račun.</translation>
 <translation id="4430505936695785931">Dohvatite spremljene zaporke u drugim aplikacijama</translation>
 <translation id="4431224949908513835">Odaberite način plaćanja koji želite ispuniti.</translation>
@@ -1294,6 +1296,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5581786858144165447">Pitajte pomoću AI načina</translation>
 <translation id="5585019845078534178">Kartice</translation>
 <translation id="5591526871732898147">Priložena slika {index}</translation>
+<translation id="5594597292424622277">Pauziraj videozapis</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="559567008082979829">Postavite da se preuzimanja brišu nakon mjesec dana.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -2163,6 +2166,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8528009254289981965">Otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8531572740963685410">PDF-ovi</translation>
+<translation id="8532059953132740592">Reproduciraj videozapis</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="8534481786647257214">Dovršen je post za Google+.</translation>

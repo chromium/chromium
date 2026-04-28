@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Depolama alanınız dolu</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
+<translation id="1199631150313925648">Manuel olarak gir</translation>
 <translation id="1199963004393929848">Yeşil tema</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1204075260022434100">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{{count} yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Gizlilik Bildirimi</translation>
 <translation id="4420409367264901497">Yer İşaretini Düzenle</translation>
 <translation id="4425365312778464779">Bu hesap yönetiliyor</translation>
+<translation id="443008484043213881">Araçlar</translation>
 <translation id="4430277756566635951">Şu anda <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
 <translation id="4430505936695785931">Kayıtlı şifrelere diğer uygulamalardan erişin</translation>
 <translation id="4431224949908513835">Doldurulmasını istediğiniz bir ödeme yöntemi seçin.</translation>
@@ -1294,6 +1296,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5581786858144165447">AI Modu'na sorun</translation>
 <translation id="5585019845078534178">Kartlar</translation>
 <translation id="5591526871732898147">Eklenen resim {index}</translation>
+<translation id="5594597292424622277">Videoyu duraklat</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
 <translation id="559567008082979829">İndirdikleriniz bir ay sonra silinir.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
@@ -2163,6 +2166,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8528009254289981965">Diğer uygulamalardaki bağlantıları Gizli modda açın</translation>
 <translation id="8529767659511976195">Yeni</translation>
 <translation id="8531572740963685410">PDF'ler</translation>
+<translation id="8532059953132740592">Videoyu oynat</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Güvenli Tarama açık</translation>
 <translation id="8534481786647257214">Google+ yayını tamamlandı.</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Penyimpanan Anda penuh</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
+<translation id="1199631150313925648">Masukkan secara manual</translation>
 <translation id="1199963004393929848">Tema hijau</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{{count} bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Notifikasi Privasi</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">Akun ini dikelola</translation>
+<translation id="443008484043213881">Alat</translation>
 <translation id="4430277756566635951">Saat ini <ph name="EMAIL" /> dipilih. Pilih akun.</translation>
 <translation id="4430505936695785931">Dapatkan sandi tersimpan di aplikasi lainnya</translation>
 <translation id="4431224949908513835">Pilih metode pembayaran untuk diisi.</translation>
@@ -1294,6 +1296,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5581786858144165447">Mode Tanya AI</translation>
 <translation id="5585019845078534178">Kartu</translation>
 <translation id="5591526871732898147">Gambar terlampir {index}</translation>
+<translation id="5594597292424622277">Jeda video</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="559567008082979829">Setel download Anda untuk dihapus setelah satu bulan.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
@@ -2163,6 +2166,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8528009254289981965">Buka link dari aplikasi lain dalam mode Samaran</translation>
 <translation id="8529767659511976195">Baru</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">Putar video</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing aktif</translation>
 <translation id="8534481786647257214">Kirim Google+ selesai.</translation>

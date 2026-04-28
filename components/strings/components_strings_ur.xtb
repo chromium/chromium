@@ -2157,6 +2157,7 @@
 <translation id="4318312030194671742">پینٹ پیش منظر کے کمپوزیٹر کی سروس</translation>
 <translation id="4318566738941496689">آپ کے آلے کا نام اور نیٹ ورک پتہ</translation>
 <translation id="4320119221194966055">ذاتی قرضے</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{‫<ph name="DEVICE_NAME" /> سے لنک موصول ہوا}other{‫<ph name="DEVICE_NAME" /> سے # لنکس موصول ہوئے}}</translation>
 <translation id="4325600325087822253">ٹرے 17</translation>
 <translation id="4325863107915753736">مضمون تلاش کرنے میں ناکام ہوگیا</translation>
 <translation id="4326324639298822553">اپنی اختتامی تاریخ چیک کریں اور دوبارہ کوشش کریں</translation>
@@ -4984,6 +4985,7 @@
 <translation id="8758529215314160755">‏آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="END_LINK" /> <ph name="ACCOUNT" /> میں اپنے نام میں ترمیم کر سکتے ہیں۔</translation>
 <translation id="8759274551635299824">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="87601671197631245">یہ سائٹ پرانی سیکیورٹی کنفیگریشن کو استعمال کر رہی ہے جو اس سائٹ پر بھیجے جانے پر آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) کو ظاہر کر سکتی ہے۔</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{‫<ph name="DEVICE_NAME" /> سے لنک بھیجا گیا}other{‫<ph name="DEVICE_NAME" /> سے # لنکس بھیجے گئے}}</translation>
 <translation id="8763927697961133303">‏USB آلہ</translation>
 <translation id="8763986294015493060">فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کریں</translation>
 <translation id="8766943070169463815">محفوظ طریقے سے ادائیگی کرنے کیلئے سند کی تصدیق کرنے کی شیٹ کھلی ہے</translation>

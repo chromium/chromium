@@ -2328,7 +2328,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2565214867520763227">Turn on screen reader</translation>
 <translation id="2566146433999774844">Join tab group with <ph name="OWNER_FIRST_NAME" /> and <ph name="NUM_OTHER_MEMBERS" /> others</translation>
 <translation id="256726287944589768">Show footer on new tab page</translation>
-<translation id="2567313753132089780">Password must be at least 12 characters and include uppercase and lowercase letters, numbers and symbols</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Retailer name</translation>
 <translation id="257088987046510401">Themes</translation>
@@ -3178,7 +3177,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158033540161634471">Set up your fingerprint</translation>
 <translation id="3158203338449343164">Unpin tab search</translation>
-<translation id="3158732900546890991">Password must be at least eight characters and include at least two of the following: uppercase letters, lowercase letters, numbers or symbols</translation>
 <translation id="3158770568048368350">This may cause your mobile network to briefly disconnect</translation>
 <translation id="3159335509547415276">Learn about blocked accounts</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -5665,6 +5663,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4882312758060467256">Has access to this site</translation>
+<translation id="4882805770036405108">Open reading mode faster with a shortcut. Press ⌥ + ⌘ + R to toggle reading mode.</translation>
 <translation id="4882848900607400156">When you share your precise location, Gemini can answer your questions more accurately. Your data is not used to improve generative AI models.</translation>
 <translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
@@ -8906,6 +8905,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7186903260115204164">Add freehand drawings, signatures and highlights with the new Draw tool</translation>
 <translation id="7186935534137027449">App command</translation>
 <translation id="7188508872042490670">On-device site data</translation>
+<translation id="7188755083797868960">Open reading mode faster with a shortcut. Press Alt + Shift + R to toggle reading mode.</translation>
 <translation id="7189234443051076392">Make sure that there is enough space on your device</translation>
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="7189558282078169397">Tabs from other devices</translation>

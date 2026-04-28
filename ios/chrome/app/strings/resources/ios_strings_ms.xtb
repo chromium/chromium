@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Storan anda penuh</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1190609913194133056">Pusat Pemberitahuan</translation>
+<translation id="1199631150313925648">Masukkan butiran secara manual</translation>
 <translation id="1199963004393929848">Tema hijau</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1204075260022434100">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{{count} penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Notis Privasi</translation>
 <translation id="4420409367264901497">Edit Penanda Halaman</translation>
 <translation id="4425365312778464779">Akaun ini terurus</translation>
+<translation id="443008484043213881">Alat</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> dipilih pada masa ini. Pilih akaun.</translation>
 <translation id="4430505936695785931">Dapatkan kata laluan yang disimpan dalam apl lain</translation>
 <translation id="4431224949908513835">Pilih kaedah pembayaran untuk diisi.</translation>

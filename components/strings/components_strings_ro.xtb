@@ -2156,6 +2156,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4318312030194671742">Serviciul Paint Preview Compositor</translation>
 <translation id="4318566738941496689">Numele și adresa de rețea ale dispozitivului tău</translation>
 <translation id="4320119221194966055">Credite de nevoi personale</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link primit de la <ph name="DEVICE_NAME" />}few{# linkuri primite de la <ph name="DEVICE_NAME" />}other{# de linkuri primite de la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Tava 17</translation>
 <translation id="4325863107915753736">Articolul nu a fost găsit</translation>
 <translation id="4326324639298822553">Verifică data de expirare și încearcă din nou</translation>
@@ -4984,6 +4985,7 @@ Detalii suplimentare:
 <translation id="8758529215314160755">Poți să-ți editezi numele în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Acest card este expirat</translation>
 <translation id="87601671197631245">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele, mesajele sau cardurile de credit) când sunt trimise la acest site.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link trimis de pe <ph name="DEVICE_NAME" />}few{# linkuri trimise de pe <ph name="DEVICE_NAME" />}other{# de linkuri trimise de pe <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispozitiv USB</translation>
 <translation id="8763986294015493060">Închide toate ferestrele incognito deschise</translation>
 <translation id="8766943070169463815">Foaia de autentificare cu date de conectare pentru plăți securizate este deschisă</translation>

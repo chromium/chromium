@@ -555,7 +555,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3439276997620616816">Oma hiljutised vahelehed leiate siit</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
 <translation id="3444179773590444986">Kas soovite saitide tumeda teema kohta tagasisidet jagada?</translation>
-<translation id="3448874648066942074">Lehe kokkuvõte AI abil</translation>
 <translation id="3452832259067974318">Teie privaatsuse kaitsmiseks ei sisesta Chrome sellele väljale automaatselt parooli.</translation>
 <translation id="3474624961160222204">Jätka kasutajana <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Võite valida oma otsingumootori</translation>
@@ -855,7 +854,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4698757800236023795">Aktiivne (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Vahemällu salvestatud kujutised ja failid</translation>
 <translation id="4710167854527459075">Sordi uusima järgi</translation>
-<translation id="4718044610319080485">Käivitab AI-assistendi</translation>
 <translation id="4719927025381752090">Paku tõlkimist</translation>
 <translation id="4720556299488643018">Tühista tellimus</translation>
 <translation id="4732120983431207637">Virnaharutaja</translation>
@@ -1661,7 +1659,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7914399737746719723">Rakendus on installitud</translation>
 <translation id="7917574899775263813">Viimasele vahelehele liikumine</translation>
 <translation id="7919123827536834358">Need keeled tõlgitakse automaatselt</translation>
-<translation id="7921782882718083488">Tee sellest lehest kokkuvõte</translation>
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome eemaldab automaatselt load märguandeid kuritarvitavatelt saitidelt ja saitidelt, mida te pole hiljuti külastanud</translation>
@@ -1825,7 +1822,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud pilt-pildis vaheleht</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
 <translation id="854522910157234410">Ava leht</translation>
-<translation id="8547466829003330976">PDF-i ülevaatus AI abil</translation>
 <translation id="8551513938758868521">Lukusta Chrome'ist lahkumisel inkognito vahelehed</translation>
 <translation id="8559961053328923750">Chrome piirab nende andmete hulka, mida saidid saavad reklaamide toimivuse mõõtmiseks brauseri kaudu jagada</translation>
 <translation id="8559990750235505898">Paku muudes keeltes olevate lehtede tõlkimist</translation>

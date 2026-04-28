@@ -152,6 +152,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1228893227497259893">Entitate-identifikatzaile okerra</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatikoki hauteman da)</translation>
 <translation id="1232569758102978740">Izengabea</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> behar da</translation>
 <translation id="1236081509407217141">EB erabiltzeko baimena eman nahi duzu?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Gailuaren izena</translation>
@@ -472,6 +473,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1721424275792716183">* Nahitaez bete behar da eremua</translation>
 <translation id="1723636263173393300">Gidalerro honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> lasterbide baino gehiago izan behar.</translation>
 <translation id="1725591448053514783">You gutun-azala 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> edo <ph name="FIELD_3" /> behar da</translation>
 <translation id="1727613060316725209">Ziurtagiriak balio du</translation>
 <translation id="1728677426644403582">Web-orri baten iturburua ari zara ikusten</translation>
 <translation id="173080396488393970">Ez dira onartzen mota horretako txartelak</translation>
@@ -1429,6 +1431,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3220264767789936523">Janzkera formala</translation>
 <translation id="3223287115535306850">Aplikazio bat abiarazi dela adierazteko dardara</translation>
 <translation id="3223425961342298674">Ukatu da kokapena erabiltzeko baimena</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> edo <ph name="FIELD_2" /> behar da</translation>
 <translation id="3225319735946384299">Kode-sinadura</translation>
 <translation id="3225919329040284222">Zerbitzariak aurkeztu duen ziurtagiria ez dator bat integratutako eskakizunekin. Eskakizun horiek segurtasun handiko webgune batzuek egiten dituzte erabiltzaileak babesteko.</translation>
 <translation id="3226128629678568754">Orria kargatzeko behar diren datuak berriro bidaltzeko, sakatu Kargatu berriro botoia.</translation>
@@ -2152,6 +2155,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4318312030194671742">Webguneen aurrebistak konposatzeko zerbitzua</translation>
 <translation id="4318566738941496689">Gailuaren izena eta sareko helbidea</translation>
 <translation id="4320119221194966055">Mailegu pertsonalak</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> gailutik jasotako esteka}other{<ph name="DEVICE_NAME" /> gailutik jasotako # esteka}}</translation>
 <translation id="4325600325087822253">17. erretilua</translation>
 <translation id="4325863107915753736">Ezin izan da aurkitu artikulua</translation>
 <translation id="4326324639298822553">Egiaztatu iraungitze-data eta saiatu berriro</translation>
@@ -4977,6 +4981,7 @@ Xehetasun gehiago:
 <translation id="8758529215314160755">Izena <ph name="BEGIN_LINK" />Google-ko kontuan<ph name="END_LINK" /> (<ph name="ACCOUNT" />) edita dezakezu</translation>
 <translation id="8759274551635299824">Iraungita dago txartela</translation>
 <translation id="87601671197631245">Webgune honek segurtasun-konfigurazio zaharkitu bat erabiltzen du; ondorioz, baliteke zure informazioa (adibidez, pasahitzak, mezuak edo kreditu-txartelak) agerian uztea webgune honetara bidaltzen duzunean.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> gailutik bidalitako esteka}other{<ph name="DEVICE_NAME" /> gailutik bidalitako # esteka}}</translation>
 <translation id="8763927697961133303">USB bidezko gailua</translation>
 <translation id="8763986294015493060">Itxi irekita dauden ezkutuko moduko leiho guztiak</translation>
 <translation id="8766943070169463815">Ordainketa seguruetarako kredentzialak autentifikatzeko orria irekita dago</translation>

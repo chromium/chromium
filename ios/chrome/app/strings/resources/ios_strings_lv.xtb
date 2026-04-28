@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Krātuve ir pilna</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
+<translation id="1199631150313925648">Ievadīt manuāli</translation>
 <translation id="1199963004393929848">Zaļš motīvs</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1204075260022434100">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{{count} grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}other{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Konfidencialitātes paziņojums</translation>
 <translation id="4420409367264901497">Rediģēt grāmatzīmi</translation>
 <translation id="4425365312778464779">Šis konts tiek pārvaldīts.</translation>
+<translation id="443008484043213881">Rīki</translation>
 <translation id="4430277756566635951">Pašlaik ir atlasīts šāds konts: <ph name="EMAIL" />. Izvēlieties kontu.</translation>
 <translation id="4430505936695785931">Iegūstiet saglabātās paroles citās lietotnēs</translation>
 <translation id="4431224949908513835">Atlasiet maksājuma veidu, ko aizpildīt.</translation>
@@ -1294,6 +1296,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5581786858144165447">Jautāt MI režīmam</translation>
 <translation id="5585019845078534178">Kartes</translation>
 <translation id="5591526871732898147">Pievienotais attēls {index}</translation>
+<translation id="5594597292424622277">Pārtraukt videoklipa atskaņošanu</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="559567008082979829">Iestatiet, lai lejupielādes tiktu dzēstas pēc viena mēneša.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
@@ -2163,6 +2166,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8528009254289981965">Iespēja atvērt saites no citām lietotnēm inkognito režīmā</translation>
 <translation id="8529767659511976195">Jaunums</translation>
 <translation id="8531572740963685410">PDF faili</translation>
+<translation id="8532059953132740592">Atskaņot videoklipu</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Ir ieslēgta droša pārlūkošana</translation>
 <translation id="8534481786647257214">Google+ ziņa izveidota.</translation>

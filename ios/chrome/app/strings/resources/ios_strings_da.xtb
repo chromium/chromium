@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Der er ikke mere lagerplads</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
+<translation id="1199631150313925648">Angiv manuelt</translation>
 <translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto {email}}one{{count} bogmærke er gemt i "{title}" på din konto {email}}other{{count} bogmærker er gemt i "{title}" på din konto {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Privatlivsmeddelelse</translation>
 <translation id="4420409367264901497">Rediger bogmærke</translation>
 <translation id="4425365312778464779">Dette er en administreret konto</translation>
+<translation id="443008484043213881">Værktøjer</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="4430505936695785931">Få adgang til gemte adgangskoder i andre apps</translation>
 <translation id="4431224949908513835">Vælg en betalingsmetode, der skal udfyldes.</translation>
@@ -1294,6 +1296,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5581786858144165447">Spørg AI-tilstand</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5591526871732898147">Vedhæftet billede {index}</translation>
+<translation id="5594597292424622277">Sæt videoen på pause</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="559567008082979829">Angiv, at dine downloads skal slettes efter én måned.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -2163,6 +2166,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8528009254289981965">Åbn links fra andre apps i inkognito</translation>
 <translation id="8529767659511976195">Ny</translation>
 <translation id="8531572740963685410">PDF'er</translation>
+<translation id="8532059953132740592">Afspil videoen</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8534481786647257214">Opslag delt på Google+.</translation>

@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">לאתר הזה אין הרשאה לשמור נתונים במכשיר שלך.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏קונסולת JavaScript</translation>
+<translation id="157005186601751931">פתיחת הכרטיסייה באפליקציה</translation>
 <translation id="1570604804919108255">ביטול ההשתקה של ההתראות</translation>
 <translation id="1570990174567554976">נוצרה תיקיית הסימניות '<ph name="BOOKMARK_TITLE" />'.</translation>
 <translation id="1571041387761170095">אין סיסמאות חלשות או סיסמאות בשימוש חוזר</translation>
@@ -2325,7 +2326,6 @@
 <translation id="2565214867520763227">הפעלת קורא המסך</translation>
 <translation id="2566146433999774844">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUM_OTHER_MEMBERS" /> משתמשים</translation>
 <translation id="256726287944589768">הצגת כותרת תחתונה בדף הכרטיסייה החדשה</translation>
-<translation id="2567313753132089780">הסיסמה צריכה להכיל 12 תווים לפחות, כולל אותיות רישיות ואותיות קטנות, מספרים ותווים מיוחדים</translation>
 <translation id="2568774940984945469">גורם מכיל של סרגל המידע</translation>
 <translation id="2569972178052279830">שם הקמעונאי</translation>
 <translation id="257088987046510401">ערכות נושא</translation>
@@ -3175,7 +3175,6 @@
 <translation id="3157931365184549694">שחזור</translation>
 <translation id="3158033540161634471">הגדרת טביעת האצבע</translation>
 <translation id="3158203338449343164">ביטול ההצמדה של "חיפוש בכרטיסיות"</translation>
-<translation id="3158732900546890991">הסיסמה צריכה להכיל 8 תווים לפחות, כולל לפחות שניים מהבאים: אותיות רישיות, אותיות קטנות, מספרים או תווים מיוחדים</translation>
 <translation id="3158770568048368350">תהליך ההגדרה עלול לגרום לניתוק קצר מהרשת הסלולרית</translation>
 <translation id="3159335509547415276">מידע על חשבונות חסומים</translation>
 <translation id="3159493096109238499">בז'</translation>
@@ -6120,6 +6119,7 @@
 <translation id="5204967432542742771">הזנת סיסמה</translation>
 <translation id="5205484256512407285">אף פעם אין להשתמש בנתונים סלולריים להעברה</translation>
 <translation id="520568280985468584">הרשת נוספה בהצלחה. ייתכן שיחלפו מספר דקות עד שהרשת הסלולרית תהיה פעילה.</translation>
+<translation id="5207395053540207113">‏רוצה לתת לחיפוש Google גישה לתוכן ב-Drive?</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> רוצה לוודא שמכשיר ה-ChromeOS שלך כשיר.</translation>
 <translation id="5208926629108082192">פרטי הרשת הסלולרית של המכשיר</translation>
@@ -9032,6 +9032,7 @@
 <translation id="727595954130325265">לקנייה</translation>
 <translation id="7277275452721470458">‏פעילות במצב AI</translation>
 <translation id="727952162645687754">שגיאה בהורדה</translation>
+<translation id="7280265656690268844">‏האופטימיזציה של JavaScript מושבתת</translation>
 <translation id="7280649757394340890">הגדרות קול של המרת טקסט לדיבור</translation>
 <translation id="7280683802406059877">התאמה אישית של מקש הקיצור</translation>
 <translation id="7280877790564589615">התבקשה הרשאה</translation>

@@ -152,6 +152,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1228893227497259893">Rangt auðkenni einingar</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (greint sjálfvirkt)</translation>
 <translation id="1232569758102978740">Ónefnt</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> er áskilið</translation>
 <translation id="1236081509407217141">Viltu leyfa VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Heiti tækisins þíns</translation>
@@ -472,6 +473,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1721424275792716183">* Reiturinn má ekki vera auður</translation>
 <translation id="1723636263173393300">Þessi regla á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> flýtileiðir.</translation>
 <translation id="1725591448053514783">Umslag: You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> eða <ph name="FIELD_3" /> er áskilið</translation>
 <translation id="1727613060316725209">Vottorðið er gilt</translation>
 <translation id="1728677426644403582">Þú ert að skoða uppruna vefsíðu</translation>
 <translation id="173080396488393970">Þessi kortategund er ekki studd</translation>
@@ -1432,6 +1434,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3220264767789936523">Formlegur klæðnaður</translation>
 <translation id="3223287115535306850">Hleðslutákn forritaræsingar</translation>
 <translation id="3223425961342298674">Staðsetning ekki leyfð</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> eða <ph name="FIELD_2" /> er áskilið</translation>
 <translation id="3225319735946384299">Kóðaundirritun</translation>
 <translation id="3225919329040284222">Þjónninn framvísaði vottorði sem samsvarar ekki innbyggðum væntingum. Þessar væntingar eru hafðar með fyrir tiltekin mjög örugg vefsvæði í því skyni að vernda þig.</translation>
 <translation id="3226128629678568754">Ýttu á endurnýjunarhnappinn til að endursenda gögnin sem þarf til að hlaða síðuna.</translation>
@@ -2156,6 +2159,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4318312030194671742">Samsetningarþjónusta málunarforskoðunar</translation>
 <translation id="4318566738941496689">Heiti tækisins og vistfang netkerfis</translation>
 <translation id="4320119221194966055">Persónuleg lán</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Tengill móttekinn frá <ph name="DEVICE_NAME" />}one{# tengill móttekinn frá <ph name="DEVICE_NAME" />}other{# tenglar mótteknir frá <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bakki 17</translation>
 <translation id="4325863107915753736">Mistókst að finna greinina</translation>
 <translation id="4326324639298822553">Athugaðu gildistímann og reyndu aftur</translation>
@@ -4982,6 +4986,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8758529215314160755">Þú getur breytt nafninu <ph name="BEGIN_LINK" />á Google-reikningnum þínum<ph name="END_LINK" />: <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Kortið er útrunnið</translation>
 <translation id="87601671197631245">Þetta vefsvæði notar úrelta öryggisstillingu sem gæti sett upplýsingarnar þínar í hættu (til dæmis aðgangsorð, skilaboð eða kreditkort) þegar þær eru sendar til vefsvæðisins.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Tengill sendur úr <ph name="DEVICE_NAME" />}one{# tengill sendur úr <ph name="DEVICE_NAME" />}other{# tenglar sendir úr <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">USB-tæki</translation>
 <translation id="8763986294015493060">Loka öllum huliðsgluggum sem eru opnir</translation>
 <translation id="8766943070169463815">Sannvottunarsíða fyrir skilríki öruggrar greiðslu var opnuð</translation>

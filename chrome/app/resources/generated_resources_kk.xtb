@@ -830,6 +830,7 @@
 <translation id="1567579616025300478">Бұл сайтқа деректерді құрылғыға сақтауға рұқсат берілмейді.</translation>
 <translation id="156793199942386351">"<ph name="ACTION" />" әрекетіне "<ph name="CURRENTKEY" />" пернесі әлдеқашан тағайындалған. <ph name="RESPONSE" /> үшін кез келген пернені басыңыз.</translation>
 <translation id="1567993339577891801">JavaScript консолі</translation>
+<translation id="157005186601751931">Қойындыны қолданбадан ашу</translation>
 <translation id="1570604804919108255">Хабарландырулардың дыбысын қосу</translation>
 <translation id="1570990174567554976">"<ph name="BOOKMARK_TITLE" />" бетбелгісінің қалтасы жасалды.</translation>
 <translation id="1571041387761170095">Әлсіз немесе бұрын қолданылған құпия сөздер жоқ.</translation>
@@ -2311,7 +2312,6 @@
 <translation id="2565214867520763227">Экран оқу құралын қосу</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> және тағы <ph name="NUM_OTHER_MEMBERS" /> адам қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="256726287944589768">"Жаңа қойынды" бетінде төменгі деректемені көрсету</translation>
-<translation id="2567313753132089780">Құпия сөз кемінде 12 таңбадан тұруы және бас әріптер мен кіші әріптерді, сандар мен таңбаларды қамтуы керек.</translation>
 <translation id="2568774940984945469">Ақпараттық жолақ контейнері</translation>
 <translation id="2569972178052279830">Бөлшек сатушы аты</translation>
 <translation id="257088987046510401">Тақырыптар</translation>
@@ -3161,7 +3161,6 @@
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3158033540161634471">Саусақ ізін орнату</translation>
 <translation id="3158203338449343164">Қойынды іздеу функциясын босату</translation>
-<translation id="3158732900546890991">Құпия сөз кемінде 8 таңбадан тұруы және келесілердің кемінде екеуін қамтуы керек: бас әріптер, кіші әріптер, сандар немесе таңбалар.</translation>
 <translation id="3158770568048368350">Бұл мобильдік желінің қысқа уақыт үзілуіне себеп болуы мүмкін.</translation>
 <translation id="3159335509547415276">Блокталған аккаунттар туралы ақпарат</translation>
 <translation id="3159493096109238499">Қоңыр сарғыш</translation>
@@ -6102,6 +6101,7 @@
 <translation id="5204967432542742771">Құпия сөз енгізу</translation>
 <translation id="5205484256512407285">Тасымалдау үшін ешқашан мобильдік интернетті пайдаланбау</translation>
 <translation id="520568280985468584">Желі қосылды. Ұялы желі белсенді болуы үшін бірнеше минут керек.</translation>
+<translation id="5207395053540207113">Search-ке Drive контентін пайдалануға рұқсат беру керек пе?</translation>
 <translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> жарамды ChromeOS құрылғысын пайдаланып жатқаныңызды тексергісі келеді.</translation>
 <translation id="5208926629108082192">Құрылғының мобильді желісі туралы ақпарат</translation>
@@ -9005,6 +9005,7 @@
 <translation id="727595954130325265">Қазір сатып алу</translation>
 <translation id="7277275452721470458">AI режимінің тарихы</translation>
 <translation id="727952162645687754">Жүктеу қатесі</translation>
+<translation id="7280265656690268844">JavaScript оңтайландыру функциясы өшірулі</translation>
 <translation id="7280649757394340890">Мәтінді дыбысқа түрлендіру дауыстық параметрлері</translation>
 <translation id="7280683802406059877">Пернелер тіркесімін бейімдеу</translation>
 <translation id="7280877790564589615">Рұқсат қажет</translation>

@@ -837,6 +837,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1567579616025300478">Šiai svetainei neleidžiama išsaugoti duomenų jūsų įrenginyje.</translation>
 <translation id="156793199942386351">Klavišas „<ph name="CURRENTKEY" />“ jau priskirtas veiksmui „<ph name="ACTION" />“. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
 <translation id="1567993339577891801">„JavaScript“ pultas</translation>
+<translation id="157005186601751931">Atidaryti skirtuką programoje</translation>
 <translation id="1570604804919108255">Įjungti pranešimų garsą</translation>
 <translation id="1570990174567554976">Sukurtas žymių aplankas „<ph name="BOOKMARK_TITLE" />“.</translation>
 <translation id="1571041387761170095">Nėra nesudėtingų ar pakartotinai naudojamų slaptažodžių</translation>
@@ -2330,7 +2331,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2565214867520763227">Ekrano skaitytuvo įjungimas</translation>
 <translation id="2566146433999774844">Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /> ir dar <ph name="NUM_OTHER_MEMBERS" /> žm.</translation>
 <translation id="256726287944589768">Rodyti poraštę naujo skirtuko puslapyje</translation>
-<translation id="2567313753132089780">Slaptažodį turi sudaryti bent dvylika simbolių ir didžiosios bei mažosios raidės, skaičiai ir simboliai</translation>
 <translation id="2568774940984945469">Informacinės juostos sudėtinis rodinys</translation>
 <translation id="2569972178052279830">Mažmenininko pavadinimas</translation>
 <translation id="257088987046510401">Temos</translation>
@@ -3180,7 +3180,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3157931365184549694">Atkurti</translation>
 <translation id="3158033540161634471">Piršto antspaudo nustatymas</translation>
 <translation id="3158203338449343164">Atsegti skirtukų paiešką</translation>
-<translation id="3158732900546890991">Slaptažodį turi sudaryti bent aštuoni simboliai ir jame turi būti bent du iš šių elementų: didžiųjų raidžių, mažųjų raidžių, skaičių arba simbolių</translation>
 <translation id="3158770568048368350">Dėl to mobiliojo ryšio tinklas gali būti laikinai atjungtas</translation>
 <translation id="3159335509547415276">Sužinokite apie užblokuotas paskyras</translation>
 <translation id="3159493096109238499">Smėlio spalva</translation>
@@ -6124,6 +6123,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5204967432542742771">Įveskite slaptažodį</translation>
 <translation id="5205484256512407285">Niekada nenaudoti mobiliojo ryšio duomenų perkeliant</translation>
 <translation id="520568280985468584">Tinklas pridėtas sėkmingai. Gali užtrukti kelias minutes, kol mobiliojo ryšio tinklas taps aktyvus.</translation>
+<translation id="5207395053540207113">Leisti Paieškai pasiekti Disko turinį?</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="520840839826327499">„<ph name="SERVICE_NAME" />“ nori patikrinti, ar naudojate tinkamą „Chrome“ OS įrenginį.</translation>
 <translation id="5208926629108082192">Įrenginio mobiliojo ryšio tinklo informacija</translation>
@@ -9039,6 +9039,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="727595954130325265">Apsipirkti dabar</translation>
 <translation id="7277275452721470458">DI režimo veikla</translation>
 <translation id="727952162645687754">Atsisiuntimo klaida</translation>
+<translation id="7280265656690268844">„JavaScript“ optimizavimas išjungtas</translation>
 <translation id="7280649757394340890">Teksto į kalbą balso nustatymai</translation>
 <translation id="7280683802406059877">Tinkinti spartųjį klavišą</translation>
 <translation id="7280877790564589615">Prašoma leidimo</translation>

@@ -828,6 +828,7 @@
 <translation id="1567579616025300478">此网站不得将数据保存在您的设备上。</translation>
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
+<translation id="157005186601751931">在应用中打开标签页</translation>
 <translation id="1570604804919108255">将通知取消静音</translation>
 <translation id="1570990174567554976">已创建“<ph name="BOOKMARK_TITLE" />”书签文件夹。</translation>
 <translation id="1571041387761170095">没有安全系数低或重复使用的密码</translation>
@@ -2306,7 +2307,6 @@
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的标签页分组</translation>
 <translation id="256726287944589768">在“新标签页”页面上显示页脚</translation>
-<translation id="2567313753132089780">密码长度必须至少为 12 个字符，且需包含大小写字母、数字和符号</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2569972178052279830">零售商名称</translation>
 <translation id="257088987046510401">主题</translation>
@@ -3156,7 +3156,6 @@
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158033540161634471">设置指纹</translation>
 <translation id="3158203338449343164">取消固定标签页搜索功能</translation>
-<translation id="3158732900546890991">密码长度必须至少为 8 个字符，且需至少包含以下两种字符：大写字母、小写字母、数字或符号</translation>
 <translation id="3158770568048368350">这可能会导致您的移动网络连接暂时断开</translation>
 <translation id="3159335509547415276">了解被屏蔽的账号</translation>
 <translation id="3159493096109238499">米黄色</translation>
@@ -6096,6 +6095,7 @@
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5205484256512407285">一律不使用移动数据进行传输</translation>
 <translation id="520568280985468584">已成功添加网络。不过，您的移动网络可能要过几分钟才可用。</translation>
+<translation id="5207395053540207113">允许 Google 搜索访问云端硬盘内容？</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />需要检查您使用的是否为符合条件的 Chrome 操作系统设备。</translation>
 <translation id="5208926629108082192">设备移动网络信息</translation>
@@ -6325,7 +6325,7 @@
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379140238605961210">继续禁止使用麦克风</translation>
 <translation id="5382591305415226340">管理支持的链接</translation>
-<translation id="5384401776498845256">哪些对象可与您分享内容</translation>
+<translation id="5384401776498845256">谁能与您分享内容</translation>
 <translation id="5385628342687007304">这个密码仅会保存到此设备上。若要在其他设备上使用该密码，请将它保存到您的 Google 账号。</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">企业政策已更改。实验按钮已添加到工具栏。点击此按钮即可打开对话框以启用实验。</translation>
@@ -7686,7 +7686,7 @@
 <translation id="6345878117466430440">标记为已读</translation>
 <translation id="6346952829206698721">从剪贴板中粘贴</translation>
 <translation id="6347010704471250799">显示通知</translation>
-<translation id="634792071306410644">您需要将您的设备设为可见，其他人才能与您分享内容</translation>
+<translation id="634792071306410644">您需要将设备设为可见，其他人才能与您分享内容</translation>
 <translation id="6348252528297699679">您可依次前往“设置”&gt;“隐私和安全”&gt;“隐私控制”&gt;“位置信息使用权”，关闭位置信息服务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6348655410494610085">使用现有 Google 账号或创建新账号</translation>
 <translation id="6348805481186204412">离线存储空间</translation>
@@ -9000,6 +9000,7 @@
 <translation id="727595954130325265">立即抢购</translation>
 <translation id="7277275452721470458">AI 模式活动</translation>
 <translation id="727952162645687754">下载错误</translation>
+<translation id="7280265656690268844">JavaScript 优化功能已关闭</translation>
 <translation id="7280649757394340890">文字转语音的语音设置</translation>
 <translation id="7280683802406059877">自定义键盘快捷键</translation>
 <translation id="7280877790564589615">已请求权限</translation>

@@ -835,6 +835,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1567579616025300478">Þetta vefsvæði má ekki vista gögn í tækinu þínu.</translation>
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ er þegar úthlutað á aðgerðina „<ph name="ACTION" />“. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-stjórnborð</translation>
+<translation id="157005186601751931">Opna flipa í forriti</translation>
 <translation id="1570604804919108255">Hætta að þagga tilkynningar</translation>
 <translation id="1570990174567554976">Bókamerkjamappan „<ph name="BOOKMARK_TITLE" />“ búin til.</translation>
 <translation id="1571041387761170095">Engin léleg eða endurnýtt aðgangsorð</translation>
@@ -2328,7 +2329,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2565214867520763227">Kveikja á skjálesara</translation>
 <translation id="2566146433999774844">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> til viðbótar eru í</translation>
 <translation id="256726287944589768">Sýna fót á síðunni „Nýr flipi“</translation>
-<translation id="2567313753132089780">Aðgangsorð verður að vera a.m.k. 12 stafir og innihalda hástafi, lágstafi, tölustafi og tákn</translation>
 <translation id="2568774940984945469">Rammi upplýsingastiku</translation>
 <translation id="2569972178052279830">Heiti söluaðila</translation>
 <translation id="257088987046510401">Þemu</translation>
@@ -3178,7 +3178,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158033540161634471">Skráðu fingrafarið þitt</translation>
 <translation id="3158203338449343164">Losa flipaleit</translation>
-<translation id="3158732900546890991">Aðgangsorð verður að vera að minnsta kosti 8 stafir og innihalda a.m.k. tvennt af eftirfarandi: hástafi, lágstafi, tölustafi eða tákn</translation>
 <translation id="3158770568048368350">Þetta gæti valdið því að tengingin við farsímakerfið rofni um stund</translation>
 <translation id="3159335509547415276">Nánar um reikninga á bannlista</translation>
 <translation id="3159493096109238499">Drapplitaður</translation>
@@ -5665,6 +5664,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4881685975363383806">Ekki minna mig á næst</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4882312758060467256">Hefur aðgang að þessu vefsvæði</translation>
+<translation id="4882805770036405108">Opnaðu lesstillingu hraðar með flýtileið. Ýttu á ⌥ + ⌘ + R til að skipta á milli lesstillinga.</translation>
 <translation id="4882848900607400156">Þegar þú deilir nákvæmri staðsetningu þinni getur Gemini svarað spurningum þínum af meiri nákvæmni. Gögnin þín eru ekki notuð til að bæta skapandi gervigreindarlíkön.</translation>
 <translation id="4882919381756638075">Vefsvæði nota yfirleitt hljóðnemann fyrir samskiptaeiginleika eins og myndspjall</translation>
 <translation id="4883436287898674711">Öll vefsvæði <ph name="WEBSITE_1" /></translation>
@@ -6122,6 +6122,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5204967432542742771">Sláðu inn aðgangsorð</translation>
 <translation id="5205484256512407285">Aldrei nota farsímagögn við flutning</translation>
 <translation id="520568280985468584">Netkerfi var bætt við. Nokkrar mínútur gætu liðið áður en farsímakerfið virkjast.</translation>
+<translation id="5207395053540207113">Veita Leit aðgang að efni á Drive?</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kanna hvort þú sért að nota gjaldgengt ChromeOS tæki.</translation>
 <translation id="5208926629108082192">Upplýsingar um farsímakerfi tækis</translation>
@@ -8906,6 +8907,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7186903260115204164">Bættu við teikningum, undirskriftum og yfirstrikunum með nýja teikniverkfærinu</translation>
 <translation id="7186935534137027449">Forritaskipun</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
+<translation id="7188755083797868960">Opnaðu lesstillingu hraðar með flýtileið. Ýttu á Alt + Shift + R til að kveikja eða slökkva á lesstillingu.</translation>
 <translation id="7189234443051076392">Gakktu úr skugga um að það sé nóg pláss á tækinu</translation>
 <translation id="7189451821249468368">Þú ert ekki með tilskildar uppfærslur til að skrá þetta tæki. Hafðu samband við söludeild til að kaupa uppfærslur. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu hafa samband við þjónustudeild.</translation>
 <translation id="7189558282078169397">Flipar frá öðrum tækjum</translation>
@@ -9031,6 +9033,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="727595954130325265">Versla núna</translation>
 <translation id="7277275452721470458">Virkni gervigreindarstillingar</translation>
 <translation id="727952162645687754">Niðurhalsvilla</translation>
+<translation id="7280265656690268844">Slökkt er á fínstillingu JavaScript</translation>
 <translation id="7280649757394340890">Raddstillingar talgervils</translation>
 <translation id="7280683802406059877">Sérsníða flýtilykla</translation>
 <translation id="7280877790564589615">Heimildar krafist</translation>

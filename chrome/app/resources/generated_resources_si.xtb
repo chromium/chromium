@@ -831,6 +831,7 @@
 <translation id="1567579616025300478">මෙම වෙබ් අඩවියට ඔබේ උපාංගයේ දත්ත සුරැකීමට ඉඩ නොදෙයි.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. <ph name="RESPONSE" />ට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="1567993339577891801">JavaScript කොන්සෝලය</translation>
+<translation id="157005186601751931">යෙදුම තුළ පටිත්ත විවෘත කරන්න</translation>
 <translation id="1570604804919108255">දැනුම්දීම් නිහඬ කිරීම ඉවත් කරන්න</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' පිටුසන් ෆෝල්ඩරය සාදන ලදී.</translation>
 <translation id="1571041387761170095">දුර්වල හෝ නැවත භාවිත කළ මුරපද නැත</translation>
@@ -2315,7 +2316,6 @@
 <translation id="2565214867520763227">තිර කියවනය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> සහ තව <ph name="NUM_OTHER_MEMBERS" /> දෙනෙකු සමග පටිති සමූහයට එකතු වන්න</translation>
 <translation id="256726287944589768">නව ටැබ් පිටුවේ පාදම පෙන්වන්න</translation>
-<translation id="2567313753132089780">මුරපදය අවම වශයෙන් අනුලකුණු 12ක් විය යුතු අතර ඉහළ සහ පහළ අනුලකුණු, අංක සහ සංකේත ඇතුළත් විය යුතු යි</translation>
 <translation id="2568774940984945469">තොරතුරු තීරු බහාලුම</translation>
 <translation id="2569972178052279830">සිල්ලර වෙළෙන්දාගේ නම</translation>
 <translation id="257088987046510401">තේමා</translation>
@@ -3165,7 +3165,6 @@
 <translation id="3157931365184549694">ප්‍රතිසාධනය</translation>
 <translation id="3158033540161634471">ඔබගේ ඇඟිලි සලකුණ පිහිටුවන්න</translation>
 <translation id="3158203338449343164">පටිති සෙවීම ගලවන්න</translation>
-<translation id="3158732900546890991">මුරපදය අවම වශයෙන් අනුලකුණු 8ක් විය යුතු අතර පහත ඒවායින් අවම වශයෙන් දෙකක් ඇතුළත් විය යුතු යි: කැපිටල් අකුරු, කුඩා අකුරු, අංක, හෝ සංකේත</translation>
 <translation id="3158770568048368350">මෙය ඔබගේ ජංගම දුරකථන ජාලය මදකට විසන්ධි වීමට හේතු විය හැකිය</translation>
 <translation id="3159335509547415276">අවහිර කළ ගිණුම් පිළිබඳව දැන ගන්න</translation>
 <translation id="3159493096109238499">ළා දුඹුරු වැලි</translation>
@@ -6108,6 +6107,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5204967432542742771">මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="5205484256512407285">මාරු කිරීමට කිසි විටක ජංගම දත්ත භාවිත නොකරන්න</translation>
 <translation id="520568280985468584">ජාලය සාර්ථකව එක් කර ඇත. ඔබගේ සෙලියුලර් ජාලය සක්‍රිය වීමට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
+<translation id="5207395053540207113">Drive අන්තර්ගතයට ප්‍රවේශ වීමට සෙවීමට ඉඩ දෙන්න ද?</translation>
 <translation id="5207949376430453814">පෙළ කාකපාදය උද්දීපනය කරන්න</translation>
 <translation id="520840839826327499">ඔබ යෝග්‍ය ChromeOS උපාංගයක් භාවිත කරන්නේදැයි පරීක්ෂා කිරීමට <ph name="SERVICE_NAME" /> හට අවශ්‍යයි.</translation>
 <translation id="5208926629108082192">උපාංග ජංගම ජාල තතු</translation>
@@ -9015,6 +9015,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="727595954130325265">දැන් සාප්පු යන්න</translation>
 <translation id="7277275452721470458">AI මාදිලි ක්‍රියාකාරකම්</translation>
 <translation id="727952162645687754">බාගත දෝශය</translation>
+<translation id="7280265656690268844">ජාවාස්ක්‍රිප්ට් ප්‍රශස්තකරණය ක්‍රියාවිරහිතයි</translation>
 <translation id="7280649757394340890">පෙළ-කථන හඬ සැකසුම්</translation>
 <translation id="7280683802406059877">යතුරු පුවරු කෙටිමං අභිරුචිකරණය කරන්න</translation>
 <translation id="7280877790564589615">අවසරය ඉල්ලන ලදී</translation>

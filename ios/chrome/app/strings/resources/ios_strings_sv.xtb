@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Lagringsutrymmet är fullt</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
+<translation id="1199631150313925648">Ange manuellt</translation>
 <translation id="1199963004393929848">Grönt tema</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{{count} bokmärken har sparats i {title} i ditt konto, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Integritetsmeddelande</translation>
 <translation id="4420409367264901497">Redigera bokmärke</translation>
 <translation id="4425365312778464779">Detta är ett hanterat konto</translation>
+<translation id="443008484043213881">Verktyg</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="4430505936695785931">Få tillgång till sparade lösenord i andra appar</translation>
 <translation id="4431224949908513835">Välj en betalningsmetod att fylla i.</translation>
@@ -1294,6 +1296,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5581786858144165447">Fråga AI-läget</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5591526871732898147">Bifogad bild {index}</translation>
+<translation id="5594597292424622277">Pausa videon</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="559567008082979829">Ställ in att dina nedladdningar ska raderas efter en månad.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -2163,6 +2166,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8528009254289981965">Öppna länkar från andra appar i inkognitoläget</translation>
 <translation id="8529767659511976195">Nytt</translation>
 <translation id="8531572740963685410">PDF-filer</translation>
+<translation id="8532059953132740592">Spela upp videon</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
 <translation id="8534481786647257214">Inlägg på Google+ klart.</translation>

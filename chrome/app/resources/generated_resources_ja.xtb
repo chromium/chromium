@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">このサイトでは、デバイスへのデータの保存は許可されていません。</translation>
 <translation id="156793199942386351">「<ph name="CURRENTKEY" />」キーはすでに「<ph name="ACTION" />」に割り当てられています。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="1567993339577891801">JavaScript コンソール</translation>
+<translation id="157005186601751931">アプリでタブを開く</translation>
 <translation id="1570604804919108255">通知のミュートを解除する</translation>
 <translation id="1570990174567554976">ブックマーク フォルダ「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="1571041387761170095">脆弱なパスワードや使い回されているパスワードはありません</translation>
@@ -2308,7 +2309,6 @@
 <translation id="2565214867520763227">スクリーン リーダーをオンにする</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> さんと他 <ph name="NUM_OTHER_MEMBERS" /> 人のタブグループに参加</translation>
 <translation id="256726287944589768">新しいタブページにフッターを表示する</translation>
-<translation id="2567313753132089780">パスワードは英字（大文字と小文字）、数字、および記号を使用して、12 文字以上で指定してください</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
 <translation id="2569972178052279830">販売店の名前</translation>
 <translation id="257088987046510401">テーマ</translation>
@@ -3158,7 +3158,6 @@
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158033540161634471">指紋の設定</translation>
 <translation id="3158203338449343164">タブ検索の固定を解除</translation>
-<translation id="3158732900546890991">パスワードは英字（大文字と小文字）、数字、または記号の少なくとも 2 種類を使用して、8 文字以上で指定してください</translation>
 <translation id="3158770568048368350">モバイル ネットワークが一時的に切断される可能性があります</translation>
 <translation id="3159335509547415276">アカウントのブロックに関する詳細</translation>
 <translation id="3159493096109238499">ベージュ</translation>
@@ -6094,6 +6093,7 @@
 <translation id="5204967432542742771">パスワードを入力</translation>
 <translation id="5205484256512407285">転送にモバイルデータを使用しない</translation>
 <translation id="520568280985468584">ネットワークを追加しました。モバイル ネットワークが有効になるまでに数分かかる場合があります。</translation>
+<translation id="5207395053540207113">Google 検索にドライブのコンテンツへのアクセスを許可しますか？</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> により、ご使用の ChromeOS デバイスが対象かどうかの確認が行われます。</translation>
 <translation id="5208926629108082192">デバイスのモバイル ネットワーク情報</translation>
@@ -8998,6 +8998,7 @@
 <translation id="727595954130325265">今すぐ購入</translation>
 <translation id="7277275452721470458">AI モードのアクティビティ</translation>
 <translation id="727952162645687754">ダウンロード エラー</translation>
+<translation id="7280265656690268844">JavaScript の最適化がオフになっています</translation>
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
 <translation id="7280683802406059877">キーボード ショートカットをカスタマイズ</translation>
 <translation id="7280877790564589615">許可の要求</translation>

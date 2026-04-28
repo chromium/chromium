@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">禁止這個網站將資料儲存到裝置。</translation>
 <translation id="156793199942386351">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
+<translation id="157005186601751931">在應用程式中開啟分頁</translation>
 <translation id="1570604804919108255">開啟通知音效</translation>
 <translation id="1570990174567554976">已建立「<ph name="BOOKMARK_TITLE" />」書籤資料夾。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
@@ -2314,7 +2315,6 @@
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
 <translation id="2566146433999774844">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
 <translation id="256726287944589768">在新分頁中顯示頁尾</translation>
-<translation id="2567313753132089780">密碼至少要有 12 個字元，且必須包含大小寫英文字母、數字和符號</translation>
 <translation id="2568774940984945469">資訊列容器</translation>
 <translation id="2569972178052279830">零售商名稱</translation>
 <translation id="257088987046510401">主題</translation>
@@ -3164,7 +3164,6 @@
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
 <translation id="3158203338449343164">取消固定「分頁搜尋」</translation>
-<translation id="3158732900546890991">密碼至少要有 8 個字元，且必須包含下列至少兩項元素：大寫字母、小寫字母、數字或符號</translation>
 <translation id="3158770568048368350">這可能導致行動網路暫時中斷連線</translation>
 <translation id="3159335509547415276">瞭解封鎖的帳戶</translation>
 <translation id="3159493096109238499">米色</translation>
@@ -6100,6 +6099,7 @@
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5205484256512407285">一律不使用行動數據進行傳輸</translation>
 <translation id="520568280985468584">已成功新增網路。行動網路可能要過幾分鐘才會啟用。</translation>
+<translation id="5207395053540207113">要允許 Google 搜尋存取雲端硬碟內容嗎？</translation>
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想要確認你是否使用合格的 Chrome OS 裝置。</translation>
 <translation id="5208926629108082192">裝置行動網路資訊</translation>
@@ -9002,6 +9002,7 @@
 <translation id="727595954130325265">立即選購</translation>
 <translation id="7277275452721470458">AI 模式活動</translation>
 <translation id="727952162645687754">下載錯誤</translation>
+<translation id="7280265656690268844">JavaScript 最佳化功能已關閉</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7280683802406059877">自訂鍵盤快速鍵</translation>
 <translation id="7280877790564589615">要求權限</translation>

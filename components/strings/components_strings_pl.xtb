@@ -152,6 +152,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1228893227497259893">Błędny identyfikator elementu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (wykryty automatycznie)</translation>
 <translation id="1232569758102978740">Bez tytułu</translation>
+<translation id="1234539281285007945">Pole <ph name="FIELD_1" /> jest wymagane</translation>
 <translation id="1236081509407217141">Zezwalać na VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Nazwa urządzenia</translation>
@@ -472,6 +473,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1721424275792716183">* Pole jest wymagane</translation>
 <translation id="1723636263173393300">Maksymalna liczba skrótów w tej zasadzie to <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Koperta You 6</translation>
+<translation id="172754119609519423">Pole <ph name="FIELD_1" />, <ph name="FIELD_2" /> lub <ph name="FIELD_3" /> jest wymagane</translation>
 <translation id="1727613060316725209">Certyfikat jest ważny</translation>
 <translation id="1728677426644403582">Przeglądasz źródło strony internetowej</translation>
 <translation id="173080396488393970">Ten typ karty nie jest obsługiwany</translation>
@@ -1432,6 +1434,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3220264767789936523">Stroje oficjalne</translation>
 <translation id="3223287115535306850">Animowana ikona uruchamiania aplikacji</translation>
 <translation id="3223425961342298674">Lokalizacja nie jest dozwolona</translation>
+<translation id="3225277284238802910">Pole <ph name="FIELD_1" /> lub <ph name="FIELD_2" /> jest wymagane</translation>
 <translation id="3225319735946384299">Podpisywanie kodu</translation>
 <translation id="3225919329040284222">Serwer przedstawił certyfikat, który nie pasuje do zaprogramowanych oczekiwań. Oczekiwania mają chronić Cię w określonych witrynach o wysokim poziomie zabezpieczeń.</translation>
 <translation id="3226128629678568754">Naciśnij przycisk ponownego załadowania, by przesłać dane wymagane do wczytania strony.</translation>
@@ -2156,6 +2159,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4318312030194671742">Usługa kompozytora podglądu renderowania</translation>
 <translation id="4318566738941496689">Nazwa i adres sieciowy urządzenia</translation>
 <translation id="4320119221194966055">Kredyty konsumpcyjne</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Odebrano link z urządzenia <ph name="DEVICE_NAME" />}few{Odebrano # linki z urządzenia <ph name="DEVICE_NAME" />}many{Odebrano # linków z urządzenia <ph name="DEVICE_NAME" />}other{Odebrano # linku z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Taca 17</translation>
 <translation id="4325863107915753736">Nie udało się znaleźć artykułu</translation>
 <translation id="4326324639298822553">Sprawdź datę ważności i spróbuj ponownie</translation>
@@ -4983,6 +4987,7 @@ Dodatkowe informacje:
 <translation id="8758529215314160755">Imię i nazwisko możesz zmienić <ph name="BEGIN_LINK" />na koncie Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">Ta karta straciła ważność</translation>
 <translation id="87601671197631245">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła, wiadomości i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Wysłano link z urządzenia <ph name="DEVICE_NAME" />}few{Wysłano # linki z urządzenia <ph name="DEVICE_NAME" />}many{Wysłano # linków z urządzenia <ph name="DEVICE_NAME" />}other{Wysłano # linku z urządzenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8763986294015493060">Zamknij wszystkie otwarte okna incognito</translation>
 <translation id="8766943070169463815">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności jest otwarty</translation>

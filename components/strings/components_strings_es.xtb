@@ -152,6 +152,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1228893227497259893">Identificador de entidad incorrecto</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (autodetectado)</translation>
 <translation id="1232569758102978740">Sin título</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> es obligatorio</translation>
 <translation id="1236081509407217141">¿Permitir realidad virtual?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">El nombre de tu dispositivo</translation>
@@ -472,6 +473,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
 <translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> o <ph name="FIELD_3" /> es obligatorio</translation>
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo el código fuente de una página web</translation>
 <translation id="173080396488393970">No se admite este tipo de tarjeta</translation>
@@ -1432,6 +1434,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3220264767789936523">Ropa formal</translation>
 <translation id="3223287115535306850">Throbber de lanzamiento de la aplicación</translation>
 <translation id="3223425961342298674">Ubicación no permitida</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> o <ph name="FIELD_2" /> es obligatorio</translation>
 <translation id="3225319735946384299">Code Signing</translation>
 <translation id="3225919329040284222">El servidor ha mostrado un certificado que no coincide con lo que se esperaba. Algunos sitios web tienen un alto nivel de seguridad para garantizar tu protección y esperan ciertas características de los certificados.</translation>
 <translation id="3226128629678568754">Pulsa el botón de actualización de página para que se vuelvan a enviar los datos necesarios para cargar la página.</translation>
@@ -2156,6 +2159,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4318312030194671742">Servicio de composición de vista previa de pintura</translation>
 <translation id="4318566738941496689">El nombre de tu dispositivo y la dirección de red</translation>
 <translation id="4320119221194966055">Préstamos personales</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Enlace recibido desde <ph name="DEVICE_NAME" />}other{# enlaces recibidos desde <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bandeja 17</translation>
 <translation id="4325863107915753736">Error al buscar el artículo</translation>
 <translation id="4326324639298822553">Consulta la fecha de vencimiento y vuelve a intentarlo</translation>
@@ -4983,6 +4987,7 @@ Más información:
 <translation id="8758529215314160755">Puedes editar tu nombre en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /> <ph name="ACCOUNT" />.</translation>
 <translation id="8759274551635299824">La tarjeta ha caducado</translation>
 <translation id="87601671197631245">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas, los mensajes o las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Enlace enviado desde <ph name="DEVICE_NAME" />}other{# enlaces enviados desde <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Cierra todas las ventanas de Incógnito que estén abiertas</translation>
 <translation id="8766943070169463815">La hoja de autenticación de credenciales de pago seguras está abierta</translation>

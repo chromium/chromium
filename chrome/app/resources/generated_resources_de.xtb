@@ -830,6 +830,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1567579616025300478">Diese Website darf keine Daten auf deinem Gerät speichern.</translation>
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="1567993339577891801">JavaScript-Konsole</translation>
+<translation id="157005186601751931">Tab in App öffnen</translation>
 <translation id="1570604804919108255">Stummschaltung von Benachrichtigungen aufheben</translation>
 <translation id="1570990174567554976">Lesezeichenordner „<ph name="BOOKMARK_TITLE" />“ erstellt.</translation>
 <translation id="1571041387761170095">Keine schwachen oder wiederverwendeten Passwörter</translation>
@@ -2311,7 +2312,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2565214867520763227">Screenreader aktivieren</translation>
 <translation id="2566146433999774844">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und <ph name="NUM_OTHER_MEMBERS" /> weiteren Personen beitreten</translation>
 <translation id="256726287944589768">Fußzeile auf der Seite „Neuer Tab“ anzeigen</translation>
-<translation id="2567313753132089780">Das Passwort muss mindestens 12 Zeichen lang sein sowie Groß- und Kleinbuchstaben, Ziffern und Symbole enthalten</translation>
 <translation id="2568774940984945469">Infoleisten-Container</translation>
 <translation id="2569972178052279830">Name des Einzelhändlers</translation>
 <translation id="257088987046510401">Designs</translation>
@@ -3161,7 +3161,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3158033540161634471">Fingerabdruck einrichten</translation>
 <translation id="3158203338449343164">Tab-Suche loslösen</translation>
-<translation id="3158732900546890991">Das Passwort muss mindestens 8 Zeichen lang sein und mindestens zwei der folgenden Elemente enthalten: Großbuchstaben, Kleinbuchstaben, Ziffern oder Symbole</translation>
 <translation id="3158770568048368350">Hierdurch wird die Verbindung zu deinem Mobilfunknetz möglicherweise kurz getrennt</translation>
 <translation id="3159335509547415276">Informationen zu blockierten Konten</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6102,6 +6101,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5204967432542742771">Passwort eingeben</translation>
 <translation id="5205484256512407285">Nie mobile Daten benutzen, um Daten zu übertragen</translation>
 <translation id="520568280985468584">Das Netzwerk wurde hinzugefügt. Es kann einige Minuten dauern, bis das Mobilfunknetz aktiv wird.</translation>
+<translation id="5207395053540207113">Der Google Suche erlauben, auf Drive-Inhalte zuzugreifen?</translation>
 <translation id="5207949376430453814">Textcursor hervorheben</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> möchte überprüfen, ob du ein unterstütztes Chrome OS-Gerät verwendest.</translation>
 <translation id="5208926629108082192">Informationen zum Mobilfunknetz des Geräts</translation>
@@ -8349,7 +8349,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6808166974213191158">Chrome OS Flex-Systemimage-Writer</translation>
 <translation id="6808193438228982088">Fuchs</translation>
 <translation id="6808818615395768377">Blockieren, wenn die Website unbekannt ist (Standardeinstellung)</translation>
-<translation id="6809470175540814047">In &amp;Inkognitofenster öffnen</translation>
+<translation id="6809470175540814047">In Inkognitofenster öffnen</translation>
 <translation id="6810613314571580006">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion deaktiviert ist, wirst du bei jeder Anmeldung auf einer Website nach einer Bestätigung gefragt.</translation>
 <translation id="6811034713472274749">Seitenansicht bereit</translation>
 <translation id="6811151703183939603">Fest</translation>
@@ -9006,6 +9006,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="727595954130325265">Jetzt kaufen</translation>
 <translation id="7277275452721470458">Aktivitäten im KI-Modus</translation>
 <translation id="727952162645687754">Fehler beim Herunterladen</translation>
+<translation id="7280265656690268844">JavaScript-Optimierung ist deaktiviert</translation>
 <translation id="7280649757394340890">Einstellungen für Text-zu-Sprache</translation>
 <translation id="7280683802406059877">Tastenkombination anpassen</translation>
 <translation id="7280877790564589615">Berechtigung angefordert</translation>

@@ -2156,6 +2156,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4318312030194671742">Service de composition d'aperçus Paint</translation>
 <translation id="4318566738941496689">Nom et adresse réseau de votre appareil</translation>
 <translation id="4320119221194966055">Prêts personnels</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Lien reçu de <ph name="DEVICE_NAME" />}one{# lien reçu de <ph name="DEVICE_NAME" />}other{# liens reçus de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bac 17</translation>
 <translation id="4325863107915753736">Échec de la recherche de l'article.</translation>
 <translation id="4326324639298822553">Veuillez vérifier la date d'expiration, puis réessayer</translation>
@@ -4984,6 +4985,7 @@ Informations supplémentaires :
 <translation id="8758529215314160755">Vous pouvez modifier votre nom dans votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Carte arrivée à expiration</translation>
 <translation id="87601671197631245">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe, vos messages ou vos cartes de crédit, lorsqu'elles lui sont transmises.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Lien envoyé depuis <ph name="DEVICE_NAME" />}one{# lien envoyé depuis <ph name="DEVICE_NAME" />}other{# liens envoyés depuis <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Périphérique USB</translation>
 <translation id="8763986294015493060">Fermez toutes les fenêtres de navigation privée actuellement ouvertes</translation>
 <translation id="8766943070169463815">La fiche d'authentification concernant les infos de paiement sécurisé est ouverte</translation>

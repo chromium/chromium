@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">Тут відображатимуться останні вкладки</translation>
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
 <translation id="3444179773590444986">Надіслати відгук про темну тему для сайтів?</translation>
-<translation id="3448874648066942074">Підсумувати вміст сторінки за допомогою ШІ</translation>
 <translation id="3452832259067974318">З міркувань конфіденційності Chrome не буде автоматично заповнювати пароль у цьому полі.</translation>
 <translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Ви можете вибрати пошукову систему</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">Активні (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Кешовані зображення й файли</translation>
 <translation id="4710167854527459075">Сортувати за новішими</translation>
-<translation id="4718044610319080485">Активується помічник на основі ШІ</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720556299488643018">Скасувати</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1661,7 +1659,6 @@
 <translation id="7914399737746719723">Додаток установлено</translation>
 <translation id="7917574899775263813">Перейти до останньої вкладки</translation>
 <translation id="7919123827536834358">Перекладати ці мови автоматично</translation>
-<translation id="7921782882718083488">Підсумувати вміст цієї сторінки</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome автоматично скасовує дозволи для сайтів, які надсилають забагато сповіщень або які ви не відвідували останнім часом</translation>
@@ -1825,7 +1822,6 @@
 <translation id="8538291624121505885"><ph name="TAB_TITLE" /> (одна з вибраних закріплених вкладок у режимі "картинка в картинці")</translation>
 <translation id="8540136935098276800">Введіть URL-адресу правильного формату</translation>
 <translation id="854522910157234410">Відкрити цю сторінку</translation>
-<translation id="8547466829003330976">Проаналізувати файл PDF за допомогою ШІ</translation>
 <translation id="8551513938758868521">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="8559961053328923750">Chrome обмежує загальний обсяг даних, якими сайти можуть обмінюватися через веб-переглядач, щоб оцінювати ефективність своїх оголошень.</translation>
 <translation id="8559990750235505898">Пропозиція перекладати сторінки іншими мовами</translation>

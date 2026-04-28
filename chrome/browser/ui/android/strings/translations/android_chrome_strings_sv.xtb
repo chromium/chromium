@@ -555,7 +555,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3439276997620616816">Du hittar dina senaste flikar här</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
 <translation id="3444179773590444986">Vill du dela feedback om mörkt tema för webbplatser?</translation>
-<translation id="3448874648066942074">Sammanfatta sidan med AI</translation>
 <translation id="3452832259067974318">Av integritetsskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan välja din sökmotor</translation>
@@ -856,7 +855,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4698757800236023795">Aktiva (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4710167854527459075">Sortera efter senaste</translation>
-<translation id="4718044610319080485">Startar AI-assistenten</translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
 <translation id="4720556299488643018">Avsluta prenumeration</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1662,7 +1660,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7917574899775263813">Hoppa till den sista fliken</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
-<translation id="7921782882718083488">Sammanfatta den här sidan</translation>
 <translation id="7926975587469166629">Kortets namn</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome tar automatiskt bort behörigheter för webbplatser som missbrukar aviseringar eller som du inte har besökt nyligen</translation>
@@ -1826,7 +1823,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, fäst flik med bild-i-bild som har valts tillsammans med andra</translation>
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
 <translation id="854522910157234410">Öppna sidan</translation>
-<translation id="8547466829003330976">Granska PDF:en med AI</translation>
 <translation id="8551513938758868521">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="8559961053328923750">Chrome begränsar den totala mängden data som webbplatser kan dela via webbläsaren för att mäta annonsresultatet</translation>
 <translation id="8559990750235505898">Erbjud översättning av sidor till andra språk</translation>

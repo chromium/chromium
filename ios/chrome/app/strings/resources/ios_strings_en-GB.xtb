@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Your storage is full</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
+<translation id="1199631150313925648">Enter manually</translation>
 <translation id="1199963004393929848">Green theme</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{{count} bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Privacy Notice</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">This account is managed</translation>
+<translation id="443008484043213881">Tools</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4430505936695785931">Get saved passwords in other apps</translation>
 <translation id="4431224949908513835">Select a payment method to fill.</translation>

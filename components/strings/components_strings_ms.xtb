@@ -152,6 +152,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1228893227497259893">Pengecam entiti yang salah</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (auto kesan)</translation>
 <translation id="1232569758102978740">Tidak Bertajuk</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> diperlukan</translation>
 <translation id="1236081509407217141">Benarkan VR?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Nama peranti anda</translation>
@@ -472,6 +473,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1721424275792716183">* Medan perlu diisi</translation>
 <translation id="1723636263173393300">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> pintasan.</translation>
 <translation id="1725591448053514783">Sampul You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> atau <ph name="FIELD_3" /> diperlukan</translation>
 <translation id="1727613060316725209">Sijil sah</translation>
 <translation id="1728677426644403582">Anda sedang melihat sumber halaman web</translation>
 <translation id="173080396488393970">Jenis kad ini tidak disokong</translation>
@@ -627,6 +629,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1979156660928743046">Maklumat Media</translation>
 <translation id="1987486584747170374">Carian anda, padanan terbaik dan kandungan halaman tersebut dihantar kepada Google. Item ini tidak akan digunakan oleh jurusemak untuk meningkatkan AI. Organisasi anda boleh mengubah tetapan ini pada bila-bila masa.</translation>
 <translation id="1988881251331415125">Jika ejaan sudah betul, <ph name="BEGIN_LINK" />cuba jalankan Diagnostik Sambungan<ph name="END_LINK" />.</translation>
+<translation id="1991370806334788445">Cuba berikan kebenaran untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> mahu menyimpan data bersaiz besar pada komputer setempat anda secara kekal</translation>
 <translation id="1997774360448418989">Kertas (Nipis)</translation>
@@ -1432,6 +1435,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3220264767789936523">Pakaian Formal</translation>
 <translation id="3223287115535306850">Ikon pemuatan pelancaran apl</translation>
 <translation id="3223425961342298674">Lokasi tidak dibenarkan</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> atau <ph name="FIELD_2" /> diperlukan</translation>
 <translation id="3225319735946384299">Menandatangan Kod</translation>
 <translation id="3225919329040284222">Pelayan memberikan sijil yang tidak sepadan dengan jangkaan terbina dalam. Jangkaan ini disertakan untuk laman web dengan keselamatan tinggi tertentu untuk melindungi anda.</translation>
 <translation id="3226128629678568754">Tekan butang muat semula untuk menyerahkan kembali data yang diperlukan untuk memuatkan halaman.</translation>

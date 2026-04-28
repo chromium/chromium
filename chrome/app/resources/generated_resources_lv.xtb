@@ -835,6 +835,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1567579616025300478">Šai vietnei nav atļauts saglabāt datus jūsu ierīcē.</translation>
 <translation id="156793199942386351">Taustiņš “<ph name="CURRENTKEY" />” jau ir piešķirts darbībai “<ph name="ACTION" />”. Nospiediet jebkuru taustiņu, lai <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript konsole</translation>
+<translation id="157005186601751931">Atvērt cilni lietotnē</translation>
 <translation id="1570604804919108255">Ieslēgt paziņojumus</translation>
 <translation id="1570990174567554976">Tika izveidota grāmatzīmju mape “<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="1571041387761170095">Nav nedrošu vai atkārtoti izmantotu paroļu.</translation>
@@ -2316,7 +2317,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2565214867520763227">Ekrāna lasītāja ieslēgšana</translation>
 <translation id="2566146433999774844">Pievienošanās ciļņu grupai, ko izmanto <ph name="OWNER_FIRST_NAME" /> un <ph name="NUM_OTHER_MEMBERS" /> citi dalībnieki</translation>
 <translation id="256726287944589768">Rādīt kājeni jaunas cilnes lapā</translation>
-<translation id="2567313753132089780">Parolei ir jābūt vismaz 12 rakstzīmes garai, kā arī tajā ir jābūt gan lielajiem, gan mazajiem burtiem, cipariem un simboliem.</translation>
 <translation id="2568774940984945469">Informācijas joslas konteiners</translation>
 <translation id="2569972178052279830">Mazumtirgotāja nosaukums</translation>
 <translation id="257088987046510401">Motīvi</translation>
@@ -3166,7 +3166,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158033540161634471">Iestatiet pirksta nospiedumu</translation>
 <translation id="3158203338449343164">Atspraust meklēšanu cilnēs</translation>
-<translation id="3158732900546890991">Parolē ir jābūt vismaz astoņām rakstzīmēm, kā arī tajā ir jābūt vismaz divām no šādām rakstzīmēm: lielajiem burtiem, mazajiem burtiem, cipariem vai simboliem.</translation>
 <translation id="3158770568048368350">Tādējādi īslaicīgi var tikt pārtraukts savienojums ar mobilo tīklu</translation>
 <translation id="3159335509547415276">Uzziniet vairāk par bloķētiem kontiem.</translation>
 <translation id="3159493096109238499">Bēša</translation>
@@ -6108,6 +6107,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5204967432542742771">Ievadiet paroli</translation>
 <translation id="5205484256512407285">Nekad neizmantot pārsūtīšanai mobilos datus</translation>
 <translation id="520568280985468584">Tīkls ir sekmīgi pievienots. Mobilā tīkla aktivizēšana var ilgt vairākas minūtes.</translation>
+<translation id="5207395053540207113">Vai atļaut pakalpojumam Meklēšana piekļūt Diska saturam?</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vēlas pārbaudīt, vai izmantojat piemērotu Chrome OS ierīci.</translation>
 <translation id="5208926629108082192">Ierīces mobilā tīkla informācija</translation>
@@ -9016,6 +9016,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="727595954130325265">Iepirkties tūlīt</translation>
 <translation id="7277275452721470458">MI režīma darbība</translation>
 <translation id="727952162645687754">Lejupielādes kļūda</translation>
+<translation id="7280265656690268844">JavaScript optimizācija ir izslēgta</translation>
 <translation id="7280649757394340890">Balss iestatījumi teksta pārvēršanai runā</translation>
 <translation id="7280683802406059877">Pielāgot īsinājumtaustiņu</translation>
 <translation id="7280877790564589615">Atļaujas pieprasījums</translation>

@@ -2156,6 +2156,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4318312030194671742">Gwasanaeth Cyfansoddwr Rhagolwg Paent</translation>
 <translation id="4318566738941496689">Enw'ch dyfais a'ch cyfeiriad rhwydwaith</translation>
 <translation id="4320119221194966055">Benthyciadau Personol</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Dolen wedi'i derbyn gan <ph name="DEVICE_NAME" />}zero{Derbyniwyd # dolen gan <ph name="DEVICE_NAME" />}two{Derbyniwyd # ddolen gan <ph name="DEVICE_NAME" />}few{Derbyniwyd # dolen gan <ph name="DEVICE_NAME" />}many{Derbyniwyd # dolen gan <ph name="DEVICE_NAME" />}other{Derbyniwyd # dolen gan <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Hambwrdd 17</translation>
 <translation id="4325863107915753736">Wedi methu â dod o hyd i'r erthygl</translation>
 <translation id="4326324639298822553">Gwiriwch eich dyddiad darfod a rhowch gynnig arall arni</translation>
@@ -3187,6 +3188,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5968400720580217226">Dull AI</translation>
 <translation id="5969199813874624822">Cadw ac Olrhain y Pris</translation>
 <translation id="5969933937005244170">Dim ond os byddwch yn eu rhannu mewn trywydd y bydd tabiau agored perthnasol yn cael eu defnyddio</translation>
+<translation id="5972020793760134803">Newid i'r tab</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Chweched Rôl</translation>
 <translation id="5975083100439434680">Pellhau</translation>
@@ -4981,6 +4983,7 @@ Manylion ychwanegol:
 <translation id="8758529215314160755">Gallwch olygu eich enw yn eich <ph name="BEGIN_LINK" />Cyfrif Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Mae'r cerdyn hwn wedi darfod</translation>
 <translation id="87601671197631245">Mae'r wefan hon yn defnyddio hen ffurfweddiad diogelwch, a allai ddatgelu'ch gwybodaeth (er enghraifft, cyfrineiriau, negeseuon, neu gardiau credyd) pan fydd yn cael ei hanfon i'r wefan hon.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Anfonwyd dolen o <ph name="DEVICE_NAME" />}zero{Anfonwyd # dolen o <ph name="DEVICE_NAME" />}two{Anfonwyd # ddolen o <ph name="DEVICE_NAME" />}few{Anfonwyd # dolen o <ph name="DEVICE_NAME" />}many{Anfonwyd # dolen o <ph name="DEVICE_NAME" />}other{Anfonwyd # dolen o <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dyfais USB</translation>
 <translation id="8763986294015493060">Cau pob ffenestr anhysbys sydd ar agor ar hyn o bryd</translation>
 <translation id="8766943070169463815">Mae'r daflen ddilysu manylion talu ddiogel ar agor</translation>

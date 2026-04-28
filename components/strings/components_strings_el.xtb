@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">Εσφαλμένο αναγνωριστικό οντότητας</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (εντοπίστηκε αυτόματα)</translation>
 <translation id="1232569758102978740">Χωρίς τίτλο</translation>
+<translation id="1234539281285007945">Το πεδίο <ph name="FIELD_1" /> είναι υποχρεωτικό</translation>
 <translation id="1236081509407217141">Να επιτρέπεται το VR;</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">Το όνομα της συσκευής σας</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* Το πεδίο είναι υποχρεωτικό</translation>
 <translation id="1723636263173393300">Αυτή η πολιτική δεν πρέπει να έχει περισσότερες από <ph name="MAX_ITEMS_LIMIT" /> συντομεύσεις.</translation>
 <translation id="1725591448053514783">Φάκελος You 6</translation>
+<translation id="172754119609519423">Το πεδίο <ph name="FIELD_1" />, το πεδίο <ph name="FIELD_2" /> ή το πεδίο <ph name="FIELD_3" /> είναι υποχρεωτικό</translation>
 <translation id="1727613060316725209">Το πιστοποιητικό είναι έγκυρο</translation>
 <translation id="1728677426644403582">Βλέπετε την πηγή μιας ιστοσελίδας</translation>
 <translation id="173080396488393970">Αυτός ο τύπος κάρτας δεν υποστηρίζεται</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">Επίσημη ένδυση</translation>
 <translation id="3223287115535306850">Ένδειξη εκκίνησης εφαρμογής</translation>
 <translation id="3223425961342298674">Η πρόσβαση στην τοποθεσία δεν επιτράπηκε</translation>
+<translation id="3225277284238802910">Το πεδίο <ph name="FIELD_1" /> ή το πεδίο <ph name="FIELD_2" /> είναι υποχρεωτικό</translation>
 <translation id="3225319735946384299">Υπογραφή κώδικα</translation>
 <translation id="3225919329040284222">Ο διακομιστής παρουσίασε ένα πιστοποιητικό που δεν αντιστοιχεί στις ενσωματωμένες προϋποθέσεις. Αυτές οι προϋποθέσεις συμπεριλαμβάνονται σε συγκεκριμένους ιστότοπους υψηλής ασφάλειας για την προστασία σας.</translation>
 <translation id="3226128629678568754">Πατήστε το κουμπί της επανάληψης φόρτωσης για να υποβάλετε ξανά τα δεδομένα που απαιτούνται για τη φόρτωση της σελίδας.</translation>

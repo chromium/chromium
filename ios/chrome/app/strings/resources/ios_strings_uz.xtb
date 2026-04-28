@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Xotirada joy qolmadi</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1190609913194133056">Bildirishnomalar markazi</translation>
+<translation id="1199631150313925648">Qoʻlda kiritish</translation>
 <translation id="1199963004393929848">Yashil rangli mavzu</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bukmark {email} hisobingizdagi "{title}" jildiga saqlandi}other{{count} ta bukmark {email} hisobingizdagi "{title}" jildiga saqlandi.}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Maxfiylik eslatmasi</translation>
 <translation id="4420409367264901497">Bukmarkni tahrirlash</translation>
 <translation id="4425365312778464779">Bu hisob nazorat ostida</translation>
+<translation id="443008484043213881">Asboblar</translation>
 <translation id="4430277756566635951">Hozir tanlangan: <ph name="EMAIL" />. Hisobni tanlang.</translation>
 <translation id="4430505936695785931">Saqlangan parollardan boshqa ilovalarda foydalanish</translation>
 <translation id="4431224949908513835">Kiritish uchun toʻlov usulini tanlang.</translation>

@@ -2156,6 +2156,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4318312030194671742">Paint Önizleme Birleştirme Hizmeti</translation>
 <translation id="4318566738941496689">Cihazınızın adı ve ağ adresi</translation>
 <translation id="4320119221194966055">Bireysel Krediler</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından bağlantı alındı.}other{<ph name="DEVICE_NAME" /> cihazından # bağlantı alındı.}}</translation>
 <translation id="4325600325087822253">Tepsi 17</translation>
 <translation id="4325863107915753736">Makale bulunamadı</translation>
 <translation id="4326324639298822553">Son kullanma tarihini kontrol edip tekrar deneyin</translation>
@@ -4984,6 +4985,7 @@ Ek ayrıntılar:
 <translation id="8758529215314160755">Adınızı <ph name="BEGIN_LINK" />Google Hesabınızda<ph name="END_LINK" /> (<ph name="ACCOUNT" />) düzenleyebilirsiniz.</translation>
 <translation id="8759274551635299824">Bu kartın kullanım süresi doldu</translation>
 <translation id="87601671197631245">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler, mesajlar veya kredi kartları) gösterilebilir.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından bağlantı gönderildi.}other{<ph name="DEVICE_NAME" /> cihazından # bağlantı gönderildi.}}</translation>
 <translation id="8763927697961133303">USB cihaz</translation>
 <translation id="8763986294015493060">Açık olan tüm gizli pencereleri kapat</translation>
 <translation id="8766943070169463815">Güvenli ödeme kimlik bilgisi doğrulama sayfası açıldı</translation>

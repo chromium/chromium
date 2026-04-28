@@ -2153,6 +2153,7 @@
 <translation id="4318312030194671742">Paint Preview ਕੰਪੋਜ਼ੀਟਰ ਸੇਵਾ</translation>
 <translation id="4318566738941496689">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਨਾਮ ਅਤੇ ਨੈੱਟਵਰਕ ਪਤਾ</translation>
 <translation id="4320119221194966055">ਨਿੱਜੀ ਲੋਨ</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਤੋਂ ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}one{<ph name="DEVICE_NAME" /> ਤੋਂ # ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਇਆ}other{<ph name="DEVICE_NAME" /> ਤੋਂ # ਲਿੰਕ ਪ੍ਰਾਪਤ ਹੋਏ}}</translation>
 <translation id="4325600325087822253">ਟ੍ਰੇਅ 17</translation>
 <translation id="4325863107915753736">ਲੇਖ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ</translation>
 <translation id="4326324639298822553">ਆਪਣੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ ਦੇਖੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
@@ -4978,6 +4979,7 @@
 <translation id="8758529215314160755">ਤੁਸੀਂ ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> <ph name="ACCOUNT" /> ਵਿੱਚ ਆਪਣੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8759274551635299824">ਇਸ ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="87601671197631245">ਇਹ ਸਾਈਟ ਬਹੁਤ ਪੁਰਾਣਾ ਸੁਰੱਖਿਆ ਸੰਰੂਪਣ ਵਰਤਦੀ ਹੈ, ਜਿਸ ਕਰਕੇ ਸ਼ਾਇਦ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਵਜੋਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ) ਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਭੇਜਣ ਵੇਲੇ ਉਹ ਜਾਣਕਾਰੀ ਉਜਾਗਰ ਹੋ ਜਾਵੇ।</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਤੋਂ ਲਿੰਕ ਭੇਜਿਆ ਗਿਆ}one{<ph name="DEVICE_NAME" /> ਤੋਂ # ਲਿੰਕ ਭੇਜਿਆ ਗਿਆ}other{<ph name="DEVICE_NAME" /> ਤੋਂ # ਲਿੰਕ ਭੇਜੇ ਗਏ}}</translation>
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
 <translation id="8763986294015493060">ਫ਼ਿਲਹਾਲ ਖੁੱਲ੍ਹੀਆਂ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="8766943070169463815">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਪ੍ਰਮਾਣੀਕਰਨ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਹੈ</translation>

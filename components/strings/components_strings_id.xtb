@@ -2156,6 +2156,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4318312030194671742">Layanan Penyusun Paint Preview</translation>
 <translation id="4318566738941496689">Nama dan alamat jaringan perangkat Anda</translation>
 <translation id="4320119221194966055">Pinjaman Pribadi</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link diterima dari <ph name="DEVICE_NAME" />}other{# link diterima dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Baki 17</translation>
 <translation id="4325863107915753736">Gagal menemukan artikel</translation>
 <translation id="4326324639298822553">Periksa tanggal kedaluwarsa dan coba lagi</translation>
@@ -4979,6 +4980,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8758529215314160755">Anda dapat mengedit nama Anda <ph name="BEGIN_LINK" />di Akun Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Kartu sudah tidak aktif</translation>
 <translation id="87601671197631245">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi, pesan, atau kartu kredit) saat dikirimkan ke situs ini.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Link dikirim dari <ph name="DEVICE_NAME" />}other{# link dikirim dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Perangkat USB</translation>
 <translation id="8763986294015493060">Tutup semua jendela Samaran yang saat ini terbuka</translation>
 <translation id="8766943070169463815">Sheet autentikasi kredensial pembayaran aman dibuka</translation>

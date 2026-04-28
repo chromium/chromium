@@ -834,6 +834,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1567579616025300478">Ce site n'est pas autorisé à enregistrer des données sur votre appareil.</translation>
 <translation id="156793199942386351">Vous avez déjà associé <ph name="CURRENTKEY" /> à l'action "<ph name="ACTION" />". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
+<translation id="157005186601751931">Ouvrir l'onglet dans l'appli</translation>
 <translation id="1570604804919108255">Réactiver les notifications</translation>
 <translation id="1570990174567554976">Dossier de favoris "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="1571041387761170095">Aucun mot de passe peu sécurisé/réutilisé</translation>
@@ -2315,7 +2316,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2565214867520763227">Activer le lecteur d'écran</translation>
 <translation id="2566146433999774844">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autres personnes</translation>
 <translation id="256726287944589768">Afficher le pied de page sur la page "Nouvel onglet"</translation>
-<translation id="2567313753132089780">Le mot de passe doit comporter au moins 12 caractères, dont des majuscules et minuscules, des chiffres et des symboles</translation>
 <translation id="2568774940984945469">Conteneur de barres d'infos</translation>
 <translation id="2569972178052279830">Nom du marchand</translation>
 <translation id="257088987046510401">Thèmes</translation>
@@ -3165,7 +3165,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158033540161634471">Configurer votre empreinte digitale</translation>
 <translation id="3158203338449343164">Retirer la recherche dans les onglets</translation>
-<translation id="3158732900546890991">Le mot de passe doit comporter au moins huit caractères, dont au moins deux majuscules, minuscules, chiffres ou symboles</translation>
 <translation id="3158770568048368350">Votre réseau mobile risque d'être déconnecté brièvement</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6106,6 +6105,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5204967432542742771">Mot de passe</translation>
 <translation id="5205484256512407285">Ne jamais utiliser les données mobiles pour les transferts</translation>
 <translation id="520568280985468584">Le réseau a bien été ajouté. L'activation de votre réseau cellulaire peut prendre plusieurs minutes.</translation>
+<translation id="5207395053540207113">Autoriser la Recherche à accéder au contenu Drive ?</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS éligible.</translation>
 <translation id="5208926629108082192">Infos sur le réseau mobile de l'appareil</translation>
@@ -9016,6 +9016,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="727595954130325265">Acheter</translation>
 <translation id="7277275452721470458">Activité en Mode IA</translation>
 <translation id="727952162645687754">Erreur lors du téléchargement.</translation>
+<translation id="7280265656690268844">L'optimisation JavaScript est désactivée</translation>
 <translation id="7280649757394340890">Paramètres de voix de la synthèse vocale</translation>
 <translation id="7280683802406059877">Personnaliser le raccourci clavier</translation>
 <translation id="7280877790564589615">Autorisation demandée</translation>

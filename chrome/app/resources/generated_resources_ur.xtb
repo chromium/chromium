@@ -833,6 +833,7 @@
 <translation id="1567579616025300478">اس سائٹ کو آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' پہلے سے ہی '<ph name="ACTION" />' کارروائی کو تفویض کردہ ہے۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
 <translation id="1567993339577891801">‏JavaScript کونسول</translation>
+<translation id="157005186601751931">ایپ میں ٹیب کھولیں</translation>
 <translation id="1570604804919108255">اطلاعات کو غیر خاموش کریں</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' بُک مارک فولڈر بنایا گیا۔</translation>
 <translation id="1571041387761170095">کوئی کمزور یا دوبارہ استعمال کردہ پاس ورڈز نہیں</translation>
@@ -2316,7 +2317,6 @@
 <translation id="2565214867520763227">سکرین قاری کو آن کریں</translation>
 <translation id="2566146433999774844">‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUM_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
 <translation id="256726287944589768">نئے ٹیب صفحہ پر فوٹر دکھائیں</translation>
-<translation id="2567313753132089780">پاس ورڈ کم از کم 12 حروف کا ہونا چاہیے اور اس میں بڑے اور چھوٹے حروف، نمبرز اور علامات شامل ہونی چاہئیں</translation>
 <translation id="2568774940984945469">معلومات بار کنٹینر</translation>
 <translation id="2569972178052279830">ریٹیلر کا نام</translation>
 <translation id="257088987046510401">تھیمز</translation>
@@ -3166,7 +3166,6 @@
 <translation id="3157931365184549694">بحال کریں</translation>
 <translation id="3158033540161634471">اپنے فنگر پرنٹ کو ترتیب دیں</translation>
 <translation id="3158203338449343164">ٹیب تلاش سے پن ہٹائیں</translation>
-<translation id="3158732900546890991">پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے اور اس میں درج ذیل میں سے کم از کم دو شامل ہونے چاہئیں: بڑے حروف، چھوٹے حروف، نمبرز یا علامات</translation>
 <translation id="3158770568048368350">یہ آپ کے موبائل نیٹ ورک کو مختصر طور پر غیر منسلک کرنے کا سبب بن سکتا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
 <translation id="3159493096109238499">زردی مائل بھورا</translation>
@@ -6107,6 +6106,7 @@
 <translation id="5204967432542742771">پاس ورڈ درج کریں</translation>
 <translation id="5205484256512407285">منتقلی کے لیے کبھی بھی موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="520568280985468584">نیٹ ورک کامیابی کے ساتھ شامل کر دیا گیا ہے۔ آپ کے سیلولر نیٹ ورک کے فعال ہونے میں کئی منٹ لگ سکتے ہیں۔</translation>
+<translation id="5207395053540207113">‏تلاش کو Drive کے مواد تک رسائی کی اجازت دیں؟</translation>
 <translation id="5207949376430453814">متن کیرٹ کو نمایاں کریں</translation>
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> چیک کرنا چاہتا ہے کہ آیا آپ اہل ChromeOS آلہ استعمال کررہے ہیں۔</translation>
 <translation id="5208926629108082192">آلہ کے موبائل نیٹ ورک کی معلومات</translation>
@@ -9012,6 +9012,7 @@
 <translation id="727595954130325265">ابھی خریدیں</translation>
 <translation id="7277275452721470458">‏‫AI وضع کی سرگرمی</translation>
 <translation id="727952162645687754">ڈاؤن لوڈ میں خرابی</translation>
+<translation id="7280265656690268844">‏‫JavaScript آپٹیمائزیشن آف ہے</translation>
 <translation id="7280649757394340890">ٹیکسٹ ٹو اسپیچ آواز کی ترتیبات</translation>
 <translation id="7280683802406059877">کی بورڈ شارٹ کٹ کو حسب ضرورت بنائیں</translation>
 <translation id="7280877790564589615">اجازت کی درخواست کی گئی</translation>

@@ -555,7 +555,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3439276997620616816">Itt láthatja majd a legutóbb megnyitott lapjait</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
 <translation id="3444179773590444986">Megosztja velünk véleményét a webhelyeknél használt sötét témával kapcsolatban?</translation>
-<translation id="3448874648066942074">Oldal összegzése AI segítségével</translation>
 <translation id="3452832259067974318">Adatai védelme érdekében a Chrome nem tölti ki automatikusan a jelszót ebben a mezőben.</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Kiválaszthatja keresőmotorját</translation>
@@ -855,7 +854,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4698757800236023795">Aktív (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">A gyorsítótárban szereplő képek és fájlok</translation>
 <translation id="4710167854527459075">Rendezés: legújabb elől</translation>
-<translation id="4718044610319080485">A funkció aktiválja az AI-asszisztenst</translation>
 <translation id="4719927025381752090">Fordítás felajánlása</translation>
 <translation id="4720556299488643018">Leiratkozás</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1661,7 +1659,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7914399737746719723">Alkalmazás telepítve</translation>
 <translation id="7917574899775263813">Ugrás az utolsó lapra</translation>
 <translation id="7919123827536834358">Automatikus fordítás ezekről a nyelvekről</translation>
-<translation id="7921782882718083488">Oldal összegzése</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">A Chrome automatikusan visszavonja azoknak a webhelyeknek az engedélyeit, amelyek visszaélnek az értesítésekkel, vagy amelyeket Ön nem keresett fel a közelmúltban</translation>
@@ -1825,7 +1822,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8538291624121505885"><ph name="TAB_TITLE" />, több másik mellett kiválasztott, kitűzött lap kép a képben módban</translation>
 <translation id="8540136935098276800">Megfelelő formátumú URL-t adjon meg</translation>
 <translation id="854522910157234410">Az oldal megnyitása</translation>
-<translation id="8547466829003330976">PDF áttekintése AI segítségével</translation>
 <translation id="8551513938758868521">Inkognitó lapok zárolása a Chrome elhagyásakor</translation>
 <translation id="8559961053328923750">A Chrome korlátozza, hogy a webhelyek összesen mennyi adatot oszthatnak meg a böngészőn keresztül a hirdetések teljesítményének mérése érdekében.</translation>
 <translation id="8559990750235505898">Más nyelvű oldalak fordításának felajánlása</translation>

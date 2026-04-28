@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">നിങ്ങളുടെ സ്റ്റോറേജ് നിറഞ്ഞു</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1190609913194133056">അറിയിപ്പ് കേന്ദ്രം</translation>
+<translation id="1199631150313925648">നേരിട്ട് നൽകുക</translation>
 <translation id="1199963004393929848">പച്ച തീം</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1204075260022434100">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ {title} എന്നതിലേക്ക് "{count}" ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">സ്വകാര്യത അറിയിപ്പ്</translation>
 <translation id="4420409367264901497">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4425365312778464779">ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യപ്പെടുന്നു</translation>
+<translation id="443008484043213881">ടൂളുകള്‍</translation>
 <translation id="4430277756566635951">നിലവിൽ <ph name="EMAIL" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4430505936695785931">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ മറ്റ് ആപ്പുകളിൽ നേടുക</translation>
 <translation id="4431224949908513835">പൂരിപ്പിക്കാൻ ഒരു പേയ്‌മെന്റ് രീതി തിരഞ്ഞെടുക്കുക.</translation>

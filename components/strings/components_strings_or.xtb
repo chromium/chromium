@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ଭୁଲ୍‍ ଅସ୍ତିତ୍ୱ ଚିହ୍ନଟକାରୀ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ସ୍ୱତଃ-ଚିହ୍ନଟ କରାଯାଇଛି)</translation>
 <translation id="1232569758102978740">ବେନାମୀ</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> ଆବଶ୍ୟକ</translation>
 <translation id="1236081509407217141">VRକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="1236689197410206751">Afterpay</translation>
 <translation id="1240347957665416060">ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ନାମ</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ଫିଲ୍ଡ ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="1723636263173393300">ଏହି ନୀତିରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ସର୍ଟକଟ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="1725591448053514783">ଏନଭେଲପ ୟୁ 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> କିମ୍ବା <ph name="FIELD_3" /> ଆବଶ୍ୟକ</translation>
 <translation id="1727613060316725209">ସାର୍ଟିଫିକେଟଟି ବୈଧ ଅଟେ</translation>
 <translation id="1728677426644403582">ଆପଣ ଏକ ୱେବ୍ ପୃଷ୍ଠାର ଉତ୍ସ ଦେଖୁଛନ୍ତି</translation>
 <translation id="173080396488393970">ଏହି ପ୍ରକାର କାର୍ଡ ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3220264767789936523">ଫର୍ମାଲ ପୋଷାକ</translation>
 <translation id="3223287115535306850">ଲଞ୍ଚ କରାଯାଉଥିବା ଆପର ଥ୍ରୋବର୍</translation>
 <translation id="3223425961342298674">ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> କିମ୍ବା <ph name="FIELD_2" /> ଆବଶ୍ୟକ</translation>
 <translation id="3225319735946384299">କୋଡ୍‌ ହସ୍ତାକ୍ଷର</translation>
 <translation id="3225919329040284222">ସର୍ଭର୍ ଏକ ସାର୍ଟିଫିକେଟ୍‌କୁ ଉପସ୍ଥାପନ କରୁଛି, ଯାହା ବିଲ୍ଟ-ଇନ୍ ପ୍ରତ୍ୟାଶା ସହ ମେଳ ଖାଉନାହିଁ। ଏହି ପ୍ରତ୍ୟାଶାଗୁଡ଼ିକ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାକୁ କିଛି ଉଚ୍ଚ ସୁରକ୍ଷା ଥିବା ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ପାଇଁ ଅନ୍ତର୍ଭୁକ୍ତ କରାଯାଇଛି।</translation>
 <translation id="3226128629678568754">ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବାକୁ ଆବଶ୍ୟକ ହେଉଥିବା ଡାଟା ପୁଣି ଦାଖଲ କରିବାକୁ ରିଲୋଡ୍‌ ବଟନ୍‌ ଦବାନ୍ତୁ।</translation>

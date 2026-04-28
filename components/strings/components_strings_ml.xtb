@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">തെറ്റായ എന്റിറ്റി ഐഡന്റിഫയർ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (സ്വയം-കണ്ടെത്തി)</translation>
 <translation id="1232569758102978740">ശീര്‍ഷകമില്ലാത്ത</translation>
+<translation id="1234539281285007945"><ph name="FIELD_1" /> ആവശ്യമാണ്</translation>
 <translation id="1236081509407217141">VR അനുവദിക്കണോ?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">നിങ്ങളുടെ ഉപകരണത്തിൻ്റെ പേര്</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ഫീൽഡ് ആവശ്യമാണ്</translation>
 <translation id="1723636263173393300">ഈ നയത്തിൽ <ph name="MAX_ITEMS_LIMIT" /> എണ്ണത്തേക്കാൾ കൂടുതൽ കുറുക്കുവഴികൾ ഉണ്ടാകരുത്.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
+<translation id="172754119609519423"><ph name="FIELD_1" />, <ph name="FIELD_2" /> അല്ലെങ്കിൽ <ph name="FIELD_3" /> ആവശ്യമാണ്</translation>
 <translation id="1727613060316725209">സാധുതയുള്ള സർട്ടിഫിക്കറ്റാണ്</translation>
 <translation id="1728677426644403582">നിങ്ങൾ ഒരു വെബ് പേജിന്റെ ഉറവിടമാണ് കാണുന്നത്</translation>
 <translation id="173080396488393970">ഇത്തരത്തിലുള്ള കാർഡ് അനുയോജ്യമല്ല</translation>
@@ -1431,6 +1433,7 @@
 <translation id="3220264767789936523">ഫോർമൽ വസ്‌ത്രം</translation>
 <translation id="3223287115535306850">ആപ്പ് ലോഞ്ച് ചെയ്യൽ ത്രോബർ</translation>
 <translation id="3223425961342298674">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചില്ല</translation>
+<translation id="3225277284238802910"><ph name="FIELD_1" /> അല്ലെങ്കിൽ <ph name="FIELD_2" /> ആവശ്യമാണ്</translation>
 <translation id="3225319735946384299">കോഡ് സൈനിംഗ്</translation>
 <translation id="3225919329040284222">ബിൽട്ട്-ഇൻ പ്രതീക്ഷകള്‍ക്ക് പൊരുത്തപ്പെടാത്ത സര്‍ട്ടിഫിക്കറ്റാണ് സെര്‍വര്‍ അവതരിപ്പിച്ചത്. നിങ്ങളെ സംരക്ഷിക്കുന്നതിലേക്കായുള്ള നിശ്ചിത, ഉന്നത-സുരക്ഷാ വെബ്‌സൈറ്റുകൾക്കായാണ് ഈ പ്രതീക്ഷകൾ ഉൾപ്പെടുത്തിയിരിക്കുന്നത്.</translation>
 <translation id="3226128629678568754">പേജ് ലോഡ് ചെയ്യുന്നതിനാവശ്യമായ ഡാറ്റ വീണ്ടും സമർപ്പിക്കാൻ വീണ്ടും ലോഡ് ചെയ്യുക ബട്ടൺ അമർത്തുക.</translation>

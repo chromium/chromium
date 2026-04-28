@@ -2315,7 +2315,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2565214867520763227">Ative o leitor de ecrã</translation>
 <translation id="2566146433999774844">Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoas</translation>
 <translation id="256726287944589768">Mostrar rodapé na página Novo separador</translation>
-<translation id="2567313753132089780">A palavra-passe tem de ter, pelo menos, 12 carateres e incluir letras maiúsculas e minúsculas, números e símbolos</translation>
 <translation id="2568774940984945469">Contentor da Barra de informações</translation>
 <translation id="2569972178052279830">Nome do retalhista</translation>
 <translation id="257088987046510401">Temas</translation>
@@ -3166,7 +3165,6 @@ Quer pará-lo?</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar a sua impressão digital</translation>
 <translation id="3158203338449343164">Desafixar Pesquisa de separadores</translation>
-<translation id="3158732900546890991">A palavra-passe tem de ter, pelo menos, 8 carateres e incluir, pelo menos, dois dos seguintes elementos: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="3158770568048368350">Isto pode fazer com que a sua rede móvel se desligue momentaneamente</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas</translation>
 <translation id="3159493096109238499">Bege</translation>
@@ -5653,6 +5651,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4881685975363383806">Não lembrar novamente</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
+<translation id="4882805770036405108">Abra o modo de leitura mais rapidamente com um atalho. Prima ⌥ + ⌘ + R para ativar/desativar o modo de leitura.</translation>
 <translation id="4882848900607400156">Quando partilha a sua localização exata, o Gemini pode responder às suas perguntas com mais precisão. Os seus dados não são usados para melhorar os modelos de IA generativa.</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
@@ -8895,6 +8894,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7186903260115204164">Adicione desenhos à mão livre, assinaturas e realces com a nova ferramenta de desenho</translation>
 <translation id="7186935534137027449">Comando da app</translation>
 <translation id="7188508872042490670">Dados de sites no dispositivo</translation>
+<translation id="7188755083797868960">Abra o modo de leitura mais rapidamente com um atalho. Prima Alt + Shift + R para ativar/desativar o modo de leitura.</translation>
 <translation id="7189234443051076392">Certifique-se de que existe espaço suficiente no seu dispositivo.</translation>
 <translation id="7189451821249468368">Não tem atualizações suficientes para inscrever este dispositivo. Entre em contacto com as vendas para comprar mais. Se considera que recebeu esta mensagem por engano, contacte o apoio técnico.</translation>
 <translation id="7189558282078169397">Separadores de outros dispositivos</translation>

@@ -556,7 +556,6 @@
 <translation id="3439276997620616816">ستظهر لك هنا علامات التبويب الأخيرة.</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
 <translation id="3444179773590444986">هل تريد مشاركة ملاحظاتك وآرائك حول وضع "المظهر الداكن" للمواقع الإلكترونية؟</translation>
-<translation id="3448874648066942074">تلخيص الصفحة باستخدام الذكاء الاصطناعي</translation>
 <translation id="3452832259067974318">‏لحماية خصوصيتك، لن يملء متصفِّح Chrome تلقائيًا كلمة المرور في هذا الحقل.</translation>
 <translation id="3474624961160222204">المتابعة بحساب "<ph name="NAME" />"</translation>
 <translation id="3478363558367712427">يمكنك استخدام محرّك بحث آخر.</translation>
@@ -856,7 +855,6 @@
 <translation id="4698757800236023795">نشطة (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
 <translation id="4710167854527459075">الترتيب حسب الأحدث</translation>
-<translation id="4718044610319080485">يتم استدعاء المساعد المستند إلى الذكاء الاصطناعي</translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
 <translation id="4720556299488643018">ألغِ اشتراكي</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1664,7 +1662,6 @@
 <translation id="7914399737746719723">تم تثبيت التطبيق.</translation>
 <translation id="7917574899775263813">الانتقال السريع إلى علامة التبويب الأخيرة</translation>
 <translation id="7919123827536834358">ترجمة هذه اللغات تلقائيًا</translation>
-<translation id="7921782882718083488">تلخيص هذه الصفحة</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
 <translation id="7927073875790626822">الواقع الممتد</translation>
 <translation id="7929587383660661825">‏يزيل Chrome تلقائيًا الأذونات من المواقع الإلكترونية التي تُسيء استخدام الإشعارات أو التي لم تتم زيارتها مؤخرًا</translation>
@@ -1829,7 +1826,6 @@
 <translation id="8538291624121505885">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في وضع "نافذة ضمن النافذة" مع علامات تبويب أخرى</translation>
 <translation id="8540136935098276800">‏يُرجى إدخال عنوان URL بتنسيق صحيح.</translation>
 <translation id="854522910157234410">فتح هذه الصفحة</translation>
-<translation id="8547466829003330976">‏مراجعة ملف PDF باستخدام الذكاء الاصطناعي</translation>
 <translation id="8551513938758868521">‏قفل علامات التبويب في وضع التصفُّح المتخفي عند إغلاق Chrome</translation>
 <translation id="8559961053328923750">‏يحد متصفِّح Chrome من إجمالي البيانات التي يمكن للمواقع الإلكترونية مشاركتها من خلال المتصفّح لقياس أداء الإعلانات.</translation>
 <translation id="8559990750235505898">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>

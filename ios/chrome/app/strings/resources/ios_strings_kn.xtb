@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">ನಿಮ್ಮ ಸಂಗ್ರಹಣೆ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1190609913194133056">ಅಧಿಸೂಚನೆಯ ಕೇಂದ್ರ</translation>
+<translation id="1199631150313925648">ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ</translation>
 <translation id="1199963004393929848">ಹಸಿರು ಥೀಮ್</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1204075260022434100">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಎಂಬಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ ಖಾತೆ {email} ನಲ್ಲಿ "{title}" ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">ಗೌಪ್ಯತೆಯ ಸೂಚನೆ</translation>
 <translation id="4420409367264901497">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4425365312778464779">ಈ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
+<translation id="443008484043213881">ಸಾಧನಗಳು</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ಅನ್ನು ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4430505936695785931">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4431224949908513835">ಭರ್ತಿ ಮಾಡಲು ಪಾವತಿ ವಿಧಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>

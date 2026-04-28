@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">તમારો સ્ટોરેજ ભરાઈ ગયો છે</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1190609913194133056">સૂચના કેન્દ્ર</translation>
+<translation id="1199631150313925648">મેન્યુઅલી દાખલ કરો</translation>
 <translation id="1199963004393929848">ગ્રીન થીમ</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1204075260022434100">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં "{title}"માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">ગોપનીયતા સૂચના</translation>
 <translation id="4420409367264901497">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="4425365312778464779">આ એકાઉન્ટ મેનેજ કરવામાં આવે છે</translation>
+<translation id="443008484043213881">ટૂલ્સ</translation>
 <translation id="4430277756566635951">હાલમાં <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="4430505936695785931">અન્ય ઍપમાં સાચવેલા પાસવર્ડ મેળવો</translation>
 <translation id="4431224949908513835">ભરવા માટે ચુકવણી પદ્ધતિ પસંદ કરો.</translation>

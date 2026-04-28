@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">ორგანიზაციის არასწორი იდენტიფიკატორი</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ავტომატურად დადგენილი)</translation>
 <translation id="1232569758102978740">უსათაურო</translation>
+<translation id="1234539281285007945">საჭიროა <ph name="FIELD_1" /></translation>
 <translation id="1236081509407217141">გსურთ VR-ის დაშვება?</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">თქვენი მოწყობილობის სახელი</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* ველი აუცილებელია</translation>
 <translation id="1723636263173393300">ამ წესებში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი მალსახმობი არ უნდა იყოს.</translation>
 <translation id="1725591448053514783">კონვერტი You 6</translation>
+<translation id="172754119609519423">საჭიროა <ph name="FIELD_1" />, <ph name="FIELD_2" /> ან <ph name="FIELD_3" /></translation>
 <translation id="1727613060316725209">სერთიფიკატი ძალაშია</translation>
 <translation id="1728677426644403582">თქვენ ათვალიერებთ ვებგვერდის წყაროს</translation>
 <translation id="173080396488393970">ამ ტიპის ბარათი მხარდაუჭერელია</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">ოფიციალური ტანსაცმელი</translation>
 <translation id="3223287115535306850">აპის გაშვების თრობერი</translation>
 <translation id="3223425961342298674">მდებარეობაზე წვდომა დაშვებულია</translation>
+<translation id="3225277284238802910">საჭიროა <ph name="FIELD_1" /> ან <ph name="FIELD_2" /></translation>
 <translation id="3225319735946384299">კოდის ხელმოწერა</translation>
 <translation id="3225919329040284222">სერვერმა წარმოადგინა სერტიფიკატი, რომელიც არ შეესაბამება ჩაშენებულ მოთხოვნებს. ეს მოთხოვნები ჩართულია უსაფრთხოების მაღალი დონის მქონე გარკვეული ვებსაიტებისთვის, თქვენი დაცვის მიზნით.</translation>
 <translation id="3226128629678568754">დააჭირეთ ხელახლა ჩატვირთვის ღილაკს, რათა ხელახლა გააგზავნოთ მონაცემები, რომლებიც საჭიროა გვერდის ჩასატვირთად.</translation>

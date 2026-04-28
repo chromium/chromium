@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavještenja</translation>
+<translation id="1199631150313925648">Unesite ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1204075260022434100">{count,plural, =1{Oznaka je sačuvana u folder "{title}" na računu {email}}one{{count} oznaka je sačuvana u folder "{title}" na računu {email}}few{{count} oznake su sačuvane u folder "{title}" na računu {email}}other{{count} oznaka je sačuvano u folder "{title}" na računu {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Obavještenje o privatnosti</translation>
 <translation id="4420409367264901497">Uređivanje oznake</translation>
 <translation id="4425365312778464779">Ovim računom se upravlja</translation>
+<translation id="443008484043213881">Alati</translation>
 <translation id="4430277756566635951">Trenutno je odabrano: <ph name="EMAIL" />. Odabir računa.</translation>
 <translation id="4430505936695785931">Dobijte sačuvane lozinke u drugim aplikacijama</translation>
 <translation id="4431224949908513835">Odaberite način plaćanja za unos.</translation>
@@ -1294,6 +1296,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5581786858144165447">Postavljanje pitanja AI načinu rada</translation>
 <translation id="5585019845078534178">Kartice</translation>
 <translation id="5591526871732898147">{index}. priložena slika</translation>
+<translation id="5594597292424622277">Pauziranje videozapisa</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
 <translation id="559567008082979829">Postavite da se preuzimanja brišu nakon jednog mjeseca.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -2163,6 +2166,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8528009254289981965">Otvorite linkove iz drugih aplikacija u anonimnom načinu rada</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8531572740963685410">PDF-ovi</translation>
+<translation id="8532059953132740592">Reproduciranje videozapisa</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Sigurno pregledanje je uključeno</translation>
 <translation id="8534481786647257214">Završena je Google+ objava.</translation>

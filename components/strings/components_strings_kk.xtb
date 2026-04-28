@@ -2155,6 +2155,7 @@
 <translation id="4318312030194671742">Paint Preview шығармашылық қызметі</translation>
 <translation id="4318566738941496689">Құрылғыңыздың атауы және желі мекенжайыңыз</translation>
 <translation id="4320119221194966055">Тұтынушылық несиелер</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан сілтеме келді.}other{<ph name="DEVICE_NAME" /> құрылғысынан # сілтеме келді.}}</translation>
 <translation id="4325600325087822253">17-науа</translation>
 <translation id="4325863107915753736">Мақала табылмады</translation>
 <translation id="4326324639298822553">Жарамдылық мерзімін тексеріп, әрекетті қайталаңыз</translation>
@@ -4981,6 +4982,7 @@
 <translation id="8758529215314160755">Атыңызды <ph name="BEGIN_LINK" />Google аккаунтында<ph name="END_LINK" /> (<ph name="ACCOUNT" />) өзгертуге болады.</translation>
 <translation id="8759274551635299824">Картаның мерзімі біткен</translation>
 <translation id="87601671197631245">Бұл сайттың қауіпсіздік конфигурациясы ескірген. Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер, хабарлар не несиелік карта нөмірлері) жария етілуі мүмкін.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан сілтеме жіберілді.}other{<ph name="DEVICE_NAME" /> құрылғысынан # сілтеме жіберілді.}}</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8763986294015493060">Қазір ашық тұрған инкогнито терезелерінің барлығын жабу</translation>
 <translation id="8766943070169463815">Қауіпсіз төлем деректерін аутентификациялау парағы ашылды.</translation>

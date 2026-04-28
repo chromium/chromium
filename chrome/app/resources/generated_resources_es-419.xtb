@@ -830,6 +830,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1567579616025300478">Este sitio no tiene permitido guardar datos en tu dispositivo.</translation>
 <translation id="156793199942386351">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
+<translation id="157005186601751931">Abrir pestaña en la app</translation>
 <translation id="1570604804919108255">Dejar de silenciar notificaciones</translation>
 <translation id="1570990174567554976">Se creó la carpeta de favoritos "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">No tienes contraseñas poco seguras o reutilizadas</translation>
@@ -2311,7 +2312,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
 <translation id="2566146433999774844">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
 <translation id="256726287944589768">Mostrar el pie de página en la página Nueva pestaña</translation>
-<translation id="2567313753132089780">La contraseña debe tener al menos 12 caracteres y debe incluir letras mayúsculas y minúsculas, números y símbolos</translation>
 <translation id="2568774940984945469">Contenedor de la barra de información</translation>
 <translation id="2569972178052279830">Nombre del minorista</translation>
 <translation id="257088987046510401">Temas</translation>
@@ -3161,7 +3161,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura tu huella</translation>
 <translation id="3158203338449343164">Dejar de fijar la búsqueda de pestañas</translation>
-<translation id="3158732900546890991">La contraseña debe tener al menos 8 caracteres y debe incluir al menos dos de los siguientes elementos: letras mayúsculas, letras minúsculas, números o símbolos</translation>
 <translation id="3158770568048368350">Es posible que esta acción desconecte tu red móvil por un breve instante</translation>
 <translation id="3159335509547415276">Más información sobre cuentas bloqueadas</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -6105,6 +6104,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5204967432542742771">Ingresa tu contraseña</translation>
 <translation id="5205484256512407285">No usar nunca los datos móviles para transferir contenido</translation>
 <translation id="520568280985468584">Se agregó la red de forma correcta. Es posible que tu red móvil tarde unos minutos en activarse.</translation>
+<translation id="5207395053540207113">¿Quieres permitir que la Búsqueda acceda al contenido de Drive?</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás usando un dispositivo apto para ChromeOS.</translation>
 <translation id="5208926629108082192">Información sobre la red móvil del dispositivo</translation>
@@ -9013,6 +9013,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="727595954130325265">Comprar ahora</translation>
 <translation id="7277275452721470458">Actividad del Modo IA</translation>
 <translation id="727952162645687754">Error de descarga</translation>
+<translation id="7280265656690268844">La optimización de JavaScript está desactivada</translation>
 <translation id="7280649757394340890">Configuración de la voz en la función de texto a voz</translation>
 <translation id="7280683802406059877">Personalizar combinación de teclas</translation>
 <translation id="7280877790564589615">Permiso solicitado</translation>

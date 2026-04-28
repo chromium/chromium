@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">A tárhely megtelt</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1190609913194133056">Értesítési központ</translation>
+<translation id="1199631150313925648">Megadás manuálisan</translation>
 <translation id="1199963004393929848">Zöld téma</translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1204075260022434100">{count,plural, =1{A könyvjelző el lett mentve {email} fiókja következő mappájába: „{title}”}other{{count} könyvjelző el lett mentve {email} fiókja következő mappájába: „{title}”.}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Adatvédelmi közlemény</translation>
 <translation id="4420409367264901497">Könyvjelző szerkesztése</translation>
 <translation id="4425365312778464779">Ez egy felügyelt fiók</translation>
+<translation id="443008484043213881">Eszközök</translation>
 <translation id="4430277756566635951">Jelenleg kiválasztva: <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="4430505936695785931">Mentett jelszavak lekérése más alkalmazásokban</translation>
 <translation id="4431224949908513835">Válassza ki a kitöltéshez használni kívánt fizetési módot.</translation>
@@ -1294,6 +1296,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5581786858144165447">Kérdezés az AI módtól</translation>
 <translation id="5585019845078534178">Kártyák</translation>
 <translation id="5591526871732898147">Csatolt kép: {index}.</translation>
+<translation id="5594597292424622277">Videó szüneteltetése</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="559567008082979829">Beállíthatja, hogy a letöltések egy hónap után törlődjenek.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -2163,6 +2166,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8528009254289981965">Más alkalmazásokból származó linkek megnyitása inkognitóban</translation>
 <translation id="8529767659511976195">Új</translation>
 <translation id="8531572740963685410">PDF-fájlok</translation>
+<translation id="8532059953132740592">Videó lejátszása</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A Biztonságos Böngészés be van kapcsolva</translation>
 <translation id="8534481786647257214">A Google+-bejegyzés kész.</translation>

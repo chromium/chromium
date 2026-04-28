@@ -2153,6 +2153,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4318312030194671742">Paint Preview Compositor szolgáltatás</translation>
 <translation id="4318566738941496689">Az eszköz neve és hálózati címe</translation>
 <translation id="4320119221194966055">Személyi kölcsönök</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Link érkezett innen: <ph name="DEVICE_NAME" />}other{# link érkezett innen: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">17. tálca</translation>
 <translation id="4325863107915753736">Nem sikerült megtalálni a cikket</translation>
 <translation id="4326324639298822553">Ellenőrizze a lejárati dátumot, majd próbálja újra</translation>
@@ -4982,6 +4983,7 @@ További részletek:
 <translation id="8758529215314160755">Nevét a <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /> (<ph name="ACCOUNT" />) szerkesztheti.</translation>
 <translation id="8759274551635299824">A kártya lejárt</translation>
 <translation id="87601671197631245">Ez a webhely elavult biztonsági konfigurációt használ, ezért előfordulhat, hogy mások látják az Ön adatait (például jelszavait, üzeneteit vagy hitelkártyaszámait), amikor elküldi őket a webhelynek.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{A(z) <ph name="DEVICE_NAME" /> eszközről küldött link}other{A(z) <ph name="DEVICE_NAME" /> eszközről küldött # link}}</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8763986294015493060">Az összes jelenleg megnyitott inkognitó ablak bezárása</translation>
 <translation id="8766943070169463815">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja megnyitva.</translation>

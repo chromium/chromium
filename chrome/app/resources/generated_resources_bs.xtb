@@ -836,6 +836,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1567579616025300478">Web lokaciji nije dozvoljeno da pohranjuje podatke na uređaj.</translation>
 <translation id="156793199942386351">Tipka "<ph name="CURRENTKEY" />" je već dodijeljena radnji "<ph name="ACTION" />". Pritisnite bilo koju tipku da <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konzola za JavaScript</translation>
+<translation id="157005186601751931">Otvori karticu u aplikaciji</translation>
 <translation id="1570604804919108255">Uključi zvuk obavještenja</translation>
 <translation id="1570990174567554976">Kreiran je folder s oznakom "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Nema slabih ni već korištenih lozinki</translation>
@@ -2326,7 +2327,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2565214867520763227">Uključite čitač ekrana</translation>
 <translation id="2566146433999774844">Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUM_OTHER_MEMBERS" /> osoba/e</translation>
 <translation id="256726287944589768">Prikazuj podnožje na stranici Nova kartica</translation>
-<translation id="2567313753132089780">Lozinka mora sadržavati najmanje 12 znakova i uključivati velika i mala slova, brojeve i simbole</translation>
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
 <translation id="2569972178052279830">Naziv maloprodavca</translation>
 <translation id="257088987046510401">Teme</translation>
@@ -3176,7 +3176,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavite otisak prsta</translation>
 <translation id="3158203338449343164">Otkači pretraživanje kartica</translation>
-<translation id="3158732900546890991">Lozinka mora sadržavati najmanje 8 znakova i uključivati najmanje dvije od sljedećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">To može uzrokovati kratki prekid vaše mobilne mreže</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
 <translation id="3159493096109238499">Bež</translation>
@@ -6120,6 +6119,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5204967432542742771">Unesite lozinku</translation>
 <translation id="5205484256512407285">Nikada ne koristi prenos podataka na mobilnoj mreži za prenos</translation>
 <translation id="520568280985468584">Mreža je uspješno dodana. Može potrajati nekoliko minuta da mobilna mreža postane aktivna.</translation>
+<translation id="5207395053540207113">Dozvoliti Pretraživanju da pristupa sadržaju na Disku?</translation>
 <translation id="5207949376430453814">Istakni kursor u tekstu</translation>
 <translation id="520840839826327499">Usluga <ph name="SERVICE_NAME" /> želi provjeriti koristite li ChromeOS uređaj koji ispunjava uslove.</translation>
 <translation id="5208926629108082192">Informacije o mobilnoj mreži uređaja</translation>
@@ -9032,6 +9032,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="727595954130325265">Kupite odmah</translation>
 <translation id="7277275452721470458">Aktivnost u AI načinu rada</translation>
 <translation id="727952162645687754">Greška prilikom preuzimanja</translation>
+<translation id="7280265656690268844">Optimizacija JavaScripta je isključena</translation>
 <translation id="7280649757394340890">Postavke glasa za pretvaranje teksta u govor</translation>
 <translation id="7280683802406059877">Prilagodite prečicu na tastaturi</translation>
 <translation id="7280877790564589615">Upućen je zahtjev za odobrenje</translation>

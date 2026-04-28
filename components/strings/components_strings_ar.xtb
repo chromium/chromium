@@ -152,6 +152,7 @@
 <translation id="1228893227497259893">معرف الكيان خاطئ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (تم التعرّف عليها تلقائيًا)</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
+<translation id="1234539281285007945">يجب ملء الحقل "<ph name="FIELD_1" />"</translation>
 <translation id="1236081509407217141">هل تريد السماح باستخدام "الواقع الافتراضي"؟</translation>
 <translation id="1236689197410206751">AfterPay</translation>
 <translation id="1240347957665416060">اسم الجهاز</translation>
@@ -472,6 +473,7 @@
 <translation id="1721424275792716183">* يجب ملء الحقل</translation>
 <translation id="1723636263173393300">يجب ألا تحتوي هذه السياسة على اختصارات يتجاوز عددها <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">‏ظرف You 6</translation>
+<translation id="172754119609519423">يجب ملء الحقل "<ph name="FIELD_1" />" أو "<ph name="FIELD_2" />" أو "<ph name="FIELD_3" />"</translation>
 <translation id="1727613060316725209">الشهادة صالحة</translation>
 <translation id="1728677426644403582">أنت تعرض مصدر صفحة ويب</translation>
 <translation id="173080396488393970">لا يتم دعم هذا النوع من البطاقات</translation>
@@ -1432,6 +1434,7 @@
 <translation id="3220264767789936523">ملابس رسمية</translation>
 <translation id="3223287115535306850">رمز التحميل الخاص ببدء تشغيل التطبيق</translation>
 <translation id="3223425961342298674">تم رفض طلب الوصول إلى الموقع الجغرافي.</translation>
+<translation id="3225277284238802910">يجب ملء الحقل "<ph name="FIELD_1" />" أو "<ph name="FIELD_2" />"</translation>
 <translation id="3225319735946384299">التوقيع بالرمز</translation>
 <translation id="3225919329040284222">قدم الخادم شهادة لا تتطابق مع التوقعات المضمّنة. تم تضمين هذه التوقعات للحصول على مواقع إلكترونية موثوقة وآمنة جدًا لتوفير الحماية لك.</translation>
 <translation id="3226128629678568754">اضغط على زر إعادة التحميل لإعادة إرسال البيانات المطلوبة لتحميل الصفحة.</translation>

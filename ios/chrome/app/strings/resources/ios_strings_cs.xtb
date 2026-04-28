@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Vaše úložiště je plné</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1190609913194133056">Centrum oznámení</translation>
+<translation id="1199631150313925648">Zadat ručně</translation>
 <translation id="1199963004393929848">Zelený motiv</translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1204075260022434100">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Do složky „{title}“ ve vašem účtu {email} byly uloženy {count} záložky}many{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložky}other{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložek}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Oznámení o ochraně soukromí</translation>
 <translation id="4420409367264901497">Upravit záložku</translation>
 <translation id="4425365312778464779">Tento účet je spravován</translation>
+<translation id="443008484043213881">Nástroje</translation>
 <translation id="4430277756566635951">Momentálně vybráno: <ph name="EMAIL" />. Vyberte účet.</translation>
 <translation id="4430505936695785931">Používejte uložená hesla v jiných aplikacích</translation>
 <translation id="4431224949908513835">Vyberte platební metodu, kterou chcete vyplnit.</translation>
@@ -1294,6 +1296,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5581786858144165447">Zeptat se v režimu AI</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5591526871732898147">Přiložený obrázek {index}</translation>
+<translation id="5594597292424622277">Pozastavit video</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="559567008082979829">Nastaví automatické mazání stažených souborů po jednom měsíci.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
@@ -2163,6 +2166,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8528009254289981965">Otevírejte odkazy z jiných aplikací v anonymním režimu</translation>
 <translation id="8529767659511976195">Nové</translation>
 <translation id="8531572740963685410">Soubory PDF</translation>
+<translation id="8532059953132740592">Přehrát video</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Bezpečné prohlížení je zapnuté</translation>
 <translation id="8534481786647257214">Příspěvek na Google+ byl odeslán.</translation>

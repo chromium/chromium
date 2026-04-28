@@ -2156,6 +2156,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4318312030194671742">Servizo de composición de vista previa da renderización</translation>
 <translation id="4318566738941496689">O nome e o enderezo de rede do teu dispositivo</translation>
 <translation id="4320119221194966055">Préstamos persoais</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Recibiches a ligazón desde: <ph name="DEVICE_NAME" />}other{Recibiches # ligazóns desde: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Bandexa 17</translation>
 <translation id="4325863107915753736">Non se puido atopar o artigo</translation>
 <translation id="4326324639298822553">Comproba a data de caducidade e téntao de novo</translation>
@@ -4982,6 +4983,7 @@ Detalles adicionais:
 <translation id="8758529215314160755">Podes editar o teu nome na túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Esta tarxeta caducou</translation>
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Enviouse a ligazón desde: <ph name="DEVICE_NAME" />}other{Enviáronse # ligazóns desde: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8763986294015493060">Pechar todas as ventás do modo de incógnito que estean abertas</translation>
 <translation id="8766943070169463815">A folla de autenticación da credencial de pagos seguros está aberta</translation>

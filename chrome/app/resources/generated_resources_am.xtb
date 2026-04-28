@@ -834,6 +834,7 @@
 <translation id="1567579616025300478">ይህ ጣቢያ መሣሪያዎ ላይ ውሂብን እንዲያስቀምጥ አልተፈቀደለትም።</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ቀደም ብሎ ወደ «<ph name="ACTION" />» እርምጃ ተመድቧል። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="1567993339577891801">ጃቫስክሪፕት ኮንሶል</translation>
+<translation id="157005186601751931">ትርን በመተግበሪያ ውስጥ ክፈት</translation>
 <translation id="1570604804919108255">የማሳወቂያዎች ድምጸ-ከል አንሳ</translation>
 <translation id="1570990174567554976">«<ph name="BOOKMARK_TITLE" />» የዕልባት አቃፊ ተፈጥሯል።</translation>
 <translation id="1571041387761170095">ምንም ደካማ ወይም ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት የሉም</translation>
@@ -2323,7 +2324,6 @@
 <translation id="2565214867520763227">ማያ ገጽ አንባቢን ያብሩ</translation>
 <translation id="2566146433999774844">ከ<ph name="OWNER_FIRST_NAME" /> እና <ph name="NUM_OTHER_MEMBERS" /> ሌሎች ጋር የትር ቡድን ይቀላቀላሉ</translation>
 <translation id="256726287944589768">አዲስ ትር ገፅ ላይ ግርጌ አሳይ</translation>
-<translation id="2567313753132089780">የይለፍ ቃል ቢያንስ 12 ቁምፊዎች መሆን እና ዐቢይ እና ንዑስ ሆሄ ፊደላት፣ ቁጥሮች እና ምልክቶችን ማካተት አለበት</translation>
 <translation id="2568774940984945469">መረጃ አሞሌ መያዣ</translation>
 <translation id="2569972178052279830">የቸርቻሪ ስም</translation>
 <translation id="257088987046510401">ገፅታዎች </translation>
@@ -3173,7 +3173,6 @@
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3158033540161634471">የጣት አሻራዎን ያዋቅሩ</translation>
 <translation id="3158203338449343164">የትር ፍለጋን ይንቀሉ</translation>
-<translation id="3158732900546890991">የይለፍ ቃል ቢያንስ 8 ቁምፊዎች መሆን እና ከሚከተሉት ውስጥ ቢያንስ ሁለቱን ማካተት አለበት፦ ዓቢይ ሆሄ ፊደላት፣ ንዑስ ሆሄ ፊደላት፣ ቁጥሮች ወይም ምልክቶች</translation>
 <translation id="3158770568048368350">ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለአጭር ጊዜ እንዲቋረጥ ሊያደርግ ይችላል</translation>
 <translation id="3159335509547415276">ስለ የታገዱ መለያዎች የበለጠ ይወቁ</translation>
 <translation id="3159493096109238499">ቤዥ</translation>
@@ -6115,6 +6114,7 @@
 <translation id="5204967432542742771">የይለፍ ቃል ያስገቡ</translation>
 <translation id="5205484256512407285">ለማስተላለፍ የተንቀሳቃሽ ስልክ ውሂብን በጭራሽ አይጠቀሙ</translation>
 <translation id="520568280985468584">አውታረ መረብ በተሳካ ሁኔታ ታክሏል። የተንቀሳቃሽ ስልክ አውታረ መረብዎ ንቁ እስኪሆን ድረስ ብዙ ደቂቃዎችን ሊወስድ ይችላል።</translation>
+<translation id="5207395053540207113">ፍለጋ የDrive ይዘትን እንዲደርስ ይፈቀድ?</translation>
 <translation id="5207949376430453814">የጽሑፍ ድፋቱን አድምቅ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> እርስዎ ብቁ የሆነ የChromeOS መሣሪያ እየተጠቀሙ መሆንዎን ማረጋገጥ ይፈልጋል።</translation>
 <translation id="5208926629108082192">የመሣሪያ የተንቀሳቃሽ ስልክ አውታረ መረብ መረጃ</translation>
@@ -9025,6 +9025,7 @@
 <translation id="727595954130325265">አሁን ሸምት</translation>
 <translation id="7277275452721470458">የሰው ሠራሽ አስተውሎት ሁነታ እንቅስቃሴ</translation>
 <translation id="727952162645687754">የማውረድ ስህተት</translation>
+<translation id="7280265656690268844">የጃቫስክሪፕት ማትባት ጠፍቷል</translation>
 <translation id="7280649757394340890">የጽሑፍ-ወደ-ንግግር ድምፅ ቅንብሮች</translation>
 <translation id="7280683802406059877">የቁልፍ ሰሌዳ አቋራጭን ያብጁ</translation>
 <translation id="7280877790564589615">ፈቃድ ተጠይቋል</translation>

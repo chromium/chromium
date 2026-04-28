@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">El almacenamiento está lleno</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
+<translation id="1199631150313925648">Ingresar manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1204075260022434100">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email})}other{{count} favoritos se guardaron en "{title}" en tu cuenta ({email})}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Aviso de privacidad</translation>
 <translation id="4420409367264901497">Editar favorito</translation>
 <translation id="4425365312778464779">Esta cuenta está administrada</translation>
+<translation id="443008484043213881">Herramientas</translation>
 <translation id="4430277756566635951">Selección actual: <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="4430505936695785931">Obtén las contraseñas guardadas en otras apps</translation>
 <translation id="4431224949908513835">Selecciona una forma de pago para completarla.</translation>
@@ -1294,6 +1296,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5581786858144165447">Preguntar al Modo IA</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5591526871732898147">Imagen adjunta {index}</translation>
+<translation id="5594597292424622277">Pausar el video</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="559567008082979829">Configura tus descargas para que se borren después de un mes.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -2163,6 +2166,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8528009254289981965">Abre vínculos de otras apps en el modo Incógnito</translation>
 <translation id="8529767659511976195">Nuevo</translation>
 <translation id="8531572740963685410">PDF</translation>
+<translation id="8532059953132740592">Reproducir el video</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8534481786647257214">Entrada de Google+ publicada</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Hapësira ruajtëse është plot</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
+<translation id="1199631150313925648">Fut manualisht</translation>
 <translation id="1199963004393929848">Tema e gjelbër</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1204075260022434100">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{{count} faqeshënues u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Njoftim i privatësisë</translation>
 <translation id="4420409367264901497">Redakto faqeshënuesin</translation>
 <translation id="4425365312778464779">Kjo llogari është e menaxhuar</translation>
+<translation id="443008484043213881">Veglat</translation>
 <translation id="4430277756566635951">Aktualisht është zgjedhur <ph name="EMAIL" />. Zgjidh një llogari.</translation>
 <translation id="4430505936695785931">Merr fjalëkalimet e ruajtura në aplikacione të tjera</translation>
 <translation id="4431224949908513835">Zgjidh një mënyrë pagese për të plotësuar.</translation>
@@ -1294,6 +1296,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5581786858144165447">Pyet "Modalitetin e IA-së"</translation>
 <translation id="5585019845078534178">Kartat</translation>
 <translation id="5591526871732898147">Imazhi i bashkëngjitur {index}</translation>
+<translation id="5594597292424622277">Vendos në pauzë videon</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="559567008082979829">Cakto që shkarkimet e tua të fshihen pas një muaji</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -2163,6 +2166,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8528009254289981965">Hap lidhjet nga aplikacionet e tjera në modalitetin "E fshehtë"</translation>
 <translation id="8529767659511976195">Risi</translation>
 <translation id="8531572740963685410">Skedarët PDF</translation>
+<translation id="8532059953132740592">Luaj videon</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">"Shfletimi i sigurt" është aktiv</translation>
 <translation id="8534481786647257214">Postimi i Google+ përfundoi.</translation>

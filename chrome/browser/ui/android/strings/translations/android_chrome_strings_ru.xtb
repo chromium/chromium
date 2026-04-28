@@ -60,7 +60,7 @@
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="1204037785786432551">Сохранить данные по ссылке</translation>
-<translation id="1206892813135768548">Копировать текст ссылки</translation>
+<translation id="1206892813135768548">Скопировать текст ссылки</translation>
 <translation id="1209206284964581585">Скрыть</translation>
 <translation id="1227058898775614466">История переходов</translation>
 <translation id="123724288017357924">Обновить страницу без учета кешированного контента</translation>
@@ -555,7 +555,6 @@
 <translation id="3439276997620616816">Здесь будут ваши недавние вкладки</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
-<translation id="3448874648066942074">Создать краткий пересказ страницы с помощью ИИ</translation>
 <translation id="3452832259067974318">Чтобы обеспечить конфиденциальность ваших данных, мы просим ввести пароль вручную.</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
@@ -855,7 +854,6 @@
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
-<translation id="4718044610319080485">Вызывает ИИ-помощника</translation>
 <translation id="4719927025381752090">Предлагать перевод</translation>
 <translation id="4720556299488643018">Отписаться</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -1661,7 +1659,6 @@
 <translation id="7914399737746719723">Приложение установлено</translation>
 <translation id="7917574899775263813">Перейти на последнюю вкладку</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
-<translation id="7921782882718083488">Создать краткий пересказ страницы</translation>
 <translation id="7926975587469166629">Название карты</translation>
 <translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome автоматически отзывает разрешения у сайтов с ложными уведомлениями или у тех, которые вы давно не посещали</translation>
@@ -1825,7 +1822,6 @@
 <translation id="8538291624121505885">Выбранная вместе с несколькими другими и закрепленная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="8540136935098276800">Введите URL в правильном формате.</translation>
 <translation id="854522910157234410">Открыть эту страницу</translation>
-<translation id="8547466829003330976">Проверить PDF с помощью ИИ</translation>
 <translation id="8551513938758868521">Блокировать доступ к вкладкам инкогнито, когда вы не используете Chrome</translation>
 <translation id="8559961053328923750">Chrome ограничивает общий объем данных, который сайты могут отправлять через браузер, чтобы оценивать эффективность рекламы.</translation>
 <translation id="8559990750235505898">Предлагать перевести страницы на других языках</translation>

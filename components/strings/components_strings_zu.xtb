@@ -2153,6 +2153,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="4318312030194671742">Isevisi ye-Paint Preview Compositor</translation>
 <translation id="4318566738941496689">Igama ledivayisi yakho nekheli lenethiwekhi</translation>
 <translation id="4320119221194966055">Imalimboleko Yomuntu Siqu</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{Ilinki yamukelwe ivela ku-<ph name="DEVICE_NAME" />}one{Amalinki angu-# amukelwe evela ku-<ph name="DEVICE_NAME" />}other{Amalinki angu-# amukelwe evela ku-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Ithileyi 17</translation>
 <translation id="4325863107915753736">Yehlulekile ukuthola i-athikili</translation>
 <translation id="4326324639298822553">Hlola idethi yakho yokuphelelwa isikhathi uphinde uzame futhi</translation>
@@ -4979,6 +4980,7 @@ Imininingwane engeziwe:
 <translation id="8758529215314160755">Ungahlela igama lakho <ph name="BEGIN_LINK" />kuGoogle Account<ph name="END_LINK" /> <ph name="ACCOUNT" /> yakho</translation>
 <translation id="8759274551635299824">Leli khadi liphelelwe isikhathi</translation>
 <translation id="87601671197631245">Le sayithi isebenzisa ukulungiselelwa kokuvikeleka okuphelelwe isikhathi, okugaveza ulwazi lwakho (ngokwesibonelo, amaphasiwedi, imilayezo, noma amakhadi wesikweletu) uma kuthunyelwe kuleli sayithi.</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{Ilinki ithunyelwe isuka ku-<ph name="DEVICE_NAME" />}one{Amalinki angu-# athunyelwe esuka ku-<ph name="DEVICE_NAME" />}other{Amalinki angu-# athunyelwe esuka ku-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Idivayisi ye-USB</translation>
 <translation id="8763986294015493060">Vala wonke amawindi e-Incognito avuliwe njengamanje</translation>
 <translation id="8766943070169463815">Ishidi lokufakazela ubuqiniso lezimfanelo zenkokhelo elivikelekile livuliwe</translation>

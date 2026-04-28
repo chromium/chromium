@@ -835,6 +835,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1567579616025300478">Ta strona nie ma uprawnień do zapisywania danych na Twoim urządzeniu.</translation>
 <translation id="156793199942386351">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konsola JavaScript</translation>
+<translation id="157005186601751931">Otwórz kartę w aplikacji</translation>
 <translation id="1570604804919108255">Wyłącz wyciszenie powiadomień</translation>
 <translation id="1570990174567554976">Utworzono folder zakładek „<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="1571041387761170095">Brak słabych lub ponownie użytych haseł</translation>
@@ -2299,7 +2300,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2565214867520763227">Włącz czytnik ekranu</translation>
 <translation id="2566146433999774844">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i inne osoby (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="256726287944589768">Pokaż stopkę na stronie Nowa karta</translation>
-<translation id="2567313753132089780">Hasło musi mieć co najmniej 12 znaków oraz zawierać wielkie i małe litery, cyfry oraz symbole</translation>
 <translation id="2568774940984945469">Kontener paska informacji</translation>
 <translation id="2569972178052279830">Nazwa sprzedawcy</translation>
 <translation id="257088987046510401">Motywy</translation>
@@ -3149,7 +3149,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
 <translation id="3158203338449343164">Odepnij Wyszukiwanie kart</translation>
-<translation id="3158732900546890991">Hasło musi mieć co najmniej 8 znaków oraz zawierać co najmniej 2 z tych elementów: wielkie litery, małe litery, cyfry i symbole</translation>
 <translation id="3158770568048368350">To może spowodować chwilowe rozłączenie sieci komórkowej</translation>
 <translation id="3159335509547415276">Więcej informacji o zablokowanych kontach</translation>
 <translation id="3159493096109238499">Beżowy</translation>
@@ -5629,6 +5628,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4881685975363383806">Nie przypominaj mi następnym razem</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4882312758060467256">Ma dostęp do tej strony</translation>
+<translation id="4882805770036405108">Otwieraj tryb czytania szybciej za pomocą skrótu. Naciśnij ⌥ + ⌘ + R, aby przełączyć tryb czytania.</translation>
 <translation id="4882848900607400156">Gdy udostępniasz swoją dokładną lokalizację, Gemini może dokładniej odpowiadać na Twoje pytania. Nie używamy Twoich danych do ulepszania modeli generatywnej AI.</translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883436287898674711">Wszystkie strony <ph name="WEBSITE_1" /></translation>
@@ -6086,6 +6086,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
 <translation id="5205484256512407285">Nigdy nie używaj mobilnej transmisji danych</translation>
 <translation id="520568280985468584">Sieć komórkowa została dodana. Może minąć kilka minut, zanim się uaktywni.</translation>
+<translation id="5207395053540207113">Zezwolić wyszukiwarce na dostęp do treści na Dysku?</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> chce sprawdzić, czy używasz odpowiedniego urządzenia z Chrome OS.</translation>
 <translation id="5208926629108082192">Informacje o sieci komórkowej urządzenia</translation>
@@ -8869,6 +8870,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7186903260115204164">Dodawaj odręczne rysunki, podpisy i wyróżnienia za pomocą nowego narzędzia do rysowania</translation>
 <translation id="7186935534137027449">Polecenie aplikacji</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
+<translation id="7188755083797868960">Otwieraj tryb czytania szybciej za pomocą skrótu. Naciśnij Alt + Shift + R, aby przełączyć tryb czytania.</translation>
 <translation id="7189234443051076392">Upewnij się, że masz wystarczająco dużo miejsca na urządzeniu</translation>
 <translation id="7189451821249468368">Nie masz wystarczającej liczby licencji, by zarejestrować to urządzenie. Aby dokupić licencje, skontaktuj się z działem sprzedaży. Jeśli uważasz, że widzisz tę wiadomość z powodu błędu, skontaktuj się z zespołem pomocy.</translation>
 <translation id="7189558282078169397">Karty z innych urządzeń</translation>
@@ -8994,6 +8996,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="727595954130325265">Kup teraz</translation>
 <translation id="7277275452721470458">Aktywność w Trybie AI</translation>
 <translation id="727952162645687754">Błąd pobierania</translation>
+<translation id="7280265656690268844">Optymalizacja JavaScriptu jest wyłączona</translation>
 <translation id="7280649757394340890">Ustawienia głosu przy zamianie tekstu na mowę</translation>
 <translation id="7280683802406059877">Dostosuj skrót klawiszowy</translation>
 <translation id="7280877790564589615">Prośba o uprawnienia</translation>

@@ -54,6 +54,7 @@
 <translation id="1179890706672152411">Yaddaş doludur</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1190609913194133056">Bildiriş Mərkəzi</translation>
+<translation id="1199631150313925648">Manual daxil edin</translation>
 <translation id="1199963004393929848">Yaşıl tema</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1204075260022434100">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}}</translation>
@@ -958,6 +959,7 @@
 <translation id="441868831736628555">Məxfilik Bildirişi</translation>
 <translation id="4420409367264901497">Əlfəcinə düzəliş edin</translation>
 <translation id="4425365312778464779">Bu hesab idarə edilir</translation>
+<translation id="443008484043213881">Alətlər</translation>
 <translation id="4430277756566635951">Seçilib: <ph name="EMAIL" />. Hesab seçin.</translation>
 <translation id="4430505936695785931">Digər tətbiqlərdə yadda saxlanmış parolları əldə edin</translation>
 <translation id="4431224949908513835">Daxil etmək üçün ödəniş metodu seçin.</translation>
@@ -1294,6 +1296,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5581786858144165447">Sİ-dən soruşun rejimi</translation>
 <translation id="5585019845078534178">Kartlar</translation>
 <translation id="5591526871732898147">Əlavə edilmiş şəkil {index}</translation>
+<translation id="5594597292424622277">Videonu durdurun</translation>
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
 <translation id="559567008082979829">Endirmələri bir ay sonra silinəcək şəkildə ayarlayın.</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
@@ -2163,6 +2166,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8528009254289981965">Digər tətbiqlərdən əldə edilən keçidləri Anonim rejimdə açın</translation>
 <translation id="8529767659511976195">Yeni</translation>
 <translation id="8531572740963685410">PDF-lər</translation>
+<translation id="8532059953132740592">Videonu oxudun</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
 <translation id="8534481786647257214">Google+ postu tamamladı.</translation>
