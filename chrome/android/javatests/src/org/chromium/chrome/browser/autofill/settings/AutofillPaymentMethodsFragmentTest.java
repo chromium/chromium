@@ -105,7 +105,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for AutofillPaymentMethodsFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({})
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
