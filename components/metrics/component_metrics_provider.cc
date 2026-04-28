@@ -20,7 +20,7 @@ namespace {
 // Extracts the first 32 bits of a fingerprint string, excluding the fingerprint
 // format specifier - see the fingerprint format specification at
 // https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-uint32_t Trim(const std::string& fp) {
+uint32_t Trim(std::string_view fp) {
   const auto len_prefix = fp.find(".");
   if (len_prefix == std::string::npos) {
     return 0;
@@ -42,7 +42,7 @@ ComponentMetricsProvider::~ComponentMetricsProvider() = default;
 
 // static
 SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
-    const std::string& app_id) {
+    std::string_view app_id) {
   static constexpr auto kComponentMap = base::MakeFixedFlatMap<
       std::string_view, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
@@ -184,7 +184,7 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
 }
 
 // static
-uint32_t ComponentMetricsProvider::HashCohortId(const std::string& cohort_id) {
+uint32_t ComponentMetricsProvider::HashCohortId(std::string_view cohort_id) {
   return base::PersistentHash(cohort_id.substr(0, cohort_id.find_last_of(":")));
 }
 

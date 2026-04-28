@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 
+#include <string_view>
 #include <vector>
 
 #include "components/metrics/metrics_provider.h"
@@ -45,9 +46,9 @@ class ComponentMetricsProvider : public MetricsProvider {
       SystemProfileProto* system_profile_proto) override;
 
   static SystemProfileProto_ComponentId CrxIdToComponentId(
-      const std::string& app_id);
+      std::string_view app_id);
 
-  static uint32_t HashCohortId(const std::string& cohort_id);
+  static uint32_t HashCohortId(std::string_view cohort_id);
 
  private:
   std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate_;
