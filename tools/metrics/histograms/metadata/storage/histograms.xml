@@ -407,29 +407,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IndexedDB.CalculateBlockingStatusLongTimes" units="ms"
-    expires_after="2026-07-19">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the duration of Transaction::IsTransactionBlockingOtherClients, but
-    only if it takes over 2ms to execute. This is intended to facilitate
-    tracking down performance issues. See crbug.com/384476946
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.CalculateBlockingStatusRequestQueueSize"
-    units="count" expires_after="2026-07-19">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the number of queued lock requests that exist in the
-    PartitionedLockManager when IsTransactionBlockingPtherClients() takes over
-    2ms to complete. This is intended to facilitate tracking down performance
-    issues. See crbug.com/384476946
-  </summary>
-</histogram>
-
 <histogram name="IndexedDB.ClientKeepActiveRemotesCount" units="count"
     expires_after="2026-10-05">
   <owner>pmonette@chromium.org</owner>
