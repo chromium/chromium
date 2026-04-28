@@ -144,8 +144,6 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {password_manager::features::kActorLogin,
-         password_manager::features::
-             kActorLoginPermissionsUseStrongAffiliations,
          password_manager::features::kActorLoginQualityLogs,
          features::kGlicActor},
         // TODO(crbug.com/480920277): Remove the FedCM flag once the prototyping

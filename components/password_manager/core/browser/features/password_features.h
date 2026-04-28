@@ -31,9 +31,6 @@ BASE_DECLARE_FEATURE(kActorLoginPermissionsUi);
 #endif
 
 #if !BUILDFLAG(IS_IOS)
-// Enables the usage of temporary permissions across affiliated origins for
-// Actor Login.
-BASE_DECLARE_FEATURE(kActorLoginPermissionsUseStrongAffiliations);
 BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 #endif  // !BUILDFLAG(IS_IOS)
 

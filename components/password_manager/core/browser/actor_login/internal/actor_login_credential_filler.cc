@@ -166,10 +166,7 @@ void ActorLoginCredentialFiller::AttemptLogin(
   // strongly affiliated.
   affiliations::AffiliationService* affiliation_service =
       client_->GetAffiliationService();
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginPermissionsUseStrongAffiliations) &&
-      affiliation_service) {
+  if (affiliation_service) {
     affiliation_service->GetAffiliationsAndBranding(
         affiliations::FacetURI::FromPotentiallyInvalidSpec(
             credential_.request_origin.GetURL().spec()),

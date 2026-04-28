@@ -2282,9 +2282,6 @@ TEST_P(ActorLoginCredentialFillerTest, AffiliatedOrigin_FillSuccess) {
 
 TEST_P(ActorLoginCredentialFillerTest,
        UsesChosenAffiliatedCredentialOverExactMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginPermissionsUseStrongAffiliations);
 
   // The origin where the credential is being filled.
   url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));
@@ -2349,11 +2346,8 @@ TEST_P(ActorLoginCredentialFillerTest,
 TEST_P(ActorLoginCredentialFillerTest,
        UsesChosenAffiliatedCredentialOverExactMatch_InIframe) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kActorLoginSameSiteIframeSupport,
-       password_manager::features::kActorLoginPermissionsUseStrongAffiliations},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kActorLoginSameSiteIframeSupport);
 
   // The origin where the credential is being filled.
   url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));

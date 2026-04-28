@@ -26,8 +26,6 @@ BASE_FEATURE(kActorLoginPermissionsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kActorLoginPermissionsUseStrongAffiliations,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginReauthTaskRefocus, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginQualityLogs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginSameSiteIframeSupport,
