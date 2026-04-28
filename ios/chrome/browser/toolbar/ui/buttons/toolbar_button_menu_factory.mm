@@ -119,7 +119,8 @@
 - (UIMenu*)menuForNewTabButton {
   BOOL isTabGroupsPageVisible =
       _tabGridState.currentPage == TabGridPageTabGroups;
-  BOOL isTabGroupVisible = _tabGridState.visibleTabGroup;
+  BOOL isTabGroupVisible =
+      _tabGridState.tabGridVisible && _tabGridState.visibleTabGroup;
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock createNewTabBlock = ^{

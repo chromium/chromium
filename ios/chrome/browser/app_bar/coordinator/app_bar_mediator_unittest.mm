@@ -88,6 +88,7 @@ MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
 @interface AppBarMediator (Test)
 - (void)updateConsumer;
 - (void)updateAssistantButton;
+- (void)addNewTabInCurrentTabGroup;
 @end
 
 class AppBarMediatorTest : public PlatformTest {
@@ -231,6 +232,9 @@ class AppBarMediatorTest : public PlatformTest {
     mediator_.lensHandler = mock_lens_handler_;
     mock_gemini_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mediator_.geminiHandler = mock_gemini_handler_;
+    mock_tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
+    mediator_.regularTabGroupsCommands = mock_tab_groups_handler_;
+    mediator_.incognitoTabGroupsCommands = mock_tab_groups_handler_;
   }
 
   ~AppBarMediatorTest() override { [mediator_ disconnect]; }
@@ -302,6 +306,7 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_qr_scanner_handler_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
+  id mock_tab_groups_handler_;
 };
 
 // Tests that the consumer is updated when a web state is added.
@@ -430,6 +435,111 @@ TEST_F(AppBarMediatorTest, TestCreateNewTabTabGridIncognito) {
 
   EXPECT_TRUE(url_loader_->last_params.in_incognito);
   EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+}
+
+// Tests creating a new tab in a group from inside of the tab grid.
+TEST_F(AppBarMediatorTest, TestCreateNewTabTabGridInGroup) {
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+
+  // Create a group.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  const TabGroup* group = regular_web_state_list_->CreateGroup(
+      {0},
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kGrey),
+      tab_groups::TabGroupId::GenerateNew());
+
+  tab_grid_state_.visibleTabGroup = group;
+
+  // Expect tab grid to prepare to exit.
+  id mock_tab_grid_handler = OCMProtocolMock(@protocol(TabGridCommands));
+  mediator_.tabGridHandler = mock_tab_grid_handler;
+  OCMExpect([mock_tab_grid_handler prepareToExitTabGrid]);
+  OCMExpect([mock_tab_groups_handler_ hideTabGroup]);
+  // We don't expect exitTabGrid because FakeUrlLoadingBrowserAgent doesn't
+  // mutate the web state list, so addNewTabIncognito returns false.
+
+  // Try to open a new tab.
+  [mediator_ createNewTabFromView:nil];
+
+  EXPECT_FALSE(url_loader_->last_params.in_incognito);
+  EXPECT_FALSE(url_loader_->last_params.load_in_group);
+  EXPECT_EQ(nullptr, url_loader_->last_params.tab_group.get());
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+
+  EXPECT_OCMOCK_VERIFY(mock_tab_grid_handler);
+  EXPECT_OCMOCK_VERIFY(mock_tab_groups_handler_);
+}
+
+// Tests that adding a new tab in the current group from the tab grid
+// correctly updates the URL loader with the group info and prepares to exit the
+// grid.
+TEST_F(AppBarMediatorTest, TestAddNewTabInCurrentTabGroup) {
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+
+  // Create a group.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  const TabGroup* group = regular_web_state_list_->CreateGroup(
+      {0},
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kGrey),
+      tab_groups::TabGroupId::GenerateNew());
+
+  tab_grid_state_.visibleTabGroup = group;
+  [mediator_ updateConsumer];
+
+  // Expect tab grid to prepare to exit.
+  id mock_tab_grid_handler = OCMProtocolMock(@protocol(TabGridCommands));
+  mediator_.tabGridHandler = mock_tab_grid_handler;
+  OCMExpect([mock_tab_grid_handler prepareToExitTabGrid]);
+
+  // Try to open a new tab in group.
+  [mediator_ addNewTabInCurrentTabGroup];
+
+  EXPECT_FALSE(url_loader_->last_params.in_incognito);
+  EXPECT_TRUE(url_loader_->last_params.load_in_group);
+  EXPECT_EQ(group, url_loader_->last_params.tab_group.get());
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+
+  EXPECT_OCMOCK_VERIFY(mock_tab_grid_handler);
+}
+
+// Tests creating a new tab in a group from inside of the tab grid when disabled
+// by policy.
+TEST_F(AppBarMediatorTest, TestCreateNewTabTabGridInGroupDisabledByPolicy) {
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+
+  // Create a group.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  const TabGroup* group = regular_web_state_list_->CreateGroup(
+      {0},
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kGrey),
+      tab_groups::TabGroupId::GenerateNew());
+
+  tab_grid_state_.visibleTabGroup = group;
+
+  // Disable adding regular tabs by policy (forcing incognito).
+  regular_profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+
+  // We don't expect prepareToExitTabGrid or exitTabGrid to be called.
+  id mock_tab_grid_handler = OCMProtocolMock(@protocol(TabGridCommands));
+  mediator_.tabGridHandler = mock_tab_grid_handler;
+
+  // Try to open a new tab.
+  [mediator_ createNewTabFromView:nil];
+
+  // Verify that Load was NOT called.
+  EXPECT_EQ(0, url_loader_->load_new_tab_call_count);
 }
 
 // Tests that buttons are enabled/disabled based on policy.

@@ -42,3 +42,13 @@ source_set("ui") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_bar_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//testing/gtest",
+  ]
+}

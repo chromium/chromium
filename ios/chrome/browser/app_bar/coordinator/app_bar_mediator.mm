@@ -482,13 +482,11 @@
     return;
   }
 
-  GURL URL(kChromeUINewTabURL);
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.in_incognito = _incognitoState.incognitoContentVisible;
-  params.load_in_group = true;
-  params.tab_group = self.currentTabGroup->GetWeakPtr();
-  _URLLoader->Load(params);
-  [self updateConsumer];
+  [self.tabGridHandler prepareToExitTabGrid];
+  if ([self addNewTabInGroup:self.currentTabGroup
+                   incognito:_incognitoState.incognitoContentVisible]) {
+    [self.tabGridHandler exitTabGrid];
+  }
 }
 
 - (void)navigateToPageForItem:(web::NavigationItem*)item {
@@ -540,14 +538,6 @@
     tabCount = static_cast<NSUInteger>(self.currentWebStateList->count());
   }
 
-  [self.consumer updateTabCount:tabCount];
-  [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
-  [self.consumer setTabGroupsPageVisible:_tabGridState.currentPage ==
-                                         TabGridPageTabGroups];
-  [self.consumer setTabGroupVisible:_tabGridState.visibleTabGroup];
-  [self.consumer
-      setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
-
   BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
   ToolbarButtonMenuFactory* buttonMenuFactory =
       incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
@@ -558,6 +548,15 @@
            forButtonType:AppBarButtonTypeNewTab];
   [self.consumer setMenu:[buttonMenuFactory menuForTabGridButton]
            forButtonType:AppBarButtonTypeTabGrid];
+
+  [self.consumer updateTabCount:tabCount];
+  [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
+  [self.consumer setTabGroupsPageVisible:_tabGridState.currentPage ==
+                                         TabGridPageTabGroups];
+  [self.consumer setTabGroupVisible:self.currentTabGroup != nullptr];
+  [self.consumer
+      setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
+
   [self updateAssistantButton];
   [self updateButtonsForCurrentTabGridPage];
 }
@@ -634,6 +633,13 @@
   // example).
   if (!IsAddNewTabAllowedByPolicy(_prefService, incognito)) {
     return;
+  }
+
+  if (_tabGridState.visibleTabGroup) {
+    id<TabGroupsCommands> tabGroupsHandler =
+        incognito ? self.incognitoTabGroupsCommands
+                  : self.regularTabGroupsCommands;
+    [tabGroupsHandler hideTabGroup];
   }
 
   [self.tabGridHandler prepareToExitTabGrid];
@@ -716,6 +722,24 @@
     // Create a Tab Group with 'identifiers'.
     [tabGroupsHandler showTabGroupCreationForTabs:identifiers];
   }
+}
+
+// Adds a new tab in `group` and returns its success.
+- (BOOL)addNewTabInGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(group);
+  WebStateList* webStateList =
+      incognito ? _incognitoWebStateList : _regularWebStateList;
+  int webStateListCount = webStateList->count();
+
+  GURL URL(kChromeUINewTabURL);
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = incognito;
+  params.load_in_group = true;
+  params.tab_group = group->GetWeakPtr();
+  _URLLoader->Load(params);
+
+  [self updateConsumer];
+  return webStateListCount != webStateList->count();
 }
 
 @end

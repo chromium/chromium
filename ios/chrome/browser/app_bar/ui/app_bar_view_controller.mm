@@ -845,7 +845,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 // Updates the new tab button for whether the tab groups page in the tab grid or
 // a tab group is visible.
 - (void)updateNewTabButtonForTabGroupsVisibility {
-  if (_isTabGroupsPageVisible || _isTabGroupVisible) {
+  if (_isTabGroupsPageVisible || (_isTabGridVisible && _isTabGroupVisible)) {
     _openNewTabButton.menu = _openNewTabButtonMenu;
     _openNewTabButton.showsMenuAsPrimaryAction = YES;
     return;
