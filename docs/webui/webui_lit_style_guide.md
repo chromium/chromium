@@ -63,6 +63,10 @@ Specifically the following pieces are required:
      that the browser knows which class to instantiate when encountering the
      corresponding DOM name. Must be placed after the class definition in the
      same file.
+ 5. The HTML template is imported from the corresponding `.html.ts` template
+    file using `getHtml()`, and is not defined inline. Exception: dummy test
+    elements and low level cr_elements implementing customized rendering
+    behavior may use html and render directly.
 
 ### Method definition order
 
@@ -141,7 +145,10 @@ The overall goal is to separate the HTML template from the element's business
 logic as much as possible, and draw a clear boundary between the
 responsibilities of each file. `.html.ts` files should mostly look like regular
 HTML code with a bit of Lit extras (Lit expressions), and any non-trivial TS
-logic should be delegated to helper methods in the .ts file.
+logic should be delegated to helper methods in the .ts file. Similarly, the
+`.ts` file should not be responsible for defining any portion of the template
+directly, as this should be done in the `.html.ts` file.
+
 
 **Do not:**
 ```ts

@@ -30,8 +30,8 @@ interface OrderEntry {
 }
 
 type Options = [];
-type MessageIds =
-    'inconsistentClassName'|'inconsistentFilename'|'incorrectClassNameSuffix'|
+type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
+    'inconsistentFilename'|'incorrectClassNameSuffix'|
     'incorrectDollarSignNotation'|'incorrectDomNameSuffix'|
     'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
     'missingCustomElementRegistration'|'missingCustomEventTypeParameter'|
@@ -404,6 +404,33 @@ class ClassInfo {
   }
 }
 
+function canImportHtml(filename: string, importsRender: boolean): boolean {
+  if (filename.endsWith('.html.ts')) {
+    return true;
+  }
+
+  const normalizedFilename = filename.replaceAll('\\', '/');
+
+  // Low level cr-elements can use html in combination with render() to
+  // implement reusable complex rendering patterns (lazy rendering,
+  // smart lists). Also allowing as a one-off exemption for
+  // selectable-lazy-list in tab_search, which also implements a smart
+  // list.
+  const canUseHtmlWithRender =
+      normalizedFilename.includes('ui/webui/resources/cr_elements') ||
+      (normalizedFilename.includes('chrome/browser/resources/tab_search') &&
+       normalizedFilename.endsWith('selectable_lazy_list.ts'));
+  if (importsRender && canUseHtmlWithRender) {
+    return true;
+  }
+
+  // Tests may use html to define dummy elements, e.g. for testing
+  // mixins
+  const isTestFile = normalizedFilename.includes('chrome/test/data/webui') ||
+      normalizedFilename.includes('chrome/test/data/pdf');
+  return isTestFile;
+}
+
 export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
     Options, MessageIds>({
   meta: {
@@ -413,6 +440,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       description: 'Checks that the structure of a LitElement is correct',
     },
     messages: {
+      htmlImportInTsFile:
+          'Found import of html in file containing a CrLitElement subclass definition. Templates for CrLitElement subclasses belong in the .html.ts template file, not the class definition file.',
       useFireHelper:
           'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))..',
       useFireHelperWithEventName:
@@ -448,6 +477,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
   create(context) {
     // Whether lit.rollup.js is imported.
     let hasLitImport = false;
+    let importsRender = false;
+    let htmlImportNode: TSESTree.Node|null = null;
 
     // Whether operating on a test file, assuming all files end with the
     // '_test.ts' suffix.
@@ -478,9 +509,19 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
 
     return {
       [`ImportDeclaration[source.value=/${
-          LIT_IMPORT_REGEX}/][importKind=value] > ImportSpecifier > Identifier[name="CrLitElement"]`](
-          _node: TSESTree.Identifier) {
-        hasLitImport = true;
+          LIT_IMPORT_REGEX}/][importKind=value] > ImportSpecifier`](
+          node: TSESTree.ImportSpecifier) {
+        assert.ok(isIdentifier(node.imported));
+        const importedName = node.imported.name;
+        if (importedName === 'html') {
+          htmlImportNode = node;
+        }
+        if (importedName === 'render') {
+          importsRender = true;
+        }
+        if (importedName === 'CrLitElement') {
+          hasLitImport = true;
+        }
       },
       'ClassDeclaration'(node: TSESTree.ClassDeclaration) {
         if (!hasLitImport ||
@@ -596,6 +637,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         for (const classInfo of classInfos.values()) {
           classInfo.runMissingTagNameRegistrationCheck();
           classInfo.runMissingCustomElementRegistrationCheck();
+        }
+
+        if (htmlImportNode && classInfos.size > 0 &&
+            !canImportHtml(context.filename, importsRender)) {
+          context.report({
+            node: htmlImportNode,
+            messageId: 'htmlImportInTsFile',
+          });
         }
       },
     };
