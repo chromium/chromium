@@ -611,7 +611,7 @@ found in the LICENSE file.
     </style>
 
     <!-- Gesture User Education IPH styles -->
-    <style name="TextAppearance.GestureUserEducationIphText" parent="TextAppearance.TextLarge">
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+    <style name="TextAppearance.GestureUserEducationIphText" parent="TextAppearance.Headline2">
+        <item name="android:textColor">@color/baseline_primary_100</item>
     </style>
 </resources>
