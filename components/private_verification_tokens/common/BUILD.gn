@@ -19,3 +19,21 @@ source_set("private_verification_tokens_public_key_unittest") {
     "//testing/gtest",
   ]
 }
+
+source_set("private_verification_tokens_token") {
+  sources = [
+    "private_verification_tokens_token.cc",
+    "private_verification_tokens_token.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("private_verification_tokens_token_unittest") {
+  testonly = true
+  sources = [ "private_verification_tokens_token_unittest.cc" ]
+  deps = [
+    ":private_verification_tokens_token",
+    "//base",
+    "//testing/gtest",
+  ]
+}
