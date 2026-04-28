@@ -334,21 +334,12 @@ impl Lexer {
             State::InsideCdata | State::CDataClosing(_) => Err(self.error(SyntaxError::UnclosedCdata)),
             State::TagStarted | State::CommentOrCDataOrDoctypeStarted |
             State::CommentStarted | State::CDataStarted(_)| State::DoctypeStarted(_) |
-            State::CommentClosing(ClosingSubstate::Second) |
+            State::CommentClosing(_) |
             State::InsideComment | State::InsideMarkupDeclaration |
             State::InsideProcessingInstruction | State::ProcessingInstructionClosing |
-            State::InsideDoctype | State::InsideMarkupDeclarationQuotedString(_) =>
+            State::InsideDoctype | State::InsideMarkupDeclarationQuotedString(_) |
+            State::EmptyTagClosing | State::InvalidCDataClosing(_) =>
                 Err(self.error(SyntaxError::UnexpectedEof)),
-            State::EmptyTagClosing =>
-                Ok(Token::Character('/')),
-            State::CommentClosing(ClosingSubstate::First) =>
-                Ok(Token::Character('-')),
-            State::InvalidCDataClosing(ClosingSubstate::First) =>
-                Ok(Token::Character(']')),
-            State::InvalidCDataClosing(ClosingSubstate::Second) => {
-                self.eof_handled = false;
-                Ok(self.move_to_with_unread(State::Normal, &[']'], Token::Character(']')))
-            },
             State::Normal => Ok(Token::Eof),
         }
     }
@@ -783,7 +774,7 @@ mod tests {
     #[test]
     fn special_chars_test() {
         let (mut lex, mut buf) = make_lex_and_buf(
-            r"?x!+ // -| ]z]]"
+            r"?x!+ // -| ]z]] "
         );
 
         assert_oks!(for lex and buf ;
@@ -802,6 +793,7 @@ mod tests {
             Token::Character('z')
             Token::Character(']')
             Token::Character(']')
+            Token::Character(' ')
         );
         assert_none!(for lex and buf);
     }
@@ -1009,11 +1001,7 @@ mod tests {
             })
         );
         eof_check!("?"  ; Token::Character('?'));
-        eof_check!("/"  ; Token::Character('/'));
         eof_check!("-"  ; Token::Character('-'));
-        eof_check!("]"  ; Token::Character(']'));
-        eof_check!("]"  ; Token::Character(']'));
-        eof_check!("]"  ; Token::Character(']'));
     }
 
     #[test]
@@ -1027,6 +1015,8 @@ mod tests {
         );
         eof_check!("<"        ; 0, 1);
         eof_check!("<!"       ; 0, 2);
+        eof_check!("/"        ; 0, 1);
+        eof_check!("]"        ; 0, 1);
         eof_check!("<!-"      ; 0, 3);
         eof_check!("<!["      ; 0, 3);
         eof_check!("<![C"     ; 0, 4);
