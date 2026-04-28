@@ -72,7 +72,25 @@ public class DOMUtils {
     }
 
     /**
+     * Seeks the media with given {@code id} to the end.
+     *
+     * @param webContents The WebContents in which the media element lives.
+     * @param id The element's id to be seeked.
+     */
+    public static void seekMediaToEnd(final WebContents webContents, final String id)
+            throws TimeoutException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(function() {");
+        sb.append("  var media = document.getElementById('" + id + "');");
+        sb.append("  if (media) media.currentTime = media.duration;");
+        sb.append("})();");
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                webContents, sb.toString(), MEDIA_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
      * Returns whether the media with given {@code id} is paused.
+     *
      * @param webContents The WebContents in which the media element lives.
      * @param id The element's id to check.
      * @return whether the media is paused.
