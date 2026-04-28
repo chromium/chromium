@@ -198,41 +198,35 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             mPdfView = pdfView;
 
             // TODO(crbug.com/498644542): call getPageCount() within onLoadDocumentSuccess()
-            if (PdfUtils.isInlinePdfV2Enabled()) {
-                // Add a one-time listener to track total page count and remove itself afterwards.
-                // This listener is necessary because getPdfDocument() can return null up until the
-                // viewport is changed.
-                mPdfView.addOnViewportChangedListener(
-                        new PdfView.OnViewportChangedListener() {
-                            @Override
-                            public void onViewportChanged(
-                                    int firstVisiblePage,
-                                    int visiblePagesCount,
-                                    SparseArray pageLocations,
-                                    float zoomLevel) {
-                                if (mDelegate != null
-                                        && mPdfView != null
-                                        && mPdfView.getPdfDocument() != null) {
-                                    mDelegate.onDocumentLoaded(
-                                            mPdfView.getPdfDocument().getPageCount());
-                                    mPdfView.post(
-                                            () -> {
-                                                if (mPdfView != null) {
-                                                    mPdfView.removeOnViewportChangedListener(this);
-                                                }
-                                            });
-                                }
-                            }
-                        });
-
-                // Add a persistent listener to track page changes.
-                mPdfView.addOnViewportChangedListener(
-                        (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) -> {
-                            if (mDelegate != null) {
-                                mDelegate.onViewportChanged(firstVisiblePage, zoomLevel);
-                            }
-                        });
+            if (!PdfUtils.isInlinePdfV2Enabled() || mDelegate == null) {
+                return;
             }
+            final PdfView capturedView = pdfView;
+            final PdfActionsDelegate delegate = mDelegate;
+
+            // Add a one-time listener to track total page count and remove itself afterwards.
+            // This listener is necessary because getPdfDocument() can return null up until the
+            // viewport is changed.
+            capturedView.addOnViewportChangedListener(
+                    new PdfView.OnViewportChangedListener() {
+                        @Override
+                        public void onViewportChanged(
+                                int firstVisiblePage,
+                                int visiblePagesCount,
+                                SparseArray pageLocations,
+                                float zoomLevel) {
+                            if (capturedView.getPdfDocument() != null) {
+                                capturedView.removeOnViewportChangedListener(this);
+                                delegate.onDocumentLoaded(
+                                        capturedView.getPdfDocument().getPageCount());
+                            }
+                        }
+                    });
+
+            // Add a persistent listener to track page changes.
+            capturedView.addOnViewportChangedListener(
+                    (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) ->
+                            delegate.onViewportChanged(firstVisiblePage, zoomLevel));
         }
 
         /** Public no-arg constructor for FragmentManager. */
