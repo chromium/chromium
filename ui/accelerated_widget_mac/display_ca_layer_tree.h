@@ -31,7 +31,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
   explicit DisplayCALayerTree(CALayer* root_layer);
   ~DisplayCALayerTree() override;
 
-  void UpdateCALayerTree(const gfx::CALayerParams& ca_layer_params) override;
+  void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) override;
 
  private:
   void GotCALayerFrame(uint32_t ca_context_id);

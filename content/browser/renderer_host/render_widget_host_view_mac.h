@@ -434,7 +434,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   bool ShouldWaitRemoteCompositorFrameOnResize() const override;
 
   // AcceleratedWidgetMacNSView implementation.
-  void AcceleratedWidgetCALayerParamsUpdated() override;
+  void AcceleratedWidgetCALayerParamsUpdated(
+      gfx::CALayerParams params) override;
 
   // ui::AccessibilityFocusOverrider::Client:
   id GetAccessibilityFocusedUIElement() override;

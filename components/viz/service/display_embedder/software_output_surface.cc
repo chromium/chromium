@@ -109,7 +109,7 @@ void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
   params.swap_response.timings = {swap_time, swap_time};
   params.swap_response.result = gfx::SwapResult::SWAP_ACK;
   params.swap_trace_id = swap_trace_id;
-  client_->DidReceiveSwapBuffersAck(params,
+  client_->DidReceiveSwapBuffersAck(std::move(params),
                                     /*release_fence=*/gfx::GpuFenceHandle());
 
   base::TimeTicks now = base::TimeTicks::Now();

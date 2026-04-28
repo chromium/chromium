@@ -1966,10 +1966,9 @@ void NativeWidgetMacNSWindowHost::UpdateVisualState() {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, AcceleratedWidgetMac:
 
-void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated() {
-  if (const auto* ca_layer_params = compositor_->widget()->GetCALayerParams()) {
-    GetNSWindowMojo()->SetCALayerParams(*ca_layer_params);
-  }
+void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated(
+    gfx::CALayerParams ca_layer_params) {
+  GetNSWindowMojo()->SetCALayerParams(std::move(ca_layer_params));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

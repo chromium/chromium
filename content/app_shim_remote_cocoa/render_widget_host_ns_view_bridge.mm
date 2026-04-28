@@ -162,10 +162,10 @@ void RenderWidgetHostNSViewBridge::SetBounds(const gfx::Rect& rect) {
 }
 
 void RenderWidgetHostNSViewBridge::SetCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   if (display_disabled_)
     return;
-  display_ca_layer_tree_->UpdateCALayerTree(ca_layer_params);
+  display_ca_layer_tree_->UpdateCALayerTree(std::move(ca_layer_params));
 }
 
 void RenderWidgetHostNSViewBridge::SetBackgroundColor(SkColor color) {

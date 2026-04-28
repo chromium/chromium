@@ -1162,9 +1162,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   return true;
 }
 
-void Display::DidReceiveSwapBuffersAck(
-    const gpu::SwapBuffersCompleteParams& params,
-    gfx::GpuFenceHandle release_fence) {
+void Display::DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
+                                       gfx::GpuFenceHandle release_fence) {
   // Adding to |pending_presentation_group_timings_| must
   // have been done in DrawAndSwap(), and should not be popped until
   // DidReceiveSwapBuffersAck.
@@ -1313,10 +1312,9 @@ void Display::DidReceiveSwapBuffersAck(
   }
 }
 
-void Display::DidReceiveCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+void Display::DidReceiveCALayerParams(gfx::CALayerParams ca_layer_params) {
   if (client_)
-    client_->DisplayDidReceiveCALayerParams(ca_layer_params);
+    client_->DisplayDidReceiveCALayerParams(std::move(ca_layer_params));
 }
 
 void Display::DidSwapWithSize(const gfx::Size& pixel_size) {
@@ -1419,9 +1417,9 @@ LocalSurfaceId Display::GetSurfaceAtAggregation(
 }
 
 void Display::SoftwareDeviceUpdatedCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   if (client_)
-    client_->DisplayDidReceiveCALayerParams(ca_layer_params);
+    client_->DisplayDidReceiveCALayerParams(std::move(ca_layer_params));
 }
 
 void Display::ForceImmediateDrawAndSwapIfPossible() {

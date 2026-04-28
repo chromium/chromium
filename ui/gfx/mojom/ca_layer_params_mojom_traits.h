@@ -12,15 +12,11 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams> {
-  static uint32_t is_empty(const gfx::CALayerParams& ca_layer_params) {
-    return ca_layer_params.is_empty;
-  }
-
-  static gfx::Size pixel_size(const gfx::CALayerParams& ca_layer_params) {
+  static gfx::Size pixel_size(gfx::CALayerParams& ca_layer_params) {
     return ca_layer_params.pixel_size;
   }
 
-  static float scale_factor(const gfx::CALayerParams& ca_layer_params) {
+  static float scale_factor(gfx::CALayerParams& ca_layer_params) {
     return ca_layer_params.scale_factor;
   }
 

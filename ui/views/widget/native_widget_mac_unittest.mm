@@ -126,10 +126,10 @@ class BridgedNativeWidgetTestApi {
   void SimulateFrameSwap(const gfx::Size& size) {
     const float kScaleFactor = 1.0f;
     gfx::CALayerParams ca_layer_params;
-    ca_layer_params.is_empty = false;
+    ca_layer_params.ca_context_id = 123u;
     ca_layer_params.pixel_size = size;
     ca_layer_params.scale_factor = kScaleFactor;
-    bridge_->SetCALayerParams(ca_layer_params);
+    bridge_->SetCALayerParams(std::move(ca_layer_params));
   }
 
   NSAnimation* show_animation() {

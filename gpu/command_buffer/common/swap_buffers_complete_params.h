@@ -19,9 +19,10 @@ namespace gpu {
 struct GPU_COMMAND_BUFFER_COMMON_EXPORT SwapBuffersCompleteParams {
   SwapBuffersCompleteParams();
   SwapBuffersCompleteParams(SwapBuffersCompleteParams&& other);
-  SwapBuffersCompleteParams(const SwapBuffersCompleteParams& other);
+  SwapBuffersCompleteParams(const SwapBuffersCompleteParams& other) = delete;
   SwapBuffersCompleteParams& operator=(SwapBuffersCompleteParams&& other);
-  SwapBuffersCompleteParams& operator=(const SwapBuffersCompleteParams& other);
+  SwapBuffersCompleteParams& operator=(const SwapBuffersCompleteParams& other) =
+      delete;
   ~SwapBuffersCompleteParams();
 
   gfx::SwapResponse swap_response;

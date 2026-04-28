@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "components/viz/service/display/output_surface_client.h"
+#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "ui/gfx/ca_layer_params.h"
 
 namespace cc {
 
@@ -15,10 +17,9 @@ class FakeOutputSurfaceClient : public viz::OutputSurfaceClient {
  public:
   FakeOutputSurfaceClient() = default;
 
-  void DidReceiveSwapBuffersAck(const gpu::SwapBuffersCompleteParams& params,
+  void DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
                                 gfx::GpuFenceHandle release_fence) override;
-  void DidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+  void DidReceiveCALayerParams(gfx::CALayerParams ca_layer_params) override {}
   void DidSwapWithSize(const gfx::Size& pixel_size) override {}
   void DidReceivePresentationFeedback(
       const gfx::PresentationFeedback& feedback) override {}

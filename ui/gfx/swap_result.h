@@ -5,15 +5,12 @@
 #ifndef UI_GFX_SWAP_RESULT_H_
 #define UI_GFX_SWAP_RESULT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
-
-struct CALayerParams;
 
 enum class SwapResult {
   SWAP_ACK,
@@ -82,7 +79,7 @@ struct COMPONENT_EXPORT(GFX) SwapCompletionResult {
   SwapCompletionResult(gfx::SwapResult swap_result,
                        gfx::GpuFenceHandle release_fence);
   SwapCompletionResult(gfx::SwapResult swap_result,
-                       std::unique_ptr<gfx::CALayerParams> ca_layer_params);
+                       gfx::CALayerParams ca_layer_params);
   SwapCompletionResult(SwapCompletionResult&& other);
   ~SwapCompletionResult();
 
@@ -91,7 +88,7 @@ struct COMPONENT_EXPORT(GFX) SwapCompletionResult {
 
   gfx::SwapResult swap_result = SwapResult::SWAP_FAILED;
   gfx::GpuFenceHandle release_fence;
-  std::unique_ptr<CALayerParams> ca_layer_params;
+  CALayerParams ca_layer_params;
 };
 
 }  // namespace gfx

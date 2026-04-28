@@ -305,7 +305,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetActivationIndependence(bool independence) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                       const gfx::Size& excluded_margin) override;
-  void SetCALayerParams(const gfx::CALayerParams& ca_layer_params) override;
+  void SetCALayerParams(gfx::CALayerParams ca_layer_params) override;
   void SetWindowTitle(const std::u16string& title) override;
   void SetIgnoresMouseEvents(bool ignores_mouse_events) override;
   void MakeFirstResponder() override;

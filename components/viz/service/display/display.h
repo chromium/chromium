@@ -160,10 +160,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void DidFinishFrame(const BeginFrameAck& ack) override;
 
   // OutputSurfaceClient implementation.
-  void DidReceiveSwapBuffersAck(const gpu::SwapBuffersCompleteParams& params,
+  void DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
                                 gfx::GpuFenceHandle release_fence) override;
-  void DidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override;
+  void DidReceiveCALayerParams(gfx::CALayerParams ca_layer_params) override;
   void DidSwapWithSize(const gfx::Size& pixel_size) override;
   void DidReceivePresentationFeedback(
       const gfx::PresentationFeedback& feedback) override;
@@ -177,7 +176,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   // SoftwareOutputDeviceClient implementation
   void SoftwareDeviceUpdatedCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override;
+      gfx::CALayerParams ca_layer_params) override;
 
   bool has_scheduler() const { return !!scheduler_; }
   bool visible() const { return visible_; }

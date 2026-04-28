@@ -352,7 +352,7 @@ void FakeSkiaOutputSurface::SwapBuffersAck() {
   gpu::SwapBuffersCompleteParams params;
   params.swap_response.timings = {now, now};
   params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-  client_->DidReceiveSwapBuffersAck(params,
+  client_->DidReceiveSwapBuffersAck(std::move(params),
                                     /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }

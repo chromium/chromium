@@ -292,7 +292,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
                               const gfx::Size& pixel_size,
                               gfx::GpuFenceHandle release_fence) {
-    params_.push_back(params);
+    params_.push_back(std::move(params));
   }
 
   void ReleaseOverlays(std::vector<gpu::Mailbox> overlays) {

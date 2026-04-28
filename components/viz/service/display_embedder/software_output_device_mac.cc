@@ -196,12 +196,11 @@ void SoftwareOutputDeviceMac::EndPaint() {
 
   if (client_) {
     gfx::CALayerParams ca_layer_params;
-    ca_layer_params.is_empty = false;
     ca_layer_params.scale_factor = scale_factor_;
     ca_layer_params.pixel_size = pixel_size_;
     ca_layer_params.io_surface_mach_port.reset(
         IOSurfaceCreateMachPort(current_paint_buffer_->io_surface.get()));
-    client_->SoftwareDeviceUpdatedCALayerParams(ca_layer_params);
+    client_->SoftwareDeviceUpdatedCALayerParams(std::move(ca_layer_params));
   }
 
   current_paint_buffer_ = nullptr;

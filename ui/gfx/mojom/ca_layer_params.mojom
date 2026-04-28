@@ -6,17 +6,29 @@ module gfx.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+struct CAContext {
+  // The integer handle to create the CAContext.
+  uint32 id;
+
+  // A mach port that will keep previous CAContext alive (and frozen) until
+  // the port is released.
+  handle<platform>? fence_mach_port;
+};
+
 union CALayerContent {
-  uint32 ca_context_id;
+  // A CAContext for remote CoreAnimation.
+  CAContext ca_context;
+
+  // A mach port for an IOSurface.
   handle<platform> io_surface_mach_port;
 };
 
 // gfx::CALayerParams
 struct CALayerParams {
-  // TODO(crbug.com/40499115): Use preprocessor to restrict platform-specific members to
-  // desired platform.
-  bool is_empty;
-  CALayerContent content;
+  // The content to display.
+  CALayerContent? content;
+
+  // The geometry of the frame.
   gfx.mojom.Size pixel_size;
   float scale_factor;
 };

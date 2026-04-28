@@ -25,7 +25,7 @@ class DisplayClient {
       AggregatedRenderPassList* render_passes) = 0;
   virtual void DisplayDidDrawAndSwap() = 0;
   virtual void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) = 0;
+      gfx::CALayerParams ca_layer_params) = 0;
   virtual void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) = 0;
   virtual void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) = 0;

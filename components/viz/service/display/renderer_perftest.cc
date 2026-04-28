@@ -83,7 +83,7 @@ class WaitForSwapDisplayClient : public DisplayClient {
       AggregatedRenderPassList* render_passes) override {}
   void DisplayDidDrawAndSwap() override {}
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+      gfx::CALayerParams ca_layer_params) override {}
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {
     DCHECK(loop_);
     loop_->Quit();

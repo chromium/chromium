@@ -42,24 +42,24 @@ void AcceleratedWidgetMac::SetNSView(AcceleratedWidgetMacNSView* view) {
 }
 
 void AcceleratedWidgetMac::ResetNSView() {
-  last_ca_layer_params_valid_ = false;
+  last_ca_layer_params_ = std::nullopt;
   view_ = nullptr;
 }
 
 const gfx::CALayerParams* AcceleratedWidgetMac::GetCALayerParams() const {
-  if (!last_ca_layer_params_valid_) {
+  if (!last_ca_layer_params_) {
     return nullptr;
   }
-  return &last_ca_layer_params_;
+  return &last_ca_layer_params_.value();
 }
 
 bool AcceleratedWidgetMac::HasFrameOfSize(const gfx::Size& dip_size) const {
-  if (!last_ca_layer_params_valid_) {
+  if (!last_ca_layer_params_) {
     return false;
   }
   // TODO(danakj): We should avoid lossy conversions to integer DIPs.
   gfx::Size last_swap_size_dip = gfx::ToFlooredSize(gfx::ConvertSizeToDips(
-      last_ca_layer_params_.pixel_size, last_ca_layer_params_.scale_factor));
+      last_ca_layer_params_->pixel_size, last_ca_layer_params_->scale_factor));
   return last_swap_size_dip == dip_size;
 }
 
@@ -80,15 +80,14 @@ void AcceleratedWidgetMac::SetSuspended(bool is_suspended) {
 }
 
 void AcceleratedWidgetMac::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   if (is_suspended_) {
     return;
   }
 
-  last_ca_layer_params_valid_ = true;
-  last_ca_layer_params_ = ca_layer_params;
+  last_ca_layer_params_ = ca_layer_params.CloneWithoutFence();
   if (view_) {
-    view_->AcceleratedWidgetCALayerParamsUpdated();
+    view_->AcceleratedWidgetCALayerParamsUpdated(std::move(ca_layer_params));
   }
 }
 

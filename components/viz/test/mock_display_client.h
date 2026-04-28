@@ -30,7 +30,7 @@ class MockDisplayClient : public mojom::DisplayClient {
 
   // mojom::DisplayClient implementation.
 #if BUILDFLAG(IS_APPLE)
-  MOCK_METHOD1(OnDisplayReceivedCALayerParams, void(const gfx::CALayerParams&));
+  MOCK_METHOD1(OnDisplayReceivedCALayerParams, void(gfx::CALayerParams));
 #endif
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD1(CreateLayeredWindowUpdater,

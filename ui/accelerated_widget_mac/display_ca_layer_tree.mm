@@ -63,8 +63,7 @@ DisplayCALayerTree::~DisplayCALayerTree() {
   io_surface_layer_ = nil;
 }
 
-void DisplayCALayerTree::UpdateCALayerTree(
-    const gfx::CALayerParams& ca_layer_params) {
+void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
   // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
   // wants a floating point value.
   gfx::Size dip_size = gfx::ToFlooredSize(gfx::ConvertSizeToDips(

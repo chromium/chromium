@@ -898,16 +898,16 @@ RootCompositorFrameSinkImpl::StopOverdrawTracking() {
 }
 
 void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
 #if BUILDFLAG(IS_APPLE)
   // If |ca_layer_params| should have content only when there exists a client
   // to send it to.
-  DCHECK(ca_layer_params.is_empty || display_client_);
+  DCHECK(ca_layer_params.IsEmpty() || display_client_);
   if (last_ca_layer_params_ == ca_layer_params &&
       base::TimeTicks::Now() < next_forced_ca_layer_params_update_time_) {
     return;
   }
-  last_ca_layer_params_ = ca_layer_params;
+  last_ca_layer_params_ = ca_layer_params.CloneWithoutFence();
   // OnDisplayReceivedCALayerParams() is ultimately responsible for triggering
   // updates to vsync. VSync may change dynamically. To ensure the value is
   // updated correctly, OnDisplayReceivedCALayerParams() is periodically called,
@@ -916,7 +916,7 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
   next_forced_ca_layer_params_update_time_ =
       base::TimeTicks::Now() + base::Seconds(10);
   if (display_client_)
-    display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
+    display_client_->OnDisplayReceivedCALayerParams(std::move(ca_layer_params));
 #else
   NOTREACHED();
 #endif

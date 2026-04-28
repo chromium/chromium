@@ -220,22 +220,19 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     }
     params.pixel_size = pixel_size_;
     params.scale_factor = scale_factor_;
-    params.is_empty = false;
 
     // |frame.completion_callback| will reach this function:
     // SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers().
     if (no_post_task_for_callback_) {
       std::move(frame.completion_callback)
-          .Run(gfx::SwapCompletionResult(
-              gfx::SwapResult::SWAP_ACK,
-              std::make_unique<gfx::CALayerParams>(params)));
+          .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK,
+                                         std::move(params)));
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(frame.completion_callback),
-                         gfx::SwapCompletionResult(
-                             gfx::SwapResult::SWAP_ACK,
-                             std::make_unique<gfx::CALayerParams>(params))));
+                         gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK,
+                                                   std::move(params))));
     }
   }
 

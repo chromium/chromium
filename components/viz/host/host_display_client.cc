@@ -40,11 +40,11 @@ mojo::PendingRemote<mojom::DisplayClient> HostDisplayClient::GetBoundRemote(
 
 #if BUILDFLAG(IS_APPLE)
 void HostDisplayClient::OnDisplayReceivedCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   ui::CALayerFrameSink* ca_layer_frame_sink =
       ui::CALayerFrameSink::FromAcceleratedWidget(widget_);
   if (ca_layer_frame_sink)
-    ca_layer_frame_sink->UpdateCALayerTree(ca_layer_params);
+    ca_layer_frame_sink->UpdateCALayerTree(std::move(ca_layer_params));
   else
     DLOG(WARNING) << "Received frame for non-existent widget.";
 }

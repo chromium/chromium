@@ -17,7 +17,7 @@ mojo::PendingRemote<mojom::DisplayClient> FakeDisplayClient::BindRemote() {
 
 #if BUILDFLAG(IS_APPLE)
 void FakeDisplayClient::OnDisplayReceivedCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {}
+    gfx::CALayerParams ca_layer_params) {}
 #endif
 
 #if BUILDFLAG(IS_WIN)

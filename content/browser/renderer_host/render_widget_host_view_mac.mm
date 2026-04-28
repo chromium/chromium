@@ -171,7 +171,8 @@ bool RenderWidgetHostViewMac::ShouldWaitRemoteCompositorFrameOnResize() const {
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratedWidgetMacNSView, public:
 
-void RenderWidgetHostViewMac::AcceleratedWidgetCALayerParamsUpdated() {
+void RenderWidgetHostViewMac::AcceleratedWidgetCALayerParamsUpdated(
+    gfx::CALayerParams ca_layer_params) {
   // Set the background color for the root layer from the frame that just
   // swapped. See RenderWidgetHostViewAura for more details. Note that this is
   // done only after the swap has completed, so that the background is not set
@@ -179,10 +180,7 @@ void RenderWidgetHostViewMac::AcceleratedWidgetCALayerParamsUpdated() {
   SetBackgroundLayerColor(last_frame_root_background_color_);
 
   // Update the contents that the NSView is displaying.
-  const gfx::CALayerParams* ca_layer_params =
-      browser_compositor_->GetLastCALayerParams();
-  if (ca_layer_params)
-    ns_view_->SetCALayerParams(*ca_layer_params);
+  ns_view_->SetCALayerParams(std::move(ca_layer_params));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1139,7 +1137,7 @@ void RenderWidgetHostViewMac::TakeFallbackContentFrom(
   const gfx::CALayerParams* ca_layer_params =
       view_mac->browser_compositor_->GetLastCALayerParams();
   if (ca_layer_params)
-    ns_view_->SetCALayerParams(*ca_layer_params);
+    ns_view_->SetCALayerParams(ca_layer_params->CloneWithoutFence());
   browser_compositor_->TakeFallbackContentFrom(
       view_mac->browser_compositor_.get());
 }

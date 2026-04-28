@@ -33,13 +33,11 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
   // and is now visible to the user, along with information about the swap
   // including: the result, timings, what was swapped, what can be released, and
   // damage compared to the last swapped buffer.
-  virtual void DidReceiveSwapBuffersAck(
-      const gpu::SwapBuffersCompleteParams& params,
-      gfx::GpuFenceHandle release_fence) = 0;
+  virtual void DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
+                                        gfx::GpuFenceHandle release_fence) = 0;
 
   // For displaying a swapped frame's contents on macOS.
-  virtual void DidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) = 0;
+  virtual void DidReceiveCALayerParams(gfx::CALayerParams ca_layer_params) = 0;
 
   // For sending swap sizes back to the browser process. Currently only used on
   // Android and Linux.

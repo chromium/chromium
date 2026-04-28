@@ -20,34 +20,36 @@ namespace gfx {
 struct COMPONENT_EXPORT(GFX) CALayerParams {
   CALayerParams();
   CALayerParams(CALayerParams&& params);
-  CALayerParams(const CALayerParams& params);
+  CALayerParams(const CALayerParams& params) = delete;
   CALayerParams& operator=(CALayerParams&& params);
-  CALayerParams& operator=(const CALayerParams& params);
+  CALayerParams& operator=(const CALayerParams& params) = delete;
   ~CALayerParams();
 
-  bool operator==(const CALayerParams& params) const {
-    return is_empty == params.is_empty &&
-           ca_context_id == params.ca_context_id &&
-#if BUILDFLAG(IS_APPLE)
-           io_surface_mach_port == params.io_surface_mach_port &&
-#endif
-           pixel_size == params.pixel_size &&
-           scale_factor == params.scale_factor;
-  }
+  // Return a clone of `this`. To avoid accidental stalls, the resulting clone
+  // will not retain `ca_context_fence_mach_port`.
+  CALayerParams CloneWithoutFence() const;
 
-  // The |is_empty| flag is used to short-circuit code to handle CALayerParams
-  // on non-macOS platforms.
-  bool is_empty = true;
+  // If `this` or `other` has a valid `ca_context_fence_mach_port` then equality
+  // will return false.
+  bool operator==(const CALayerParams& other) const;
+
+  // Helper to short-circuit code to handle CALayerParams on non-macOS
+  // platforms.
+  bool IsEmpty() const;
 
   // Can be used to instantiate a CALayerTreeHost in the browser process, which
   // will display a CALayerTree rooted in the GPU process. This is non-zero when
   // using remote CoreAnimation.
   uint32_t ca_context_id = 0;
 
+#if BUILDFLAG(IS_APPLE)
+  // A port that, until it is deleted, will keep the previous CAContext alive
+  // and frozen until it is freed.
+  base::apple::ScopedMachSendRight ca_context_fence_mach_port;
+
   // Used to set the contents of a CALayer in the browser to an IOSurface that
   // is specified by the GPU process. This is non-null iff |ca_context_id| is
   // zero.
-#if BUILDFLAG(IS_APPLE)
   gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port;
 #endif
 

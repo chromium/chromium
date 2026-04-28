@@ -133,7 +133,7 @@ class StubDisplayClient : public DisplayClient {
       AggregatedRenderPassList* render_passes) override {}
   void DisplayDidDrawAndSwap() override {}
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+      gfx::CALayerParams ca_layer_params) override {}
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
@@ -680,7 +680,7 @@ TEST_F(DisplayTest, DisableSwapUntilResize) {
   gpu::SwapBuffersCompleteParams params;
   params.swap_response.timings = GetTestSwapTimings();
   params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-  display_->DidReceiveSwapBuffersAck(params,
+  display_->DidReceiveSwapBuffersAck(std::move(params),
                                      /*release_fence=*/gfx::GpuFenceHandle());
   EXPECT_TRUE(swap_callback_run);
 

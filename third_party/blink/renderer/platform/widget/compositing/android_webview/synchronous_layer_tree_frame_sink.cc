@@ -383,7 +383,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     gpu::SwapBuffersCompleteParams params;
     params.swap_response.timings = {now, now};
     params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-    display_->DidReceiveSwapBuffersAck(params,
+    display_->DidReceiveSwapBuffersAck(std::move(params),
                                        /*release_fence=*/gfx::GpuFenceHandle());
     display_->DidReceivePresentationFeedback(
         gfx::PresentationFeedback::Failure());

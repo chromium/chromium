@@ -1892,7 +1892,7 @@ void NativeWidgetNSWindowBridge::SetAspectRatio(
 }
 
 void NativeWidgetNSWindowBridge::SetCALayerParams(
-    const gfx::CALayerParams& ca_layer_params) {
+    gfx::CALayerParams ca_layer_params) {
   // Ignore frames arriving "late" for an old size. A frame at the new size
   // should arrive soon.
   // TODO(danakj): We should avoid lossy conversions to integer DIPs.
@@ -1904,7 +1904,7 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
 
   // Update the DisplayCALayerTree with the most recent CALayerParams, to make
   // the content display on-screen.
-  display_ca_layer_tree_->UpdateCALayerTree(ca_layer_params);
+  display_ca_layer_tree_->UpdateCALayerTree(std::move(ca_layer_params));
 
   if (ca_transaction_sync_suppressed_)
     ca_transaction_sync_suppressed_ = false;

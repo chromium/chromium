@@ -478,7 +478,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void UpdateVisualState() override;
 
   // ui::AcceleratedWidgetMacNSView:
-  void AcceleratedWidgetCALayerParamsUpdated() override;
+  void AcceleratedWidgetCALayerParamsUpdated(
+      gfx::CALayerParams ca_layer_params) override;
 
   // ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;

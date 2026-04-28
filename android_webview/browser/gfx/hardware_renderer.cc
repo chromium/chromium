@@ -186,7 +186,7 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
       viz::AggregatedRenderPassList* render_passes) override;
   void DisplayDidDrawAndSwap() override {}
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+      gfx::CALayerParams ca_layer_params) override {}
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}

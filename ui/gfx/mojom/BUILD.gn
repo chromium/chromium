@@ -330,6 +330,7 @@ mojom("mojom") {
           {
             mojom = "gfx.mojom.CALayerParams"
             cpp = "::gfx::CALayerParams"
+            move_only = true
           },
         ]
         traits_sources = [ "ca_layer_params_mojom_traits.cc" ]

@@ -22,7 +22,7 @@ class AcceleratedWidgetMacNSView {
   // UpdateCALayerTree method is called. This is used to update background
   // colors and to suppressing drawing of blank windows until content is
   // available.
-  virtual void AcceleratedWidgetCALayerParamsUpdated() = 0;
+  virtual void AcceleratedWidgetCALayerParamsUpdated(gfx::CALayerParams) = 0;
 };
 
 // AcceleratedWidgetMac owns a tree of CALayers. The widget may be passed
@@ -65,7 +65,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT AcceleratedWidgetMac
   static AcceleratedWidgetMac* Get(gfx::AcceleratedWidget widget);
 
   // gfx::CALayerFrameSink implementation:
-  void UpdateCALayerTree(const gfx::CALayerParams& ca_layer_params) override;
+  void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) override;
 
   // The AcceleratedWidgetMacNSView that is using this as its internals.
   raw_ptr<AcceleratedWidgetMacNSView> view_ = nullptr;
@@ -78,8 +78,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT AcceleratedWidgetMac
   bool is_suspended_ = false;
 
   // The last CALayer parameter update from the CALayerFrameSink interface.
-  bool last_ca_layer_params_valid_ = false;
-  gfx::CALayerParams last_ca_layer_params_;
+  std::optional<gfx::CALayerParams> last_ca_layer_params_;
 };
 
 }  // namespace ui

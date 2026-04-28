@@ -93,7 +93,7 @@ class TestAcceleratedWidgetMacNSView : public AcceleratedWidgetMacNSView {
   virtual ~TestAcceleratedWidgetMacNSView() = default;
 
   // AcceleratedWidgetMacNSView
-  void AcceleratedWidgetCALayerParamsUpdated() override {}
+  void AcceleratedWidgetCALayerParamsUpdated(gfx::CALayerParams) override {}
 
  private:
   NSView* __strong view_ [[maybe_unused]];

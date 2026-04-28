@@ -166,7 +166,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
                               AggregatedRenderPassList* render_passes) override;
   void DisplayDidDrawAndSwap() override;
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override;
+      gfx::CALayerParams ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
   void DisplayAddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
   void SetWideColorEnabled(bool enabled) override;

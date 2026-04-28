@@ -24,7 +24,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerFrameSink {
 
   // Update the embedder's CALayer tree to show the content described by
   // |ca_layer_params|.
-  virtual void UpdateCALayerTree(const gfx::CALayerParams& ca_layer_params) = 0;
+  virtual void UpdateCALayerTree(gfx::CALayerParams ca_layer_params) = 0;
 };
 
 }  // namespace ui

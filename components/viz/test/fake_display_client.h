@@ -27,7 +27,7 @@ class FakeDisplayClient : public mojom::DisplayClient {
   // mojom::DisplayClient implementation.
 #if BUILDFLAG(IS_APPLE)
   void OnDisplayReceivedCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override;
+      gfx::CALayerParams ca_layer_params) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -65,7 +65,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void DisableDisplay() override;
   void MakeFirstResponder() override;
   void SetBounds(const gfx::Rect& rect) override;
-  void SetCALayerParams(const gfx::CALayerParams& ca_layer_params) override;
+  void SetCALayerParams(gfx::CALayerParams ca_layer_params) override;
   void SetBackgroundColor(SkColor color) override;
   void SetVisible(bool visible) override;
   void SetTooltipText(const std::u16string& display_text) override;

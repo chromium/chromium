@@ -2458,7 +2458,7 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
   }
 
   PostTaskToClientThread(base::BindOnce(did_swap_buffer_complete_callback_,
-                                        params, pixel_size,
+                                        std::move(params), pixel_size,
                                         std::move(release_fence)));
 }
 

@@ -18,7 +18,7 @@ class SoftwareOutputDeviceClient {
   // Specify the CALayer parameters used to display the content drawn by this
   // device on macOS.
   virtual void SoftwareDeviceUpdatedCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) = 0;
+      gfx::CALayerParams ca_layer_params) = 0;
 };
 
 }  // namespace viz

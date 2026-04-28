@@ -11,14 +11,8 @@ SwapBuffersCompleteParams::SwapBuffersCompleteParams() = default;
 SwapBuffersCompleteParams::SwapBuffersCompleteParams(
     SwapBuffersCompleteParams&& other) = default;
 
-SwapBuffersCompleteParams::SwapBuffersCompleteParams(
-    const SwapBuffersCompleteParams& other) = default;
-
 SwapBuffersCompleteParams& SwapBuffersCompleteParams::operator=(
     SwapBuffersCompleteParams&& other) = default;
-
-SwapBuffersCompleteParams& SwapBuffersCompleteParams::operator=(
-    const SwapBuffersCompleteParams& other) = default;
 
 SwapBuffersCompleteParams::~SwapBuffersCompleteParams() = default;
 
