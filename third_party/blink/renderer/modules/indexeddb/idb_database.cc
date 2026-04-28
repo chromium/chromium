@@ -72,6 +72,9 @@ namespace {
 BASE_FEATURE(kIDBDatabaseExternalMemoryAccounting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIDBDatabaseDumpOnHighConnectionCount,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Number of connections in the process. All operations use
 // std::memory_order_relaxed since there is no dependency with other data.
 //
@@ -83,7 +86,8 @@ void IncrementNumConnections() {
       g_num_connections.fetch_add(1, std::memory_order_relaxed) + 1;
 
   constexpr int64_t kHighPendingConnectionCount = 10000;
-  if (new_connection_count == kHighPendingConnectionCount) {
+  if (new_connection_count == kHighPendingConnectionCount &&
+      base::FeatureList::IsEnabled(kIDBDatabaseDumpOnHighConnectionCount)) {
     base::debug::DumpWithoutCrashing();
   }
 }
