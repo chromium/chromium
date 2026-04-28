@@ -85,6 +85,7 @@ if (!is_android) {
     sources = [ "roll_back_mode_b_infobar_controller_browsertest.cc" ]
     deps = [
       "//chrome/browser",
+      "//chrome/browser/profiles:misc",
       "//chrome/test:test_support",
       "//components/infobars/content",
       "//components/privacy_sandbox:features",

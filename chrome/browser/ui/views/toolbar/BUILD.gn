@@ -402,6 +402,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/bookmarks",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/profiles:misc",
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui:ui_features",

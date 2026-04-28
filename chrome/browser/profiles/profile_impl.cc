@@ -230,12 +230,12 @@
 #endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/extensions/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/extensions/extension_special_storage_policy.h"  // nogncheck crbug.com/40147906
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"

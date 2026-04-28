@@ -218,6 +218,7 @@ if (!is_android) {
       ":accessibility",
       ":impl",
       "//chrome/browser/accessibility/live_caption:browser_tests",
+      "//chrome/browser/profiles:misc",
       "//chrome/test:test_support",
       "//components/live_caption:constants",
       "//components/live_caption:live_translate",

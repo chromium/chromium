@@ -925,6 +925,7 @@ source_set("impl") {
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/prefetch",
     "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/search",
     "//chrome/browser/spellchecker",
     "//chrome/browser/ssl",

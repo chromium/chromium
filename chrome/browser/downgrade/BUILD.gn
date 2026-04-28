@@ -57,6 +57,7 @@ source_set("impl") {
       "//chrome/browser:browser_process",
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
       "//components/affiliations/core/browser:affiliations",

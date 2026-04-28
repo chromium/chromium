@@ -106,6 +106,7 @@ if (!is_android) {
         "//chrome/browser:browser_process",
         "//chrome/browser:test_support",
         "//chrome/browser/prefs:util",
+        "//chrome/browser/profiles:misc",
         "//chrome/browser/profiles/keep_alive",
         "//chrome/browser/search_engines",
         "//chrome/browser/ui",

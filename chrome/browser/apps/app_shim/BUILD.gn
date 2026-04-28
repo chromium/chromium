@@ -36,6 +36,7 @@ source_set("app_shim") {
     "//chrome/browser/lifetime",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",

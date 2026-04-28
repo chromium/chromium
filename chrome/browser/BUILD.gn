@@ -267,28 +267,6 @@ static_library("browser") {
     "process_singleton.h",
     "process_singleton_internal.cc",
     "process_singleton_internal.h",
-    "profiles/bookmark_model_loaded_observer.cc",
-    "profiles/bookmark_model_loaded_observer.h",
-    "profiles/chrome_incognito_mode_policy_handler.cc",
-    "profiles/chrome_incognito_mode_policy_handler.h",
-    "profiles/chrome_version_service.cc",
-    "profiles/chrome_version_service.h",
-    "profiles/force_safe_search_policy_handler.cc",
-    "profiles/force_safe_search_policy_handler.h",
-    "profiles/force_youtube_safety_mode_policy_handler.cc",
-    "profiles/force_youtube_safety_mode_policy_handler.h",
-    "profiles/off_the_record_profile_impl.cc",
-    "profiles/off_the_record_profile_impl.h",
-    "profiles/profile_avatar_downloader.cc",
-    "profiles/profile_avatar_downloader.h",
-    "profiles/profile_impl.cc",
-    "profiles/profile_impl.h",
-    "profiles/profiles_state.cc",
-    "profiles/renderer_updater.cc",
-    "profiles/renderer_updater.h",
-    "profiles/renderer_updater_factory.cc",
-    "profiles/renderer_updater_factory.h",
-    "profiles/storage_partition_descriptor.h",
     "renderer_preferences_util.cc",
     "renderer_preferences_util.h",
     "resources_util.cc",
@@ -432,6 +410,10 @@ static_library("browser") {
     "//chrome/browser/prefs:impl",
     "//chrome/browser/privacy_sandbox:impl",
     "//chrome/browser/prefs:util_impl",
+
+    # profiles:impl includes headers from //chrome/browser that can't be
+    # split out yet (e.g. browser_process.h).
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiles:profile_manager",
@@ -926,6 +908,7 @@ static_library("browser") {
     "//chrome/browser/privacy_sandbox",
     "//chrome/browser/privacy_sandbox:impl",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_downloader",
     "//chrome/browser/profiles:profile_io_data",
@@ -2083,11 +2066,6 @@ static_library("browser") {
       "prefetch/android/preload_pages_settings_bridge.cc",
       "preloading/android/preloading_data_bridge.cc",
       "preloading/android/preloading_feature_map.cc",
-      "profiles/android/profile_manager_utils.cc",
-      "profiles/android/profile_resolver.cc",
-      "profiles/android/profile_resolver.h",
-      "profiles/profile_manager_android.cc",
-      "profiles/profile_manager_android.h",
       "shell_integration_android.cc",
       "supervised_user/android/extension_parent_approval.cc",
       "supervised_user/android/extension_parent_approval.h",
@@ -2509,10 +2487,6 @@ static_library("browser") {
       "preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h",
       "process_singleton_startup_lock.cc",
       "process_singleton_startup_lock.h",
-      "profiles/delete_profile_helper.cc",
-      "profiles/delete_profile_helper.h",
-      "profiles/profile_window.cc",
-      "profiles/profile_window.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
     ]
@@ -2993,14 +2967,6 @@ static_library("browser") {
         "download/bubble/download_display_controller.cc",
         "download/bubble/download_display_controller.h",
         "platform_util.cc",
-        "profiles/avatar_menu.cc",
-        "profiles/avatar_menu.h",
-        "profiles/avatar_menu_desktop.cc",
-        "profiles/avatar_menu_observer.h",
-        "profiles/profile_activity_metrics_recorder.cc",
-        "profiles/profile_activity_metrics_recorder.h",
-        "profiles/profile_list_desktop.cc",
-        "profiles/profile_list_desktop.h",
       ]
 
       deps += [
@@ -4074,13 +4040,7 @@ static_library("browser") {
       deps += [ "//chrome/browser/chromeos/printing" ]
     }
   } else {  # !is_chromeos
-    sources += [
-      "fullscreen.h",
-      "profiles/gaia_info_update_service.cc",
-      "profiles/gaia_info_update_service.h",
-      "profiles/gaia_info_update_service_factory.cc",
-      "profiles/gaia_info_update_service_factory.h",
-    ]
+    sources += [ "fullscreen.h" ]
     deps += [
       "//components/reporting/storage:storage_configuration",
       "//components/reporting/storage:storage_module",
@@ -4139,8 +4099,6 @@ static_library("browser") {
       "memory_details_win.cc",
       "platform_util_win.cc",
       "process_singleton_win.cc",
-      "profiles/profile_shortcut_manager_win.cc",
-      "profiles/profile_shortcut_manager_win.h",
       "shell_integration_win.cc",
     ]
 
@@ -4220,7 +4178,6 @@ static_library("browser") {
     }
   } else {
     # Non - Windows.
-    sources += [ "profiles/profile_shortcut_manager_stub.cc" ]
     if (toolkit_views) {
       deps += [
         "//ui/views",
@@ -4388,10 +4345,6 @@ static_library("browser") {
   }
 
   if (is_linux || is_win || is_mac) {
-    sources += [
-      "profiles/guest_mode_policy_handler.cc",
-      "profiles/guest_mode_policy_handler.h",
-    ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",

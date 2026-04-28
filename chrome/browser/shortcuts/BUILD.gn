@@ -186,6 +186,7 @@ source_set("unit_tests") {
     sources += [ "shortcut_creator_win_unittest.cc" ]
     deps += [
       "//chrome/browser",
+      "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profile_manager",
     ]
   }

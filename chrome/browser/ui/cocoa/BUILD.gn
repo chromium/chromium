@@ -145,6 +145,7 @@ source_set("cocoa") {
     "//chrome/browser/prefs",
     "//chrome/browser/printing",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles/keep_alive",

@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/signin/features.gni")
@@ -16,40 +17,15 @@ import("//extensions/buildflags/buildflags.gni")
 # (ie, non-factory, non-impl). There will likely need to be a :factory or :impl
 # target (maybe both) for those eventually.
 source_set("profiles") {
-  sources = [
-    "incognito_helpers.cc",
+  public = [
     "incognito_helpers.h",
-    "profile_key.cc",
     "profile_key.h",
     "profiles_state.h",
-    "sql_init_error_message_ids.cc",
     "sql_init_error_message_ids.h",
   ]
 
   if (is_android) {
-    sources += [
-      "profile_android.cc",
-      "profile_key_android.cc",
-      "profile_key_android.h",
-    ]
-  }
-
-  # Cannot depend on //chrome/browser:browser.
-  deps = [
-    "//chrome/app:branded_strings",
-    "//chrome/app:generated_resources",
-    "//sql",
-  ]
-  if (is_android) {
-    deps += [
-      "//chrome/browser/profiles/android:jni_headers",
-      "//chrome/common:constants",
-      "//content/public/browser",
-    ]
-  }
-
-  if (enable_bound_session_credentials) {
-    deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+    public += [ "profile_key_android.h" ]
   }
 
   public_deps = [
@@ -57,24 +33,261 @@ source_set("profiles") {
     ":profile_manager",
     "//build:chromeos_buildflags",
     "//components/leveldb_proto",
+    "//sql",
   ]
+}
+
+# This set of targets is currently logically homed in the profiles directory,
+# but is a grab-bag of different features with different dependencies. This
+# should likely be cleaned up at some point.
+source_set("misc") {
+  sources = [
+    "bookmark_model_loaded_observer.cc",
+    "bookmark_model_loaded_observer.h",
+    "chrome_incognito_mode_policy_handler.cc",
+    "chrome_incognito_mode_policy_handler.h",
+    "chrome_version_service.cc",
+    "force_safe_search_policy_handler.cc",
+    "force_safe_search_policy_handler.h",
+    "force_youtube_safety_mode_policy_handler.cc",
+    "force_youtube_safety_mode_policy_handler.h",
+    "incognito_helpers.cc",
+    "off_the_record_profile_impl.cc",
+    "off_the_record_profile_impl.h",
+    "profile_avatar_downloader.cc",
+    "profile_avatar_downloader.h",
+    "profile_impl.cc",
+    "profile_impl.h",
+    "profile_key.cc",
+    "profiles_state.cc",
+    "renderer_updater.cc",
+    "renderer_updater.h",
+    "renderer_updater_factory.cc",
+    "renderer_updater_factory.h",
+    "sql_init_error_message_ids.cc",
+    "storage_partition_descriptor.h",
+  ]
+
+  public_deps = [
+    ":profiles",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":profile",
+    ":profile_downloader",
+    ":profile_manager",
+    ":profile_util",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:buildflags",
+    "//chrome/browser:flags",
+    "//chrome/browser:global_features",
+    "//chrome/browser/accessibility",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/background",
+    "//chrome/browser/background_fetch",
+    "//chrome/browser/background_sync",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/browsing_data",
+    "//chrome/browser/client_hints",
+    "//chrome/browser/content_index",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/dom_distiller",
+    "//chrome/browser/download",
+    "//chrome/browser/file_system_access",
+    "//chrome/browser/first_run",
+    "//chrome/browser/heavy_ad_intervention",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/k_anonymity_service",
+    "//chrome/browser/lifetime",
+    "//chrome/browser/net",
+    "//chrome/browser/origin_trials",
+    "//chrome/browser/password_manager/factories",
+    "//chrome/browser/permissions",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/privacy",
+    "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/push_messaging",
+    "//chrome/browser/push_messaging:service_impl_public",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/reduce_accept_language",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ssl",
+    "//chrome/browser/storage",
+    "//chrome/browser/transition_manager",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/zoom",
+    "//chrome/browser/updates/announcement_notification",
+    "//chrome/browser/webid",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//components/background_sync",
+    "//components/bookmarks/browser",
+    "//components/browsing_data/content",
+    "//components/content_settings/core/browser",
+    "//components/domain_reliability",
+    "//components/embedder_support",
+    "//components/guest_view/buildflags",
+    "//components/heavy_ad_intervention",
+    "//components/keyed_service/content",
+    "//components/language/core/common",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/site_isolation",
+    "//components/spellcheck:buildflags",
+    "//components/supervised_user/core/browser",
+    "//components/user_prefs",
+    "//components/webui/flags",
+    "//components/zoom",
+    "//content/public/browser",
+    "//media/mojo/services",
+    "//net",
+    "//sql",
+    "//ui/base",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/profile_manager_utils.cc",
+      "android/profile_resolver.cc",
+      "android/profile_resolver.h",
+      "profile_android.cc",
+      "profile_key_android.cc",
+      "profile_manager_android.cc",
+    ]
+    deps += [
+      "//chrome/browser/android:profile_token",
+      "//chrome/browser/profiles/android:jni_headers",
+      "//chrome/common:constants",
+      "//content/public/browser",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/accessibility/tree_fixing:prefs",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
+      "//chrome/browser/ui/signin",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "gaia_info_update_service.cc",
+      "gaia_info_update_service.h",
+      "gaia_info_update_service_factory.cc",
+      "gaia_info_update_service_factory.h",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "avatar_menu.cc",
+      "avatar_menu.h",
+      "avatar_menu_desktop.cc",
+      "avatar_menu_observer.h",
+      "profile_activity_metrics_recorder.cc",
+      "profile_activity_metrics_recorder.h",
+      "profile_list_desktop.cc",
+      "profile_list_desktop.h",
+    ]
+    deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "profile_shortcut_manager_win.cc",
+      "profile_shortcut_manager_win.h",
+    ]
+    deps += [
+      "//chrome/browser/policy:path_parser",
+      "//chrome/browser/win",
+    ]
+  } else {
+    sources += [ "profile_shortcut_manager_stub.cc" ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    sources += [
+      "guest_mode_policy_handler.cc",
+      "guest_mode_policy_handler.h",
+    ]
+  }
+
+  if (is_linux || is_mac) {
+    deps += [
+      "//chrome/browser/gapis",
+      "//components/gapis",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/arc/session:service_launcher",
+      "//chrome/browser/ash/locale",
+      "//chrome/browser/ash/login/session",
+      "//chrome/browser/ash/login/signin",
+      "//chrome/browser/ash/preferences",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/ash/secure_channel",
+      "//chromeos/ash/components/account_manager",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/demo_mode",
+      "//chromeos/components/kiosk",
+    ]
+  }
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
+
+  if (enable_spellcheck) {
+    deps += [ "//chrome/browser/spellchecker" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+  }
 }
 
 # This target should be very minimal, likely no new sources should be added
 # here. It should not depend on anything besides flags/constants in
 # //chrome/browser/* because almost everything else depends on it.
 source_set("profile") {
-  sources = [
-    "profile.cc",
+  public = [
     "profile.h",
-    "profile_keyed_service_factory.cc",
     "profile_keyed_service_factory.h",
     "profile_manager_observer.h",
     "profile_observer.h",
-    "profile_selections.cc",
     "profile_selections.h",
-    "refcounted_profile_keyed_service_factory.cc",
     "refcounted_profile_keyed_service_factory.h",
+  ]
+
+  sources = [
+    "profile.cc",
+    "profile_keyed_service_factory.cc",
+    "profile_selections.cc",
+    "refcounted_profile_keyed_service_factory.cc",
   ]
 
   public_deps = [
@@ -116,6 +329,7 @@ source_set("profile") {
 
 source_set("profile_manager") {
   sources = [
+    "chrome_version_service.h",
     "profile_destroyer.h",
     "profile_manager.h",
     "profile_metrics.h",
@@ -130,6 +344,18 @@ source_set("profile_manager") {
     "//components/profile_metrics",
     "//content/public/browser",
   ]
+
+  if (!is_android) {
+    sources += [
+      "delete_profile_helper.h",
+      "profile_window.h",
+    ]
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+
+  if (is_android) {
+    sources += [ "profile_manager_android.h" ]
+  }
 }
 
 source_set("profile_manager_impl") {
@@ -148,6 +374,7 @@ source_set("profile_manager_impl") {
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
+    "//chrome/browser:flags",
     "//chrome/browser/accessibility",
     "//chrome/browser/browsing_data",
     "//chrome/browser/lifetime",
@@ -178,8 +405,17 @@ source_set("profile_manager_impl") {
   }
 
   if (!is_android) {
+    sources += [
+      "delete_profile_helper.cc",
+      "profile_window.cc",
+    ]
     deps += [
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/web_applications",
       "//components/live_caption",
     ]
   }
@@ -198,10 +434,9 @@ source_set("profile_manager_impl") {
 }
 
 source_set("profile_io_data") {
-  sources = [
-    "profile_io_data.cc",
-    "profile_io_data.h",
-  ]
+  public = [ "profile_io_data.h" ]
+
+  sources = [ "profile_io_data.cc" ]
 
   deps = [
     "//base",
@@ -280,6 +515,7 @@ source_set("profile_util_impl") {
   ]
 
   deps = [
+    ":misc",
     ":profile",
     ":profile_manager",
     ":profile_util",
@@ -361,6 +597,7 @@ source_set("profiles_extra_parts_impl") {
   sources = [ "chrome_browser_main_extra_parts_profiles.cc" ]
 
   deps = [
+    ":misc",
     ":profile_manager",
     ":profile_util",
     ":profiles_extra_parts",
@@ -686,11 +923,12 @@ source_set("profiles_extra_parts_impl") {
 }
 
 source_set("profile_downloader") {
-  sources = [
-    "profile_downloader.cc",
+  public = [
     "profile_downloader.h",
     "profile_downloader_delegate.h",
   ]
+
+  sources = [ "profile_downloader.cc" ]
 
   public_deps = [
     "//base",
@@ -723,7 +961,6 @@ source_set("unit_tests") {
     ":profile_util",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser",
     "//chrome/browser/browsing_topics",
     "//chrome/browser/signin",
     "//chrome/test:test_support",

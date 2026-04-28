@@ -42,6 +42,7 @@ source_set("browser_tests") {
   deps = [
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/shortcuts:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",

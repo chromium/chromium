@@ -376,8 +376,10 @@ static_library("ui") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_manager_impl",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/profiles:profile_util_impl",
     "//chrome/browser/profiling_host",
@@ -754,6 +756,11 @@ static_library("ui") {
     # page_load_metrics's :impl includes headers from //chrome/browser/ui that
     # can't be split out yet.
     "//chrome/browser/page_load_metrics:impl",
+
+    # profiles:misc includes headers from //chrome/browser/ui that can't be
+    # split out yet (e.g. browser.h, browser_finder.h).
+    "//chrome/browser/profiles:misc",
+    "//chrome/browser/profiles:profile_manager_impl",
 
     # sessions includes headers from //chrome/browser/ui that can't be
     # split out yet (e.g. browser.h, browser_finder.h).
