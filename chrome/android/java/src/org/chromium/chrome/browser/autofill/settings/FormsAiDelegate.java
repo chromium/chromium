@@ -5,12 +5,21 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
+import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -18,12 +27,23 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
+import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
 
 /** A delegate class to handle shared logic for Forms AI settings fragments. */
 @NullMarked
@@ -107,7 +127,114 @@ public class FormsAiDelegate {
                 == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
-    void editEntity(EntityInstance entityInstance) {
+    void addAutofillAiEntities(PreferenceScreen screen) {
+        EntityDataManager entityDataManager =
+                EntityDataManagerFactory.getForProfile(mFragment.getProfile());
+        if (entityDataManager == null) {
+            return;
+        }
+        if (!entityDataManager.canListEntityInstancesInSettings()) {
+            return;
+        }
+
+        Map<EntityType, List<EntityInstanceWithLabels>> instancesToList =
+                entityDataManager.getInstancesToList();
+
+        boolean isEligibleToAddEntities =
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+                        ? entityDataManager.canEnableOrDisableAutofillAi()
+                        : entityDataManager.isEligibleToAutofillAi()
+                                && entityDataManager.getAutofillAiOptInStatus());
+        boolean addButtonEnabled =
+                isEligibleToAddEntities
+                        && !disabledSettingsInThirdPartyMode(mFragment.getProfile());
+
+        for (Map.Entry<EntityType, List<EntityInstanceWithLabels>> entry :
+                instancesToList.entrySet()) {
+            EntityType type = entry.getKey();
+            List<EntityInstanceWithLabels> entities = entry.getValue();
+
+            boolean isEnabled = type.isEnabled();
+            boolean isReadOnly = type.isReadOnly();
+            boolean shouldHaveAddButton = isEnabled && !isReadOnly;
+            if (entities.isEmpty() && !shouldHaveAddButton) {
+                continue;
+            }
+
+            PreferenceCategory category = new PreferenceCategory(getStyledContext());
+            category.setTitle(type.getTypeNameAsString());
+            category.setKey(type.getTypeNameAsString());
+            screen.addPreference(category);
+
+            for (EntityInstanceWithLabels entity : entities) {
+                Preference pref = new Preference(getStyledContext());
+                pref.setTitle(entity.getEntityInstanceLabel());
+                pref.setSummary(entity.getEntityInstanceSubLabel());
+                pref.setKey(entity.getGuid());
+                if (entity.isStoredInWallet()) {
+                    pref.setWidgetLayoutResource(R.layout.google_wallet_widget);
+                }
+                pref.setOnPreferenceClickListener(
+                        preference -> {
+                            if (entity.isStoredInWallet()) {
+                                AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(
+                                        mFragment.getActivity());
+                                return true;
+                            }
+                            EntityInstance entityInstance =
+                                    entityDataManager.getEntityInstance(preference.getKey());
+                            if (entityInstance == null) {
+                                return true;
+                            }
+                            editEntity(entityInstance);
+                            return true;
+                        });
+                category.addPreference(pref);
+            }
+
+            if (shouldHaveAddButton) {
+                addAddEntityButton(category, type, !addButtonEnabled);
+            }
+        }
+    }
+
+    /** Add button to create an entity of a certain type. */
+    private void addAddEntityButton(
+            PreferenceCategory screen, EntityType entityType, boolean disabled) {
+        Preference pref = new Preference(getStyledContext());
+        Drawable plusIcon =
+                ApiCompatibilityUtils.getDrawable(mFragment.getResources(), R.drawable.plus);
+        plusIcon.mutate();
+        plusIcon.setColorFilter(
+                disabled
+                        ? SemanticColorUtils.getDefaultIconColorSecondary(mFragment.getContext())
+                        : SemanticColorUtils.getDefaultControlColorActive(mFragment.getContext()),
+                PorterDuff.Mode.SRC_IN);
+        pref.setIcon(plusIcon);
+        pref.setTitle(entityType.getAddEntityTypeString());
+        pref.setKey(entityType.getTypeNameAsString() + " Add"); // For testing.
+        pref.setEnabled(!disabled);
+        pref.setOnPreferenceClickListener(
+                preference -> {
+                    Instant nowInstant = Instant.ofEpochMilli(TimeUtils.currentTimeMillis());
+                    LocalDate modifiedDate =
+                            nowInstant.atZone(ZoneId.systemDefault()).toLocalDate();
+                    showEntityEditor(
+                            new EntityInstance.Builder(entityType)
+                                    .setModifiedDate(modifiedDate)
+                                    .setUseCount(0)
+                                    .setRecordType(
+                                            entityType.isEligibleForWalletStorage()
+                                                    ? RecordType.SERVER_WALLET
+                                                    : RecordType.LOCAL)
+                                    .setIsMaskedServerEntity(entityType.isMaskedStorageSupported())
+                                    .build());
+                    return true;
+                });
+        screen.addPreference(pref);
+    }
+
+    private void editEntity(EntityInstance entityInstance) {
         if (entityInstance.requiresReauthToSee()) {
             if (mReauthenticatorBridge == null) {
                 mReauthenticatorBridge =
@@ -140,6 +267,10 @@ public class FormsAiDelegate {
                         mFragment.getProfile(),
                         entityInstance);
         mEntityEditor.showEditorDialog();
+    }
+
+    private Context getStyledContext() {
+        return mFragment.getPreferenceManager().getContext();
     }
 
     private void onLocalSaveFallback() {
