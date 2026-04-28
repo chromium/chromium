@@ -55,8 +55,7 @@ class NET_EXPORT HashValue {
   // Serializes the HashValue to a string.
   std::string ToString() const;
 
-  // These return the bytes of the contained hash value.
-  base::span<uint8_t> span();
+  // This returns the bytes of the contained hash value.
   base::span<const uint8_t> span() const;
 
   // Returns the SHA256 byte array. CHECK-fails if tag() != HASH_VALUE_SHA256;

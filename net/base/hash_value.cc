@@ -69,14 +69,7 @@ std::string HashValue::ToString() const {
   NOTREACHED();
 }
 
-base::span<uint8_t> HashValue::span() {
-  switch (tag_) {
-    case HASH_VALUE_SHA256:
-      return fingerprint.sha256;
-  }
 
-  NOTREACHED();
-}
 
 base::span<const uint8_t> HashValue::span() const {
   switch (tag_) {
