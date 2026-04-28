@@ -57,9 +57,9 @@ if (use_unified_system_module) {
       "--module-name",
       "//build/modules:system",
       "--os",
-      target_os,
+      current_os,
       "--cpu",
-      target_cpu,
+      current_cpu,
     ]
   }
 
