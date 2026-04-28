@@ -3475,6 +3475,24 @@ void MediaStreamManager::Aborted(
   SendLogMessage(base::StringPrintf(
       "Aborted({stream_type=%s}, {session_id=%s})",
       StreamTypeToString(stream_type), capture_session_id.ToString().c_str()));
+
+  // If the video for a screen capture is aborted, the corresponding
+  // audio must also be stopped.
+  if (blink::IsVideoScreenCaptureMediaType(stream_type)) {
+    DeviceRequest* const request =
+        FindRequestByVideoSessionId(capture_session_id);
+    if (request) {
+      for (const auto& stream_devices_ptr :
+           request->stream_devices_set.stream_devices) {
+        if (stream_devices_ptr->audio_device.has_value()) {
+          VLOG(1) << "MSM::Aborted: Stopping associated audio device";
+          StopDevice(stream_devices_ptr->audio_device->type,
+                     stream_devices_ptr->audio_device->session_id());
+        }
+      }
+    }
+  }
+
   StopDevice(stream_type, capture_session_id);
 }
 

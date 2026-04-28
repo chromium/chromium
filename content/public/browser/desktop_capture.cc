@@ -144,11 +144,9 @@ void OpenNativeScreenCapturePicker(
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
-  content::MediaStreamManager::GetInstance()
-      ->video_capture_manager()
-      ->OpenNativeScreenCapturePicker(
-          type, std::move(created_callback), std::move(picker_callback),
-          std::move(cancel_callback), std::move(error_callback));
+  content::MediaStreamManager::GetInstance()->OpenNativeScreenCapturePicker(
+      type, std::move(created_callback), std::move(picker_callback),
+      std::move(cancel_callback), std::move(error_callback));
 }
 
 void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
