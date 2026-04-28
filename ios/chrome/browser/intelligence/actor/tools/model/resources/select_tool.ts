@@ -12,6 +12,25 @@ import {getElementFromPoint} from '//ios/chrome/browser/intelligence/actor/tools
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
+// LINT.IfChange(SelectToolResultCode)
+enum SelectToolResultCode {
+  // The function call was successful.
+  OK = 0,
+  // The coordinates provided to target the element were not in the viewport.
+  COORDINATES_OUT_OF_BOUNDS = 1,
+  // The DOM node id provided to target the element was not in the viewport.
+  INVALID_DOM_NODE_ID = 2,
+  // The targeted element was not a <select>.
+  SELECT_INVALID_ELEMENT = 3,
+  // The targeted element was disabled.
+  ELEMENT_DISABLED = 4,
+  // The targeted <option> in the <select> was disabled.
+  SELECT_OPTION_DISABLED = 5,
+  // There isn't an <option> in the <select> matching the desired value.
+  SELECT_NO_SUCH_OPTION = 6,
+}
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/select_tool_java_script_feature.h:SelectToolResultCode)
+
 /**
  * Simulates selecting the <option> with the given value in a <select> element.
  *
@@ -25,12 +44,12 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
  * https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/select_tool.cc;l=35;drc=e8b169d1e8ed51cc6e49a169f10c4876e5a9e30f.
  */
 function selectMatchingOption(element: HTMLElement, targetValue: string): {
-  success: boolean,
+  resultCode: number,
   message: string,
 } {
   if (element.tagName.toUpperCase() !== 'SELECT') {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.SELECT_INVALID_ELEMENT,
       message: 'Target element is not a <select>.',
     };
   }
@@ -38,7 +57,7 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
   const selectElement = element as HTMLSelectElement;
   if (selectElement.disabled) {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.ELEMENT_DISABLED,
       message: '<select> element is disabled.',
     };
   }
@@ -52,7 +71,7 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
     if (valueForElement(option) === targetValue) {
       if (option.disabled) {
         return {
-          success: false,
+          resultCode: SelectToolResultCode.SELECT_OPTION_DISABLED,
           message: 'Specified value to select does exist but is disabled.',
         };
       }
@@ -63,7 +82,7 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
 
   if (!originalTargetOptionValue) {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.SELECT_NO_SUCH_OPTION,
       message: `Option with value '${targetValue}' not found.`,
     };
   }
@@ -80,7 +99,10 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
   // https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/resources/autofill_controller.js;l=597-598;drc=c96942249c46055e50b3288518331c13912249fa.
   setInputElementValue(originalTargetOptionValue, element as HTMLInputElement);
 
-  return {success: true, message: 'Selected option successfully.'};
+  return {
+    resultCode: SelectToolResultCode.OK,
+    message: 'Selected option successfully.',
+  };
 }
 
 /**
@@ -89,13 +111,13 @@ function selectMatchingOption(element: HTMLElement, targetValue: string): {
  */
 function selectByCoordinate(
     x: number, y: number, pixelType: number, value: string): {
-  success: boolean,
+  resultCode: number,
   message: string,
 } {
   const {element} = getElementFromPoint(x, y, pixelType);
   if (!element || !(element instanceof HTMLElement)) {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.COORDINATES_OUT_OF_BOUNDS,
       message: 'No element found at the target coordinates.',
     };
   }
@@ -107,19 +129,19 @@ function selectByCoordinate(
  * with the given `value`.
  */
 function selectByNodeId(nodeId: number, value: string): {
-  success: boolean,
+  resultCode: number,
   message: string,
 } {
   const node: Node|null = getNodeById(nodeId, window);
   if (!node || node.nodeType !== Node.ELEMENT_NODE) {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.INVALID_DOM_NODE_ID,
       message: `No element found with id ${nodeId}.`,
     };
   }
   if (!(node instanceof HTMLElement)) {
     return {
-      success: false,
+      resultCode: SelectToolResultCode.SELECT_INVALID_ELEMENT,
       message: `Element with id ${nodeId} is not an HTMLElement.`,
     };
   }

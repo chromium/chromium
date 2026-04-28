@@ -16,9 +16,14 @@ void WebActorTool::ResolveTargetFrame(
     base::WeakPtr<web::WebFrame> web_frame,
     const optimization_guide::proto::ActionTarget& target,
     ActionTargetJavaScriptFeature::TargetFrameCallback callback) {
-  if (!web_state || !web_frame) {
-    std::move(callback).Run(base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies)));
+  if (!web_state) {
+    std::move(callback).Run(base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway)));
+    return;
+  }
+  if (!web_frame) {
+    std::move(callback).Run(base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway)));
     return;
   }
 

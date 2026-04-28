@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/select_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -173,7 +174,8 @@ class SelectToolJavaScriptTest
 TEST_P(SelectToolJavaScriptTest, Select_NotASelect) {
   NSDictionary* result =
       Select(/*html_element_id=*/"not_a_select", /*value=*/"v1");
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kSelectInvalidElement));
   EXPECT_TRUE(
       [result[@"message"] containsString:@"Target element is not a <select>."]);
 }
@@ -181,7 +183,8 @@ TEST_P(SelectToolJavaScriptTest, Select_NotASelect) {
 TEST_P(SelectToolJavaScriptTest, Select_DisabledSelect) {
   NSDictionary* result =
       Select(/*html_element_id=*/"disabled_select", /*value=*/"v1");
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kElementDisabled));
   EXPECT_TRUE(
       [result[@"message"] containsString:@"<select> element is disabled."]);
 }
@@ -189,7 +192,8 @@ TEST_P(SelectToolJavaScriptTest, Select_DisabledSelect) {
 TEST_P(SelectToolJavaScriptTest, Select_DisabledOption) {
   NSDictionary* result =
       Select(/*html_element_id=*/"target_select", /*value=*/"v3");
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kSelectOptionDisabled));
   EXPECT_TRUE([result[@"message"]
       containsString:@"Specified value to select does exist but is disabled."]);
 }
@@ -197,7 +201,8 @@ TEST_P(SelectToolJavaScriptTest, Select_DisabledOption) {
 TEST_P(SelectToolJavaScriptTest, Select_OptionNotFound) {
   NSDictionary* result =
       Select(/*html_element_id=*/"target_select", /*value=*/"nonexistent");
-  EXPECT_FALSE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kSelectNoSuchOption));
   EXPECT_TRUE([result[@"message"] containsString:@"not found"]);
 }
 
@@ -210,7 +215,8 @@ TEST_P(SelectToolJavaScriptTest, Select_Success) {
 
   NSDictionary* result =
       Select(/*html_element_id=*/"target_select", /*value=*/"v2");
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kOk));
 
   std::vector<EventInfo> actual = GetCapturedEvents();
   std::vector<EventInfo> expected = {
@@ -241,7 +247,8 @@ TEST_P(SelectToolJavaScriptTest, Select_WithWhitespace) {
   // to "v4" when looking for the matching option.
   NSDictionary* result =
       Select(/*html_element_id=*/"target_select", /*value=*/"v4");
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(SelectToolResultCode::kOk));
 
   // The original value is used, despite trimming the whitespace for comparison.
   std::vector<EventInfo> actual = GetCapturedEvents();

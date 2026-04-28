@@ -22,6 +22,25 @@ class SelectAction;
 
 namespace actor {
 
+// LINT.IfChange(SelectToolResultCode)
+enum class SelectToolResultCode {
+  // The function call was successful.
+  kOk = 0,
+  // The coordinates provided to target the element were not in the viewport.
+  kCoordinatesOutOfBounds = 1,
+  // The DOM node id provided to target the element was not in the viewport.
+  kInvalidDomNodeId = 2,
+  // The targeted element was not a <select>.
+  kSelectInvalidElement = 3,
+  // The targeted element was disabled.
+  kElementDisabled = 4,
+  // The targeted <option> in the <select> was disabled.
+  kSelectOptionDisabled = 5,
+  // There isn't an <option> in the <select> matching the desired value.
+  kSelectNoSuchOption = 6,
+};
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/select_tool.ts:SelectToolResultCode)
+
 class SelectToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static SelectToolJavaScriptFeature* GetInstance();
