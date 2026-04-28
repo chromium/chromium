@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.DELEGATE;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.SEARCH_BOX_VIEW;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.TOP_INSET_PX;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.TRANSITION_Y;
 
@@ -63,6 +64,13 @@ public class NewTabPageLayoutViewBinderUnitTest {
         int topInsetPx = 40;
         mModel.set(TOP_INSET_PX, topInsetPx);
         verify(mView).setPaddingRelative(10, topInsetPx, 20, 30);
+    }
+
+    @Test
+    public void testSearchBoxView() {
+        View searchBoxView = mock(View.class);
+        mModel.set(SEARCH_BOX_VIEW, searchBoxView);
+        verify(mView).setSearchBoxView(eq(searchBoxView));
     }
 
     @Test

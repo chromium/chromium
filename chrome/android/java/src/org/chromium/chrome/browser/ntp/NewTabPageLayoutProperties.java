@@ -8,23 +8,27 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties used for the NewTabPageLayout. */
 @NullMarked
 class NewTabPageLayoutProperties {
     /** The delegate for NewTabPageLayout. */
-    static final PropertyModel.WritableObjectPropertyKey<NewTabPageLayout.Delegate> DELEGATE =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<NewTabPageLayout.Delegate> DELEGATE =
+            new WritableObjectPropertyKey<>();
 
     /**
      * Sets the layout change listener for NewTabPageLayout. Previously added listener will be
      * removed.
      */
-    static final PropertyModel.WritableObjectPropertyKey<View.OnLayoutChangeListener>
-            ON_LAYOUT_CHANGE_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<View.OnLayoutChangeListener> ON_LAYOUT_CHANGE_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    /** The search box view. */
+    static final WritableObjectPropertyKey<View> SEARCH_BOX_VIEW =
+            new WritableObjectPropertyKey<>();
 
     /** The system's top inset for the NewTabPageLayout. */
     static final WritableIntPropertyKey TOP_INSET_PX = new WritableIntPropertyKey();
@@ -37,6 +41,6 @@ class NewTabPageLayoutProperties {
     static final WritableFloatPropertyKey TRANSITION_Y = new WritableFloatPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {
-        DELEGATE, ON_LAYOUT_CHANGE_LISTENER, TOP_INSET_PX, TRANSITION_Y,
+        DELEGATE, ON_LAYOUT_CHANGE_LISTENER, SEARCH_BOX_VIEW, TOP_INSET_PX, TRANSITION_Y,
     };
 }

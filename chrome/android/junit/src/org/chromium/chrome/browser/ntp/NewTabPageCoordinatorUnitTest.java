@@ -279,11 +279,13 @@ public class NewTabPageCoordinatorUnitTest {
 
         assertNotNull(model.get(NewTabPageLayoutProperties.DELEGATE));
         assertNotNull(model.get(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER));
+        assertNotNull(model.get(NewTabPageLayoutProperties.SEARCH_BOX_VIEW));
 
         mCoordinator.destroy();
 
         assertNull(model.get(NewTabPageLayoutProperties.DELEGATE));
         assertNull(model.get(NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER));
+        assertNull(model.get(NewTabPageLayoutProperties.SEARCH_BOX_VIEW));
     }
 
     private void createCoordinator() {

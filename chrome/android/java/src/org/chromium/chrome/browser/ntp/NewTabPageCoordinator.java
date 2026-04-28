@@ -338,6 +338,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         lifecycleDispatcher,
                         mProfile.isOffTheRecord(),
                         mWindowAndroid);
+        mModel.set(NewTabPageLayoutProperties.SEARCH_BOX_VIEW, mSearchBoxCoordinator.getView());
 
         updateSearchBoxTwoSideMargin();
         initializeLogoCoordinator();
@@ -1299,6 +1300,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         if (mSearchBoxCoordinator != null) {
+            mModel.set(NewTabPageLayoutProperties.SEARCH_BOX_VIEW, null);
             mSearchBoxCoordinator.destroy();
             mSearchBoxCoordinator = null;
         }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.DELEGATE;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.ON_LAYOUT_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.SEARCH_BOX_VIEW;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.TOP_INSET_PX;
 import static org.chromium.chrome.browser.ntp.NewTabPageLayoutProperties.TRANSITION_Y;
 
@@ -44,6 +45,8 @@ public class NewTabPageLayoutViewBinder {
                 newTabPageLayout.addOnLayoutChangeListener(newListener);
             }
             newTabPageLayout.setTag(R.id.ntp_view_layout_change_listener_tag, newListener);
+        } else if (SEARCH_BOX_VIEW == key) {
+            newTabPageLayout.setSearchBoxView(model.get(SEARCH_BOX_VIEW));
         } else if (TOP_INSET_PX == key) {
             newTabPageLayout.setPaddingRelative(
                     newTabPageLayout.getPaddingStart(),
