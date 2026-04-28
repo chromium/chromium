@@ -25,6 +25,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -42,6 +43,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -306,21 +308,26 @@ void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
     return;
   }
 
-  // TODO: b/445628211 - Use localized strings.
   std::u16string title;
-  std::u16string message =
-      u"Your administrator updated the security requirements for your device";
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_MESSAGE);
   std::u16string button_title;
 
   if (has_password && has_pin) {
-    title = u"Change your PIN and password";
-    button_title = u"Go to Settings";
+    title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_BOTH);
+    button_title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_BOTH);
   } else if (has_password) {
-    title = u"Change your password";
-    button_title = u"Change password";
+    title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_PASSWORD);
+    button_title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_PASSWORD);
   } else {
-    title = u"Change your PIN";
-    button_title = u"Change PIN";
+    title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_PIN);
+    button_title = l10n_util::GetStringUTF16(
+        IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_PIN);
   }
 
   ShowNotification(profile_, title, message, button_title);

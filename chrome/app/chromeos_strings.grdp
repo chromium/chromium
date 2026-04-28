@@ -5198,6 +5198,27 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_MISMATCHED" desc="Message shown below the title that tells the user they have entered two different PIN values.">
     PINs do not match
   </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_MESSAGE" desc="Message shown in a notification when the administrator has updated the local auth factors complexity requirements.">
+    Your administrator updated the security requirements for your device
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_BOTH" desc="Title of a notification when both PIN and password complexity requirements have been updated.">
+    Change your PIN and password
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_PASSWORD" desc="Title of a notification when password complexity requirements have been updated.">
+    Change your password
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_TITLE_PIN" desc="Title of a notification when PIN complexity requirements have been updated.">
+    Change your PIN
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_BOTH" desc="Label for a button in a notification that takes the user to settings to update their PIN and password.">
+    Go to Settings
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_PASSWORD" desc="Label for a button in a notification that takes the user to the password change screen.">
+    Change password
+  </message>
+  <message name="IDS_LOCAL_AUTH_FACTORS_POLICY_COMPLEXITY_UPDATE_BUTTON_PIN" desc="Label for a button in a notification that takes the user to the PIN change screen.">
+    Change PIN
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_NONE" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to None.">
     Must be at least 1 digit
   </message>
@@ -5210,6 +5231,7 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_HIGH" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to High.">
     Must be at least 8 digits and can't contain repeating or ordered sequences
   </message>
+
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE" desc="Notification message after account removal.">
     <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device
   </message>
