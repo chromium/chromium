@@ -76,9 +76,10 @@ class EmailVerifierDelegateTest : public testing::Test {
     email_verifier_ = std::make_unique<NiceMock<MockEmailVerifier>>();
     delegate_ = std::make_unique<EmailVerifierDelegate>(
         &client_,
-        base::BindRepeating([](content::webid::EmailVerifier* verifier,
-                               AutofillManager&) { return verifier; },
-                            email_verifier_.get()));
+        base::BindRepeating(
+            [](content::webid::EmailVerifier* verifier, AutofillClient&,
+               const LocalFrameToken&) { return verifier; },
+            email_verifier_.get()));
   }
 
   void TearDown() override {

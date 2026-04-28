@@ -27,8 +27,8 @@ class AutofillClient;
 // https://github.com/dickhardt/email-verification-protocol
 class EmailVerifierDelegate : public AutofillManager::Observer {
  public:
-  using EmailVerifierBuilder =
-      base::RepeatingCallback<content::webid::EmailVerifier*(AutofillManager&)>;
+  using EmailVerifierBuilder = base::RepeatingCallback<
+      content::webid::EmailVerifier*(AutofillClient&, const LocalFrameToken&)>;
 
   explicit EmailVerifierDelegate(AutofillClient* client);
   EmailVerifierDelegate(AutofillClient* client, EmailVerifierBuilder builder);

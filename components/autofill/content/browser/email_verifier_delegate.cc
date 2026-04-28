@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -22,11 +23,13 @@ namespace autofill {
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client)
     : EmailVerifierDelegate(
           client,
-          base::BindRepeating([](AutofillManager& manager) {
-            ContentAutofillDriver& content_driver =
-                static_cast<ContentAutofillDriver&>(manager.driver());
-            content::RenderFrameHost* rfh = content_driver.render_frame_host();
-            return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
+          base::BindRepeating([](AutofillClient& client,
+                                 const LocalFrameToken& frame_token) {
+            content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+                *static_cast<ContentAutofillClient&>(client).web_contents(),
+                frame_token);
+            return rfh ? content::webid::EmailVerifier::GetOrCreateForFrame(rfh)
+                       : nullptr;
           })) {}
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client,
@@ -82,7 +85,10 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
 
   content::webid::EmailVerifier* verifier =
-      email_verifier_builder_.Run(manager);
+      email_verifier_builder_.Run(manager.client(), email_field.host_frame());
+  if (!verifier) {
+    return;
+  }
   verifier->Verify(
       base::UTF16ToUTF8(email), base::UTF16ToUTF8(email_field.nonce()),
       base::BindOnce(
