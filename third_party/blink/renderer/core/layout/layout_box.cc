@@ -206,7 +206,7 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
     if (LayoutBox* spin_box =
             spin_button ? spin_button->GetLayoutBox() : nullptr) {
       const Length& logical_width = spin_box->StyleRef().LogicalWidth();
-      result += spin_box->BorderAndPaddingInlineSize();
+      result += spin_box->BorderPaddingInlineSize();
       // Since the width of spin_box is not calculated yet,
       // spin_box->LogicalWidth() returns 0. Use the computed logical
       // width instead.
@@ -389,7 +389,7 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
   const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
   LayoutUnit inner_block_size;
   if (inner_box) {
-    inner_block_size = inner_box->BorderAndPaddingBlockSize();
+    inner_block_size = inner_box->BorderPaddingBlockSize();
   } else {
     // content-visibility:hidden skips layout for the inner element, but the
     // menulist intrinsic height still includes its themed block padding.
@@ -1656,7 +1656,9 @@ PhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   // is just to make sure that left-hand scrollbars don't mess up
   // scrollWidth. For the full story, visit http://crbug.com/724255.
   if (scrollbars.left > 0 && clamp_to_content_box == kClampToContentBox) {
-    LayoutUnit max_width = StitchedSize().width - BorderAndPaddingWidth();
+    const LayoutUnit max_width =
+        StitchedSize().width -
+        (BorderOutsets() + PaddingOutsets()).HorizontalSum();
     scrollbars.left =
         std::min(scrollbars.left, max_width.ClampNegativeToZero());
   }
@@ -2550,7 +2552,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForRelPositioned() const {
       ToLogicalSize(layout_inline->PhysicalLinesBoundingBox().size,
                     layout_inline->StyleRef().GetWritingMode())
           .block_size;
-  return (block_size - layout_inline->BorderAndPaddingBlockSize())
+  return (block_size - layout_inline->BorderPaddingBlockSize())
       .ClampNegativeToZero();
 }
 

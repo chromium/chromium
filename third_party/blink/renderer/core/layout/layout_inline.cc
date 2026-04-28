@@ -259,7 +259,7 @@ PhysicalRect LayoutInline::LocalCaretRect(int, CaretShape caret_shape) const {
   }
 
   LogicalRect logical_caret_rect = LocalCaretRectForEmptyElement(
-      BorderAndPaddingInlineSize(), LayoutUnit(), caret_shape);
+      BorderPaddingInlineSize(), LayoutUnit(), caret_shape);
 
   if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;

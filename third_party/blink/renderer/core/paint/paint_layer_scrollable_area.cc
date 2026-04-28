@@ -2475,15 +2475,16 @@ void PaintLayerScrollableArea::Resize(
 
   PhysicalSize difference(new_size - current_size);
 
-  bool is_box_sizing_border =
+  const bool is_box_sizing_border =
       GetLayoutBox()->StyleRef().BoxSizing() == EBoxSizing::kBorderBox;
+  const PhysicalBoxStrut border_padding =
+      GetLayoutBox()->BorderOutsets() + GetLayoutBox()->PaddingOutsets();
 
   EResize resize = GetLayoutBox()->StyleRef().UsedResize();
   if (resize != EResize::kVertical && difference.width) {
     LayoutUnit base_width =
         GetLayoutBox()->StitchedSize().width -
-        (is_box_sizing_border ? LayoutUnit()
-                              : GetLayoutBox()->BorderAndPaddingWidth());
+        (is_box_sizing_border ? LayoutUnit() : border_padding.HorizontalSum());
     base_width = LayoutUnit(base_width / zoom_factor);
     element->SetInlineStyleProperty(CSSPropertyID::kWidth,
                                     RoundToInt(base_width + difference.width),
@@ -2493,8 +2494,7 @@ void PaintLayerScrollableArea::Resize(
   if (resize != EResize::kHorizontal && difference.height) {
     LayoutUnit base_height =
         GetLayoutBox()->StitchedSize().height -
-        (is_box_sizing_border ? LayoutUnit()
-                              : GetLayoutBox()->BorderAndPaddingHeight());
+        (is_box_sizing_border ? LayoutUnit() : border_padding.VerticalSum());
     base_height = LayoutUnit(base_height / zoom_factor);
     element->SetInlineStyleProperty(CSSPropertyID::kHeight,
                                     RoundToInt(base_height + difference.height),

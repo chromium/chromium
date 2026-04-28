@@ -244,29 +244,17 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
   }
 
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingHeight() const {
+  LayoutUnit BorderPaddingBlockSize() const {
     NOT_DESTROYED();
-    return BorderTop() + BorderBottom() + PaddingTop() + PaddingBottom();
+    const PhysicalBoxStrut border_padding = BorderOutsets() + PaddingOutsets();
+    return IsHorizontalWritingMode() ? border_padding.VerticalSum()
+                                     : border_padding.HorizontalSum();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingWidth() const {
+  LayoutUnit BorderPaddingInlineSize() const {
     NOT_DESTROYED();
-    return BorderLeft() + BorderRight() + PaddingLeft() + PaddingRight();
-  }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockSize() const {
-    NOT_DESTROYED();
-    if (!StyleRef().HasBorder() && !StyleRef().MayHavePadding()) {
-      return LayoutUnit();
-    }
-    return IsHorizontalWritingMode() ? BorderAndPaddingHeight()
-                                     : BorderAndPaddingWidth();
-  }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineSize() const {
-    NOT_DESTROYED();
-    if (!StyleRef().HasBorder() && !StyleRef().MayHavePadding()) {
-      return LayoutUnit();
-    }
-    return IsHorizontalWritingMode() ? BorderAndPaddingWidth()
-                                     : BorderAndPaddingHeight();
+    const PhysicalBoxStrut border_padding = BorderOutsets() + PaddingOutsets();
+    return IsHorizontalWritingMode() ? border_padding.HorizontalSum()
+                                     : border_padding.VerticalSum();
   }
 
   virtual PhysicalBoxStrut MarginOutsets() const = 0;
