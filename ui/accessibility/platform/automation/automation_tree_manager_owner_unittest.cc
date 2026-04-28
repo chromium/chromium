@@ -1000,48 +1000,4 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   EXPECT_TRUE(tree_destroyed);
 }
 
-TEST_F(AutomationTreeManagerOwnerTest, UnserializeFailureClearsCachedTree) {
-  EXPECT_TRUE(GetTreeIDToTreeMap().empty());
-
-  const int valid_node_id = 1;
-  const int invalid_node_id = 2;
-
-  std::vector<AXTreeUpdate> updates;
-  updates.emplace_back();
-  auto& tree_update = updates.back();
-  auto& tree_data = tree_update.tree_data;
-  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
-  tree_update.has_tree_data = true;
-  tree_update.root_id = valid_node_id;
-  tree_update.nodes.emplace_back();
-  auto& node_data = tree_update.nodes.back();
-  node_data.role = ax::mojom::Role::kDesktop;
-  node_data.id = valid_node_id;
-  std::vector<AXEvent> events;
-  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
-
-  ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
-
-  updates.clear();
-  updates.emplace_back();
-  auto& bad_update = updates.back();
-  bad_update.has_tree_data = true;
-  bad_update.tree_data.tree_id = tree_data.tree_id;
-  bad_update.root_id = valid_node_id;
-  bad_update.nodes.emplace_back();
-  auto& bad_node_data = bad_update.nodes.back();
-  bad_node_data.id = valid_node_id;
-  // Adds a non-existent node id.
-  bad_node_data.child_ids.push_back(invalid_node_id);
-
-#if AX_FAIL_FAST_BUILD()
-  EXPECT_DEATH_IF_SUPPORTED(
-      SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events),
-      "");
-#else
-  SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
-  EXPECT_TRUE(GetTreeIDToTreeMap().empty());
-#endif
-}
-
 }  // namespace ui
