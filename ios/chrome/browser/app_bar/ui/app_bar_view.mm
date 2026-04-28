@@ -10,8 +10,33 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
+
 // Animation duration for color transition.
-CGFloat kColorTransitionDuration = 0.2;
+constexpr CGFloat kColorTransitionDuration = 0.2;
+
+// Constants for the shadow.
+constexpr CGFloat kShadowRadius = 31;
+constexpr CGFloat kShadowOpacity = 0.8;
+constexpr CGFloat kShadowOffset = 13;
+// Adds the cutout shape (arcs and line) to the path.
+// Assumes the path is already at the starting point (bounds.size.width, 0).
+void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
+  // Right inverse rounded corner.
+  [path addArcWithCenter:CGPointMake(bounds.size.width - kAppBarCornerRadius, 0)
+                  radius:kAppBarCornerRadius
+              startAngle:0
+                endAngle:M_PI_2
+               clockwise:YES];
+
+  [path addLineToPoint:CGPointMake(kAppBarCornerRadius, kAppBarCornerRadius)];
+
+  // Left inverse rounded corner.
+  [path addArcWithCenter:CGPointMake(kAppBarCornerRadius, 0)
+                  radius:kAppBarCornerRadius
+              startAngle:M_PI_2
+                endAngle:M_PI
+               clockwise:YES];
+}
 
 }  // namespace
 
@@ -19,6 +44,7 @@ CGFloat kColorTransitionDuration = 0.2;
   CAShapeLayer* _maskLayer;
   UIBezierPath* _maskPath;
   CGRect _lastBounds;
+  CAShapeLayer* _shadowLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -27,6 +53,10 @@ CGFloat kColorTransitionDuration = 0.2;
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
+
+    _shadowLayer = [CAShapeLayer layer];
+    [self.layer addSublayer:_shadowLayer];
+
     [self updateBackgroundColor];
     [self updateMask];
   }
@@ -61,10 +91,12 @@ CGFloat kColorTransitionDuration = 0.2;
   if (_hideColorBackground == hideColorBackground) {
     return;
   }
+  CAShapeLayer* shadowLayer = _shadowLayer;
   _hideColorBackground = hideColorBackground;
   [UIView animateWithDuration:kColorTransitionDuration
                    animations:^{
                      [self updateBackgroundColor];
+                     shadowLayer.opacity = hideColorBackground ? 0 : 1;
                    }];
 }
 
@@ -99,27 +131,30 @@ CGFloat kColorTransitionDuration = 0.2;
   [_maskPath addLineToPoint:CGPointMake(bounds.size.width, bounds.size.height)];
   [_maskPath addLineToPoint:CGPointMake(bounds.size.width, 0)];
 
-  // Right inverse rounded corner.
-  [_maskPath
-      addArcWithCenter:CGPointMake(bounds.size.width - kAppBarCornerRadius, 0)
-                radius:kAppBarCornerRadius
-            startAngle:0
-              endAngle:M_PI_2
-             clockwise:YES];
-
-  [_maskPath
-      addLineToPoint:CGPointMake(kAppBarCornerRadius, kAppBarCornerRadius)];
-
-  // Left inverse rounded corner.
-  [_maskPath addArcWithCenter:CGPointMake(kAppBarCornerRadius, 0)
-                       radius:kAppBarCornerRadius
-                   startAngle:M_PI_2
-                     endAngle:M_PI
-                    clockwise:YES];
+  AddCutoutToPath(_maskPath, bounds);
 
   [_maskPath closePath];
 
   _maskLayer.path = _maskPath.CGPath;
+
+  // Inner shadow implementation.
+  // Create a path that is specifically above the top cutout edge.
+  UIBezierPath* shadowSourcePath = [UIBezierPath bezierPath];
+  [shadowSourcePath moveToPoint:CGPointMake(bounds.size.width, 0)];
+
+  AddCutoutToPath(shadowSourcePath, bounds);
+
+  // Now close the path by going up and around above the view bounds.
+  [shadowSourcePath addLineToPoint:CGPointMake(0, -kShadowRadius * 2)];
+  [shadowSourcePath
+      addLineToPoint:CGPointMake(bounds.size.width, -kShadowRadius * 2)];
+  [shadowSourcePath closePath];
+
+  _shadowLayer.shadowColor = [UIColor blackColor].CGColor;
+  _shadowLayer.shadowOpacity = kShadowOpacity;
+  _shadowLayer.shadowOffset = CGSizeMake(0, kShadowOffset);
+  _shadowLayer.shadowRadius = kShadowRadius;
+  _shadowLayer.shadowPath = shadowSourcePath.CGPath;
 }
 
 @end
