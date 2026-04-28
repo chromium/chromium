@@ -237,16 +237,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Placeholder"/>
 </enum>
 
-<enum name="PowerBookmarkType">
-  <int value="0" label="Unspecified">
-    Unspecified power type, shouldn't be used.
-  </int>
-  <int value="1" label="Mock">Mock power type, used for testing.</int>
-  <int value="2" label="Note">
-    Note power type, used to take notes on webpages.
-  </int>
-</enum>
-
 <enum name="PriceTrackingState">
   <int value="0" label="Price tracking shown"/>
   <int value="1" label="Price tracking enabled"/>
