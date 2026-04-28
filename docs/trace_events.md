@@ -134,8 +134,8 @@ Use `base::test::TracingEnvironment` to enable tracing in unittests and `base::t
 Avoid using legacy base::trace_event::TraceLog in new code.
 
 ```cpp
-#include "base/test/test_trace_processor.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/track_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

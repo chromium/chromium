@@ -8,7 +8,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/test/test_trace_processor_impl.h"
+#include "base/test/tracing/test_trace_processor_impl.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"

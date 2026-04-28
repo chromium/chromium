@@ -11,8 +11,8 @@ specific_include_rules = {
     "+ui/gfx/color_utils.h"
   ],
   ".*test\.[cc|h]": [
-    "+base/test/trace_event_analyzer.h",
-    "+base/test/trace_test_utils.h",
+    "+base/test/tracing/trace_event_analyzer.h",
+    "+base/test/tracing/trace_test_utils.h",
   ],
   "box_fragment_painter_test.cc": [
     "+components/paint_preview/common/paint_preview_tracker.h",

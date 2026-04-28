@@ -30,7 +30,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/named_trigger.h"

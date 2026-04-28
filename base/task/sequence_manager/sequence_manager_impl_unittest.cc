@@ -61,7 +61,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"

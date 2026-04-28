@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/webdx_feature_tracing.h"
 
-#include "base/test/trace_event_analyzer.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"

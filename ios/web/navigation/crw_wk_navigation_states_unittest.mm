@@ -7,8 +7,8 @@
 #import <WebKit/WebKit.h>
 
 #import "base/test/task_environment.h"
-#import "base/test/test_trace_processor.h"
-#import "base/test/trace_test_utils.h"
+#import "base/test/tracing/test_trace_processor.h"
+#import "base/test/tracing/trace_test_utils.h"
 #import "base/trace_event/trace_event.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"

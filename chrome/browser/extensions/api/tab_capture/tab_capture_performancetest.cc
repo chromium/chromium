@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_performance_test_base.h"

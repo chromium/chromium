@@ -12,7 +12,7 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
-#import "base/test/test_trace_processor.h"
+#import "base/test/tracing/test_trace_processor.h"
 #import "base/trace_event/trace_event.h"
 #import "base/trace_event/trace_log.h"
 #import "base/tracing/perfetto_platform.h"

@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/test/base/testing_browser_process.h"

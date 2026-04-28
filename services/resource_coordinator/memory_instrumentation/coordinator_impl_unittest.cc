@@ -13,7 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"

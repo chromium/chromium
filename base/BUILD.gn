@@ -4189,7 +4189,7 @@ test("base_unittests") {
     deps += [ ":stack_canary_linux_unittests" ]
   }
 
-  sources += [ "test/test_trace_processor_example_unittest.cc" ]
+  sources += [ "test/tracing/test_trace_processor_example_unittest.cc" ]
 
   if (is_posix) {
     sources += [
@@ -4530,7 +4530,7 @@ test("base_unittests") {
   }
 
   sources += [
-    "test/trace_event_analyzer_unittest.cc",
+    "test/tracing/trace_event_analyzer_unittest.cc",
     "trace_event/memory_allocator_dump_unittest.cc",
     "trace_event/memory_dump_manager_unittest.cc",
     "trace_event/memory_dump_scheduler_unittest.cc",

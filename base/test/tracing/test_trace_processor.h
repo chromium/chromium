@@ -8,15 +8,15 @@
 // TODO(b/224531105): Implement EXTRACT_ARGS to return multiple args to simplify
 // queries.
 
-#ifndef BASE_TEST_TEST_TRACE_PROCESSOR_H_
-#define BASE_TEST_TEST_TRACE_PROCESSOR_H_
+#ifndef BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_H_
+#define BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_H_
 
 #include <ostream>
 #include <string_view>
 
 #include "base/run_loop.h"
-#include "base/test/test_trace_processor_impl.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/test_trace_processor_impl.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -84,4 +84,4 @@ std::ostream& operator<<(
     std::ostream& out,
     const base::test::TestTraceProcessor::QueryResult& result);
 
-#endif  // BASE_TEST_TEST_TRACE_PROCESSOR_H_
+#endif  // BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_H_

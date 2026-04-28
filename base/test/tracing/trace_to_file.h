@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TEST_TRACE_TO_FILE_H_
-#define BASE_TEST_TRACE_TO_FILE_H_
+#ifndef BASE_TEST_TRACING_TRACE_TO_FILE_H_
+#define BASE_TEST_TRACING_TRACE_TO_FILE_H_
 
 #include "base/files/file_path.h"
 
@@ -32,4 +32,4 @@ class TraceToFile {
 }  // namespace test
 }  // namespace base
 
-#endif  // BASE_TEST_TRACE_TO_FILE_H_
+#endif  // BASE_TEST_TRACING_TRACE_TO_FILE_H_

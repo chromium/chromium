@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"

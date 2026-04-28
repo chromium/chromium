@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/task_environment.h"
-#include "base/test/test_trace_processor.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "components/input/features.h"
 #include "components/input/utils.h"
 #include "content/public/browser/web_contents.h"

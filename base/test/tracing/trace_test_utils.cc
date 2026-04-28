@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 
 #include "base/check.h"
 #include "base/trace_event/trace_event_impl.h"

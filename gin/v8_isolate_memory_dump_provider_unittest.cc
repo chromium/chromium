@@ -8,7 +8,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"

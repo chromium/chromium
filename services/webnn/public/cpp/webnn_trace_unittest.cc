@@ -16,7 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"

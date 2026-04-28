@@ -87,8 +87,8 @@
 //
 // Note: The Stop() function needs a SingleThreadTaskRunner.
 
-#ifndef BASE_TEST_TRACE_EVENT_ANALYZER_H_
-#define BASE_TEST_TRACE_EVENT_ANALYZER_H_
+#ifndef BASE_TEST_TRACING_TRACE_EVENT_ANALYZER_H_
+#define BASE_TEST_TRACING_TRACE_EVENT_ANALYZER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -826,4 +826,4 @@ inline size_t CountMatches(const TraceEventVector& events, const Query& query) {
 
 }  // namespace trace_analyzer
 
-#endif  // BASE_TEST_TRACE_EVENT_ANALYZER_H_
+#endif  // BASE_TEST_TRACING_TRACE_EVENT_ANALYZER_H_

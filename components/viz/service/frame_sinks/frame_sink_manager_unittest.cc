@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "components/input/features.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"

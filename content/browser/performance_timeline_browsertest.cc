@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"

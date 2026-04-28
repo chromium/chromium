@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "components/viz/common/quads/compositor_render_pass.h"

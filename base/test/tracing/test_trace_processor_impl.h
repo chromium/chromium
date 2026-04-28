@@ -5,8 +5,8 @@
 // TestTraceProcessorImpl encapsulates Perfetto's TraceProcessor. This is needed
 // to prevent symbol conflicts between libtrace_processor and libperfetto.
 
-#ifndef BASE_TEST_TEST_TRACE_PROCESSOR_IMPL_H_
-#define BASE_TEST_TEST_TRACE_PROCESSOR_IMPL_H_
+#ifndef BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_IMPL_H_
+#define BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_IMPL_H_
 
 #include <memory>
 
@@ -81,4 +81,4 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
 
 }  // namespace base::test
 
-#endif  // BASE_TEST_TEST_TRACE_PROCESSOR_IMPL_H_
+#endif  // BASE_TEST_TRACING_TEST_TRACE_PROCESSOR_IMPL_H_

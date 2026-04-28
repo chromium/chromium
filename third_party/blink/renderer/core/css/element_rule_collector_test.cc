@@ -6,8 +6,8 @@
 
 #include <optional>
 
-#include "base/test/trace_event_analyzer.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"

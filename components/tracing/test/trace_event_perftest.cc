@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/task_annotator.h"
 #include "base/test/task_environment.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"

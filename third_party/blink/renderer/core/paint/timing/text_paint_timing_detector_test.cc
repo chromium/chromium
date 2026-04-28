@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/test/trace_event_analyzer.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"

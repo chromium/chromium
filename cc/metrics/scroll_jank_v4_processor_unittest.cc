@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/event_metrics_test_creator.h"

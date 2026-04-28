@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TEST_TRACE_TEST_UTILS_H_
-#define BASE_TEST_TRACE_TEST_UTILS_H_
+#ifndef BASE_TEST_TRACING_TRACE_TEST_UTILS_H_
+#define BASE_TEST_TRACING_TRACE_TEST_UTILS_H_
 
 namespace base::test {
 
@@ -23,4 +23,4 @@ void SetupTracing();
 
 }  // namespace base::test
 
-#endif  // BASE_TEST_TRACE_TEST_UTILS_H_
+#endif  // BASE_TEST_TRACING_TRACE_TEST_UTILS_H_

@@ -18,7 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"

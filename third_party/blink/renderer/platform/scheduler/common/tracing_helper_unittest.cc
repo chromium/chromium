@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
 #include "base/test/task_environment.h"
-#include "base/test/test_trace_processor.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

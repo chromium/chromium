@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_log.h"

@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"

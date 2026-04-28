@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/execution_fence.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/trace_event_analyzer.h"
+#include "base/test/tracing/trace_event_analyzer.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 

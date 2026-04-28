@@ -15,9 +15,9 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/tracing/trace_to_file.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "base/test/trace_to_file.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <vector>

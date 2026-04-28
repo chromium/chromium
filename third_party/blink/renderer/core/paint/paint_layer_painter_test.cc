@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
-#include "base/test/trace_event_analyzer.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"

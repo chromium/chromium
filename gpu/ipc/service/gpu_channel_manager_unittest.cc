@@ -9,9 +9,9 @@
 #include <stdint.h>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/test_trace_processor.h"
-#include "base/test/trace_event_analyzer.h"
-#include "base/test/trace_test_utils.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"

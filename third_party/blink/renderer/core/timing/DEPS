@@ -5,7 +5,7 @@ specific_include_rules = {
         "+url/url_constants.h",
     ],
     ".*test\.cc": [
-      "+base/test/trace_event_analyzer.h",
+      "+base/test/tracing/trace_event_analyzer.h",
       "+base/json/json_reader.h",
     ],
     "performance_mark_test.cc": [

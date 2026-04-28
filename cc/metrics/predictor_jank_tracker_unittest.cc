@@ -11,7 +11,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_trace_processor.h"
+#include "base/test/tracing/test_trace_processor.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
