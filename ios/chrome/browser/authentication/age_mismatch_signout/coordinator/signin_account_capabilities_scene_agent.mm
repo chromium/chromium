@@ -303,7 +303,7 @@
     return NO;
   }
 
-  if (_isAgeMismatchSignoutInProgress || _ageMismatchSignoutCoordinator) {
+  if (self.isSignoutInProgress) {
     return NO;
   }
 
