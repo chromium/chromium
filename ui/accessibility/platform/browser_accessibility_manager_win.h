@@ -14,6 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/display/win/screen_win.h"
@@ -182,6 +183,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   // of FinalizeAccessibilityEvents, after all other finalized events, so that
   // the UIA event recorder doesn't shut down before receiving them.
   raw_ptr<BrowserAccessibility> end_of_test_node_ = nullptr;
+
+  // Cached tab for the JAWS kSelection workaround. See kWindowActivated
+  // handling in FireSourceEvent for details. Uses AXNodeID so GetFromID()
+  // returns null if the node is removed.
+  AXNodeID last_selected_tab_id_ = kInvalidAXNodeID;
 };
 
 }  // namespace ui

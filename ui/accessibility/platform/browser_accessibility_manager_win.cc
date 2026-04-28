@@ -21,6 +21,7 @@
 #include "base/win/windows_version.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
@@ -56,6 +57,12 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 
   return nullptr;
 }
+
+// Used by the JAWS kSelection workaround (see kWindowActivated handling in
+// FireSourceEvent). Must match View::GetClassName() of `BrowserRootView` and
+// `Tab`.
+constexpr char kBrowserRootViewClassName[] = "BrowserRootView";
+constexpr char kTabClassName[] = "Tab";
 
 }  // namespace
 
@@ -333,6 +340,29 @@ void BrowserAccessibilityManagerWin::FireSourceEvent(
       // node, so only fire the UIA-specific tooltip event here.
       FireUiaAccessibilityEvent(UIA_ToolTipOpenedEventId, node);
       break;
+    case ax::mojom::Event::kWindowActivated:
+      // JAWS uses kSelection events to track which tab is active. This is
+      // an imperfect approach to enable per-tab settings (e.g. virtual
+      // cursor): switching tabs within a window fires kSelection naturally,
+      // but Alt+Tabbing between windows does not, so the correct state is
+      // not restored. Re-fire the event on the last selected tab when the
+      // browser window is activated to bridge that gap. Only applies to
+      // BrowserRootView (not dialogs/popups).
+      // TODO(crbug.com/505781387): Collaborating with the JAWS team on a
+      // more robust signal; remove once adopted.
+      if (node == GetBrowserAccessibilityRoot() &&
+          AXPlatform::GetInstance().active_assistive_tech() ==
+              AssistiveTech::kJaws) {
+        const std::string& root_class = node->GetData().GetStringAttribute(
+            ax::mojom::StringAttribute::kClassName);
+        if (root_class == kBrowserRootViewClassName) {
+          BrowserAccessibility* tab = GetFromID(last_selected_tab_id_);
+          if (tab) {
+            FireWinAccessibilityEvent(EVENT_OBJECT_SELECTION, tab);
+          }
+        }
+      }
+      break;
     default:
       break;
   }
@@ -608,6 +638,22 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleSelectedStateChanged(uia_selection_events_, wrapper,
                                  IsUIANodeSelected(wrapper));
       HandleAriaPropertiesChangedEvent(*wrapper);
+
+      // Cache the last selected tab for the JAWS workaround. See
+      // kWindowActivated handling in FireSourceEvent for details.
+      if (wrapper->GetData().GetStringAttribute(
+              ax::mojom::StringAttribute::kClassName) == kTabClassName &&
+          wrapper->GetData().GetBoolAttribute(
+              ax::mojom::BoolAttribute::kSelected)) {
+        BrowserAccessibility* root = GetBrowserAccessibilityRoot();
+        const std::string& root_class =
+            root ? root->GetData().GetStringAttribute(
+                       ax::mojom::StringAttribute::kClassName)
+                 : "";
+        if (root_class == kBrowserRootViewClassName) {
+          last_selected_tab_id_ = node->id();
+        }
+      }
       break;
     case AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONWITHIN, wrapper);

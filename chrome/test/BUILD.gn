@@ -4546,11 +4546,14 @@ if (!is_android) {
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
 
-      # Tooltip accessibility event tests are Windows-only (UIA/IA2).
-      # The test also relies on Aura APIs (EventGenerator,
-      # TooltipControllerTestHelper).
       if (is_win) {
-        sources += [ "../browser/ui/views/tooltip/tooltip_dump_accessibility_events_browsertest.cc" ]
+        sources += [
+          "../browser/ui/views/accessibility/tab_strip_dump_accessibility_events_browsertest.cc",
+
+          # Tooltip accessibility event tests rely on Aura APIs
+          # (EventGenerator, TooltipControllerTestHelper).
+          "../browser/ui/views/tooltip/tooltip_dump_accessibility_events_browsertest.cc",
+        ]
         deps += [ "//ui/wm" ]
       }
 
