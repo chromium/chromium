@@ -252,21 +252,6 @@ static_library("browser") {
     "glic/suggestions/contextual_cueing_service.h",
     "glic/suggestions/contextual_cueing_service_factory.cc",
     "global_features.cc",
-    "history/chrome_history_backend_client.cc",
-    "history/chrome_history_backend_client.h",
-    "history/chrome_history_client.cc",
-    "history/chrome_history_client.h",
-    "history/domain_diversity_reporter_factory.cc",
-    "history/domain_diversity_reporter_factory.h",
-    "history/history_service_factory.cc",
-    "history/history_tab_helper.cc",
-    "history/history_tab_helper.h",
-    "history/history_utils.cc",
-    "history/history_utils.h",
-    "history/profile_based_browsing_history_driver.cc",
-    "history/profile_based_browsing_history_driver.h",
-    "history/top_sites_factory.cc",
-    "history/top_sites_factory.h",
     "icon_loader.cc",
     "icon_loader.h",
     "icon_manager.cc",
@@ -650,6 +635,9 @@ static_library("browser") {
     # c/b/metrics/chrome_metrics_service_accessor.h
     # c/b/ui/browser_finder.h
     "//chrome/browser/supervised_user:impl",
+
+    # TODO(crbug.com/507421089): Remove this circular dependency.
+    "//chrome/browser/history:impl",
   ]
 
   public_deps = [
@@ -668,6 +656,8 @@ static_library("browser") {
     "//chrome/browser/first_run:impl",
     "//chrome/browser/google",
     "//chrome/browser/headless:initializer",
+    "//chrome/browser/history",
+    "//chrome/browser/history:impl",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/interstitials",
     "//chrome/browser/ntp_tiles",

@@ -38,8 +38,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feed/feed_service_factory.h"
-#include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/test/stub_feed_api.h"
+#include "components/feed/core/v2/public/feed_service.h"  // nogncheck crbug.com/40147906
+#include "components/feed/core/v2/public/test/stub_feed_api.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::NiceMock;

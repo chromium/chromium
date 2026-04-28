@@ -111,6 +111,7 @@ source_set("impl") {
     "//chrome/browser:shell_integration",
     "//chrome/browser:titlebar_config",
     "//chrome/browser/favicon",
+    "//chrome/browser/history",
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",

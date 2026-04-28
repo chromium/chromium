@@ -153,6 +153,7 @@ source_set("impl") {
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/favicon",
     "//chrome/browser/glic",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",

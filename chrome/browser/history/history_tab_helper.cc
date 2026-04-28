@@ -42,8 +42,8 @@
 #include "chrome/browser/history/jni_headers/HistoryTabHelper_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "components/feed/core/v2/public/feed_api.h"      // nogncheck
-#include "components/feed/core/v2/public/feed_service.h"  // nogncheck
+#include "components/feed/core/v2/public/feed_api.h"  // nogncheck crbug.com/40147906
+#include "components/feed/core/v2/public/feed_service.h"  // nogncheck crbug.com/40147906
 #include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/ui/browser.h"
