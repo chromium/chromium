@@ -16,20 +16,6 @@ inline bool EndsOnIterationBoundary(double iteration_count,
   return !fmod(iteration_count + iteration_start, 1);
 }
 
-void RecordBoundaryMisalignment(AnimationTimeDelta misalignment) {
-  // Animations require 1 microsecond precision. For a scroll-based animation,
-  // percentages are internally converted to time. The animation duration in
-  // microseconds is 16 * (range in pixels).
-  // Refer to cc/animations/scroll_timeline.h for details.
-  //
-  // It is not particularly meaningful to report the misalignment as a time
-  // since there is no dependency on having a high resolution timer. Instead,
-  // we convert back to 16ths of a pixel by scaling accordingly.
-  int sample = std::round<int>(misalignment.InMicrosecondsF());
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Animation.SDA.BoundaryMisalignment", sample,
-                             64);
-}
-
 }  // namespace
 
 double TimingCalculations::TimingCalculationEpsilon() {
@@ -115,10 +101,6 @@ Timing::Phase TimingCalculations::CalculatePhase(
   }
 
   if (local_time.value() < before_active_boundary_time) {
-    if (normalized.is_start_boundary_aligned) {
-      RecordBoundaryMisalignment(before_active_boundary_time -
-                                 local_time.value());
-    }
     return Timing::kPhaseBefore;
   }
   if (((direction == Timing::AnimationDirection::kBackwards ||
@@ -137,10 +119,6 @@ Timing::Phase TimingCalculations::CalculatePhase(
     local_time = active_after_boundary_time;
   }
   if (local_time.value() > active_after_boundary_time) {
-    if (normalized.is_end_boundary_aligned) {
-      RecordBoundaryMisalignment(local_time.value() -
-                                 active_after_boundary_time);
-    }
     return Timing::kPhaseAfter;
   }
   if (((direction == Timing::AnimationDirection::kForwards ||

@@ -2099,6 +2099,7 @@ void Animation::updatePlaybackRate(double playback_rate,
   // 2. Let animation’s pending playback rate be new playback rate.
   V8AnimationPlayState::Enum play_state = CalculateAnimationPlayState();
   pending_playback_rate_ = playback_rate;
+  InvalidateNormalizedTiming();
 
   // 3. Perform the steps corresponding to the first matching condition from
   //    below:
@@ -2998,43 +2999,42 @@ void Animation::UpdateBoundaryAlignment(
     return;
   }
 
+  if (std::abs(EffectivePlaybackRate()) != 1) {
+    return;
+  }
+
   if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(TimelineInternal())) {
-    std::optional<double> max_scroll =
-        scroll_timeline->GetMaximumScrollPosition();
-    if (!max_scroll) {
-      return;
-    }
+    // Scroll-offsets align with the scroll extents of a scroll timeline,
+    // and with the cover range for a view timeline.
     std::optional<ScrollOffsets> scroll_offsets =
         scroll_timeline->GetResolvedScrollOffsets();
-    if (!scroll_offsets) {
+
+    // Scroll-limits align with the scroll extents of a scroll timeline,
+    // and with the cover range for a view timeline.
+    std::optional<ScrollOffsets> scroll_limits =
+        scroll_timeline->GetResolvedScrollLimits();
+
+    if (!scroll_offsets || !scroll_limits) {
       return;
     }
+
+    // The start and end are relative positions along the timeline corresponding
+    // to the active range.
     TimelineRange timeline_range = scroll_timeline->GetTimelineRange();
     double start = range_start_
                        ? timeline_range.ToFractionalOffset(range_start_.value())
                        : 0;
     double end =
         range_end_ ? timeline_range.ToFractionalOffset(range_end_.value()) : 1;
-
-    AnimationTimeDelta timeline_duration =
-        scroll_timeline->GetDuration().value();
-    if (timeline_duration > AnimationTimeDelta()) {
-      start += timing.start_delay / timeline_duration;
-      end -= timing.end_delay / timeline_duration;
-    }
-
-    double start_offset =
-        start * scroll_offsets->end + (1 - start) * scroll_offsets->start;
-
-    double end_offset =
-        end * scroll_offsets->end + (1 - end) * scroll_offsets->start;
-
-    double rate = EffectivePlaybackRate();
+    double range = scroll_offsets->end - scroll_offsets->start;
+    double start_offset = scroll_offsets->start + start * range;
+    double end_offset = scroll_offsets->start + end * range;
     timing.is_start_boundary_aligned =
-        rate < 0 && start_offset <= kScrollBoundaryTolerance;
+        timing.start_delay <= AnimationTimeDelta() &&
+        start_offset - kScrollBoundaryTolerance <= scroll_limits->start;
     timing.is_end_boundary_aligned =
-        rate > 0 &&
-        rate * end_offset >= max_scroll.value() - kScrollBoundaryTolerance;
+        timing.end_delay <= AnimationTimeDelta() &&
+        end_offset + kScrollBoundaryTolerance >= scroll_limits->end;
   }
 }
 
