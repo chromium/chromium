@@ -29,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -92,13 +91,10 @@ public class SearchBoxMediatorUnitTest {
 
     @Test
     public void testOnDestroy() {
-        Drawable voiceSearchDrawable =
-                AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp);
 
         mPropertyModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, mLensClickListener);
         mPropertyModel.set(
                 SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, mVoiceSearchClickListener);
-        mPropertyModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, voiceSearchDrawable);
         mPropertyModel.set(
                 SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, mock(View.OnClickListener.class));
         mPropertyModel.set(
@@ -108,7 +104,6 @@ public class SearchBoxMediatorUnitTest {
 
         assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
@@ -119,8 +114,6 @@ public class SearchBoxMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).unregister(mMediator);
         assertNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
-        assertNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
-
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
