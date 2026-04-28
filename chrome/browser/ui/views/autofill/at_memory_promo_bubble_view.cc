@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/autofill/at_memory_promo_bubble_view.h"
 
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/accessibility_annotator/core/url_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,18 +104,30 @@ void AtMemoryPromoBubbleView::OnLearnMoreClicked() {
   }
   Browser* browser = browser_view->browser();
   if (browser) {
-#if BUILDFLAG(IS_CHROMEOS)
-    NavigateParams params(browser, GURL("chrome://help-app/"),
-                          ui::PAGE_TRANSITION_LINK);
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    NavigateParams params(browser, GURL(chrome::kChromeUIWhatsNewURL),
-                          ui::PAGE_TRANSITION_LINK);
-#endif
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    Navigate(&params);
+    // `PostTask` is used to avoid a use-after-free. Both `Navigate()`
+    // and `NotifyUserAction()` trigger the destruction of this bubble. If
+    // `Navigate()` is called first, it can trigger destruction via focus loss
+    // before the action is recorded. If `NotifyUserAction()` is called first,
+    // it destroys the view before navigation can be initiated.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<Browser> browser) {
+                         if (!browser) {
+                           return;
+                         }
+                         NavigateParams params(
+                             browser.get(),
+                             GURL(accessibility_annotator::
+                                      kAccessibilityAnnotatorLearnMoreURL),
+                             ui::PAGE_TRANSITION_LINK);
+                         params.disposition =
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                         Navigate(&params);
+                       },
+                       browser->AsWeakPtr()));
   }
 
-  NotifyUserAction(CustomHelpBubbleUi::UserAction::kAction);
+  NotifyUserAction(CustomHelpBubbleUi::UserAction::kDismiss);
 }
 
 void AtMemoryPromoBubbleView::OnGotItClicked() {

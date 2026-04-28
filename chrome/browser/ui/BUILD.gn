@@ -481,6 +481,7 @@ static_library("ui") {
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
     "//components/access_code_cast/common:metrics",
+    "//components/accessibility_annotator/core",
     "//components/account_id",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/content/browser",

@@ -1,5 +1,6 @@
 include_rules = [
  "+chrome/browser/ui/views",
+ "+components/accessibility_annotator/core",
  "+components/fullscreen_control",
  "+components/live_caption",
  "+components/services/app_service/public",
