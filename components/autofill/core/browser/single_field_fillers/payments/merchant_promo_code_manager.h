@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MERCHANT_PROMO_CODE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MERCHANT_PROMO_CODE_MANAGER_H_
 
-#include <string>
-#include <vector>
-
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -18,7 +15,6 @@
 namespace autofill {
 
 class AutofillClient;
-class AutofillOfferData;
 
 // Per-profile Merchant Promo Code Manager. This class handles promo code
 // related functionality such as retrieving promo code offer data, managing
@@ -46,13 +42,8 @@ class MerchantPromoCodeManager : public KeyedService {
       const AutofillClient& client,
       SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
-  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
 
-  // Called when offer suggestions are shown; used to record metrics.
-  // `field_global_id` is the global id of the field that had suggestions shown.
-  void OnOffersSuggestionsShown(
-    const FieldGlobalId& field_global_id,
-    const std::vector<const AutofillOfferData*>& offers);
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
 };
 
 }  // namespace autofill

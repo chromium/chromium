@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/suggestions/addresses/address_on_typing_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -79,50 +78,22 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
                              AutofillSuggestionTriggerSource trigger_source);
   ~AddressSuggestionGenerator() override;
 
-  void FetchSuggestionData(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
-      base::OnceCallback<
-          void(std::pair<SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>)>
-          callback) override;
-
   void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-          all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
   // a base::OnceCallback. Calls that callback exactly once.
-  void FetchSuggestionData(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
-      base::FunctionRef<
-          void(std::pair<SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>)>
-          callback);
-
-  // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
-  // a base::OnceCallback. Calls that callback exactly once.
   void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-          all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
@@ -134,24 +105,12 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client);
-
-  // Returns a vector of suggestions that will be suggested on a
-  // `trigger_field` in a `form`.
-  std::vector<Suggestion> GenerateAddressSuggestions(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      std::vector<AutofillProfile>& profiles_to_suggest);
+      FieldTypeSet field_types);
 
   raw_ptr<LogManager> log_manager_;
 
   AutofillSuggestionTriggerSource trigger_source_;
-
-  // Stores a set of types of fillable fields that are in the form.
-  FieldTypeSet field_types_;
 };
 
 }  // namespace autofill

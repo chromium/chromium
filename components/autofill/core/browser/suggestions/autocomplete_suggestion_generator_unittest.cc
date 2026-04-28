@@ -81,17 +81,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
       std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
           AUTOFILL_VALUE_RESULT, expected_values);
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
-
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
@@ -105,24 +97,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
         return kDbQueryId;
       });
 
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
-                  testing::SizeIs(2))))
-      .WillOnce(
-          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form_data, field_data,
-                                  /*form_structure=*/nullptr,
-                                  /*trigger_autofill_field=*/nullptr, client(),
-                                  suggestion_data_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
-        return saved_on_suggestion_data_returned_argument.second.size() == 2;
-      }));
-
   EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
-                  FillingProduct::kAutocomplete,
+                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
                   testing::UnorderedElementsAre(
                       HasSingleSuggestionWithMainText(u"SomePrefixOne"),
                       HasSingleSuggestionWithMainText(u"SomePrefixTwo")))))
@@ -130,7 +107,6 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
   generator().GenerateSuggestions(form_data, field_data,
                                   /*form_structure=*/nullptr,
                                   /*trigger_autofill_field=*/nullptr, client(),
-                                  {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
@@ -148,17 +124,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
   form_data.set_url(GURL("https://www.foo.com"));
   form_data.set_fields({field_data});
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
-
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
@@ -172,35 +140,19 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
         return kDbQueryId;
       });
 
-  EXPECT_CALL(suggestion_data_callback,
+  EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
                   SuggestionGenerator::SuggestionDataSource::kAutocomplete,
                   testing::IsEmpty())))
-      .WillOnce(
-          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form_data, field_data,
-                                  /*form_structure=*/nullptr,
-                                  /*trigger_autofill_field=*/nullptr, client(),
-                                  suggestion_data_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
-        return saved_on_suggestion_data_returned_argument.first ==
-               SuggestionGenerator::SuggestionDataSource::kAutocomplete;
-      }));
-
-  EXPECT_CALL(
-      suggestions_generated_callback,
-      Run(testing::Pair(FillingProduct::kAutocomplete, testing::IsEmpty())))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form_data, field_data,
                                   /*form_structure=*/nullptr,
                                   /*trigger_autofill_field=*/nullptr, client(),
-                                  {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
         return saved_on_suggestions_generated_argument.first ==
-               FillingProduct::kAutocomplete;
+               SuggestionGenerator::SuggestionDataSource::kAutocomplete;
       }));
 }
 
@@ -215,19 +167,18 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   form_structure.field(1)->SetTypeTo(AutofillType(CREDIT_CARD_NUMBER),
                                      /*source=*/std::nullopt);
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
 
   EXPECT_CALL(*web_data_service(), GetFormValuesForElementName).Times(0);
-  EXPECT_CALL(suggestion_data_callback,
+  EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
                   SuggestionGenerator::SuggestionDataSource::kAutocomplete,
                   testing::IsEmpty())));
-  generator().FetchSuggestionData(form, form.fields()[1], &form_structure,
+  generator().GenerateSuggestions(form, form.fields()[1], &form_structure,
                                   form_structure.field(1), client(),
-                                  suggestion_data_callback.Get());
+                                  suggestions_generated_callback.Get());
 }
 
 }  // namespace

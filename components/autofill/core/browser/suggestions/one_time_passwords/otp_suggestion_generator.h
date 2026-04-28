@@ -19,8 +19,7 @@ class OtpManager;
 // TODO(crbug.com/409962888): Cleanup once AutofillNewSuggestionGeneration is
 // launched.
 std::vector<Suggestion> BuildOtpSuggestions(
-    std::vector<std::string> one_time_passwords,
-    const FieldGlobalId& field_id);
+    std::vector<std::string> one_time_passwords);
 
 // A `SuggestionGenerator` for `FillingProduct::kOneTimePassword`.
 class OtpSuggestionGenerator : public SuggestionGenerator {
@@ -28,34 +27,17 @@ class OtpSuggestionGenerator : public SuggestionGenerator {
   explicit OtpSuggestionGenerator(OtpManager& otp_manager);
   ~OtpSuggestionGenerator() override;
 
-  void FetchSuggestionData(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
-      base::OnceCallback<
-          void(std::pair<SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>)>
-          callback) override;
-
   void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-          all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
  private:
-  void OnOtpReturned(
-      base::OnceCallback<
-          void(std::pair<SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>)>
-          callback,
-      std::vector<std::string> one_time_passwords);
+  void OnOtpReturned(base::OnceCallback<void(ReturnedSuggestions)> callback,
+                     std::vector<std::string> one_time_passwords);
 
   const base::raw_ref<OtpManager> otp_manager_;
 

@@ -590,31 +590,16 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
   test_autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://common-domain.example/test"));
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
   LoyaltyCardSuggestionGenerator generator((PasswordFormClassification()));
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_callback_argument;
-
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kLoyaltyCard,
-                        testing::SizeIs(3))))
-      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
-  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
-                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(
       suggestions_generated_callback,
       Run(testing::Pair(
-          FillingProduct::kLoyaltyCard,
+          SuggestionGenerator::SuggestionDataSource::kLoyaltyCard,
           UnorderedElementsAre(
               EqualsLoyaltyCardSuggestion(u"987654321987654321",
                                           u"CVS Pharmacy", "loyalty_card_id_1"),
@@ -624,9 +609,9 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
                                           "loyalty_card_id_3"),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsManageLoyaltyCardsSuggestion()))));
-  generator.GenerateSuggestions(
-      form().ToFormData(), field(), &form(), &field(), test_autofill_client(),
-      {saved_callback_argument}, suggestions_generated_callback.Get());
+  generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
+                                test_autofill_client(),
+                                suggestions_generated_callback.Get());
 }
 
 class ValuableSuggestionGeneratorWithNonAffiliationSupportTest

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_
 
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
@@ -55,6 +56,11 @@ struct DenseSetTraits<FillingProduct>
 using FillingProductSet = DenseSet<FillingProduct>;
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type);
+
+// Returns the `FillingProduct` responsible for generating suggestions with a
+// certain `SuggestionDataSource`.
+FillingProduct GetFillingProductFromSuggestionDataSource(
+    SuggestionGenerator::SuggestionDataSource source);
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
     FieldTypeGroup field_type_group);

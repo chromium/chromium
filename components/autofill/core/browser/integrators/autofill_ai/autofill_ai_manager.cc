@@ -510,26 +510,17 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
   const AutofillField* autofill_field =
       form.GetFieldById(trigger_field.global_id());
 
-  auto on_suggestion_data_returned =
-      [&form, &autofill_field, &trigger_field, &suggestions, this,
-       &suggestion_generator](
-          std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        suggestion_generator.GenerateSuggestions(
-            form.ToFormData(), trigger_field, &form, autofill_field, *client_,
-            {std::move(suggestion_data)},
-            [&suggestions](
-                SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
-              suggestions = std::move(returned_suggestions.second);
-            });
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
       };
 
-  // Since the `on_suggestion_data_returned` callback is called synchronously,
-  // we can assume that `suggestions` will hold correct value.
-  suggestion_generator.FetchSuggestionData(form.ToFormData(), trigger_field,
+  // Since the `on_suggestions_generated` callback is called synchronously, we
+  // can assume that `suggestions` will hold the correct value.
+  suggestion_generator.GenerateSuggestions(form.ToFormData(), trigger_field,
                                            &form, autofill_field, *client_,
-                                           on_suggestion_data_returned);
+                                           on_suggestions_generated);
   return suggestions;
 }
 

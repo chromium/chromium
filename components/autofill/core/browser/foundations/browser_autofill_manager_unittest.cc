@@ -9169,7 +9169,9 @@ TEST_F(BrowserAutofillManagerTest,
 
 struct SuggestionMergingTestParams {
   std::string test_name;
-  std::vector<std::pair<FillingProduct, std::vector<SuggestionType>>> input;
+  std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
+                        std::vector<SuggestionType>>>
+      input;
   std::vector<SuggestionType> expected_output;
 };
 
@@ -9182,8 +9184,6 @@ TEST_P(BrowserAutofillManagerSuggestionMergingTest, MergingLogic) {
   FormData form = test::GetFormData(
       {.fields = {{.label = u"Field",
                    .form_control_type = FormControlType::kInputText}}});
-  const FormGlobalId form_id = form.global_id();
-  const FieldGlobalId field_id = form.fields()[0].global_id();
 
   std::vector<SuggestionGenerator::ReturnedSuggestions> returned_suggestions =
       base::ToVector(params.input, [&](const auto& pair) {
@@ -9195,7 +9195,7 @@ TEST_P(BrowserAutofillManagerSuggestionMergingTest, MergingLogic) {
 
   test_api(autofill_manager())
       .OnIndividualSuggestionsGenerated(
-          form_id, field_id,
+          form.global_id(), form.fields()[0].global_id(),
           AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
           base::TimeTicks::Now(), std::move(returned_suggestions));
 
@@ -9210,17 +9210,21 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserAutofillManagerSuggestionMergingTest,
     testing::ValuesIn(std::vector<SuggestionMergingTestParams>{
         {.test_name = "AddressOnly",
-         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}}},
+         .input = {{SuggestionGenerator::SuggestionDataSource::kAddress,
+                    {SuggestionType::kAddressEntry}}},
          .expected_output = {SuggestionType::kAddressEntry}},
         {.test_name = "AddressAndIdentity",
-         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}},
-                   {FillingProduct::kIdentityCredential,
-                    {SuggestionType::kWebauthnCredential}}},
+         .input =
+             {{SuggestionGenerator::SuggestionDataSource::kAddress,
+               {SuggestionType::kAddressEntry}},
+              {SuggestionGenerator::SuggestionDataSource::kIdentityCredential,
+               {SuggestionType::kWebauthnCredential}}},
          .expected_output = {SuggestionType::kWebauthnCredential,
                              SuggestionType::kAddressEntry}},
         {.test_name = "AddressAndPasskey",
-         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}},
-                   {FillingProduct::kPasskey,
+         .input = {{SuggestionGenerator::SuggestionDataSource::kAddress,
+                    {SuggestionType::kAddressEntry}},
+                   {SuggestionGenerator::SuggestionDataSource::kPasskey,
                     {SuggestionType::kWebauthnCredential}}},
          .expected_output = {SuggestionType::kAddressEntry,
                              SuggestionType::kWebauthnCredential}},
@@ -9240,9 +9244,9 @@ TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
           form.global_id(), form.fields()[0].global_id(),
           AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
           base::TimeTicks::Now(),
-          {{FillingProduct::kAddress,
+          {{SuggestionGenerator::SuggestionDataSource::kAddress,
             {Suggestion(SuggestionType::kAddressEntry)}},
-           {FillingProduct::kPasskey,
+           {SuggestionGenerator::SuggestionDataSource::kPasskey,
             {Suggestion(SuggestionType::kWebauthnCredential)}}});
 
   histogram_tester.ExpectBucketCount(

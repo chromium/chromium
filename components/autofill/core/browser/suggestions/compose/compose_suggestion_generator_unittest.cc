@@ -53,10 +53,6 @@ class ComposeSuggestionGeneratorTest : public testing::Test {
 
 // Checks that compose suggestion is generated.
 TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
@@ -70,31 +66,17 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
   ComposeSuggestionGenerator generator(
       &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_callback_argument;
-
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, SizeIs(1))))
-      .WillOnce(SaveArg<0>(&saved_callback_argument));
-  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
-                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(Pair(FillingProduct::kCompose, SizeIs(1))));
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
+                       SizeIs(1))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {saved_callback_argument},
-                                suggestions_generated_callback.Get());
+                                client(), suggestions_generated_callback.Get());
 }
 
 // Checks that no compose suggestion are generated, if the feature is not
 // enabled.
 TEST_F(ComposeSuggestionGeneratorTest, NoComposeSuggestionIfFeatureDisabled) {
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
@@ -107,22 +89,12 @@ TEST_F(ComposeSuggestionGeneratorTest, NoComposeSuggestionIfFeatureDisabled) {
   ComposeSuggestionGenerator generator(
       &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_callback_argument;
-
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose, IsEmpty())))
-      .WillOnce(SaveArg<0>(&saved_callback_argument));
-  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
-                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(suggestions_generated_callback,
-              Run(Pair(FillingProduct::kCompose, IsEmpty())));
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
+                       IsEmpty())));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {saved_callback_argument},
-                                suggestions_generated_callback.Get());
+                                client(), suggestions_generated_callback.Get());
 }
 
 }  // namespace

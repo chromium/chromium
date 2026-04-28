@@ -111,22 +111,17 @@ IdentityCredentialSuggestionGenerator::IdentityCredentialSuggestionGenerator(
 IdentityCredentialSuggestionGenerator::
     ~IdentityCredentialSuggestionGenerator() = default;
 
-void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
+void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    base::OnceCallback<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
-  FetchSuggestionData(
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<SuggestionDataSource,
-                            std::vector<SuggestionGenerator::SuggestionData>>
-                      suggestion_data) {
-        std::move(callback).Run(std::move(suggestion_data));
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
       });
 }
 
@@ -136,38 +131,17 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  GenerateSuggestions(
-      form, trigger_field, form_structure, trigger_autofill_field, client,
-      all_suggestion_data,
-      [&callback](ReturnedSuggestions returned_suggestions) {
-        std::move(callback).Run(std::move(returned_suggestions));
-      });
-}
-
-void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    base::FunctionRef<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!trigger_autofill_field) {
     callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
-  trigger_field_type_ =
+  FieldType trigger_field_type =
       trigger_autofill_field->Type().GetIdentityCredentialType();
 
   // TODO(crbug.com/380367784): Add support for suggestions on NAME_FIRST
   // fields.
-  if (trigger_field_type_ == UNKNOWN_TYPE ||
-      trigger_field_type_ == NAME_FIRST) {
+  if (trigger_field_type == UNKNOWN_TYPE || trigger_field_type == NAME_FIRST) {
     callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
@@ -194,7 +168,7 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  std::vector<SuggestionData> suggestion_data;
+  std::vector<IdentityCredential> credentials;
   for (IdentityRequestAccountPtr account : *accounts) {
     bool delegated =
         account->identity_provider->format &&
@@ -206,49 +180,22 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     if (!delegated && !is_returning_credential) {
       continue;
     }
-    if (IdentityCredential credentials(
+    if (IdentityCredential credential(
             account->identity_provider->idp_metadata.config_url, account->id,
             base::UTF8ToUTF16(account->identity_provider->idp_for_display),
             base::UTF8ToUTF16(account->email),
             CreateFederatedProfileFields(account), account->decoded_picture);
-        trigger_field_type_ == PASSWORD ||
-        credentials.fields.contains(trigger_field_type_)) {
-      suggestion_data.push_back(std::move(credentials));
+        trigger_field_type == PASSWORD ||
+        credential.fields.contains(trigger_field_type)) {
+      credentials.push_back(std::move(credential));
     }
   }
-  callback(
-      {SuggestionDataSource::kIdentityCredential, std::move(suggestion_data)});
-}
-
-void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kIdentityCredential);
-  std::vector<SuggestionData> identity_credential_suggestion_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-  if (identity_credential_suggestion_data.empty()) {
-    callback({FillingProduct::kAutocomplete, {}});
-    return;
-  }
-
-  std::vector<IdentityCredential> credentials = base::ToVector(
-      std::move(identity_credential_suggestion_data),
-      [](SuggestionData& suggestion_data) {
-        return std::get<IdentityCredential>(std::move(suggestion_data));
-      });
 
   callback(
-      {FillingProduct::kIdentityCredential,
+      {SuggestionDataSource::kIdentityCredential,
        base::ToVector(credentials, [&](const IdentityCredential& credential) {
          return CreateIdentityCredentialSuggestion(credential,
-                                                   trigger_field_type_);
+                                                   trigger_field_type);
        })});
 }
 

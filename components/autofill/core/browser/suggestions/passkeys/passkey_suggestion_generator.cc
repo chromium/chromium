@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -35,55 +34,25 @@ PasskeySuggestionGenerator::PasskeySuggestionGenerator(
     : password_manager_delegate_(password_manager_delegate) {}
 PasskeySuggestionGenerator::~PasskeySuggestionGenerator() = default;
 
-void PasskeySuggestionGenerator::FetchSuggestionData(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    base::OnceCallback<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
-  if (!ShouldShowWebauthnHybridEntryPoint(trigger_field) ||
-      !password_manager_delegate_
-           ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-    std::move(callback).Run({SuggestionDataSource::kPasskey, {}});
-    return;
-  }
-  std::move(callback).Run(
-      {SuggestionDataSource::kPasskey, {HybridPasskeyAvailability(true)}});
-}
-
 void PasskeySuggestionGenerator::GenerateSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kPasskey);
-  std::vector<SuggestionData> passkey_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-
+  if (!ShouldShowWebauthnHybridEntryPoint(trigger_field)) {
+    std::move(callback).Run({SuggestionDataSource::kPasskey, {}});
+    return;
+  }
   std::vector<Suggestion> suggestions;
-  if (!passkey_data.empty()) {
-    CHECK_EQ(passkey_data.size(), 1u);
-    CHECK(std::holds_alternative<HybridPasskeyAvailability>(passkey_data[0]));
-    CHECK(std::get<HybridPasskeyAvailability>(passkey_data[0]).value());
-
-    // TODO(crbug.com/409962888): Ensure this generates a suggestion.
-    if (auto suggestion =
-            password_manager_delegate_
-                ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-      suggestions.push_back(*std::move(suggestion));
-    }
+  if (std::optional<Suggestion> suggestion =
+          password_manager_delegate_
+              ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+    suggestions.push_back(*std::move(suggestion));
   }
   std::move(callback).Run(
-      std::make_pair(FillingProduct::kPasskey, std::move(suggestions)));
+      {SuggestionDataSource::kPasskey, std::move(suggestions)});
 }
 
 }  // namespace autofill

@@ -13,8 +13,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/mock_otp_manager.h"
-#include "components/autofill/core/browser/suggestions/one_time_passwords/one_time_password_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,48 +50,31 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
         std::move(callback).Run(std::vector<std::string>{"123456"});
       });
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  EXPECT_CALL(
-      suggestions_generated_callback,
-      Run(testing::Pair(FillingProduct::kOneTimePassword,
-                        testing::UnorderedElementsAre(Field(
-                            &Suggestion::main_text,
-                            Field(&Suggestion::Text::value, u"123456"))))));
-  EXPECT_CALL(suggestion_data_callback,
+  EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
                   SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
                   testing::UnorderedElementsAre(
-                      OneTimePasswordSuggestionData("123456")))))
-      .WillOnce([&](std::pair<SuggestionGenerator::SuggestionDataSource,
-                              std::vector<SuggestionGenerator::SuggestionData>>
-                        suggestion_data) {
-        generator().GenerateSuggestions(
-            form, form.fields()[0], &form_structure, form_structure.field(0),
-            client(), {suggestion_data}, suggestions_generated_callback.Get());
-      });
+                      Field(&Suggestion::main_text,
+                            Field(&Suggestion::Text::value, u"123456"))))));
 
-  generator().FetchSuggestionData(form, form.fields()[0], &form_structure,
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
                                   form_structure.field(0), client(),
-                                  suggestion_data_callback.Get());
+                                  suggestions_generated_callback.Get());
 }
 
 TEST_F(OtpSuggestionGeneratorTest, EmptyInput) {
   std::vector<Suggestion> suggestions =
-      BuildOtpSuggestions(/*one_time_passwords=*/{}, test::MakeFieldGlobalId());
+      BuildOtpSuggestions(/*one_time_passwords=*/{});
   EXPECT_TRUE(suggestions.empty());
 }
 
 TEST_F(OtpSuggestionGeneratorTest, Otps) {
-  FieldGlobalId field_id = test::MakeFieldGlobalId();
   std::vector<std::string> otps = {"123456", "789012"};
-  std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps, field_id);
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps);
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));

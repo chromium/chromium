@@ -655,23 +655,16 @@ std::optional<Suggestion> GenerateComposeSuggestion(
                                                   trigger_source);
   std::vector<Suggestion> suggestions;
 
-  auto on_suggestion_data_returned =
-      [&form, &field, &client, &suggestions, &suggestion_generator](
-          std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        suggestion_generator.GenerateSuggestions(
-            form, field, nullptr, nullptr, client, {std::move(suggestion_data)},
-            [&suggestions](
-                SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
-              suggestions = std::move(returned_suggestions.second);
-            });
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
       };
 
-  // Since the `on_suggestion_data_returned` callback is called synchronously,
-  // we can assume that `suggestions` will hold correct value.
-  suggestion_generator.FetchSuggestionData(form, field, nullptr, nullptr,
-                                           client, on_suggestion_data_returned);
+  // Since the `on_suggestions_generated` callback is called synchronously, we
+  // can assume that `suggestions` will hold the correct value.
+  suggestion_generator.GenerateSuggestions(form, field, nullptr, nullptr,
+                                           client, on_suggestions_generated);
   if (suggestions.empty()) {
     return std::nullopt;
   }
@@ -1200,32 +1193,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   InitializeSuggestionGenerators(trigger_source, form.global_id(),
                                  field.global_id());
 
-  auto barrier_callback = base::BarrierCallback<
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>>(
-      suggestion_generators_.size(),
-      base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
-                     weak_ptr_factory_.GetWeakPtr(), form, field,
-                     trigger_source, context,
-                     suggestion_generation_start_time));
-
-  for (const auto& suggestion_generator : suggestion_generators_) {
-    suggestion_generator->FetchSuggestionData(form, field, form_structure,
-                                              autofill_field, client(),
-                                              barrier_callback);
-  }
-}
-
-void BrowserAutofillManager::OnSuggestionDataFetched(
-    const FormData& form,
-    const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext context,
-    base::TimeTicks suggestion_generation_start_time,
-    std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
-                          std::vector<SuggestionGenerator::SuggestionData>>>
-        suggestion_data) {
-  using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
   auto barrier_callback =
       base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
           suggestion_generators_.size(),
@@ -1235,64 +1202,11 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
               field.global_id(), trigger_source, context,
               suggestion_generation_start_time));
 
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
-  // still need to offer Autocomplete.
-  // TODO(crbug.com/433224307): Consider early returning here when the cache
-  // starts storing all forms and fields.
-  std::ignore = GetCachedFormAndField(form.global_id(), field.global_id(),
-                                      &form_structure, &autofill_field);
-
-  base::flat_map<SuggestionDataSource,
-                 std::vector<SuggestionGenerator::SuggestionData>>
-      all_suggestion_data(std::move(suggestion_data));
-
-  // Clear some of the suggestions based on the ablation study.
-  if (autofill_field &&
-      all_suggestion_data.contains(SuggestionDataSource::kAddress) &&
-      !all_suggestion_data[SuggestionDataSource::kAddress].empty() &&
-      EvaluateAblationStudy(*autofill_field, FillingProduct::kAddress,
-                            /*has_suggestions=*/true)) {
-    all_suggestion_data[SuggestionDataSource::kAddress].clear();
-  }
-  if (autofill_field &&
-      all_suggestion_data.contains(SuggestionDataSource::kCreditCard) &&
-      !all_suggestion_data[SuggestionDataSource::kCreditCard].empty() &&
-      EvaluateAblationStudy(*autofill_field, FillingProduct::kCreditCard,
-                            /*has_suggestions=*/true)) {
-    all_suggestion_data[SuggestionDataSource::kCreditCard].clear();
-  }
-
-  // Clear some of the suggestions based on priorities:
-  // 1. Find the highest priority suggestion data source S that returned data.
-  // 2. Keep only data from sources that are mergeable with S, discard the rest.
-  std::optional<SuggestionDataSource> highest_priority_source;
-  const DenseSet<SuggestionDataSource>* supported_mergeable_sources;
-  for (SuggestionDataSource source :
-       SuggestionGenerator::kOrderedPrioritizedSources) {
-    if (!all_suggestion_data.contains(source) ||
-        all_suggestion_data[source].empty()) {
-      continue;
-    }
-    if (!highest_priority_source.has_value()) {
-      highest_priority_source = source;
-      supported_mergeable_sources =
-          base::FindOrNull(SuggestionGenerator::kSupportedMerges,
-                           highest_priority_source.value());
-      continue;
-    }
-    if (!supported_mergeable_sources ||
-        !supported_mergeable_sources->contains(source)) {
-      all_suggestion_data.erase(source);
-    }
-  }
-
   for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
        suggestion_generators_) {
-    suggestion_generator->GenerateSuggestions(
-        form, field, form_structure, autofill_field, client(),
-        all_suggestion_data, barrier_callback);
+    suggestion_generator->GenerateSuggestions(form, field, form_structure,
+                                              autofill_field, client(),
+                                              barrier_callback);
   }
 }
 
@@ -1304,22 +1218,78 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     base::TimeTicks suggestion_generation_start_time,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
+  using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
+
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
 
-  std::map<FillingProduct, std::vector<Suggestion>> suggestions_map;
-  for (auto& [filling_product, suggestions] : returned_suggestions) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
+  // still need to offer Autocomplete.
+  // TODO(crbug.com/433224307): Consider early returning here when the cache
+  // starts storing all forms and fields.
+  std::ignore = GetCachedFormAndField(form_id, field_id, &form_structure,
+                                      &autofill_field);
+
+  base::flat_map<SuggestionDataSource, std::vector<Suggestion>> all_suggestions(
+      std::move(returned_suggestions));
+
+  // Clear some of the suggestions based on the ablation study.
+  if (autofill_field &&
+      all_suggestions.contains(SuggestionDataSource::kAddress) &&
+      !all_suggestions[SuggestionDataSource::kAddress].empty() &&
+      EvaluateAblationStudy(*autofill_field, FillingProduct::kAddress,
+                            /*has_suggestions=*/true)) {
+    all_suggestions[SuggestionDataSource::kAddress].clear();
+  }
+  if (autofill_field &&
+      all_suggestions.contains(SuggestionDataSource::kCreditCard) &&
+      !all_suggestions[SuggestionDataSource::kCreditCard].empty() &&
+      EvaluateAblationStudy(*autofill_field, FillingProduct::kCreditCard,
+                            /*has_suggestions=*/true)) {
+    all_suggestions[SuggestionDataSource::kCreditCard].clear();
+  }
+
+  // Clear some of the suggestions based on priorities:
+  // 1. Find the highest priority suggestion data source S that returned data.
+  // 2. Keep only data from sources that are mergeable with S, discard the rest.
+  std::optional<SuggestionDataSource> highest_priority_source;
+  const DenseSet<SuggestionDataSource>* supported_mergeable_sources;
+  for (SuggestionDataSource source :
+       SuggestionGenerator::kOrderedPrioritizedSources) {
+    if (!all_suggestions.contains(source) || all_suggestions[source].empty()) {
+      continue;
+    }
+    if (!highest_priority_source.has_value()) {
+      highest_priority_source = source;
+      supported_mergeable_sources =
+          base::FindOrNull(SuggestionGenerator::kSupportedMerges,
+                           highest_priority_source.value());
+      continue;
+    }
+    if (!supported_mergeable_sources ||
+        !supported_mergeable_sources->contains(source)) {
+      all_suggestions.erase(source);
+    }
+  }
+
+  std::map<FillingProduct, std::vector<Suggestion>> prioritized_suggestions;
+  for (auto& [suggestion_data_source, suggestions] : all_suggestions) {
     if (suggestions.empty()) {
       continue;
     }
+    FillingProduct filling_product =
+        GetFillingProductFromSuggestionDataSource(suggestion_data_source);
     base::UmaHistogramEnumeration(
         "Autofill.SuggestionGeneration.GeneratedFillingProduct",
         filling_product);
-    suggestions_map[filling_product] = std::move(suggestions);
+    prioritized_suggestions[filling_product] = std::move(suggestions);
   }
 
-  auto passkey_suggestions = suggestions_map.extract(FillingProduct::kPasskey);
+  auto passkey_suggestions =
+      prioritized_suggestions.extract(FillingProduct::kPasskey);
 
   auto on_generate_suggestions_complete =
       [&](std::vector<Suggestion> suggestions) {
@@ -1335,27 +1305,25 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
                                       /*show_suggestions=*/true, suggestions);
       };
 
-  if (suggestions_map.empty()) {
+  if (prioritized_suggestions.empty()) {
     on_generate_suggestions_complete({});
     return;
   }
 
-  if (suggestions_map.contains(FillingProduct::kAddress)) {
-    on_generate_suggestions_complete(MergeWithAddressSuggestions(
-        suggestions_map, form_id, field_id, trigger_source));
+  if (prioritized_suggestions.contains(FillingProduct::kAddress)) {
+    on_generate_suggestions_complete(
+        MergeWithAddressSuggestions(prioritized_suggestions, trigger_source));
     return;
   }
 
   // This ensures we cover all merge cases above, and avoid any other wrong
   // combination during prioritization.
-  CHECK_EQ(suggestions_map.size(), 1u);
-  on_generate_suggestions_complete(suggestions_map.begin()->second);
+  CHECK_EQ(prioritized_suggestions.size(), 1u);
+  on_generate_suggestions_complete(prioritized_suggestions.begin()->second);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
     std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map,
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   auto extract_vector = [&suggestions_map](FillingProduct product) {
     auto node = suggestions_map.extract(product);
@@ -2877,20 +2845,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
         suggestions = std::move(returned_suggestions.second);
       };
 
-  auto on_suggestion_data_returned =
-      [&on_suggestions_generated, &form, &trigger_field, &form_structure, this,
-       &trigger_autofill_field, &address_suggestion_generator](
-          std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        address_suggestion_generator.GenerateSuggestions(
-            form, trigger_field, &form_structure, &trigger_autofill_field,
-            client(), {std::move(suggestion_data)}, on_suggestions_generated);
-      };
-
-  address_suggestion_generator.FetchSuggestionData(
+  address_suggestion_generator.GenerateSuggestions(
       form, trigger_field, &form_structure, &trigger_autofill_field, client(),
-      on_suggestion_data_returned);
+      on_suggestions_generated);
   return suggestions;
 }
 
@@ -3165,7 +3122,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kOneTimePassword:
-      suggestions = BuildOtpSuggestions(one_time_passwords, field.global_id());
+      suggestions = BuildOtpSuggestions(one_time_passwords);
       break;
     case FillingProduct::kAtMemory:
       return {};

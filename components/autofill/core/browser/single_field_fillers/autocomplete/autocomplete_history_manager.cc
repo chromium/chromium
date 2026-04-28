@@ -64,28 +64,9 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
       },
       std::move(on_suggestions_returned), trigger_field.global_id());
 
-  auto on_suggestion_data_returned = base::BindOnce(
-      [](base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>
-             callback,
-         FormData form, FormFieldData field, const AutofillClient& client,
-         base::WeakPtr<AutocompleteSuggestionGenerator>
-             autocomplete_suggestion_generator,
-         std::pair<SuggestionGenerator::SuggestionDataSource,
-                   std::vector<SuggestionGenerator::SuggestionData>>
-             suggestion_data) {
-        if (autocomplete_suggestion_generator) {
-          autocomplete_suggestion_generator->GenerateSuggestions(
-              std::move(form), std::move(field), /*form_structure=*/nullptr,
-              /*trigger_autofill_field=*/nullptr, client,
-              {std::move(suggestion_data)}, std::move(callback));
-        }
-      },
-      std::move(on_suggestions_generated), form, trigger_field,
-      std::cref(client), suggestion_generator_->GetWeakPtr());
-
-  suggestion_generator_->FetchSuggestionData(
+  suggestion_generator_->GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      std::move(on_suggestion_data_returned));
+      std::move(on_suggestions_generated));
 }
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(

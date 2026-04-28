@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 
 #include "base/containers/to_vector.h"
-#include "components/autofill/core/browser/suggestions/compose/compose_availability.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
@@ -17,22 +16,17 @@ ComposeSuggestionGenerator::ComposeSuggestionGenerator(
 
 ComposeSuggestionGenerator::~ComposeSuggestionGenerator() = default;
 
-void ComposeSuggestionGenerator::FetchSuggestionData(
+void ComposeSuggestionGenerator::GenerateSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    base::OnceCallback<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
-  FetchSuggestionData(
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<SuggestionDataSource,
-                            std::vector<SuggestionGenerator::SuggestionData>>
-                      suggestion_data) {
-        std::move(callback).Run(std::move(suggestion_data));
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
       });
 }
 
@@ -42,27 +36,7 @@ void ComposeSuggestionGenerator::GenerateSuggestions(
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  GenerateSuggestions(
-      form, trigger_field, form_structure, trigger_autofill_field, client,
-      all_suggestion_data,
-      [&callback](ReturnedSuggestions returned_suggestions) {
-        std::move(callback).Run(std::move(returned_suggestions));
-      });
-}
-
-void ComposeSuggestionGenerator::FetchSuggestionData(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    base::FunctionRef<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!compose_delegate_ ||
       (trigger_field.form_control_type() != FormControlType::kTextArea &&
        trigger_field.form_control_type() !=
@@ -77,31 +51,7 @@ void ComposeSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  callback({SuggestionDataSource::kCompose, {ComposeAvailability(true)}});
-}
-
-void ComposeSuggestionGenerator::GenerateSuggestions(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kCompose);
-  std::vector<SuggestionData> compose_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-  if (compose_data.empty()) {
-    callback({FillingProduct::kCompose, {}});
-    return;
-  }
-
-  CHECK_EQ(compose_data.size(), 1u);
-  CHECK(std::holds_alternative<ComposeAvailability>(compose_data[0]));
-  CHECK(std::get<ComposeAvailability>(compose_data[0]).value());
-  callback({FillingProduct::kCompose,
+  callback({SuggestionDataSource::kCompose,
             {compose_delegate_->GetSuggestion(form, trigger_field,
                                               trigger_source_)}});
 }

@@ -127,23 +127,11 @@ class AddressSuggestionGeneratorTest : public testing::Test {
           suggestions = std::move(returned_suggestions.second);
         };
 
-    auto on_suggestion_data_returned =
-        [this, &on_suggestions_generated, &form_data, &field_data,
-         &address_suggestion_generator](
-            std::pair<SuggestionGenerator::SuggestionDataSource,
-                      std::vector<SuggestionGenerator::SuggestionData>>
-                suggestion_data) {
-          address_suggestion_generator.GenerateSuggestions(
-              form_data, field_data, form_structure_.get(), &field(),
-              *autofill_client(), {std::move(suggestion_data)},
-              on_suggestions_generated);
-        };
-
     // Since the `on_suggestions_generated` callback is called synchronously,
-    // we can assume that `suggestions` will hold correct value.
-    address_suggestion_generator.FetchSuggestionData(
+    // we can assume that `suggestions` will hold the correct value.
+    address_suggestion_generator.GenerateSuggestions(
         form_data, field_data, form_structure_.get(), &field(),
-        autofill_client_, on_suggestion_data_returned);
+        autofill_client_, on_suggestions_generated);
     return suggestions;
   }
 
@@ -1426,10 +1414,6 @@ TEST_F(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
@@ -1448,30 +1432,17 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
   AddressSuggestionGenerator generator(
       /*log_manager=*/nullptr,
       mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_callback_argument;
-
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAddress,
-                        testing::ElementsAre(profile1))))
-      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
-  generator.FetchSuggestionData(form_data, field, form_structure.get(),
-                                form_structure->field(0), *autofill_client(),
-                                suggestion_data_callback.Get());
 
   EXPECT_CALL(
       suggestions_generated_callback,
       Run(testing::Pair(
-          FillingProduct::kAddress,
+          SuggestionGenerator::SuggestionDataSource::kAddress,
           testing::ElementsAre(
               EqualsSuggestion(SuggestionType::kAddressEntry, u"John H. Doe"),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageAddress)))));
   generator.GenerateSuggestions(form_data, field, form_structure.get(),
                                 form_structure->field(0), *autofill_client(),
-                                {saved_callback_argument},
                                 suggestions_generated_callback.Get());
 }
 

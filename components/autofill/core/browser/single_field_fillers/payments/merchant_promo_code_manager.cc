@@ -28,33 +28,24 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   MerchantPromoCodeSuggestionGenerator merchant_promo_code_suggestion_generator;
   bool suggestions_generated = false;
 
-  auto on_suggestions_generated =
-      [&on_suggestions_returned, &field, &suggestions_generated](
-          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+  auto on_suggestions_generated = base::BindOnce(
+      [](SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback,
+         bool& suggestions_generated, FieldGlobalId field_id,
+         SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
         suggestions_generated = !returned_suggestions.second.empty();
         if (suggestions_generated) {
-          std::move(on_suggestions_returned)
-              .Run(field.global_id(), std::move(returned_suggestions.second));
+          std::move(callback).Run(field_id,
+                                  std::move(returned_suggestions.second));
         }
-      };
+      },
+      std::ref(on_suggestions_returned), std::ref(suggestions_generated),
+      field.global_id());
 
-  auto on_suggestion_data_returned =
-      [&on_suggestions_generated, &field, &form_structure, &autofill_field,
-       &client, &merchant_promo_code_suggestion_generator](
-          std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        merchant_promo_code_suggestion_generator.GenerateSuggestions(
-            form_structure.ToFormData(), field, &form_structure,
-            &autofill_field, client, {std::move(suggestion_data)},
-            on_suggestions_generated);
-      };
-
-  // Since the `on_suggestion_data_returned` callback is called synchronously,
-  // we can assume that `suggestions_generated` will hold correct value.
-  merchant_promo_code_suggestion_generator.FetchSuggestionData(
+  // Since the `on_suggestions_generated` callback is called synchronously, we
+  // can assume that `suggestions_generated` will hold the correct value.
+  merchant_promo_code_suggestion_generator.GenerateSuggestions(
       form_structure.ToFormData(), field, &form_structure, &autofill_field,
-      client, on_suggestion_data_returned);
+      client, std::move(on_suggestions_generated));
   return suggestions_generated;
 }
 

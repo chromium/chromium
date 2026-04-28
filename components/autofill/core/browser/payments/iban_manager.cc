@@ -63,22 +63,11 @@ bool IbanManager::OnGetSingleFieldSuggestions(
         }
       };
 
-  auto on_suggestion_data_returned =
-      [&on_suggestions_generated, &field, &form, &autofill_field, &client,
-       &iban_suggestion_generator](
-          std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        iban_suggestion_generator.GenerateSuggestions(
-            form.ToFormData(), field, &form, &autofill_field, client,
-            {std::move(suggestion_data)}, on_suggestions_generated);
-      };
-
-  // Since the `on_suggestion_data_returned` callback is called synchronously,
-  // we can assume that `suggestions_generated` will hold correct value.
-  iban_suggestion_generator.FetchSuggestionData(form.ToFormData(), field, &form,
+  // Since the `on_suggestions_generated` callback is called synchronously,
+  // we can assume that `suggestions_generated` will hold the correct value.
+  iban_suggestion_generator.GenerateSuggestions(form.ToFormData(), field, &form,
                                                 &autofill_field, client,
-                                                on_suggestion_data_returned);
+                                                on_suggestions_generated);
   return suggestions_generated;
 }
 

@@ -130,6 +130,38 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   NOTREACHED();
 }
 
+FillingProduct GetFillingProductFromSuggestionDataSource(
+    SuggestionGenerator::SuggestionDataSource source) {
+  switch (source) {
+    case SuggestionGenerator::SuggestionDataSource::kAutofillAi:
+      return FillingProduct::kAutofillAi;
+    case SuggestionGenerator::SuggestionDataSource::kAddress:
+    case SuggestionGenerator::SuggestionDataSource::kAddressOnTyping:
+      return FillingProduct::kAddress;
+    case SuggestionGenerator::SuggestionDataSource::kCreditCard:
+    case SuggestionGenerator::SuggestionDataSource::kVirtualStandaloneCvc:
+    case SuggestionGenerator::SuggestionDataSource::kSaveAndFillPromo:
+      return FillingProduct::kCreditCard;
+    case SuggestionGenerator::SuggestionDataSource::kIban:
+      return FillingProduct::kIban;
+    case SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode:
+      return FillingProduct::kMerchantPromoCode;
+    case SuggestionGenerator::SuggestionDataSource::kAutocomplete:
+      return FillingProduct::kAutocomplete;
+    case SuggestionGenerator::SuggestionDataSource::kLoyaltyCard:
+      return FillingProduct::kLoyaltyCard;
+    case SuggestionGenerator::SuggestionDataSource::kIdentityCredential:
+      return FillingProduct::kIdentityCredential;
+    case SuggestionGenerator::SuggestionDataSource::kPasskey:
+      return FillingProduct::kPasskey;
+    case SuggestionGenerator::SuggestionDataSource::kCompose:
+      return FillingProduct::kCompose;
+    case SuggestionGenerator::SuggestionDataSource::kOneTimePassword:
+      return FillingProduct::kOneTimePassword;
+  }
+  NOTREACHED();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 static int32_t JNI_FillingProductBridge_GetFillingProductFromSuggestionType(
     JNIEnv* env,

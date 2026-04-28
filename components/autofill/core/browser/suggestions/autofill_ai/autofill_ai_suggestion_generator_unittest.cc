@@ -243,43 +243,21 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
-                        testing::SizeIs(1))))
-      .WillOnce(
-          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form(), field_data(), &form_structure(),
-                                  &field(), client(),
-                                  suggestion_data_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
-        return !saved_on_suggestion_data_returned_argument.second.empty();
-      }));
-
   EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(
-                  FillingProduct::kAutofillAi,
+                  SuggestionGenerator::SuggestionDataSource::kAutofillAi,
                   ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                               HasType(kManageAutofillAi)))))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
-                                  {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
@@ -293,27 +271,24 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   // Driving licence does not fit into passport number field.
   SetEntities({test::GetDriversLicenseEntityInstanceWithRandomGuid()});
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
 
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_on_suggestion_data_returned_argument;
+  SuggestionGenerator::ReturnedSuggestions
+      saved_on_suggestions_generated_argument;
 
   EXPECT_CALL(
-      suggestion_data_callback,
+      suggestions_generated_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
                         IsEmpty())))
-      .WillOnce(
-          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form(), field_data(), &form_structure(),
+      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+  generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
-                                  suggestion_data_callback.Get());
+                                  suggestions_generated_callback.Get());
   EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
-        return saved_on_suggestion_data_returned_argument.first ==
+      base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
+        return saved_on_suggestions_generated_argument.first ==
                SuggestionGenerator::SuggestionDataSource::kAutofillAi;
       }));
 }
@@ -321,46 +296,25 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 TEST_F(AutofillAiSuggestionGeneratorTest, NoSuggestionsIfNoEntities) {
   SetForm({PASSPORT_NUMBER});
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
 
   EXPECT_CALL(
-      suggestion_data_callback,
+      suggestions_generated_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutofillAi,
                         IsEmpty())))
-      .WillOnce(
-          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form(), field_data(), &form_structure(),
-                                  &field(), client(),
-                                  suggestion_data_callback.Get());
-  EXPECT_TRUE(
-      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
-        return saved_on_suggestion_data_returned_argument.first ==
-               SuggestionGenerator::SuggestionDataSource::kAutofillAi;
-      }));
-
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(FillingProduct::kAutofillAi, IsEmpty())))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
                                   &field(), client(),
-                                  {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
         return saved_on_suggestions_generated_argument.first ==
-               FillingProduct::kAutofillAi;
+               SuggestionGenerator::SuggestionDataSource::kAutofillAi;
       }));
 }
 

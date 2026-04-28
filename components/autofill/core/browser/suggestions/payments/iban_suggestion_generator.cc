@@ -86,27 +86,47 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   return suggestions;
 }
 
+// Filter out IBAN-based suggestions based on the following criteria:
+// For local IBANs: Filter out the IBAN value which does not starts with the
+// provided `field_value`.
+// For server IBANs: Filter out IBAN suggestion if any of the following
+// conditions are satisfied:
+// 1. If the IBAN's `prefix` is absent and the length of the `field_value` is
+// less than `kFieldLengthLimitOnServerIbanSuggestion` characters.
+// 2. If the IBAN's prefix is present and prefix matches the `field_value`.
+void FilterIbansToSuggest(const std::u16string& field_value,
+                          std::vector<Iban>& ibans) {
+  std::erase_if(ibans, [&](const Iban& iban) {
+    if (iban.record_type() == Iban::kLocalIban) {
+      return !base::StartsWith(iban.value(), field_value);
+    } else {
+      CHECK_EQ(iban.record_type(), Iban::kServerIban);
+      if (iban.prefix().empty()) {
+        return field_value.length() >= kFieldLengthLimitOnServerIbanSuggestion;
+      } else {
+        return !(iban.prefix().starts_with(field_value) ||
+                 field_value.starts_with(iban.prefix()));
+      }
+    }
+  });
+}
+
 }  // namespace
 
 IbanSuggestionGenerator::IbanSuggestionGenerator() = default;
 IbanSuggestionGenerator::~IbanSuggestionGenerator() = default;
 
-void IbanSuggestionGenerator::FetchSuggestionData(
+void IbanSuggestionGenerator::GenerateSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    base::OnceCallback<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
-  FetchSuggestionData(
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<SuggestionDataSource,
-                            std::vector<SuggestionGenerator::SuggestionData>>
-                      suggestion_data) {
-        std::move(callback).Run(std::move(suggestion_data));
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
       });
 }
 
@@ -116,27 +136,7 @@ void IbanSuggestionGenerator::GenerateSuggestions(
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  GenerateSuggestions(
-      form, trigger_field, form_structure, trigger_autofill_field, client,
-      all_suggestion_data,
-      [&callback](ReturnedSuggestions returned_suggestions) {
-        std::move(callback).Run(std::move(returned_suggestions));
-      });
-}
-
-void IbanSuggestionGenerator::FetchSuggestionData(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    base::FunctionRef<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
   // The field is eligible only if it's focused on an IBAN field.
   if (!trigger_autofill_field ||
       !trigger_autofill_field->Type().GetTypes().contains(IBAN_VALUE)) {
@@ -183,54 +183,7 @@ void IbanSuggestionGenerator::FetchSuggestionData(
   }
 
   FilterIbansToSuggest(trigger_autofill_field->value(), ibans);
-  std::vector<SuggestionData> suggestion_data = base::ToVector(
-      std::move(ibans),
-      [](Iban& iban) { return SuggestionData(std::move(iban)); });
-  callback({SuggestionDataSource::kIban, std::move(suggestion_data)});
-}
-
-void IbanSuggestionGenerator::GenerateSuggestions(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kIban);
-  std::vector<SuggestionData> iban_suggestion_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-  if (iban_suggestion_data.empty()) {
-    callback({FillingProduct::kIban, {}});
-    return;
-  }
-
-  std::vector<Iban> ibans = base::ToVector(
-      std::move(iban_suggestion_data), [](SuggestionData& suggestion_data) {
-        return std::get<autofill::Iban>(std::move(suggestion_data));
-      });
-
-  callback({FillingProduct::kIban, GetSuggestionsForIbans(ibans)});
-}
-
-void IbanSuggestionGenerator::FilterIbansToSuggest(
-    const std::u16string& field_value,
-    std::vector<Iban>& ibans) {
-  std::erase_if(ibans, [&](const Iban& iban) {
-    if (iban.record_type() == Iban::kLocalIban) {
-      return !base::StartsWith(iban.value(), field_value);
-    } else {
-      CHECK_EQ(iban.record_type(), Iban::kServerIban);
-      if (iban.prefix().empty()) {
-        return field_value.length() >= kFieldLengthLimitOnServerIbanSuggestion;
-      } else {
-        return !(iban.prefix().starts_with(field_value) ||
-                 field_value.starts_with(iban.prefix()));
-      }
-    }
-  });
+  callback({SuggestionDataSource::kIban, GetSuggestionsForIbans(ibans)});
 }
 
 }  // namespace autofill

@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
-#include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -25,11 +24,8 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Return;
 using ::testing::SaveArg;
-using SuggestionData = SuggestionGenerator::SuggestionData;
 using ReturnedSuggestions = SuggestionGenerator::ReturnedSuggestions;
-using ProductSuggestionDataPair =
-    std::pair<SuggestionGenerator::SuggestionDataSource,
-              std::vector<SuggestionData>>;
+using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 
 class PasskeySuggestionGeneratorTest : public testing::Test {
  public:
@@ -83,24 +79,11 @@ TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
   EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillRepeatedly(Return(suggestion));
 
-  base::MockOnceCallback<void(ProductSuggestionDataPair)> fetch_cb;
-  ProductSuggestionDataPair fetched_suggestions;
-  EXPECT_CALL(fetch_cb, Run).WillOnce(SaveArg<0>(&fetched_suggestions));
-  generator().FetchSuggestionData(form(), field(), nullptr, nullptr, client(),
-                                  fetch_cb.Get());
-
-  EXPECT_EQ(fetched_suggestions.first,
-            SuggestionGenerator::SuggestionDataSource::kPasskey);
-  ASSERT_EQ(fetched_suggestions.second.size(), 1u);
-  const SuggestionData& data = fetched_suggestions.second[0];
-  ASSERT_TRUE(std::holds_alternative<HybridPasskeyAvailability>(data));
-  EXPECT_TRUE(std::get<HybridPasskeyAvailability>(data).value());
-
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb,
-              Run(Pair(FillingProduct::kPasskey, ElementsAre(suggestion))));
+  EXPECT_CALL(generate_cb, Run(Pair(SuggestionDataSource::kPasskey,
+                                    ElementsAre(suggestion))));
   generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
-                                  {{fetched_suggestions}}, generate_cb.Get());
+                                  generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -111,21 +94,11 @@ TEST_F(PasskeySuggestionGeneratorTest, NoHybridPasskeyAvailability) {
   EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .Times(0);
 
-  base::MockOnceCallback<void(ProductSuggestionDataPair)> fetch_cb;
-  ProductSuggestionDataPair fetched_suggestions;
-  EXPECT_CALL(fetch_cb, Run).WillOnce(SaveArg<0>(&fetched_suggestions));
-  generator().FetchSuggestionData(form(), field(), nullptr, nullptr, client(),
-                                  fetch_cb.Get());
-
-  // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first,
-            SuggestionGenerator::SuggestionDataSource::kPasskey);
-  EXPECT_EQ(fetched_suggestions.second.size(), 0u);
-
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
+  EXPECT_CALL(generate_cb,
+              Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
   generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
-                                  {{fetched_suggestions}}, generate_cb.Get());
+                                  generate_cb.Get());
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -141,21 +114,11 @@ TEST_F(PasskeySuggestionGeneratorTest,
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
 
-  base::MockOnceCallback<void(ProductSuggestionDataPair)> fetch_cb;
-  ProductSuggestionDataPair fetched_suggestions;
-  EXPECT_CALL(fetch_cb, Run).WillOnce(SaveArg<0>(&fetched_suggestions));
-  generator().FetchSuggestionData(form(), field(), nullptr, nullptr, client(),
-                                  fetch_cb.Get());
-
-  // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first,
-            SuggestionGenerator::SuggestionDataSource::kPasskey);
-  EXPECT_EQ(fetched_suggestions.second.size(), 0u);
-
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
+  EXPECT_CALL(generate_cb,
+              Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
   generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
-                                  {{fetched_suggestions}}, generate_cb.Get());
+                                  generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -167,42 +130,11 @@ TEST_F(PasskeySuggestionGeneratorTest,
   EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillRepeatedly(Return(std::nullopt));
 
-  base::MockOnceCallback<void(ProductSuggestionDataPair)> fetch_cb;
-  ProductSuggestionDataPair fetched_suggestions;
-  EXPECT_CALL(fetch_cb, Run).WillOnce(SaveArg<0>(&fetched_suggestions));
-  generator().FetchSuggestionData(form(), field(), nullptr, nullptr, client(),
-                                  fetch_cb.Get());
-
-  // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first,
-            SuggestionGenerator::SuggestionDataSource::kPasskey);
-  EXPECT_EQ(fetched_suggestions.second.size(), 0u);
-
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
+  EXPECT_CALL(generate_cb,
+              Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
   generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
-                                  {{fetched_suggestions}}, generate_cb.Get());
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Ensure that a fetch step always reports correctly whether a suggestion is
-// generated. This ensures that other generators can reliably tell whether a
-// hybrid entry point will be present or not.
-TEST_F(PasskeySuggestionGeneratorTest,
-       NoUpdateInGenerateIfFetchCreatesNoSuggestion) {
-  // Simulate that a suggestion *could* be generated now ...
-  Suggestion suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice);
-  EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
-      .WillRepeatedly(Return(suggestion));
-
-  // ... but ensure it's not used because the fetch step didn't have access yet.
-  base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(
-      form(), field(), nullptr, nullptr, client(),
-      {{SuggestionGenerator::SuggestionDataSource::kPasskey, {}}},
-      generate_cb.Get());
+                                  generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

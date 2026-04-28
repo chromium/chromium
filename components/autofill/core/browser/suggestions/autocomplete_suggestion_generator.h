@@ -24,25 +24,12 @@ class AutocompleteSuggestionGenerator : public SuggestionGenerator {
       scoped_refptr<AutofillWebDataService> profile_database);
   ~AutocompleteSuggestionGenerator() override;
 
-  void FetchSuggestionData(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
-      base::OnceCallback<
-          void(std::pair<SuggestionDataSource,
-                         std::vector<SuggestionGenerator::SuggestionData>>)>
-          callback) override;
-
   void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
-      const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-          all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
   void CancelPendingQuery();

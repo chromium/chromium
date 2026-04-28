@@ -239,34 +239,30 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
           log_manager);
   CHECK(autofill_field);
 
-  std::vector<ActorSuggestionWithFillData> result;
+  std::vector<Suggestion> suggestions;
   const AddressDataManager& adm =
       autofill_manager.client().GetPersonalDataManager().address_data_manager();
 
-  auto convert_and_save_in_result =
-      [&](std::pair<FillingProduct, std::vector<Suggestion>> response) {
-        result.reserve(response.second.size());
-        for (const Suggestion& s : response.second) {
-          if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
-                  GetActorAddressSuggestion(adm, fields, s, split_part)) {
-            result.emplace_back(*std::move(actor_suggestion));
-          }
-        }
-      };
-
+  auto save_suggestions = base::BindOnce(
+      [](std::vector<Suggestion>& suggestions,
+         SuggestionGenerator::ReturnedSuggestions response) {
+        suggestions = std::move(response.second);
+      },
+      std::ref(suggestions));
   AddressSuggestionGenerator generator(
       /*log_manager=*/nullptr, mojom::AutofillSuggestionTriggerSource::kGlic);
-  auto generate_suggestions =
-      [&](std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>> data) {
-        generator.GenerateSuggestions(form, *autofill_field, form_structure,
-                                      autofill_field, autofill_manager.client(),
-                                      {std::move(data)},
-                                      convert_and_save_in_result);
-      };
-  generator.FetchSuggestionData(form, *autofill_field, form_structure,
+  generator.GenerateSuggestions(form, *autofill_field, form_structure,
                                 autofill_field, autofill_manager.client(),
-                                generate_suggestions);
+                                std::move(save_suggestions));
+
+  std::vector<ActorSuggestionWithFillData> result;
+  result.reserve(suggestions.size());
+  for (const Suggestion& s : suggestions) {
+    if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
+            GetActorAddressSuggestion(adm, fields, s, split_part)) {
+      result.emplace_back(*std::move(actor_suggestion));
+    }
+  }
   return {autofill_field->global_id(), result};
 }
 
@@ -379,36 +375,33 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
       AutofillMetrics::PaymentsSigninState::kUnknown,
       /*exclude_virtual_cards=*/true);
 
-  std::vector<ActorSuggestionWithFillData> result;
+  std::vector<Suggestion> suggestions;
   const PaymentsDataManager& paydm = autofill_manager.client()
                                          .GetPersonalDataManager()
                                          .payments_data_manager();
-  auto convert_and_save_in_result =
-      [&](std::pair<FillingProduct, std::vector<Suggestion>> response) {
-        result.reserve(response.second.size());
-        for (const Suggestion& s : response.second) {
-          if (s.type != SuggestionType::kCreditCardEntry) {
-            continue;
-          }
-          if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
-                  GetActorCreditCardSuggestion(paydm, fields, s)) {
-            result.emplace_back(*std::move(actor_suggestion));
-          }
-        }
-      };
 
-  auto generate_suggestions =
-      [&](std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>> data) {
-        generator.GenerateSuggestions(
-            form, *autofill_field_for_labels, form_structure,
-            autofill_field_for_labels, autofill_manager.client(),
-            {std::move(data)}, convert_and_save_in_result);
-      };
-  generator.FetchSuggestionData(form, *autofill_field_for_labels,
+  auto save_suggestions = base::BindOnce(
+      [](std::vector<Suggestion>& suggestions,
+         SuggestionGenerator::ReturnedSuggestions response) {
+        suggestions = std::move(response.second);
+      },
+      std::ref(suggestions));
+  generator.GenerateSuggestions(form, *autofill_field_for_labels,
                                 form_structure, autofill_field_for_labels,
                                 autofill_manager.client(),
-                                generate_suggestions);
+                                std::move(save_suggestions));
+
+  std::vector<ActorSuggestionWithFillData> result;
+  result.reserve(suggestions.size());
+  for (const Suggestion& s : suggestions) {
+    if (s.type != SuggestionType::kCreditCardEntry) {
+      continue;
+    }
+    if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
+            GetActorCreditCardSuggestion(paydm, fields, s)) {
+      result.emplace_back(*std::move(actor_suggestion));
+    }
+  }
   return {autofill_field_for_labels->global_id(), result};
 }
 

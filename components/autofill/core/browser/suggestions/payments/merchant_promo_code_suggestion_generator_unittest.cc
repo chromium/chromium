@@ -52,8 +52,7 @@ class MerchantPromoCodeSuggestionGeneratorTest : public testing::Test {
         .test_payments_data_manager();
   }
 
-  std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
-      const std::vector<const AutofillOfferData*>& promo_code_offers) {
+  std::vector<Suggestion> GetPromoCodeSuggestions() {
     MerchantPromoCodeSuggestionGenerator generator;
     std::vector<Suggestion> suggestions;
 
@@ -63,19 +62,8 @@ class MerchantPromoCodeSuggestionGeneratorTest : public testing::Test {
           suggestions = returned_suggestions.second;
         };
 
-    std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
-        base::ToVector(std::move(promo_code_offers),
-                       [](const AutofillOfferData* offer) {
-                         return SuggestionGenerator::SuggestionData(*offer);
-                       });
-    base::flat_map<SuggestionGenerator::SuggestionDataSource,
-                   std::vector<SuggestionGenerator::SuggestionData>>
-        fetched_data = {
-            {SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
-             std::move(suggestion_data)}};
     generator.GenerateSuggestions(form().ToFormData(), field(), &form(),
-                                  &field(), client(), fetched_data,
-                                  on_suggestions_generated);
+                                  &field(), client(), on_suggestions_generated);
     return suggestions;
   }
 
@@ -112,46 +100,31 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
                      IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
                  SuggestionType::kSeePromoCodeDetails);
 
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
   MerchantPromoCodeSuggestionGenerator generator;
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_callback_argument;
-
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
-                  testing::ElementsAre(test_promo_code_offer_data))))
-      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
-  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
-                                client(), suggestion_data_callback.Get());
 
   EXPECT_CALL(
       suggestions_generated_callback,
       Run(testing::Pair(
-          FillingProduct::kMerchantPromoCode,
+          SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
           UnorderedElementsAre(
               Field(&Suggestion::main_text, promo_code_suggestion.main_text),
               Field(&Suggestion::type, SuggestionType::kSeparator),
               Field(&Suggestion::main_text, footer_suggestion.main_text)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {saved_callback_argument},
-                                suggestions_generated_callback.Get());
+                                client(), suggestions_generated_callback.Get());
 }
 
 TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
        GetPromoCodeSuggestionsFromPromoCodeOffers_ValidPromoCodes) {
-  std::vector<const AutofillOfferData*> promo_code_offers;
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
 
   base::Time expiry = base::Time::Now() + base::Days(2);
-  std::vector<GURL> merchant_origins;
+  std::vector<GURL> merchant_origins{GURL("https://www.example.com")};
   DisplayStrings display_strings;
   display_strings.value_prop_text = "test_value_prop_text_1";
   std::string promo_code = "test_promo_code_1";
@@ -160,7 +133,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, promo_code);
 
-  promo_code_offers.push_back(&offer1);
+  payments_data_manager().AddAutofillOfferData(offer1);
 
   DisplayStrings display_strings2;
   display_strings2.value_prop_text = "test_value_prop_text_2";
@@ -170,11 +143,10 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings2, promo_code2);
 
-  promo_code_offers.push_back(&offer2);
+  payments_data_manager().AddAutofillOfferData(offer2);
 
-  std::vector<Suggestion> promo_code_suggestions =
-      GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers);
-  EXPECT_TRUE(promo_code_suggestions.size() == 4);
+  std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();
+  ASSERT_EQ(promo_code_suggestions.size(), 4u);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::Guid>(),
@@ -208,30 +180,6 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             offer1.GetOfferDetailsUrl().spec());
   EXPECT_EQ(promo_code_suggestions[3].type,
             SuggestionType::kSeePromoCodeDetails);
-}
-
-TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
-       GetPromoCodeSuggestionsFromPromoCodeOffers_InvalidPromoCodeURL) {
-  std::vector<const AutofillOfferData*> promo_code_offers;
-  AutofillOfferData offer;
-  offer.SetPromoCode("test_promo_code_1");
-  offer.SetValuePropTextInDisplayStrings("test_value_prop_text_1");
-  offer.SetOfferIdForTesting(1);
-  offer.SetOfferDetailsUrl(GURL("invalid-url"));
-  promo_code_offers.push_back(&offer);
-
-  std::vector<Suggestion> promo_code_suggestions =
-      GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers);
-  EXPECT_TRUE(promo_code_suggestions.size() == 1);
-
-  EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
-  EXPECT_THAT(promo_code_suggestions[0],
-              Field(&Suggestion::labels,
-                    std::vector<std::vector<Suggestion::Text>>{
-                        {Suggestion::Text(u"test_value_prop_text_1")}}));
-  EXPECT_FALSE(std::holds_alternative<GURL>(promo_code_suggestions[0].payload));
-  EXPECT_EQ(promo_code_suggestions[0].type,
-            SuggestionType::kMerchantPromoCodeEntry);
 }
 
 }  // namespace

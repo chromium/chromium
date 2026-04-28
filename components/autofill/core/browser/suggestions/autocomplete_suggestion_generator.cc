@@ -34,42 +34,29 @@ AutocompleteSuggestionGenerator::~AutocompleteSuggestionGenerator() {
 }
 
 struct AutocompleteSuggestionGenerator::QueryHandler {
-  QueryHandler(FieldGlobalId field_id,
-               std::u16string prefix,
-               base::OnceCallback<void(
-                   std::pair<SuggestionDataSource,
-                             std::vector<SuggestionGenerator::SuggestionData>>)>
-                   on_suggestions_returned)
-      : field_id(field_id),
-        prefix(std::move(prefix)),
+  QueryHandler(
+      std::u16string prefix,
+      base::OnceCallback<void(ReturnedSuggestions)> on_suggestions_returned)
+      : prefix(std::move(prefix)),
         on_suggestions_returned(std::move(on_suggestions_returned)) {}
   QueryHandler(QueryHandler&&) = default;
   QueryHandler& operator=(QueryHandler&&) = default;
   ~QueryHandler() = default;
 
-  // The queried field ID.
-  FieldGlobalId field_id;
-
   // Prefix used to search suggestions, submitted by the handler.
   std::u16string prefix;
 
   // Callback to-be-executed once a response from the DB is available.
-  base::OnceCallback<void(
-      std::pair<SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>
-      on_suggestions_returned;
+  base::OnceCallback<void(ReturnedSuggestions)> on_suggestions_returned;
 };
 
-void AutocompleteSuggestionGenerator::FetchSuggestionData(
+void AutocompleteSuggestionGenerator::GenerateSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
-    base::OnceCallback<
-        void(std::pair<SuggestionDataSource,
-                       std::vector<SuggestionGenerator::SuggestionData>>)>
-        callback) {
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
   if (!trigger_field.should_autocomplete()) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
@@ -126,44 +113,7 @@ void AutocompleteSuggestionGenerator::FetchSuggestionData(
       trigger_field.name(), trigger_field.value(), kMaxAutocompleteMenuItems,
       base::BindOnce(&AutocompleteSuggestionGenerator::OnAutofillValuesReturned,
                      weak_ptr_factory_.GetWeakPtr(),
-                     QueryHandler(trigger_field.global_id(),
-                                  trigger_field.value(), std::move(callback))));
-}
-
-void AutocompleteSuggestionGenerator::GenerateSuggestions(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        all_suggestion_data,
-    base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kAutocomplete);
-  std::vector<SuggestionData> autocomplete_suggestion_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-  if (autocomplete_suggestion_data.empty()) {
-    std::move(callback).Run({FillingProduct::kAutocomplete, {}});
-    return;
-  }
-
-  std::vector<AutocompleteEntry> autocomplete_entries =
-      base::ToVector(std::move(autocomplete_suggestion_data),
-                     [](SuggestionData& suggestion_data) {
-                       return std::get<autofill::AutocompleteEntry>(
-                           std::move(suggestion_data));
-                     });
-
-  std::vector<Suggestion> suggestions;
-  suggestions.reserve(autocomplete_entries.size());
-  for (const AutocompleteEntry& entry : autocomplete_entries) {
-    suggestions.emplace_back(entry.key().value(),
-                             SuggestionType::kAutocompleteEntry);
-    suggestions.back().payload = std::move(entry);
-  }
-  std::move(callback).Run(
-      {FillingProduct::kAutocomplete, std::move(suggestions)});
+                     QueryHandler(trigger_field.value(), std::move(callback))));
 }
 
 void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
@@ -172,7 +122,7 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
     std::unique_ptr<WDTypedResult> result) {
   if (!result) {
     // Returning early here if `result` is null.  We've seen this happen on
-    // Linux due to NFS dismounting and causing sql failures.
+    // Linux due to NFS dismounting and causing SQL failures.
     // See http://crbug.com/68783.
     std::move(query_handler.on_suggestions_returned)
         .Run({SuggestionDataSource::kAutocomplete, {}});
@@ -203,12 +153,15 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
     return;
   }
 
-  std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
-      base::ToVector(std::move(entries), [](AutocompleteEntry& entry) {
-        return SuggestionGenerator::SuggestionData(std::move(entry));
+  std::vector<Suggestion> suggestions =
+      base::ToVector(entries, [](const AutocompleteEntry& entry) {
+        Suggestion suggestion(entry.key().value(),
+                              SuggestionType::kAutocompleteEntry);
+        suggestion.payload = std::move(entry);
+        return suggestion;
       });
   std::move(query_handler.on_suggestions_returned)
-      .Run({SuggestionDataSource::kAutocomplete, std::move(suggestion_data)});
+      .Run({SuggestionDataSource::kAutocomplete, std::move(suggestions)});
 }
 
 void AutocompleteSuggestionGenerator::CancelPendingQuery() {

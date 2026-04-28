@@ -99,10 +99,6 @@ class IdentityCredentialSuggestionGeneratorTest : public testing::Test {
 
 // Checks that identity credential suggestion is generated.
 TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
-  base::MockCallback<base::OnceCallback<void(
-      std::pair<SuggestionGenerator::SuggestionDataSource,
-                std::vector<SuggestionGenerator::SuggestionData>>)>>
-      suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
@@ -118,26 +114,15 @@ TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
           Return(std::vector<scoped_refptr<content::IdentityRequestAccount>>{
               account}));
 
-  std::pair<SuggestionGenerator::SuggestionDataSource,
-            std::vector<SuggestionGenerator::SuggestionData>>
-      saved_suggestion_data;
+  SuggestionGenerator::ReturnedSuggestions generated_suggestions;
   EXPECT_CALL(
-      suggestion_data_callback,
+      suggestions_generated_callback,
       Run(testing::Pair(
           SuggestionGenerator::SuggestionDataSource::kIdentityCredential,
           testing::SizeIs(1))))
-      .WillOnce(testing::SaveArg<0>(&saved_suggestion_data));
-  generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
-                                client(), suggestion_data_callback.Get());
-
-  SuggestionGenerator::ReturnedSuggestions generated_suggestions;
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(FillingProduct::kIdentityCredential,
-                                testing::SizeIs(1))))
       .WillOnce(testing::SaveArg<0>(&generated_suggestions));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {saved_suggestion_data},
-                                suggestions_generated_callback.Get());
+                                client(), suggestions_generated_callback.Get());
 
   const Suggestion& suggestion = generated_suggestions.second[0];
   EXPECT_EQ(suggestion.main_text.value, u"john@email.com");

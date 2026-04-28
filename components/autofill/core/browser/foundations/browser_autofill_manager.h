@@ -479,20 +479,6 @@ class BrowserAutofillManager : public AutofillManager {
       const std::vector<std::string>& one_time_passwords,
       SuggestionsContext& context);
 
-  // Called when all suggestion generators have finished fetching their data for
-  // the given `field` in `form`. It schedules the generation of the individual
-  // suggestions for each `FillingProduct` and calls
-  // `OnIndividualSuggestionsGenerated` when done.
-  void OnSuggestionDataFetched(
-      const FormData& form,
-      const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
-      base::TimeTicks suggestion_generation_start_time,
-      std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
-                            std::vector<SuggestionGenerator::SuggestionData>>>
-          suggestion_data);
-
   // Called when all suggestion generators have finished generating their
   // suggestions. It combines the returned suggestions respecting their
   // priorities and calls `OnGenerateSuggestionsComplete` to show them.
@@ -510,8 +496,6 @@ class BrowserAutofillManager : public AutofillManager {
   // `kSupportedMerges` in `suggestion_generator.h` for more details).
   std::vector<Suggestion> MergeWithAddressSuggestions(
       std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Generates and prioritizes different kinds of suggestions and
