@@ -38,6 +38,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 
@@ -292,8 +293,7 @@ class EntityEditorMediator {
     private EditorItem getTextFieldItem(
             EntityInstance entityInstance, AttributeType attributeType) {
         String value = getStringAttribute(entityInstance, attributeType);
-        return new EditorItem(
-                TEXT_INPUT,
+        PropertyModel itemModel =
                 new PropertyModel.Builder(TEXT_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
                         .with(TEXT_FIELD_TYPE, attributeType.getFieldType())
@@ -301,8 +301,9 @@ class EntityEditorMediator {
                         .with(
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
-                        .build(),
-                /* isFullLine= */ true);
+                        .build();
+        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        return new EditorItem(TEXT_INPUT, itemModel, /* isFullLine= */ true);
     }
 
     private EditorItem getCountryDropdownItem(
@@ -311,8 +312,7 @@ class EntityEditorMediator {
         if (TextUtils.isEmpty(value)) {
             value = mPersonalDataManager.getDefaultCountryCodeForNewAddress();
         }
-        return new EditorItem(
-                DROPDOWN,
+        PropertyModel itemModel =
                 new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
                         .with(
@@ -322,7 +322,9 @@ class EntityEditorMediator {
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .with(VALUE, value)
-                        .build());
+                        .build();
+        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        return new EditorItem(DROPDOWN, itemModel, /* isFullLine= */ true);
     }
 
     private EditorItem getDateDropdown(EntityInstance entityInstance, AttributeType attributeType) {
@@ -333,8 +335,7 @@ class EntityEditorMediator {
             attributeValue =
                     ((AttributeInstance.DateValue) attribute.getAttributeValue()).toString();
         }
-        return new EditorItem(
-                DATE,
+        PropertyModel itemModel =
                 new PropertyModel.Builder(DATE_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
                         .with(
@@ -347,8 +348,24 @@ class EntityEditorMediator {
                                         mContext.getString(
                                                 R.string
                                                         .autofill_ai_entity_editor_invalid_date_error_message)))
-                        .build(),
-                /* isFullLine= */ true);
+                        .build();
+        itemModel.set(VALUE_CHANGED_CALLBACK, (unused) -> onFieldValueChanged(itemModel));
+        return new EditorItem(DATE, itemModel, /* isFullLine= */ true);
+    }
+
+    private void onFieldValueChanged(PropertyModel itemModel) {
+        // Reset error messages on required fields if the required field value changes.
+        if (itemModel.get(IS_REQUIRED)) {
+            for (EditorItem item : mEditorModel.get(EDITOR_FIELDS)) {
+                if (isEditable(item) && item.model.get(IS_REQUIRED)) {
+                    item.model.set(ERROR_MESSAGE, "");
+                }
+            }
+            // Hide the notice as well.
+            if (mRequiredSourceNotice != null) {
+                mRequiredSourceNotice.model.set(NOTICE_VISIBLE, false);
+            }
+        }
     }
 
     private String getRequiredFieldErrorMessage(String label) {
@@ -423,7 +440,6 @@ class EntityEditorMediator {
                         // announced separately by screen readers. Don't announce
                         // the message itself.
                         .with(IMPORTANT_FOR_ACCESSIBILITY, false)
-                        // TODO: crbug.com/476755159 - Implement dynamic visibility logic.
                         .with(NOTICE_VISIBLE, false)
                         .with(TEXT_APPEARANCE, R.style.TextAppearance_ErrorCaption)
                         .build(),

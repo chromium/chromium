@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
 
@@ -793,6 +794,7 @@ public class EntityEditorModuleTest {
         ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
         EditorItem passportIssueDate = editorFields.get(3);
         EditorItem passportExpirationDate = editorFields.get(4);
+        EditorItem sourceNotice = editorFields.get(5);
 
         // Make sure the fields are required.
         assertTrue(passportIssueDate.model.get(IS_REQUIRED));
@@ -803,8 +805,20 @@ public class EntityEditorModuleTest {
         verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt());
         assertFalse(TextUtils.isEmpty(passportIssueDate.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(passportExpirationDate.model.get(ERROR_MESSAGE)));
+        assertTrue(sourceNotice.model.get(NOTICE_VISIBLE));
 
         passportIssueDate.model.set(VALUE, LocalDate.of(2026, 2, 15).toString());
+        // Manually run the callback because it's only called when the value is changed though the
+        // UI.
+        passportIssueDate
+                .model
+                .get(VALUE_CHANGED_CALLBACK)
+                .onResult(LocalDate.of(2026, 2, 15).toString());
+        // Error messages must be hidden after the required field's value changes.
+        assertTrue(TextUtils.isEmpty(passportIssueDate.model.get(ERROR_MESSAGE)));
+        assertTrue(TextUtils.isEmpty(passportExpirationDate.model.get(ERROR_MESSAGE)));
+        assertFalse(sourceNotice.model.get(NOTICE_VISIBLE));
+
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt());
 
@@ -856,6 +870,10 @@ public class EntityEditorModuleTest {
                         .replace("$2", sVehicleVinType.getTypeNameAsString()));
 
         vehicleLicensePlate.model.set(VALUE, "AA123456BB");
+        // Make sure the error messages are hidden after the value is changed.
+        assertTrue(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
+        assertTrue(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
+        assertFalse(sourceNotice.model.get(NOTICE_VISIBLE));
         // Click the "Done" button and make sure that the editor is closed because only one required
         // attribute is required to save the entity.
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
