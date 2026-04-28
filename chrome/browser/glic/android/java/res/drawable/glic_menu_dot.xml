@@ -5,16 +5,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Transparent base to fix size to 24dp -->
+    <!-- Transparent base to fix size to 40dp width -->
     <item>
         <shape>
-            <size android:width="24dp" android:height="24dp" />
+            <size
+                android:width="@dimen/glic_menu_dot_width"
+                android:height="24dp" />
             <solid android:color="@android:color/transparent" />
         </shape>
     </item>
-    <!-- Small dot centered -->
+    <!-- LINT.IfChange -->
+    <!-- Small dot centered vertically, pushed to the right.
+         Left margin 23dp = 16dp (offset) + 7dp (margin). -->
     <item
-        android:left="7dp"
+        android:left="23dp"
         android:top="7dp"
         android:right="7dp"
         android:bottom="7dp">
@@ -23,4 +27,5 @@ found in the LICENSE file.
             <size android:width="10dp" android:height="10dp" />
         </shape>
     </item>
+    <!-- LINT.ThenChange(//chrome/browser/glic/android/java/res/values/dimens.xml) -->
 </layer-list>

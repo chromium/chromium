@@ -23,4 +23,8 @@ found in the LICENSE file.
     <!-- Glic task menu dimensions -->
     <dimen name="glic_task_menu_max_width">300dp</dimen>
     <dimen name="glic_task_menu_end_offset">16dp</dimen>
+    <!-- LINT.IfChange -->
+    <!-- 24dp (original width) + 16dp (extra space between dot and title) -->
+    <dimen name="glic_menu_dot_width">40dp</dimen>
+    <!-- LINT.ThenChange(//chrome/browser/glic/android/java/res/drawable/glic_menu_dot.xml) -->
 </resources>

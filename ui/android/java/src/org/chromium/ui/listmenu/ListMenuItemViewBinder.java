@@ -129,6 +129,13 @@ public class ListMenuItemViewBinder {
                 layoutParams.width = width;
                 startIcon.setLayoutParams(layoutParams);
             }
+        } else if (propertyKey == ListMenuItemProperties.END_ICON_WIDTH) {
+            if (endIcon != null) {
+                int width = model.get(ListMenuItemProperties.END_ICON_WIDTH);
+                var layoutParams = endIcon.getLayoutParams();
+                layoutParams.width = width;
+                endIcon.setLayoutParams(layoutParams);
+            }
         } else if (propertyKey == ListMenuItemProperties.GROUP_ID) {
             // Not tracked intentionally because it's mainly for clients to know which group a
             // menu item belongs to.

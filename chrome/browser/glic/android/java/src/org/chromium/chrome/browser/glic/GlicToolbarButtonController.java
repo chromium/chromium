@@ -408,6 +408,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     private void showTaskMenu(View anchorView, List<ActorTask> tasks) {
         ModelList modelList = new ModelList();
+        int endIconWidthPx =
+                anchorView
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.glic_menu_dot_width);
 
         // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
         for (ActorTask task : tasks) {
@@ -425,7 +430,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
             if (mapTaskStateToButtonState(task.getState()) == ButtonState.NEEDS_REVIEW) {
                 builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp)
-                        .withEndIconRes(R.drawable.glic_menu_dot);
+                        .withEndIconRes(R.drawable.glic_menu_dot)
+                        .withEndIconWidth(endIconWidthPx);
             } else {
                 builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
             }
