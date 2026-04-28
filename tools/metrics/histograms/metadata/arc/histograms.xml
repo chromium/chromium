@@ -1794,7 +1794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreLaunchWithinAWeek" enum="BooleanUsage"
-    expires_after="2026-06-08">
+    expires_after="2027-06-07">
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobec@google.com</owner>
   <summary>
