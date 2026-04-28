@@ -25,6 +25,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowInsets;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -76,6 +77,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -367,6 +369,8 @@ public class LocationBarCoordinator
                         mLocationBarMediator::onUrlTextRichChanged,
                         mLocationBarMediator);
 
+        initializeBoundsEllipsis(locationBarDataProvider);
+
         // Set up text wrapping listener for FuseboxCoordinator
         mTextWrappingListener = this::onTextWrappingChanged;
         mUrlCoordinator.addTextWrappingChangeListener(mTextWrappingListener);
@@ -471,6 +475,17 @@ public class LocationBarCoordinator
         }
         // There is a third possibility: SearchActivityLocationBarLayout extends LocationBarLayout
         // and can be instantiated on phones *or* tablets.
+    }
+
+    @VisibleForTesting
+    void initializeBoundsEllipsis(LocationBarDataProvider dataProvider) {
+        // TODO(crbug.com/507471408): Revisit logic to guard it more strictly.
+        int pageClassification = dataProvider.getPageClassification(/* prefetch= */ false);
+        boolean enableBoundsEllipsis =
+                pageClassification != PageClassification.ANDROID_HUB_VALUE
+                        && pageClassification != PageClassification.OTHER_ON_CCT_VALUE
+                        && pageClassification != PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+        mUrlCoordinator.setBoundsEllipsisEnabled(enableBoundsEllipsis);
     }
 
     private void updateBottomContainerPosition() {

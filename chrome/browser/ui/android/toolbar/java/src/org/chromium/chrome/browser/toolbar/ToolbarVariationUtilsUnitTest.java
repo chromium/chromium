@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -70,29 +71,41 @@ public class ToolbarVariationUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNewToolbarUiEnabled_Enabled() {
-        assertTrue(ToolbarVariationUtils.isNewToolbarUiEnabled());
+        assertTrue(
+                ToolbarVariationUtils.isToolbarUiRefactorEnabled(
+                        RuntimeEnvironment.getApplication()));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNewToolbarUiEnabled_Disabled() {
-        assertFalse(ToolbarVariationUtils.isNewToolbarUiEnabled());
+        assertFalse(
+                ToolbarVariationUtils.isToolbarUiRefactorEnabled(
+                        RuntimeEnvironment.getApplication()));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
     public void testShouldModifyToolbarButtons_FlagDisabled() {
         // Flag disabled: return true on both.
-        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(true));
-        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(false));
+        assertTrue(
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        RuntimeEnvironment.getApplication(), true));
+        assertTrue(
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        RuntimeEnvironment.getApplication(), false));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
     public void testShouldModifyToolbarButtons_FlagEnabled() {
         // Flag enabled: return false on NTP.
-        assertFalse(ToolbarVariationUtils.shouldModifyToolbarButtons(true));
+        assertFalse(
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        RuntimeEnvironment.getApplication(), true));
         // Return true on non-NTP.
-        assertTrue(ToolbarVariationUtils.shouldModifyToolbarButtons(false));
+        assertTrue(
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        RuntimeEnvironment.getApplication(), false));
     }
 }

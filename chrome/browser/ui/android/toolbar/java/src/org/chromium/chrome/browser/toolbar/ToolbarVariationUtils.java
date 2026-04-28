@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utility class for determining the configuration of the toolbar variations. */
 @NullMarked
@@ -39,18 +42,23 @@ public final class ToolbarVariationUtils {
      * have their visibility and/or position changed in the {@code ToolbarPhone} and {@code
      * LocationBar} based on the current configuration and whether the current tab is a regular NTP.
      *
+     * @param context The current context.
      * @param isNtp Whether the current tab is a regular NTP.
      * @return Whether the toolbar buttons should be modified.
      */
-    public static boolean shouldModifyToolbarButtons(boolean isNtp) {
+    public static boolean shouldModifyToolbarButtons(Context context, boolean isNtp) {
         if (isNtp && ChromeFeatureList.sAndroidBottomBarDisableOnNtp.getValue()) {
             return false;
         }
-        return isNewToolbarUiEnabled();
+        return isToolbarUiRefactorEnabled(context);
     }
 
-    /** Whether the new toolbar variation UI is enabled. */
-    public static boolean isNewToolbarUiEnabled() {
-        return ChromeFeatureList.sAndroidBottomBar.isEnabled();
+    /**
+     * Whether the toolbar UI refactor is enabled. This controls changes to the toolbar layout and
+     * behavior only for phone form factors when the Android Bottom Bar feature is enabled.
+     */
+    public static boolean isToolbarUiRefactorEnabled(Context context) {
+        return ChromeFeatureList.sAndroidBottomBar.isEnabled()
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 }

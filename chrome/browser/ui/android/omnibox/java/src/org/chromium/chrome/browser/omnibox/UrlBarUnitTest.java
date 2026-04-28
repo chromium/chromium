@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.app.Activity;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -1152,5 +1153,87 @@ public class UrlBarUnitTest {
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
         assertTrue(mUrlBar.isSingleLine());
         assertEquals(1, mUrlBar.getMaxLines());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_Enabled() {
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        UrlBar.BoundsEllipsisSpan[] spans =
+                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
+        assertNotNull(spans);
+        assertTrue(spans.length > 0);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_Disabled() {
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        UrlBar.BoundsEllipsisSpan[] spans =
+                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
+        assertTrue(spans == null || spans.length == 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_NotEnabledByContext() {
+        mUrlBar.setBoundsEllipsisEnabled(false);
+        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        UrlBar.BoundsEllipsisSpan[] spans =
+                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
+        assertTrue(spans == null || spans.length == 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_ClearOnFocus() {
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        mUrlBar.setText("www.example.com/path/subpath/very/long/url/that/exceeds/viewport");
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        UrlBar.BoundsEllipsisSpan[] spans =
+                text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
+        assertNotNull(spans);
+        assertTrue(spans.length > 0);
+
+        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        spans = text.getSpans(0, text.length(), UrlBar.BoundsEllipsisSpan.class);
+        assertTrue(spans == null || spans.length == 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testLimitDisplayableLength_BoundsEllipsisAtEnd() {
+        mUrlBar.setBoundsEllipsisEnabled(true);
+        mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
+        StringBuilder longString = new StringBuilder();
+        for (int i = 0; i < 5000; i++) {
+            longString.append("a");
+        }
+        mUrlBar.setText(longString.toString());
+
+        Editable text = mUrlBar.getText();
+        UrlBar.EllipsisSpan[] spans = text.getSpans(0, text.length(), UrlBar.EllipsisSpan.class);
+        assertNotNull(spans);
+        assertEquals(1, spans.length);
+
+        int spanStart = text.getSpanStart(spans[0]);
+        assertTrue(spanStart >= 1000);
     }
 }

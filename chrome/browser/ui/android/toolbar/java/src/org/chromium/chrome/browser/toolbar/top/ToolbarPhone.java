@@ -2080,7 +2080,8 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void updateButtonVisibility() {
         boolean shouldModifyToolbarButtons =
-                ToolbarVariationUtils.shouldModifyToolbarButtons(isNtpVisualState(mVisualState));
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        getContext(), isNtpVisualState(mVisualState));
         boolean hideHomeButton =
                 !mIsHomeButtonEnabled
                         || (shouldModifyToolbarButtons
@@ -2105,7 +2106,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean shouldShowBackButtonOutside() {
-        return ToolbarVariationUtils.isNewToolbarUiEnabled()
+        return ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())
                 && !ToolbarVariationUtils.shouldBackButtonBeInOmnibox()
                 && !isLocationBarShownInNtp()
                 && !urlHasFocus();
@@ -3545,7 +3546,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // The optional button is not shown on the NTP so unconditionally hide it if the new
         // toolbar UI is enabled.
-        if (ToolbarVariationUtils.isNewToolbarUiEnabled()) {
+        if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())) {
             hideOptionalButton();
         } else {
             mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
@@ -3562,7 +3563,8 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void updateMenuButtonVisibility() {
         boolean shouldModifyToolbarButtons =
-                ToolbarVariationUtils.shouldModifyToolbarButtons(isNtpVisualState(mVisualState));
+                ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        getContext(), isNtpVisualState(mVisualState));
         boolean showAppMenu =
                 !shouldModifyToolbarButtons || ToolbarVariationUtils.shouldAppMenuBeInToolbar();
 

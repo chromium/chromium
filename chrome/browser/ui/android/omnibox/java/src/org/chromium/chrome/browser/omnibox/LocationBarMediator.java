@@ -1708,7 +1708,7 @@ class LocationBarMediator
         boolean isNtp = (tab.getUrl() != null) && UrlUtilities.isNtpUrl(tab.getUrl());
 
         boolean showBackButton =
-                ToolbarVariationUtils.isNewToolbarUiEnabled()
+                ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                         && ToolbarVariationUtils.shouldBackButtonBeInOmnibox()
                         && !mUrlHasFocus
                         && !isNtp;

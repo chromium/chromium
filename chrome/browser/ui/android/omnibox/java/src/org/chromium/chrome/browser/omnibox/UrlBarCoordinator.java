@@ -213,6 +213,11 @@ public class UrlBarCoordinator
         setAllowMultilineInput(false);
     }
 
+    /** Sets whether this {@link UrlBar} should enable bounds ellipsis. */
+    public void setBoundsEllipsisEnabled(boolean enabled) {
+        mUrlBar.setBoundsEllipsisEnabled(enabled);
+    }
+
     @Override
     public int getSelectionStart() {
         return mUrlBar.getSelectionStart();
