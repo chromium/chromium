@@ -9,27 +9,34 @@
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace web_app {
 
 // TODO(crbug.com/496279290): Pass web app icon and origin as constructor
 // arguments.
-WebAppInstallOptionsView::WebAppInstallOptionsView(InstallOsType os_type) {
+WebAppInstallOptionsView::WebAppInstallOptionsView(
+    InstallOsType os_type,
+    const std::u16string& title,
+    const gfx::ImageSkia& icon_image) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
-  InitView(os_type);
+  InitView(os_type, title, icon_image);
 }
 
 WebAppInstallOptionsView::~WebAppInstallOptionsView() = default;
 
-void WebAppInstallOptionsView::InitView(InstallOsType os_type) {
+void WebAppInstallOptionsView::InitView(InstallOsType os_type,
+                                        const std::u16string& title,
+                                        const gfx::ImageSkia& icon_image) {
   switch (os_type) {
     case InstallOsType::kCros: {
       AddChildView(
@@ -71,14 +78,49 @@ void WebAppInstallOptionsView::InitView(InstallOsType os_type) {
       break;
     }
     case InstallOsType::kWin: {
-      AddChildView(views::Builder<views::Label>()
-                       // TODO(crbug.com/503767931): Localize this string.
-                       .SetText(u"Installer options Windows view")
-                       .SetTextContext(views::style::CONTEXT_LABEL)
-                       .SetTextStyle(views::style::STYLE_PRIMARY)
-                       .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
-                       .Build());
-      // TODO(b/492662500): Implement Windows installation options.
+      AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kVertical)
+              .SetBetweenChildSpacing(10)
+              .AddChildren(
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(
+                          views::BoxLayout::Orientation::kHorizontal)
+                      .SetBetweenChildSpacing(10)
+                      .AddChildren(
+                          views::Builder<views::ImageView>().SetImage(
+                              ui::ImageModel::FromImageSkia(icon_image)),
+                          views::Builder<views::BoxLayoutView>()
+                              .SetOrientation(
+                                  views::BoxLayout::Orientation::kVertical)
+                              .AddChildren(
+                                  views::Builder<views::Label>()
+                                      .SetText(l10n_util::GetStringUTF16(
+                                          IDS_WEB_APP_INSTALL_ADD_TO_START_MENU))
+                                      .SetTextContext(
+                                          views::style::CONTEXT_LABEL)
+                                      .SetTextStyle(
+                                          views::style::STYLE_SECONDARY)
+                                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                                  views::Builder<views::Label>()
+                                      .SetText(l10n_util::GetStringFUTF16(
+                                          IDS_WEB_APP_INSTALL_CHROME_APPS_LOCATION,
+                                          title))
+                                      .SetTextContext(
+                                          views::style::CONTEXT_LABEL)
+                                      .SetTextStyle(
+                                          views::style::STYLE_EMPHASIZED))),
+                  views::Builder<views::Checkbox>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_WEB_APP_INSTALL_CREATE_DESKTOP_SHORTCUT))
+                      .SetChecked(true)
+                      .CopyAddressTo(&add_desktop_shortcut_checkbox_),
+                  views::Builder<views::Checkbox>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR))
+                      .SetChecked(true)
+                      .CopyAddressTo(&pin_to_task_bar_checkbox_))
+              .Build());
       break;
     }
     case InstallOsType::kMac: {
@@ -105,6 +147,15 @@ void WebAppInstallOptionsView::InitView(InstallOsType os_type) {
 
 bool WebAppInstallOptionsView::IsPinToShelfChecked() const {
   return pin_to_shelf_checkbox_ && pin_to_shelf_checkbox_->GetChecked();
+}
+
+bool WebAppInstallOptionsView::IsAddDesktopShortcutChecked() const {
+  return add_desktop_shortcut_checkbox_ &&
+         add_desktop_shortcut_checkbox_->GetChecked();
+}
+
+bool WebAppInstallOptionsView::IsPinToTaskBarChecked() const {
+  return pin_to_task_bar_checkbox_ && pin_to_task_bar_checkbox_->GetChecked();
 }
 
 }  // namespace web_app

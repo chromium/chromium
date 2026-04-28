@@ -3585,6 +3585,19 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_INSTALL_PWA_DIALOG_ORIGIN_LABEL" desc="The label in front of the origin of the site that is installing the web app.">
         from: <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph>
       </message>
+       <!-- Install dialog resources for Windows specific behavior. They cannot be guarded by expr="is_win", because these resources need to be compiled for screenshot testing. -->
+      <message name="IDS_WEB_APP_INSTALL_ADD_TO_START_MENU" desc="Installer option text for the new install dialog for web apps, signifying that a shortcut will be added to the Start Menu on Windows">
+        Adding to Start Menu
+      </message>
+      <message name="IDS_WEB_APP_INSTALL_CHROME_APPS_LOCATION" desc="Installer option text signifying where inside the Start Menu the web app shortcut will be created on Windows.">
+        Chrome Apps &gt; <ph name="APP_NAME">$1<ex>AppName</ex></ph>
+      </message>
+      <message name="IDS_WEB_APP_INSTALL_CREATE_DESKTOP_SHORTCUT" desc="Label of the checkbox to add a shortcut to the desktop after installing the web app.">
+        Add desktop shortcut
+      </message>
+      <message name="IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR" desc="Label of the checkbox to pin an installed web app shortcut to taskbar.">
+        Pin to Taskbar
+      </message>
 
       <message name="IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL" desc="Text preceding the name of a bookmark app, read by spoken feedback.">
         Shortcut name

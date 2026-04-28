@@ -290,7 +290,7 @@ void WebAppInstallFlowDialogDelegate::Show(
 
   // kInstallerOptions
   install_step_to_view[InstallDialogStep::kInstallerOptions] =
-      std::make_unique<WebAppInstallOptionsView>(os_type);
+      std::make_unique<WebAppInstallOptionsView>(os_type, title, icon_image);
 
   // kProgress
   auto progress_view = std::make_unique<WebAppInstallProgressView>();
