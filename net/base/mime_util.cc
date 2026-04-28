@@ -948,23 +948,38 @@ NET_EXPORT std::string GenerateMimeMultipartBoundary() {
   return result;
 }
 
-void AddMultipartValueForUpload(const std::string& value_name,
-                                const std::string& value,
-                                const std::string& mime_boundary,
-                                const std::string& content_type,
-                                std::string* post_data) {
+namespace {
+
+void AddContentTypeAndValue(const std::string& value,
+                            const std::string& content_type,
+                            std::string* post_data) {
   DCHECK(post_data);
-  // First line is the boundary.
-  base::StrAppend(post_data, {"--", mime_boundary, "\r\n"});
-  // Next line is the Content-disposition.
-  base::StrAppend(post_data, {"Content-Disposition: form-data; name=\"",
-                              value_name, "\"\r\n"});
+
   if (!content_type.empty()) {
     // If Content-type is specified, the next line is that.
     base::StrAppend(post_data, {"Content-Type: ", content_type, "\r\n"});
   }
   // Leave an empty line and append the value.
   base::StrAppend(post_data, {"\r\n", value, "\r\n"});
+}
+
+}  // namespace
+
+void AddMultipartValueForUpload(const std::string& value_name,
+                                const std::string& value,
+                                const std::string& mime_boundary,
+                                const std::string& content_type,
+                                std::string* post_data) {
+  DCHECK(post_data);
+
+  base::StrAppend(
+      post_data,
+      // First line is the boundary.
+      {"--", mime_boundary, "\r\n",
+       // Next line is the Content-disposition.
+       "Content-Disposition: form-data; name=\"", value_name, "\"\r\n"});
+
+  AddContentTypeAndValue(value, content_type, post_data);
 }
 
 void AddMultipartValueForUploadWithFileName(const std::string& value_name,
@@ -974,18 +989,15 @@ void AddMultipartValueForUploadWithFileName(const std::string& value_name,
                                             const std::string& content_type,
                                             std::string* post_data) {
   DCHECK(post_data);
-  // First line is the boundary.
-  base::StrAppend(post_data, {"--", mime_boundary, "\r\n"});
-  // Next line is the Content-disposition.
+
   base::StrAppend(post_data,
-                  {"Content-Disposition: form-data; name=\"", value_name,
+                  // First line is the boundary.
+                  {"--", mime_boundary, "\r\n",
+                   // Next line is the Content-disposition.
+                   "Content-Disposition: form-data; name=\"", value_name,
                    "\"; filename=\"", file_name, "\"\r\n"});
-  if (!content_type.empty()) {
-    // If Content-type is specified, the next line is that.
-    base::StrAppend(post_data, {"Content-Type: ", content_type, "\r\n"});
-  }
-  // Leave an empty line and append the value.
-  base::StrAppend(post_data, {"\r\n", value, "\r\n"});
+
+  AddContentTypeAndValue(value, content_type, post_data);
 }
 
 void AddMultipartFinalDelimiterForUpload(const std::string& mime_boundary,
