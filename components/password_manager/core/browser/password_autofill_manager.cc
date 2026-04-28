@@ -267,6 +267,10 @@ void PasswordAutofillManager::DidSelectSuggestion(
         suggestion
             .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
     CHECK(payload.backup_password);
+    if (password_client_->GetPasswordFeatureManager()
+            ->IsBiometricAuthenticationBeforeFillingEnabled()) {
+      return;
+    }
     password_manager_driver_->PreviewSuggestion(
         payload.username, payload.backup_password.value());
     return;

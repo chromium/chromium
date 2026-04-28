@@ -2334,6 +2334,25 @@ TEST_F(PasswordAutofillManagerTest,
             PasswordRecoveryState::kRegularFlow);
 }
 
+TEST_F(
+    PasswordAutofillManagerTest,
+    PasswordRecoveryFlow_AuthBeforeFillingEnabled_NoPreviewBackupSuggestion) {
+  TestPasswordManagerClient client;
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+
+  InitializePasswordAutofillManager(&client, nullptr);
+  const Suggestion::PasswordSuggestionDetails payload(
+      test_username_, test_password_, backup_password_);
+  const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      autofill::SuggestionType::kBackupPasswordEntry, test_username_, payload);
+
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
+  password_autofill_manager_->DidSelectSuggestion(suggestion);
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+}
+
 TEST_F(PasswordAutofillManagerTest,
        PasswordRecoveryFlow_ClickTroubleSigningInSuggestion) {
   fill_data().preferred_login.backup_password_value = kAliceBackupPassword;
