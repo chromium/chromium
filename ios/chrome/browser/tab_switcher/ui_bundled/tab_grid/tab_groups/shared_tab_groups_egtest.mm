@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -37,6 +38,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -190,6 +192,24 @@ void WaitForFakeJoinFlowView() {
                                               timeout:base::Seconds(20)];
 }
 
+// net::EmbeddedTestServer handler that responds with a page that redirects to
+// the URL specified in the query on load.
+std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
+    const net::test_server::HttpRequest& request) {
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+      new net::test_server::BasicHttpResponse);
+  http_response->set_content_type("text/html");
+  http_response->set_content(
+      "<html><head><script>"
+      "window.onload = function() {"
+      "    location.href = '" +
+      request.GetURL().GetQuery() +
+      "';"
+      "};"
+      "</script></head><body>Attacker Page</body></html>");
+  return std::move(http_response);
+}
+
 }  // namespace
 
 // Test Shared Tab Groups feature (with group creation access).
@@ -205,6 +225,9 @@ void WaitForFakeJoinFlowView() {
 - (void)setUp {
   [super setUp];
   RegisterQueryTitleHandler(self.testServer);
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, "/attacker_page",
+      base::BindRepeating(&HandleAttackerPage)));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 
   // Remove the user education screen by default.
@@ -454,6 +477,27 @@ void WaitForFakeJoinFlowView() {
   // Verify that it closed the Join flow.
   [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that navigation to a share URL via script (not user initiated) is
+// stopped.
+- (void)testShareURLNavigationStopped {
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+
+  GURL attackerURL =
+      self.testServer->GetURL("/attacker_page?" + joinGroupURL.spec());
+
+  [ChromeEarlGrey loadURL:attackerURL];
+
+  // Wait for the app to idle.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the FakeJoinFlowView does NOT appear.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Checks that the IPH is presented when the user foreground the app with a
@@ -1693,7 +1737,12 @@ void WaitForFakeJoinFlowView() {
   [TabGroupAppInterface mockSharedEntitiesPreview];
   GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
       data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
-  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  std::string pageContent =
+      "data:text/html,<html><body><a id='join-link' href='" +
+      joinGroupURL.spec() + "'>Join</a></body></html>";
+  [ChromeEarlGrey loadURL:GURL(pageContent)];
+  [ChromeEarlGrey tapWebStateElementWithID:@"join-link"];
 
   WaitForFakeJoinFlowView();
 

@@ -24,8 +24,10 @@ bool ShouldHandleShareURLNavigation(
     return false;
   }
 
-  if (request_info.is_user_initiated && !request_info.user_tapped_recently) {
-    return false;
+  if (!request_info.is_user_initiated &&
+      !PageTransitionCoreTypeIs(request_info.transition_type,
+                                ui::PageTransition::PAGE_TRANSITION_TYPED)) {
+    return request_info.user_tapped_recently;
   }
 
   return true;
