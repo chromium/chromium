@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/task/current_thread.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -40,7 +41,13 @@ namespace optimization_guide {
 // constructed, etc.
 class ManifestSolutionFactoryTest : public testing::Test {
  public:
-  ManifestSolutionFactoryTest() {}
+  ManifestSolutionFactoryTest() = default;
+
+  void TearDown() override {
+    // Service should eventually idle out after all sessions are destroyed.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !fake_.launcher().is_service_running(); }));
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -241,10 +248,56 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeatureWithSafety) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
-// TODO(crbug.com/504749700): Ensure equivalent scenarios from these
-// OnDeviceModelServiceControllerTest tests are covered here:
-// MultipleModelAdaptationExecutionSuccess
-// ModelAdaptationAndBaseModelSuccess
-// DisconnectsWhenIdle
+// Stuff should still work even if we use a bunch of models at the same time,
+// as long as the backend supports it.
+TEST_F(ManifestSolutionFactoryTest, ModelContention) {
+  auto safe_config = []() {
+    proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = SimpleComposeConfig();
+    *solution_config.mutable_safety() = ComposeSafetyConfig();
+    return solution_config;
+  }();
+
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddBaseModel("model_B")
+      .AddAdaptation("model_A1", "model_A")
+      .AddAdaptation("model_A2", "model_A")
+      .AddSafetyModel("safety")
+      .AddSafeSolution("case_A", "model_A", "safety", safe_config)
+      .AddSafeSolution("case_A1", "model_A1", "safety", safe_config)
+      .AddSafeSolution("case_A2a", "model_A2", "safety", safe_config)
+      .AddSafeSolution("case_A2b", "model_A2", "safety", safe_config)
+      .AddSafeSolution("case_B", "model_B", "safety", safe_config)
+      .Finish();
+  fake_.Startup();
+
+  std::vector<std::string> use_case_by_session{
+      "case_A", "case_A1", "case_A2a", "case_A2b", "case_B",
+      "case_A", "case_A1", "case_A2a", "case_A2b", "case_B",
+  };
+
+  std::vector<base::test::TestFuture<ModelBrokerClient::CreateSessionResult>>
+      session_futures(use_case_by_session.size());
+  for (size_t i = 0; i < use_case_by_session.size(); i++) {
+    fake_.client().CreateSession(use_case_by_session[i], SessionConfigParams{},
+                                 session_futures[i].GetCallback());
+  }
+  std::vector<ModelBrokerClient::CreateSessionResult> sessions(
+      use_case_by_session.size());
+  for (size_t i = 0; i < use_case_by_session.size(); i++) {
+    sessions[i] = session_futures[i].Take();
+  }
+
+  std::vector<ResponseHolder> responses(use_case_by_session.size());
+  for (size_t i = 0; i < use_case_by_session.size(); i++) {
+    sessions[i]->ExecuteModel(UserInputRequest("hello"),
+                              responses[i].GetStreamingCallback());
+  }
+
+  for (size_t i = 0; i < use_case_by_session.size(); i++) {
+    EXPECT_TRUE(responses[i].GetFinalStatus());
+  }
+}
 
 }  // namespace optimization_guide
