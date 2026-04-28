@@ -108,13 +108,13 @@ class PasswordReuseDetectorImpl : public PasswordReuseDetector {
 
   using passwords_iterator = PasswordsReusedCredentialsMap::const_iterator;
 
-  // Add password from |form| to |passwords_| and
-  // |passwords_with_matching_reused_credentials_|.
-  void AddPassword(const PasswordForm& form);
+  // Add password from `cred` to `passwords_` and
+  // `passwords_with_matching_reused_credentials_`.
+  void AddPassword(const StoredCredential& cred);
 
-  // Remove password of |form| from
-  // |passwords_with_matching_reused_credentials_|;
-  void RemovePassword(const PasswordForm& form);
+  // Remove password of `cred` from
+  // `passwords_with_matching_reused_credentials_`;
+  void RemovePassword(const StoredCredential& cred);
 
   // Removes all the credentials coming from |store_type| store from
   // |passwords_with_matching_reused_credentials_|.

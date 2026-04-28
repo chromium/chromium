@@ -13,6 +13,7 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -24,9 +25,9 @@ class PasswordStoreChange {
   // This is used in enums.xml. Please keep order the same.
   enum Type { ADD = 0, UPDATE = 1, REMOVE = 2, kMaxValue = REMOVE };
 
-  PasswordStoreChange(Type type, PasswordForm form);
+  PasswordStoreChange(Type type, StoredCredential credential);
   PasswordStoreChange(Type type,
-                      PasswordForm form,
+                      StoredCredential credential,
                       bool password_changed,
                       InsecureCredentialsChanged insecure_changed =
                           InsecureCredentialsChanged(false));
@@ -38,7 +39,7 @@ class PasswordStoreChange {
   ~PasswordStoreChange();
 
   Type type() const { return type_; }
-  const PasswordForm& form() const { return form_; }
+  const StoredCredential& credential() const { return credential_; }
   bool password_changed() const { return password_changed_; }
   InsecureCredentialsChanged insecure_credentials_changed() const {
     return insecure_credentials_changed_;
@@ -48,7 +49,7 @@ class PasswordStoreChange {
 
  private:
   Type type_;
-  PasswordForm form_;
+  StoredCredential credential_;
   bool password_changed_ = false;
   // Whether change affected insecure credentials.
   InsecureCredentialsChanged insecure_credentials_changed_{false};
@@ -66,7 +67,8 @@ inline std::ostream& operator<<(
     const PasswordStoreChange& password_store_change) {
   return os << "type: " << password_store_change.type()
             << ", password change: " << password_store_change.password_changed()
-            << ", password form: " << password_store_change.form();
+            << ", signon_realm: "
+            << password_store_change.credential().signon_realm;
 }
 #endif
 

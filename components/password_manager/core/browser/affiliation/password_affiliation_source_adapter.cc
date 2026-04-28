@@ -50,7 +50,7 @@ void PasswordAffiliationSourceAdapter::OnLoginsChanged(
   std::vector<FacetURI> facets_removed;
   for (const PasswordStoreChange& change : changes) {
     FacetURI facet_uri =
-        FacetURI::FromPotentiallyInvalidSpec(change.form().signon_realm);
+        FacetURI::FromPotentiallyInvalidSpec(change.credential().signon_realm);
 
     if (!facet_uri.is_valid()) {
       continue;

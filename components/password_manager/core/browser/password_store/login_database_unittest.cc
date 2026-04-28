@@ -85,7 +85,7 @@ MATCHER_P(StoredCredentialPasswordIs, expected_password, "") {
 
 PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
   return PasswordStoreChangeList(
-      1, PasswordStoreChange(PasswordStoreChange::ADD, form));
+      1, PasswordStoreChange(PasswordStoreChange::ADD, FromPasswordForm(form)));
 }
 
 PasswordStoreChangeList AddChangeForForm(const StoredCredential& cred) {
@@ -95,17 +95,17 @@ PasswordStoreChangeList AddChangeForForm(const StoredCredential& cred) {
 PasswordStoreChangeList UpdateChangeForForm(const PasswordForm& form,
                                             bool password_changed) {
   return PasswordStoreChangeList(
-      1,
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form, password_changed));
+      1, PasswordStoreChange(PasswordStoreChange::UPDATE,
+                             FromPasswordForm(form), password_changed));
 }
 
 PasswordStoreChangeList UpdateChangeForForm(const PasswordForm& form,
                                             bool password_changed,
                                             bool insecure_changed) {
   return PasswordStoreChangeList(
-      1,
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form, password_changed,
-                          InsecureCredentialsChanged(insecure_changed)));
+      1, PasswordStoreChange(PasswordStoreChange::UPDATE,
+                             FromPasswordForm(form), password_changed,
+                             InsecureCredentialsChanged(insecure_changed)));
 }
 
 PasswordStoreChangeList UpdateChangeForForm(const StoredCredential& cred,
@@ -117,7 +117,9 @@ PasswordStoreChangeList UpdateChangeForForm(const StoredCredential& cred,
 
 PasswordStoreChangeList RemoveChangeForForm(const PasswordForm& form) {
   return PasswordStoreChangeList(
-      1, PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+      1,
+      PasswordStoreChange(PasswordStoreChange::REMOVE, FromPasswordForm(form),
+                          /*password_changed=*/true));
 }
 
 PasswordStoreChangeList RemoveChangeForForm(const StoredCredential& cred) {
@@ -155,10 +157,6 @@ StoredCredential GenerateExampleStoredCredential() {
   cred.sharing_notification_displayed = true;
   cred.actor_login_approved = true;
   return cred;
-}
-
-StoredCredential CloneStoredCredential(const StoredCredential& cred) {
-  return FromPasswordForm(ToPasswordForm(cred));
 }
 
 // Helper functions to read the value of the first column of an executed
@@ -415,7 +413,7 @@ TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
       db().AddLogin(CloneStoredCredential(cred));
   ASSERT_EQ(1U, change_list.size());
   EXPECT_EQ(AddChangeForForm(cred), change_list);
-  EXPECT_EQ(1, change_list[0].form().primary_key.value().value());
+  EXPECT_EQ(1, change_list[0].credential().primary_key.value().value());
 }
 
 TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
@@ -433,7 +431,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
   ASSERT_EQ(1U, change_list.size());
-  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
   EXPECT_EQ(AddChangeForForm(cred), change_list);
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_THAT(std::move(result), ElementsAre(HasPrimaryKeyAndEquals(cred)));
@@ -455,7 +453,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
   ASSERT_EQ(1U, change_list.size());
-  FormPrimaryKey primary_key1 = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key1 = change_list[0].credential().primary_key.value();
   change_list.clear();
   // Delete the form
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key1, &change_list));
@@ -463,7 +461,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   // Add it again.
   change_list = db().AddLogin(std::move(cred));
   ASSERT_EQ(1U, change_list.size());
-  EXPECT_NE(primary_key1, change_list[0].form().primary_key.value());
+  EXPECT_NE(primary_key1, change_list[0].credential().primary_key.value());
 }
 
 TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
@@ -1006,8 +1004,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(now, base::Time::Max(), &changes);
   ASSERT_EQ(2U, changes.size());
   // The 3rd and the 4th should have been deleted.
-  EXPECT_EQ(3, changes[0].form().primary_key.value().value());
-  EXPECT_EQ(4, changes[1].form().primary_key.value().value());
+  EXPECT_EQ(3, changes[0].credential().primary_key.value().value());
+  EXPECT_EQ(4, changes[1].credential().primary_key.value().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1018,8 +1016,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), back_30_days, &changes);
   ASSERT_EQ(2U, changes.size());
   // The 1st and the 5th should have been deleted.
-  EXPECT_EQ(1, changes[0].form().primary_key.value().value());
-  EXPECT_EQ(5, changes[1].form().primary_key.value().value());
+  EXPECT_EQ(1, changes[0].credential().primary_key.value().value());
+  EXPECT_EQ(5, changes[1].credential().primary_key.value().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1030,7 +1028,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), base::Time(), &changes);
   ASSERT_EQ(1U, changes.size());
   // The 2nd should have been deleted.
-  EXPECT_EQ(2, changes[0].form().primary_key.value().value());
+  EXPECT_EQ(2, changes[0].credential().primary_key.value().value());
 
   // Verify nothing is left.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1054,7 +1052,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedMaxCreatedTimePasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), base::Time::Max(), &changes);
   ASSERT_EQ(1U, changes.size());
 
-  EXPECT_EQ(ToPasswordForm(forms[0]), changes[0].form());
+  EXPECT_EQ(forms[0], changes[0].credential());
   forms.clear();
 
   // Verify nothing is left.
@@ -1367,8 +1365,8 @@ TEST_F(LoginDatabaseTest, DoubleAdd) {
   // Add almost the same form again.
   cred.times_used_in_html_form++;
   PasswordStoreChangeList list;
-  list.emplace_back(PasswordStoreChange::REMOVE, ToPasswordForm(cred));
-  list.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+  list.emplace_back(PasswordStoreChange::REMOVE, CloneStoredCredential(cred));
+  list.emplace_back(PasswordStoreChange::ADD, CloneStoredCredential(cred));
   EXPECT_EQ(list, db().AddLogin(CloneStoredCredential(cred)));
 }
 
@@ -1493,7 +1491,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
       UpdateChangeForForm(ToPasswordForm(cred), /*password_changed=*/true),
       changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].form().primary_key.value().value());
+  EXPECT_EQ(1, changes[0].credential().primary_key.value().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   cred.in_store = PasswordForm::Store::kProfileStore;
@@ -1534,7 +1532,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
       UpdateChangeForForm(ToPasswordForm(cred), /*password_changed=*/false),
       changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].form().primary_key.value().value());
+  EXPECT_EQ(1, changes[0].credential().primary_key.value().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   cred.in_store = PasswordForm::Store::kProfileStore;
@@ -2173,8 +2171,8 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     // Add the same form twice to test the constraints in the database.
     EXPECT_EQ(AddChangeForForm(cred), db.AddLogin(CloneStoredCredential(cred)));
     PasswordStoreChangeList list;
-    list.emplace_back(PasswordStoreChange::REMOVE, ToPasswordForm(cred));
-    list.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+    list.emplace_back(PasswordStoreChange::REMOVE, CloneStoredCredential(cred));
+    list.emplace_back(PasswordStoreChange::ADD, CloneStoredCredential(cred));
     EXPECT_EQ(list, db.AddLogin(CloneStoredCredential(cred)));
 
     std::vector<StoredCredential> matched_credentials;
@@ -2946,9 +2944,9 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {
       db().AddLogin(std::move(cred));
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
-  ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
+  ASSERT_FALSE(changes[0].credential().keychain_identifier.empty());
 #else
-  ASSERT_TRUE(changes[0].form().keychain_identifier.empty());
+  ASSERT_TRUE(changes[0].credential().keychain_identifier.empty());
 #endif
 }
 
@@ -2972,9 +2970,9 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAddWithReplaceSemantics) {
   ASSERT_EQ(password_manager::PasswordStoreChange::Type::ADD,
             changes[1].type());
 #if BUILDFLAG(IS_IOS)
-  ASSERT_FALSE(changes[1].form().keychain_identifier.empty());
+  ASSERT_FALSE(changes[1].credential().keychain_identifier.empty());
 #else
-  ASSERT_TRUE(changes[1].form().keychain_identifier.empty());
+  ASSERT_TRUE(changes[1].credential().keychain_identifier.empty());
 #endif
 }
 
@@ -2994,9 +2992,9 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordUpdate) {
   password_manager::PasswordStoreChangeList changes = db().UpdateLogin(cred);
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
-  ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
+  ASSERT_FALSE(changes[0].credential().keychain_identifier.empty());
 #else
-  ASSERT_TRUE(changes[0].form().keychain_identifier.empty());
+  ASSERT_TRUE(changes[0].credential().keychain_identifier.empty());
 #endif
 }
 
@@ -3012,9 +3010,9 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
       db().AddLogin(CloneStoredCredential(cred));
   ASSERT_EQ(1u, changes.size());
 #if BUILDFLAG(IS_IOS)
-  ASSERT_FALSE(changes[0].form().keychain_identifier.empty());
+  ASSERT_FALSE(changes[0].credential().keychain_identifier.empty());
 #else
-  ASSERT_TRUE(changes[0].form().keychain_identifier.empty());
+  ASSERT_TRUE(changes[0].credential().keychain_identifier.empty());
 #endif
 
   std::vector<StoredCredential> forms;
@@ -3104,12 +3102,12 @@ TEST_F(LoginDatabaseTest, ChangesOnlyWithNotes) {
   StoredCredential cred = GenerateExampleStoredCredential();
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
-  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
   PasswordNote note(u"example note", base::Time::Now());
   cred.notes = {note};
 
   EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/false,
-                                /*insecure_changed=*/true),
+                                /*insecure_changed=*/false),
             db().UpdateLogin(cred, nullptr));
 
   EXPECT_EQ(db().password_notes_table().GetPasswordNotes(
@@ -3123,10 +3121,10 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoteRemoved) {
   cred.notes = {note};
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
-  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
   cred.notes = {};
   EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/false,
-                                /*insecure_changed=*/true),
+                                /*insecure_changed=*/false),
             db().UpdateLogin(cred, nullptr));
 
   EXPECT_TRUE(db().password_notes_table()
@@ -3138,7 +3136,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginInsecureCredentialsChanged) {
   StoredCredential cred = GenerateExampleStoredCredential();
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
-  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
   InsecureCredential credential1{
       cred.signon_realm, cred.username_value,
       base::Time(),      InsecureType::kLeaked,
@@ -3160,10 +3158,10 @@ TEST_F(LoginDatabaseTest, UpdateLoginNoChanges) {
   StoredCredential cred = GenerateExampleStoredCredential();
   PasswordStoreChangeList change_list =
       db().AddLogin(CloneStoredCredential(cred));
-  FormPrimaryKey primary_key = change_list[0].form().primary_key.value();
+  FormPrimaryKey primary_key = change_list[0].credential().primary_key.value();
 
   EXPECT_EQ(UpdateChangeForForm(cred, /*password_changed=*/false,
-                                /*insecure_changed=*/true),
+                                /*insecure_changed=*/false),
             db().UpdateLogin(cred, nullptr));
   EXPECT_TRUE(db().password_notes_table()
                   .GetPasswordNotes(FormPrimaryKey(primary_key))
@@ -3356,8 +3354,9 @@ TEST_F(LoginDatabaseTest,
   cred.password_value = u"new_password";
 
   PasswordStoreChangeList list;
-  list.emplace_back(PasswordStoreChange::REMOVE, ToPasswordForm(cred));
-  list.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+  list.emplace_back(PasswordStoreChange::REMOVE, CloneStoredCredential(cred));
+  list.emplace_back(PasswordStoreChange::ADD, CloneStoredCredential(cred),
+                    /*password_changed=*/true);
   EXPECT_EQ(list, db().AddLogin(CloneStoredCredential(cred)));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               IsEmpty());
@@ -3384,7 +3383,7 @@ TEST_F(LoginDatabaseTest, AddLoginWithInsecureCredentialsPersistsThem) {
                          phished.trigger_notification_from_backend));
 
   PasswordStoreChangeList list;
-  list.emplace_back(PasswordStoreChange::ADD, ToPasswordForm(cred));
+  list.emplace_back(PasswordStoreChange::ADD, CloneStoredCredential(cred));
   EXPECT_EQ(list, db().AddLogin(std::move(cred)));
   EXPECT_THAT(db().insecure_credentials_table().GetRows(FormPrimaryKey(1)),
               testing::UnorderedElementsAre(leaked, phished));
@@ -3456,7 +3455,8 @@ TEST_F(LoginDatabaseForAccountStoreTest, AddLogins) {
 
   PasswordStoreChangeList changes = db().AddLogin(std::move(cred));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(PasswordForm::Store::kAccountStore, changes[0].form().in_store);
+  EXPECT_EQ(PasswordForm::Store::kAccountStore,
+            changes[0].credential().in_store);
 }
 
 }  // namespace password_manager

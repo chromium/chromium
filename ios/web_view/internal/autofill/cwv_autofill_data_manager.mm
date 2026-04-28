@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -137,12 +138,12 @@ class WebViewPasswordStoreObserver
     NSMutableArray* updated = [NSMutableArray array];
     NSMutableArray* removed = [NSMutableArray array];
     for (const password_manager::PasswordStoreChange& change : changes) {
-      if (change.form().blocked_by_user) {
+      if (change.credential().blocked_by_user) {
         continue;
       }
-      CWVPassword* password =
-          [[CWVPassword alloc] initWithPasswordForm:change.form()
-                               isAffiliationEnabled:isAffiliationsEnabled];
+      CWVPassword* password = [[CWVPassword alloc]
+          initWithPasswordForm:ToPasswordForm(change.credential())
+          isAffiliationEnabled:isAffiliationsEnabled];
       switch (change.type()) {
         case password_manager::PasswordStoreChange::ADD:
           [added addObject:password];

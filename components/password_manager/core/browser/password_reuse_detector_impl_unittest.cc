@@ -107,7 +107,7 @@ PasswordStoreChangeList GetChangeList(
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   PasswordStoreChangeList changes;
   for (const auto& form : forms) {
-    changes.push_back(PasswordStoreChange(type, *form));
+    changes.emplace_back(type, FromPasswordForm(*form));
   }
 
   return changes;
@@ -831,8 +831,8 @@ TEST_F(PasswordReuseDetectorTest, PasswordStoreRespectedOnRemove) {
 
   // Simulate the removal of the account stored credential.
   PasswordStoreChangeList remove_changes;
-  remove_changes.push_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, account_store_form));
+  remove_changes.emplace_back(PasswordStoreChange::REMOVE,
+                              FromPasswordForm(account_store_form));
   reuse_detector.OnLoginsChanged(remove_changes);
   expected_credentials.pop_back();
 

@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -98,7 +99,8 @@ password_manager::PasswordStoreChangeList GetChangesForAddedForms(
     const std::vector<password_manager::PasswordForm>& forms) {
   password_manager::PasswordStoreChangeList changes;
   for (const auto& form : forms) {
-    changes.emplace_back(password_manager::PasswordStoreChange::ADD, form);
+    changes.emplace_back(password_manager::PasswordStoreChange::ADD,
+                         FromPasswordForm(form));
   }
   return changes;
 }
@@ -583,14 +585,14 @@ void SavedPasswordsPresenter::OnLoginsChanged(
   for (const PasswordStoreChange& change : changes) {
     switch (change.type()) {
       case PasswordStoreChange::ADD:
-        forms_to_add.push_back(change.form());
+        forms_to_add.push_back(ToPasswordForm(change.credential()));
         break;
       case PasswordStoreChange::UPDATE:
-        forms_to_remove.push_back(change.form());
-        forms_to_add.push_back(change.form());
+        forms_to_remove.push_back(ToPasswordForm(change.credential()));
+        forms_to_add.push_back(ToPasswordForm(change.credential()));
         break;
       case PasswordStoreChange::REMOVE:
-        forms_to_remove.push_back(change.form());
+        forms_to_remove.push_back(ToPasswordForm(change.credential()));
         break;
     }
   }

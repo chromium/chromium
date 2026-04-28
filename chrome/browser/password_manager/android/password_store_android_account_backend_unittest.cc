@@ -471,8 +471,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForRemoveLogin) {
                              mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+  expected_changes.emplace_back(PasswordStoreChange::REMOVE,
+                                FromPasswordForm(std::move(form)));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
@@ -518,8 +518,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   // Verify that the callback is called.
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
+  expected_changes.emplace_back(PasswordStoreChange::REMOVE,
+                                FromPasswordForm(std::move(form_to_delete)));
   EXPECT_CALL(mock_deletion_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
@@ -548,8 +548,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForAddLogin) {
   backend().AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::ADD, form));
+  expected_changes.emplace_back(PasswordStoreChange::ADD,
+                                FromPasswordForm(std::move(form)));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
@@ -581,8 +581,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   backend().AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::ADD, form));
+  expected_changes.emplace_back(PasswordStoreChange::ADD,
+                                FromPasswordForm(std::move(form)));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
@@ -606,8 +606,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForUpdateLogin) {
   backend().UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form));
+  expected_changes.emplace_back(PasswordStoreChange::UPDATE,
+                                FromPasswordForm(std::move(form)));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
@@ -639,8 +639,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   backend().UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
-  expected_changes.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::ADD, form));
+  expected_changes.emplace_back(PasswordStoreChange::ADD,
+                                FromPasswordForm(std::move(form)));
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
@@ -1120,8 +1120,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, DisableAutoSignInForOrigins) {
   // updating of the second login.
   PasswordStoreChangeList change1;
   change1.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::UPDATE,
-                          FormWithDisabledAutoSignIn(form_to_update2)));
+      PasswordStoreChange::UPDATE,
+      FromPasswordForm(FormWithDisabledAutoSignIn(form_to_update2)));
   const JobId kUpdateJobId2{13389};
   EXPECT_CALL(*bridge_helper(),
               UpdateLogin(EqualsStoredCredential(
@@ -1135,8 +1135,8 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, DisableAutoSignInForOrigins) {
   EXPECT_CALL(mock_reply, Run());
   PasswordStoreChangeList change2;
   change2.emplace_back(
-      PasswordStoreChange(PasswordStoreChange::UPDATE,
-                          FormWithDisabledAutoSignIn(form_to_update1)));
+      PasswordStoreChange::UPDATE,
+      FromPasswordForm(FormWithDisabledAutoSignIn(form_to_update1)));
   consumer().OnLoginsChanged(kUpdateJobId2, change2);
   RunUntilIdle();
 

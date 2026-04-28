@@ -152,6 +152,10 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   return cred;
 }
 
+StoredCredential CloneStoredCredential(const StoredCredential& cred) {
+  return FromPasswordForm(ToPasswordForm(cred));
+}
+
 std::vector<PasswordForm> ToPasswordForms(
     std::vector<StoredCredential>&& credentials) {
   std::vector<PasswordForm> forms;

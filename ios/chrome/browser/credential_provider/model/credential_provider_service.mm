@@ -19,6 +19,7 @@
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -254,12 +255,12 @@ void CredentialProviderService::OnLoginsChanged(
     const PasswordStoreChangeList& changes) {
   std::vector<PasswordForm> forms_to_add, forms_to_remove;
   for (const PasswordStoreChange& change : changes) {
-    if (change.form().blocked_by_user) {
+    if (change.credential().blocked_by_user) {
       continue;
     }
     switch (change.type()) {
       case PasswordStoreChange::ADD:
-        forms_to_add.push_back(change.form());
+        forms_to_add.push_back(ToPasswordForm(change.credential()));
         break;
       case PasswordStoreChange::UPDATE:
         // Using a password triggers this code path, since it updates
@@ -267,11 +268,11 @@ void CredentialProviderService::OnLoginsChanged(
         // for now the whole password file is re-written on every change, which
         // is inefficient. Username changes are not considered updates, but
         // instead treated as a new credential (REMOVE then ADD).
-        forms_to_remove.push_back(change.form());
-        forms_to_add.push_back(change.form());
+        forms_to_remove.push_back(ToPasswordForm(change.credential()));
+        forms_to_add.push_back(ToPasswordForm(change.credential()));
         break;
       case PasswordStoreChange::REMOVE:
-        forms_to_remove.push_back(change.form());
+        forms_to_remove.push_back(ToPasswordForm(change.credential()));
         break;
       default:
         NOTREACHED();

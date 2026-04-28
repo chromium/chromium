@@ -456,7 +456,7 @@ static_library("test_support") {
     "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/leak_detection",
-    "//components/password_manager/core/browser/password_store:password_form_converters",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/safe_browsing:buildflags",
     "//components/signin/public/identity_manager:test_support",

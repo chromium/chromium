@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -300,7 +301,8 @@ void ManagePasswordsState::ProcessLoginsChanged(
     if (change.type() != password_manager::PasswordStoreChange::REMOVE) {
       all_changes_are_deletion = false;
     }
-    const PasswordForm& changed_form = change.form();
+    PasswordForm changed_form =
+        password_manager::ToPasswordForm(change.credential());
     if (changed_form.blocked_by_user) {
       continue;
     }

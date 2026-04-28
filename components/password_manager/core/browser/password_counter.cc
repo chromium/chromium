@@ -10,15 +10,23 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
 namespace {
 
-bool IsAutofillableCredential(const PasswordForm& form) {
-  return !form.blocked_by_user && !form.IsFederatedCredential() &&
+bool IsAutofillableCredential(const StoredCredential& credential) {
+  return !credential.blocked_by_user &&
+         !credential.federation_origin.IsValid() &&
+         credential.scheme != PasswordForm::Scheme::kUsernameOnly;
+}
+
+bool IsAutofillableForm(const PasswordForm& form) {
+  return !form.blocked_by_user && !form.federation_origin.IsValid() &&
          form.scheme != PasswordForm::Scheme::kUsernameOnly;
 }
 
@@ -54,7 +62,7 @@ void PasswordCounter::OnGetPasswordStoreResultsOrErrorFrom(
   }
   size_t counter = std::ranges::count_if(
       std::get<password_manager::LoginsResult>(results_or_error),
-      &IsAutofillableCredential);
+      [](const PasswordForm& form) { return IsAutofillableForm(form); });
   if (store == profile_store_) {
     profile_passwords_ = counter;
     profile_observer_.Observe(store);
@@ -74,14 +82,14 @@ void PasswordCounter::OnLoginsChanged(PasswordStoreInterface* store,
   for (const PasswordStoreChange& change : changes) {
     switch (change.type()) {
       case PasswordStoreChange::ADD:
-        if (IsAutofillableCredential(change.form())) {
+        if (IsAutofillableCredential(change.credential())) {
           counter++;
         }
         break;
       case PasswordStoreChange::UPDATE:
         break;
       case PasswordStoreChange::REMOVE:
-        if (IsAutofillableCredential(change.form())) {
+        if (IsAutofillableCredential(change.credential())) {
           counter--;
         }
         break;

@@ -262,8 +262,8 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(
 
   for (auto& cred : credentials) {
     if (origins_updated.count(cred.url)) {
-      changes.emplace_back(PasswordStoreChange::UPDATE,
-                           ToPasswordForm(std::move(cred)));
+      changes.emplace_back(PasswordStoreChange::UPDATE, std::move(cred),
+                           /*password_changed=*/false);
     }
   }
   return changes;

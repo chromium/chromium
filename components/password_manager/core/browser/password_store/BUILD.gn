@@ -6,6 +6,8 @@ source_set("password_store_interface") {
   sources = [
     "actionable_error.h",
     "interactions_stats.h",
+    "password_form_converters.cc",
+    "password_form_converters.h",
     "password_store_backend_error.cc",
     "password_store_backend_error.h",
     "password_store_change.cc",
@@ -27,16 +29,6 @@ source_set("password_store_interface") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-source_set("password_form_converters") {
-  sources = [
-    "password_form_converters.cc",
-    "password_form_converters.h",
-  ]
-  public_deps = [ ":password_store_interface" ]
-  deps = [ "//base" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 source_set("password_store_impl") {
   sources = [
     "encrypt_decrypt_interface.h",
@@ -53,7 +45,6 @@ source_set("password_store_impl") {
   ]
   public_deps = [ ":password_store_interface" ]
   deps = [
-    ":password_form_converters",
     "//base",
     "//build:blink_buildflags",
     "//components/affiliations/core/browser:affiliations",
@@ -143,7 +134,6 @@ static_library("test_support") {
     "test_password_store.h",
   ]
   deps = [
-    ":password_form_converters",
     ":password_store_impl",
     "//base",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
@@ -179,7 +169,6 @@ source_set("unit_tests") {
   }
 
   deps = [
-    ":password_form_converters",
     ":password_store_impl",
     ":test_support",
     "//base",

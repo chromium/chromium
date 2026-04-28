@@ -23,6 +23,9 @@ PasswordForm ToPasswordForm(StoredCredential&& cred);
 // Passes by value to support efficient moves.
 StoredCredential FromPasswordForm(PasswordForm form);
 
+// Returns a deep copy of StoredCredential.
+StoredCredential CloneStoredCredential(const StoredCredential& cred);
+
 // Converts a vector of StoredCredentials to a vector of PasswordForms.
 std::vector<PasswordForm> ToPasswordForms(
     std::vector<StoredCredential>&& credentials);

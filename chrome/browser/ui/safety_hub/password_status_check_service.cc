@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -292,8 +293,8 @@ base::DictValue GetNoPasswordCardData(bool password_saving_allowed) {
 }
 
 bool ShouldAddToCompromisedPasswords(
-    const password_manager::PasswordForm form) {
-  auto& issues = form.password_issues;
+    const password_manager::StoredCredential& cred) {
+  auto& issues = cred.password_issues;
 
   // If the password is leaked but muted, then do not add to compromised
   // passwords.
@@ -520,45 +521,36 @@ void PasswordStatusCheckService::OnLoginsChanged(
     return;
   }
 
-  std::vector<password_manager::PasswordForm> forms_to_add;
-  std::vector<password_manager::PasswordForm> forms_to_remove;
+  std::set<PasswordPair> updated_passwords =
+      latest_result_->GetCompromisedPasswords();
+
   for (const password_manager::PasswordStoreChange& change : changes) {
+    const auto& cred = change.credential();
     // Ignore federated or blocked entries.
-    const auto& form = change.form();
-    if (form.IsFederatedCredential() || form.blocked_by_user) {
+    if (cred.federation_origin.IsValid() || cred.blocked_by_user) {
       continue;
     }
+
+    PasswordPair password_pair(cred.url.spec(),
+                               base::UTF16ToUTF8(cred.username_value));
+
     switch (change.type()) {
       case password_manager::PasswordStoreChange::ADD:
-        forms_to_add.push_back(form);
+        saved_credential_count_++;
+        if (ShouldAddToCompromisedPasswords(cred)) {
+          updated_passwords.insert(std::move(password_pair));
+        }
         break;
       case password_manager::PasswordStoreChange::UPDATE:
-        forms_to_remove.push_back(form);
-        forms_to_add.push_back(form);
+        updated_passwords.erase(password_pair);
+        if (ShouldAddToCompromisedPasswords(cred)) {
+          updated_passwords.insert(std::move(password_pair));
+        }
         break;
       case password_manager::PasswordStoreChange::REMOVE:
-        forms_to_remove.push_back(form);
+        saved_credential_count_--;
+        updated_passwords.erase(std::move(password_pair));
         break;
-    }
-  }
-
-  const std::set<PasswordPair>& stored_password =
-      latest_result_->GetCompromisedPasswords();
-  std::set<PasswordPair> updated_passwords = stored_password;
-
-  // Remove deleted forms
-  for (const auto& form : forms_to_remove) {
-    saved_credential_count_--;
-    updated_passwords.erase(
-        PasswordPair(form.url.spec(), base::UTF16ToUTF8(form.username_value)));
-  }
-
-  // Add new forms
-  for (const auto& form : forms_to_add) {
-    saved_credential_count_++;
-    if (ShouldAddToCompromisedPasswords(form)) {
-      updated_passwords.insert(PasswordPair(
-          form.url.spec(), base::UTF16ToUTF8(form.username_value)));
     }
   }
 

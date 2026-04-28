@@ -402,59 +402,60 @@ TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
 TEST_P(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
   PasswordStoreBackend* backend = CreateBackend();
   InitializeBackend(backend);
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  const PasswordStoreChange add_change =
-      PasswordStoreChange(PasswordStoreChange::ADD, form);
+  const PasswordStoreChange add_change = PasswordStoreChange(
+      PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
+  backend->AddLoginAsync(std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   PasswordStoreBackend* backend = CreateBackend();
   InitializeBackend(backend);
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
+  backend->AddLoginAsync(CloneStoredCredential(cred), base::DoNothing());
   RunUntilIdle();
 
-  form.password_value = u"a different password";
-  const PasswordStoreChange update_change =
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form);
+  cred.password_value = u"a different password";
+  const PasswordStoreChange update_change = PasswordStoreChange(
+      PasswordStoreChange::UPDATE, CloneStoredCredential(cred),
+      /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
-  backend->UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
+  backend->UpdateLoginAsync(std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   PasswordStoreBackend* backend = CreateBackend();
   InitializeBackend(backend);
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
+  backend->AddLoginAsync(CloneStoredCredential(cred), base::DoNothing());
   RunUntilIdle();
 
-  PasswordStoreChange remove_change =
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form);
+  PasswordStoreChange remove_change = PasswordStoreChange(
+      PasswordStoreChange::REMOVE, CloneStoredCredential(cred),
+      /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(remove_change)))));
-  backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
-                            mock_reply.Get());
+  backend->RemoveLoginAsync(FROM_HERE, std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -499,17 +500,17 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncMetrics) {
   InitializeBackend(backend);
 
   // Fill the store
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  const PasswordStoreChange add_change =
-      PasswordStoreChange(PasswordStoreChange::ADD, form);
+  const PasswordStoreChange add_change = PasswordStoreChange(
+      PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
+  backend->AddLoginAsync(std::move(cred), mock_reply.Get());
 
   // Get the logins
   backend->GetAllLoginsAsync(base::DoNothing());
@@ -561,17 +562,17 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
   InitializeBackend(backend);
 
   // Fill the store
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  const PasswordStoreChange add_change =
-      PasswordStoreChange(PasswordStoreChange::ADD, form);
+  const PasswordStoreChange add_change = PasswordStoreChange(
+      PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
-  backend->AddLoginAsync(FromPasswordForm(form), mock_reply.Get());
+  backend->AddLoginAsync(std::move(cred), mock_reply.Get());
 
   // Get the logins
   backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -612,9 +613,9 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   InitializeBackend(bad_backend);
 
   // Fill the store
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
-  bad_backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
+  bad_backend->AddLoginAsync(std::move(cred), base::DoNothing());
 
   // Get the logins
   bad_backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -645,21 +646,22 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
 
   PasswordStoreBackend* backend = CreateBackend();
   InitializeBackend(backend);
-  PasswordForm form =
-      *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
+  StoredCredential cred =
+      FillStoredCredentialWithData(CreateTestPasswordFormData(), GetParam());
 
-  backend->AddLoginAsync(FromPasswordForm(form), base::DoNothing());
+  backend->AddLoginAsync(CloneStoredCredential(cred), base::DoNothing());
   RunUntilIdle();
 
-  form.password_value = u"a different password";
-  const PasswordStoreChange update_change =
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form);
+  cred.password_value = u"a different password";
+  const PasswordStoreChange update_change = PasswordStoreChange(
+      PasswordStoreChange::UPDATE, CloneStoredCredential(cred),
+      /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   EXPECT_CALL(
       mock_reply,
       Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
-  backend->UpdateLoginAsync(FromPasswordForm(form), mock_reply.Get());
+  backend->UpdateLoginAsync(std::move(cred), mock_reply.Get());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -710,7 +712,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncMetrics) {
   RunUntilIdle();
 
   PasswordStoreChange remove_change =
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form);
+      PasswordStoreChange(PasswordStoreChange::REMOVE, FromPasswordForm(form));
 
   backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
                             base::DoNothing());
@@ -739,7 +741,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncFailsMetrics) {
   RunUntilIdle();
 
   PasswordStoreChange remove_change =
-      PasswordStoreChange(PasswordStoreChange::REMOVE, form);
+      PasswordStoreChange(PasswordStoreChange::REMOVE, FromPasswordForm(form));
 
   bad_backend->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
                                 base::DoNothing());
@@ -1080,7 +1082,8 @@ TEST_P(PasswordStoreBuiltInBackendPasswordLossMetricsTest,
   RunUntilIdle();
 
   PasswordStoreChangeList changes;
-  changes.emplace_back(test_case.change_type, std::move(form));
+  changes.emplace_back(test_case.change_type,
+                       FromPasswordForm(std::move(form)));
   (static_cast<PasswordStoreBuiltInBackend*>(backend))
       ->NotifyCredentialsChangedForTesting(pass_key, changes);
   RunUntilIdle();

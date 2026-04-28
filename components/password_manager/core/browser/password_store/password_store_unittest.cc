@@ -146,7 +146,7 @@ PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
 PasswordStoreChangeList CreateChangeList(PasswordStoreChange::Type type,
                                          PasswordForm form) {
   PasswordStoreChangeList changes;
-  changes.emplace_back(type, std::move(form));
+  changes.emplace_back(type, FromPasswordForm(std::move(form)));
   return changes;
 }
 
@@ -155,7 +155,7 @@ auto HasChangeType(PasswordStoreChange::Type type) {
 }
 
 auto HasForm(const PasswordForm& form) {
-  return testing::Property(&PasswordStoreChange::form, Eq(form));
+  return testing::Property(&PasswordStoreChange::credential, MatchesForm(form));
 }
 
 auto EqChange(PasswordStoreChange::Type type, const PasswordForm& form) {

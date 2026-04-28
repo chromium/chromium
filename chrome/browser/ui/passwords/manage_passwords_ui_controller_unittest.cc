@@ -54,6 +54,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -780,7 +781,8 @@ TEST_P(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
 
   test_local_form().blocked_by_user = true;
   password_manager::PasswordStoreChange change(
-      password_manager::PasswordStoreChange::ADD, test_local_form());
+      password_manager::PasswordStoreChange::ADD,
+      password_manager::FromPasswordForm(test_local_form()));
   password_manager::PasswordStoreChangeList list(1, change);
   controller()->OnLoginsChanged(/*unused source store:*/ nullptr, list);
 

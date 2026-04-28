@@ -105,7 +105,7 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   std::u16string expected_password = cred.password_value;
   password_manager::PasswordStoreChangeList changes =
       login_db_->AddLogin(std::move(cred));
-  std::string keychain_identifier = changes[0].form().keychain_identifier;
+  std::string keychain_identifier = changes[0].credential().keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
@@ -128,7 +128,8 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
 
   password_manager::PasswordStoreChangeList changes =
       login_db_->AddLogin(FromPasswordForm(ToPasswordForm(cred)));
-  std::string old_keychain_identifier = changes[0].form().keychain_identifier;
+  std::string old_keychain_identifier =
+      changes[0].credential().keychain_identifier;
 
   cred.password_value = u"secret";
 
@@ -165,7 +166,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
 
   password_manager::PasswordStoreChangeList changes =
       login_db_->AddLogin(FromPasswordForm(ToPasswordForm(cred)));
-  std::string keychain_identifier = changes[0].form().keychain_identifier;
+  std::string keychain_identifier = changes[0].credential().keychain_identifier;
   std::ignore = login_db_->RemoveLogin(cred, /*changes=*/nullptr);
 
   // Verify that password is no longer available in the keychain.

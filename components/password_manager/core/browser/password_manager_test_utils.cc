@@ -86,6 +86,13 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
   return form;
 }
 
+StoredCredential FillStoredCredentialWithData(const PasswordFormData& form_data,
+                                              bool is_account_store,
+                                              bool use_federated_login) {
+  return FromPasswordForm(*FillPasswordFormWithData(form_data, is_account_store,
+                                                    use_federated_login));
+}
+
 PasswordForm CreateEntry(const std::string& username,
                          const std::string& password,
                          const GURL& origin_url,

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -91,8 +92,8 @@ PasswordReuseDetectorImpl::~PasswordReuseDetectorImpl() {
 void PasswordReuseDetectorImpl::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& form : results) {
-    AddPassword(*form);
+  for (auto& form : results) {
+    AddPassword(FromPasswordForm(std::move(*form)));
   }
 }
 
@@ -102,10 +103,10 @@ void PasswordReuseDetectorImpl::OnLoginsChanged(
   for (const auto& change : changes) {
     if (change.type() == PasswordStoreChange::ADD ||
         change.type() == PasswordStoreChange::UPDATE) {
-      AddPassword(change.form());
+      AddPassword(change.credential());
     }
     if (change.type() == PasswordStoreChange::REMOVE) {
-      RemovePassword(change.form());
+      RemovePassword(change.credential());
     }
   }
 }
@@ -119,7 +120,7 @@ void PasswordReuseDetectorImpl::OnLoginsRetained(
   // |retained_passwords| contains also blacklisted entities, but since they
   // don't have password value they will be skipped inside AddPassword().
   for (const auto& form : retained_passwords) {
-    AddPassword(form);
+    AddPassword(FromPasswordForm(form));
   }
 }
 
@@ -367,26 +368,28 @@ void PasswordReuseDetectorImpl::ClearAllNonGmailPasswordHash() {
       });
 }
 
-void PasswordReuseDetectorImpl::AddPassword(const PasswordForm& form) {
+void PasswordReuseDetectorImpl::AddPassword(const StoredCredential& cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < kMinPasswordLengthToCheck) {
+  if (cred.password_value.size() < kMinPasswordLengthToCheck) {
     return;
   }
 
-  uint64_t password_hash = CalculatePasswordHash(form.password_value, salt_);
+  uint64_t password_hash = CalculatePasswordHash(cred.password_value, salt_);
   password_hashes_with_matching_reused_credentials_[password_hash]
-      .matching_credentials.insert(MatchingReusedCredential(form));
+      .matching_credentials.insert(MatchingReusedCredential(
+          cred.signon_realm, cred.url, cred.username_value, cred.in_store));
   password_hashes_with_matching_reused_credentials_[password_hash]
-      .password_length = form.password_value.size();
+      .password_length = cred.password_value.size();
 }
 
-void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
+void PasswordReuseDetectorImpl::RemovePassword(const StoredCredential& cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (form.password_value.size() < kMinPasswordLengthToCheck) {
+  if (cred.password_value.size() < kMinPasswordLengthToCheck) {
     return;
   }
 
-  MatchingReusedCredential credential_criteria(form);
+  MatchingReusedCredential credential_criteria(
+      cred.signon_realm, cred.url, cred.username_value, cred.in_store);
   auto password_value_iter =
       passwords_with_matching_reused_credentials_.begin();
   while (password_value_iter !=
@@ -396,7 +399,7 @@ void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
     // Remove only the password for the specific domain and username.
     // Don't remove all passwords from
     // |passwords_with_matching_reused_credentials_| with a given
-    // |form.password_value|.
+    // |cred.password_value|.
     const auto credential_to_remove =
         stored_credentials_for_password_value.find(credential_criteria);
     if (credential_to_remove != stored_credentials_for_password_value.end()) {
@@ -413,7 +416,7 @@ void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
     }
   }
 
-  uint64_t password_hash = CalculatePasswordHash(form.password_value, salt_);
+  uint64_t password_hash = CalculatePasswordHash(cred.password_value, salt_);
   auto password_hash_iterator =
       password_hashes_with_matching_reused_credentials_.find(password_hash);
   if (password_hash_iterator ==
