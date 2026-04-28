@@ -27,7 +27,7 @@ suite('CrA11yAnnouncerElementTest', () => {
 
   test('QueuesMessages', async () => {
     const announcer = getInstance();
-    const messagesDiv = announcer.shadowRoot!.querySelector('#messages')!;
+    const messagesDiv = announcer.shadowRoot.querySelector('#messages')!;
 
     // Queue up 2 messages at once, and assert they both exist.
     const message1 = 'Knock knock!';
@@ -54,7 +54,7 @@ suite('CrA11yAnnouncerElementTest', () => {
     announcer.remove();
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
     assertFalse(
-        announcer.shadowRoot!.querySelector('#messages')!.textContent.includes(
+        announcer.shadowRoot.querySelector('#messages')!.textContent.includes(
             lostMessage));
 
     // Creates new announcer since previous announcer is removed from instances.

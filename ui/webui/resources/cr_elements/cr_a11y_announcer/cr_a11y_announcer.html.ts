@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getTrustedHTML} from '//resources/js/static_types.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-export function getTemplate() {
-  return getTrustedHTML`
+import type {CrA11yAnnouncerElement} from './cr_a11y_announcer.js';
+
+export function getHtml(this: CrA11yAnnouncerElement) {
+  return html`
 <div id="messages" role="alert" aria-live="polite" aria-relevant="additions">
 </div>`;
 }

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {CustomElement} from '//resources/js/custom_element.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import sheet from './cr_a11y_announcer.css' with {type : 'css'};
-import {getTemplate} from './cr_a11y_announcer.html.js';
+import {getCss} from './cr_a11y_announcer.css.js';
+import {getHtml} from './cr_a11y_announcer.html.js';
 
 /**
  * The CrA11yAnnouncerElement is a visually hidden element that reads out
@@ -18,11 +18,7 @@ export type CrA11yAnnouncerMessagesSentEvent = CustomEvent<{
   messages: string[],
 }>;
 
-declare global {
-  interface HTMLElementEventMap {
-    'cr-a11y-announcer-messages-sent': CrA11yAnnouncerMessagesSentEvent;
-  }
-}
+
 
 /**
  * 150ms seems to be around the minimum time required for screen readers to
@@ -51,24 +47,24 @@ export function getInstance(container: HTMLElement = document.body):
   return instance;
 }
 
-export class CrA11yAnnouncerElement extends CustomElement {
+export class CrA11yAnnouncerElement extends CrLitElement {
   static get is() {
     return 'cr-a11y-announcer';
   }
 
-  static override get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private currentTimeout_: number|null = null;
   private messages_: string[] = [];
 
-  constructor() {
-    super();
-    this.shadowRoot!.adoptedStyleSheets = [sheet];
-  }
-
-  disconnectedCallback() {
+  override disconnectedCallback() {
+    super.disconnectedCallback();
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);
       this.currentTimeout_ = null;
@@ -91,7 +87,7 @@ export class CrA11yAnnouncerElement extends CustomElement {
     this.messages_.push(message);
 
     this.currentTimeout_ = setTimeout(() => {
-      const messagesDiv = this.shadowRoot!.querySelector('#messages')!;
+      const messagesDiv = this.shadowRoot.querySelector('#messages')!;
       messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
 
       // <if expr="is_macosx">
@@ -117,6 +113,15 @@ export class CrA11yAnnouncerElement extends CustomElement {
       this.messages_.length = 0;
       this.currentTimeout_ = null;
     }, timeout);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-a11y-announcer': CrA11yAnnouncerElement;
+  }
+  interface HTMLElementEventMap {
+    'cr-a11y-announcer-messages-sent': CrA11yAnnouncerMessagesSentEvent;
   }
 }
 

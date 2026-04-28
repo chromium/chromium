@@ -88,7 +88,6 @@ build_webui("build") {
   }
 
   if ((!is_android && !is_ios) || is_desktop_android) {
-    static_files = [ "cr_a11y_announcer/cr_a11y_announcer.css" ]
     ts_files += [
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",
@@ -139,6 +138,7 @@ build_webui("build") {
 
     css_files += [
       "action_link_lit.css",
+      "cr_a11y_announcer/cr_a11y_announcer.css",
       "cr_actionable_row_style_lit.css",
       "cr_collapse/cr_collapse.css",
       "cr_drawer/cr_drawer.css",
