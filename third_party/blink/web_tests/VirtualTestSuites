@@ -4372,7 +4372,8 @@
       "webexposed",
       "compositing/filters",
       "external/wpt/soft-navigation-heuristics/smoke/tentative/lcp.html",
-      "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html"
+      "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html",
+      "wpt_internal/wasm/custom_descriptors_feature.any.js"
     ],
     "exclusive_tests": [
       "media/stable"

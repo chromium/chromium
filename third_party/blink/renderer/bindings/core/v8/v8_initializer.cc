@@ -734,7 +734,7 @@ bool WasmCustomDescriptorsEnabledCallback(v8::Local<v8::Context> context) {
   if (!execution_context) {
     return false;
   }
-  return RuntimeEnabledFeatures::WebAssemblyCustomDescriptorsEnabled(
+  return RuntimeEnabledFeatures::WebAssemblyCustomDescriptorsV2Enabled(
       execution_context);
 }
 

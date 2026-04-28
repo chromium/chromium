@@ -6369,13 +6369,6 @@
       base_feature: "WebAppEnableTranslations",
     },
     {
-      // https://chromestatus.com/feature/6024844719947776
-      name: "WebAssemblyCustomDescriptors",
-      origin_trial_feature_name: "WebAssemblyCustomDescriptors",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       // https://chromestatus.com/feature/6024844719947776, take 2
       name: "WebAssemblyCustomDescriptorsV2",
       origin_trial_feature_name: "WebAssemblyCustomDescriptorsV2",

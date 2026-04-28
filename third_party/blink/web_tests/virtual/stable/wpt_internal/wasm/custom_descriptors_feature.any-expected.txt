@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] custom_descriptors_feature
+  assert_true: expected true got false
+[FAIL] custom_descriptors_feature 1
+  WebAssembly.Module(): descriptor types need --experimental-wasm-custom-descriptors @+13
+Harness: the test ran to completion.
+
