@@ -6,6 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -36,6 +39,26 @@ void IsolatedWebAppUserInstalledManager::SetProvider(
     base::PassKey<WebAppProvider>,
     WebAppProvider& provider) {
   provider_ = &provider;
+}
+
+void IsolatedWebAppUserInstalledManager::Install(
+    const IsolatedWebAppUrlInfo& url_info,
+    const IsolatedWebAppInstallSource& source,
+    const std::optional<IwaVersion>& expected_version,
+    InstallIsolatedWebAppCallback callback) {
+  // That would be caught later anyway. This check just saves resources.
+  if (!ChromeIwaRuntimeDataProvider::GetInstance().GetUserInstallAllowlistData(
+          url_info.web_bundle_id().id())) {
+    std::move(callback).Run(base::unexpected(InstallIsolatedWebAppCommandError{
+        "IWA with WebAppManagement::Type::kIwaUserInstalled must be on the "
+        "user install allowlist."}));
+    return;
+  }
+
+  provider_->scheduler().InstallIsolatedWebApp(
+      url_info, source, expected_version,
+      /*optional_keep_alive=*/nullptr,
+      /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }
 
 void IsolatedWebAppUserInstalledManager::OnRuntimeDataChanged() {

@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 
 class Profile;
@@ -15,18 +16,30 @@ class Profile;
 namespace web_app {
 
 class WebAppProvider;
+class IsolatedWebAppUrlInfo;
+class IsolatedWebAppInstallSource;
+class IwaVersion;
+struct InstallIsolatedWebAppCommandSuccess;
+struct InstallIsolatedWebAppCommandError;
 
 // This class manages the lifetime of isolated web app installed by user
 // through Graphical User Interface.
-// TODO(crbug.com/477039906): Move user-installation flow to go through this
-// manager.
 class IsolatedWebAppUserInstalledManager {
+  using InstallIsolatedWebAppCallback = base::OnceCallback<void(
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError>)>;
+
  public:
   explicit IsolatedWebAppUserInstalledManager(Profile& profile);
   ~IsolatedWebAppUserInstalledManager();
 
   void Start();
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
+
+  void Install(const IsolatedWebAppUrlInfo& url_info,
+               const IsolatedWebAppInstallSource& source,
+               const std::optional<IwaVersion>& expected_version,
+               InstallIsolatedWebAppCallback callback);
 
  private:
   void OnRuntimeDataChanged();
