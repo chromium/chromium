@@ -2109,6 +2109,17 @@ Readability.prototype = {
       return {score: 100, captionFun: () => this._cloneElement(figcaption)};
     }
 
+    // Also prefer <cite> as it is often used for image credits/captions.
+    const citeList = Array.from(el.getElementsByTagName('cite'));
+    const citeString = citeList.map((c) => c.textContent).join(' ');
+    if (citeString.length > 0) {
+      return {score: 95, captionFun: () => {
+        const figcaption = this._doc.createElement('figcaption');
+        figcaption.textContent = citeString;
+        return figcaption;
+      }};
+    }
+
     // Synthesize caption from <p> tags.
     const pList = Array.from(el.getElementsByTagName('p'));
     let pString = pList.map((p) => p.textContent).join(' ');
@@ -2117,7 +2128,7 @@ Readability.prototype = {
       if (/\b(credit|source|photo:)\b/i.test(pString)) {
         score = 95;
       }
-      return {score: score, captionFun: () => {
+    return {score: score, captionFun: () => {
         const figcaption = this._doc.createElement('figcaption');
         figcaption.textContent = pString;
         return figcaption;
@@ -2158,7 +2169,7 @@ Readability.prototype = {
     // Second pass: Find the best caption from the relevant slice.
     const captionCandidates = leadCandidates.slice(0, bestImageRatingIndex + 1);
     const captionRatings =
-        captionCandidates.map((el) => this._rateLeadCaptionIn(el));
+      captionCandidates.map((el) => this._rateLeadCaptionIn(el));
     const [bestCaptionRating, bestCaptionRatingIndex] =
         this._argmax(captionRatings, (rating) => rating?.score ?? -1);
 

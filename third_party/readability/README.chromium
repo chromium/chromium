@@ -36,3 +36,5 @@ update the modded_src/version and update the list of changes below.
   text blocks are never ignored (crbug.com/483735928).
 - Expand unlikelyCandidates regex with e-commerce keywords to strip interactive
   shopping carousels (crbug.com/441593356).
+- Allow <cite> elements to be counted as potential image captions
+  (crbug.com/494366222).
