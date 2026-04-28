@@ -35,7 +35,7 @@ let allEventsReceived;
 function eventListener(event) {
   chrome.test.assertTrue(eventNumber < EXPECTED_EVENTS.length);
   chrome.test.assertEq(EXPECTED_EVENTS[eventNumber], event);
-  if (++eventNumber == EXPECTED_EVENTS.length) {
+  if (++eventNumber === EXPECTED_EVENTS.length) {
     allEventsReceived();
   }
 }
@@ -62,7 +62,7 @@ function waitForDisplay(callback) {
     if (state.available) {
       displayStateHandler(state);
     } else {
-      console.log('Display not ready yet');
+      console.info('Display not ready yet');
     }
   }));
 }

@@ -4,7 +4,7 @@
 
 function checkFirstMessageEquals(expectedRequest) {
   return function(request) {
-    if (request != expectedRequest) {
+    if (request !== expectedRequest) {
       chrome.test.fail('Unexpected request: ' + JSON.stringify(request));
     }
     // chrome.test.succeed() will be called by chrome.test.listenOnce().

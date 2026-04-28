@@ -12,7 +12,7 @@ function testExecuteScriptInNewTab() {
   // Create a new tab to chrome://newtab and wait for the loading to complete.
   // Then, try to inject a script into that tab. The injection should fail.
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (!newTabUrls.includes(tab.url) || changeInfo.status != 'complete') {
+    if (!newTabUrls.includes(tab.url) || changeInfo.status !== 'complete') {
       return;
     }
     chrome.tabs.onUpdated.removeListener(listener);
@@ -20,8 +20,8 @@ function testExecuteScriptInNewTab() {
       chrome.test.assertTrue(!!chrome.runtime.lastError);
       const lastErrorMessage = chrome.runtime.lastError.message;
       chrome.test.assertTrue(
-          lastErrorMessage.indexOf('Cannot access contents of') != -1 ||
-              lastErrorMessage.indexOf('Cannot access a chrome:// URL') != -1,
+          lastErrorMessage.indexOf('Cannot access contents of') !== -1 ||
+              lastErrorMessage.indexOf('Cannot access a chrome:// URL') !== -1,
           lastErrorMessage);
       chrome.test.succeed();
     });

@@ -22,7 +22,7 @@ chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
       break;
     case true:
       chrome.test.sendMessage('incognito allowed', function(message) {
-        if (message == 'incognito update') {
+        if (message === 'incognito update') {
           updateBrowserAction();
         }
       });
@@ -31,7 +31,7 @@ chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
 });
 
 chrome.test.sendMessage('ready', function(message) {
-  if (message == 'update') {
+  if (message === 'update') {
     updateBrowserAction();
   }
 });

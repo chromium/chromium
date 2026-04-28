@@ -14,7 +14,7 @@ chrome.test.runTests([
 
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       if (changeInfo.status === 'complete' &&
-          tab.url.indexOf('test_file.html') != -1) {
+          tab.url.indexOf('test_file.html') !== -1) {
         chrome.test.succeed();
       }
     });

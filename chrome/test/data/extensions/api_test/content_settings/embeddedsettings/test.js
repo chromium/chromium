@@ -25,7 +25,7 @@ chrome.test.runTests([
 
     // Geolocation embedded patterns are not permitted when permission
     // delegation is enabled.
-    if (delegation == 'permission') {
+    if (delegation === 'permission') {
       cs['location'].set(
           {
             primaryPattern: 'http://google.com/*',

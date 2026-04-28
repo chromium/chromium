@@ -25,7 +25,7 @@ function createTestTab(domain, callback) {
   let createdTabId = -1;
   const done =
       listenForever(chrome.tabs.onUpdated, function(tabId, changeInfo, tab) {
-        if (tabId == createdTabId && changeInfo.status != 'loading') {
+        if (tabId === createdTabId && changeInfo.status !== 'loading') {
           callback(tab);
           done();
         }

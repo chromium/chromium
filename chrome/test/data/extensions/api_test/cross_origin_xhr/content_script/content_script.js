@@ -5,7 +5,7 @@
 chrome.extension.onRequest.addListener(function(url, sender, sendResponse) {
   let isErrorTriggered = false;
   const req = new XMLHttpRequest();
-  console.log(`Requesting url: ${url}`);
+  console.info(`Requesting url: ${url}`);
   req.open('GET', url, true);
 
   req.onload = function() {

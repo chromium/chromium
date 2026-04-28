@@ -27,15 +27,15 @@ async function testWithIframe() {
   let numAllFramesMessages = 0;
   let numTopFrameOnlyMessages = 0;
   const testCallback = (message, sender, sendResponse) => {
-    if (message == 'all_frames') {
+    if (message === 'all_frames') {
       numAllFramesMessages++;
       chrome.test.assertTrue(numAllFramesMessages <= 3);
-    } else if (message == 'top_frame_only') {
+    } else if (message === 'top_frame_only') {
       numTopFrameOnlyMessages++;
       chrome.test.assertTrue(
           numTopFrameOnlyMessages <= 2,
           'Unexpected: maybe wrong injection on the activation');
-    } else if (message == 'activated') {
+    } else if (message === 'activated') {
       chrome.runtime.onMessage.removeListener(testCallback);
       // Inject a second script into the now-activated frame, but run it at
       // document_idle. This ensures that any content scripts that will run on
@@ -54,7 +54,7 @@ async function testWithIframe() {
       chrome.runtime.onMessage.removeListener(testCallback);
       chrome.test.fail('Unexpected message: ' + JSON.stringify(message));
     }
-    if (numAllFramesMessages == 3 && numTopFrameOnlyMessages == 2) {
+    if (numAllFramesMessages === 3 && numTopFrameOnlyMessages === 2) {
       // Navigate to the pre-rendered page.
       // TODO(crbug.com/40208062): `chrome.tabs.update` can not activate
       // the pre-rendered page, but takes a new navigation instead.
@@ -84,17 +84,17 @@ async function testWithAboutBlankIframe(details) {
   let numAllFramesMessages = 0;
   let numTopFrameOnlyMessages = 0;
   const testCallback = (message, sender, sendResponse) => {
-    if (message == 'all_frames') {
+    if (message === 'all_frames') {
       numAllFramesMessages++;
       chrome.test.assertTrue(
           numAllFramesMessages <= expectedNumAllFramesMessages,
           'Unexpected: maybe running on about:blank');
-    } else if (message == 'top_frame_only') {
+    } else if (message === 'top_frame_only') {
       numTopFrameOnlyMessages++;
       chrome.test.assertTrue(
           numAllFramesMessages <= expectedNumTopFrameOnlyMessages,
           'Unexpected: maybe wrong injection on the activation');
-    } else if (message == 'activated') {
+    } else if (message === 'activated') {
       chrome.runtime.onMessage.removeListener(testCallback);
       // Inject a second script into the now-activated frame, but run it at
       // document_idle. This ensures that any content scripts that will run on
@@ -115,8 +115,8 @@ async function testWithAboutBlankIframe(details) {
       chrome.runtime.onMessage.removeListener(testCallback);
       chrome.test.fail('Unexpected message: ' + JSON.stringify(message));
     }
-    if (numAllFramesMessages == expectedNumAllFramesMessages &&
-        numTopFrameOnlyMessages == expectedNumTopFrameOnlyMessages) {
+    if (numAllFramesMessages === expectedNumAllFramesMessages &&
+        numTopFrameOnlyMessages === expectedNumTopFrameOnlyMessages) {
       // Navigate to the pre-rendered page.
       // TODO(crbug.com/40208062): `chrome.tabs.update` can not activate
       // the pre-rendered page, but takes a new navigation instead.

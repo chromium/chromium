@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return;
   }
 
-  chrome.test.assertEq(request.source == 'a.com', request.modified);
+  chrome.test.assertEq(request.source === 'a.com', request.modified);
   receivedRequests[request.source] = true;
   if (receivedRequests['a.com'] && receivedRequests['b.com']) {
     chrome.test.succeed();

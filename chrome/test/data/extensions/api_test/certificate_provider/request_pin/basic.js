@@ -29,18 +29,18 @@ function onPinRequested(responseDetails) {
     chrome.certificateProvider.requestPin(
         {signRequestId: SIGN_REQUEST_ID}, onPinRequested);
     chrome.test.sendMessage('User closed the dialog', function(message) {
-      if (message == 'GetLastError') {
+      if (message === 'GetLastError') {
         chrome.test.sendMessage(lastError);
       }
     });
     return;
   }
 
-  const success = responseDetails.userInput == CORRECT_PIN;
+  const success = responseDetails.userInput === CORRECT_PIN;
   if (success) {
     chrome.certificateProvider.stopPinRequest(
         {signRequestId: SIGN_REQUEST_ID}, onPinRequestStopped);
-    chrome.test.sendMessage(lastError == '' ? 'Success' : lastError);
+    chrome.test.sendMessage(lastError === '' ? 'Success' : lastError);
   } else {
     attempts++;
     const code = attempts < WRONG_ATTEMPTS_LIMIT ?
@@ -52,7 +52,7 @@ function onPinRequested(responseDetails) {
           attemptsLeft: 0,
         };
     chrome.certificateProvider.requestPin(code, onPinRequested);
-    chrome.test.sendMessage(lastError == '' ? 'Invalid PIN' : lastError);
+    chrome.test.sendMessage(lastError === '' ? 'Invalid PIN' : lastError);
   }
 }
 

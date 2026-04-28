@@ -20,7 +20,7 @@ try {
   if (rules != null) {
     message = 'passed';
     for (let i = 0; i < rules.length; ++i) {
-      if (rules.item(i).cssText.indexOf('extension_id') != -1) {
+      if (rules.item(i).cssText.indexOf('extension_id') !== -1) {
         message = 'Found unreplaced extension_id in: ' + rules.item(i).cssText;
         break;
       }

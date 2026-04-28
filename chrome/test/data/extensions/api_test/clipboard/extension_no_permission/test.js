@@ -69,7 +69,7 @@ function testExecuteScriptCopyPaste(baseUrl) {
       {url: tabUrl}, pass(function(newTab) {
         const done = chrome.test.listenForever(
             chrome.tabs.onUpdated, function(_, info, updatedTab) {
-              if (updatedTab.id == newTab.id && info.status == 'complete') {
+              if (updatedTab.id === newTab.id && info.status === 'complete') {
                 runScript(newTab.id);
                 done();
               }
@@ -90,7 +90,7 @@ function testContentScriptCopyPaste(baseUrl) {
   chrome.tabs.create({url: tabUrl}, chrome.test.callbackPass(function(newTab) {
     const done = chrome.test.listenForever(
         chrome.tabs.onUpdated, function(_, info, updatedTab) {
-          if (updatedTab.id == newTab.id && info.status == 'complete') {
+          if (updatedTab.id === newTab.id && info.status === 'complete') {
             runScript(newTab.id);
             done();
           }

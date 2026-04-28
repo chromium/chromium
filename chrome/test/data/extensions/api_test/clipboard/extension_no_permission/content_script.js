@@ -25,7 +25,7 @@ function run() {
   if (document.execCommand('paste')) {
     return 'Succeeded to paste';
   }
-  if (textOut.value == 'foobar') {
+  if (textOut.value === 'foobar') {
     return 'Successfully copied/pasted despite execCommand failures';
   }
 

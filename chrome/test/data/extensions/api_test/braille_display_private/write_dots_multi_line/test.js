@@ -38,7 +38,7 @@ function waitForDisplay(callback) {
     if (state.available) {
       displayStateHandler(state);
     } else {
-      console.log('Display not ready yet');
+      console.info('Display not ready yet');
     }
   }));
 }

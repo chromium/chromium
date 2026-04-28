@@ -6,5 +6,5 @@ try {
   document.write('bypass');
 } catch (e) {
 }
-const bypassSucess = document.body.innerText.indexOf('bypass') != -1;
+const bypassSucess = document.body.innerText.indexOf('bypass') !== -1;
 chrome.runtime.connect().postMessage(bypassSucess);

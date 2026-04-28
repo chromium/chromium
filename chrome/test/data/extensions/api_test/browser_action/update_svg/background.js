@@ -23,9 +23,9 @@ function updateBrowserAction() {
 }
 
 chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-  if (isAllowedAccess == true) {
+  if (isAllowedAccess === true) {
     chrome.test.sendMessage('incognito ready', function(message) {
-      if (message == 'incognito update') {
+      if (message === 'incognito update') {
         updateBrowserAction();
       }
     });
@@ -33,7 +33,7 @@ chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
 });
 
 chrome.test.sendMessage('ready', function(message) {
-  if (message == 'update') {
+  if (message === 'update') {
     updateBrowserAction();
   }
 });

@@ -9,7 +9,7 @@ chrome.test.getConfig(function(config) {
       '/extensions/test_file_with_body.html';
 
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete') {
+    if (changeInfo.status !== 'complete') {
       return;
     }
     chrome.tabs.onUpdated.removeListener(listener);

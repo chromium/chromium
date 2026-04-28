@@ -9,7 +9,7 @@ chrome.test.runTests([
     let callsCompleted = 0;
     function setComplete() {
       ++callsCompleted;
-      if (callsCompleted == 4) {
+      if (callsCompleted === 4) {
         chrome.test.succeed();
       }
     }

@@ -5,11 +5,11 @@
 chrome.test.runTests([function contentTest() {
   window.addEventListener('message', function(event) {
     const msg = event.data;
-    if (msg == 'original') {
-      console.log('VICTIM: No content changed.');
+    if (msg === 'original') {
+      console.info('VICTIM: No content changed.');
       chrome.test.succeed();
     } else {
-      console.log(`VICTIM: Detected injected content - ${msg}`);
+      console.info(`VICTIM: Detected injected content - ${msg}`);
       chrome.test.fail(`Content changed: ${msg}`);
     }
   }, false);
@@ -19,7 +19,7 @@ chrome.test.runTests([function contentTest() {
     const testUrl = `http://a.com:${config.testServer.port}` +
         '/extensions/api_test/content_scripts/other_extensions/' +
         `iframe_content.html#${escape(chrome.runtime.getURL('test.html'))}`;
-    console.log(`Opening frame: ${testUrl}`);
+    console.info(`Opening frame: ${testUrl}`);
     document.getElementById('content_frame').src = testUrl;
   });
 }]);

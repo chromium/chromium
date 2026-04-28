@@ -14,15 +14,15 @@ chrome.test.runTests([
   function onMessage() {
     chrome.runtime.onMessage.addListener(function(
         request, sender, sendResponse) {
-      if (request == 'all_frames') {
+      if (request === 'all_frames') {
         numAllFramesMessages++;
-      } else if (request == 'top_frame_only') {
+      } else if (request === 'top_frame_only') {
         numTopFrameOnlyMessages++;
       } else {
         chrome.test.fail(`Unexpected request: ${JSON.stringify(request)}`);
       }
 
-      if (numAllFramesMessages == 2 && numTopFrameOnlyMessages == 1) {
+      if (numAllFramesMessages === 2 && numTopFrameOnlyMessages === 1) {
         chrome.test.succeed();
       }
     });

@@ -13,7 +13,7 @@ chrome.test.getConfig(function(config) {
   // chrome.storage should exist, since the extension has the permission, and
   // the storage api is allowed in content scripts.
   if (!chrome.storage) {
-    console.log('Error: chrome.storage doesn\'t exist; it should');
+    console.info('Error: chrome.storage doesn\'t exist; it should');
     success = false;
   }
 
@@ -22,7 +22,7 @@ chrome.test.getConfig(function(config) {
       return true;
     }
 
-    console.log(`Error: ${name} doesn't exist, but should.`);
+    console.info(`Error: ${name} doesn't exist, but should.`);
     return false;
   };
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function enableBrowserAction(message) {
-  if (message == 'start enabled') {
+  if (message === 'start enabled') {
     chrome.browserAction.disable(function() {
       chrome.test.notifyPass();
     });

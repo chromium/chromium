@@ -25,7 +25,7 @@ function run() {
   if (!document.execCommand('paste')) {
     return 'Failed to paste';
   }
-  if (textOut.value != 'foobar') {
+  if (textOut.value !== 'foobar') {
     return `Expected 'foobar', got ${textOut.value}`;
   }
 

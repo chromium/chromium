@@ -16,25 +16,25 @@ function getTestFunctionFor(keys, fails) {
             function(values) {
               for (let i = 0; i < keys.length; ++i) {
                 // Default session type should be normal.
-                if (keys[i] == 'sessionType') {
+                if (keys[i] === 'sessionType') {
                   chrome.test.assertEq('normal', values[keys[i]]);
                 }
                 // PlayStoreStatus by default should be not available.
-                if (keys[i] == 'playStoreStatus') {
+                if (keys[i] === 'playStoreStatus') {
                   chrome.test.assertEq('not available', values[keys[i]]);
                 }
-                if (keys[i] == 'managedDeviceStatus') {
+                if (keys[i] === 'managedDeviceStatus') {
                   chrome.test.assertEq('not managed', values[keys[i]]);
                 }
                 // Debug
                 if (keys[i] in values) {
-                  console.log(`  values["${keys[i]}"] = ${values[keys[i]]}`);
+                  console.info(`  values["${keys[i]}"] = ${values[keys[i]]}`);
                 } else {
-                  console.log(`  ${keys[i]} is missing in values`);
+                  console.info(`  ${keys[i]} is missing in values`);
                 }
 
                 chrome.test.assertEq(
-                    fails.indexOf(keys[i]) == -1, keys[i] in values);
+                    fails.indexOf(keys[i]) === -1, keys[i] in values);
               }
             },
             ),

@@ -83,23 +83,23 @@ function compareNode(left, right) {
   // chrome.test.log(JSON.stringify(left, null, 2));
   // chrome.test.log(JSON.stringify(right, null, 2));
   //  TODO(erikkay): do some comparison of dateAdded
-  if (left.id != right.id) {
+  if (left.id !== right.id) {
     return `id mismatch: ${left.id} != ${right.id}`;
   }
-  if (left.title != right.title) {
+  if (left.title !== right.title) {
     // TODO(erikkay): This resource dependency still isn't working reliably.
     // See bug 19866.
     // return 'title mismatch: ' + left.title + ' != ' + right.title;
     chrome.test.log(`title mismatch: ${left.title} != ${right.title}`);
   }
-  if (left.url != right.url) {
+  if (left.url !== right.url) {
     return `url mismatch: ${left.url} != ${right.url}`;
   }
   // Check only when optional 'index' property exist.
-  if (left.index != undefined && left.index != right.index) {
+  if (left.index !== undefined && left.index !== right.index) {
     return `index mismatch: ${left.index} != ${right.index}`;
   }
-  if (left.unmodifiable != right.unmodifiable) {
+  if (left.unmodifiable !== right.unmodifiable) {
     return `unmodifiable mismatch: ${left.unmodifiable} ` +
         `!= ${right.unmodifiable}`;
   }
@@ -117,7 +117,7 @@ function compareTrees(left, right, verbose) {
   if (left == null || right == null) {
     return `${left} != ${right}`;
   }
-  if (left.length != right.length) {
+  if (left.length !== right.length) {
     return `count mismatch: ${left.length} != ${right.length}`;
   }
   for (let i = 0; i < left.length; i++) {

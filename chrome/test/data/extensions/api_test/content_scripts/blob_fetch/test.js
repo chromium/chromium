@@ -11,10 +11,10 @@ chrome.test.runTests([
   function testBlobUrlFromContentScript() {
     chrome.extension.onMessage.addListener(function(
         request, sender, sendResponse) {
-      if (request == 'kindly_reply_with_blob_url') {
+      if (request === 'kindly_reply_with_blob_url') {
         const blobUrl = URL.createObjectURL(new Blob(['success_payload']));
         sendResponse(blobUrl);
-      } else if (request == 'success_payload') {
+      } else if (request === 'success_payload') {
         chrome.test.succeed();
       } else {
         chrome.test.fail(`Unexpected request: ${JSON.stringify(request)}`);

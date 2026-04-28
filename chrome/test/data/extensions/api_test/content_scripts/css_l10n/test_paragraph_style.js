@@ -11,7 +11,7 @@ var message = 'Test failed to complete';  // eslint-disable-line no-var
 try {
   const p = document.getElementById('pId');
   const color = getComputedStyle(p).color;
-  if (getComputedStyle(p).color == 'rgb(255, 0, 0)') {
+  if (getComputedStyle(p).color === 'rgb(255, 0, 0)') {
     message = 'passed';
   } else {
     message = 'Paragraph is not red: ' + color;

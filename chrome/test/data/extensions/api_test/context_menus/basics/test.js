@@ -29,16 +29,14 @@ const tests = [
   },
 
   function remove() {
-    let id;
-    id = chrome.contextMenus.create(maybeAddId({title: '1'}), function() {
+    const id = chrome.contextMenus.create(maybeAddId({title: '1'}), function() {
       assertNoLastError();
       chrome.contextMenus.remove(id, chrome.test.callbackPass());
     });
   },
 
   function update() {
-    let id;
-    id = chrome.contextMenus.create(
+    const id = chrome.contextMenus.create(
         maybeAddId({title: 'update test'}), function() {
           assertNoLastError();
           chrome.contextMenus.update(
@@ -67,15 +65,15 @@ const tests = [
   },
 
   function hasParent() {
-    let id;
-    id = chrome.contextMenus.create(maybeAddId({title: 'parent'}), function() {
-      assertNoLastError();
-      chrome.contextMenus.create(
-          maybeAddId({title: 'child', parentId: id}), function() {
-            assertNoLastError();
-            chrome.test.succeed();
-          });
-    });
+    const id =
+        chrome.contextMenus.create(maybeAddId({title: 'parent'}), function() {
+          assertNoLastError();
+          chrome.contextMenus.create(
+              maybeAddId({title: 'child', parentId: id}), function() {
+                assertNoLastError();
+                chrome.test.succeed();
+              });
+        });
   },
 ];
 

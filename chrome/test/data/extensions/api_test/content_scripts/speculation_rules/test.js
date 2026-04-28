@@ -15,11 +15,11 @@ async function testInjectSpeculationRules() {
 
   // Monitor messages from the injected content_script.js.
   const testCallback = (message, sender, sendResponse) => {
-    if (message == getUrl('empty.html')) {
+    if (message === getUrl('empty.html')) {
       // empty.html is loaded.
       chrome.test.assertFalse(testPageLoaded);
       testPageLoaded = true;
-    } else if (message == getUrl('title1.html')) {
+    } else if (message === getUrl('title1.html')) {
       // title1.html is prerendered as a result of the permitted inline
       // speculation rules injection.
       chrome.test.assertFalse(prerenderPageLoaded);

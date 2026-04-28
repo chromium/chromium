@@ -5,7 +5,7 @@
 chrome.runtime.sendMessage(location.href);
 
 // Inject speculation rules if the page is the initial test page.
-if (location.pathname == '/empty.html') {
+if (location.pathname === '/empty.html') {
   // Generate the prerendering target URL that is in the same origin with
   // the path '/title1.html'.
   const target = new URL(location.href);

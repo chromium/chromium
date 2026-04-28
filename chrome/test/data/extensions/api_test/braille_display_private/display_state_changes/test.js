@@ -17,9 +17,9 @@ const EXPECTED_EVENTS = [
 let eventNumber = 0;
 
 function eventListener(event) {
-  console.log(`Got event ${JSON.stringify(event)}`);
+  console.info(`Got event ${JSON.stringify(event)}`);
   chrome.test.assertEq(event, EXPECTED_EVENTS[eventNumber]);
-  if (++eventNumber == EXPECTED_EVENTS.length) {
+  if (++eventNumber === EXPECTED_EVENTS.length) {
     callbackCompleted();
   }
 }

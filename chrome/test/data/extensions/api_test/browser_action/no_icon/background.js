@@ -31,7 +31,7 @@ const setIconParamQueue = [
 
 // Called when the user clicks on the browser action.
 chrome.browserAction.onClicked.addListener(function(windowId) {
-  if (setIconParamQueue.length == 0) {
+  if (setIconParamQueue.length === 0) {
     chrome.test.notifyFail('Queue of params for test cases unexpectedly empty');
     return;
   }
@@ -41,7 +41,7 @@ chrome.browserAction.onClicked.addListener(function(windowId) {
       chrome.test.notifyPass();
     });
   } catch (error) {
-    console.log(error.message);
+    console.info(error.message);
     chrome.test.notifyFail(error.message);
   }
 });

@@ -6,15 +6,15 @@ let numPings = 0;
 let baseUrl;
 
 chrome.runtime.onMessage.addListener(function(data) {
-  if (data != 'ping') {
+  if (data !== 'ping') {
     chrome.test.fail(`Unexpected request: ${JSON.stringify(data)}`);
   }
 
-  if (++numPings == 2) {
+  if (++numPings === 2) {
     // Navigate the iframe to another page and check that the content script is
     // also injected into that page.
     document.querySelector('iframe').src = `${baseUrl}test_file_with_body.html`;
-  } else if (numPings == 3) {
+  } else if (numPings === 3) {
     chrome.test.notifyPass();
   }
 });
