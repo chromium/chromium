@@ -642,14 +642,12 @@ perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
 
 import("//base/tracing/stdlib/chrome/perfetto_sql_files.gni")
 action("amalgamated_perfetto_sql_stdlib") {
-  script = "//third_party/perfetto/tools/gen_amalgamated_sql.py"
+  script = "tracing/gen_amalgamated_stdlib.py"
   sources =
       rebase_path(chrome_stdlib_sql_files, ".", "//base/tracing/stdlib/chrome")
   stdlib_header = "$root_gen_dir/base/test/perfetto_sql_stdlib.h"
   outputs = [ stdlib_header ]
   args = [
-           "--namespace",
-           "chrome_stdlib",
            "--cpp-out",
            rebase_path(stdlib_header, root_build_dir),
          ] + rebase_path(sources, root_build_dir)
