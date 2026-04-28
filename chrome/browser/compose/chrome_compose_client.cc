@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "chrome/browser/compose/compose_enabling.h"
@@ -127,7 +128,16 @@ void ChromeComposeClient::FieldChangeObserver::OnAfterTextFieldValueChanged(
   ++text_field_value_change_event_count_;
   if (text_field_value_change_event_count_ >=
       compose::GetComposeConfig().nudge_field_change_event_max) {
-    HideComposeNudges();
+    if (base::FeatureList::IsEnabled(
+            compose::features::kComposeHideComposeNudgesAsynchronously)) {
+      // This asynchronous call is to avoid reentrant AutofillManager::Observer
+      // calls. See crbug.com/501120730 for details.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&FieldChangeObserver::HideComposeNudges,
+                                    weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      HideComposeNudges();
+    }
     text_field_value_change_event_count_ = 0;
   }
 }

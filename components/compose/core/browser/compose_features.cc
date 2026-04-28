@@ -73,4 +73,8 @@ BASE_FEATURE(kComposeAllowOnDeviceExecution, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeUpfrontInputModes, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kComposeHideComposeNudgesAsynchronously,
+             "ComposeHideComposeNudgesAsynchronously",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace compose::features

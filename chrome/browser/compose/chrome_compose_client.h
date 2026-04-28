@@ -95,6 +95,8 @@ class ChromeComposeClient
 
     autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
         this};
+
+    base::WeakPtrFactory<FieldChangeObserver> weak_ptr_factory_{this};
   };
 
   ChromeComposeClient(const ChromeComposeClient&) = delete;

@@ -79,8 +79,12 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
 // Enables on-device execution, if available.
 BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
 
-// Enables or disables upfront input modes in the dialog.
+// Enables upfront input modes in the dialog.
 BASE_DECLARE_FEATURE(kComposeUpfrontInputModes);
+
+// If enabled, Compose nudges are hidden asynchronously to avoid reentrant
+// AutofillManager::Observer calls. See crbug.com/501120730 for details.
+BASE_DECLARE_FEATURE(kComposeHideComposeNudgesAsynchronously);
 
 }  // namespace compose::features
 
