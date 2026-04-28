@@ -317,10 +317,6 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.effective_enabled_permissions_;
   }
-  static bool can_disable_untrusted_network(
-      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
-    return properties.can_disable_untrusted_network_;
-  }
   static bool is_cross_origin_content(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.is_cross_origin_content_;

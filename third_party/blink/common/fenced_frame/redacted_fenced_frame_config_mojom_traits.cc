@@ -499,9 +499,6 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
     }
   }
 
-  out_properties->can_disable_untrusted_network_ =
-      data.can_disable_untrusted_network();
-
   out_properties->is_cross_origin_content_ = data.is_cross_origin_content();
 
   out_properties->allow_cross_origin_event_reporting_ =

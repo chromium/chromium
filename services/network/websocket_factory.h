@@ -71,11 +71,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketFactory final {
   // Removes and deletes |impl|.
   void Remove(WebSocket* impl);
 
-  // Close existing WebSocket connections when network access is revoked from a
-  // fenced frame. The frame's associated WebSockets are identified via their
-  // IsolationInfo's nonce.
-  void RemoveIfNonceMatches(const base::UnguessableToken& nonce);
-
   // Creates synthetic WEBSOCKET_ALIVE NetLog entries for pre-existing
   // WebSocket connections. Called when NetLog capture starts to provide
   // visibility into active WebSockets that were created before logging began.

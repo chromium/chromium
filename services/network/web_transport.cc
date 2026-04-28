@@ -603,10 +603,6 @@ void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
   transport_->Close(close_info_to_pass);
 }
 
-void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
-  transport_->CloseIfNonceMatches(nonce);
-}
-
 void WebTransport::OnLocalNetworkAccessCheck(
     const net::IPEndPoint& server_address,
     const net::NetLogWithSource& net_log,

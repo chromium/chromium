@@ -958,8 +958,6 @@ struct URLLoaderFactoryParams {
   mojo_base.mojom.UnguessableToken? network_restrictions_id;
 };
 
-// If allowlisted_patterns is empty then it falls back to the earlier use case
-// of all network revoked (only applicable to fenced frames).
 struct NonceAndAllowlistedPatterns {
   mojo_base.mojom.UnguessableToken nonce;
   ConnectionAllowlists allowlists;
@@ -974,17 +972,13 @@ struct NonceAndAllowlistedPatterns {
 // to it.
 //
 // WARNING: When adding a new entry point function in the NetworkContext to
-// send a network request, if it is passed the IsolationInfo, either directly
-// or via one of its resultant keys like NetworkIsolationKey,
-// NetworkAnonymizationKey etc., or via its container like
-// `URLRequest.trusted_params`, make sure to check that the nonce in the key is
-// not revoked via NetworkContext::IsNetworkForNonceAndUrlAllowed() (See
-// example check in NetworkContext::ResolveHost). If it is, the request should
-// most likely be abandoned unless it is considered privacy safe, since the
-// initiating context has revoked access to the network. If the request is
+// send a network request, make sure to send the network_restrictions_id
+// so it can be checked that network is not restricted via
+// NetworkContext::IsNetworkForNonceAndUrlAllowed() (See
+// example check in NetworkContext::ResolveHost). If the request is
 // allowed to access the network, please add a comment in the function as to
-// why network revocation doesn’t apply to that request. More context on
-// network revocation is in the comment for `RevokeNetworkForNonces()` below.
+// why network restrictions don’t apply to that request. More context on
+// network restrictions is in the comment for `RevokeNetworkForNonces()` below.
 [RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface NetworkContext {
   // Sets a client for this network context.
@@ -1770,16 +1764,7 @@ interface NetworkContext {
   // the connection-allowlist feature it is extended to also add allowlisted
   // URLs for iframes and top-level frames. Also rename the corresponding
   // NetworkContext::network_revocation_nonces_ to network_restriction_nonces_.
-  // Used for the following scenarios:
-  // 1. Used for fenced frames network
-  // revocation:
-  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
-  // Each fenced frame tree primarily uses one "fenced frame nonce" for
-  // requests that originate from it, but requests from credentialless iframes
-  // within the fenced frame tree use a different "credentialless iframes
-  // nonce". Currently these are the two nonces passed in `nonces`.
-  //
-  // 2. Used for connection-allowlist (see
+  // Used for connection-allowlist (see
   // https://github.com/WICG/connection-allowlists). Network from the
   // URLLoaderfactory whose `network_restriction_id` matches `nonces` will only
   // be allowed to `allowlisted_patterns` and blocked otherwise.
@@ -1794,16 +1779,8 @@ interface NetworkContext {
   // `NetworkService` crash. Note that this will only clear nonces specified
   // previously in `RevokeNetworkForNonces`, and should only be called when
   // those nonces are no longer relevant (for instance, after the corresponding
-  // fenced frame is destroyed).
+  // frame is destroyed).
   ClearNonces(array<mojo_base.mojom.UnguessableToken> nonces);
-
-  // Register that network requests operating under the nonce `nonce` whose url
-  // without filename is `exempted_url` should be exempt from network
-  // revocation. This can be called before network is revoked for `nonce` with
-  // `RevokeNetworkForNonce`, and it will store the exemption so that it can
-  // take effect afterwards.
-  ExemptUrlFromNetworkRevocationForNonce(
-      url.mojom.Url exempted_url, mojo_base.mojom.UnguessableToken nonce) => ();
 
   // Request that `request` be performed and cached as a prefetch. If a matching
   // request is subseqently received from a render process, the prefetch will

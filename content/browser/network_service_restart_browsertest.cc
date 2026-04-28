@@ -1088,10 +1088,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                                 final_resource_url)));
 }
 
-// Nonces whose network access is revoked should be restored in `NetworkContext`
-// in case of a `NetworkService` crash, which destroys the `NetworkContext`
-// owned by `NetworkService` and the set of network revocation nonces in
-// `NetworkContext`.
+// Nonces whose network access is restricted should be restored in
+// `NetworkContext` in case of a `NetworkService` crash, which destroys the
+// `NetworkContext` owned by `NetworkService` and the set of network
+// restriction nonces in `NetworkContext`.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        RestoreNetworkRevocationNonces) {
   if (IsInProcessNetworkService()) {
@@ -1105,15 +1105,21 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   // Revoke network access for the generated nonce.
   base::UnguessableToken nonce = base::UnguessableToken::Create();
+  network::ConnectionAllowlists allowlists;
+  allowlists.enforced.emplace();
+  std::map<base::UnguessableToken, network::ConnectionAllowlists>
+      nonces_to_allowlists;
+  nonces_to_allowlists[nonce] = std::move(allowlists);
   partition->RevokeNetworkForNoncesInNetworkContext(
-      {{nonce, network::ConnectionAllowlists()}}, base::DoNothing());
+      std::move(nonces_to_allowlists), base::DoNothing());
 
   // Make a get request, which should be blocked.
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::OriginatingProcessId::browser();
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
+  params->network_restrictions_id = nonce;
+  params->isolation_info = net::IsolationInfo::CreateTransient(std::nullopt);
 
   network::ResourceRequest request;
   request.url = GetTestURL();
@@ -1143,7 +1149,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   new_params->process_id = network::OriginatingProcessId::browser();
   new_params->is_orb_enabled = false;
-  new_params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
+  new_params->network_restrictions_id = nonce;
+  new_params->isolation_info =
+      net::IsolationInfo::CreateTransient(std::nullopt);
 
   std::unique_ptr<network::TestURLLoaderClient> new_client =
       FetchRequest(request, new_network_context, std::move(new_params));

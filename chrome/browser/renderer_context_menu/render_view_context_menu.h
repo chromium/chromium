@@ -240,10 +240,6 @@ class RenderViewContextMenu
 
   static bool IsDevToolsURL(const GURL& url);
 
-  // Returns true if the command id is gated by fenced frame untrusted network
-  // status.
-  static bool IsCommandGatedByFencedFrameUntrustedNetworkStatus(int id);
-
   // Formats a URL to be written to the clipboard and returns the formatted
   // string. Used by WriteURLToClipboard(), but kept in a separate function so
   // the formatting behavior can be tested without having to initialize the
@@ -348,11 +344,6 @@ class RenderViewContextMenu
 
   // Helper function for checking policies.
   bool IsSaveAsItemAllowedByPolicy(const GURL& item_url) const;
-
-  // Helper function for checking fenced frame tree untrusted network access
-  // status. For context menu commands that are gated on fenced frame untrusted
-  // network status, this check should be applied.
-  bool IsUntrustedNetworkDisabled() const;
 
   // Helper function for checking if text query should be opened in Lens. Checks
   // whether Lens is available and whether the text selection entrypoint flag is
@@ -590,52 +581,6 @@ class RenderViewContextMenu
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
       send_tab_to_self_submenu_delegate_;
-
-  // Fenced frame can disable its untrusted network in exchange for access to
-  // unpartitioned cross-site data. To prevent cross-site data from leaking out
-  // of fenced frame, context menu commands should be gated on untrusted network
-  // status if:
-  // 1. It can be executed within a fenced frame.
-  // 2. It can transfer information out of fenced frame. Network request is the
-  // primary concern.
-  //
-  // See:
-  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
-
-  // Note: Add `NO_IFTTT=<reason>` in the CL description if the linter is not
-  // applicable. For example, if a new command that is not gated on fenced frame
-  // network status is added, the following look up table does not require any
-  // change.
-  //
-  // LINT.IfChange(CommandsGatedOnFencedFrameUntrustedNetworkStatus)
-  static constexpr auto kFencedFrameUntrustedNetworkStatusGatedCommands =
-      base::MakeFixedFlatSet<int>(
-          {// For opening a link.
-           IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-           IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-           IDC_OPEN_LINK_IN_PROFILE_FIRST, IDC_OPEN_LINK_IN_PROFILE_LAST,
-           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
-
-           // Open link commands that appear in certain scenarios.
-           IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
-           IDC_CONTENT_CONTEXT_OPENLINKINPROFILE, IDC_CONTENT_CONTEXT_GOTOURL,
-           IDC_CONTENT_CONTEXT_OPENLINKWITH, IDC_CONTENT_CONTEXT_OPENAVNEWTAB,
-           IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB,
-
-           // Image loading commands.
-           IDC_CONTENT_CONTEXT_LOAD_IMAGE,
-           IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB,
-
-           // Opening Glic
-           IDC_CONTENT_CONTEXT_GLIC,
-
-           // Listen to Page.
-           IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
-
-           // Autofill commands.
-           IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY});
-  // LINT.ThenChange(//chrome/app/chrome_command_ids.h:ChromeCommandIds)
 
   //  Used for CTR metrics of menu item for opening Glic.
   bool glic_item_shown_ = false;

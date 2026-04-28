@@ -306,11 +306,6 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
 
   redacted_properties.parent_permissions_info_ = parent_permissions_info_;
 
-  if (entity != FencedFrameEntity::kCrossOriginContent) {
-    redacted_properties.can_disable_untrusted_network_ =
-        can_disable_untrusted_network_;
-  }
-
   redacted_properties.is_cross_origin_content_ =
       entity == FencedFrameEntity::kCrossOriginContent;
   redacted_properties.allow_cross_origin_event_reporting_ =

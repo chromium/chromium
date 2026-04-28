@@ -4684,7 +4684,7 @@ enum WebFeature {
   kAriaLabeledByAlternativeSpelling = 5375,
   kOBSOLETE_CanvasTextNg = 5376,
   kDOMWindowOpenPopup = 5377,
-  kFencedFrameDisableUntrustedNetwork = 5378,
+  kOBSOLETE_FencedFrameDisableUntrustedNetwork = 5378,
   kFencedFrameNotifyEvent = 5379,
   kOBSOLETE_SharedStorageGetInFencedFrame = 5380,
   kOBSOLETE_Translator_MeasureInputUsage_Method = 5381,

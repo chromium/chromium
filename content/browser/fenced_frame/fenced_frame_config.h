@@ -208,16 +208,6 @@ class CONTENT_EXPORT FencedFrameProperty {
   VisibilityToContent visibility_to_content_;
 };
 
-enum class DisableUntrustedNetworkStatus {
-  kNotStarted,
-  // Set when the fenced frame has called window.fence.disableUntrustedNetwork()
-  // but its descendant fenced frames have not had their network access cut off
-  // yet.
-  kCurrentFrameTreeComplete,
-  // Set after all descendant fenced frames have had network cut off.
-  kCurrentAndDescendantFrameTreesComplete
-};
-
 // A collection of properties that can be loaded into a fenced frame and
 // specifies its subsequent behavior. (During a navigation, they are
 // transformed into a `FencedFrameProperties` object, and installed at
@@ -490,13 +480,12 @@ class CONTENT_EXPORT FencedFrameProperties {
   }
 
   // Used for urn iframes, which should not have a separate storage/network
-  // partition or access to window.fence.disableUntrustedNetwork().
+  // partition.
   // TODO(crbug.com/40257432): Refactor this to be part of the
   // FencedFrameProperties constructor rather than
   // OnFencedFrameURLMappingComplete.
   void AdjustPropertiesForUrnIframe() {
     partition_nonce_ = std::nullopt;
-    can_disable_untrusted_network_ = false;
   }
 
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
@@ -523,47 +512,11 @@ class CONTENT_EXPORT FencedFrameProperties {
     mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   }
 
-  bool can_disable_untrusted_network() const {
-    return can_disable_untrusted_network_;
-  }
-
-  bool HasDisabledNetworkForCurrentFrameTree() const {
-    return disable_untrusted_network_status_ ==
-               DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete ||
-           disable_untrusted_network_status_ ==
-               DisableUntrustedNetworkStatus::
-                   kCurrentAndDescendantFrameTreesComplete;
-  }
-
-  bool HasDisabledNetworkForCurrentAndDescendantFrameTrees() const {
-    return disable_untrusted_network_status_ ==
-           DisableUntrustedNetworkStatus::
-               kCurrentAndDescendantFrameTreesComplete;
-  }
-
-  void MarkDisabledNetworkForCurrentFrameTree() {
-    CHECK(can_disable_untrusted_network_);
-    CHECK(
-        disable_untrusted_network_status_ !=
-        DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
-    disable_untrusted_network_status_ =
-        DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete;
-  }
-
-  // Safe to call multiple times (will do nothing after the first time).
-  void MarkDisabledNetworkForCurrentAndDescendantFrameTrees() {
-    CHECK(can_disable_untrusted_network_);
-    disable_untrusted_network_status_ =
-        DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete;
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            ConfigMojomTraitsTest);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            PropertiesHasFencedFrameReportingTest);
-  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
-                           PropertiesCanDisableUntrustedNetworkTest);
 
   std::vector<std::pair<GURL, FencedFrameConfig>>
   GenerateURNConfigVectorForConfigs(
@@ -613,9 +566,6 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   // The nonce that will be included in the IsolationInfo, CookiePartitionKey
   // and StorageKey for network, cookie and storage partitioning, respectively.
-  // As part of IsolationInfo it is also used to identify which network requests
-  // should be disallowed in the network service if the initiator fenced frame
-  // tree has had its network cut off via disableUntrustedNetwork().
   std::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
 
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
@@ -656,19 +606,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   // inheritance. Right now, only developer-created fenced frames (non-Protected
   // Audience/Shared Storage) will have a flexible permissions policy.
   std::optional<ParentPermissionsInfo> parent_permissions_info_;
-
-  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
-  // (and then access to unpartitioned storage).
-  // Currently true in all fenced frame configs, but set to false if loaded in a
-  // urn iframe.
-  // TODO(crbug.com/40256574): Remove this when urn iframes are removed.
-  bool can_disable_untrusted_network_ = true;
-
-  // Tracks the status of disabling untrusted network in this fenced frame. This
-  // requires the fenced frame and all its descendant fenced frames to call
-  // window.fence.disableUntrustedNetwork().
-  DisableUntrustedNetworkStatus disable_untrusted_network_status_ =
-      DisableUntrustedNetworkStatus::kNotStarted;
 
   // Whether the original document loaded with this config opted in to
   // cross-origin event-level reporting. That is, if the document was served

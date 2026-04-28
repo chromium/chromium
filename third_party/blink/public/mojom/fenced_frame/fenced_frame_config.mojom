@@ -228,12 +228,6 @@ struct FencedFrameProperties {
   // fenced frames whose mode = DeprecatedFencedFrameMode::kDefault).
   ParentPermissionsInfo? parent_permissions_info;
 
-  // Whether this config allows calls to window.fence.disableUntrustedNetwork()
-  // (and then access to unpartitioned storage).
-  // Currently false in urn iframes, and in documents cross-origin to the
-  // mapped url in fenced frames.
-  bool can_disable_untrusted_network;
-
   // Whether the document this config belongs to is cross-origin to the document
   // that owns the fenced frame config. Equivalent to
   // FencedFrameEntity::kCrossOriginContent in the browser-side config.

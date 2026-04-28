@@ -604,55 +604,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest, FullyObscured) {
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest,
-                       SelfErrorNavigation) {
-  const GURL main_url(https_server()->GetURL("a.test", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(web_contents(), main_url));
-
-  RenderFrameHost* primary_rfh = primary_main_frame_host();
-  const GURL fenced_frame_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-
-  ff_helper().CreateFencedFrameAndWaitUntilRenderedInViewport(primary_rfh,
-                                                              fenced_frame_url);
-  RenderFrameHost* error_ff =
-      ff_helper().CreateFencedFrameAndWaitUntilRenderedInViewport(
-          primary_rfh, fenced_frame_url);
-
-  // Force one of the fenced frames to navigate itself to an error page, by
-  // first disabling untrusted network, and then attempting a navigation.
-  EXPECT_TRUE(ExecJs(error_ff, R"(
-    (async () => {
-      return window.fence.disableUntrustedNetwork();
-    })();
-  )"));
-
-  const GURL fenced_frame_url_2(
-      https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
-  TestFrameNavigationObserver nav_observer(error_ff);
-  EXPECT_TRUE(
-      ExecJs(error_ff, JsReplace(R"(location.href = $1)", fenced_frame_url_2)));
-  nav_observer.Wait();
-
-  // We should have navigated to an error page with an opaque origin. We need to
-  // get the most recent RFH for the fenced frame, because the error navigation
-  // may have invalidated the old RFH.
-  error_ff = ff_helper().GetMostRecentlyAddedFencedFrame(primary_rfh);
-  EXPECT_TRUE(error_ff->IsErrorDocument());
-  EXPECT_TRUE(error_ff->GetLastCommittedOrigin().opaque());
-
-  // Navigate the primary main frame, logging UMA metrics in the process.
-  const GURL new_main_url(https_server()->GetURL("b.test", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(web_contents(), new_main_url));
-
-  // Across the lifetime of the page, the most same-site fenced frames in the
-  // viewport was 2. Error navigations will cause the error frame to be tracked
-  // under its previous successfully committed site, which in this case was
-  // a.test. So there are still 2 "a.test fenced frames" in the viewport at
-  // unload time.
-  ValidateHistograms(/*overall_max=*/2, /*unload_time_max=*/2);
-}
-
-IN_PROC_BROWSER_TEST_F(FencedFrameViewportObserverBrowserTest,
                        SelfAboutBlankNavigation) {
   const GURL main_url(https_server()->GetURL("a.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(web_contents(), main_url));

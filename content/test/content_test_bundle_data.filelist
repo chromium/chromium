@@ -7381,11 +7381,9 @@ data/fenced_frames/in_iframe.html
 data/fenced_frames/in_iframe.html.mock-http-headers
 data/fenced_frames/link_rel_module_preload.html
 data/fenced_frames/link_rel_module_preload.html.mock-http-headers
-data/fenced_frames/link_rel_module_preload_disable_network.html
 data/fenced_frames/link_rel_module_preload_disable_network.html.mock-http-headers
 data/fenced_frames/link_rel_preload.html
 data/fenced_frames/link_rel_preload.html.mock-http-headers
-data/fenced_frames/link_rel_preload_disable_network.html
 data/fenced_frames/link_rel_preload_disable_network.html.mock-http-headers
 data/fenced_frames/nested.html
 data/fenced_frames/nested.html.mock-http-headers
@@ -8355,11 +8353,9 @@ data/linearized.pdf
 data/linearized.pdf.README
 data/link_rel_preconnect.html
 data/link_rel_preconnect.html.mock-http-headers
-data/link_rel_preconnect_disable_network.html
 data/link_rel_preconnect_disable_network.html.mock-http-headers
 data/link_rel_prefetch.html
 data/link_rel_prefetch.html.mock-http-headers
-data/link_rel_prefetch_disable_network.html
 data/link_rel_prefetch_disable_network.html.mock-http-headers
 data/link_rel_prefetch_referrer_policy.html
 data/links.html

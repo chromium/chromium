@@ -266,10 +266,8 @@ class CONTENT_EXPORT NavigationRequest
           std::nullopt);
 
   // Creates a request for either a browser-initiated navigation or a
-  // renderer-initiated navigation. Returns nullptr if the navigation could not
-  // be started, such as when network access has been revoked (see
-  // RenderFrameHost::IsUntrustedNetworkDisabled()).  Normally,
-  // renderer-initiated navigations use CreateRendererInitiated(), but some
+  // renderer-initiated navigation. Normally, renderer-initiated navigations
+  // use CreateRendererInitiated(), but some
   // legacy renderer-initiated navigation paths, such as OpenURL, are stuck
   // using this path instead; these cases specify `browser_initiated` as false.
   //
@@ -2565,15 +2563,6 @@ class CONTENT_EXPORT NavigationRequest
   void MaybeRecordNavigationStartAdjustments();
 
   void ResetViewTransitionState();
-
-  // This check is to prevent a race condition where a parent fenced frame
-  // initiates a nested fenced frame navigation right before the entire frame
-  // tree has network access disabled. If such navigation is allowed to commit,
-  // the navigated fenced frame will have network access. This allows parent
-  // fenced frame to communicate cross-site data into child fenced frame, which
-  // is bad. So we need to disable navigations when both the embedder and nested
-  // frames have already disabled network.
-  bool IsDisabledEmbedderInitiatedFencedFrameNavigation();
 
   // Sets the expected process to the process of the current associated RFH.
   void SetExpectedProcessIfAssociated();

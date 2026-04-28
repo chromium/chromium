@@ -121,13 +121,6 @@ PrefetchMatchingURLLoaderFactory::GetBoundNetworkForTesting() const {
   return next_->GetBoundNetworkForTesting();  // IN-TEST
 }
 
-void PrefetchMatchingURLLoaderFactory::
-    CancelRequestsIfNonceMatchesAndUrlNotExempted(
-        const base::UnguessableToken& nonce,
-        const std::set<GURL>& exemptions) {
-  next_->CancelRequestsIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
-}
-
 void PrefetchMatchingURLLoaderFactory::DestroyURLLoaderFactory(
     cors::CorsURLLoaderFactory* factory) {
   CHECK_EQ(factory, next_.get());

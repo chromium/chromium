@@ -5990,7 +5990,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5375" label="AriaLabeledByAlternativeSpelling"/>
   <int value="5376" label="OBSOLETE_CanvasTextNg"/>
   <int value="5377" label="DOMWindowOpenPopup"/>
-  <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
+  <int value="5378" label="OBSOLETE_FencedFrameDisableUntrustedNetwork"/>
   <int value="5379" label="FencedFrameNotifyEvent"/>
   <int value="5380" label="OBSOLETE_SharedStorageGetInFencedFrame"/>
   <int value="5381" label="OBSOLETE_Translator_MeasureInputUsage_Method"/>
@@ -7311,16 +7311,6 @@ Called by update_permissions_policy_enum.py.-->
       label="Supports-Loading-Mode response header 'fenced-frame' not
              opted-in"/>
 </enum>
-
-<!-- LINT.IfChange(FencedFrameDisableUntrustedNetworkOutcome) -->
-
-<enum name="FencedFrameDisableUntrustedNetworkOutcome">
-  <int value="0" label="Network disabled and promise resolved"/>
-  <int value="1" label="Document not fully active"/>
-  <int value="2" label="Not allowed to disable network"/>
-</enum>
-
-<!-- LINT.ThenChange(//third_party/blink/public/common/fenced_frame/fenced_frame_utils.h:DisableUntrustedNetworkOutcome) -->
 
 <!-- LINT.IfChange(FencedFrameNotifyEventOutcome) -->
 

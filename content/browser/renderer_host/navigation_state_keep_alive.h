@@ -43,10 +43,6 @@ class NavigationStateKeepAlive
     return source_site_instance_.get();
   }
 
-  bool is_untrusted_network_disabled() const {
-    return is_untrusted_network_disabled_;
-  }
-
  private:
   friend class RenderFrameHostImpl;
 
@@ -56,8 +52,7 @@ class NavigationStateKeepAlive
   NavigationStateKeepAlive(
       const blink::LocalFrameToken& token,
       scoped_refptr<PolicyContainerHost> policy_container_host,
-      scoped_refptr<SiteInstanceImpl> source_site_instance,
-      bool is_untrusted_network_disabled);
+      scoped_refptr<SiteInstanceImpl> source_site_instance);
 
   // The frame token for the RenderFrameHost this state is associated with.
   const blink::LocalFrameToken frame_token_;
@@ -81,11 +76,6 @@ class NavigationStateKeepAlive
 
   // The source SiteInstance is passed in to RenderFrameProxyHost::OpenURL.
   scoped_refptr<SiteInstanceImpl> source_site_instance_;
-
-  // The network status of the RenderFrameHost this state is associated with.
-  // For more details, see comment on
-  // RenderFrameHost::IsUntrustedNetworkDisabled().
-  bool is_untrusted_network_disabled_;
 };
 
 }  // namespace content

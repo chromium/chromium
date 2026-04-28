@@ -426,19 +426,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     isolation_info_ptr = &isolation_info.value();
   }
 
-  // Check if the initiator's network access has been revoked.
-  // This check is only relevant if there is a partition nonce in the
-  // isolation info. (All requests originating from a fenced frame have a
-  // nonce specified.)
-  if (isolation_info.has_value() && isolation_info->nonce().has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(
-          *isolation_info->nonce(), resource_request.url,
-          isolation_info->network_anonymization_key())) {
-    mojo::Remote<mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(
-            URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
-    return;
-  }
+  // Check if the initiator's network access has been restricted.
   if (network_restrictions_id_.has_value() &&
       !context_->IsNetworkForNonceAndUrlAllowed(
           *network_restrictions_id_, resource_request.url,
@@ -994,30 +982,6 @@ net::handles::NetworkHandle CorsURLLoaderFactory::GetBoundNetworkForTesting()
     const {
   CHECK(!factory_override_);
   return network_loader_factory_->GetBoundNetworkForTesting();  // IN-TEST
-}
-
-void CorsURLLoaderFactory::CancelRequestsIfNonceMatchesAndUrlNotExempted(
-    const base::UnguessableToken& nonce,
-    const std::set<GURL>& exemptions) {
-  CHECK(!prevent_self_deletion_);
-  prevent_self_deletion_ = true;
-  auto iterate_over_set = [&nonce, &exemptions](auto& url_loaders) {
-    // Cancelling the request may cause the URL loader to be deleted from the
-    // data structure, invalidating the iterator if it is currently pointing to
-    // that element. So advance to the next element first and delete the
-    // previous one.
-    for (auto loader_it = url_loaders.begin(); loader_it != url_loaders.end();
-         /* iteration performed inside the loop */) {
-      auto* loader = loader_it->get();
-      ++loader_it;
-      loader->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
-    }
-  };
-
-  iterate_over_set(url_loaders_);
-  iterate_over_set(cors_url_loaders_);
-  prevent_self_deletion_ = false;
-  DeleteIfNeeded();
 }
 
 }  // namespace network::cors

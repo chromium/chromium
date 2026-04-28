@@ -78,11 +78,6 @@ void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(bool is_main_frame) {
                             is_main_frame);
 }
 
-void RecordDisableUntrustedNetworkOutcome(
-    const DisableUntrustedNetworkOutcome outcome) {
-  base::UmaHistogramEnumeration(kDisableUntrustedNetworkOutcome, outcome);
-}
-
 void RecordNotifyEventOutcome(const NotifyEventOutcome outcome) {
   base::UmaHistogramEnumeration(kNotifyEventOutcome, outcome);
 }

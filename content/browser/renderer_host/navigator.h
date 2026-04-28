@@ -234,9 +234,6 @@ class CONTENT_EXPORT Navigator {
   NavigationControllerImpl& controller() { return controller_; }
   const NavigationControllerImpl& controller() const { return controller_; }
 
-  void SetWillNavigateFromFrameProxyCallbackForTesting(
-      const base::RepeatingClosure& callback);
-
  private:
   friend class NavigatorTestWithBrowserSideNavigation;
 
@@ -275,9 +272,6 @@ class CONTENT_EXPORT Navigator {
 
   // Tracks metrics for each navigation.
   std::unique_ptr<Navigator::NavigationMetricsData> metrics_data_;
-
-  // Called every time NavigateFromFrameProxy() is called.
-  base::RepeatingClosure will_navigate_from_frame_proxy_callback_for_testing_;
 };
 
 }  // namespace content

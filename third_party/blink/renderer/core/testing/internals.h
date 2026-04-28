@@ -636,10 +636,7 @@ class Internals final : public ScriptWrappable {
   Vector<String> getCreatorScripts(HTMLImageElement* img);
 
   ScriptPromise<IDLString> LCPPrediction(ScriptState*, Document* document);
-
-  ScriptPromise<IDLUndefined> exemptUrlFromNetworkRevocation(ScriptState*,
-                                                             const String& url);
-  String lastCompiledScriptFileName(Document* document);
+  String lastCompiledScriptFileName(Document*);
   bool lastCompiledScriptUsedCodeCache(Document* document);
 
  private:

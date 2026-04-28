@@ -380,10 +380,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       RevokeNetworkForNoncesCallback callback) override {}
   void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override {
   }
-  void ExemptUrlFromNetworkRevocationForNonce(
-      const GURL& exempted_url,
-      const base::UnguessableToken& nonce,
-      ExemptUrlFromNetworkRevocationForNonceCallback callback) override {}
   void Prefetch(int32_t request_id,
                 uint32_t options,
                 const ResourceRequest& request,

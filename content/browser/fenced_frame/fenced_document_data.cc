@@ -44,13 +44,4 @@ void FencedDocumentData::MaybeResetAutomaticBeaconData(
   }
 }
 
-void FencedDocumentData::RunDisabledUntrustedNetworkCallbacks() {
-  for (auto& callback : on_disabled_untrusted_network_callbacks_) {
-    if (!callback.is_null()) {
-      std::move(callback).Run();
-    }
-  }
-  on_disabled_untrusted_network_callbacks_.clear();
-}
-
 }  // namespace content

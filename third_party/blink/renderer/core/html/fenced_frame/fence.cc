@@ -13,8 +13,6 @@
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -23,7 +21,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -340,46 +337,6 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
     }
   }
   return out;
-}
-
-ScriptPromise<IDLUndefined> Fence::disableUntrustedNetwork(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!DomWindow()) {
-    RecordDisableUntrustedNetworkOutcome(
-        DisableUntrustedNetworkOutcome::kNotActive);
-    exception_state.ThrowSecurityError(
-        "May not use a Fence object associated with a Document that is not "
-        "fully active.");
-    return EmptyPromise();
-  }
-  LocalFrame* frame = DomWindow()->GetFrame();
-  DCHECK(frame->GetDocument());
-  CHECK(frame->GetDocument()->Loader()->FencedFrameProperties().has_value());
-  bool can_disable_untrusted_network = frame->GetDocument()
-                                           ->Loader()
-                                           ->FencedFrameProperties()
-                                           ->can_disable_untrusted_network();
-  if (!can_disable_untrusted_network) {
-    RecordDisableUntrustedNetworkOutcome(
-        DisableUntrustedNetworkOutcome::kNotAllowed);
-    exception_state.ThrowTypeError(
-        "This frame is not allowed to disable untrusted network.");
-    return EmptyPromise();
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-  frame->GetLocalFrameHostRemote().DisableUntrustedNetworkInFencedFrame(
-      BindOnce(
-          [](ScriptPromiseResolver<IDLUndefined>* resolver) {
-            RecordDisableUntrustedNetworkOutcome(
-                DisableUntrustedNetworkOutcome::kResolved);
-            resolver->Resolve();
-          },
-          WrapPersistent(resolver)));
-  return promise;
 }
 
 void Fence::reportPrivateAggregationEvent(const String& event,

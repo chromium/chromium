@@ -220,12 +220,6 @@ async function generateRemoteContextURL(headers, origin) {
   });
   url.searchParams.append('pipe', formatted_headers.join('|'));
 
-  // Exempt the remote context dispatcher URL from network revocation, so RPC
-  // execution will still work to orchestrate tests after network is revoked.
-  const remote_context_dispatcher_url =
-      getRemoteContextDispatcherURL(effective_origin) + `?uuid=${uuid}`;
-  await window.internals.exemptUrlFromNetworkRevocation(remote_context_dispatcher_url);
-
   return [uuid, url];
 }
 

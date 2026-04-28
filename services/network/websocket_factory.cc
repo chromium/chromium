@@ -126,17 +126,6 @@ void WebSocketFactory::CreateWebSocket(
     handshake_client_remote.reset();
     return;
   }
-  if (isolation_info.nonce().has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(
-          *isolation_info.nonce(), url,
-          isolation_info.network_anonymization_key())) {
-    mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
-        std::move(handshake_client));
-    handshake_client_remote->OnFailure("Network access revoked",
-                                       net::ERR_NETWORK_ACCESS_REVOKED, -1);
-    handshake_client_remote.reset();
-    return;
-  }
   // Enforce Connection-Allowlist restrictions for WebSocket connections. Convert
   // ws(s):// to http(s):// for allowlist matching, since the allowlist patterns
   // use HTTP schemes.
@@ -176,13 +165,6 @@ void WebSocketFactory::Remove(WebSocket* impl) {
     return;
   }
   connections_.erase(it);
-}
-
-void WebSocketFactory::RemoveIfNonceMatches(
-    const base::UnguessableToken& nonce) {
-  std::erase_if(connections_, [&nonce](const auto& connection) {
-    return connection->RevokeIfNonceMatches(nonce);
-  });
 }
 
 void WebSocketFactory::CreateNetLogEntriesForActiveConnections(

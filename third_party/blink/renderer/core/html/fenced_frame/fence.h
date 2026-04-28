@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -21,7 +20,6 @@ namespace blink {
 class ExceptionState;
 class FenceEvent;
 class LocalDOMWindow;
-class ScriptState;
 class V8UnionFenceEventOrString;
 
 // Fence is a collection of fencedframe-related APIs that are visible
@@ -54,10 +52,6 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   // is the main frame of a fenced frame. This will return a non-empty array if
   // the fenced frame was created through some API that uses configurations.
   HeapVector<Member<FencedFrameConfig>> getNestedConfigs(
-      ExceptionState& exception_state);
-
-  ScriptPromise<IDLUndefined> disableUntrustedNetwork(
-      ScriptState* script_state,
       ExceptionState& exception_state);
 
   // Notifies the fenced frame's embedder that `triggering_event` has occurred

@@ -41,12 +41,6 @@ class CONTENT_EXPORT FencedDocumentData
   void MaybeResetAutomaticBeaconData(
       blink::mojom::AutomaticBeaconType event_type);
 
-  void AddDisabledUntrustedNetworkCallback(base::OnceClosure callback) {
-    on_disabled_untrusted_network_callbacks_.push_back(std::move(callback));
-  }
-
-  void RunDisabledUntrustedNetworkCallbacks();
-
  private:
   // No public constructors to force going through static methods of
   // DocumentUserData (e.g. CreateForCurrentDocument).
@@ -61,17 +55,6 @@ class CONTENT_EXPORT FencedDocumentData
   std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
       automatic_beacon_info_;
 
-  // Should be invoked when network access is cut off. This is stored as a
-  // vector to account for the web platform supporting multiple calls to
-  // disableUntrustedNetwork().
-  // Note: The callbacks must be run before FencedDocumentData is destroyed.
-  // Otherwise a check failure will crash the program, see check's error
-  // message: "LocalFrameHost::DisableUntrustedNetworkInFencedFrameCallback was
-  // destroyed without first either being run or its corresponding binding being
-  // closed. It is an error to drop response callbacks which still correspond to
-  // an open interface pipe."
-  // TODO(crbug.com/340606646): Add guards against the scenario above.
-  std::vector<base::OnceClosure> on_disabled_untrusted_network_callbacks_;
 };
 
 }  // namespace content

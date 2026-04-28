@@ -78,28 +78,6 @@ are required for functionality purposes.
 See: `network::kFencedFrameSharedStorageDefaultRequiredFeatures` in
 `services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
-## Permissions for fenced frames with unpartitioned data access
-
-Third-party cookie deprecation breaks useful website features like personalized
-payment buttons. Fenced frames offer a potential solution by allowing controlled
-access to cross-site user data stored in Shared Storage. To protect privacy,
-fenced frames must disable external communications (specifically, anything that
-can send data out of a fenced frame) before accessing this sensitive data.
-Otherwise, the sensitive information can be exfiltrated, creating a data leak.
-
-When these fenced frames are constructed using a URL provided by the embedder
-and can contain information from the embedder in the URL, it is acceptable to
-have information flow in from the embedder to the fenced frame via permission
-backed features. However, Permissions-backed APIs pose the challenge of data
-outflow, since many of them can allow for the exact kind of data exfiltration
-that must be prevented to keep the unpartitioned data safe. To mitigate that
-risk, we are currently allowing a small subset of permissions-backed features to
-be enabled. This can be expanded in the future if more use cases are found that
-require other features.
-
-See: `network::kFencedFrameAllowedFeatures` in
-`services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
-
 ## Permissions policy-based features audit
 
 Below is an audit of all permissions-backed features (as of August 2023) and
@@ -216,8 +194,7 @@ vector](https://github.com/WICG/web-smart-card/blob/main/README.md#fingerprintin
 While arbitrary data can be put into the [details parameter of a
 PaymentRequest()
 constructor](https://developer.mozilla.org/en-US/docs/Web/API/PaymentRequest/PaymentRequest),
-the payment request won’t be allowed once
-`window.fence.disableUntrustedNetwork()` is resolved. However, the main use case
+the payment request won’t be allowed. However, the main use case
 for this API in a subframe requires direct communication between the embedder
 and the subframe. Because fenced frames explicitly disallow this kind of
 communication, the Payment Request API will be broken inside of fenced frames if
@@ -228,8 +205,7 @@ we enable them. Therefore, it should not be allowed.
 
 This feature determines if a synchronous XML request can be made. Without
 network cutoff, this allows information to freely flow between the fenced frame
-and arbitrary servers. Once `window.fence.disableUntrustedNetwork()` is
-resolved, these requests should not succeed.
+and arbitrary servers.
 
 There are no API methods that can be used for fingerprinting.
 
@@ -465,10 +441,10 @@ submitted across fenced frame boundaries that include matching autofill data.
 *Feature: kDirectSockets*
 
 This directly involves sending TCP/UDP data into and out of a fenced frame, This
-is fine before network cutoff, but shouldn’t be allowed once
-`window.fence.disableUntrustedNetwork()` is resolved. However, there are a few
-factors at play that make disabling network for direct sockets more complicated
-than other types of network access:
+is fine when fenced frames have network. Historically this was disabled for fenced
+frames due to the following considerations around network revocation (obsoleted).
+There are a few factors at play that make disabling network for direct sockets more
+complicated than other types of network access:
 
 * It looks like direct sockets are only intended to be enabled in Isolated Web
   Apps, although other user agents could break this if they wanted to (see intro
@@ -565,14 +541,15 @@ resulting frame and the URL that was picked can be leaked via network requests
 from the result rendering fenced frame. This is an ongoing privacy consideration
 for fenced frames.
 
-### ✅ Shared Storage get(): no risk
-*Feature: TBD unpartitioned access feature*
+### 🔺🖐️ Shared Storage get(): no risk
+*Feature: Deprecated unpartitioned access feature*
 
-This must be allowed in fenced frames. This is the way that unpartitioned data
-will be read by a fenced frame after network revocation. There is an [output
+This was earlier allowed in fenced frames as this was the way that unpartitioned data
+was read by a fenced frame after revoking network. There was an [output
 gate](https://github.com/WICG/shared-storage/blob/main/README.md#output-gates-and-privacy)
 specifically for access from within a fenced frame, so this data will not be
 able to be exfiltrated to first-party contexts outside of the fenced frame.
+It is no longer allowed as that feature is now removed.
 
 ### 🔻🖐️❌ Unload: infiltration/fingerprinting risk, usability issues
 *Feature: kUnload*

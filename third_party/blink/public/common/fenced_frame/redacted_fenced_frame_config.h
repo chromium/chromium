@@ -223,9 +223,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   const std::optional<ParentPermissionsInfo> parent_permissions_info() const {
     return parent_permissions_info_;
   }
-  bool can_disable_untrusted_network() const {
-    return can_disable_untrusted_network_;
-  }
   bool is_cross_origin_content() const { return is_cross_origin_content_; }
   bool allow_cross_origin_event_reporting() const {
     return allow_cross_origin_event_reporting_;
@@ -252,7 +249,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   std::vector<network::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
   std::optional<ParentPermissionsInfo> parent_permissions_info_;
-  bool can_disable_untrusted_network_ = false;
   bool is_cross_origin_content_ = false;
   bool allow_cross_origin_event_reporting_ = false;
 };

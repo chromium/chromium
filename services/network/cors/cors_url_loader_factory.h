@@ -140,15 +140,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // guarantee that the overriding factory behaves correctly).
   net::handles::NetworkHandle GetBoundNetworkForTesting() const;
 
-  // Cancels all requests matching `nonce` associated with this factory, unless
-  // exempted by a url in `exemptions`. Used to cancel in-progress requests
-  // when network revocation is triggered.
-  //
-  // Note that this may delete `this`.
-  void CancelRequestsIfNonceMatchesAndUrlNotExempted(
-      const base::UnguessableToken& nonce,
-      const std::set<GURL>& exemptions);
-
   // Returns whether CORS preflight request flowing through this
   // URLLoaderFactory should represent an error or not.
   bool IsCorsPreflighLoadOptionAllowed() const;

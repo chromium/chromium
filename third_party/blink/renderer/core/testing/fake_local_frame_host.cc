@@ -261,17 +261,6 @@ void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     bool once,
     bool cross_origin_exposed) {}
 
-void FakeLocalFrameHost::DisableUntrustedNetworkInFencedFrame(
-    DisableUntrustedNetworkInFencedFrameCallback callback) {
-  std::move(callback).Run();
-}
-
-void FakeLocalFrameHost::ExemptUrlFromNetworkRevocationForTesting(
-    const blink::KURL& exempted_url,
-    ExemptUrlFromNetworkRevocationForTestingCallback callback) {
-  std::move(callback).Run();
-}
-
 void FakeLocalFrameHost::SendLegacyTechEvent(
     const String& type,
     mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}

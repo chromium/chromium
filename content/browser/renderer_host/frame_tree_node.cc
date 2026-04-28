@@ -645,15 +645,6 @@ void FrameTreeNode::ResetNavigationRequest(NavigationDiscardReason reason) {
   // it created for the navigation. Also register that the load stopped.
   DidStopLoading();
   render_manager_.DiscardSpeculativeRFHIfUnused(reason);
-
-  // An ancestor's network revocation status could've changed as a result of
-  // the NavigationRequest getting reset. When fenced frames revoke network
-  // access by calling `window.fence.disableUntrustedNetwork`, the returned
-  // promise cannot be resolved until ongoing navigations in descendant frames
-  // complete.
-  current_frame_host()
-      ->GetOutermostMainFrame()
-      ->CalculateUntrustedNetworkStatus();
 }
 
 void FrameTreeNode::ResetNavigationRequestButKeepState(

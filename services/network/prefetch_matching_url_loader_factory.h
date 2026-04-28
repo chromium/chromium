@@ -22,10 +22,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
-namespace base {
-class UnguessableToken;
-}
-
 namespace net {
 struct MutableNetworkTrafficAnnotationTag;
 }
@@ -88,10 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
   void ClearBindings();
 
   net::handles::NetworkHandle GetBoundNetworkForTesting() const;
-
-  void CancelRequestsIfNonceMatchesAndUrlNotExempted(
-      const base::UnguessableToken& nonce,
-      const std::set<GURL>& exemptions);
 
   // Methods called from CorsURLLoaderFactory.
   void DestroyURLLoaderFactory(cors::CorsURLLoaderFactory* factory);

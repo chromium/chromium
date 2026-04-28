@@ -893,17 +893,6 @@ void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
   }
 }
 
-void CorsURLLoader::CancelRequestIfNonceMatchesAndUrlNotExempted(
-    const base::UnguessableToken& nonce,
-    const std::set<GURL>& exemptions) {
-  if (isolation_info_.nonce() == nonce) {
-    if (!exemptions.contains(request_.url.GetWithoutFilename())) {
-      HandleComplete(
-          URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
-    }
-  }
-}
-
 std::optional<net::cookie_util::StorageAccessStatus>
 CorsURLLoader::GetStorageAccessStatus() {
   if (isolation_info_.network_isolation_key().GetNonce()) {

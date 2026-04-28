@@ -67,7 +67,6 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
        {blink::features::kFencedFramesCrossOriginEventReporting, {}},
        {blink::features::kFencedFramesReportEventHeaderChanges, {}},
-       {blink::features::kExemptUrlFromNetworkRevocationForTesting, {}},
        {blink::features::kFencedFramesCrossOriginAutomaticBeaconData, {}}},
       {/* disabled_features */});
 }
@@ -302,21 +301,6 @@ GURL AddAndVerifyFencedFrameURL(
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();
-}
-
-bool RevokeFencedFrameUntrustedNetwork(RenderFrameHost* rfh) {
-  static_cast<RenderFrameHostImpl*>(rfh)->DisableUntrustedNetworkInFencedFrame(
-      base::DoNothing());
-  return base::test::RunUntil(
-      [rfh]() { return rfh->IsUntrustedNetworkDisabled(); });
-}
-
-void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
-                                                const std::vector<GURL>& urls) {
-  std::ranges::for_each(urls, [rfh](GURL url) {
-    static_cast<RenderFrameHostImpl*>(rfh)
-        ->ExemptUrlFromNetworkRevocationForTesting(url, base::DoNothing());
-  });
 }
 
 void SetFencedFrameConfig(RenderFrameHost* rfh, const GURL& url) {
