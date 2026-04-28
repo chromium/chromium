@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.data_sharing.ui.versioning.VersionUpdateIphHandler.maybeShowVersioningIph;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -29,6 +28,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.data_sharing.ui.versioning.VersionUpdateIphHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -350,7 +350,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         Profile profile =
                 assumeNonNull(mTabModelSelectorSupplier.get()).getCurrentModel().getProfile();
         if (profile != null) {
-            maybeShowVersioningIph(
+            VersionUpdateIphHandler.maybeShowVersioningIph(
                     mUserEducationHelper,
                     mToggleTabStackButton,
                     profile,

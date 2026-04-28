@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.isNewToolbarUiEnabled;
-import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.shouldBackButtonBeInOmnibox;
-import static org.chromium.components.embedder_support.util.UrlUtilities.isNtpUrl;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -96,6 +93,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -105,6 +103,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -588,7 +587,7 @@ class LocationBarMediator
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return;
-        boolean onNtp = isNtpUrl(tab.getUrl());
+        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
@@ -847,7 +846,7 @@ class LocationBarMediator
             }
 
             if (currentTab != null) {
-                boolean isCurrentTabNtpUrl = isNtpUrl(currentTab.getUrl());
+                boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
                 if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                     mOmniboxUma.recordNavigationOnNtp(
                             omniboxLoadUrlParams.url,
@@ -1706,10 +1705,13 @@ class LocationBarMediator
             mLocationBarLayout.setBackButtonVisibility(false);
             return;
         }
-        boolean isNtp = (tab.getUrl() != null) && isNtpUrl(tab.getUrl());
+        boolean isNtp = (tab.getUrl() != null) && UrlUtilities.isNtpUrl(tab.getUrl());
 
         boolean showBackButton =
-                isNewToolbarUiEnabled() && shouldBackButtonBeInOmnibox() && !mUrlHasFocus && !isNtp;
+                ToolbarVariationUtils.isNewToolbarUiEnabled()
+                        && ToolbarVariationUtils.shouldBackButtonBeInOmnibox()
+                        && !mUrlHasFocus
+                        && !isNtp;
         mLocationBarLayout.setBackButtonVisibility(showBackButton);
         mLocationBarLayout.setBackButtonEnabled(tab.canGoBack());
     }

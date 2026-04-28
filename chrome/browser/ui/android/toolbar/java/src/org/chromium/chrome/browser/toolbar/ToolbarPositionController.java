@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -691,7 +690,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         } else if (prefStateChanged) {
             // Animate when the pref changes via the long press menu, but not if it was changed via
             // the settings UI.
-            int positionAndSource = computeToolbarPositionAndSource();
+            int positionAndSource = AddressBarPreference.computeToolbarPositionAndSource();
             boolean animate =
                     !isOmniboxFocused
                             && !ntpShowing

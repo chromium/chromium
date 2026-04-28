@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.ui.base.KeyNavigationUtil.isTabNavigation;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -454,7 +453,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             return true;
         }
 
-        if (isTabNavigation(event)) {
+        if (KeyNavigationUtil.isTabNavigation(event)) {
             boolean maybeProcessed = super.onKeyDown(keyCode, event);
             if (maybeProcessed) return true;
             if (event.isShiftPressed()) {

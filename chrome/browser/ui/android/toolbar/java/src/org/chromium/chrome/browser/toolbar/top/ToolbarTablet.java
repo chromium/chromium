@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
-import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -69,6 +67,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.ui.accessibility.KeyboardFocusUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -515,7 +514,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     public void onWidthConsumerVisibilityChanged() {
-        if (!isToolbarTabletResizeRefactorEnabled()) return;
+        if (!ToolbarUtils.isToolbarTabletResizeRefactorEnabled()) return;
 
         // Re-allocate width to account for a change in a width consumer's visibility.
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -669,7 +668,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
         @Override
         public int updateVisibility(int availableWidth) {
-            assert isToolbarTabletResizeRefactorEnabled();
+            assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
             return Math.min(
                     availableWidth,
                     (int)
@@ -692,7 +691,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
         @Override
         public int updateVisibility(int availableWidth) {
-            assert isToolbarTabletResizeRefactorEnabled();
+            assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
             if (mOptionalButtonForciblyHidden) {
                 setOptionalButtonVisibility(false);
                 return 0;
@@ -717,7 +716,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     public void requestKeyboardFocus() {
-        setFocusOnFirstFocusableDescendant(this);
+        KeyboardFocusUtil.setFocusOnFirstFocusableDescendant(this);
         // TODO(crbug.com/360423850): Replace this setFocus(mLocationBar) when omnibox keyboard
         // behavior is fixed.
     }

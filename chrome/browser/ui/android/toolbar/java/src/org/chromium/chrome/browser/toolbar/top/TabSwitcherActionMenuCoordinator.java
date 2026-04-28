@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
-
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -300,7 +298,7 @@ public class TabSwitcherActionMenuCoordinator {
                         .build();
             case MenuItemType.DIVIDER:
             default:
-                return buildMenuDivider(mProfile.isIncognitoBranded());
+                return BasicListMenu.buildMenuDivider(mProfile.isIncognitoBranded());
         }
     }
 

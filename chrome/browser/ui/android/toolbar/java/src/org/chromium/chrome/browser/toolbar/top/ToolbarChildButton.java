@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
-
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
@@ -44,7 +42,7 @@ public abstract class ToolbarChildButton extends ToolbarChild {
 
     @Override
     public int updateVisibility(int availableWidth) {
-        assert isToolbarTabletResizeRefactorEnabled();
+        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
 
         int width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
         setHasSpaceToShow(availableWidth >= width);

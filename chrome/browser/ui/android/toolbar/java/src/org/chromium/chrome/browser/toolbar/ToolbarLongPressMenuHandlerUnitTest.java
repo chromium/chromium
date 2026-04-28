@@ -22,8 +22,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
-
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -71,6 +69,7 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
@@ -308,7 +307,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Test
     @SmallTest
     public void testHandleMoveAddressBarTo() {
-        setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_LONG_PRESS);
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_LONG_PRESS);
         clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
@@ -317,7 +316,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
-        setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
         clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
@@ -326,7 +325,8 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
-        setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        AddressBarPreference.setToolbarPositionAndSource(
+                ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);
@@ -335,7 +335,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                 mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
 
-        setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
         clearInvocations(mLocalPrefService);
         mToolbarLongPressMenuHandler.handleMenuClick(
                 ToolbarLongPressMenuHandler.MenuItemType.MOVE_ADDRESS_BAR_TO);

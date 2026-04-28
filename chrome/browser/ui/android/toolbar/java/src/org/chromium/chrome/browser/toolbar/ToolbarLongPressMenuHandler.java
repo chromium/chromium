@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -252,9 +251,11 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         boolean currentlyOnTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
         // The new position is the inverse of the current position.
         if (currentlyOnTop) {
-            setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+            AddressBarPreference.setToolbarPositionAndSource(
+                    ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         } else {
-            setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_LONG_PRESS);
+            AddressBarPreference.setToolbarPositionAndSource(
+                    ToolbarPositionAndSource.TOP_LONG_PRESS);
         }
     }
 

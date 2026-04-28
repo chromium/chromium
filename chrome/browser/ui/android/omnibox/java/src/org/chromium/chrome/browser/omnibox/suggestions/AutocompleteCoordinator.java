@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.ui.base.KeyNavigationUtil.isTabNavigation;
 
 import android.animation.Animator;
 import android.content.Context;
@@ -415,7 +414,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         // Suggestion, simulating press/long press of the UI element.
         if ((keyCode == KeyEvent.KEYCODE_DPAD_UP)
                 || (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
-                || isTabNavigation(event)) {
+                || KeyNavigationUtil.isTabNavigation(event)) {
             mMediator.allowPendingItemSelection();
             assumeNonNull(mContainer).onKeyDown(keyCode, event);
             return true;

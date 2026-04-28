@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
-
 import android.animation.Animator;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
@@ -73,13 +71,13 @@ public abstract class ToolbarChild
 
     @Override
     public int updateVisibility(int availableWidth) {
-        assert isToolbarTabletResizeRefactorEnabled();
+        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         return 0;
     }
 
     @Override
     public int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators) {
-        assert isToolbarTabletResizeRefactorEnabled();
+        assert ToolbarUtils.isToolbarTabletResizeRefactorEnabled();
         return 0;
     }
 }
