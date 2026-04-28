@@ -22,6 +22,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
@@ -185,6 +186,44 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
                            ->IsExpandOnHoverEnabled() != initial_state;
               },
               true)));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+                       PixelTestUncollapsedState) {
+  RunTestSequence(
+      // Verify not collapsed
+      CheckResult(
+          [this]() {
+            return vertical_tab_strip_state_controller()->IsCollapsed();
+          },
+          false),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Screenshot(kVerticalTabStripTopContainerElementId,
+                 /*screenshot_name=*/"UncollapsedVerticalTabStripTopContainer",
+                 /*baseline_cl=*/"7797519"));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+                       PixelTestCollapsedState) {
+  gfx::ScopedAnimationDurationScaleMode disable_animation(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripCollapseButtonElementId),
+      // Press Collapse Button
+      PressButton(kVerticalTabStripCollapseButtonElementId),
+      WaitForEvent(kTabStripRegionElementId,
+                   kVerticalTabStripCollapsedCustomEventId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Screenshot(kVerticalTabStripTopContainerElementId,
+                 /*screenshot_name=*/"CollapsedVerticalTabStripTopContainer",
+                 /*baseline_cl=*/"7797519"));
 }
 
 }  // namespace

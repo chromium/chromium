@@ -169,6 +169,7 @@ TabSearchBubbleUIBrowserTest.*
 *TailoredSecurityDesktopDialogManagerTest.InvokeUi_*
 TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
+VerticalTabStripTopContainerInteractiveUiTest.PixelTest*
 *WatermarkBrowserTest.*
 *WatermarkTestPageBrowserTest.*
 *WatermarkTestPageDynamicBrowserTest.*
