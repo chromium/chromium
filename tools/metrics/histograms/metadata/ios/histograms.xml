@@ -2489,6 +2489,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-01-27">
   <owner>yasamans@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the length of the selected text that triggered Explain Gemini edit
     menu.
@@ -2509,6 +2510,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-10-11">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the entry point source from which Gemini was triggered. Recorded
     when Gemini is triggered. Starting M148, a portion of the Omnibox Chip
@@ -2520,6 +2522,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-03-10">
   <owner>yasamans@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the availability of an entry point source from which Gemini could be
     triggered. Recorded when the entry point is available to the user. Starting
@@ -2532,6 +2535,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-03-05">
   <owner>yasamans@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the entry point source from which Gemini was impressed. Recorded
     when an entry point is shown. Starting M148, a portion of the Omnibox Chip
@@ -2553,6 +2557,7 @@ chromium-metrics-reviews@google.com.
     enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-10-11">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records how the user submitted the first prompt of a session to BWG (Gemini)
     on iOS. Persisted floaties resumed from persisted tabs are considered new
@@ -2618,6 +2623,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-10-11">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-alchemy@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the entry point source from which Gemini First Run Experience (FRE)
     was triggered. Recorded when the Gemini FRE is triggered. Starting M148, a
@@ -2718,6 +2724,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-09-20">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records whether prompts sent to Gemini include page context.
   </summary>
@@ -2754,6 +2761,7 @@ chromium-metrics-reviews@google.com.
     enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-10-11">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>Records how the user submitted any prompt to Gemini on iOS.</summary>
 </histogram>
 
@@ -2827,6 +2835,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-10-11">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records whether the user sent their first prompt in a Gemini session on iOS.
     False indicates abandoned sessions.
@@ -2837,6 +2846,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-10-11">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Records the total number of prompts sent by the user in a BWG (Gemini)
     session on iOS. Includes 0 for abandoned sessions where no prompts were
