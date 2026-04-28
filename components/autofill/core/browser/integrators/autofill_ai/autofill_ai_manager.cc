@@ -437,15 +437,11 @@ void AutofillAiManager::HandlePromptResult(
         // doesn't require a valid `session_id`.
         if (base::FeatureList::IsEnabled(
                 wallet::features::kWalletApiPrivatePassesConsent)) {
-          // TODO(crbug.com/489354073): Remove the value_or() usage and instead
-          // CHECK() that the `ui_context` fields are populated properly.
-          // For now, since the same strings are used across platforms and since
-          // `ui_context` is not populated from the UI code yet, they are
-          // hardcoded here.
+          CHECK(ui_context.accepted_consent_string_id.has_value());
+          CHECK(ui_context.accept_button_string_id.has_value());
           session_id = RecordWalletPrivatePassConsent(
-              ui_context.accepted_consent_string_id.value_or(
-                  IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW),
-              ui_context.accept_button_string_id.value_or(IDS_SAVE),
+              ui_context.accepted_consent_string_id.value(),
+              ui_context.accept_button_string_id.value(),
               *client_->GetConsentAuditor(), *client_->GetIdentityManager());
         }
         wallet_manager->SaveWalletEntityInstance(entity, session_id,
