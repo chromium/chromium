@@ -1399,6 +1399,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD,
                 "Allow the WebView Prefetch API to start main resource prefetch requests from off"
                         + " the main thread."),
+        Flag.baseFeature(
+                "PreventSvgFilterPaint",
+                "Disables SVG filter painting for remote frames and web plugins."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
