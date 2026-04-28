@@ -27,6 +27,8 @@ import com.google.android.apps.common.testing.accessibility.framework.checks.Tou
 
 import org.junit.Assert;
 import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -58,6 +60,7 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     private final Class<T> mActivityClass;
     private boolean mFinishActivity = true;
     private T mActivity;
+    private boolean mIsClassRule;
 
     /**
      * @param activityClass The Class of the Activity the TestRule will use.
@@ -112,12 +115,18 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     }
 
     @Override
+    public Statement apply(Statement base, Description description) {
+        mIsClassRule = (description.getMethodName() == null);
+        return super.apply(base, description);
+    }
+
+    @Override
     @CallSuper
     protected void after() {
         try {
             ensureSoftKeyboardIsHidden();
         } finally {
-            if (mFinishActivity && mActivity != null) {
+            if ((mIsClassRule || mFinishActivity) && mActivity != null) {
                 finishActivity();
             }
         }
