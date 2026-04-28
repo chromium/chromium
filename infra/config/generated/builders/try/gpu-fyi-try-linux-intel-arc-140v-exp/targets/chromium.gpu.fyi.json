@@ -24,6 +24,7 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
+            "display_server": "x11",
             "gpu": "8086:64a0",
             "os": "Ubuntu",
             "pool": "chromium.tests.gpu.experimental"

@@ -806,6 +806,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
+            "display_server": "x11",
             "gpu": "1002:7340-25.2.8",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu",
@@ -821,6 +822,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
+            "display_server": "x11",
             "gpu": "1002:13c0",
             "os": "Ubuntu",
             "pool": "chromium.tests.gpu.experimental",
@@ -845,6 +847,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
+            "display_server": "x11",
             "gpu": "8086:64a0",
             "os": "Ubuntu",
             "pool": "chromium.tests.gpu.experimental",
@@ -1173,6 +1176,7 @@ targets.mixin(
             "gpu": "1002:1900-25.2.2",
             "os": "Ubuntu-24.04",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu.experimental",
         },
     ),
@@ -1185,6 +1189,7 @@ targets.mixin(
             "gpu": "1002:150e-25.0.7",
             "os": "Ubuntu-24.04",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu.experimental",
         },
     ),
@@ -1197,6 +1202,7 @@ targets.mixin(
             "gpu": "1002:7340-23.2.1|1002:7340-25.2.8",
             "os": "Ubuntu-22.04|Ubuntu-24.04",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1209,6 +1215,7 @@ targets.mixin(
             "gpu": "1002:7480-25.0.7",
             "os": "Ubuntu-24.04",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1221,6 +1228,7 @@ targets.mixin(
             "gpu": "8086:9bc5-23.2.1",
             "os": "Ubuntu-22.04.5",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1232,6 +1240,7 @@ targets.mixin(
         dimensions = {
             "gpu": "8086:9bc5-23.2.1",
             "os": "Ubuntu-22.04",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1244,6 +1253,7 @@ targets.mixin(
             "gpu": "8086:4680-23.2.1",
             "os": "Ubuntu-22.04",
             "display_attached": "1",
+            "display_server": "x11",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -1253,6 +1263,7 @@ targets.mixin(
     name = "linux_nvidia_gtx_1660_experimental",
     swarming = targets.swarming(
         dimensions = {
+            "display_server": "x11",
             "gpu": "10de:2184-535.183.01",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu",
@@ -1264,6 +1275,7 @@ targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
     swarming = targets.swarming(
         dimensions = {
+            "display_server": "x11",
             "gpu": "10de:2184-535.183.01",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu",
@@ -1275,6 +1287,7 @@ targets.mixin(
     name = "linux_nvidia_rtx_4070_super_stable",
     swarming = targets.swarming(
         dimensions = {
+            "display_server": "x11",
             "gpu": "10de:2783-580.95.05",
             "os": "Ubuntu-24.04",
             "pool": "chromium.tests.gpu",

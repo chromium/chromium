@@ -776,6 +776,7 @@
         "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
+            "display_server": "x11",
             "gpu": "10de:2184-535.183.01",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
