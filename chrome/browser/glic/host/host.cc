@@ -426,6 +426,7 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
   CHECK(web_client);
   handler_info_->web_client = web_client;
 
+  // TODO(b/507074189): Refactor Skills to use the invoke API.
   if (!pending_contextual_skills_.empty()) {
     web_client->NotifyContextualSkillPreviewsChanged(
         std::move(pending_contextual_skills_));
