@@ -1215,7 +1215,7 @@ static size_t GetGlobalMaxConnectionsPerProxyChainForWebSocket() {
 // Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
 // globals in net::ClientSocketPoolManager (2) saturates out of bound values.
 TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
-  const size_t kDefault = 32;
+  const size_t kDefault = 128;
   const size_t kMin = 6;
   const size_t kMax = 256;
 
