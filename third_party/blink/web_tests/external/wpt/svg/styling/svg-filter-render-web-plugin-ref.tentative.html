@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<svg width="0" height="0">
+    <filter id="svg-filter">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+    </filter>
+</svg>
+</head>
+<body>
+    <div>
+        SVG filter security test: this test passes if there is no filter effect on the web plugin.
+    </div>
+    <br />
+    <div>
+        <embed width="100px" height="100px" frameBorder="0" type="application/x-webkit-test-webplugin"></embed>
+    </div>
+</body>
+</html>

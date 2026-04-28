@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
@@ -54,6 +55,10 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
         .PaintReplaced(paint_info, paint_offset);
     return;
   }
+
+  std::optional<ScopedPaintChunkProperties> removed_svg_filter_paint =
+      EmbeddedContentPainter::RemoveSvgFilterPaint(layout_embedded_object_,
+                                                   paint_info);
 
   if (paint_info.phase == PaintPhase::kSelectionDragImage)
     return;

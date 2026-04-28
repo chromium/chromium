@@ -6368,6 +6368,37 @@
     "expires": "Jan 1, 2027"
   },
   {
+    "prefix": "prevent-svg-filter-paint",
+    "owners": [
+      "arichiv@chromium.org",
+      "pdr@chromium.org"
+    ],
+    "platforms": [
+      "Android",
+      "ChromeOS",
+      "Linux",
+      "Mac",
+      "Webview",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/svg/styling/svg-filter-render-local-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
+      "wpt_internal/svg"
+    ],
+    "exclusive_tests": [
+      "external/wpt/svg/styling/svg-filter-render-local-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
+      "wpt_internal/svg/svg-filter-render.sub.https.html"
+    ],
+    "args": [
+      "--enable-features=PreventSvgFilterPaint:PreventSvgFilterPaintOnRemoteFrame/true/PreventSvgFilterPaintOnWebPlugin/true"
+    ],
+    "expires": "Nov 1, 2026"
+  },
+  {
     "prefix": "popover-hint-new-behavior-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

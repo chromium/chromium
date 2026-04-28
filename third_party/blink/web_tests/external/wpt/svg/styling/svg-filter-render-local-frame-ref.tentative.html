@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<svg width="0" height="0">
+    <filter id="svg-filter">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+    </filter>
+</svg>
+<style type="text/css">
+.svg-filter {
+    filter: url(#svg-filter);
+}
+</style>
+</head>
+<body>
+    <div>
+        SVG filter security test: this test passes if there is a filter effect on the same-origin frame.
+    </div>
+    <br />
+    <div>
+        <iframe width="100px" height="100px" frameBorder="0" class="svg-filter" src="/svg/styling/support/svg-filter-render-iframe.html"></iframe>
+    </div>
+</body>
+</html>

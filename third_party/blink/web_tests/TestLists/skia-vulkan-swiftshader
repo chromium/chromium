@@ -208,7 +208,6 @@ css3/filters/filter-repaint-composited-fallback-crash.html
 # Webplugin Failing to Create Promise SkImage - crbug.com/935648
 compositing/plugins/webplugin-alpha.html
 compositing/plugins/webplugin-no-alpha.html
-compositing/plugins/webplugin-reflection.html
 
 # Subframe not painting - crbug.com/935672
 compositing/overflow/border-radius-above-composited-subframe.html
