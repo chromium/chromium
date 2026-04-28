@@ -63,12 +63,14 @@ class UnexportableKeyMacTest : public testing::Test {
       GetUnexportableKeyProvider(config_)};
 };
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {
   for (bool available : {true, false}) {
     scoped_fake_keychain_.keychain()->set_secure_enclave_available(available);
     EXPECT_EQ(GetUnexportableKeyProvider(config_) != nullptr, available);
   }
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(UnexportableKeyMacTest, GetAllSigningKeys) {
   // Initially, there should be no keys.
