@@ -28,7 +28,10 @@ namespace ash {
 
 class PaymentsAutofillAuthBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  PaymentsAutofillAuthBrowserTest() = default;
+  PaymentsAutofillAuthBrowserTest() {
+    set_exit_when_last_browser_closes(false);
+  }
+
   ~PaymentsAutofillAuthBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
