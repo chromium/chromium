@@ -485,28 +485,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             if (entityInstance == null) {
                                 return true;
                             }
-                            if (entityInstance.requiresReauthToSee()) {
-                                if (mReauthenticatorBridge == null) {
-                                    mReauthenticatorBridge =
-                                            ReauthenticatorBridge.create(
-                                                    getActivity(),
-                                                    getProfile(),
-                                                    DeviceAuthSource.AUTOFILL);
-                                }
-                                if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                                        != BiometricStatus.UNAVAILABLE) {
-                                    mReauthenticatorBridge.reauthenticate(
-                                            success -> {
-                                                if (success) {
-                                                    showEntityEditor(entityInstance);
-                                                }
-                                            });
-                                } else {
-                                    showEntityEditor(entityInstance);
-                                }
-                            } else {
-                                showEntityEditor(entityInstance);
-                            }
+                            editEntity(entityInstance);
                             return true;
                         });
                 category.addPreference(pref);
@@ -515,6 +494,31 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             if (shouldHaveAddButton) {
                 addAddEntityButton(category, type, !addButtonEnabled);
             }
+        }
+    }
+
+    private void editEntity(EntityInstance entityInstance) {
+        if (entityInstance.requiresReauthToSee()) {
+            if (mReauthenticatorBridge == null) {
+                mReauthenticatorBridge =
+                        ReauthenticatorBridge.create(
+                                getActivity(),
+                                getProfile(),
+                                DeviceAuthSource.AUTOFILL);
+            }
+            if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                    != BiometricStatus.UNAVAILABLE) {
+                mReauthenticatorBridge.reauthenticate(
+                        success -> {
+                            if (success) {
+                                showEntityEditor(entityInstance);
+                            }
+                        });
+            } else {
+                showEntityEditor(entityInstance);
+            }
+        } else {
+            showEntityEditor(entityInstance);
         }
     }
 
