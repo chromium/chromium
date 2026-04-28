@@ -1249,14 +1249,9 @@ class WebViewChromium
         int COUNT = 15;
     }
 
-    public static void recordWebViewSystemApiCall(
-            @SystemApiCall int sample, @ApiCallUserAction String action) {
+    public static void recordWebViewSystemApiCall(@SystemApiCall int sample) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.ApiCall.System", sample, SystemApiCall.COUNT);
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS)) {
-            RecordUserAction.record("AndroidWebView.ApiCall." + action);
-        }
     }
 
     // This does not touch any global / non-threadsafe state, but note that
@@ -3792,8 +3787,7 @@ class WebViewChromium
             return ret;
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_DRAG_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_DRAG_EVENT, ApiCallUserAction.WEBVIEW_INSTANCE_ON_DRAG_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.ON_DRAG_EVENT);
             return mAwContents.getViewMethods().onDragEvent(event);
         }
     }
@@ -3807,9 +3801,7 @@ class WebViewChromium
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_CREATE_INPUT_CONNECTION")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_CREATE_INPUT_CONNECTION,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_CREATE_INPUT_CONNECTION);
+            recordWebViewSystemApiCall(SystemApiCall.ON_CREATE_INPUT_CONNECTION);
             return mAwContents.getViewMethods().onCreateInputConnection(outAttrs);
         }
     }
@@ -3830,9 +3822,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_KEY_MULTIPLE")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_KEY_MULTIPLE,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_KEY_MULTIPLE);
+            recordWebViewSystemApiCall(SystemApiCall.ON_KEY_MULTIPLE);
             return false;
         }
     }
@@ -3852,8 +3842,7 @@ class WebViewChromium
             return ret;
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_KEY_DOWN")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_KEY_DOWN, ApiCallUserAction.WEBVIEW_INSTANCE_ON_KEY_DOWN);
+            recordWebViewSystemApiCall(SystemApiCall.ON_KEY_DOWN);
             return false;
         }
     }
@@ -3873,8 +3862,7 @@ class WebViewChromium
             return ret;
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_KEY_UP")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_KEY_UP, ApiCallUserAction.WEBVIEW_INSTANCE_ON_KEY_UP);
+            recordWebViewSystemApiCall(SystemApiCall.ON_KEY_UP);
             return mAwContents.getViewMethods().onKeyUp(keyCode, event);
         }
     }
@@ -3938,9 +3926,7 @@ class WebViewChromium
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_WINDOW_FOCUS_CHANGED")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_WINDOW_FOCUS_CHANGED,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_WINDOW_FOCUS_CHANGED);
+            recordWebViewSystemApiCall(SystemApiCall.ON_WINDOW_FOCUS_CHANGED);
             mAwContents.getViewMethods().onWindowFocusChanged(hasWindowFocus);
         }
     }
@@ -3959,9 +3945,7 @@ class WebViewChromium
             return;
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_FOCUS_CHANGED")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_FOCUS_CHANGED,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_FOCUS_CHANGED);
+            recordWebViewSystemApiCall(SystemApiCall.ON_FOCUS_CHANGED);
             mAwContents.getViewMethods().onFocusChanged(focused, direction, previouslyFocusedRect);
         }
     }
@@ -4017,9 +4001,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.DISPATCH_KEY_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.DISPATCH_KEY_EVENT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_DISPATCH_KEY_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.DISPATCH_KEY_EVENT);
             return mAwContents.getViewMethods().dispatchKeyEvent(event);
         }
     }
@@ -4040,9 +4022,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_TOUCH_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_TOUCH_EVENT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_TOUCH_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.ON_TOUCH_EVENT);
             return mAwContents.getViewMethods().onTouchEvent(ev);
         }
     }
@@ -4063,9 +4043,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_HOVER_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_HOVER_EVENT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_HOVER_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.ON_HOVER_EVENT);
             return mAwContents.getViewMethods().onHoverEvent(event);
         }
     }
@@ -4086,9 +4064,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_GENERIC_MOTION_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_GENERIC_MOTION_EVENT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_GENERIC_MOTION_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.ON_GENERIC_MOTION_EVENT);
             return mAwContents.getViewMethods().onGenericMotionEvent(event);
         }
     }
@@ -4096,9 +4072,7 @@ class WebViewChromium
     @Override
     public boolean onTrackballEvent(MotionEvent ev) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_TRACKBALL_EVENT")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_TRACKBALL_EVENT,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_TRACKBALL_EVENT);
+            recordWebViewSystemApiCall(SystemApiCall.ON_TRACKBALL_EVENT);
             // Trackball event not handled, which eventually gets converted to DPAD keyevents
             return false;
         }
@@ -4244,9 +4218,7 @@ class WebViewChromium
                 CallSite.WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_START_TEMPORARY_DETACH")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_START_TEMPORARY_DETACH,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH);
+            recordWebViewSystemApiCall(SystemApiCall.ON_START_TEMPORARY_DETACH);
             mAwContents.getViewMethods().onStartTemporaryDetach();
         }
     }
@@ -4257,9 +4229,7 @@ class WebViewChromium
                 CallSite.WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_FINISH_TEMPORARY_DETACH")) {
-            recordWebViewSystemApiCall(
-                    SystemApiCall.ON_FINISH_TEMPORARY_DETACH,
-                    ApiCallUserAction.WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH);
+            recordWebViewSystemApiCall(SystemApiCall.ON_FINISH_TEMPORARY_DETACH);
             mAwContents.getViewMethods().onFinishTemporaryDetach();
         }
     }
@@ -4270,9 +4240,7 @@ class WebViewChromium
             if (ThreadUtils.runningOnUiThread()) {
                 try (TraceEvent event =
                         TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
-                    recordWebViewSystemApiCall(
-                            SystemApiCall.ON_CHECK_IS_TEXT_EDITOR,
-                            ApiCallUserAction.WEBVIEW_INSTANCE_ON_CHECK_IS_TEXT_EDITOR);
+                    recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
                     return mAwContents.getViewMethods().onCheckIsTextEditor();
                 }
             }
