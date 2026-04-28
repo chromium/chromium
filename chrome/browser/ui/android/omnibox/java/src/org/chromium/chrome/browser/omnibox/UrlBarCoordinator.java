@@ -406,6 +406,29 @@ public class UrlBarCoordinator
     }
 
     /**
+     * Tell the UrlBar that it is being relocated to a new parent. Focus change notifications are
+     * dropped while this process is ongoing.
+     */
+    public void startReparenting() {
+        mMediator.startReparenting();
+    }
+
+    /**
+     * Tell the UrlBar that it has been relocated to a new parent and set its new focus state.
+     *
+     * @param postReparentingFocus Whether the UrlBar should be focused now that the reparenting
+     *     process has completed.
+     */
+    public void finishReparenting(boolean postReparentingFocus) {
+        mMediator.finishReparenting();
+        if (postReparentingFocus) {
+            mUrlBar.requestFocus();
+        } else {
+            mUrlBar.clearFocus();
+        }
+    }
+
+    /**
      * Restarts Android input method framework on the UrlBar, resetting any existing input
      * connection.
      */

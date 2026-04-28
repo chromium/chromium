@@ -446,6 +446,18 @@ public class UrlBarMediatorUnitTest {
         Assert.assertTrue(mModel.get(UrlBarProperties.TEXT_STATE).originChanged);
     }
 
+    @Test
+    public void reparentingDropsFocusChangeEvents() {
+        mMediator.startReparenting();
+        mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(false);
+        Mockito.verifyNoInteractions(mFocusChangeCallback);
+
+        mMediator.finishReparenting();
+        mModel.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+        Mockito.verify(mFocusChangeCallback).onResult(true);
+    }
+
     private static SpannableStringBuilder spannable(String text) {
         return new SpannableStringBuilder(text);
     }

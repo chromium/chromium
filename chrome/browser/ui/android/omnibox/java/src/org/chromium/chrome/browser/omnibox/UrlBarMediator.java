@@ -51,6 +51,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private boolean mShowOriginOnly;
     private final @Nullable Callback<String> mTextChangeListener;
     private final @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
+    private boolean mIsReparenting;
 
     /**
      * Creates a URLBarMediator.
@@ -261,6 +262,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     private void onUrlFocusChange(boolean focus) {
+        if (mIsReparenting) return;
         mHasFocus = focus;
 
         if (mModel.get(UrlBarProperties.ALLOW_FOCUS)) {
@@ -452,5 +454,13 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
     void setUseSmallText(boolean useSmallText) {
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, useSmallText);
+    }
+
+    void startReparenting() {
+        mIsReparenting = true;
+    }
+
+    void finishReparenting() {
+        mIsReparenting = false;
     }
 }
