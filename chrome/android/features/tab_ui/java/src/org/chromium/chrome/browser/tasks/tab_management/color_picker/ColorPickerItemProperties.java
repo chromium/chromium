@@ -31,23 +31,28 @@ public class ColorPickerItemProperties {
     /** An indicator of whether this color is the currently selected one. */
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
 
+    /** The index of this item in its collection for accessibility. */
+    public static final ReadableIntPropertyKey ITEM_INDEX = new ReadableIntPropertyKey();
+
     /** Creates a model for a color item. */
     public static PropertyModel create(
             int color,
             @ColorPickerType int colorPickerType,
             boolean isIncognito,
             Runnable onClickListener,
-            boolean isSelected) {
+            boolean isSelected,
+            int itemIndex) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(COLOR_ID, color)
                 .with(COLOR_PICKER_TYPE, colorPickerType)
                 .with(IS_INCOGNITO, isIncognito)
                 .with(ON_CLICK_LISTENER, onClickListener)
                 .with(IS_SELECTED, isSelected)
+                .with(ITEM_INDEX, itemIndex)
                 .build();
     }
 
     public static final PropertyKey[] ALL_KEYS = {
-        COLOR_ID, COLOR_PICKER_TYPE, IS_INCOGNITO, ON_CLICK_LISTENER, IS_SELECTED
+        COLOR_ID, COLOR_PICKER_TYPE, IS_INCOGNITO, ON_CLICK_LISTENER, IS_SELECTED, ITEM_INDEX
     };
 }

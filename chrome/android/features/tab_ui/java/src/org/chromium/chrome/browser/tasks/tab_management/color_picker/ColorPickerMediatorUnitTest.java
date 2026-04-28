@@ -42,7 +42,8 @@ public class ColorPickerMediatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mColorIds = TabGroupColorUtils.getTabGroupColorIdList();
 
-        for (int color : mColorIds) {
+        for (int i = 0; i < mColorIds.size(); i++) {
+            int color = mColorIds.get(i);
             PropertyModel model =
                     ColorPickerItemProperties.create(
                             /* color= */ color,
@@ -51,7 +52,8 @@ public class ColorPickerMediatorUnitTest {
                             /* onClickListener= */ () -> {
                                 mMediator.setSelectedColorItem(color);
                             },
-                            /* isSelected= */ false);
+                            /* isSelected= */ false,
+                            /* itemIndex= */ i);
             mColorItems.add(model);
         }
 

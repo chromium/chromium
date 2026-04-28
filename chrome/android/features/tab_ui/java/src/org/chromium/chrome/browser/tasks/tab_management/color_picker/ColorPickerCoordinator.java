@@ -7,8 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management.color_picker;
 import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RadioGroup;
 
 import androidx.annotation.IntDef;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -65,7 +69,8 @@ public class ColorPickerCoordinator implements ColorPicker {
         List<PropertyModel> colorItems = new ArrayList<>();
         List<FrameLayout> colorViews = new ArrayList<>();
 
-        for (int color : colors) {
+        for (int i = 0; i < colors.size(); i++) {
+            int color = colors.get(i);
             FrameLayout view = (FrameLayout) ColorPickerItemViewBinder.createItemView(context);
             colorViews.add(view);
 
@@ -82,13 +87,32 @@ public class ColorPickerCoordinator implements ColorPicker {
                                     onColorItemClicked.run();
                                 }
                             },
-                            /* isSelected= */ false);
+                            /* isSelected= */ false,
+                            /* itemIndex= */ i);
             colorItems.add(model);
             PropertyModelChangeProcessor.create(model, view, ColorPickerItemViewBinder::bind);
         }
 
         // Set all color item views on the parent container view.
         mContainerView.setColorViews(colorViews);
+
+        ViewCompat.setAccessibilityDelegate(
+                mContainerView,
+                new AccessibilityDelegateCompat() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfoCompat info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setClassName(RadioGroup.class.getName());
+                        info.setCollectionInfo(
+                                AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
+                                        /* rowCount= */ 1,
+                                        /* columnCount= */ colors.size(),
+                                        /* hierarchical= */ false,
+                                        AccessibilityNodeInfoCompat.CollectionInfoCompat
+                                                .SELECTION_MODE_SINGLE));
+                    }
+                });
 
         mMediator = new ColorPickerMediator(colorItems);
     }

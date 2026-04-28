@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.color_picker.Colo
 import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.COLOR_PICKER_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.IS_SELECTED;
+import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ITEM_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerItemProperties.ON_CLICK_LISTENER;
 
 import android.content.Context;
@@ -25,6 +26,9 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -69,7 +73,8 @@ public class ColorPickerItemViewBinder {
                     .setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
         } else if (propertyKey == IS_SELECTED) {
             refreshColorIconOnSelection(model, view);
-            setAccessibilityContent(view, model.get(IS_SELECTED), model.get(COLOR_ID));
+            setAccessibilityContent(
+                    view, model.get(IS_SELECTED), model.get(COLOR_ID), model.get(ITEM_INDEX));
         }
     }
 
@@ -103,15 +108,16 @@ public class ColorPickerItemViewBinder {
 
     private static void refreshColorIconOnSelection(PropertyModel model, View view) {
         final View colorIcon = view.findViewById(R.id.color_picker_icon);
+        boolean isSelected = model.get(IS_SELECTED);
 
         if (isAndroidThemeModuleEnabled()) {
             var button = (MaterialButton) colorIcon;
-            button.setChecked(model.get(IS_SELECTED));
-            button.setEnabled(!model.get(IS_SELECTED));
+            button.setToggleCheckedStateOnClick(false);
+            button.setChecked(isSelected);
 
             ViewOverlay overlay = colorIcon.getOverlay();
 
-            if (model.get(IS_SELECTED)) {
+            if (isSelected) {
                 BorderDrawable borderDrawable = getBorderDrawable(model, button);
                 overlay.add(borderDrawable);
             } else {
@@ -121,7 +127,7 @@ public class ColorPickerItemViewBinder {
             LayerDrawable layerDrawable = (LayerDrawable) colorIcon.getBackground();
 
             // Toggle the selected layer opaqueness based on the user click action.
-            int alpha = model.get(IS_SELECTED) ? 0xFF : 0;
+            int alpha = isSelected ? 0xFF : 0;
             layerDrawable.getDrawable(SELECTION_LAYER).setAlpha(alpha);
         }
 
@@ -185,22 +191,49 @@ public class ColorPickerItemViewBinder {
         }
     }
 
-    private static void setAccessibilityContent(View view, boolean isSelected, int colorId) {
+    private static void setAccessibilityContent(
+            View view, boolean isSelected, int colorId, int position) {
         View colorIcon = view.findViewById(R.id.color_picker_icon);
         Resources res = view.getContext().getResources();
 
         final @StringRes int colorDescRes =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
                         colorId);
-        final @StringRes int selectedFormatDescRes =
-                isSelected
-                        ? R.string
-                                .accessibility_tab_group_color_picker_color_item_selected_description
-                        : R.string
-                                .accessibility_tab_group_color_picker_color_item_not_selected_description;
         String colorDesc = res.getString(colorDescRes);
-        String contentDescription = res.getString(selectedFormatDescRes, colorDesc);
+
+        // If we are using the Android Theme Module, the buttons are "checkable", so specifying
+        // their selected state in the content description is redundant.
+        String contentDescription;
+        if (isAndroidThemeModuleEnabled()) {
+            contentDescription = colorDesc;
+        } else {
+            final @StringRes int selectedFormatDescRes =
+                    isSelected
+                            ? R.string
+                                    .accessibility_tab_group_color_picker_color_item_selected_description
+                            : R.string
+                                    .accessibility_tab_group_color_picker_color_item_not_selected_description;
+            contentDescription = res.getString(selectedFormatDescRes, colorDesc);
+        }
         colorIcon.setContentDescription(contentDescription);
+
+        ViewCompat.setAccessibilityDelegate(
+                colorIcon,
+                new AccessibilityDelegateCompat() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfoCompat info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.setCollectionItemInfo(
+                                AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
+                                        /* rowIndex= */ 0,
+                                        /* rowSpan= */ 1,
+                                        /* columnIndex= */ position,
+                                        /* columnSpan= */ 1,
+                                        /* heading= */ false,
+                                        /* selected= */ isSelected));
+                    }
+                });
     }
 
     private static boolean isAndroidThemeModuleEnabled() {
