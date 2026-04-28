@@ -103,18 +103,17 @@ bool IterateVisitedLinkDBTask::RunOnDBThread(HistoryBackend* backend,
   // Begin iterating through the VisitedLinkDatabase.
   bool success = false;
   if (db) {
-    HistoryDatabase::VisitedLinkEnumerator iter;
-    if (db->InitVisitedLinkEnumeratorForEverything(iter)) {
+    // Use the joined enumerator to fetch visited link rows together with their
+    // link URLs in a single query, rather than issuing a separate URL lookup
+    // per row.
+    HistoryDatabase::VisitedLinkWithUrlEnumerator iter;
+    if (db->InitVisitedLinkWithUrlEnumeratorForEverything(iter)) {
       VisitedLinkRow row;
-      while (iter.GetNextVisitedLink(row)) {
-        URLRow url_info;
-        // We must obtain the link url from the ID we're given.
-        if (db->GetURLRow(row.link_url_id, &url_info)) {
-          net::SchemefulSite top_level_site(row.top_level_url);
-          url::Origin frame_origin = url::Origin::Create(row.frame_url);
-          enumerator_->OnVisitedLink(url_info.url(), top_level_site,
-                                     frame_origin);
-        }
+      GURL link_url;
+      while (iter.GetNextVisitedLink(row, link_url)) {
+        net::SchemefulSite top_level_site(row.top_level_url);
+        url::Origin frame_origin = url::Origin::Create(row.frame_url);
+        enumerator_->OnVisitedLink(link_url, top_level_site, frame_origin);
       }
       success = true;
     }

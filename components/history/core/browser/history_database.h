@@ -6,6 +6,9 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 
 #include <memory>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
@@ -21,6 +24,7 @@
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 
 namespace base {
 class FilePath;
@@ -199,6 +203,54 @@ class HistoryDatabase : public DownloadDatabase,
   // visits known to sync.
   bool KnownToSyncVisitsExist();
   void SetKnownToSyncVisitsExist(bool exist);
+
+  // Visited link with URL enumeration -----------------------------------------
+
+  // Enumerator that returns visited link rows joined with their link URL from
+  // the urls table, avoiding N+1 queries during startup iteration.
+  class VisitedLinkWithUrlEnumerator {
+   public:
+    VisitedLinkWithUrlEnumerator();
+
+    VisitedLinkWithUrlEnumerator(const VisitedLinkWithUrlEnumerator&) = delete;
+    VisitedLinkWithUrlEnumerator& operator=(
+        const VisitedLinkWithUrlEnumerator&) = delete;
+
+    ~VisitedLinkWithUrlEnumerator();
+
+    // Retrieves the next visited link and its associated link URL. Returns
+    // false if no more rows are available.
+    bool GetNextVisitedLink(VisitedLinkRow& row, GURL& link_url);
+
+   private:
+    friend class HistoryDatabase;
+
+    bool initialized_ = false;
+    sql::Statement statement_;
+  };
+
+  // Initializes the given enumerator to enumerate all visited links joined with
+  // their URLs from the urls table. This is more efficient than separately
+  // querying the urls table for each visited link row.
+  bool InitVisitedLinkWithUrlEnumeratorForEverything(
+      VisitedLinkWithUrlEnumerator& enumerator);
+
+  // Batch recent visits -------------------------------------------------------
+
+  // A map from URLID to a vector of (visit_time, transition) pairs, sorted by
+  // visit_time descending. Used to batch-fetch recent visits for multiple URLs
+  // in a single query during startup rebuild, instead of issuing N separate
+  // GetMostRecentVisitsForURL queries.
+  using RecentVisitsMap = std::unordered_map<
+      URLID,
+      std::vector<std::pair<base::Time, ui::PageTransition>>>;
+
+  // Fetches the most recent visits (up to |max_visits_per_url|) for all URLs
+  // that match the "significant" criteria. Returns a map from URLID to visit
+  // info. This replaces the per-URL GetMostRecentVisitsForURL pattern during
+  // RebuildFromHistory, converting N+1 SQL queries into a single query.
+  RecentVisitsMap GetBatchRecentVisitsForSignificantURLs(
+      int max_visits_per_url);
 
   // Sync metadata storage ----------------------------------------------------
 
