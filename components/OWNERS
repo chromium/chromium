@@ -22,6 +22,7 @@ per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
 per-file collaboration_strings.grdp=file://components/collaboration/OWNERS
 per-file commerce_strings.grdp=file://components/commerce_strings_grdp/OWNERS
 per-file compose_strings.grdp=file://components/compose_strings_grdp/OWNERS
+per-file contextual_cueing_strings.grdp=file://chrome/browser/contextual_cueing/OWNERS
 per-file contextual_tasks_strings.grdp=file://components/contextual_tasks/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS

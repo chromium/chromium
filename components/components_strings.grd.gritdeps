@@ -12,6 +12,7 @@ components/collaboration_strings.grdp
 components/commerce_strings.grdp
 components/components_settings_strings.grdp
 components/compose_strings.grdp
+components/contextual_cueing_strings.grdp
 components/contextual_tasks_strings.grdp
 components/crash_strings.grdp
 components/dialog_strings.grdp

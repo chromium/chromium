@@ -33,6 +33,8 @@ source_set("impl") {
 
   sources = [
     "contextual_cueing_controller.cc",
+    "contextual_cueing_menu_model.cc",
+    "contextual_cueing_menu_model.h",
     "contextual_cueing_service.cc",
     "contextual_cueing_service_factory.cc",
     "contextual_cueing_web_contents_observer.cc",
@@ -49,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/tab_list",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
@@ -56,7 +59,9 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/strings:components_strings",
     "//components/sync/service",
+    "//components/vector_icons",
     "//content/public/browser",
     "//ui/menus",
   ]

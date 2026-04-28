@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_menu_model.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -482,10 +483,13 @@ void ContextualCueingController::ShowCue(
   page_action_controller->OverrideText(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
 
-  // TODO(crbug.com/500407600): Show a dropdown menu instead of a close button
+  auto menu_model = std::make_unique<ContextualCueingMenuModel>(
+      browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
+      cue_type, target.CueActionDataFromResponse(response));
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
-      page_actions::AnchoredMessageActionIconType::kClose, /*model=*/nullptr);
+      page_actions::AnchoredMessageActionIconType::kMenu,
+      std::move(menu_model));
   page_action_controller->ShowAnchoredMessage(
       kActionAnchoredContextualCue,
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});

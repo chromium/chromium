@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Contextual Cueing Menu-->
+  <message name ="IDS_CONTEXTUAL_CUEING_MENU_DISMISS" desc="Title of a menu item which, on click, dismisses the contextual cue.">
+    Dismiss
+  </message>
+  <message name ="IDS_CONTEXTUAL_CUEING_MENU_EDIT_PROMPT" desc="Title of a menu item which, on click, opens the AI chat and allows for the user to edit the prompt.">
+    Edit prompt
+  </message>
+  <message name ="IDS_CONTEXTUAL_CUEING_MENU_SUGGESTION_SETTINGS" desc="Title of a menu item which, on click, takes the user to the suggestions settings page.">
+    Suggestion settings
+  </message>
+</grit-part>
