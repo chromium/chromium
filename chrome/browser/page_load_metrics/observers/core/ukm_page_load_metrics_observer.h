@@ -166,10 +166,7 @@ class UkmPageLoadMetricsObserver
   const page_load_metrics::ContentfulPaintTimingInfo&
   GetSoftNavigationLargestContentfulPaint() const;
 
-  void RecordSoftNavigationMetrics(
-      ukm::SourceId ukm_source_id,
-      const page_load_metrics::mojom::SoftNavigationMetrics&
-          soft_navigation_metrics);
+  void RecordSoftNavigationMetrics();
 
   void RecordLargestContentfulPaintBeforeSoftNavigation();
 
@@ -378,6 +375,9 @@ class UkmPageLoadMetricsObserver
   page_load_metrics::NavigationHandleUserData::InitiatorLocation
       navigation_trigger_type_ = page_load_metrics::NavigationHandleUserData::
           InitiatorLocation::kOther;
+
+  // Counts the soft navigations since the beginning of the page load.
+  int64_t soft_navigation_count_ = 0;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };
