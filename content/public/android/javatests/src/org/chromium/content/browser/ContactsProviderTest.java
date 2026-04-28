@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.ContactsDialogHost;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPermissionProvider;
 import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerDelegate;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -140,35 +141,43 @@ public class ContactsProviderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ContactsPicker.setContactsPickerDelegate(
-                            (WebContents webContents,
-                                    ContactsPickerListener listener,
-                                    boolean multiple,
-                                    boolean names,
-                                    boolean emails,
-                                    boolean tels,
-                                    boolean addresses,
-                                    boolean icons,
-                                    String formattedOrigin,
-                                    ContactsFetcher contactsFetcher) -> {
-                                List<ContactsPickerListener.Contact> contacts = new ArrayList<>();
-                                List<String> contactsNames = new ArrayList<>();
-                                contactsNames.add("test");
-                                contacts.add(
-                                        new ContactsPickerListener.Contact(
-                                                contactsNames,
-                                                /* contactEmails= */ null,
-                                                /* contactTel= */ null,
-                                                /* contactAddresses= */ null,
-                                                /* contactIcons= */ null));
+                            new ContactsPickerDelegate() {
+                                @Override
+                                public Object showContactsPicker(
+                                        WebContents webContents,
+                                        ContactsPickerListener listener,
+                                        boolean multiple,
+                                        boolean names,
+                                        boolean emails,
+                                        boolean tels,
+                                        boolean addresses,
+                                        boolean icons,
+                                        String formattedOrigin,
+                                        ContactsFetcher contactsFetcher) {
+                                    List<ContactsPickerListener.Contact> contacts =
+                                            new ArrayList<>();
+                                    List<String> contactsNames = new ArrayList<>();
+                                    contactsNames.add("test");
+                                    contacts.add(
+                                            new ContactsPickerListener.Contact(
+                                                    contactsNames,
+                                                    /* contactEmails= */ null,
+                                                    /* contactTel= */ null,
+                                                    /* contactAddresses= */ null,
+                                                    /* contactIcons= */ null));
 
-                                listener.onContactsPickerUserAction(
-                                        ContactsPickerListener.ContactsPickerAction
-                                                .CONTACTS_SELECTED,
-                                        contacts,
-                                        /* percentageShared= */ 0,
-                                        /* propertiesSiteRequested= */ 0,
-                                        /* propertiesUserRejected= */ 0);
-                                return true;
+                                    listener.onContactsPickerUserAction(
+                                            ContactsPickerListener.ContactsPickerAction
+                                                    .CONTACTS_SELECTED,
+                                            contacts,
+                                            /* percentageShared= */ 0,
+                                            /* propertiesSiteRequested= */ 0,
+                                            /* propertiesUserRejected= */ 0);
+                                    return true;
+                                }
+
+                                @Override
+                                public void cancelContactsPicker(Object picker) {}
                             });
                 });
 

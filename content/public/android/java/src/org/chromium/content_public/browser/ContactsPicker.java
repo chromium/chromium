@@ -26,6 +26,8 @@ public final class ContactsPicker {
      */
     private static @Nullable Object sPicker;
 
+    private static @Nullable WebContentsObserver sWebContentsObserver;
+
     private ContactsPicker() {}
 
     /**
@@ -47,6 +49,10 @@ public final class ContactsPicker {
         }
 
         return webContents.getVisibility() == Visibility.VISIBLE;
+    }
+
+    public static @Nullable Object getObserverForTesting() {
+        return sWebContentsObserver;
     }
 
     /**
@@ -94,6 +100,38 @@ public final class ContactsPicker {
                         includeIcons,
                         formattedOrigin,
                         contactsFetcher);
+
+        if (sPicker != null) {
+            assert sWebContentsObserver == null;
+            sWebContentsObserver =
+                    new WebContentsObserver(webContents) {
+                        @Override
+                        public void onVisibilityChanged(@Visibility int visibility) {
+                            if (visibility != Visibility.VISIBLE) {
+                                dismissAndCleanup();
+                            }
+                        }
+
+                        @Override
+                        public void webContentsDestroyed() {
+                            dismissAndCleanup();
+                        }
+
+                        private void dismissAndCleanup() {
+                            if (sPicker != null && sContactsPickerDelegate != null) {
+                                sContactsPickerDelegate.cancelContactsPicker(sPicker);
+                            }
+                        }
+                    };
+
+            // Defensive check in case visibility changed during picker creation.
+            if (webContents.getVisibility() != Visibility.VISIBLE) {
+                if (sContactsPickerDelegate != null) {
+                    sContactsPickerDelegate.cancelContactsPicker(sPicker);
+                }
+            }
+        }
+
         return true;
     }
 
@@ -101,5 +139,9 @@ public final class ContactsPicker {
     public static void onContactsPickerDismissed() {
         assert sPicker != null;
         sPicker = null;
+        if (sWebContentsObserver != null) {
+            sWebContentsObserver.observe(null);
+            sWebContentsObserver = null;
+        }
     }
 }
