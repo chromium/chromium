@@ -115,6 +115,13 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        IconViewAccessibleName) {
+  // Show the Translate icon.
+  ChromeTranslateClient::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetTranslateEnabled(true);
+
   EXPECT_EQ(GetTranslateIcon()->GetViewAccessibility().GetCachedName(),
             BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_SHOW_TRANSLATE)));

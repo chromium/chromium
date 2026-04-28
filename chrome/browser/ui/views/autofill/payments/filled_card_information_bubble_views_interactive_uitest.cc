@@ -542,6 +542,7 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
+  ShowBubble();
   EXPECT_EQ(
       GetIconView()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(

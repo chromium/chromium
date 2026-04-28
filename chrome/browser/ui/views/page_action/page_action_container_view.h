@@ -58,11 +58,6 @@ class PageActionContainerView : public views::View {
   // Callbacks used to handle page action view chip state changes. Used to
   // ensure that the container reorders the page actions accordingly.
   std::vector<base::CallbackListSubscription> chip_state_changed_callbacks_;
-
-  // Subscriptions to page action view visibility changes, used to ensure that
-  // the chips/non-chips page action view are correctly ordered.
-  std::vector<base::CallbackListSubscription>
-      page_action_view_visible_changed_callbacks_;
 };
 
 }  // namespace page_actions

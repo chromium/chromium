@@ -700,6 +700,12 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     IconViewAccessibleName) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source =
+      GetParam().enrollment_source;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
   EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));

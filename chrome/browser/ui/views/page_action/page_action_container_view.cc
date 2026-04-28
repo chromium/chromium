@@ -60,11 +60,6 @@ PageActionContainerView::PageActionContainerView(
             &PageActionContainerView::OnPageActionSuggestionChipStateChanged,
             base::Unretained(this))));
 
-    page_action_view_visible_changed_callbacks_.push_back(
-        view->AddVisibleChangedCallback(base::BindRepeating(
-            &PageActionContainerView::NormalizePageActionViewOrder,
-            base::Unretained(this))));
-
     // Record the original index for the page action view so that even if it
     // become a suggestion chip (move to index 0) we can bring it back later at
     // the exact same initial index.

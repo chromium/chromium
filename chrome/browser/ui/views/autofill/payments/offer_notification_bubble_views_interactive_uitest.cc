@@ -531,6 +531,7 @@ IN_PROC_BROWSER_TEST_P(
 #endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_IconViewAccessibleName) {
+  ShowBubbleForOfferAndVerify();
   EXPECT_EQ(GetOfferNotificationPageActionView()
                 ->GetViewAccessibility()
                 .GetCachedName(),

@@ -162,6 +162,9 @@ class PageActionView : public IconLabelBubbleView,
   IsChipShowingChangedCallback is_chip_showing_changed_callback_ =
       base::DoNothing();
 
+  // The last "chip showing" state that was sent for a notification.
+  std::optional<bool> last_notified_is_chip_showing_;
+
   // Used to record click event histogram. It's initialized to base::DoNothing()
   // for testing purpose.
   base::RepeatingCallback<void(PageActionTrigger)> click_callback_ =
