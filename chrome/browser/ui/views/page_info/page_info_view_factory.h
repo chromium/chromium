@@ -29,7 +29,10 @@ class PageInfoViewFactory {
   static constexpr int kMinBubbleWidth = 320;
   static constexpr int kMaxBubbleWidth = 1000;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButtonElementId);
+
   enum PageInfoViewID {
+
     VIEW_ID_PAGE_INFO_NONE = 0,
     VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD,
     VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE,

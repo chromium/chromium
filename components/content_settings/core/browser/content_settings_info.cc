@@ -157,6 +157,21 @@ PermissionSetting ContentSettingsInfo::Delegate::ApplyPermissionEmbargo(
   return setting;
 }
 
+PermissionSetting
+ContentSettingsInfo::Delegate::RemoveBlockedPermissionsForEphemeralGrant(
+    const PermissionSetting& setting,
+    const PermissionSetting& new_ephemeral_setting) const {
+  if (std::get<ContentSetting>(new_ephemeral_setting) !=
+      CONTENT_SETTING_ALLOW) {
+    return setting;
+  }
+  ContentSetting content_setting = std::get<ContentSetting>(setting);
+  if (content_setting == CONTENT_SETTING_BLOCK) {
+    return CONTENT_SETTING_ASK;
+  }
+  return content_setting;
+}
+
 PermissionSetting ContentSettingsInfo::Delegate::ToPermissionSetting(
     ContentSetting setting) const {
   return setting;

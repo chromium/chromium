@@ -38,6 +38,7 @@ class PermissionToggleRowView : public views::View {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRowSubTitleCameraElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRowSubTitleMicrophoneElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSubpageButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kPermissionDisabledAtSystemLevelElementId);
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,

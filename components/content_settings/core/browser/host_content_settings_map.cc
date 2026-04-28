@@ -581,7 +581,6 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
       if (content_settings::ShouldTypeExpireActively(content_type)) {
         UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
       }
-
       return;
     }
 

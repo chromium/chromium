@@ -58,6 +58,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleCameraElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleMicrophoneElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
+                                      kSubpageButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PermissionToggleRowView,
     kPermissionDisabledAtSystemLevelElementId);
@@ -239,6 +241,8 @@ void PermissionToggleRowView::InitForUserSource(
             },
             base::Unretained(this)),
         vector_icons::kSubmenuArrowChromeRefreshIcon, icon_size);
+    subpage_button->SetProperty(views::kElementIdentifierKey,
+                                kSubpageButtonElementId);
     subpage_button->SetTooltipText(
         PageInfoUI::PermissionSubpageButtonTooltipString(permission_.type));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());

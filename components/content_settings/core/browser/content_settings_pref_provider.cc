@@ -25,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -261,23 +262,83 @@ bool PrefProvider::SetWebsiteSetting(
                                 ? GetCoarseVisitedTime(clock_->Now())
                                 : base::Time();
 
-  // If mojom::SessionModel is ONE_TIME, we know for sure that a one time
-  // permission has been set by the One Time Provider, therefore we reset a
-  // potentially existing Allow Always setting.
-  if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
-    DCHECK(std::ranges::contains(GetTypesWithTemporaryGrantsInHcsm(),
-                                 content_type));
-    in_value = base::Value();
-  }
-
   RuleMetaData metadata;
   metadata.set_last_modified(modified_time);
   metadata.set_last_visited(last_visited);
   metadata.SetFromConstraints(constraints);
+
+  // If mojom::SessionModel is ONE_TIME, we know for sure that a one time
+  // permission has been set by the One Time Provider.
+  if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
+    DCHECK(std::ranges::contains(GetTypesWithTemporaryGrantsInHcsm(),
+                                 content_type));
+
+    mojom::SessionModel session_model;
+    std::optional<base::Value> new_value = ValueForHandlingEphemeralGrant(
+        primary_pattern, secondary_pattern, content_type, in_value, constraints,
+        &session_model);
+    if (new_value.has_value()) {
+      in_value = std::move(new_value).value();
+      metadata.set_session_model(session_model);
+    } else {
+      return true;
+    }
+  }
+
   GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
                           std::move(in_value), std::move(metadata));
   return true;
+}
+
+std::optional<base::Value> PrefProvider::ValueForHandlingEphemeralGrant(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type,
+    const base::Value& in_value,
+    const ContentSettingConstraints& constraints,
+    mojom::SessionModel* session_model) {
+  // If we should clear the persistent grant, let's just do it.
+  if (constraints.ephemeral_clears_persistent_grant()) {
+    return base::Value();
+  }
+
+  // Otherwise reset potentially BLOCKED states to ASK.
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_type);
+  CHECK(info);
+
+  std::optional<PermissionSetting> setting =
+      info->delegate().FromValue(in_value);
+  if (!setting.has_value()) {
+    return std::nullopt;
+  }
+  std::unique_ptr<Rule> current_rule =
+      GetPref(content_type)
+          ->GetRule(primary_pattern.ToRepresentativeUrl(),
+                    secondary_pattern.ToRepresentativeUrl(), off_the_record_);
+  if (!current_rule) {
+    return std::nullopt;
+  }
+  CHECK_EQ(current_rule->primary_pattern, primary_pattern);
+  CHECK_EQ(current_rule->secondary_pattern, secondary_pattern);
+  std::optional<PermissionSetting> current_setting =
+      info->delegate().FromValue(current_rule->value);
+  *session_model = current_rule->metadata.session_model();
+  if (!current_setting) {
+    // Invalid setting, let's clean it up.
+    return base::Value();
+  }
+  PermissionSetting new_setting =
+      info->delegate().RemoveBlockedPermissionsForEphemeralGrant(
+          *current_setting, *setting);
+  if (new_setting != *current_setting) {
+    return info->delegate().IsUndecided(new_setting)
+               ? base::Value()
+               : info->delegate().ToValue(new_setting);
+  } else {
+    return std::nullopt;
+  }
 }
 
 bool PrefProvider::UpdateLastVisitTime(

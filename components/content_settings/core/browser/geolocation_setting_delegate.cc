@@ -155,6 +155,24 @@ PermissionSetting GeolocationSettingDelegate::ApplyPermissionEmbargo(
   return geo_setting;
 }
 
+PermissionSetting
+GeolocationSettingDelegate::RemoveBlockedPermissionsForEphemeralGrant(
+    const PermissionSetting& setting,
+    const PermissionSetting& new_ephemeral_setting) const {
+  const GeolocationSetting& new_ephemeral_geo_setting =
+      std::get<GeolocationSetting>(new_ephemeral_setting);
+  GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
+  if (new_ephemeral_geo_setting.approximate == PermissionOption::kAllowed &&
+      geo_setting.approximate == PermissionOption::kDenied) {
+    geo_setting.approximate = PermissionOption::kAsk;
+  }
+  if (new_ephemeral_geo_setting.precise == PermissionOption::kAllowed &&
+      geo_setting.precise == PermissionOption::kDenied) {
+    geo_setting.precise = PermissionOption::kAsk;
+  }
+  return geo_setting;
+}
+
 PermissionSetting GeolocationSettingDelegate::ToPermissionSetting(
     ContentSetting setting) const {
   return GeolocationSetting{ToPermissionOption(setting),

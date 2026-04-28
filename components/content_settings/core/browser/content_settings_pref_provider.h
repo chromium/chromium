@@ -100,6 +100,16 @@ class PrefProvider : public UserModifiableProvider {
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();
 
+  // Computes the value that needs to be stored in this provider after an
+  // ephemeral grant was stored.
+  std::optional<base::Value> ValueForHandlingEphemeralGrant(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      const base::Value& in_value,
+      const ContentSettingConstraints& constraints,
+      mojom::SessionModel* session_model);
+
 #if !BUILDFLAG(IS_IOS)
   // Migrate between GEOLOCATION and GEOLOCATION_WITH_OPTIONS.
   void MigrateGeolocationExceptions();

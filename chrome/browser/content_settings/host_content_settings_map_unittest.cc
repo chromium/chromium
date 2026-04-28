@@ -26,6 +26,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mock_settings_observer.h"
+#include "chrome/browser/content_settings/one_time_permission_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/client_hints/common/client_hints.h"
@@ -88,6 +89,7 @@ using ::testing::MockFunction;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -1155,6 +1157,145 @@ TEST_F(HostContentSettingsMapTest, SetOneTimeGeolocationSetting) {
   EXPECT_EQ(info.source, SettingSource::kUser);
   EXPECT_EQ(info.primary_pattern.ToString(), "*");
   EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+}
+
+TEST_F(HostContentSettingsMapTest, SetOneTimeAndPersistentGeolocationSetting) {
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  GURL url("https://example.com");
+
+  // Set persistent approximate grant.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kAsk),
+      content_settings::ContentSettingConstraints());
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kAsk),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::DURABLE);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
+
+  // Set one-time precise grant on top.
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::ONE_TIME);
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting(PermissionOption::kAllowed,
+                         PermissionOption::kAllowed),
+      constraints);
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kAllowed,
+                           PermissionOption::kAllowed),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::ONE_TIME);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
+  std::vector<ContentSettingPatternSource> settings =
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  EXPECT_THAT(settings, SizeIs(3));
+
+  // Simulate the one-time permission expiring.
+  static_cast<OneTimePermissionProvider*>(
+      map->content_settings_providers_
+          [content_settings::ProviderType::kOneTimePermissionProvider]
+              .get())
+      ->OnLastPageFromOriginClosed(
+          url::Origin::Create(GURL("https://example.com:443")));
+  EXPECT_THAT(
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+      SizeIs(2));
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kAsk),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::DURABLE);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
+}
+
+TEST_F(HostContentSettingsMapTest,
+       SetOneTimeGeolocationGrantWithPersistentPermissionBlocked) {
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  GURL url("https://example.com");
+
+  // Set persistent blocked state.
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting(PermissionOption::kDenied, PermissionOption::kDenied),
+      content_settings::ContentSettingConstraints());
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kDenied,
+                           PermissionOption::kDenied),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::DURABLE);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
+
+  // Set one-time approximate grant.
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::ONE_TIME);
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting(PermissionOption::kAllowed, PermissionOption::kDenied),
+      constraints);
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kAllowed,
+                           PermissionOption::kDenied),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::ONE_TIME);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
+  std::vector<ContentSettingPatternSource> settings =
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  EXPECT_THAT(settings, SizeIs(3));
+
+  // Simulate the one-time permission expiring.
+  static_cast<OneTimePermissionProvider*>(
+      map->content_settings_providers_
+          [content_settings::ProviderType::kOneTimePermissionProvider]
+              .get())
+      ->OnLastPageFromOriginClosed(
+          url::Origin::Create(GURL("https://example.com:443")));
+  EXPECT_THAT(
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+      SizeIs(2));
+  {
+    content_settings::SettingInfo info;
+    EXPECT_EQ(
+        GeolocationSetting(PermissionOption::kAsk, PermissionOption::kDenied),
+        std::get<GeolocationSetting>(map->GetPermissionSetting(
+            url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS, &info)));
+    EXPECT_EQ(info.metadata.session_model(), SessionModel::DURABLE);
+    EXPECT_EQ(info.source, SettingSource::kUser);
+    EXPECT_EQ(info.primary_pattern.ToString(), "https://example.com:443");
+    EXPECT_EQ(info.secondary_pattern.ToString(), "*");
+  }
 }
 
 TEST_F(HostContentSettingsMapTest,

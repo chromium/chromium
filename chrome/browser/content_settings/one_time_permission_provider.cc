@@ -121,16 +121,18 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
 
   if (constraints.session_model() !=
       content_settings::mojom::SessionModel::ONE_TIME) {
-    if (setting && info->delegate().IsAnyPermissionAllowed(*setting)) {
-      // Transition from Allow once to Allow. Delete setting and let the pref
-      // provider handle it.
-      base::AutoLock lock(value_map_.GetLock());
-      value_map_.DeleteValue(primary_pattern, secondary_pattern,
-                             content_settings_type);
-    }
+    // Changes to the durable permission should reset the corresponding one-time
+    // grant. This is triggered for example by a transition from Allow once to
+    // Allow.
+    base::AutoLock lock(value_map_.GetLock());
+    value_map_.DeleteValue(primary_pattern, secondary_pattern,
+                           content_settings_type);
 
     return false;
   }
+
+  CHECK(info->delegate().IsAnyPermissionAllowed(*setting))
+      << "One time permission grants should allow something.";
 
   base::Time now = clock_->Now();
   content_settings::RuleMetaData metadata;
@@ -149,17 +151,13 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   {
     base::AutoLock lock(value_map_.GetLock());
     value_map_.SetValue(primary_pattern, secondary_pattern,
-                        content_settings_type, std::move(value),
+                        content_settings_type, value.Clone(),
                         std::move(metadata));
   }
 
   NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
 
-  // We need to handle transitions from Allow to Allow Once gracefully.
-  // In that case we add the Allow Once setting in this provider, but also
-  // have to clear the Allow setting in the pref provider. By returning false
-  // here, we let the control flow trickle down to the pref provider.
-  value = base::Value();
+  // Changes to one-time grants might need updates in the pref provider.
   return false;
 }
 
