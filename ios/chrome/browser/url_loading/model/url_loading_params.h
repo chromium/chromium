@@ -36,6 +36,9 @@ struct UrlLoadParams {
   static UrlLoadParams InNewTab(const GURL& url, const GURL& virtual_url);
   static UrlLoadParams InNewTab(const GURL& url, int insertion_index);
 
+  // Initializes a UrlLoadParams from an OpenNewTabCommand.
+  static UrlLoadParams FromOpenNewTabCommand(OpenNewTabCommand* command);
+
   // Initializes a UrlLoadParams intended to switch to tab.
   static UrlLoadParams SwitchToTab(
       const web::NavigationManager::WebLoadParams& web_params);
@@ -115,6 +118,14 @@ struct UrlLoadParams {
   // The tab group where the URL should be loaded (if null and `load_in_group`
   // the URL is loaded in a new tab group).
   base::WeakPtr<const TabGroup> tab_group;
+
+  // The GUID of the Send Tab to Self entry that triggered this navigation.
+  std::string send_tab_to_self_entry_guid;
+
+  // Whether this navigation comes from Send Tab to Self.
+  bool is_from_send_tab_to_self() const {
+    return !send_tab_to_self_entry_guid.empty();
+  }
 
   bool in_background() const {
     return disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
