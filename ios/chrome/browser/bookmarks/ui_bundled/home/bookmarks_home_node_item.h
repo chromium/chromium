@@ -18,15 +18,13 @@ class BookmarkNode;
 // single bookmark.
 @interface BookmarksHomeNodeItem : TableViewItem
 
-// Whether a slashed cloud should be displayed.
-@property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
-
 // Attributes for the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
 // The node is not retained.
 + (instancetype)makeItemWithType:(NSInteger)type
-                    bookmarkNode:(const bookmarks::BookmarkNode*)node;
+                    bookmarkNode:(const bookmarks::BookmarkNode*)node
+     shouldDisplayCloudSlashIcon:(BOOL)shouldDisplayCloudSlashIcon;
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
 
 // Returns the node associated to this item if it still exists, otherwise nil.

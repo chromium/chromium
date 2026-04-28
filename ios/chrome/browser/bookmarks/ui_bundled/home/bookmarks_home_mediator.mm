@@ -246,8 +246,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   for (const auto& child : self.displayedNode->children()) {
     BookmarksHomeNodeItem* nodeItem =
         [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
-                                   bookmarkNode:child.get()];
-    nodeItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
+                                   bookmarkNode:child.get()
+                    shouldDisplayCloudSlashIcon:shouldDisplayCloudSlashIcon];
     [self.consumer.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -314,11 +314,12 @@ bool IsABookmarkNodeSectionForIdentifier(
       continue;
     }
 
+    BOOL shouldDisplayCloudSlashIcon =
+        [self shouldDisplayCloudSlashIconWithBookmarkNode:permanentNode];
     BookmarksHomeNodeItem* item =
         [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
-                                   bookmarkNode:permanentNode];
-    item.shouldDisplayCloudSlashIcon =
-        [self shouldDisplayCloudSlashIconWithBookmarkNode:permanentNode];
+                                   bookmarkNode:permanentNode
+                    shouldDisplayCloudSlashIcon:shouldDisplayCloudSlashIcon];
     [self.consumer.tableViewModel addItem:item
                   toSectionWithIdentifier:sectionIdentifier];
   }
@@ -940,11 +941,12 @@ bool IsABookmarkNodeSectionForIdentifier(
       bookmarks::GetBookmarksMatchingProperties(_bookmarkModel.get(), query,
                                                 kMaxBookmarksSearchResults);
   for (const BookmarkNode* node : nodes) {
+    BOOL shouldDisplayCloudSlashIcon =
+        [self shouldDisplayCloudSlashIconWithBookmarkNode:node];
     BookmarksHomeNodeItem* nodeItem =
         [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
-                                   bookmarkNode:node];
-    nodeItem.shouldDisplayCloudSlashIcon =
-        [self shouldDisplayCloudSlashIconWithBookmarkNode:node];
+                                   bookmarkNode:node
+                    shouldDisplayCloudSlashIcon:shouldDisplayCloudSlashIcon];
     [self.consumer.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];

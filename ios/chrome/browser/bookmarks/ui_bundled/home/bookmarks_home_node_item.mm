@@ -32,24 +32,29 @@ const NSInteger kNumberOfTitleLines = 2;
   GURL _URL;
   // The id of the bookmark node used to create this item.
   int64_t _id_;
+  // Whether a slashed cloud should be displayed.
+  BOOL _shouldDisplayCloudSlashIcon;
 }
 
 + (instancetype)makeItemWithType:(NSInteger)type
-                    bookmarkNode:(const bookmarks::BookmarkNode*)node {
+                    bookmarkNode:(const bookmarks::BookmarkNode*)node
+     shouldDisplayCloudSlashIcon:(BOOL)shouldDisplayCloudSlashIcon {
   CHECK(node);
   return [[BookmarksHomeNodeItem alloc]
-      initWithType:type
-             title:bookmark_utils_ios::TitleForBookmarkNode(node)
-               URL:node->url()
-               id_:node->id()
-          isFolder:node->is_folder()];
+                     initWithType:type
+                            title:bookmark_utils_ios::TitleForBookmarkNode(node)
+                              URL:node->url()
+                              id_:node->id()
+                         isFolder:node->is_folder()
+      shouldDisplayCloudSlashIcon:shouldDisplayCloudSlashIcon];
 }
 
 - (instancetype)initWithType:(NSInteger)type
-                       title:(NSString*)title
-                         URL:(GURL)URL
-                         id_:(int64_t)id_
-                    isFolder:(BOOL)isFolder {
+                          title:(NSString*)title
+                            URL:(GURL)URL
+                            id_:(int64_t)id_
+                       isFolder:(BOOL)isFolder
+    shouldDisplayCloudSlashIcon:(BOOL)shouldDisplayCloudSlashIcon {
   if ((self = [super initWithType:type])) {
     if (isFolder) {
       self.cellClass = [TableViewBookmarksFolderCell class];
@@ -60,6 +65,7 @@ const NSInteger kNumberOfTitleLines = 2;
     _title = title;
     _URL = URL;
     _id_ = id_;
+    _shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
   }
   return self;
 }
@@ -78,7 +84,7 @@ const NSInteger kNumberOfTitleLines = 2;
         BookmarksFolderAccessoryTypeDisclosureIndicator;
     bookmarkCell.accessibilityIdentifier = _title;
     bookmarkCell.accessibilityTraits |= UIAccessibilityTraitButton;
-    bookmarkCell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
+    bookmarkCell.cloudSlashedView.hidden = !_shouldDisplayCloudSlashIcon;
   } else {
     TableViewCellContentConfiguration* configuration =
         [[TableViewCellContentConfiguration alloc] init];
@@ -96,7 +102,7 @@ const NSInteger kNumberOfTitleLines = 2;
 
     configuration.leadingConfiguration = faviconConfiguration;
 
-    if (self.shouldDisplayCloudSlashIcon) {
+    if (_shouldDisplayCloudSlashIcon) {
       ImageContentConfiguration* imageConfiguration =
           [[ImageContentConfiguration alloc] init];
       imageConfiguration.image =

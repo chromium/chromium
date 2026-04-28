@@ -1931,11 +1931,12 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       self.mediator.displayedNode,
       self.mediator.displayedNode->children().size(), folderTitle);
 
+  BOOL shouldDisplayCloudSlashIcon = [self.mediator
+      shouldDisplayCloudSlashIconWithBookmarkNode:self.mediator.displayedNode];
   BookmarksHomeNodeItem* nodeItem =
       [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
-                                 bookmarkNode:self.mediator.editingFolderNode];
-  nodeItem.shouldDisplayCloudSlashIcon = [self.mediator
-      shouldDisplayCloudSlashIconWithBookmarkNode:self.mediator.displayedNode];
+                                 bookmarkNode:self.mediator.editingFolderNode
+                  shouldDisplayCloudSlashIcon:shouldDisplayCloudSlashIcon];
   [self.tableViewModel addItem:nodeItem
        toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
 
