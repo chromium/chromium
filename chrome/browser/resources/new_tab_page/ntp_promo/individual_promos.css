@@ -58,12 +58,23 @@
   flex-direction: row;
   font: inherit;
   gap: var(--ntp-promo-element-spacing);
+  isolation: isolate;
   padding: var(--ntp-promo-padding);
   position: relative;
   text-align: start;
 }
 
-#promo:hover {
+/* Use a pseudo-element to apply the hover effect (initially transparent). */
+#promo::before {
+  background-color: transparent;
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+#promo:hover::before {
   background-color: var(--ntp-promo-background-hovered);
 }
 
