@@ -73,6 +73,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUserBlockingAboveNormalPriority);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRetryCreateFileMappingOnCommitLimit);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPumpPeekMessageWithObserver);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPreventReparsePointTraversal);
 #endif
 
 #if BUILDFLAG(IS_POSIX)
