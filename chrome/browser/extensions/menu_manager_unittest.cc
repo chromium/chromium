@@ -382,7 +382,7 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   EXPECT_EQ(incognito, item->incognito());
   EXPECT_EQ(title, item->title());
   EXPECT_EQ(checked, item->checked());
-  EXPECT_EQ(item->checked(), item->checked());
+  EXPECT_EQ(type, item->type());
   EXPECT_EQ(visible, item->visible());
   EXPECT_EQ(enabled, item->enabled());
   EXPECT_EQ(contexts, item->contexts());
