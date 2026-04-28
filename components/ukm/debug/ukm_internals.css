@@ -46,6 +46,12 @@ span#is_sampling_enabled {
   white-space: nowrap;
 }
 
+.webdx-features-list {
+  padding: 10px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
 .source_container > td.url::before {
   content: '+ ';
   font-weight: bold;

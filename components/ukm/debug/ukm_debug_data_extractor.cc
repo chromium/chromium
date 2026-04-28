@@ -13,11 +13,18 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
+#include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
+#endif
 
 namespace ukm {
 namespace debug {
@@ -29,6 +36,9 @@ static const uint64_t BIT_FILTER_LAST32 = 0xffffffffULL;
 struct SourceData {
   raw_ptr<UkmSource> source;
   std::vector<raw_ptr<mojom::UkmEntry, VectorExperimental>> entries;
+#if !BUILDFLAG(IS_IOS)
+  raw_ptr<const BitSet> webdx_features;
+#endif
 };
 
 std::string GetName(const ukm::builders::EntryDecoder& decoder, uint64_t hash) {
@@ -106,6 +116,12 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     source_data[v->source_id].entries.push_back(v.get());
   }
 
+#if !BUILDFLAG(IS_IOS)
+  for (const auto& kv : ukm_service->recordings_.webdx_features) {
+    source_data[kv.first].webdx_features = &kv.second;
+  }
+#endif
+
   base::ListValue sources_list;
   for (const auto& kv : source_data) {
     const auto* src = kv.second.source.get();
@@ -128,6 +144,22 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     }
 
     source_dict.Set("events", std::move(entries_list));
+
+#if !BUILDFLAG(IS_IOS)
+    if (kv.second.webdx_features) {
+      base::ListValue webdx_features_list;
+      for (size_t i = 0; i < kv.second.webdx_features->set_size(); ++i) {
+        if (kv.second.webdx_features->Contains(i)) {
+          // WebDX feature enum names are prefixed with "k" -- omit them.
+          std::string feature_name =
+              base::ToString(static_cast<blink::mojom::WebDXFeature>(i))
+                  .substr(1);
+          webdx_features_list.Append(base::Value(std::move(feature_name)));
+        }
+      }
+      source_dict.Set("webdx_features", std::move(webdx_features_list));
+    }
+#endif
 
     sources_list.Append(std::move(source_dict));
   }

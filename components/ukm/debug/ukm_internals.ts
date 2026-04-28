@@ -26,6 +26,7 @@ interface UkmSource {
   type: string;
   events: UkmEvent[];
   url?: string;
+  webdx_features?: string[];
 }
 
 /**
@@ -218,8 +219,21 @@ function createEventMetricTablesForSource(
   // Apply the display state
   eventMetricsElement.style.display = displayState;
 
+  if (sourceData.webdx_features && sourceData.webdx_features.length > 0) {
+    const featuresDiv = document.createElement('div');
+    featuresDiv.classList.add('webdx-features-list');
+    const label = document.createElement('b');
+    label.textContent = 'WebDX Features: ';
+    featuresDiv.appendChild(label);
+    featuresDiv.appendChild(
+        document.createTextNode(sourceData.webdx_features.sort().join(', ')));
+    eventMetricsElement.appendChild(featuresDiv);
+  }
+
   if (sourceData.events.length === 0) {
-    eventMetricsElement.textContent = '(no events)';
+    const noEventsDiv = document.createElement('div');
+    noEventsDiv.textContent = '(no events)';
+    eventMetricsElement.appendChild(noEventsDiv);
     return;
   }
 
@@ -398,8 +412,12 @@ function updateUkmCache(data: UkmSession) {
   for (const source of data.sources) {
     const key = as64Bit(source.id);
     if (!cachedSources.has(key)) {
-      const mergedSource:
-          UkmSource = {id: source.id, type: source.type, events: source.events};
+      const mergedSource: UkmSource = {
+        id: source.id,
+        type: source.type,
+        events: source.events,
+        webdx_features: source.webdx_features || [],
+      };
       if (source.url) {
         mergedSource.url = source.url;
       }
@@ -411,6 +429,13 @@ function updateUkmCache(data: UkmSession) {
       for (const event of source.events) {
         if (!existingEvents.has(normalizeToString(event))) {
           cachedSources.get(key)!.events.push(event);
+        }
+      }
+      // Merge distinct webdx features.
+      const existingFeatures = new Set(cachedSources.get(key)!.webdx_features);
+      for (const feature of source.webdx_features || []) {
+        if (!existingFeatures.has(feature)) {
+          cachedSources.get(key)!.webdx_features!.push(feature);
         }
       }
     }
