@@ -113,11 +113,8 @@ ui::Accelerator GlicLauncherConfiguration::GetDefaultHotkey() {
 
 // static
 ui::Accelerator GlicLauncherConfiguration::GetDefaultSelectionHotkey() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   const ui::EventFlags modifiers = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
-#elif BUILDFLAG(IS_CHROMEOS)
-  // This is the search key on ChromeOS keyboard.
-  const ui::EventFlags modifiers = ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
 #else
   const ui::EventFlags modifiers = ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN;
 #endif
