@@ -31,6 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.EmptyFragment;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -586,6 +587,12 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         // Key used for saving back stack positions.
         private static final String KEY_BACK_STACK_COUNTS = "BackStackCounts";
 
+        @SuppressWarnings("ReferenceEquality")
+        private boolean isTopFragment(FragmentManager fm, Fragment f) {
+            List<Fragment> fragments = fm.getFragments();
+            return f == fragments.get(fragments.size() - 1);
+        }
+
         @Override
         public void onFragmentResumed(FragmentManager fm, Fragment f) {
             if (f instanceof MainSettings) {
@@ -595,6 +602,18 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
             if (f instanceof DialogFragment dialogFragment && dialogFragment.getShowsDialog()) {
                 // Skip on showing a dialog UI.
+                return;
+            }
+            // onFragmentResumed signifies that the Fragment is in the RESUMED state of its
+            // lifecycle, not necessarily that it is the "top-most" or "currently focused"
+            // fragment in a specific container. If the detail pane has a back stack, the
+            // fragment being popped and the fragment being revealed can occasionally overlap
+            // in their lifecycle states during the transition. Android system may briefly
+            // initialize or resume the underlying fragment before the top-most one fully
+            // takes over. EmptyFragment is often immediately followed by real the top-most
+            // ragment. This causes an issue that inadvertently mangles the breadcrumb.
+            // It should be filtered to prevent it.
+            if (f.getClass() == EmptyFragment.class && !isTopFragment(fm, f)) {
                 return;
             }
 
