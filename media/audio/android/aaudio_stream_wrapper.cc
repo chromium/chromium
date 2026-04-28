@@ -198,12 +198,13 @@ class LOCKABLE AAudioDestructionHelper {
     CHECK(!is_closing_);
 
     is_closing_ = true;
+    wrapper_ = nullptr;
     aaudio_stream_ = stream;
   }
 
  private:
   base::Lock lock_;
-  const raw_ptr<AAudioStreamWrapper> wrapper_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<AAudioStreamWrapper> wrapper_ GUARDED_BY(lock_) = nullptr;
   raw_ptr<AAudioStream> aaudio_stream_ GUARDED_BY(lock_) = nullptr;
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
