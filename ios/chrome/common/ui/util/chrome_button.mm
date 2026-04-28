@@ -211,21 +211,34 @@ void ConfigureImageColor(UIButtonConfiguration* button_configuration,
     return;
   }
 
+  UIButtonConfiguration* configuration = self.configuration;
   UIConfigurationTextAttributesTransformer originalTransformer =
-      self.configuration.titleTextAttributesTransformer;
-  self.configuration.titleTextAttributesTransformer =
+      configuration.titleTextAttributesTransformer;
+
+  configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
           NSDictionary<NSAttributedStringKey, id>* incoming) {
-    NSDictionary<NSAttributedStringKey, id>* transformed =
-        originalTransformer(incoming);
+    NSDictionary<NSAttributedStringKey, id>* transformed = incoming;
+    if (originalTransformer) {
+      transformed = originalTransformer(incoming);
+    }
     NSMutableDictionary<NSAttributedStringKey, id>* outgoing =
         [transformed mutableCopy];
-    outgoing[NSFontAttributeName] = font;
+    if (font) {
+      outgoing[NSFontAttributeName] = font;
+    } else {
+      [outgoing removeObjectForKey:NSFontAttributeName];
+    }
     return outgoing;
   };
+
+  self.configuration = configuration;
 }
 
 - (UIFont*)font {
+  if (!self.configuration.titleTextAttributesTransformer) {
+    return nil;
+  }
   NSDictionary<NSAttributedStringKey, id>* attributes =
       self.configuration.titleTextAttributesTransformer(@{});
   return attributes[NSFontAttributeName];

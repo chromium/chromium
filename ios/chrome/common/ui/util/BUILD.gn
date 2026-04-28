@@ -56,6 +56,7 @@ source_set("image_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chrome_button_unittest.mm",
     "dynamic_type_util_unittest.mm",
     "image_util_unittest.mm",
     "ui_util_unittest.mm",
