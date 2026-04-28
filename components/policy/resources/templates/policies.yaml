@@ -1508,3 +1508,4 @@ atomic_groups:
   60: ProtectedContent
   61: LegacyCookieScopeSettings
   62: GeolocationSettings
+  63: SocketPoolSizeSettings
