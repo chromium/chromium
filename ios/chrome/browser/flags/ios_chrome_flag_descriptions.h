@@ -1108,6 +1108,9 @@ extern const char kUseFeedEligibilityServiceDescription[];
 extern const char kUseSceneViewControllerName[];
 extern const char kUseSceneViewControllerDescription[];
 
+extern const char kUseUIGraphicsImageRendererForFallbackIconsName[];
+extern const char kUseUIGraphicsImageRendererForFallbackIconsDescription[];
+
 extern const char kVariationsExperimentalCorpusName[];
 extern const char kVariationsExperimentalCorpusDescription[];
 

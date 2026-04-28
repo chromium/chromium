@@ -992,4 +992,7 @@ BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 // Returns true if the `AssistantAimMinimizedState` feature is enabled.
 bool IsAssistantAimMinimizedStateEnabled();
 
+// Feature flag to enable the use of UIGraphicsImageRenderer for fallback icons.
+BASE_DECLARE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

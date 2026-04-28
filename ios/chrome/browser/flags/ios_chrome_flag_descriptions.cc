@@ -1820,6 +1820,12 @@ const char kUseSceneViewControllerName[] = "Use Scene View Controller";
 const char kUseSceneViewControllerDescription[] =
     "Enables the use of SceneViewController.";
 
+const char kUseUIGraphicsImageRendererForFallbackIconsName[] =
+    "Use UIGraphicsImageRenderer for Fallback Icons";
+const char kUseUIGraphicsImageRendererForFallbackIconsDescription[] =
+    "When enabled, uses UIGraphicsImageRenderer to generate fallback icons "
+    "instead of deprecated UIGraphicsGetImageFromCurrentImageContext.";
+
 const char kVariationsExperimentalCorpusName[] =
     "Variations experimental corpus";
 const char kVariationsExperimentalCorpusDescription[] =
