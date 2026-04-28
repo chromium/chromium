@@ -25,6 +25,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -523,14 +524,28 @@ std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
   std::vector<base::FilePath> filenames;
 
   {
-    base::win::ScopedHGlobal<FileGroupDescriptorType*> fgd(medium.hGlobal);
-    if (!fgd.data()) {
+    base::win::ScopedHGlobal<FileGroupDescriptorType*> descriptor(
+        medium.hGlobal);
+    if (!descriptor.data()) {
       return std::nullopt;
     }
 
-    unsigned int num_files = fgd->cItems;
+    unsigned int num_files = descriptor->cItems;
     // We expect there to be at least one file in here.
-    DCHECK_GE(num_files, 1u);
+    if (num_files < 1u) {
+      return std::nullopt;
+    }
+    // We expect the medium to contain enough data for at least cItems file
+    // group descriptor.
+    const auto required_size =
+        base::CheckMul(num_files, sizeof(decltype(descriptor->fgd[0])));
+    const auto end_offset =
+        required_size + offsetof(FileGroupDescriptorType, fgd);
+    if (end_offset.IsInvalidOr([&descriptor](size_t result) {
+          return descriptor.size() < result;
+        })) {
+      return std::nullopt;
+    }
 
     // Value to be incremented to ensure a unique display name, as it is
     // possible that the filenames found in the file group descriptor are not
@@ -540,15 +555,15 @@ std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
 
     for (size_t i = 0; i < num_files; i++) {
       // Folder entries not currently supported--skip this item.
-      if ((fgd->fgd[i].dwFlags & FD_ATTRIBUTES) &&
-          (fgd->fgd[i].dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+      if ((descriptor->fgd[i].dwFlags & FD_ATTRIBUTES) &&
+          (descriptor->fgd[i].dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
         DLOG(WARNING) << "GetVirtualFilenames: display name '"
-                      << ConvertString(fgd->fgd[i].cFileName)
+                      << ConvertString(descriptor->fgd[i].cFileName)
                       << "' refers to a directory (not supported).";
         continue;
       }
       base::FilePath display_name = GetUniqueVirtualFilename(
-          ConvertString(fgd->fgd[i].cFileName), filenames, &uniquifier);
+          ConvertString(descriptor->fgd[i].cFileName), filenames, &uniquifier);
 
       filenames.push_back(display_name);
     }
@@ -568,10 +583,28 @@ bool GetFileNameFromFirstDescriptor(IDataObject* data_object,
     return false;
 
   {
-    base::win::ScopedHGlobal<FileGroupDescriptorType*> fgd(medium.hGlobal);
+    base::win::ScopedHGlobal<FileGroupDescriptorType*> descriptor(
+        medium.hGlobal);
+    // We expect valid data in the file group descriptor.
+    if (!descriptor.data()) {
+      return false;
+    }
     // We expect there to be at least one file in here.
-    DCHECK_GE(fgd->cItems, 1u);
-    filename->assign(ConvertString(fgd->fgd[0].cFileName));
+    if (descriptor->cItems < 1u) {
+      return false;
+    }
+    // We expect the medium to contain enough data for at least cItems file
+    // group descriptor.
+
+    if (base::CheckAdd(offsetof(FileGroupDescriptorType, fgd),
+                       base::CheckMul(descriptor->cItems,
+                                      sizeof(decltype(descriptor->fgd[0]))))
+            .IsInvalidOr(
+                [&](size_t result) { return descriptor.size() < result; })) {
+      return false;
+    }
+
+    filename->assign(ConvertString(descriptor->fgd[0].cFileName));
   }
   ReleaseStgMedium(&medium);
   return true;

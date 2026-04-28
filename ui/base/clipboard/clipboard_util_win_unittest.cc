@@ -113,6 +113,96 @@ class MockZipShellFolderDataObject
   const std::string kVirtualFileContents_ = "Virtual file contents from ZIP";
 };
 
+class MockVirtualFilesDataObject
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IDataObject> {
+ public:
+  MockVirtualFilesDataObject() = default;
+
+  IFACEMETHODIMP GetData(FORMATETC* format_etc, STGMEDIUM* medium) override {
+    if (!format_etc || !medium) {
+      return E_INVALIDARG;
+    }
+
+    if (format_etc->cfFormat ==
+        ClipboardFormatType::FileDescriptorType().ToFormatEtc().cfFormat) {
+      size_t fgd_size = sizeof(FILEGROUPDESCRIPTORW) + sizeof(FILEDESCRIPTORW);
+      HGLOBAL hglobal = ::GlobalAlloc(GHND, fgd_size);
+      auto* fgd = static_cast<FILEGROUPDESCRIPTORW*>(::GlobalLock(hglobal));
+      fgd->cItems = 2;
+      // SAFETY: `fgd_size` allocates enough for 2 FILEDESCRIPTORW items.
+      auto fgd_span = UNSAFE_BUFFERS(base::span(fgd->fgd, 2u));
+      base::span(fgd_span[0].cFileName)
+          .copy_prefix_from(base::span(L"File1.txt"));
+      base::span(fgd_span[1].cFileName)
+          .copy_prefix_from(base::span(L"File2.txt"));
+      ::GlobalUnlock(hglobal);
+
+      medium->tymed = TYMED_HGLOBAL;
+      medium->hGlobal = hglobal;
+      medium->pUnkForRelease = nullptr;
+      return S_OK;
+    }
+
+    if (format_etc->cfFormat ==
+        ClipboardFormatType::FileContentAtIndexType(0).ToFormatEtc().cfFormat) {
+      HGLOBAL hglobal = ::GlobalAlloc(GHND, 4);
+      auto* data = static_cast<char*>(::GlobalLock(hglobal));
+      // SAFETY: `hglobal` size is 4.
+      UNSAFE_BUFFERS(base::span(data, 4u))
+          .copy_from(base::span_from_cstring("test"));
+      ::GlobalUnlock(hglobal);
+      medium->tymed = TYMED_HGLOBAL;
+      medium->hGlobal = hglobal;
+      medium->pUnkForRelease = nullptr;
+      return S_OK;
+    }
+
+    return DV_E_FORMATETC;
+  }
+
+  IFACEMETHODIMP QueryGetData(FORMATETC* format_etc) override {
+    if (!format_etc) {
+      return E_INVALIDARG;
+    }
+
+    if (format_etc->cfFormat ==
+            ClipboardFormatType::FileDescriptorType().ToFormatEtc().cfFormat ||
+        format_etc->cfFormat == ClipboardFormatType::FileContentAtIndexType(0)
+                                    .ToFormatEtc()
+                                    .cfFormat) {
+      return S_OK;
+    }
+
+    return DV_E_FORMATETC;
+  }
+
+  IFACEMETHODIMP GetDataHere(FORMATETC*, STGMEDIUM*) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP GetCanonicalFormatEtc(FORMATETC*, FORMATETC* out) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP SetData(FORMATETC*, STGMEDIUM*, BOOL) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP EnumFormatEtc(DWORD, IEnumFORMATETC**) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP DAdvise(FORMATETC*, DWORD, IAdviseSink*, DWORD*) override {
+    return E_NOTIMPL;
+  }
+
+  IFACEMETHODIMP DUnadvise(DWORD) override { return E_NOTIMPL; }
+
+  IFACEMETHODIMP EnumDAdvise(IEnumSTATDATA**) override { return E_NOTIMPL; }
+};
+
 using ClipboardUtilWinTest = PlatformTest;
 
 TEST_F(ClipboardUtilWinTest, EmptyHtmlToCFHtml) {
@@ -203,5 +293,31 @@ TEST_F(ClipboardUtilWinTest, GetFilenamesFromHDROP) {
   EXPECT_EQ(filenames[0], file1);
   EXPECT_EQ(filenames[1], file2);
 }
+
+TEST_F(ClipboardUtilWinTest, GetVirtualFilenames) {
+  Microsoft::WRL::ComPtr<IDataObject> data_object =
+      Microsoft::WRL::Make<MockVirtualFilesDataObject>();
+
+  std::optional<std::vector<base::FilePath>> filenames =
+      clipboard_util::GetVirtualFilenames(data_object.Get());
+
+  ASSERT_TRUE(filenames.has_value());
+  ASSERT_EQ(filenames->size(), 2u);
+  EXPECT_EQ(filenames->at(0).value(), L"File1.txt");
+  EXPECT_EQ(filenames->at(1).value(), L"File2.txt");
+}
+
+TEST_F(ClipboardUtilWinTest, GetFileContents) {
+  Microsoft::WRL::ComPtr<IDataObject> data_object =
+      Microsoft::WRL::Make<MockVirtualFilesDataObject>();
+
+  std::wstring filename;
+  std::string file_contents;
+  EXPECT_TRUE(clipboard_util::GetFileContents(data_object.Get(), &filename,
+                                              &file_contents));
+  EXPECT_EQ(filename, L"File1.txt");
+  EXPECT_EQ(file_contents, "test");
+}
+
 }  // namespace
 }  // namespace ui
