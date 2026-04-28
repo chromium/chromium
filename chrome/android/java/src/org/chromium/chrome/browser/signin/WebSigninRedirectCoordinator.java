@@ -80,9 +80,7 @@ public class WebSigninRedirectCoordinator {
                 new WebSigninBridge.Factory()
                         .createWithEmail(tab.getProfile(), email, this::onSigninResult);
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
-            mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
-        }
+        startTimerOrForceShowDialog();
     }
 
     /**
@@ -104,9 +102,7 @@ public class WebSigninRedirectCoordinator {
                 new WebSigninBridge.Factory()
                         .createWithCoreAccountId(tab.getProfile(), accountId, this::onSigninResult);
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
-            mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
-        }
+        startTimerOrForceShowDialog();
     }
 
     /**
@@ -239,6 +235,14 @@ public class WebSigninRedirectCoordinator {
                 break;
             case WebSigninTrackerResult.OTHER_ERROR:
                 break;
+        }
+    }
+
+    private void startTimerOrForceShowDialog() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)) {
+            showDialog();
+        } else if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)) {
+            mShowDialogTimer.startTimer(SHOW_WEB_SIGNIN_LOADING_DIALOG_DELAY_MS, this::showDialog);
         }
     }
 }

@@ -41,6 +41,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kChromeAndroidIdentitySurveyNtpPromo,
     &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
     &switches::kEnableWebSigninLoadingDialog,
+    &switches::kForceShowWebSigninLoadingDialog,
     &switches::kSigninLevelUpButton,
     &switches::kSigninManagerSeedingFix,
     &switches::kSupportForcedSigninPolicy,

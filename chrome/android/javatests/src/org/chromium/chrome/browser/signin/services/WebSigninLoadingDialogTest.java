@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +23,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -69,24 +71,33 @@ public class WebSigninLoadingDialogTest {
 
     @Captor private ArgumentCaptor<Callback<Integer>> mCallbackCaptor;
 
+    private WebSigninRedirectCoordinator mCoordinator;
+
     @Before
     public void setUp() {
         WebSigninBridgeJni.setInstanceForTesting(mWebSigninBridgeMocks);
         mActivityTestRule.startOnBlankPage();
     }
 
+    @After
+    public void tearDown() {
+        if (mCoordinator != null) {
+            ThreadUtils.runOnUiThreadBlocking(mCoordinator::destroy);
+        }
+    }
+
     @Test
     @MediumTest
     public void testShowDialog() {
-        WebSigninRedirectCoordinator coordinator = new WebSigninRedirectCoordinator();
+        mCoordinator = new WebSigninRedirectCoordinator();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.setTabForTesting(mActivityTestRule.getActivityTab());
-                    coordinator.showDialog();
+                    mCoordinator.setTabForTesting(mActivityTestRule.getActivityTab());
+                    mCoordinator.showDialog();
                 });
 
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
-        Assert.assertNotNull(coordinator.getDialogModelForTesting());
+        Assert.assertNotNull(mCoordinator.getDialogModelForTesting());
     }
 
     @Test
@@ -94,11 +105,11 @@ public class WebSigninLoadingDialogTest {
     public void testDialogShownAfterDelay() {
         when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), any()))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
-        WebSigninRedirectCoordinator coordinator = new WebSigninRedirectCoordinator();
+        mCoordinator = new WebSigninRedirectCoordinator();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.initializeWebSigninAndRedirect(
+                    mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
                             /* continueUrl */ new GURL("https://continue.url"),
@@ -110,17 +121,40 @@ public class WebSigninLoadingDialogTest {
 
     @Test
     @MediumTest
-    public void testCancelButton() {
-        WebSigninRedirectCoordinator coordinator = new WebSigninRedirectCoordinator();
+    @Features.EnableFeatures(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)
+    public void testForceShowDialog() {
+        when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), any()))
+                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+        mCoordinator = new WebSigninRedirectCoordinator();
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.setTabForTesting(mActivityTestRule.getActivityTab());
-                    coordinator.showDialog();
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            mActivityTestRule.getActivityTab(),
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("about:blank"));
+                });
+
+        onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
+        // Verify that the timer was NOT started.
+        verify(mMockShowDialogTimer, never()).startTimer(anyLong(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testCancelButton() {
+        mCoordinator = new WebSigninRedirectCoordinator();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.setTabForTesting(mActivityTestRule.getActivityTab());
+                    mCoordinator.showDialog();
                 });
         onViewWaiting(withId(R.id.web_signin_loading_dialog)).check(matches(isDisplayed()));
         onView(withId(R.id.cancel_button)).perform(click());
 
-        Assert.assertNull(coordinator.getDialogModelForTesting());
+        Assert.assertNull(mCoordinator.getDialogModelForTesting());
     }
 
     @Test
@@ -128,12 +162,12 @@ public class WebSigninLoadingDialogTest {
     public void testDialogNotShownBeforeDelay() {
         when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
-        WebSigninRedirectCoordinator coordinator = new WebSigninRedirectCoordinator();
-        coordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+        mCoordinator = new WebSigninRedirectCoordinator();
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.initializeWebSigninAndRedirect(
+                    mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
                             /* continueURL */ new GURL("https://continue.url"),
@@ -142,7 +176,7 @@ public class WebSigninLoadingDialogTest {
                     mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
                 });
 
-        Assert.assertNull(coordinator.getDialogModelForTesting());
+        Assert.assertNull(mCoordinator.getDialogModelForTesting());
         verify(mMockShowDialogTimer, atLeastOnce()).cancelTimer();
     }
 
@@ -151,10 +185,10 @@ public class WebSigninLoadingDialogTest {
     public void testDialogShownForAtLeastMinimumTime() {
         when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
-        WebSigninRedirectCoordinator coordinator = new WebSigninRedirectCoordinator();
+        mCoordinator = new WebSigninRedirectCoordinator();
         // Use a 0ms delay to show the dialog immediately by running the runnable passed to
         // startTimer.
-        coordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
         doAnswer(
                         invocation -> {
                             Runnable runnable = invocation.getArgument(1);
@@ -164,7 +198,7 @@ public class WebSigninLoadingDialogTest {
                 .when(mMockShowDialogTimer)
                 .startTimer(anyLong(), any(Runnable.class));
 
-        coordinator.setMinDialogVisibleTimerForTesting(mMockMinDialogVisibleTimer);
+        mCoordinator.setMinDialogVisibleTimerForTesting(mMockMinDialogVisibleTimer);
         final ArgumentCaptor<Runnable> minShowTimeRunnableCaptor =
                 ArgumentCaptor.forClass(Runnable.class);
         doAnswer(
@@ -177,7 +211,7 @@ public class WebSigninLoadingDialogTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    coordinator.initializeWebSigninAndRedirect(
+                    mCoordinator.initializeWebSigninAndRedirect(
                             mActivityTestRule.getActivityTab(),
                             "test@gmail.com",
                             /* continueUrl */ new GURL("https://continue.url"),
@@ -202,6 +236,6 @@ public class WebSigninLoadingDialogTest {
                 });
 
         // Dialog should be dismissed.
-        Assert.assertNull(coordinator.getDialogModelForTesting());
+        Assert.assertNull(mCoordinator.getDialogModelForTesting());
     }
 }
