@@ -1,2 +1,3 @@
 bot,repeat,shard,flags
+android-brya-kano-i5-8gb-perf,1,1,--debug
 android-pixel-tangor-perf,1,1,--cool-down-threshold=moderate

@@ -2,52 +2,68 @@
     "0": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false,
-                "pageset_repeat": 1
+                "abridged": false
             }
         }
     },
     "1": {
-        "benchmarks": {
-            "speedometer2": {
-                "abridged": false,
-                "pageset_repeat": 1
+        "crossbench": {
+            "loadline_tablet.crossbench": {
+                "crossbench_name": "loadline-tablet-fast",
+                "arguments": [
+                    "--debug",
+                    "--enable-field-trials"
+                ]
             }
-        }
+        },
+        "benchmarks": {}
     },
     "2": {
         "crossbench": {
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
+            "motionmark1.3.crossbench": {
+                "crossbench_name": "motionmark_1.3",
                 "arguments": [
-                    "--fileserver",
-                    "--debug"
+                    "--debug",
+                    "--enable-field-trials"
                 ]
             }
         },
         "benchmarks": {}
     },
     "3": {
+        "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            }
+        },
         "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3",
+                "arguments": [
+                    "--fileserver",
+                    "--debug",
+                    "--enable-field-trials"
+                ]
+            },
             "web_tests_cuj": {
                 "crossbench_name": "speedometer_3.1",
                 "arguments": [
                     "--web-tests-cuj",
-                    "--debug"
+                    "--debug",
+                    "--enable-field-trials"
                 ]
             }
-        },
-        "benchmarks": {}
+        }
     },
     "extra_infos": {
-        "num_stories": 4,
-        "predicted_min_shard_time": 10,
-        "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 71.0,
-        "predicted_max_shard_index": 0,
+        "num_stories": 6,
+        "predicted_min_shard_time": 71.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 3600,
+        "predicted_max_shard_index": 1,
         "shard #0": 71.0,
-        "shard #1": 32.0,
-        "shard #2": 60,
-        "shard #3": 10
+        "shard #1": 3600,
+        "shard #2": 360,
+        "shard #3": 102.0
     }
 }
