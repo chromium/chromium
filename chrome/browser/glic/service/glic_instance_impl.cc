@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -314,6 +315,11 @@ GlicInstanceImpl::instance_metrics_backwards_compatibility() {
 
 void GlicInstanceImpl::OnSelectionAreasChanged(int count) {
   instance_metrics_.OnSelectionAreasChanged(count);
+}
+
+std::unique_ptr<WebUIContentsContainer>
+GlicInstanceImpl::CreateWebUIContentsContainer() {
+  return coordinator_delegate_->CreateWebUIContentsContainer();
 }
 
 bool GlicInstanceImpl::IsShowing() const {

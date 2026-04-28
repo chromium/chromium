@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -216,7 +217,7 @@ void Host::CreateContents(bool initially_hidden) {
   VLOG(1) << "Glic [Host] CreateContents";
 
   glic_service().fre_controller().RecordFrameworkStartTime();
-  contents_ = glic_service().web_contents_warming_pool().TakeContainer();
+  contents_ = instance_delegate_->CreateWebUIContentsContainer();
   contents_->AttachToHost(this);
 
   metrics_.StartRecording();

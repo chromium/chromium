@@ -52,6 +52,8 @@ class Point;
 namespace glic {
 
 class ContextualCueingService;
+class WebUIContentsContainer;
+class GlicWebContentsWarmingPool;
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
 BASE_DECLARE_FEATURE(kGlicMaxAwakeInstances);
@@ -97,6 +99,8 @@ class GlicInstanceCoordinatorImpl
       size_t limit) override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
+  std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
+      override;
 
   // signin::IdentityManager::Observer implementation
   void OnPrimaryAccountChanged(
@@ -132,6 +136,7 @@ class GlicInstanceCoordinatorImpl
               std::optional<std::string> deprecated_prompt_suggestion,
               bool deprecated_auto_send,
               std::optional<std::string> deprecated_conversation_id) override;
+  void EnsurePreload() override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
   void Shutdown() override;
@@ -171,6 +176,7 @@ class GlicInstanceCoordinatorImpl
 
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
+  GlicWebContentsWarmingPool& GetWebContentsWarmingPoolForTesting();
   std::string DescribeForTesting();
 
   // Testing support. These methods should not be added to the public interface.
@@ -271,6 +277,7 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceCoordinatorMetrics metrics_;
 
   std::unique_ptr<GlicTabObserver> tab_observer_;
+  std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

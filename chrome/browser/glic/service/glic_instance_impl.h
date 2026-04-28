@@ -99,6 +99,10 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void ContextAccessIndicatorChanged(
         GlicInstanceImpl& source_instance,
         bool enabled) = 0;
+
+    // Called to create a new web contents for the glic instance.
+    virtual std::unique_ptr<WebUIContentsContainer>
+    CreateWebUIContentsContainer() = 0;
   };
 
   GlicInstanceImpl(
@@ -239,6 +243,8 @@ class GlicInstanceImpl : public GlicInstance,
   glic::GlicInstanceMetricsBackwardsCompatibility&
   instance_metrics_backwards_compatibility() override;
   void OnSelectionAreasChanged(int count) override;
+  std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
+      override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;

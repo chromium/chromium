@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -281,9 +282,7 @@ class NewGlicApiTestWithWebContentsWarming : public NewGlicApiTest {
 
   void SetUpOnMainThread() override {
     NewGlicApiTest::SetUpOnMainThread();
-    glic::GlicKeyedService::Get(this->GetProfile())
-        ->web_contents_warming_pool()
-        .Clear();
+    coordinator().GetWebContentsWarmingPoolForTesting().Clear();
   }
 
  private:
@@ -301,9 +300,8 @@ class NewGlicApiTestWithPixelOutput : public NewGlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnPreload) {
-  auto container = glic::GlicKeyedService::Get(this->GetProfile())
-                       ->web_contents_warming_pool()
-                       .TakeContainer();
+  auto container =
+      coordinator().GetWebContentsWarmingPoolForTesting().TakeContainer();
   ASSERT_TRUE(container);
   auto* web_contents = container->web_contents();
 
@@ -684,11 +682,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest, testGetContextCrossProfile) {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnFullLoad) {
-  service()->web_contents_warming_pool().EnsurePreload();
+  coordinator().GetWebContentsWarmingPoolForTesting().EnsurePreload();
   ASSERT_OK(RunUntilEqual(
       [&]() {
-        return service()
-                   ->web_contents_warming_pool()
+        return coordinator()
+                   .GetWebContentsWarmingPoolForTesting()
                    .GetWarmedContainerForTesting() != nullptr;
       },
       true));

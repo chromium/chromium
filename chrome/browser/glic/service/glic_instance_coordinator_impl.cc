@@ -97,7 +97,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           FROM_HERE,
           base::MemoryPressureListenerTag::kGlicKeyedService,
           this),
-      metrics_(this) {
+      metrics_(this),
+      web_contents_warming_pool_(
+          std::make_unique<GlicWebContentsWarmingPool>(profile)) {
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -132,6 +134,11 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
   last_active_instance_ = nullptr;
   auto instances = std::exchange(instances_, {});
   instances.clear();
+}
+
+GlicWebContentsWarmingPool&
+GlicInstanceCoordinatorImpl::GetWebContentsWarmingPoolForTesting() {
+  return *web_contents_warming_pool_;
 }
 
 void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
@@ -273,10 +280,15 @@ void GlicInstanceCoordinatorImpl::Toggle(
                   deprecated_auto_send, deprecated_conversation_id);
 }
 
+void GlicInstanceCoordinatorImpl::EnsurePreload() {
+  web_contents_warming_pool_->EnsurePreload();
+}
+
 void GlicInstanceCoordinatorImpl::Shutdown() {
   for (auto& [instance_id, instance] : instances_) {
     instance->Shutdown();
   }
+  web_contents_warming_pool_->Clear();
 }
 
 void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
@@ -813,6 +825,11 @@ void GlicInstanceCoordinatorImpl::ContextAccessIndicatorChanged(
   ComputeContentAccessIndicator();
 }
 
+std::unique_ptr<WebUIContentsContainer>
+GlicInstanceCoordinatorImpl::CreateWebUIContentsContainer() {
+  return web_contents_warming_pool_->TakeContainer();
+}
+
 void GlicInstanceCoordinatorImpl::SetWarmingEnabledForTesting(
     bool warming_enabled) {
   warming_enabled_ = warming_enabled;
@@ -909,7 +926,7 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     return;
   }
 
-  service_->web_contents_warming_pool().Clear();
+  web_contents_warming_pool_->Clear();
 
   for (auto& [_, instance] : instances_) {
     if (instance->IsShowing() || instance->IsActuating() ||

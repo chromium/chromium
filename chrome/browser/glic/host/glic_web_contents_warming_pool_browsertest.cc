@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/common/chrome_features.h"
@@ -49,7 +50,7 @@ class GlicWarmingPoolBrowserTest
   }
 
   GlicWebContentsWarmingPool& pool() {
-    return GlicKeyedService::Get(GetProfile())->web_contents_warming_pool();
+    return coordinator().GetWebContentsWarmingPoolForTesting();
   }
 
  private:
@@ -198,7 +199,7 @@ class GlicWarmingDisabledBrowserTest
   }
 
   GlicWebContentsWarmingPool& pool() {
-    return GlicKeyedService::Get(GetProfile())->web_contents_warming_pool();
+    return coordinator().GetWebContentsWarmingPoolForTesting();
   }
 
  private:

@@ -155,6 +155,9 @@ class Host : public GlicSharingManagerProvider {
     instance_metrics_backwards_compatibility() = 0;
 
     virtual bool IsActive() = 0;
+
+    virtual std::unique_ptr<WebUIContentsContainer>
+    CreateWebUIContentsContainer() = 0;
   };
 
   class Observer : public base::CheckedObserver {

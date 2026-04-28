@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
@@ -91,13 +92,16 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
   }
 
   std::string WarmedAndSizedStatus(GlicKeyedService* service) {
-    const bool warmed =
-        service->web_contents_warming_pool().HasWarmedContainerForTesting() ||
-        service->IsWindowOrFreShowing();
+    const bool warmed = GetInstanceCoordinator()
+                            .GetWebContentsWarmingPoolForTesting()
+                            .HasWarmedContainerForTesting() ||
+                        service->IsWindowOrFreShowing();
     if (!warmed) {
       return "Not warmed";
     }
-    if (service->web_contents_warming_pool().HasWarmedContainerForTesting()) {
+    if (GetInstanceCoordinator()
+            .GetWebContentsWarmingPoolForTesting()
+            .HasWarmedContainerForTesting()) {
       return "warmed and sized";
     }
     auto* instance = service->GetInstanceForActiveTab(nullptr);

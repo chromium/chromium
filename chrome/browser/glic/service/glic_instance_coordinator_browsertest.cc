@@ -1706,7 +1706,7 @@ class GlicInstanceCoordinatorNoWarmingTest
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorNoWarmingTest,
                        NoWarmingWhenDelayed) {
   GlicWebContentsWarmingPool& warming_pool =
-      coordinator().service()->web_contents_warming_pool();
+      coordinator().GetWebContentsWarmingPoolForTesting();
 
   // Initially, there shouldn't be a warmed container.
   ASSERT_FALSE(warming_pool.HasWarmedContainerForTesting());

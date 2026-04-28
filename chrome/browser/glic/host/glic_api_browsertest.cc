@@ -56,6 +56,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
@@ -3370,7 +3371,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
-  GetService()->web_contents_warming_pool().EnsurePreload();
+  GetInstanceCoordinator().EnsurePreload();
 
   // Open 3 instances, with instance 2 being the active one.
   GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
@@ -3391,9 +3392,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
 
   // There is a warmed contents initially. It should be non-showing and
   // non-actuating.
-  GetService()->web_contents_warming_pool().EnsurePreload();
-  ASSERT_TRUE(
-      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
+  GetInstanceCoordinator().EnsurePreload();
+  ASSERT_TRUE(GetInstanceCoordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .HasWarmedContainerForTesting());
 
   // Simulate memory pressure.
   base::MemoryPressureListener::NotifyMemoryPressure(
@@ -3405,8 +3407,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   }));
 
   // Verify the warmed contents is reset.
-  ASSERT_FALSE(
-      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
+  ASSERT_FALSE(GetInstanceCoordinator()
+                   .GetWebContentsWarmingPoolForTesting()
+                   .HasWarmedContainerForTesting());
 
   // Active instance should not be hibernated.
   ASSERT_TRUE(instance1->IsShowing());

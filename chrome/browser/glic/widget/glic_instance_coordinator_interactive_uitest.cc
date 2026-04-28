@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -898,8 +899,8 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
 
   auto CheckWarmed() {
     return Do([this]() {
-      EXPECT_TRUE(glic_service()
-                      ->web_contents_warming_pool()
+      EXPECT_TRUE(GetInstanceCoordinator()
+                      .GetWebContentsWarmingPoolForTesting()
                       .HasWarmedContainerForTesting());
     });
   }

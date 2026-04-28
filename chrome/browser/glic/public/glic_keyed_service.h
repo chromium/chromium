@@ -58,7 +58,6 @@ class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
-class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
 
@@ -241,10 +240,6 @@ class GlicKeyedService : public KeyedService,
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
-  GlicWebContentsWarmingPool& web_contents_warming_pool() {
-    return *web_contents_warming_pool_;
-  }
-
   // Get the GlicInstance associated with the given browser's active tab, or
   // null if there is none. `bwi` can be null if preloaded with no browser open.
   GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
@@ -332,7 +327,6 @@ class GlicKeyedService : public KeyedService,
 
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
-  std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

@@ -42,7 +42,6 @@
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
-#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
@@ -171,9 +170,7 @@ GlicKeyedService::GlicKeyedService(
           std::make_unique<AuthController>(profile, identity_manager)),
 
       tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
-      tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)),
-      web_contents_warming_pool_(
-          std::make_unique<GlicWebContentsWarmingPool>(profile)) {
+      tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)) {
 
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
 
@@ -238,7 +235,6 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   instance_coordinator().Shutdown();
-  web_contents_warming_pool_->Clear();
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {
@@ -603,7 +599,7 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
     return;
   }
 
-  web_contents_warming_pool_->EnsurePreload();
+  instance_coordinator().EnsurePreload();
 }
 
 GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {

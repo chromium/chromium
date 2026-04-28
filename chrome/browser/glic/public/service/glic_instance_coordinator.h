@@ -76,6 +76,9 @@ class GlicInstanceCoordinator {
       bool deprecated_auto_send,
       std::optional<std::string> deprecated_conversation_id) = 0;
 
+  // Readies glic to show.
+  virtual void EnsurePreload() = 0;
+
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;
 

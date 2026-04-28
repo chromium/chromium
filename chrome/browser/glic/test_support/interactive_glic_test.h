@@ -862,6 +862,12 @@ class InteractiveGlicTestMixin : public T {
         ss.str(), "WaitForWebUIState");
   }
 
+  GlicInstanceCoordinatorImpl& GetInstanceCoordinator() {
+    CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    return static_cast<GlicInstanceCoordinatorImpl&>(
+        glic_service()->instance_coordinator());
+  }
+
  protected:
   GlicKeyedService* glic_service() {
     return GlicKeyedServiceFactory::GetGlicKeyedService(
@@ -870,12 +876,6 @@ class InteractiveGlicTestMixin : public T {
 
   GlicInstanceCoordinator& instance_coordinator() {
     return glic_service()->instance_coordinator();
-  }
-
-  GlicInstanceCoordinatorImpl& GetInstanceCoordinator() {
-    CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
-    return static_cast<GlicInstanceCoordinatorImpl&>(
-        glic_service()->instance_coordinator());
   }
 
   GlicInstanceImpl* GetGlicInstanceImpl() {
