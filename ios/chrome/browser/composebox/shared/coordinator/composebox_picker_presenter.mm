@@ -11,7 +11,6 @@
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
                                          UINavigationControllerDelegate,
                                          UIImagePickerControllerDelegate>
-
 @end
 
 @implementation ComposeboxPickerPresenter {
@@ -62,9 +61,16 @@
 
 - (void)imagePickerController:(UIImagePickerController*)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
+  __weak __typeof(self) weakSelf = self;
+  [picker dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf.delegate
+                                   composeboxPickerPresenterDidDissmissCamera:
+                                       weakSelf];
+                             }];
+
   UIImage* image = info[UIImagePickerControllerOriginalImage];
   if (!image) {
-    [picker dismissViewControllerAnimated:YES completion:nil];
     return;
   }
 
@@ -74,6 +80,16 @@
                   didPickImages:@[ [[ComposeboxPickerImageResult alloc]
                                     initWithImageProvider:provider
                                                   assetID:nil] ]];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
+  __weak __typeof(self) weakSelf = self;
+  [picker dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf.delegate
+                                   composeboxPickerPresenterDidDissmissCamera:
+                                       weakSelf];
+                             }];
 }
 
 #pragma mark - PHPickerViewControllerDelegate

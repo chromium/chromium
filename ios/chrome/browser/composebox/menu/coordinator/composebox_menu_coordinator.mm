@@ -134,6 +134,11 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   [_mediator processImageItems:results];
 }
 
+- (void)composeboxPickerPresenterDidDissmissCamera:
+    (ComposeboxPickerPresenter*)presenter {
+  // NO-OP.
+}
+
 #pragma mark - Private
 
 /// Displays a snackbar error indicating the maximum number of attachments has

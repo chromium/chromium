@@ -19,6 +19,10 @@
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results;
 
+/// Called when the camera picker presentation dismisses.
+- (void)composeboxPickerPresenterDidDissmissCamera:
+    (ComposeboxPickerPresenter*)presenter;
+
 @end
 
 /// Presents the various composebox pickers.

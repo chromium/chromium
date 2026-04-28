@@ -44,10 +44,6 @@ enum class FuseboxAttachmentButtonType;
 - (void)composeboxViewControllerDidTapCameraButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
-/// Informs the delegate that a user did tap on the gallery button.
-- (void)composeboxViewControllerMayShowGalleryPicker:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
 /// Informs the delegate that the plus menu opened and passes the visible
 /// attachment buttons.
 - (void)composeboxViewController:
