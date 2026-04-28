@@ -12,8 +12,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/strings/grit/components_strings.h"

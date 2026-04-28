@@ -79,7 +79,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
@@ -517,7 +516,7 @@ void ChromePaymentsAutofillClient::OnCardDataAvailable(
             if (!contents) {
               return;
             }
-            ManualFillingControllerImpl::GetOrCreate(contents.get())
+            ManualFillingController::GetOrCreate(contents.get())
                 ->ShowAccessorySheetTab(
                     autofill::AccessoryTabType::CREDIT_CARDS);
           },

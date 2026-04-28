@@ -27,7 +27,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;
