@@ -1,5 +1,6 @@
 include_rules = [
   "+components/policy/core/common",
+  "+components/certificate_matching",
 ]
 
 specific_include_rules = {

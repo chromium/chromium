@@ -25,6 +25,7 @@ static_library("common") {
 
   deps = [
     "//base",
+    "//components/certificate_matching",
     "//components/policy/core/common",
   ]
 

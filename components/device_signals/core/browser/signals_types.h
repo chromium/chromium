@@ -45,7 +45,8 @@ enum class SignalName {
   kAgent,
   kOsSignals,
   kBrowserContextSignals,
-  kMaxValue = kBrowserContextSignals
+  kCertificates,
+  kMaxValue = kCertificates
 };
 
 // Superset of all signal collection errors that can occur, including top-level
@@ -317,6 +318,15 @@ struct AgentSignalsResponse : BaseSignalResponse {
   std::vector<Agents> detected_agents{};
 };
 
+struct CertificateSignalsResponse : BaseSignalResponse {
+  CertificateSignalsResponse();
+  CertificateSignalsResponse(const CertificateSignalsResponse&);
+  CertificateSignalsResponse& operator=(const CertificateSignalsResponse&);
+  bool operator==(const CertificateSignalsResponse&) const;
+  ~CertificateSignalsResponse() override;
+  std::vector<std::string> serialized_caa_responses;
+};
+
 // Request struct containing properties that will be used by the
 // SignalAggregator to validate signals access permissions while delegating
 // the collection to the right Collectors. Signals that require parameters (e.g.
@@ -342,6 +352,9 @@ struct SignalsAggregationRequest {
 
   // Parameters required when requesting the collection of agent signals.
   std::unordered_set<AgentSignalCollectionType> agent_signal_parameters;
+
+  // Parameters required when requesting the collection of client certificates.
+  std::vector<GetCertificateOptions> certificate_signal_parameters;
 
   std::vector<GetSettingsOptions> settings_signal_parameters;
 
@@ -381,6 +394,8 @@ struct SignalsAggregationResponse {
       std::nullopt;
 
   std::optional<AgentSignalsResponse> agent_signals_response = std::nullopt;
+  std::optional<CertificateSignalsResponse> certificate_signals_response =
+      std::nullopt;
 };
 
 }  // namespace device_signals

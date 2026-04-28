@@ -147,6 +147,15 @@ bool AgentSignalsResponse::operator==(const AgentSignalsResponse&) const =
 
 AgentSignalsResponse::~AgentSignalsResponse() = default;
 
+CertificateSignalsResponse::CertificateSignalsResponse() = default;
+CertificateSignalsResponse::CertificateSignalsResponse(
+    const CertificateSignalsResponse&) = default;
+CertificateSignalsResponse& CertificateSignalsResponse::operator=(
+    const CertificateSignalsResponse&) = default;
+bool CertificateSignalsResponse::operator==(
+    const CertificateSignalsResponse&) const = default;
+CertificateSignalsResponse::~CertificateSignalsResponse() = default;
+
 SignalsAggregationRequest::SignalsAggregationRequest() = default;
 
 SignalsAggregationRequest::SignalsAggregationRequest(

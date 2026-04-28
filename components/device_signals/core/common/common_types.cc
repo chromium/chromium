@@ -6,6 +6,17 @@
 
 #include "components/device_signals/core/common/signals_constants.h"
 
+namespace {
+bool IsMatchingCert(
+    const certificate_matching::CertificatePrincipalPattern& cert,
+    const certificate_matching::CertificatePrincipalPattern& other_cert) {
+  return (cert.common_name() == other_cert.common_name() &&
+          cert.locality() == other_cert.locality() &&
+          cert.organization() == other_cert.organization() &&
+          cert.organization_unit() == other_cert.organization_unit());
+}
+}  // namespace
+
 namespace device_signals {
 
 ExecutableMetadata::ExecutableMetadata() = default;
@@ -49,6 +60,19 @@ bool GetFileSystemInfoOptions::operator==(
   return file_path == other.file_path &&
          compute_sha256 == other.compute_sha256 &&
          compute_executable_metadata == other.compute_executable_metadata;
+}
+
+GetCertificateOptions::GetCertificateOptions() = default;
+GetCertificateOptions::GetCertificateOptions(const GetCertificateOptions&) =
+    default;
+GetCertificateOptions& GetCertificateOptions::operator=(
+    const GetCertificateOptions&) = default;
+GetCertificateOptions::~GetCertificateOptions() = default;
+bool GetCertificateOptions::operator==(
+    const GetCertificateOptions& other) const {
+  return IsMatchingCert(issuer_pattern, other.issuer_pattern) &&
+         IsMatchingCert(subject_pattern, other.subject_pattern) &&
+         nonce == other.nonce && timestamp == other.timestamp;
 }
 
 bool CrowdStrikeSignals::IsEmpty() const {

@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/values.h"
+#include "components/certificate_matching/certificate_principal_pattern.h"
 
 namespace device_signals {
 
@@ -115,6 +116,20 @@ struct CrowdStrikeSignals {
   std::optional<base::Value> ToValue() const;
 
   bool operator==(const CrowdStrikeSignals& other) const;
+};
+
+struct GetCertificateOptions {
+  GetCertificateOptions();
+  GetCertificateOptions(const GetCertificateOptions&);
+  GetCertificateOptions& operator=(const GetCertificateOptions&);
+  bool operator==(const GetCertificateOptions&) const;
+  ~GetCertificateOptions();
+  certificate_matching::CertificatePrincipalPattern issuer_pattern;
+  certificate_matching::CertificatePrincipalPattern subject_pattern;
+  // A 256-bit random value generated per-report to prevent replay attacks.
+  std::string nonce;
+  // The time the challenge was generated, in milliseconds.
+  int64_t timestamp = 0;
 };
 
 }  // namespace device_signals

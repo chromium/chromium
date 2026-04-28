@@ -2303,6 +2303,36 @@ message AffiliationState {
   optional UnaffiliationReason unaffiliation_reason = 2;
 }
 
+// Certificate details
+message CertificateDetails {
+  // The set of supported signature algorithms.
+  enum SignatureAlgorithm {
+    SIGNATURE_ALGORITHM_UNKNOWN = 0;
+    RSA_PKCS1_SHA1 = 1;
+    RSA_PKCS1_SHA256 = 2;
+    ECDSA_SHA256 = 3;
+    RSA_PSS_SHA256 = 4;
+  }
+
+  // The DER encoded enterprise certificate.
+  optional bytes certificate = 1;
+  // A 256-bit random value.
+  optional bytes nonce = 2;
+  // A timestamp to limit the timeframe during which the challenge may be
+  // replayed.
+  optional int64 timestamp = 3;
+  // The algorithm used when signing the challenge
+  optional SignatureAlgorithm algorithm = 4;
+}
+
+// The signed certificate details for an MDM certificate.
+message SignedCertificateDetails {
+  // The serialized certificate details.
+  optional bytes data = 1;
+  // The signature of the certificate details data.
+  optional bytes signature = 2;
+}
+
 // Chrome user profile level status, used by activated Profiles. Profile name is
 // not listed here as they are in the ChromeUserProfileBasicInfo.
 message ChromeUserProfileInfo {
@@ -2349,6 +2379,12 @@ message ChromeUserProfileInfo {
 
   // Profile level security signals.
   optional ProfileSignalsReport profile_signals_report = 13;
+
+  // A list of MDM certificates and their details.
+  repeated SignedCertificateDetails certificates = 14;
+
+  // Whether certificates were truncated.
+  optional bool certificates_were_truncated = 15;
 }
 
 // Report browser level status.
