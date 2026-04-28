@@ -58,6 +58,9 @@ BASE_DECLARE_FEATURE(kContextualTasksUseStratusDarkModeColors);
 // If enabled, animates the caret.
 BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
 
+// Enables energy effect in Nextbox.
+BASE_DECLARE_FEATURE(kEnergyEffectInNextbox);
+
 // Fixes the composebox jump.
 BASE_DECLARE_FEATURE(kContextualTasksComposeboxJumpFix);
 

@@ -491,6 +491,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                      base::FeatureList::IsEnabled(
                          contextual_tasks::kContextualTasksAnimatedCaret));
 
+  source->AddBoolean(
+      "energyEffectEnabled",
+      base::FeatureList::IsEnabled(contextual_tasks::kEnergyEffectInNextbox));
+
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
       "internals",

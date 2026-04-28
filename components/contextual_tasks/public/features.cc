@@ -81,6 +81,9 @@ BASE_FEATURE(kContextualTasksUseStratusDarkModeColors,
 // If enabled, animates the caret.
 BASE_FEATURE(kContextualTasksAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables energy effect in Nextbox. This works as a killswitch for the feature.
+BASE_FEATURE(kEnergyEffectInNextbox, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksEnableFileHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksComposeboxJumpFix,
