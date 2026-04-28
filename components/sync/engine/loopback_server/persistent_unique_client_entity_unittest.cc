@@ -32,6 +32,13 @@ TEST(PersistentUniqueClientEntityTest, CreateFromEntity) {
   ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 }
 
+TEST(PersistentUniqueClientEntityTest, CreateFromEntityWithNoSpecifics) {
+  sync_pb::SyncEntity entity;
+  entity.set_client_tag_hash("tag");
+  // This should not crash, it should return nullptr.
+  EXPECT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+}
+
 TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {
   const std::string kNonUniqueName = "somename";
   const std::string kClientTag = "someclienttag";
