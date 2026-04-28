@@ -518,6 +518,8 @@ bool AAudioStreamWrapper::Open() {
     if (!device_id_matches) {
       DLOG(WARNING) << "Failed to set device ID for AAudio stream. Expected: "
                     << expected_device_id << "; actual: " << actual_device_id;
+      AAudioStream_close(aaudio_stream_);
+      aaudio_stream_ = nullptr;
       return false;
     }
   }
