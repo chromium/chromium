@@ -3475,6 +3475,13 @@
       public: true,
     },
     {
+      // Fixes a bug in the implementation of `interest` and `loseinterest`
+      // events - they should not be composed events.
+      // This shipped in M149 and can be removed in M151.
+      name: "InterestEventsNonComposed",
+      status: "stable",
+    },
+    {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
       status: "stable",
