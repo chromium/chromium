@@ -78,6 +78,8 @@ class ContextualCueingPageData
     kDisallowed,
     kNeedsPdfPageCount,
     kNeedsPageContent,
+    // Allowed pending PDF page count.
+    kAllowedPendingPageCount,
   };
 
   // Holds the info related to word count client signal.
