@@ -208,6 +208,10 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
     return GetControllerForProcess(main_rfh()->GetProcess());
   }
 
+  scoped_refptr<base::SequencedTaskRunner> GetLogManagerTaskRunner() {
+    return event_log_manager_->GetTaskRunnerForTesting();
+  }
+
   std::unique_ptr<webrtc_event_logging::WebRtcEventLogManager>
       event_log_manager_;
   testing::NiceMock<MockWebRtcRemoteEventLogsObserver> remote_observer_;
@@ -796,6 +800,96 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(base::StartsWith(
       log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe(),
       "webrtc_event_log_01"));
+}
+
+TEST_F(RTCDiagnosticLoggingTest, EventLogStartedAfterSessionIdSet) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed, true);
+  base::ListValue allowed_origins;
+  allowed_origins.Append(url.spec());
+  prefs->SetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+                 std::move(allowed_origins));
+
+  event_log_manager_->OnPeerConnectionAdded(main_rfh()->GetGlobalId(), kLid,
+                                            base::GetCurrentProcId(),
+                                            url.spec(), "");
+
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::FilePath log_file_path;
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&log_file_path));
+
+  base::test::TestFuture<void> session_id_future;
+  event_log_manager_->OnPeerConnectionSessionIdSet(
+      main_rfh()->GetGlobalId(), kLid, "session_id",
+      session_id_future.GetCallback());
+  EXPECT_TRUE(session_id_future.Wait());
+
+  EXPECT_FALSE(log_file_path.empty());
+
+  base::test::TestFuture<void> stop_future;
+  content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
+      *main_rfh(), stop_future.GetCallback());
+  EXPECT_TRUE(stop_future.Wait());
+
+  EXPECT_TRUE(base::PathExists(log_file_path));
+
+  base::DeletePathRecursively(log_file_path.DirName());
+}
+
+TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed, true);
+  base::ListValue allowed_origins;
+  allowed_origins.Append(url.spec());
+  prefs->SetList(prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins,
+                 std::move(allowed_origins));
+
+  event_log_manager_->OnPeerConnectionAdded(main_rfh()->GetGlobalId(), kLid,
+                                            base::GetCurrentProcId(),
+                                            url.spec(), "");
+
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::FilePath log_file_path;
+  EXPECT_CALL(remote_observer_,
+              OnRemoteLogStarted(testing::_, testing::_, testing::_))
+      .WillOnce(testing::SaveArg<1>(&log_file_path));
+
+  base::test::TestFuture<void> session_id_future;
+  event_log_manager_->OnPeerConnectionSessionIdSet(
+      main_rfh()->GetGlobalId(), kLid, "session_id",
+      session_id_future.GetCallback());
+  EXPECT_TRUE(session_id_future.Wait());
+
+  EXPECT_FALSE(log_file_path.empty());
+
+  base::test::TestFuture<void> cancel_future;
+  event_log_manager_->CancelLogging(main_rfh()->GetProcess()->GetDeprecatedID(),
+                                    cancel_future.GetCallback());
+  EXPECT_TRUE(cancel_future.Wait());
+
+  EXPECT_FALSE(base::PathExists(log_file_path));
+
+  if (base::PathExists(log_file_path.DirName())) {
+    base::DeletePathRecursively(log_file_path.DirName());
+  }
 }
 
 TEST_F(RTCDiagnosticLoggingTest,

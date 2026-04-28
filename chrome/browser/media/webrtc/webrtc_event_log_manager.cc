@@ -16,6 +16,7 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/webrtc/rtc_diagnostic_logging_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -288,8 +289,21 @@ void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
     int lid,
     const std::string& session_id,
     base::OnceClosure reply) {
+  auto custom_callback = base::BindOnce(
+      [](content::GlobalRenderFrameHostId frame_id, std::string session_id,
+         base::OnceClosure original_reply, bool success) {
+        if (auto* rfh = content::RenderFrameHost::FromID(frame_id);
+            success && rfh) {
+          rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+              *rfh, session_id, std::move(original_reply));
+        } else {
+          std::move(original_reply).Run();
+        }
+      },
+      frame_id, session_id, std::move(reply));
+
   OnSessionIdSetForPeerConnection(frame_id, lid, session_id,
-                                  base::IgnoreArgs<bool>(std::move(reply)));
+                                  std::move(custom_callback));
 }
 
 void WebRtcEventLogManager::OnWebRtcEventLogWrite(
