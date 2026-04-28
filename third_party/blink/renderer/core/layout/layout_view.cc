@@ -572,19 +572,14 @@ PhysicalRect LayoutView::ViewRect() const {
 
       // This adjustment should always be an expansion of the current
       // viewport.
-
-      // TODO(https://crbug.com/1495157): The snapshot size can be smaller (by
-      // one pixel) than the frame on mobile viewport. Investigate why. Consider
-      // adding `<meta name="viewport" content="width=device-width">` to the
-      // HTML if this occurs.
       if (transition->GetSnapshotRootSize().width() <
               frame_view_->Size().width() ||
           transition->GetSnapshotRootSize().height() <
               frame_view_->Size().height()) {
-        // TODO(https://issues.chromium.org/362991812) This can happen on
-        // ChromeOS devices in portrait mode, and we need to investigate why.
-        base::debug::DumpWithoutCrashing();
-
+        // TODO(https://issues.chromium.org/362991812) This can happen when
+        // layout is deferred during a resize or rotation, causing a temporary
+        // mismatch. We need skip the transition which would have happened later
+        // anyway.
         transition->SkipTransitionSoon();
         return PhysicalRect(PhysicalOffset(),
                             PhysicalSize(frame_view_->Size()));

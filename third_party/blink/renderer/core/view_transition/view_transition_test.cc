@@ -1681,4 +1681,57 @@ TEST_P(ViewTransitionTest,
   EXPECT_TRUE(callback_ran);
 }
 
+TEST_P(ViewTransitionTest, AutoResizeMismatchedSizes) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html { view-transition-name: root; }
+      body { height: 2000px; margin: 0; }
+      #anchor { height: 100px; background: blue; }
+      #anchor2 { height: 100px; background: green; }
+    </style>
+    <div id="anchor"></div>
+    <div id="anchor2"></div>
+  )HTML");
+
+  GetDocument().scrollingElement()->setScrollTop(150);
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda, {})
+          .ToLocalChecked());
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), callback, ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Force GetViewportEnabled() to false to trigger the ClientWidth branch.
+  GetDocument().GetSettings()->SetViewportEnabled(false);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Defer main frame updates to simulate the race!
+  auto defer_update = web_view_helper_->LocalMainFrame()
+                          ->FrameWidgetImpl()
+                          ->DeferMainFrameUpdate();
+
+  gfx::Size original_size = web_view_helper_->GetWebView()->Size();
+  gfx::Size new_size =
+      gfx::Size(original_size.width() + 100, original_size.height() + 100);
+
+  // Call Resize directly on LocalFrameView to force the size change!
+  GetDocument().View()->Resize(new_size);
+
+  // Call ViewRect, which is possible from scroll anchoring.
+  GetDocument().GetLayoutView()->ViewRect();
+
+  UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+
+  EXPECT_EQ(GetState(transition), State::kAborted);
+}
+
 }  // namespace blink
