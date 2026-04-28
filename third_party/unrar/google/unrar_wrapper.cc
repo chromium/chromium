@@ -64,13 +64,15 @@ bool RarReader::Open(std::unique_ptr<RarReaderDelegate> delegate,
       L"-p" + (password_.empty() ? L"x" : base::UTF8ToWide(password_));
   command_->ParseArg(password_flag.data());
   command_->ParseArg(const_cast<wchar_t*>(L"t"));
+  command_->ParseDone();
+  // Disables an optimization that can allow specially crafted archives to
+  // bypass analysis. See crbug.com/506473226.
+  command_->Recurse = RECURSE_ALWAYS;
 
   if (!writer_) {
     // If no custom writer is set, use the default FileWriter writing to temp_file.
     writer_ = std::make_unique<FileWriter>(temp_file_.Duplicate());
   }
-
-  command_->ParseDone();
 
   archive_ = std::make_unique<Archive>(command_.get());
   archive_->SetReaderDelegate(reader_.get());

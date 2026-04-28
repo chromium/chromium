@@ -438,6 +438,31 @@ TEST_F(SandboxedRarAnalyzerTest,
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithAsterisk) {
+  // Verifies that a file named "*" doesn't trigger the exact match early exit
+  // in UnRAR, which would cause subsequent files to be skipped.
+  // See crbug.com/506473226.
+  // bypass.rar contains: "*", "evil.exe"
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("bypass.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  // Both "*" and "evil.exe" should be found.
+  EXPECT_THAT(
+      results.archived_binary,
+      testing::UnorderedElementsAre(
+          testing::Property(
+              &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+              testing::Eq("*")),
+          testing::Property(
+              &safe_browsing::ClientDownloadRequest_ArchivedBinary::file_path,
+              testing::Eq("evil.exe"))));
+}
+
 TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   base::FilePath file_path;
   ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("small_archive.rar"));
