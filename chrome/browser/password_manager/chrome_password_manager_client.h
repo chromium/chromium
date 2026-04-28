@@ -236,6 +236,7 @@ class ChromePasswordManagerClient
   void PromptUserToEnableAutosignin() override;
   bool IsOffTheRecord() const override;
   profile_metrics::BrowserProfileType GetProfileType() const override;
+  using password_manager::PasswordManagerClient::GetPasswordManager;
   const password_manager::PasswordManagerInterface* GetPasswordManager()
       const override;
   using password_manager::PasswordManagerClient::GetPasswordFeatureManager;

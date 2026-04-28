@@ -41,6 +41,11 @@ class PasswordManagerInterface : public FormSubmissionObserver {
     // form corresponding to the pending credentials to be saved/updated in the
     // database.
     virtual void OnLoginSuccessful(const PasswordForm& pending_form) = 0;
+
+    // Notifies that password forms were parsed on the page.
+    virtual void OnPasswordFormsParsed(
+        PasswordManagerDriver* driver,
+        const std::vector<autofill::FormData>& forms_data) {}
   };
 
   PasswordManagerInterface() = default;

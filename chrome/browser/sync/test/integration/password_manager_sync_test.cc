@@ -388,6 +388,7 @@ class PasswordManagerSyncTest : public SyncTest {
     ASSERT_EQ(web_contents,
               GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
     PasswordsNavigationObserver observer(web_contents);
+    observer.set_wait_for_password_forms_parsed(true);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), url));
     ASSERT_TRUE(observer.Wait());
     // After navigation, the password manager retrieves any matching credentials
@@ -735,14 +736,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // shown.
   GetAllLoginsFromProfilePasswordStore();
   GetAllLoginsFromAccountPasswordStore();
-  // PasswordFormsParsed (sent at DOMContentLoaded) and DidFinishLoad travel
-  // over different Mojo interfaces, so the parsed IPC may still be queued on
-  // the browser side when NavigateToFileHttps() returns. Drain browser-side
-  // queues so PasswordManager has a PasswordFormManager for the form before
-  // submission; otherwise no save prompt is shown.
-  // TODO(crbug.com/500570908): Wait for a specific signal (ideally inside
-  // PasswordsNavigationObserver) instead of RunAllTasksUntilIdle().
-  content::RunAllTasksUntilIdle();
   FillAndSubmitPasswordForm(web_contents, "different-user@gmail.com", "pass");
 
   // Since the submitted credential is *not* for the primary account, Chrome
@@ -773,11 +766,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // shown.
   GetAllLoginsFromProfilePasswordStore();
   GetAllLoginsFromAccountPasswordStore();
-  // See the comment above the equivalent call in
-  // OfferToSaveNonPrimaryAccountCredential for why this is needed.
-  // TODO(crbug.com/500570908): Wait for a specific signal (ideally inside
-  // PasswordsNavigationObserver) instead of RunAllTasksUntilIdle().
-  content::RunAllTasksUntilIdle();
   FillAndSubmitPasswordForm(
       web_contents,
       GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount),
