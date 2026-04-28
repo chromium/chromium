@@ -35,10 +35,11 @@ bool IsVapidKey(const std::string& application_server_key);
 // keys have to be encoded using the URL-safe variant of the base64 encoding.
 std::string NormalizeSenderInfo(const std::string& sender_info);
 
-// Currently |user_visible_only| is always true, once silent pushes are
-// enabled, get this information from SW database.
+// Creates `PushSubscriptionOptions` with the given `sender_id` and
+// `user_visible_only` flag.
 blink::mojom::PushSubscriptionOptionsPtr MakeOptions(
-    const std::string& sender_id);
+    const std::string& sender_id,
+    bool user_visible_only);
 
 // Inspects the |PushEventStatus| and returns if push was successful; when
 // returning false, if the std::optional<PushUnregistrationReason> is not

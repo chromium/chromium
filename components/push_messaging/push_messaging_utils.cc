@@ -36,9 +36,10 @@ GURL CreateEndpoint(version_info::Channel channel,
 }
 
 blink::mojom::PushSubscriptionOptionsPtr MakeOptions(
-    const std::string& sender_id) {
+    const std::string& sender_id,
+    bool user_visible_only) {
   return blink::mojom::PushSubscriptionOptions::New(
-      /*user_visible_only=*/true,
+      user_visible_only,
       std::vector<uint8_t>(sender_id.begin(), sender_id.end()));
 }
 

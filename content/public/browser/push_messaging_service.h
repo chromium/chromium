@@ -45,6 +45,7 @@ class CONTENT_EXPORT PushMessagingService {
       base::OnceCallback<void(blink::mojom::PushUnregistrationStatus)>;
   using SubscriptionInfoCallback =
       base::OnceCallback<void(bool is_valid,
+                              bool user_visible_only,
                               const GURL& endpoint,
                               const std::optional<base::Time>& expiration_time,
                               const std::vector<uint8_t>& p256dh,

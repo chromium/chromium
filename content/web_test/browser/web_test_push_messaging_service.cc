@@ -148,8 +148,8 @@ void WebTestPushMessagingService::GetSubscriptionInfo(
                                 .subspan(std::size(kAuthentication))
                                 .data());
   const GURL endpoint = CreateEndpoint(subscription_id);
-  std::move(callback).Run(true /* is_valid */, endpoint, GetFutureTime(),
-                          p256dh, auth);
+  std::move(callback).Run(/*is_valid=*/true, /*user_visible_only=*/true,
+                          endpoint, GetFutureTime(), p256dh, auth);
 }
 
 bool WebTestPushMessagingService::SupportNonVisibleMessages() {

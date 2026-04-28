@@ -1749,6 +1749,64 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
   EXPECT_TRUE(push_message_listener.WaitUntilSatisfied());
   run_loop.Run();  // Wait until the message is handled by push service.
 }
+
+// Tests that an extension can subscribe to push notifications with
+// `userVisibleOnly: false` from its service worker and that this state is
+// accurately reported back when the worker calls `getSubscription()`.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest,
+                       GetSubscriptionPersistsUserVisibleOnlyFalse) {
+  // Create an extension with a service worker background.
+  TestExtensionDir test_dir;
+  constexpr char kManifest[] =
+      R"({
+         "name": "Test Extension",
+         "manifest_version": 3,
+         "version": "0.1",
+         "background": {"service_worker": "background.js"}
+       })";
+  test_dir.WriteManifest(kManifest);
+
+  constexpr char kBackgroundScript[] =
+      R"(
+        self.addEventListener('activate', event => {
+          // 1. Subscribe to push notifications with `userVisibleOnly: false`.
+          self.registration.pushManager.subscribe({
+            userVisibleOnly: false,
+            applicationServerKey: new TextEncoder().encode('1234567890')
+          }).then(sub => {
+            // 2. Once subscribed, immediately fetch the subscription.
+            return self.registration.pushManager.getSubscription();
+          }).then(sub => {
+            // 3. Verify that the now retrieved subscription has
+            //    `userVisibleOnly: false`.
+            if (!sub) {
+              chrome.test.sendMessage('ERROR: null subscription');
+            } else if (sub.options.userVisibleOnly) {
+              chrome.test.sendMessage('ERROR: userVisibleOnly is true');
+            } else {
+              chrome.test.sendMessage('SUCCESS');
+            }
+          }).catch(err => {
+            // Report any errors during the subscription process.
+            chrome.test.sendMessage('ERROR: ' + err.message);
+          });
+        });
+      )";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+
+  ExtensionTestMessageListener result_listener;
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  {
+    SCOPED_TRACE(
+        "waiting for background to subscribe to push and then check its "
+        "subscription");
+    EXPECT_TRUE(result_listener.WaitUntilSatisfied());
+  }
+  EXPECT_EQ("SUCCESS", result_listener.message());
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)

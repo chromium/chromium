@@ -165,11 +165,13 @@ class PushMessagingServiceImpl final : public content::PushMessagingService,
                                const std::string& sender_id,
                                const GURL& endpoint,
                                const std::optional<base::Time>& expiration_time,
+                               bool user_visible_only,
                                SubscriptionInfoCallback callback,
                                bool is_valid);
 
   void DidGetEncryptionInfo(const GURL& endpoint,
                             const std::optional<base::Time>& expiration_time,
+                            bool user_visible_only,
                             SubscriptionInfoCallback callback,
                             std::string p256dh,
                             std::string auth_secret) const;

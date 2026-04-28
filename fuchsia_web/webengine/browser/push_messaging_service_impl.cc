@@ -65,7 +65,8 @@ bool IsInvalidRequester(const GURL& origin,
 
 void ValidateTokenError(
     content::PushMessagingService::SubscriptionInfoCallback callback) {
-  std::move(callback).Run(/*is_valid=*/false, /*endpoint=*/GURL{},
+  std::move(callback).Run(/*is_valid=*/false, /*user_visible_only=*/false,
+                          /*endpoint=*/GURL{},
                           /*expiration_time=*/std::nullopt,
                           /*p256dh=*/std::vector<uint8_t>{},
                           /*auth=*/std::vector<uint8_t>{});
@@ -140,7 +141,8 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
               &PushMessagingServiceImpl::DidValidateSubscription,
               weak_ptr_factory_.GetWeakPtr(), app_id->app_id(), sender_id,
               push_messaging::CreateEndpoint(GetChannel(), subscription_id),
-              app_id->expiration_time(), std::move(callback)));
+              app_id->expiration_time(), app_id->user_visible_only(),
+              std::move(callback)));
 }
 
 void PushMessagingServiceImpl::Unsubscribe(
@@ -538,6 +540,7 @@ void PushMessagingServiceImpl::DidValidateSubscription(
     const std::string& sender_id,
     const GURL& endpoint,
     const std::optional<base::Time>& expiration_time,
+    bool user_visible_only,
     SubscriptionInfoCallback callback,
     bool is_valid) {
   if (!is_valid) {
@@ -550,12 +553,13 @@ void PushMessagingServiceImpl::DidValidateSubscription(
       push_messaging::NormalizeSenderInfo(sender_id),
       base::BindOnce(&PushMessagingServiceImpl::DidGetEncryptionInfo,
                      weak_ptr_factory_.GetWeakPtr(), endpoint, expiration_time,
-                     std::move(callback)));
+                     user_visible_only, std::move(callback)));
 }
 
 void PushMessagingServiceImpl::DidGetEncryptionInfo(
     const GURL& endpoint,
     const std::optional<base::Time>& expiration_time,
+    bool user_visible_only,
     SubscriptionInfoCallback callback,
     std::string p256dh,
     std::string auth_secret) const {
@@ -565,7 +569,7 @@ void PushMessagingServiceImpl::DidGetEncryptionInfo(
     return;
   }
   std::move(callback).Run(
-      true, endpoint, expiration_time,
+      true, user_visible_only, endpoint, expiration_time,
       std::vector<uint8_t>(p256dh.begin(), p256dh.end()),
       std::vector<uint8_t>(auth_secret.begin(), auth_secret.end()));
 }

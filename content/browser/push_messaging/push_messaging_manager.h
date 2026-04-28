@@ -138,6 +138,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       int64_t service_worker_registration_id,
       const std::string& application_server_key,
       bool is_valid,
+      bool user_visible_only,
       const GURL& endpoint,
       const std::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,

@@ -43,6 +43,7 @@
 #include "components/permissions/permission_manager.h"
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/push_messaging/push_messaging_utils.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -571,12 +572,25 @@ class ExtensionsPushMessagingServiceTest
         /*profile_manager=*/false);
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
+
+    // Override the GCM Profile service so that we can use a fake GCM driver to
+    // simulate GCM responses in a controlled unit test environment for push
+    // testing.
+    gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildFakeGCMProfileService));
   }
 
   void TearDown() override {
     ExtensionServiceTestWithInstall::TearDown();
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
+
+ private:
+  // Required to prevent DCHECK failure in VariationsIdsProvider::GetInstance()
+  // when loading the service worker script, as unit tests do not automatically
+  // initialize the global variations instance.
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests that extension origins with various background contexts have permission
@@ -678,6 +692,96 @@ TEST_P(ExtensionsPushMessagingServiceTest, PushMessagingAPIPermission) {
         push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
                                           false));
   }
+}
+
+// Tests that `userVisibleOnly: false` is correctly persisted and returned
+// for worker-based extensions.
+TEST_P(ExtensionsPushMessagingServiceTest,
+       GetSubscriptionPersistsUserVisibleOnlyFalse) {
+  ContextType extension_context_type = GetParam();
+  if (extension_context_type != ContextType::kServiceWorker) {
+    return;  // Only supported for service worker extensions
+  }
+
+  // Load a manifest V3 service worker extension.
+  TestExtensionDir test_dir;
+  constexpr char kManifest[] =
+      R"({
+         "name": "Test Extension",
+         "manifest_version": 3,
+         "version": "0.1",
+         "background": {"service_worker": "background.js"}
+       })";
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  PushMessagingServiceImpl* push_service =
+      PushMessagingServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(push_service);
+  const GURL extension_origin =
+      Extension::GetBaseURLFromExtensionId(extension->id());
+
+  std::string subscription_id;
+  base::RunLoop subscribe_run_loop;
+
+  // Create options with `user_visible_only` `false`.
+  auto options = blink::mojom::PushSubscriptionOptions::New();
+  options->user_visible_only = false;
+  options->application_server_key =
+      std::vector<uint8_t>(std::begin(kTestSenderId), std::end(kTestSenderId));
+
+  // Subscribe from worker.
+  push_service->SubscribeFromWorker(
+      extension_origin, kTestServiceWorkerId, /*render_process_id=*/-1,
+      std::move(options),
+      base::BindLambdaForTesting(
+          [&](const std::string& registration_id, const GURL& endpoint,
+              const std::optional<base::Time>& expiration_time,
+              const std::vector<uint8_t>& p256dh,
+              const std::vector<uint8_t>& auth,
+              blink::mojom::PushRegistrationStatus status) {
+            EXPECT_EQ(
+                blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE,
+                status);
+            subscription_id = registration_id;
+            subscribe_run_loop.Quit();
+          }));
+
+  {
+    SCOPED_TRACE("Waiting for subscription from worker to complete");
+    subscribe_run_loop.Run();
+  }
+  ASSERT_FALSE(subscription_id.empty());
+
+  bool out_is_valid = false;
+  bool out_user_visible_only = true;
+
+  // Retrieve subscription info and verify that `user_visible_only` is `false`.
+  base::RunLoop get_subscription_info_run_loop;
+  push_service->GetSubscriptionInfo(
+      extension_origin, kTestServiceWorkerId, std::string(kTestSenderId),
+      subscription_id,
+      base::BindLambdaForTesting(
+          [&](bool is_valid, bool user_visible_only, const GURL& endpoint,
+              const std::optional<base::Time>& expiration_time,
+              const std::vector<uint8_t>& p256dh,
+              const std::vector<uint8_t>& auth) {
+            out_is_valid = is_valid;
+            out_user_visible_only = user_visible_only;
+            get_subscription_info_run_loop.Quit();
+          }));
+
+  {
+    SCOPED_TRACE("Waiting for retrieval of subscription info to complete");
+    get_subscription_info_run_loop.Run();
+  }
+
+  EXPECT_TRUE(out_is_valid);
+  EXPECT_FALSE(out_user_visible_only);
 }
 
 // Android only supports manifest V3 with service worker.
