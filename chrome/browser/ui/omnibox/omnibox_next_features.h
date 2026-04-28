@@ -26,6 +26,7 @@ namespace internal {
 
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
+BASE_DECLARE_FEATURE(kWebUIOmniboxSimplification);
 
 }  // namespace internal
 
@@ -85,6 +86,14 @@ extern const base::FeatureParam<bool> kShowToolsAndModels;
 extern const base::FeatureParam<bool> kShowContextMenuHeaders;
 // Whether to use the composebox fork.
 extern const base::FeatureParam<bool> kUseComposeboxFork;
+// Whether to use the grey oblong background for context menu entrypoint.
+extern const base::FeatureParam<bool> kContextButtonHasBackground;
+// Whether the button should be an oblong shape vs circular.
+extern const base::FeatureParam<bool> kContextButtonShapeIsOblong;
+// Whether to show the "Ask about tabs" label for the context menu entrypoint.
+extern const base::FeatureParam<bool> kContextButtonShowAskAboutTabsLabel;
+// Whether to show the "Ask about tabs" action in the context menu.
+extern const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();

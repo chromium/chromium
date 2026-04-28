@@ -36,6 +36,10 @@ BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
 // panel taking up the whole of the popup, covering the location bar completely.
 BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 
+// If enabled, the Omnibox Popup will enable a different UI state when on a
+// webpage.
+BASE_FEATURE(kWebUIOmniboxSimplification, DISABLED);
+
 }  // namespace internal
 
 constexpr base::FeatureParam<AddContextButtonVariant>::Option
@@ -333,6 +337,18 @@ const base::FeatureParam<bool> kUseComposeboxFork(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_UseComposeboxFork",
     false);
+const base::FeatureParam<bool> kContextButtonHasBackground{
+    &internal::kWebUIOmniboxSimplification,
+    "Omnibox_ContextButtonHasBackground", false};
+const base::FeatureParam<bool> kContextButtonShapeIsOblong{
+    &internal::kWebUIOmniboxSimplification,
+    "Omnibox_ContextButtonShapeIsOblong", false};
+const base::FeatureParam<bool> kContextButtonShowAskAboutTabsLabel{
+    &internal::kWebUIOmniboxSimplification,
+    "Omnibox_ContextButtonShowAskAboutTabsLabel", false};
+const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction{
+    &internal::kWebUIOmniboxSimplification,
+    "Omnibox_ContextMenuShowAskAboutTabsAction", false};
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
