@@ -35,7 +35,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -133,7 +132,7 @@ Browser* GetExistingBrowserForOpenBehavior(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup) {
   BrowserWindowInterface* current_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   Browser* workspace_browser =
       current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
 

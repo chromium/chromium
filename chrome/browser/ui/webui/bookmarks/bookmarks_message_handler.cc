@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -339,7 +340,7 @@ void BookmarksMessageHandler::HandleSingleUploadClicked(
   // Show the dialog asking the user to confirm their choice to move the
   // bookmark.
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ShowBookmarkAccountStorageUploadDialog(
       browser ? browser->GetBrowserForMigrationOnly() : nullptr,
       bookmarks::GetBookmarkNodeByID(model, id));

@@ -18,9 +18,9 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
@@ -516,7 +516,7 @@ content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
   // Open new foreground tab or popup triggered by user activation in payment
   // handler window in browser.
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile_);
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser && user_gesture &&
       (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
        disposition == WindowOpenDisposition::NEW_POPUP)) {

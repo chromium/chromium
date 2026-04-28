@@ -23,7 +23,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/buildflags.h"
@@ -223,7 +223,8 @@ void CertificateSelector::Show() {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     BrowserWindowInterface* const browser =
-        chrome::FindLastActiveWithProfile(profile);
+        ProfileBrowserCollection::GetForProfile(profile)
+            ->GetLastActiveBrowser();
     if (browser) {
       SetModalType(ui::mojom::ModalType::kWindow);
       constrained_window::CreateBrowserModalDialogViews(

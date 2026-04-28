@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   // Startup URLs should not have been applied to the browser window.
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
   BrowserWindowInterface* const new_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   auto* const tab_strip_model = new_browser->GetTabStripModel();
@@ -171,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
 
   BrowserWindowInterface* const pref_urls_opened_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   ASSERT_TRUE(pref_urls_opened_browser);
 
   // Check pref_urls_opened_browser.
@@ -192,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
       profile, /*should_trigger_session_restore=*/true);
   ASSERT_EQ(2u, chrome::GetBrowserCount(profile));
   BrowserWindowInterface* const new_browser =
-      chrome::FindLastActiveWithProfile(profile);
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();
@@ -282,7 +283,9 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   auto* new_browser = ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
       profile, /*should_trigger_session_restore=*/true);
   ASSERT_EQ(3u, chrome::GetBrowserCount(profile));
-  EXPECT_EQ(new_browser, chrome::FindLastActiveWithProfile(profile));
+  EXPECT_EQ(
+      new_browser,
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser());
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();

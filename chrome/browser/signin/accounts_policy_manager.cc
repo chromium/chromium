@@ -25,7 +25,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -87,7 +86,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     browser_collection_observation_.Observe(browser_collection);
     // Find the last active browser window for the profile.
     BrowserWindowInterface* const active_browser =
-        chrome::FindLastActiveWithProfile(profile);
+        ProfileBrowserCollection::GetForProfile(profile)
+            ->GetLastActiveBrowser();
     if (active_browser) {
       OnBrowserActivated(active_browser);
     }

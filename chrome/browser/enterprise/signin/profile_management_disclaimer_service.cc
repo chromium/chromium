@@ -29,7 +29,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
@@ -257,7 +256,8 @@ void ProfileManagementDisclaimerService::
   }
 
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(&profile_.get());
+      ProfileBrowserCollection::GetForProfile(&profile_.get())
+          ->GetLastActiveBrowser();
   bool has_browser_with_tab =
       browser && browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
                      Browser::WindowFeature::kFeatureTabStrip);

@@ -43,8 +43,8 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
@@ -429,7 +429,8 @@ void BackgroundModeManager::LaunchBackgroundApplication(
 // static
 BrowserWindowInterface* BackgroundModeManager::GetBrowserWindowForProfile(
     Profile* profile) {
-  BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   return browser ? browser : chrome::OpenEmptyWindow(profile);
 }
 

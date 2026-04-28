@@ -58,7 +58,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1097,8 +1097,10 @@ content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
   // external application. For those cases, try to find the active web
   // contents of the browser to show the dialog on.
   if (!force_save_web_contents) {
-    BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(
-        Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(
+            Profile::FromBrowserContext(metadata_->GetBrowserContext()))
+            ->GetLastActiveBrowser();
     if (browser) {
       force_save_web_contents =
           browser->GetTabStripModel()->GetActiveWebContents();

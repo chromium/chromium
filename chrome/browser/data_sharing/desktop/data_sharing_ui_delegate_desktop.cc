@@ -8,9 +8,9 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -27,7 +27,7 @@ void DataSharingUIDelegateDesktop::HandleShareURLIntercepted(
     const GURL& url,
     std::unique_ptr<ShareURLInterceptionContext> context) {
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile_);
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser) {
     auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
         browser->GetBrowserForMigrationOnly());

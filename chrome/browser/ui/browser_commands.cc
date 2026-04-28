@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -764,7 +765,8 @@ BrowserWindowInterface* OpenEmptyWindow(Profile* profile,
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     BrowserWindowInterface* const last_active_browser =
-        chrome::FindLastActiveWithProfile(profile);
+        ProfileBrowserCollection::GetForProfile(profile)
+            ->GetLastActiveBrowser();
     if (last_active_browser) {
       if (auto* controller = tabs::VerticalTabStripStateController::From(
               last_active_browser)) {

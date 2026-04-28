@@ -23,8 +23,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/common/channel_info.h"
@@ -229,7 +229,8 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
   CHECK(policies_received_);
   CHECK(source_profile_);
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(source_profile_);
+      ProfileBrowserCollection::GetForProfile(source_profile_)
+          ->GetLastActiveBrowser();
   bool has_browser_with_tab =
       browser && browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
                      Browser::WindowFeature::kFeatureTabStrip);

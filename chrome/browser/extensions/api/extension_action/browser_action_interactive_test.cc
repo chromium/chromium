@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -820,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   EXPECT_FALSE(popup_browser->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureToolbar));
   EXPECT_EQ(popup_browser,
-            chrome::FindLastActiveWithProfile(browser()->profile()));
+            ProfileBrowserCollection::GetForProfile(browser()->profile())
+                ->GetLastActiveBrowser());
 
   // Load up the extension, which will call chrome.browserAction.openPopup()
   // when it is loaded and verify that the popup didn't open.

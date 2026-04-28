@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 #include "chrome/grit/branded_strings.h"
@@ -218,7 +218,7 @@ ExtensionErrorUIDesktop::~ExtensionErrorUIDesktop() = default;
 
 bool ExtensionErrorUIDesktop::ShowErrorInBubbleView() {
   BrowserWindowInterface* const browser =
-      chrome::FindLastActiveWithProfile(profile_);
+      ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (!browser)
     return false;
 

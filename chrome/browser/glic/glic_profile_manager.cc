@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
@@ -65,17 +65,9 @@ void AutoOpenGlicPanel() {
   mojom::InvocationSource pretend_source = mojom::InvocationSource::kOsButton;
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::switches::kGlicOpenOnStartup) == "attached") {
-    // Attachment is best effort; FindLastActiveWithProfile() may return null
-    // here.
-    GlobalBrowserCollection::GetInstance()->ForEach(
-        [&](BrowserWindowInterface* bwi) {
-          if (bwi->GetProfile() == profile) {
-            last_active = bwi;
-            return false;
-          }
-          return true;
-        },
-        BrowserCollection::Order::kActivation);
+    // Attachment is best effort; GetLastActiveBrowser() may return null here.
+    last_active = ProfileBrowserCollection::GetForProfile(profile)
+                      ->GetLastActiveBrowser();
     pretend_source = mojom::InvocationSource::kTopChromeButton;
   }
   GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(

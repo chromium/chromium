@@ -95,10 +95,10 @@
 #include "base/uuid.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -2599,8 +2599,10 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
         return AlreadyResponded();
       }
 
-      BrowserWindowInterface* const browser = chrome::FindLastActiveWithProfile(
-          Profile::FromBrowserContext(browser_context()));
+      BrowserWindowInterface* const browser =
+          ProfileBrowserCollection::GetForProfile(
+              Profile::FromBrowserContext(browser_context()))
+              ->GetLastActiveBrowser();
       if (!browser) {
         return RespondNow(Error(kCouldNotFindWebContentsError));
       }
