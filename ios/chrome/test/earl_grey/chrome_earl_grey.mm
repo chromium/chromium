@@ -150,10 +150,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return idiom == UIUserInterfaceIdiomPhone;
 }
 
-- (BOOL)isTabGridSetUp {
-  return [ChromeEarlGreyAppInterface isTabGridSetUp];
-}
-
 - (BOOL)isRTL {
   return [ChromeEarlGreyAppInterface isRTL];
 }

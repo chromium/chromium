@@ -68,9 +68,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if running on an iPhone.
 - (BOOL)isIPhoneIdiom;
 
-// YES if the TabGridViewController's child views have been set up.
-- (BOOL)isTabGridSetUp;
-
 // YES if the current interface language uses RTL layout.
 - (BOOL)isRTL;
 

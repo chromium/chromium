@@ -33,9 +33,6 @@ enum class TipsNotificationType;
 // the app binary and can be called from either app or test code.
 @interface ChromeEarlGreyAppInterface : NSObject
 
-// Returns whether the TabGridViewController's child views have been set up.
-+ (BOOL)isTabGridSetUp;
-
 // YES if the current interface language uses RTL layout.
 + (BOOL)isRTL;
 
