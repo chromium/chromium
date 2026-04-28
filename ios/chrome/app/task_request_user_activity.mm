@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -444,6 +445,13 @@ void OpenVoiceSearchWithBrowser(Browser* browser) {
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [handler startVoiceSearch];
+}
+
+// Starts QR code scanner.
+void OpenQRCodeScannerWithBrowser(Browser* browser) {
+  id<QRScannerCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), QRScannerCommands);
+  [handler showQRScanner];
 }
 
 // Navigates to the history UI.
@@ -893,10 +901,16 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
             completion:{}];
         break;
       case SpotlightActionType::kVoiceSearch:
-        // TODO(crbug.com/492115056): Add implementation.
+        [self openURLs:{GURL(kChromeUINewTabURL)}
+            sceneState:sceneState
+            targetMode:_targetMode
+            completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
         break;
       case SpotlightActionType::kQRScanner:
-        // TODO(crbug.com/492115056): Add implementation.
+        [self openURLs:{GURL(kChromeUINewTabURL)}
+            sceneState:sceneState
+            targetMode:_targetMode
+            completion:base::BindOnce(&OpenQRCodeScannerWithBrowser)];
         break;
       case SpotlightActionType::kNewTab:
         [self openURLs:{GURL(kChromeUINewTabURL)}
