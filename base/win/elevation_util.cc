@@ -27,6 +27,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/shell_util.h"
 #include "base/win/startup_information.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -140,81 +141,18 @@ expected<Process, DWORD> RunDeElevated(
 }
 
 HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
-  return RunDeElevatedNoWait(command_line.GetProgram().value(),
-                             command_line.GetArgumentsString());
+  return RunShellExecuteViaExplorer(command_line.GetProgram().value(),
+                                    command_line.GetArgumentsString());
 }
 
 HRESULT RunDeElevatedNoWait(const std::wstring& path,
                             const std::wstring& parameters,
                             std::optional<std::wstring_view> current_directory,
                             bool start_hidden) {
-  Microsoft::WRL::ComPtr<IShellWindows> shell;
-  HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  LONG hwnd = 0;
-  Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = shell->FindWindowSW(ScopedVariant(CSIDL_DESKTOP).AsInput(),
-                           ScopedVariant().AsInput(), SWC_DESKTOP, &hwnd,
-                           SWFO_NEEDDISPATCH, &dispatch);
-  if (hr == S_FALSE || FAILED(hr)) {
-    return hr == S_FALSE ? E_FAIL : hr;
-  }
-
-  Microsoft::WRL::ComPtr<IServiceProvider> service;
-  hr = dispatch.As(&service);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellBrowser> browser;
-  hr = service->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&browser));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellView> view;
-  hr = browser->QueryActiveShellView(&view);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  hr = view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
-  hr = dispatch.As(&folder);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  hr = folder->get_Application(&dispatch);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
-  hr = dispatch.As(&shell_dispatch);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  std::optional<FilePath> current_dir;
-  if (!current_directory) {
-    current_dir = PathService::CheckedGet(DIR_CURRENT);
-    current_directory = current_dir->value();
-  }
-
-  return shell_dispatch->ShellExecute(
-      ScopedBstr(path.c_str()).Get(), ScopedVariant(parameters.c_str()),
-      ScopedVariant(current_directory->data()),
-      /*vOperation=*/ScopedVariant::kEmptyVariant,
-      ScopedVariant(start_hidden ? SW_HIDE : SW_SHOWDEFAULT));
+  ShellExecuteOptions options{.current_directory = std::wstring(
+                                  current_directory.value_or(std::wstring())),
+                              .start_hidden = start_hidden};
+  return RunShellExecuteViaExplorer(path, parameters, options);
 }
 
 }  // namespace base::win
