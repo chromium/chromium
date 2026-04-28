@@ -69,7 +69,7 @@ PermissionUtil::ToPermissionStatusWithDetails(
 // components/permissions/permission_util.cc.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host);
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -88,12 +88,13 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   }
 #endif
 
-  if (render_frame_host->GetLastCommittedOrigin().GetURL().is_empty()) {
+  GURL origin = render_frame_host->GetLastCommittedOrigin().GetURL();
+  if (origin.is_empty() && render_frame_host->IsInPrimaryMainFrame()) {
     if (!web_contents->GetVisibleURL().is_empty()) {
-      return web_contents->GetVisibleURL();
+      origin = web_contents->GetVisibleURL();
     }
   }
-  return render_frame_host->GetLastCommittedOrigin().GetURL();
+  return origin;
 }
 
 bool PermissionUtil::IsDomainOverride(
