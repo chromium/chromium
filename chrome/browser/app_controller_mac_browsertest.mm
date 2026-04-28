@@ -769,32 +769,24 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
 // Tests that, even if only an incognito browser is currently opened, a GURL
 // is opened in a regular (non-incognito) browser.
 // Regression test for https://crbug.com/40536115, https://crbug.com/40912038
-// TODO(crbug.com/505221665): Re-enable this test once it's no longer flaky.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened \
-  DISABLED_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened
-#else
-#define MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened \
-  OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AppControllerBrowserTest,
-    MAYBE_OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure the AppController is the NSApp delegate.
   std::ignore = AppController.sharedController;
 
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  // Close the current browser.
+  // Create an incognito browser.
   Profile* profile = browser()->profile();
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsers();
-  observer.Wait();
-  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
-  // Create an incognito browser and check that it is the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+
+  // Close the original browser.
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+
+  // Check that the incognito browser is the last active browser.
   EXPECT_EQ(incognito_browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
@@ -806,16 +798,14 @@ IN_PROC_BROWSER_TEST_F(
                     object:incognito_browser->window()
                                ->GetNativeWindow()
                                .GetNativeNSWindow()];
-  // Open a url.
+
+  // Open a url, waiting for a new browser window to open.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
-  content::TestNavigationObserver event_navigation_observer(simple);
-  event_navigation_observer.StartWatchingNewWebContents();
   SendOpenUrlToAppController(simple);
-  event_navigation_observer.Wait();
-  // Check that a new regular browser is opened
-  // and the url is opened in the regular browser.
-  BrowserWindowInterface* new_browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
+
+  // Check that a new regular browser is opened and the url is opened in it.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_TRUE(new_browser->GetProfile()->IsRegularProfile());
   EXPECT_EQ(profile, new_browser->GetProfile());

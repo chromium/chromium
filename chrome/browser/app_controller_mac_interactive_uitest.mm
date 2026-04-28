@@ -148,16 +148,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
                        WhileIncognitoBrowserIsOpened_NewWindow) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  // Close the current browser.
-  Profile* profile = browser()->profile();
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsers();
-  observer.Wait();
-  EXPECT_FALSE(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-
   // Create an incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  Profile* original_profile = browser()->profile();
+  Browser* incognito_browser = CreateIncognitoBrowser(original_profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+
+  // Close the original browser.
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   EXPECT_EQ(incognito_browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
@@ -175,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuInteractiveUITest,
   Browser* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
-  EXPECT_EQ(profile, new_browser->profile());
+  EXPECT_EQ(original_profile, new_browser->profile());
 }
 
 // Test that when the ProfilePicker is shown, a reopen event focuses the
