@@ -37,7 +37,8 @@ GlicRegionCaptureController::~GlicRegionCaptureController() = default;
 
 void GlicRegionCaptureController::CaptureRegion(
     tabs::TabInterface* tab,
-    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
+    mojom::GetTabContextOptionsPtr options) {
   on_capture_region_for_testing_.Run();
 
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
@@ -114,7 +115,7 @@ void GlicRegionCaptureController::CaptureRegion(
     }
     selection_overlay_controller->BindCaptureRegionObserver(
         std::move(observer));
-    selection_overlay_controller->Show();
+    selection_overlay_controller->Show(std::move(options));
   } else {
     // If a capture is already in progress, cancel it and notify the observer.
     if (capture_region_observer_) {

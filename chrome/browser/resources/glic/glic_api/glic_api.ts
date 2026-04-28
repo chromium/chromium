@@ -518,6 +518,8 @@ export declare interface GlicBrowserHost {
    * Starts a user-interactive process to select content from a tab. The user
    * can select multiple regions.
    *
+   * Uses the optional `params` to control the capture behavior and target tab.
+   *
    * The returned observable will emit a value for each region captured. The
    * client can cancel this operation by unsubscribing from the observable,
    * which will cause the observable to be completed.
@@ -534,7 +536,8 @@ export declare interface GlicBrowserHost {
    * the same or a different client instance), the existing capture session will
    * be terminated and a new one will begin.
    */
-  captureRegion?(): ObservableValue<CaptureRegionResult>;
+  captureRegion?
+      (params?: CaptureRegionParams): ObservableValue<CaptureRegionResult>;
 
   /**
    * Deletes a captured region.
@@ -1351,6 +1354,11 @@ export declare interface CaptureRegionResult {
    * polygons in the future.
    */
   region?: CapturedRegion;
+}
+
+export declare interface CaptureRegionParams {
+  tabId: string;
+  options: TabContextOptions;
 }
 
 /** An encoded journal. */

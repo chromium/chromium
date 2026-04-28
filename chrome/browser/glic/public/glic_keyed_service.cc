@@ -520,8 +520,10 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 void GlicKeyedService::CaptureRegion(
     tabs::TabInterface* tab,
-    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
-  region_capture_controller_->CaptureRegion(tab, std::move(observer));
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
+    mojom::GetTabContextOptionsPtr options) {
+  region_capture_controller_->CaptureRegion(tab, std::move(observer),
+                                            std::move(options));
 }
 
 void GlicKeyedService::DeleteCapturedRegion(tabs::TabInterface* tab,

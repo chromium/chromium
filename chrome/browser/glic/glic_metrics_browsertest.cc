@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
   // Simulate showing the overlay.
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
-  controller->Show();
+  controller->Show(/*options=*/nullptr);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return controller->state() == SelectionOverlayController::State::kOverlay;
   }));

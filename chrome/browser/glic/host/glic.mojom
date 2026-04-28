@@ -967,6 +967,12 @@ enum CancelActionsResult {
   kFailed = 3,
 };
 
+// Options used to customize region capture.
+struct CaptureRegionParams {
+  int32 tab_id;
+  GetTabContextOptions options;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -1208,9 +1214,13 @@ interface WebClientHandler {
   // terminated by either the browser (e.g., on user cancellation) or the
   // client.
   //
+  // The optional `params` can be used to specify a target tab or request
+  // specific capture behavior.
+  //
   // If another capture is already in progress, the previous capture session
   // will be terminated and a new one will begin.
-  CaptureRegion(pending_remote<CaptureRegionObserver> observer);
+  CaptureRegion(pending_remote<CaptureRegionObserver> observer,
+                CaptureRegionParams? params);
 
   // Deletes a captured region.
   DeleteCapturedRegion(int32 tab_id, mojo_base.mojom.UnguessableToken id);

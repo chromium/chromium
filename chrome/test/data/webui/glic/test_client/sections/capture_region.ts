@@ -41,7 +41,13 @@ function onCaptureRegionClick() {
     $.captureRegionBtn.setAttribute('pressed', 'true');
     $.captureRegionResultList.innerHTML = '';
 
-    const observable = browser.captureRegion();
+    const observable = browser.captureRegion({
+      tabId: client.getFocusedTabId(),
+      options: {
+        viewportScreenshot: true,
+        annotatedPageContent: true,
+      },
+    });
     captureRegionSubscription = observable.subscribeObserver!({
       next: (result: CaptureRegionResult) => {
         logMessage(`Region captured: ${JSON.stringify(result)}`);

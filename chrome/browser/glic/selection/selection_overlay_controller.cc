@@ -191,7 +191,8 @@ void SelectionOverlayController::BindCaptureRegionObserver(
       &SelectionOverlayController::CloseUI, weak_factory_.GetWeakPtr()));
 }
 
-void SelectionOverlayController::Show() {
+void SelectionOverlayController::Show(mojom::GetTabContextOptionsPtr options) {
+  options_ = std::move(options);
   ShowModalUI();
 }
 
@@ -245,9 +246,11 @@ bool SelectionOverlayController::HandleKeyboardEvent(
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {
-  auto options = mojom::GetTabContextOptions::New();
-  options->include_viewport_screenshot = true;
-  options->include_annotated_page_content = true;
+  auto fallback_options = mojom::GetTabContextOptions::New();
+  fallback_options->include_viewport_screenshot = true;
+  fallback_options->include_annotated_page_content = true;
+
+  const auto& options = options_ ? *options_ : *fallback_options;
 
   auto progress_listener =
       std::make_unique<SelectionOverlayFetchPageProgressListener>(
@@ -255,7 +258,7 @@ void SelectionOverlayController::StartScreenshotFlow() {
                          weak_factory_.GetWeakPtr()),
           base::BindOnce(&SelectionOverlayController::OnScreenshotRedacted,
                          weak_factory_.GetWeakPtr()));
-  FetchPageContext(tab_, *options,
+  FetchPageContext(tab_, options,
                    base::BindOnce(&SelectionOverlayController::PageContextReady,
                                   weak_factory_.GetWeakPtr()),
                    std::move(progress_listener),
@@ -415,6 +418,7 @@ void SelectionOverlayController::Reset() {
   selected_regions_.clear();
   tab_context_.reset();
   capture_region_observer_.reset();
+  options_.reset();
 }
 
 void SelectionOverlayController::RenderRegions() {
