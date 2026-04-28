@@ -4,27 +4,25 @@
 
 package org.chromium.chrome.browser.logo;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.transition.ChangeBounds;
+import android.transition.TransitionManager;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -42,7 +40,7 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
  * this view and we have an animated GIF logo ready.
  */
 @NullMarked
-public class LogoView extends FrameLayout implements OnClickListener {
+public class LogoView extends ImageView implements OnClickListener {
     // Number of milliseconds for a new logo to fade in.
     private static final int LOGO_TRANSITION_TIME_MS = 400;
 
@@ -53,8 +51,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private @Nullable Drawable mAnimatedLogoDrawable;
 
     private @Nullable ObjectAnimator mFadeAnimation;
-    private final Paint mPaint;
-    private @Nullable Matrix mAnimatedLogoMatrix;
     private boolean mLogoIsDefault;
     private boolean mNewLogoIsDefault;
     private boolean mAnimationEnabled = true;
@@ -81,9 +77,15 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 public void setValue(LogoView logoView, float amount) {
                     assert amount >= 0f;
                     assert amount <= 1f;
-                    if (logoView.mTransitionAmount != amount) {
-                        logoView.mTransitionAmount = amount;
-                        invalidate();
+                    logoView.mTransitionAmount = amount;
+                    if (amount <= 0.5f) {
+                        logoView.setAlpha(1.0f - amount * 2.0f);
+                    } else {
+                        if (logoView.mNewLogoDrawable != null
+                                && logoView.getDrawable() != logoView.mNewLogoDrawable) {
+                            logoView.setImageDrawable(logoView.mNewLogoDrawable);
+                        }
+                        logoView.setAlpha((amount - 0.5f) * 2.0f);
                     }
                 }
             };
@@ -93,9 +95,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
         super(context, attrs);
 
         mLogoIsDefault = true;
-
-        mPaint = new Paint();
-        mPaint.setFilterBitmap(true);
 
         // Mark this view as non-clickable so that accessibility will ignore it. When a non-default
         // logo is shown, this view will be marked clickable again.
@@ -117,7 +116,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         endFadeAnimation();
         mLogoDrawable = null;
         mNewLogoDrawable = null;
-        invalidate();
+        setImageDrawable(null);
     }
 
     /** Sets the {@link LogoProperties.ClickHandler} to notify when the logo is pressed. */
@@ -189,14 +188,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
             return;
         }
 
-        mAnimatedLogoMatrix = new Matrix();
-        setMatrix(
-                mAnimatedLogoDrawable.getIntrinsicWidth(),
-                mAnimatedLogoDrawable.getIntrinsicHeight(),
-                mAnimatedLogoMatrix,
-                false);
-        // Set callback here to ensure #invalidateDrawable() is called.
-        mAnimatedLogoDrawable.setCallback(this);
+        setImageDrawable(mAnimatedLogoDrawable);
+        setScaleType(ScaleType.FIT_CENTER);
+        setAlpha(1.0f);
+
         if (mAnimatedLogoDrawable instanceof BaseGifDrawable) {
             ((BaseGifDrawable) mAnimatedLogoDrawable).start();
         } else if (mAnimatedLogoDrawable instanceof AnimatedImageDrawable) {
@@ -255,11 +250,15 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
         if (mFadeAnimation != null) mFadeAnimation.end();
 
+        mAnimatedLogoDrawable = null;
+
         // Don't crossfade if the new logoDrawable is the same as the old one.
         if (mLogoDrawable == logoDrawable) return;
 
         mNewLogoDrawable = logoDrawable;
         mNewLogoIsDefault = isDefaultLogo;
+
+        setScaleType(isDefaultLogo ? ScaleType.CENTER_INSIDE : ScaleType.FIT_CENTER);
 
         MarginLayoutParams logoViewLayoutParams = (MarginLayoutParams) getLayoutParams();
         int oldLogoHeight = logoViewLayoutParams.height;
@@ -269,42 +268,19 @@ public class LogoView extends FrameLayout implements OnClickListener {
         int newLogoHeight = newLogoViewLayoutParams[0];
         int newLogoTopMargin = newLogoViewLayoutParams[1];
 
-        setLogoBounds(mNewLogoDrawable, mNewLogoIsDefault);
+        if (newLogoHeight != oldLogoHeight || newLogoTopMargin != oldLogoTopMargin) {
+            ChangeBounds boundsTransition = new ChangeBounds();
+            boundsTransition.setStartDelay(mAnimationEnabled ? (LOGO_TRANSITION_TIME_MS / 2) : 0);
+            boundsTransition.setDuration(mAnimationEnabled ? (LOGO_TRANSITION_TIME_MS / 2) : 0);
+
+            TransitionManager.beginDelayedTransition((ViewGroup) getParent(), boundsTransition);
+            LogoUtils.setLogoViewLayoutParamsForDoodle(
+                    LogoView.this, newLogoHeight, newLogoTopMargin);
+        }
 
         mFadeAnimation = ObjectAnimator.ofFloat(this, mTransitionProperty, 0f, 1f);
         mFadeAnimation.setInterpolator(new LinearInterpolator());
         mFadeAnimation.setDuration(mAnimationEnabled ? LOGO_TRANSITION_TIME_MS : 0);
-        mFadeAnimation.addUpdateListener(
-                new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        if (newLogoHeight == oldLogoHeight) return;
-
-                        float animationValue = (Float) animation.getAnimatedValue();
-                        if (animationValue <= 0.5f) {
-                            return;
-                        }
-
-                        // Interpolate height
-                        int logoHeight =
-                                Math.round(
-                                        (oldLogoHeight
-                                                + (newLogoHeight - oldLogoHeight)
-                                                        * 2
-                                                        * (animationValue - 0.5f)));
-
-                        // Interpolate top margin
-                        int logoTopMargin =
-                                Math.round(
-                                        (oldLogoTopMargin
-                                                + (newLogoTopMargin - oldLogoTopMargin)
-                                                        * 2
-                                                        * (animationValue - 0.5f)));
-
-                        LogoUtils.setLogoViewLayoutParamsForDoodle(
-                                LogoView.this, logoHeight, logoTopMargin);
-                    }
-                });
         mFadeAnimation.addListener(
                 new Animator.AnimatorListener() {
                     @Override
@@ -316,14 +292,14 @@ public class LogoView extends FrameLayout implements OnClickListener {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mLogoDrawable = mNewLogoDrawable;
+                        if (mNewLogoDrawable != null) {
+                            setImageDrawable(mNewLogoDrawable);
+                            setAlpha(1.0f);
+                        }
                         mLogoIsDefault = mNewLogoIsDefault;
                         mNewLogoDrawable = null;
                         mTransitionAmount = 0f;
                         mFadeAnimation = null;
-                        if (newLogoHeight != oldLogoHeight) {
-                            LogoUtils.setLogoViewLayoutParamsForDoodle(
-                                    LogoView.this, newLogoHeight, newLogoTopMargin);
-                        }
                         setContentDescription(contentDescription);
                         setClickable(isClickable);
                         setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
@@ -335,7 +311,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
                     @Override
                     public void onAnimationCancel(Animator animation) {
                         onAnimationEnd(animation);
-                        invalidate();
                     }
                 });
         mFadeAnimation.start();
@@ -368,119 +343,6 @@ public class LogoView extends FrameLayout implements OnClickListener {
      */
     private boolean isTransitioning() {
         return mTransitionAmount != 0f;
-    }
-
-    /**
-     * Sets the matrix to scale and translate the image so that it will be centered in the LogoView
-     * and scaled to fit within the LogoView.
-     *
-     * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
-     *     not fill the entire view but will still be centered.
-     */
-    private void setMatrix(
-            int imageWidth, int imageHeight, Matrix matrix, boolean preventUpscaling) {
-        int width = getWidth();
-        int height = getHeight();
-
-        float scale = Math.min((float) width / imageWidth, (float) height / imageHeight);
-        if (preventUpscaling) scale = Math.min(1.0f, scale);
-
-        int imageOffsetX = Math.round((width - imageWidth * scale) * 0.5f);
-
-        float whitespace = height - imageHeight * scale;
-        int imageOffsetY = Math.round(whitespace * 0.5f);
-
-        matrix.setScale(scale, scale);
-        matrix.postTranslate(imageOffsetX, imageOffsetY);
-    }
-
-    /**
-     * Sets the logo bounds to scale and translate the image so that it will be centered in the
-     * LogoView and scaled to fit within the LogoView.
-     *
-     * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
-     *     not fill the entire view but will still be centered.
-     */
-    private void setLogoBounds(Drawable logo, boolean preventUpscaling) {
-        if (logo == null) return;
-
-        int imageWidth = logo.getIntrinsicWidth();
-        int imageHeight = logo.getIntrinsicHeight();
-
-        int width = getWidth();
-        int height = getHeight();
-
-        float scale = Math.min((float) width / imageWidth, (float) height / imageHeight);
-        if (preventUpscaling) scale = Math.min(1.0f, scale);
-
-        int scaledWidth = Math.round(imageWidth * scale);
-        int scaledHeight = Math.round(imageHeight * scale);
-
-        int imageOffsetX = Math.round((width - scaledWidth) * 0.5f);
-
-        float whitespace = height - scaledHeight;
-        int imageOffsetY = Math.round(whitespace * 0.5f);
-
-        logo.setBounds(
-                imageOffsetX,
-                imageOffsetY,
-                imageOffsetX + scaledWidth,
-                imageOffsetY + scaledHeight);
-    }
-
-    @Override
-    protected boolean verifyDrawable(Drawable who) {
-        return who == mAnimatedLogoDrawable || super.verifyDrawable(who);
-    }
-
-    @Override
-    public void invalidateDrawable(Drawable drawable) {
-        // mAnimatedLogoDrawable doesn't actually know its bounds, so super.invalidateDrawable()
-        // doesn't invalidate the right area. Instead invalidate the entire view; the drawable takes
-        // up most of the view anyway so this is just as efficient.
-        // @see ImageView#invalidateDrawable().
-        if (drawable == mAnimatedLogoDrawable) {
-            invalidate();
-        } else {
-            super.invalidateDrawable(drawable);
-        }
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (isAnimatedLogoShowing()) {
-            if (mFadeAnimation != null) mFadeAnimation.cancel();
-            // Free the old bitmaps to allow them to be GC'd.
-            mLogoDrawable = null;
-            mNewLogoDrawable = null;
-
-            assumeNonNull(mAnimatedLogoDrawable).draw(canvas);
-        } else {
-            if (mLogoDrawable != null && mTransitionAmount < 0.5f) {
-                mLogoDrawable.setAlpha((int) (255 * 2 * (0.5f - mTransitionAmount)));
-                mLogoDrawable.draw(canvas);
-            }
-            if (mNewLogoDrawable != null && mTransitionAmount > 0.5f) {
-                mNewLogoDrawable.setAlpha(
-                        (int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
-                mNewLogoDrawable.draw(canvas);
-            }
-        }
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        if (w != oldw || h != oldh) {
-            if (mAnimatedLogoDrawable != null) {
-                setLogoBounds(mAnimatedLogoDrawable, false);
-            }
-            if (mLogoDrawable != null) {
-                setLogoBounds(mLogoDrawable, mLogoIsDefault);
-            }
-            if (mNewLogoDrawable != null) {
-                setLogoBounds(mNewLogoDrawable, mNewLogoIsDefault);
-            }
-        }
     }
 
     @Override

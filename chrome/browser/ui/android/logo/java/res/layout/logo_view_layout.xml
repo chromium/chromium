@@ -16,9 +16,11 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.logo.LogoView
         android:id="@+id/search_provider_logo"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/ntp_logo_height"
-        android:layout_marginTop="@dimen/ntp_logo_margin_top"/>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/ntp_logo_margin_top"
+        android:adjustViewBounds="true"/>
 
     <org.chromium.ui.widget.LoadingView
         android:id="@+id/loading_view"

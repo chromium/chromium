@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -169,39 +170,30 @@ public class LogoViewTest {
         // Test doodle animation.
         Logo logo = new Logo(mBitmap, null, ALT_TEXT, null);
         mView.updateLogo(logo);
+
+        // With TransitionManager, layout params are updated immediately.
+        Assert.assertEquals(doodleHeight, logoLayoutParams.height);
+        Assert.assertEquals(doodleTopMargin, logoLayoutParams.topMargin);
+
         ObjectAnimator fadeAnimation = mView.getFadeAnimationForTesting();
         Assert.assertNotNull(fadeAnimation);
 
         fadeAnimation.pause();
 
         fadeAnimation.setCurrentFraction(0);
-        Assert.assertEquals(logoHeight, logoLayoutParams.height);
-        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(1.0f, mView.getAlpha(), 0.01f);
 
-        fadeAnimation.setCurrentFraction(0.3F);
-        Assert.assertEquals(logoHeight, logoLayoutParams.height);
-        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
+        fadeAnimation.setCurrentFraction(0.25f);
+        Assert.assertEquals(0.5f, mView.getAlpha(), 0.01f);
 
-        fadeAnimation.setCurrentFraction(0.5F);
-        Assert.assertEquals(logoHeight, logoLayoutParams.height);
-        Assert.assertEquals(logoTopMargin, logoLayoutParams.topMargin);
+        fadeAnimation.setCurrentFraction(0.5f);
+        Assert.assertEquals(0.0f, mView.getAlpha(), 0.01f);
 
-        fadeAnimation.setCurrentFraction(0.65F);
-        Assert.assertEquals(
-                Math.round((logoHeight + (doodleHeight - logoHeight) * 0.3)),
-                logoLayoutParams.height);
-        Assert.assertEquals(
-                Math.round((logoTopMargin + (doodleTopMargin - logoTopMargin) * 0.3)),
-                logoLayoutParams.topMargin);
-
-        fadeAnimation.setCurrentFraction(0.75F);
-        Assert.assertEquals(Math.round((logoHeight + doodleHeight) * 0.5), logoLayoutParams.height);
-        Assert.assertEquals(
-                Math.round((logoTopMargin + doodleTopMargin) * 0.5), logoLayoutParams.topMargin);
+        fadeAnimation.setCurrentFraction(0.75f);
+        Assert.assertEquals(0.5f, mView.getAlpha(), 0.01f);
 
         fadeAnimation.setCurrentFraction(1);
-        Assert.assertEquals(doodleHeight, logoLayoutParams.height);
-        Assert.assertEquals(doodleTopMargin, logoLayoutParams.topMargin);
+        Assert.assertEquals(1.0f, mView.getAlpha(), 0.01f);
     }
 
     @Test
@@ -216,5 +208,21 @@ public class LogoViewTest {
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
         mView.setLogoHeight(200);
         Assert.assertEquals(200, params.height);
+    }
+
+    @Test
+    public void testScaleTypeSelection() {
+        // Default Logo
+        mView.setDefaultGoogleLogoDrawable(
+                mView.getContext().getDrawable(R.drawable.ic_google_logo));
+        mView.maybeShowDefaultLogoDrawable();
+        mView.endAnimationsForTesting();
+        Assert.assertEquals(ImageView.ScaleType.CENTER_INSIDE, mView.getScaleType());
+
+        // Doodle
+        Logo logo = new Logo(mBitmap, null, ALT_TEXT, null);
+        mView.updateLogo(logo);
+        mView.endAnimationsForTesting();
+        Assert.assertEquals(ImageView.ScaleType.FIT_CENTER, mView.getScaleType());
     }
 }
