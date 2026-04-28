@@ -95,9 +95,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['asyncBlocking', 'responseHeaders']);
@@ -189,9 +193,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['responseHeaders', 'asyncBlocking']);
@@ -283,9 +291,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['responseHeaders', 'asyncBlocking']);

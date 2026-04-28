@@ -13,8 +13,9 @@ const RELATIVE_PATH =
 let testUrl = '';
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete')
+  if (changeInfo.status != 'complete') {
     return;
+  }
 
   chrome.test.runTests([
     function executeJavaScriptCodeInAllFramesShouldSucceed() {
@@ -27,7 +28,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       scriptFile.allFrames = true;
       let counter = 0;
       let totalTitles = '';
-      let done = pass();
+      const done = pass();
       function verifyAndFinish() {
         assertEq(counter, 5);
         assertEq(totalTitles, 'frametest0test1test2test3');
@@ -39,10 +40,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
           counter++;
           assertTrue(counter <= 5);
           totalTitles += data.message;
-          if (counter == 5)
+          if (counter == 5) {
             verifyAndFinish();
+          }
         });
-      };
+      }
       chrome.runtime.onConnect.addListener(eventListener);
       chrome.tabs.executeScript(tabId, scriptFile);
     },
@@ -53,7 +55,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       cssFile.allFrames = true;
       let newStyle = '';
       let counter = 0;
-      let done = pass();
+      const done = pass();
       function verifyAndFinish() {
         assertEq(newStyle, 'nonenonenonenone');
         assertEq(counter, 4);
@@ -64,10 +66,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         port.onMessage.addListener(function(data) {
           counter++;
           newStyle += data.message;
-          if (counter == 4)
+          if (counter == 4) {
             verifyAndFinish();
+          }
         });
-      };
+      }
       chrome.runtime.onConnect.addListener(eventListener);
       chrome.tabs.insertCSS(tabId, cssFile, function() {
         const scriptFile = {};
@@ -75,7 +78,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         scriptFile.allFrames = true;
         chrome.tabs.executeScript(tabId, scriptFile);
       });
-    }
+    },
   ]);
 });
 

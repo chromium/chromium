@@ -10,7 +10,7 @@ chrome.test.runTests([
           autoCorrectEnabled: true,
           spellCheckEnabled: true,
           voiceInputEnabled: true,
-          handwritingEnabled: true
+          handwritingEnabled: true,
         },
         chrome.test.callbackPass(function(update) {
           chrome.test.assertEq(
@@ -19,7 +19,7 @@ chrome.test.runTests([
                 autoCorrectEnabled: true,
                 spellCheckEnabled: true,
                 voiceInputEnabled: true,
-                handwritingEnabled: true
+                handwritingEnabled: true,
               },
               update);
         }));
@@ -31,7 +31,7 @@ chrome.test.runTests([
           autoCorrectEnabled: false,
           spellCheckEnabled: false,
           voiceInputEnabled: false,
-          handwritingEnabled: false
+          handwritingEnabled: false,
         },
         chrome.test.callbackPass(function(update) {
           chrome.test.assertEq(
@@ -40,7 +40,7 @@ chrome.test.runTests([
                 autoCorrectEnabled: false,
                 spellCheckEnabled: false,
                 voiceInputEnabled: false,
-                handwritingEnabled: false
+                handwritingEnabled: false,
               },
               update);
         }));

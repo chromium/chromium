@@ -15,4 +15,4 @@ window.onload = function() {
       }
     });
   });
-}
+};

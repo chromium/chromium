@@ -158,6 +158,9 @@ function testCSPUpdateButtonIconURL() {
   notifications.create(idString, options, onCreateCallback);
 }
 chrome.test.runTests([
-  testCSP, testDataURL, testCSPUpdateIconURL, testCSPUpdateImageURL,
-  testCSPUpdateButtonIconURL
+  testCSP,
+  testDataURL,
+  testCSPUpdateIconURL,
+  testCSPUpdateImageURL,
+  testCSPUpdateButtonIconURL,
 ]);

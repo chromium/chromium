@@ -112,7 +112,8 @@ chrome.test.getConfig((config) => {
   port = config.testServer.port;
 
   chrome.test.runTests([
-    testSetOpenerOutsideOfWindow, testSetOpenerOutsideOfWindowWithWindowIdSet,
-    testSetOpenerToSelf
+    testSetOpenerOutsideOfWindow,
+    testSetOpenerOutsideOfWindowWithWindowIdSet,
+    testSetOpenerToSelf,
   ]);
 });

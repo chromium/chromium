@@ -18,14 +18,14 @@ function bluetoothSanityCheck() {
     'AB:CD:EF:01:23:45', chrome.test.callbackFail('Invalid device'));
   chrome.bluetooth.getDevices(chrome.test.callback());
 
-  var startDiscoveryCallback = chrome.test.callbackAdded();
+  const startDiscoveryCallback = chrome.test.callbackAdded();
   chrome.bluetooth.startDiscovery(function () {
     // Ignore errors.
     chrome.runtime.lastError;
     startDiscoveryCallback();
   });
 
-  var stopDiscoveryCallback = chrome.test.callbackAdded();
+  const stopDiscoveryCallback = chrome.test.callbackAdded();
   chrome.bluetooth.stopDiscovery(function () {
     // Ignore errors.
     chrome.runtime.lastError;

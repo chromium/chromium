@@ -296,16 +296,20 @@ function testListItem() {
 }
 
 function arrayEquals(a, b) {
-  if (a === b)
+  if (a === b) {
     return true;
-  if (a == null || b == null)
+  }
+  if (a == null || b == null) {
     return false;
-  if (a.length !== b.length)
+  }
+  if (a.length !== b.length) {
     return false;
+  }
 
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i])
+    if (a[i] !== b[i]) {
       return false;
+    }
   }
   return true;
 }

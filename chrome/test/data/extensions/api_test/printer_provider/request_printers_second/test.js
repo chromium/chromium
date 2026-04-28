@@ -38,7 +38,7 @@ chrome.test.sendMessage('loaded', function(test) {
           {
             id: 'printerNoDesc',
             name: 'Printer 2',
-          }
+          },
         ]);
       }
 

@@ -34,9 +34,16 @@ var expectedProperties = [
   ['reliableWrite'],
   ['writableAuxiliaries'],
   [
-    'broadcast', 'read', 'writeWithoutResponse', 'write', 'notify', 'indicate',
-    'authenticatedSignedWrites', 'extendedProperties', 'reliableWrite',
-    'writableAuxiliaries'
+    'broadcast',
+    'read',
+    'writeWithoutResponse',
+    'write',
+    'notify',
+    'indicate',
+    'authenticatedSignedWrites',
+    'extendedProperties',
+    'reliableWrite',
+    'writableAuxiliaries',
   ],
 ];
 

@@ -83,8 +83,10 @@ function getPixels(imgUrl, windowRect, callbackFn) {
         const pixelColors = [];
         for (let i = 0, n = imageData.length; i < n; i += 4) {
           pixelColors.push([
-            imageData[i + 0], imageData[i + 1], imageData[i + 2],
-            imageData[i + 3]
+            imageData[i + 0],
+            imageData[i + 1],
+            imageData[i + 2],
+            imageData[i + 3],
           ].join(','));
         }
 

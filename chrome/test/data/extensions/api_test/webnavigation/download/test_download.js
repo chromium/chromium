@@ -32,8 +32,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlStart
-              }
+                url: urlStart,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -49,8 +49,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlStart
-              }
+                url: urlStart,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -64,8 +64,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlStart
-              }
+                url: urlStart,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -79,9 +79,9 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlStart
-              }
-            }
+                url: urlStart,
+              },
+            },
           ],
           [navigationOrder('a-')]);
       chrome.tabs.update(tab.id, {url: `${urlStart}?${port}`});

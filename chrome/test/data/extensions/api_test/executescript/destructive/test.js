@@ -111,14 +111,16 @@ function startTest() {
 
     // Plugins
     function removePluginAtDocumentStart() {
-      if (maybeSkipPluginTest())
+      if (maybeSkipPluginTest()) {
         return;
+      }
       testRemoveSelf('plugin_frame.html?start');
     },
 
     function removePluginAtDocumentEnd() {
-      if (maybeSkipPluginTest())
+      if (maybeSkipPluginTest()) {
         return;
+      }
       // TODO(crbug.com/40268279): Add a way to identify that the frame is for a
       // PDF.
       testRemoveSelf('plugin_frame.html?end');
@@ -230,8 +232,9 @@ function maybeSkipPluginTest() {
     const plugin = navigator.plugins[i];
     for (let j = 0; j < plugin.length; ++j) {
       const mimeType = plugin[j];
-      if (mimeType.type === kPluginMimeType)
+      if (mimeType.type === kPluginMimeType) {
         return false;
+      }
     }
   }
   const kMessage = `Plugin not found for ${kPluginMimeType}, skipping test.`;

@@ -6,14 +6,15 @@ let baseUrl =
     'http://a.com:PORT/extensions/api_test/executescript/frame_after_load/';
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete')
+  if (changeInfo.status != 'complete') {
     return;
+  }
 
   chrome.test.runTests([
     function() {
       // Tests that we can still execute scripts after a frame has loaded after
       // the main document has completed.
-      let injectFrameCode = `let frame = document.createElement('iframe');
+      const injectFrameCode = `let frame = document.createElement('iframe');
           frame.src = '${baseUrl}inner.html';
           frame.onload = function() {
             chrome.runtime.connect().postMessage('loaded');
@@ -31,7 +32,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         });
       });
       chrome.tabs.executeScript(tabId, {code: injectFrameCode});
-    }
+    },
   ]);
 });
 

@@ -4,7 +4,7 @@
 
 const service = {
   uuid: '00001234-0000-1000-8000-00805f9b34fb',
-  isPrimary: true
+  isPrimary: true,
 };
 chrome.bluetoothLowEnergy.createService(service, function(result) {
   if (chrome.runtime.lastError) {

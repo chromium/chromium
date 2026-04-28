@@ -20,11 +20,11 @@ function failOnSuccess() {
 
 const service1 = {
   uuid: '00001234-0000-1000-8000-00805f9b34fb',
-  isPrimary: true
+  isPrimary: true,
 };
 const service2 = {
   uuid: '00001234-0000-1000-8000-00805f9b34fb',
-  isPrimary: true
+  isPrimary: true,
 };
 chrome.bluetoothLowEnergy.createService(service1, function(serviceId) {
   if (failOnError(serviceId)) {

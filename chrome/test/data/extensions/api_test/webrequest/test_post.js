@@ -109,7 +109,7 @@ function sendPost(formFile, parseableForm) {
               } :
                                            {
                                              raw: [
-                                               {bytes: new ArrayBuffer()}
+                                               {bytes: new ArrayBuffer()},
                                              ],  // wildcard: matches any buffer
                                            },
               initiator: getDomain(initiators.WEB_INITIATED),
@@ -145,9 +145,15 @@ function sendPost(formFile, parseableForm) {
         [
           // event order
           [
-            'a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted',
-            's-onBeforeRequest', 's-onResponseStarted', 's-onCompleted',
-            'b-onBeforeRequest', 'b-onResponseStarted', 'b-onCompleted'
+            'a-onBeforeRequest',
+            'a-onResponseStarted',
+            'a-onCompleted',
+            's-onBeforeRequest',
+            's-onResponseStarted',
+            's-onCompleted',
+            'b-onBeforeRequest',
+            'b-onResponseStarted',
+            'b-onCompleted',
           ],
         ],
         {urls: ['<all_urls>']},  // filter

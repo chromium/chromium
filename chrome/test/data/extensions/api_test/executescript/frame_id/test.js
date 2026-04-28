@@ -38,7 +38,9 @@ let idFrameThird;
 let idFrameNoPermission;
 
 function matchesAny(urls, regex) {
-  return urls.some(function(url) { return regex.test(url); });
+  return urls.some(function(url) {
+    return regex.test(url);
+  });
 }
 
 let gCssCounter = 0;
@@ -55,7 +57,7 @@ function insertCSS(tabId, injectDetails, callback) {
         tabId, {
           code: '[getComputedStyle(document.body).minWidth, document.URL];',
           allFrames: true,
-          matchAboutBlank: true
+          matchAboutBlank: true,
         },
         function(results) {
           chrome.test.assertNoLastError();
@@ -106,7 +108,9 @@ chrome.test.getConfig(function(config) {
     });
   });
 
-  chrome.tabs.create({url: testUrl}, function(tab) { tabId = tab.id; });
+  chrome.tabs.create({url: testUrl}, function(tab) {
+    tabId = tab.id;
+  });
 });
 
 function runTests(config) {
@@ -127,7 +131,7 @@ function runTests(config) {
             frameId: 0,
             matchAboutBlank: true,
             allFrames: true,
-            code: 'document.URL'
+            code: 'document.URL',
           },
           pass(function(results) {
             assertEq(5, results.length);
@@ -144,7 +148,7 @@ function runTests(config) {
           tabId, {
             frameId: idFrameSrcdoc,
             matchAboutBlank: true,
-            code: 'document.URL'
+            code: 'document.URL',
           },
           pass(function(results) {
             assertEq(1, results.length);
@@ -167,7 +171,7 @@ function runTests(config) {
             frameId: idFrameSrcdoc,
             matchAboutBlank: true,
             allFrames: true,
-            code: 'document.URL'
+            code: 'document.URL',
           },
           pass(function(results) {
             assertEq(1, results.length);
@@ -180,7 +184,7 @@ function runTests(config) {
           tabId, {
             frameId: idFrameSandboxed,
             matchAboutBlank: true,
-            code: 'document.URL'
+            code: 'document.URL',
           },
           pass((results) => {
             assertEq(1, results.length);
@@ -323,7 +327,7 @@ function runTests(config) {
             frameId: idFrameSandboxed,
             matchAboutBlank: true,
             allFrames: true,
-            code: 'body{color:red}'
+            code: 'body{color:red}',
           },
           pass((results) => {
             assertEq(1, results.length);

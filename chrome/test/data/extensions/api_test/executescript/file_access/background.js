@@ -31,6 +31,6 @@ chrome.test.getConfig(function(config) {
               chrome.test.succeed();
             });
       });
-    }
+    },
   ]);
 });

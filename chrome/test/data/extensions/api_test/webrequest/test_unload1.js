@@ -69,11 +69,13 @@ runTests([
               parentDocumentId: 1,
               frameType: 'sub_frame',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]]);
 
     const f = document.createElement('iframe');

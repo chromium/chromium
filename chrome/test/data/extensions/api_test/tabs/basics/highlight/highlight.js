@@ -36,8 +36,12 @@ loadScript.then(async function() {
   chrome.test.runTests([
     async function setup() {
       const tabs1 = [
-        'http://e.com', 'http://a.com', 'http://a.com/b.html', 'http://b.com',
-        'http://a.com/d.html', 'http://a.com/c.html'
+        'http://e.com',
+        'http://a.com',
+        'http://a.com/b.html',
+        'http://b.com',
+        'http://a.com/d.html',
+        'http://a.com/c.html',
       ];
       const tabs2 = ['http://c.com/', 'http://a.com', 'http://a.com/b.html'];
       testWindowId1 = (await chrome.windows.create({url: tabs1})).id;

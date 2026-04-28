@@ -429,8 +429,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -446,8 +446,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -461,8 +461,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -476,8 +476,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -490,8 +490,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}2`
-              }
+                url: `${urlTest}2`,
+              },
             },
             {
               label: 'b-onErrorOccurred',
@@ -506,8 +506,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}2`
-              }
+                url: `${urlTest}2`,
+              },
             },
             {
               label: 'c-onBeforeNavigate',
@@ -520,8 +520,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'c-onCommitted',
@@ -537,8 +537,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'c-onDOMContentLoaded',
@@ -552,8 +552,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'c-onCompleted',
@@ -567,16 +567,19 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('empty.html')
-              }
-            }
+                url: getURL('empty.html'),
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('c-'),
+            navigationOrder('a-'),
+            navigationOrder('c-'),
             [
-              'a-onCompleted', 'b-onBeforeNavigate', 'b-onErrorOccurred',
-              'c-onCommitted'
-            ]
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'b-onErrorOccurred',
+              'c-onCommitted',
+            ],
           ]);
 
       // Note: d.html expects the redirect path to follow the port

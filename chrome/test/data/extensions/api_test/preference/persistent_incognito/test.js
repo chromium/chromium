@@ -28,7 +28,7 @@ chrome.test.runTests([
             {
               value: true,
               incognitoSpecific: false,
-              levelOfControl: 'controllable_by_this_extension'
+              levelOfControl: 'controllable_by_this_extension',
             },
             'hyperlink auditing should be enabled in incognito mode'));
   },
@@ -51,7 +51,7 @@ chrome.test.runTests([
             {
               value: false,
               incognitoSpecific: true,
-              levelOfControl: 'controlled_by_this_extension'
+              levelOfControl: 'controlled_by_this_extension',
             },
             'hyperlink auditing should be disabled in incognito mode'));
   },

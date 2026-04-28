@@ -105,7 +105,7 @@ queue = [
     chrome.test.sendMessage('ready', function(message) {
       chrome.test.runTests([testReadDescriptorValue]);
     });
-  }
+  },
 ];
 
 runNext();

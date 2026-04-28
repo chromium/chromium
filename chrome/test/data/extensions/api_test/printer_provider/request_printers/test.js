@@ -46,7 +46,7 @@ chrome.test.sendMessage('loaded', function(test) {
                 name: 'Printer 1',
                 description: 'Test printer',
               },
-              'printer2'
+              'printer2',
             ]],
             expectedError);
       } else if (test == 'INVALID_PRINTER') {
@@ -71,7 +71,7 @@ chrome.test.sendMessage('loaded', function(test) {
           {
             id: 'printerNoDesc',
             name: 'Printer 2',
-          }
+          },
         ]);
       }
 

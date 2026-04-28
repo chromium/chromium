@@ -156,8 +156,9 @@ function navigateAndWait(url, callback) {
               JSON.stringify(info)} ${JSON.stringify(tab)}`);
         }
         if (tab.id == tabId && info.status == 'complete') {
-          if (callback)
+          if (callback) {
             callback(tab);
+          }
           done();
         }
       });
@@ -172,7 +173,7 @@ function deepCopy(obj) {
     return obj;
   }
   if (Array.isArray(obj)) {
-    const tmpArray = new Array();
+    const tmpArray = [];
     for (let i = 0; i < obj.length; i++) {
       tmpArray.push(deepCopy(obj[i]));
     }
@@ -558,7 +559,10 @@ function initListeners(filter, extraInfoSpec) {
 
   chrome.webRequest.onAuthRequired.addListener(
       onAuthRequired, filter, intersect(extraInfoSpec, [
-        'asyncBlocking', 'blocking', 'responseHeaders', 'extraHeaders'
+        'asyncBlocking',
+        'blocking',
+        'responseHeaders',
+        'extraHeaders',
       ]));
 
   chrome.webRequest.onResponseStarted.addListener(

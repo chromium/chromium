@@ -4,10 +4,10 @@
 
 const NATIVE_APP_NAME = 'com.google.chrome.test.initiator';
 const MESSAGE_TO_SEND = {
-  request: 'foo'
+  request: 'foo',
 };
 const EXPECTED_RESPONSE_MESSAGE = {
-  response: 'bar'
+  response: 'bar',
 };
 
 function assertValidNativeMessageSender(sender) {

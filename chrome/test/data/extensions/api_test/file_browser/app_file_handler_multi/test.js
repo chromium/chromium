@@ -265,8 +265,10 @@ function testForDriveDirectories() {
 function testForMixedFilesAndDirectories() {
   testPromise(Promise
                   .all([
-                    localFileSystemPromise, driveFileSystemPromise,
-                    localDirSystemPromise, driveDirSystemPromise
+                    localFileSystemPromise,
+                    driveFileSystemPromise,
+                    localDirSystemPromise,
+                    driveDirSystemPromise,
                   ])
                   .then(function(args) {
                     return launchWithEntries(

@@ -5,31 +5,31 @@
 chrome.test.runTests([
   function addListeners() {
     chrome.webRequest.onBeforeRequest.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onSendHeaders.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onHeadersReceived.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onBeforeRedirect.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onResponseStarted.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onCompleted.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onErrorOccurred.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.webRequest.onAuthRequired.addListener(function(details) {}, {
-      urls: ['<all_urls>']
+      urls: ['<all_urls>'],
     });
     chrome.test.succeed();
   },

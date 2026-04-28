@@ -15,7 +15,7 @@ function onPickerResult(audioTrackNum, id, options) {
   chrome.test.assertEq('string', typeof id);
   chrome.test.assertNe('', id);
   const videoConstraint = {
-    mandatory: {chromeMediaSource: 'desktop', chromeMediaSourceId: id}
+    mandatory: {chromeMediaSource: 'desktop', chromeMediaSourceId: id},
   };
   const audioConstraint =
       options.canRequestAudioTrack ? videoConstraint : false;
@@ -125,7 +125,7 @@ chrome.test.runTests([
             audio: false,
             video: {
               mandatory:
-                  {chromeMediaSource: 'desktop', chromeMediaSourceId: id + 'x'}
+                  {chromeMediaSource: 'desktop', chromeMediaSourceId: id + 'x'},
             },
           },
           chrome.test.fail, chrome.test.succeed);

@@ -5,7 +5,9 @@
 // There is no DOMContentLoaded event on restoring from the cache.
 function cacheRestoreNavigationOrder(prefix) {
   return [
-    `${prefix}onBeforeNavigate`, `${prefix}onCommitted`, `${prefix}onCompleted`
+    `${prefix}onBeforeNavigate`,
+    `${prefix}onCommitted`,
+    `${prefix}onCompleted`,
   ];
 }
 
@@ -36,8 +38,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -53,8 +55,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -68,8 +70,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -83,8 +85,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -97,8 +99,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -114,8 +116,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -129,8 +131,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -144,8 +146,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'c-onBeforeNavigate',
@@ -158,8 +160,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'c-onCommitted',
@@ -177,8 +179,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: ['forward_back'],
                 transitionType: 'link',
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'c-onCompleted',
@@ -192,14 +194,16 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
-            }
+                url: urlA,
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
-            cacheRestoreNavigationOrder('c-'), isLoadedBy('b-', 'a-'),
-            isLoadedBy('c-', 'b-')
+            navigationOrder('a-'),
+            navigationOrder('b-'),
+            cacheRestoreNavigationOrder('c-'),
+            isLoadedBy('b-', 'a-'),
+            isLoadedBy('c-', 'b-'),
           ]);
       chrome.tabs.update(tab.id, {url: urlA});
     },

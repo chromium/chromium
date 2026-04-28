@@ -103,7 +103,7 @@ chrome.test.getConfig(function(config) {
                 tab.id, {
                   code: 'chrome.runtime.sendMessage({' +
                       '  inIncognitoContext: chrome.extension.inIncognitoContext' +
-                      '});'
+                      '});',
                 },
                 pass(function() {
                   assertEq(undefined, chrome.runtime.lastError);

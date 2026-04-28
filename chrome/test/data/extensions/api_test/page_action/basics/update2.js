@@ -9,7 +9,7 @@ chrome.tabs.query({active: true}, function(tabs) {
   chrome.pageAction.setIcon({
     tabId: tab.id,
     imageData: document.getElementById('canvas').getContext('2d').getImageData(
-        0, 0, 16, 16)
+        0, 0, 16, 16),
   });
   chrome.test.notifyPass();
 });

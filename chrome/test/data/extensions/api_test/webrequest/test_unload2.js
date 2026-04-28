@@ -47,11 +47,13 @@ runTests([
               fromCache: false,
               error: 'net::ERR_ABORTED',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]]);
 
     const callbackDone = chrome.test.callbackAdded();

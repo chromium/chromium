@@ -73,11 +73,13 @@ runTests([
               error: 'net::ERR_ABORTED',
               initiator: initiator,
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],
@@ -152,11 +154,13 @@ runTests([
               initiator: initiator,
               documentId: 1,
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],

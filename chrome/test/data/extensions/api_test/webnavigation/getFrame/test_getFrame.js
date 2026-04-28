@@ -104,7 +104,7 @@ ready.then(async function() {
             tabId: tab.id,
             frameId: 0,
             processId: processId,
-            documentId: documentId
+            documentId: documentId,
           },
           function(details) {
             chrome.test.assertEq(
@@ -127,7 +127,7 @@ ready.then(async function() {
             tabId: tab.id,
             frameId: 1,
             processId: processId,
-            documentId: documentId
+            documentId: documentId,
           },
           function(details) {
             chrome.test.assertEq(null, details);
@@ -156,7 +156,7 @@ ready.then(async function() {
               url: url,
               documentId: documentId,
               documentLifecycle: 'active',
-              frameType: 'outermost_frame'
+              frameType: 'outermost_frame',
             }],
             details);
         chrome.test.succeed();
@@ -199,7 +199,7 @@ ready.then(async function() {
                         url: prerenderTargetUrl,
                         documentId: details.documentId,
                         documentLifecycle: 'prerender',
-                        frameType: 'outermost_frame'
+                        frameType: 'outermost_frame',
                       }],
                       frameDetails.filter(ob => ob.url === prerenderTargetUrl));
                   done();
@@ -247,7 +247,7 @@ ready.then(async function() {
                           url: prerenderTargetUrl,
                           documentId: details.parentDocumentId,
                           documentLifecycle: 'prerender',
-                          frameType: 'outermost_frame'
+                          frameType: 'outermost_frame',
                         },
                         {
                           errorOccurred: false,
@@ -258,8 +258,8 @@ ready.then(async function() {
                           documentId: details.documentId,
                           parentDocumentId: details.parentDocumentId,
                           documentLifecycle: 'prerender',
-                          frameType: 'sub_frame'
-                        }
+                          frameType: 'sub_frame',
+                        },
                       ],
                       frameDetails.filter(
                           ob => ob.documentLifecycle === 'prerender'));
@@ -371,7 +371,7 @@ ready.then(async function() {
                         url: prerenderTargetUrl,
                         documentId: details.documentId,
                         documentLifecycle: 'active',
-                        frameType: 'outermost_frame'
+                        frameType: 'outermost_frame',
                       }],
                       frameDetails.filter(ob => ob.url === prerenderTargetUrl));
                   done();
@@ -409,7 +409,7 @@ ready.then(async function() {
                         url: urlFrames,
                         documentId: documentId,
                         documentLifecycle: 'active',
-                        frameType: 'outermost_frame'
+                        frameType: 'outermost_frame',
                       }],
                       details);
                   chrome.test.succeed();

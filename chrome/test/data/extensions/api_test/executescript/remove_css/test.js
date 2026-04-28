@@ -19,8 +19,10 @@ const file = '/file.css';
 
 function getFrameIds(tabId, callback) {
   chrome.webNavigation.getAllFrames({tabId}, frames => {
-    let sortedFrames = frames.sort(
-        (a, b) => a.frameId < b.frameId ? -1 : a.frameId > b.frameId ? 1 : 0);
+    const sortedFrames = frames.sort(
+        (a, b) => a.frameId < b.frameId ? -1 :
+            a.frameId > b.frameId       ? 1 :
+                                          0);
 
     // We make some assumptions about the frames returned.
     chrome.test.assertEq(5, sortedFrames.length);
@@ -50,9 +52,9 @@ function makeCSSTester(apiFunction, tabId, frameIds, colorState) {
         // After the API call, modify the state with the given delta, then
         // verify that the state here reflects the actual state as reported
         // by the content script.
-        let expected = [...Object.assign(colorState, colorStateDelta)];
-        let pending = [];
-        for (let frameId of frameIds) {
+        const expected = [...Object.assign(colorState, colorStateDelta)];
+        const pending = [];
+        for (const frameId of frameIds) {
           pending.push(new Promise(messageResolve => {
             chrome.tabs.sendMessage(tabId, {}, {frameId}, color => {
               chrome.test.assertEq(expected.shift(), color);
@@ -67,11 +69,12 @@ function makeCSSTester(apiFunction, tabId, frameIds, colorState) {
 }
 
 chrome.test.getConfig(config => {
-  let testUrl = 'http://example.com:' + config.testServer.port +
+  const testUrl = 'http://example.com:' + config.testServer.port +
       '/extensions/api_test/executescript/remove_css/test.html';
   chrome.tabs.onUpdated.addListener(function listener(tabId, {status}) {
-    if (status != 'complete')
+    if (status != 'complete') {
       return;
+    }
     chrome.tabs.onUpdated.removeListener(listener);
     getFrameIds(tabId, frameIds => {
       // 'colorState' holds a snapshot of expected values of the CSS properties
@@ -81,19 +84,25 @@ chrome.test.getConfig(config => {
       // Each frame is a child of the frame preceding it. Frames 0 through 3
       // are <iframe src="..."> while frame 4 is <iframe srcdoc="...">
       // (about:srcdoc).
-      let colorState = [
-        originalColor, originalColor, originalColor, originalColor,
-        originalColor
+      const colorState = [
+        originalColor,
+        originalColor,
+        originalColor,
+        originalColor,
+        originalColor,
       ];
-      let testInsertCSS =
+      const testInsertCSS =
           makeCSSTester(chrome.tabs.insertCSS, tabId, frameIds, colorState);
-      let testRemoveCSS =
+      const testRemoveCSS =
           makeCSSTester(chrome.tabs.removeCSS, tabId, frameIds, colorState);
       chrome.test.runTests([
         async function insertCSSShouldSucceed() {
           await testInsertCSS({code, allFrames: true, matchAboutBlank: true}, [
-            injectedColor, injectedColor, injectedColor, injectedColor,
-            injectedColor
+            injectedColor,
+            injectedColor,
+            injectedColor,
+            injectedColor,
+            injectedColor,
           ]);
           chrome.test.succeed();
         },
@@ -174,7 +183,7 @@ chrome.test.getConfig(config => {
                                     [injectedColor, , , , , ]))
           .then(() => testRemoveCSS({ code }, [originalColor, , , , , ]));
           chrome.test.succeed();
-        }
+        },
       ]);
     });
   });

@@ -32,7 +32,7 @@ const RULES = {
 
 const CONFIG = {
   rules: RULES,
-  mode: 'fixed_servers'
+  mode: 'fixed_servers',
 };
 
 chrome.test.runTests([

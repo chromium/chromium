@@ -137,7 +137,7 @@ const availableTests = [
                     Security: 'WPA-PSK',
                     SignalStrength: 80,
                   },
-                }
+                },
               ],
               result);
 
@@ -186,7 +186,7 @@ const availableTests = [
                     Security: 'WPA-PSK',
                     SignalStrength: 80,
                   },
-                }
+                },
               ],
               result);
         }));

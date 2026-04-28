@@ -309,7 +309,7 @@ const availableTests = [
                     Security: 'WPA-PSK',
                     SSID: 'wifi2_PSK',
                   },
-                }
+                },
               ],
               result);
 
@@ -435,7 +435,7 @@ const availableTests = [
                     SignalStrength: 80,
                     SSID: 'wifi2_PSK',
                   },
-                }
+                },
               ],
               result);
         }));
@@ -478,7 +478,7 @@ const availableTests = [
                     SignalStrength: 80,
                     SSID: 'wifi2_PSK',
                   },
-                }
+                },
               ],
               result);
         }));
@@ -524,13 +524,13 @@ const availableTests = [
               Scanning: false,
               State: 'Enabled',
               Type: 'WiFi',
-              ManagedNetworkAvailable: false
+              ManagedNetworkAvailable: false,
             },
             {
               State: 'Uninitialized',
               SIMPresent: true,
               SIMLockStatus: {LockEnabled: true, LockType: '', RetriesLeft: 3},
-              Type: 'Cellular'
+              Type: 'Cellular',
             },
           ],
           result);
@@ -540,8 +540,11 @@ const availableTests = [
   function requestNetworkScan() {
     // Connected or Connecting networks should be listed first, sorted by type.
     const expected = [
-      'stub_ethernet_guid', 'stub_wifi1_guid', 'stub_vpn1_guid',
-      'stub_vpn2_guid', 'stub_wifi2_guid'
+      'stub_ethernet_guid',
+      'stub_wifi1_guid',
+      'stub_vpn1_guid',
+      'stub_vpn2_guid',
+      'stub_wifi2_guid',
     ];
     const done = chrome.test.callbackAdded();
     const listener =
@@ -916,8 +919,11 @@ const availableTests = [
     // Connecting to wifi2 should set wifi1 to offline. Connected or Connecting
     // networks should be listed first, sorted by type.
     const expected = [
-      'stub_ethernet_guid', 'stub_vpn1_guid', 'stub_wifi2_guid',
-      'stub_wifi1_guid', 'stub_vpn2_guid'
+      'stub_ethernet_guid',
+      'stub_vpn1_guid',
+      'stub_wifi2_guid',
+      'stub_wifi1_guid',
+      'stub_vpn2_guid',
     ];
     const done = chrome.test.callbackAdded();
     const listener =
@@ -951,8 +957,9 @@ const availableTests = [
   },
   function getCaptivePortalStatus() {
     const networks = [
-      ['stub_ethernet_guid', 'Online'], ['stub_wifi1_guid', 'Offline'],
-      ['stub_wifi2_guid', 'Portal']
+      ['stub_ethernet_guid', 'Online'],
+      ['stub_wifi1_guid', 'Offline'],
+      ['stub_wifi2_guid', 'Portal'],
     ];
     networks.forEach(function(network) {
       const guid = network[0];
@@ -985,7 +992,7 @@ const availableTests = [
     const simState = {
       requirePin: true,
       currentPin: DEFAULT_PIN,
-      newPin: newPin
+      newPin: newPin,
     };
     // Test setting 'requirePin' and 'newPin'.
     chrome.networkingPrivate.getProperties(

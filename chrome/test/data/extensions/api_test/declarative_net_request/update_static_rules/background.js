@@ -18,7 +18,7 @@ async function getActiveRules() {
       const result = await chrome.declarativeNetRequest.testMatchOutcome({
         url: `https://${rulesetId}-${ruleId}.example.com/`,
         type: 'main_frame',
-        method: 'get'
+        method: 'get',
       });
       if (result.matchedRules.length > 0) {
         chrome.test.assertEq(
@@ -53,7 +53,12 @@ chrome.test.runTests([
 
     chrome.test.assertEq(
         [
-          'rules1-1', 'rules1-2', 'rules1-3', 'rules2-1', 'rules2-2', 'rules2-3'
+          'rules1-1',
+          'rules1-2',
+          'rules1-3',
+          'rules2-1',
+          'rules2-2',
+          'rules2-3',
         ],
         await getActiveRules());
     chrome.test.assertEq([], await getDisabledRuleIds('rules1'));
@@ -143,7 +148,7 @@ chrome.test.runTests([
     await updateStaticRules(
         {
           rulesetId: 'rules2',
-          disableRuleIds: Array.from({length: 5000}, (_, i) => i + 10)
+          disableRuleIds: Array.from({length: 5000}, (_, i) => i + 10),
         },
         'Error: The number of disabled static rules exceeds ' +
             'the disabled rule count limit.');

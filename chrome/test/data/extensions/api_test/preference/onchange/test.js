@@ -35,7 +35,7 @@ chrome.test.runTests([
         value: false,
         incognitoSpecific: false,
         levelOfControl: 'controlled_by_this_extension',
-      }
+      },
     ]);
     pw.hyperlinkAuditingEnabled.set(
         {
@@ -104,7 +104,7 @@ chrome.test.runTests([
         value: true,
         incognitoSpecific: false,
         levelOfControl: 'controllable_by_this_extension',
-      }
+      },
     ]);
     pw.hyperlinkAuditingEnabled.clear({}, chrome.test.callbackPass());
   },

@@ -116,7 +116,7 @@ runTests([
               fromCache: false,
               initiator: initiator,
               error: 'net::ERR_ABORTED',
-            }
+            },
           ],
           results);
     });

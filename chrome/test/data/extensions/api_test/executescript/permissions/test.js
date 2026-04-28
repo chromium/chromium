@@ -44,25 +44,25 @@ chrome.test.runTests([
     // This promise waits for both the first URL to finish loading and
     // the subsequent script execution to finish.
     const executePromise = new Promise((resolve, reject) => {
-      chrome.tabs.onUpdated.addListener(function listener(
-          tabId, changeInfo, tab) {
-        if (tab.status == 'complete') {
-          chrome.tabs.onUpdated.removeListener(listener);
-          chrome.tabs.update(tab.id, {url: executeUrl});
-          chrome.tabs.executeScript(
-              tab.id, {file: 'script.js'},
-              function(results) {
-                if (results != undefined || !chrome.runtime.lastError) {
-                  reject('Unexpected success in execute callback');
-                } else if (chrome.runtime.lastError.message != expectedError) {
-                  reject(
-                      `Unexpected error: ${chrome.runtime.lastError.message}`);
-                } else {
-                  resolve();
-                }
-              });
-        }
-      })
+      chrome.tabs.onUpdated.addListener(
+          function listener(tabId, changeInfo, tab) {
+            if (tab.status == 'complete') {
+              chrome.tabs.onUpdated.removeListener(listener);
+              chrome.tabs.update(tab.id, {url: executeUrl});
+              chrome.tabs.executeScript(
+                  tab.id, {file: 'script.js'}, function(results) {
+                    if (results != undefined || !chrome.runtime.lastError) {
+                      reject('Unexpected success in execute callback');
+                    } else if (
+                        chrome.runtime.lastError.message != expectedError) {
+                      reject(`Unexpected error: ${
+                          chrome.runtime.lastError.message}`);
+                    } else {
+                      resolve();
+                    }
+                  });
+            }
+          });
     });
 
     chrome.tabs.create({url: openUrl});
@@ -85,8 +85,9 @@ chrome.test.runTests([
     // A sorted list of the expected scripts results. The script returns
     // window.location.href.
     const expectedResults = [
-      tabUrl, `${fixPort('http://a.com:PORT/')}${RELATIVE_PATH}empty.html`,
-      `${fixPort('http://b.com:PORT/')}${RELATIVE_PATH}empty.html`
+      tabUrl,
+      `${fixPort('http://a.com:PORT/')}${RELATIVE_PATH}empty.html`,
+      `${fixPort('http://b.com:PORT/')}${RELATIVE_PATH}empty.html`,
     ].sort();
 
     function executeScriptCallback(results) {

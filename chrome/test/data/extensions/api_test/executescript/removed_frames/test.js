@@ -24,7 +24,7 @@ function ResponseCounter() {
   }.bind(this);
   this.removeListener = function() {
     chrome.runtime.onMessage.removeListener(listenerFunction);
-  }
+  };
   chrome.runtime.onMessage.addListener(listenerFunction);
 }
 
@@ -46,12 +46,12 @@ chrome.test.getConfig(function(config) {
       '/extensions/api_test/executescript/removed_frames/outer.html';
   // Regression tests for crbug.com/40422771.
   chrome.test.runTests([
-   function testInjectAndDeleteIframeFromMainFrame() {
+    function testInjectAndDeleteIframeFromMainFrame() {
       waitForCommittedAndRun(injectAndDeleteIframeFromMainFrame, 2, url);
     },
     function testInjectAndDeleteIframeFromIframe() {
       waitForCommittedAndRun(injectAndDeleteIframeFromIframe, 2, url);
-    }
+    },
   ]);
 });
 
@@ -73,7 +73,7 @@ function injectAndDeleteIframeFromMainFrame(counter, tabId) {
   chrome.tabs.executeScript(
       tabId,
       {code: injectFrameCode, allFrames: true, runAt: 'document_idle'});
-};
+}
 
 function injectAndDeleteIframeFromIframe(counter, tabId) {
   // Inject code into each frame. Have the child frame remove itself, deleting

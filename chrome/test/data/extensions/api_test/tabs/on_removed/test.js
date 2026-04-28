@@ -70,8 +70,12 @@ chrome.test.runTests([
   // Open some pages, so that we can try to close them.
   function setupLetterPages() {
     const pages = [
-      'chrome://version/', pageUrl('a'), pageUrl('b'), pageUrl('c'),
-      pageUrl('d'), pageUrl('e')
+      'chrome://version/',
+      pageUrl('a'),
+      pageUrl('b'),
+      pageUrl('c'),
+      pageUrl('d'),
+      pageUrl('e'),
     ];
     setupWindow(pages, pass(function(winId, tabIds) {
                   firstWindowId = winId;

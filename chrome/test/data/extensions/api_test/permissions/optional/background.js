@@ -19,7 +19,7 @@ const UNKNOWN_PERMISSIONS_ERROR = '\'*\' is not a recognized permission.';
 
 const emptyPermissions = {
   permissions: [],
-  origins: []
+  origins: [],
 };
 
 const initialPermissions = {

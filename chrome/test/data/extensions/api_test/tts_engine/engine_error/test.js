@@ -36,7 +36,7 @@ chrome.test.runTests([
       sendTtsEvent({
         'type': 'error',
         'charIndex': 0,
-        'errorMessage': 'extension tts error'
+        'errorMessage': 'extension tts error',
       });
     };
     const stopListener = function() {};

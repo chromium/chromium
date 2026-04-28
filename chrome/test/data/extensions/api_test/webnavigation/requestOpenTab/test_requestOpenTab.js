@@ -25,8 +25,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -42,8 +42,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'typed',
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -57,8 +57,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -72,8 +72,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'b-onCreatedNavigationTarget',
@@ -84,8 +84,8 @@ loadScript.then(async function() {
                 sourceTabId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -98,8 +98,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onCommitted',
@@ -115,8 +115,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -130,8 +130,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onCompleted',
@@ -145,16 +145,18 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
-            }
+                url: getURL('b.html'),
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
+            navigationOrder('a-'),
+            navigationOrder('b-'),
             [
-              'a-onDOMContentLoaded', 'b-onCreatedNavigationTarget',
-              'b-onBeforeNavigate'
-            ]
+              'a-onDOMContentLoaded',
+              'b-onCreatedNavigationTarget',
+              'b-onBeforeNavigate',
+            ],
           ]);
 
       // Notify the api test that we're waiting for the user.

@@ -12,9 +12,20 @@ function containsAll(obj, keys) {
 }
 
 const contents = [
-  'download', 'search', 'pause', 'resume', 'cancel', 'getFileIcon', 'open',
-  'show', 'erase', 'acceptDanger', 'onCreated', 'onChanged', 'onErased',
-  'onDeterminingFilename'
+  'download',
+  'search',
+  'pause',
+  'resume',
+  'cancel',
+  'getFileIcon',
+  'open',
+  'show',
+  'erase',
+  'acceptDanger',
+  'onCreated',
+  'onChanged',
+  'onErased',
+  'onDeterminingFilename',
 ];
 
 if (!chrome.downloads || !containsAll(chrome.downloads, contents)) {

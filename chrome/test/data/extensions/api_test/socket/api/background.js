@@ -502,8 +502,10 @@ const onMessageReply = function(message) {
       expectedResponsePattern = TCP_EXPECTED_RESPONSE_PATTERN;
     }
     chrome.test.runTests([
-      testSocketCreation, testSending, testPendingCallback,
-      testUsingTCPSocketOnUDPMethods
+      testSocketCreation,
+      testSending,
+      testPendingCallback,
+      testUsingTCPSocketOnUDPMethods,
     ]);
   }
 };

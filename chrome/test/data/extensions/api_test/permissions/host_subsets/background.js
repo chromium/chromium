@@ -191,7 +191,7 @@ function main() {
     contains('ftp://ftp.example.com/*', false),
 
     // And finally...
-    test.succeed
+    test.succeed,
   ]);
 }
 

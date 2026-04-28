@@ -73,7 +73,8 @@ chrome.test.getConfig(function(config) {
         chrome.test.assertEq(
             [
               {language: 'el', percentage: 61},
-              {language: 'th', percentage: 20}, {language: 'en', percentage: 18}
+              {language: 'th', percentage: 20},
+              {language: 'en', percentage: 18},
             ],
             result.languages);
       });

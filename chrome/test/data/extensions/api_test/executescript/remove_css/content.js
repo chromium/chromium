@@ -5,8 +5,8 @@
 'use strict';
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  let element = document.getElementById('main');
-  let style = getComputedStyle(element);
-  let color = style.getPropertyValue('color');
+  const element = document.getElementById('main');
+  const style = getComputedStyle(element);
+  const color = style.getPropertyValue('color');
   sendResponse(color);
 });

@@ -34,8 +34,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCommitted',
@@ -51,8 +51,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onDOMContentLoaded',
@@ -66,8 +66,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onDOMContentLoaded',
@@ -81,8 +81,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCompleted',
@@ -96,14 +96,15 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
-            }
+                url: urlMain,
+              },
+            },
           ],
           [
             [
-              'main-onBeforeNavigate', 'main-onCommitted',
-              'main-onDOMContentLoaded'
+              'main-onBeforeNavigate',
+              'main-onCommitted',
+              'main-onDOMContentLoaded',
             ],
             ['main-onDOMContentLoaded', 'main-onCompleted'],
           ]);

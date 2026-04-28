@@ -239,7 +239,7 @@ function testStaticMethods() {
 
 const REQUEST_ALL = {
   certificateTypes: [],
-  certificateAuthorities: []
+  certificateAuthorities: [],
 };
 
 // Depends on |DATA|, thus it cannot be created immediately.

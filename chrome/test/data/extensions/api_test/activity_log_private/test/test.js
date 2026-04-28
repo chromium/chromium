@@ -256,7 +256,7 @@ const hookNames = [
   'dragleave',  'dragover',  'dragstart', 'drop',      'input',
   'keydown',    'keypress',  'keyup',     'mousedown', 'mouseenter',
   'mouseleave', 'mousemove', 'mouseout',  'mouseover', 'mouseup',
-  'mousewheel'
+  'mousewheel',
 ];
 
 for (let i = 0; i < hookNames.length; i++) {

@@ -49,8 +49,9 @@ function clobber(obj, name, qualifiedName) {
     return;
   }
   const desc = getOwnPropertyDescriptor(obj, name);
-  if (!desc.configurable)
+  if (!desc.configurable) {
     return;
+  }
   let newDesc;
   if (desc.get || desc.set || typeof desc.value !== 'function') {
     newDesc = {

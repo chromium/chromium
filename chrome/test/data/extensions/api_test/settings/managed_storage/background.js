@@ -4,7 +4,7 @@
 
 const stringPolicyName = 'string-policy';
 const expectedStringPolicy = {
-  'string-policy': 'value'
+  'string-policy': 'value',
 };
 chrome.test.runTests([
   function getPolicy() {

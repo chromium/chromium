@@ -5,7 +5,7 @@
 // Create alarms that won't have time to run.
 const createParams = {
   delayInMinutes: 60.0,
-  periodInMinutes: 60
+  periodInMinutes: 60,
 };
 const MAX_ALARMS = 500;
 

@@ -101,11 +101,15 @@ loadScript.then(async function() {
                 initiator: getServerDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           {urls: ['<all_urls>'], types: ['other']});
 

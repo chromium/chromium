@@ -77,11 +77,13 @@ runTests([
               fromCache: false,
               error: 'net::ERR_ABORTED',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],
@@ -176,11 +178,13 @@ runTests([
               fromCache: false,
               error: 'net::ERR_ABORTED',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],

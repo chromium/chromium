@@ -6,7 +6,7 @@ const inIncognito = chrome.extension.inIncognitoContext;
 const alarmName = inIncognito ? 'incognito' : 'normal';
 const createParams = {
   delayInMinutes: 0.001,
-  periodInMinutes: 60
+  periodInMinutes: 60,
 };
 
 let alarmFired = false;

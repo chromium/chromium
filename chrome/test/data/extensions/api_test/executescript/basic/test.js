@@ -18,8 +18,9 @@ chrome.test.getConfig(function(config) {
       `http://b.com:${config.testServer.port}${RELATIVE_PATH}`;
 
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete')
+    if (changeInfo.status != 'complete') {
       return;
+    }
     if (!firstEnter) {
       return;
     }
@@ -89,14 +90,15 @@ chrome.test.getConfig(function(config) {
       },
 
       function executeJavaScriptCodeShouldFail() {
-        let doneListening =
+        const doneListening =
             chrome.test.listenForever(chrome.tabs.onUpdated, onUpdated);
         chrome.tabs.update(tabId, {url: testFailureUrl});
 
         function onUpdated(updatedTabId, changeInfo, tab) {
           if (updatedTabId !== tabId || tab.status != 'complete' ||
-             tab.url != testFailureUrl)
+              tab.url != testFailureUrl) {
             return;
+          }
           const scriptFile = {};
           scriptFile.code = `document.title = 'executeScript';`;
           // The error message should contain the URL of the site for which it
@@ -126,7 +128,7 @@ chrome.test.getConfig(function(config) {
             fail(
                 'Code and file should not be specified ' +
                 'at the same time in the second argument.'));
-      }
+      },
     ]);
   });
 

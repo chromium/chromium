@@ -10,8 +10,9 @@ let webPage2 = `${server}${RELATIVE_PATH}web_page2.html`;
 let extensionPageOpened = false;
 
 const listener = function(tabId, changeInfo, tab) {
-  if (changeInfo.status != 'complete')
+  if (changeInfo.status != 'complete') {
     return;
+  }
 
   // web_page1 loaded, open extension page to inject script
   if (!extensionPageOpened && tab.url == webPage1) {

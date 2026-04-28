@@ -1311,7 +1311,7 @@ chrome.test.runTests([
           name: 'A',
           value: '1',
           sameSite: 'no_restriction',
-          secure: true
+          secure: true,
         },
         pass(function() {
           chrome.cookies.get(

@@ -333,7 +333,7 @@ chrome.test.getConfig(function(config) {
         port.postMessage({testConnectChildFrameAndNavigate: true});
       });
       chrome.tabs.connect(testTab.id).postMessage({
-        testConnectChildFrameAndNavigateSetup: true
+        testConnectChildFrameAndNavigateSetup: true,
       });
     },
 

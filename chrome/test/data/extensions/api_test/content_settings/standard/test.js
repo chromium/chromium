@@ -44,7 +44,7 @@ const settings = {
 
 // Settings that do not support site-specific exceptions.
 const globalOnlySettings = {
-  autoVerify: 'block'
+  autoVerify: 'block',
 };
 
 // List of settings that are expected to return different values than were
@@ -206,7 +206,7 @@ chrome.test.runTests([
       cs.javascript.set({
         primaryPattern: '<all_urls>',
         secondaryPattern: '<all_urls>',
-        setting: 'something radically fake'
+        setting: 'something radically fake',
       });
     } catch (e) {
       caught = true;

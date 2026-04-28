@@ -71,8 +71,10 @@ function setExpectationsForNonObservablePreflight() {
       [
         // event order
         [
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ],
       ],
       {urls: [url]},  // filter

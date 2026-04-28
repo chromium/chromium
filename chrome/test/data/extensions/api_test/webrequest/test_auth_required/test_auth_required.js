@@ -95,9 +95,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['responseHeaders']);
@@ -186,9 +190,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['blocking', 'responseHeaders']);
@@ -280,9 +288,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['responseHeaders', 'blocking']);
@@ -374,9 +386,13 @@ const availableTests = [
         [
           // event order
           [
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onAuthRequired', 'onResponseStarted',
-            'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onAuthRequired',
+            'onResponseStarted',
+            'onCompleted',
           ],
         ],
         {urls: ['<all_urls>']}, ['responseHeaders', 'blocking']);

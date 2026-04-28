@@ -148,11 +148,15 @@ loadScript.then(async function() {
                 initiator: getDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           {urls: [getStyleURL()]});
 
@@ -272,11 +276,15 @@ loadScript.then(async function() {
                 parentDocumentId: 1,
                 frameType: 'sub_frame',
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           getScriptFilter());
 
@@ -491,11 +499,15 @@ loadScript.then(async function() {
                 initiator: getDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           getScriptFilter());
 
@@ -589,11 +601,15 @@ loadScript.then(async function() {
                 initiator: getDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           getScriptFilter());
 
@@ -694,11 +710,15 @@ loadScript.then(async function() {
                 initiator: getDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           {urls: [getPingURL()]});
 
@@ -802,11 +822,15 @@ loadScript.then(async function() {
                 initiator: getDomain(initiators.WEB_INITIATED),
                 documentId: 1,
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           {urls: [getBeaconURL()]});
 
@@ -1036,11 +1060,15 @@ loadScript.then(async function() {
                 parentDocumentId: 1,
                 frameType: 'sub_frame',
               },
-            }
+            },
           ],
           [[
-            'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-            'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+            'onBeforeRequest',
+            'onBeforeSendHeaders',
+            'onSendHeaders',
+            'onHeadersReceived',
+            'onResponseStarted',
+            'onCompleted',
           ]],
           {
             urls: ['<all_urls>'],

@@ -117,7 +117,7 @@ function tests_runInvoke() {
   chrome.test.runTests([async function invokeSuccess() {
     await chrome.glicPrivate.invoke({
       promptId: 'TEST_PROMPT_ID',
-      invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+      invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
     });
     chrome.test.succeed();
   }]);
@@ -128,7 +128,7 @@ function tests_runInvokeDisabled() {
     await chrome.test.assertPromiseRejects(
         chrome.glicPrivate.invoke({
           promptId: 'TEST_PROMPT_ID',
-          invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+          invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
         }),
         'Error: local-glic-not-enabled');
     chrome.test.succeed();
@@ -140,7 +140,7 @@ function tests_runInvokeNewTab() {
     await chrome.glicPrivate.invoke({
       promptId: 'TEST_PROMPT_ID',
       invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-      inNewTab: true
+      inNewTab: true,
     });
     chrome.test.succeed();
   }]);
@@ -152,7 +152,8 @@ function tests_runInvokeServerError() {
       await chrome.test.assertPromiseRejects(
           chrome.glicPrivate.invoke({
             promptId: 'http_error',
-            invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
           }),
           'Error: http-error');
       chrome.test.succeed();

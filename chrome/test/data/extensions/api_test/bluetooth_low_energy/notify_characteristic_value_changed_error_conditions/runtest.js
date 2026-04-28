@@ -20,7 +20,7 @@ function failOnSuccess() {
 
 const service = {
   uuid: '00001234-0000-1000-8000-00805f9b34fb',
-  isPrimary: true
+  isPrimary: true,
 };
 chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
   if (failOnError(serviceId)) {
@@ -29,11 +29,11 @@ chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
 
   const characteristic1 = {
     uuid: '00001234-0000-1000-8000-00805f9b34fa',
-    properties: ['notify']
+    properties: ['notify'],
   };
   const characteristic2 = {
     uuid: '00001234-0000-1000-8000-00805f9b34fa',
-    properties: ['indicate']
+    properties: ['indicate'],
   };
   chrome.bluetoothLowEnergy.createCharacteristic(
       characteristic1, serviceId, function(characteristicId1) {
@@ -75,7 +75,7 @@ chrome.bluetoothLowEnergy.createService(service, function(serviceId) {
                                         .notifyCharacteristicValueChanged(
                                             characteristicId1, {
                                               value: newValue,
-                                              shouldIndicate: true
+                                              shouldIndicate: true,
                                             },
                                             function() {
                                               if (failOnSuccess()) {

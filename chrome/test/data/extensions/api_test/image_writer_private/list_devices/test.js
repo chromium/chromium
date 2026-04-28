@@ -17,7 +17,7 @@ const expectedDevices = [
     model: 'Model 2',
     capacity: 1 << 17,
     removable: false,
-  }
+  },
 ];
 
 
@@ -28,10 +28,12 @@ function testDeviceList() {
 
 function listRemovableDevicesCallback(deviceList) {
   deviceList.sort(function(a, b) {
-    if (a.storageUnitId > b.storageUnitId)
+    if (a.storageUnitId > b.storageUnitId) {
       return 1;
-    if (a.storageUnitId < b.storageUnitId)
+    }
+    if (a.storageUnitId < b.storageUnitId) {
       return -1;
+    }
     return 0;
   });
 

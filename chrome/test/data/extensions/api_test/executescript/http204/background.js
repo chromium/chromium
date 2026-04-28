@@ -35,7 +35,7 @@ chrome.test.getConfig(function(testConfig) {
 
   chrome.webNavigation.onDOMContentLoaded.addListener(onDOMContentLoaded);
   chrome.tabs.create({
-    url: testUrl
+    url: testUrl,
   });
 
   function onDOMContentLoaded(details) {

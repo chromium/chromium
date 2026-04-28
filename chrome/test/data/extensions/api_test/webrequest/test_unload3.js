@@ -65,11 +65,13 @@ runTests([
               fromCache: false,
               error: 'net::ERR_ABORTED',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],
@@ -148,11 +150,13 @@ runTests([
               initiator: getInitiatorURLForHostname(hostname),
               frameType: 'sub_frame',
             },
-          }
+          },
         ],
         [[
-          'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-          'onErrorOccurred'
+          'onBeforeRequest',
+          'onBeforeSendHeaders',
+          'onSendHeaders',
+          'onErrorOccurred',
         ]],
         {
           urls: ['<all_urls>'],

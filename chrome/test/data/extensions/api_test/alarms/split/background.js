@@ -8,7 +8,7 @@ let alarmTriggered = false;
 let testEventFired = false;
 const createParams = {
   delayInMinutes: 0.001,
-  periodInMinutes: 60
+  periodInMinutes: 60,
 };
 
 function checkAndCompleteTest() {

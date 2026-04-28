@@ -31,11 +31,11 @@ const RULES_EXPECTED = {
 
 const CONFIG = {
   rules: RULES,
-  mode: 'fixed_servers'
+  mode: 'fixed_servers',
 };
 const CONFIG_EXPECTED = {
   rules: RULES_EXPECTED,
-  mode: 'fixed_servers'
+  mode: 'fixed_servers',
 };
 
 chrome.test.runTests([
@@ -53,7 +53,7 @@ chrome.test.runTests([
         expect(
             {
               value: CONFIG_EXPECTED,
-              levelOfControl: 'controlled_by_this_extension'
+              levelOfControl: 'controlled_by_this_extension',
             },
             'invalid proxy settings'));
   },
@@ -64,7 +64,7 @@ chrome.test.runTests([
             {
               value: CONFIG_EXPECTED,
               incognitoSpecific: false,
-              levelOfControl: 'controlled_by_this_extension'
+              levelOfControl: 'controlled_by_this_extension',
             },
             'invalid proxy settings'));
   },

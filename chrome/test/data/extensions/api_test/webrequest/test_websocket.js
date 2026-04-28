@@ -91,8 +91,12 @@ chrome.tabs.getCurrent(function(tab) {
               [
                 // event order
                 [
-                  'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                  'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+                  'onBeforeRequest',
+                  'onBeforeSendHeaders',
+                  'onSendHeaders',
+                  'onHeadersReceived',
+                  'onResponseStarted',
+                  'onCompleted',
                 ],
               ],
               {urls: ['ws://*/*']},  // filter
@@ -232,8 +236,11 @@ chrome.tabs.getCurrent(function(tab) {
               [
                 // event order
                 [
-                  'onBeforeRequest', 'onBeforeSendHeaders', 'onHeadersReceived',
-                  'onResponseStarted', 'onCompleted'
+                  'onBeforeRequest',
+                  'onBeforeSendHeaders',
+                  'onHeadersReceived',
+                  'onResponseStarted',
+                  'onCompleted',
                 ],
               ],
               {urls: ['ws://*/*']},  // filter

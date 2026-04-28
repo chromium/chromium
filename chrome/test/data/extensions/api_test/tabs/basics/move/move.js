@@ -56,8 +56,12 @@ loadScript.then(async function() {
     //  Window2: b,a,(newtab)
     function setupLetterPages() {
       const pages = [
-        CHROME_UI_NEW_TAB_URL, pageUrl('a'), pageUrl('b'), pageUrl('c'),
-        pageUrl('d'), pageUrl('e')
+        CHROME_UI_NEW_TAB_URL,
+        pageUrl('a'),
+        pageUrl('b'),
+        pageUrl('c'),
+        pageUrl('d'),
+        pageUrl('e'),
       ];
       createWindow(
           pages, {}, pass(function(winId, tabIds) {

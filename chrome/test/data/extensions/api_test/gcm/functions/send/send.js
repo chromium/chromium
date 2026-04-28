@@ -156,8 +156,9 @@ chrome.test.runTests([
       function generateString(base, len) {
         // Generates a string of size |len| by concatenating |base| multiple
         // times and trimming to |len|.
-        while (base.length < len)
+        while (base.length < len) {
           base += base;
+        }
         return base.substring(0, len);
       }
 

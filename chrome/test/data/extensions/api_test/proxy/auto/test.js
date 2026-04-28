@@ -38,7 +38,7 @@ chrome.test.runTests([
             {
               value: CONFIG,
               incognitoSpecific: false,
-              levelOfControl: 'controlled_by_this_extension'
+              levelOfControl: 'controlled_by_this_extension',
             },
             'invalid proxy settings'));
   },

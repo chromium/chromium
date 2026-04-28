@@ -55,8 +55,9 @@ loadScript.then(async function() {
               },
             },
           ],
-          [  // event order
-            ['a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted']
+          [
+            // event order
+            ['a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted'],
           ]);
       navigateAndWait(getURL('a.html'));
     },
@@ -184,13 +185,21 @@ loadScript.then(async function() {
               },
             },
           ],
-          [  // event order
+          [
+            // event order
             [
-              'onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
-              'onHeadersReceived-1', 'onBeforeRedirect', 'onBeforeRequest-2',
-              'onBeforeSendHeaders-2', 'onSendHeaders-2', 'onHeadersReceived-2',
-              'onResponseStarted', 'onCompleted'
-            ]
+              'onBeforeRequest-1',
+              'onBeforeSendHeaders-1',
+              'onSendHeaders-1',
+              'onHeadersReceived-1',
+              'onBeforeRedirect',
+              'onBeforeRequest-2',
+              'onBeforeSendHeaders-2',
+              'onSendHeaders-2',
+              'onHeadersReceived-2',
+              'onResponseStarted',
+              'onCompleted',
+            ],
           ],
           {urls: ['<all_urls>']},  // filter
           ['requestHeaders', 'responseHeaders']);
@@ -223,8 +232,9 @@ loadScript.then(async function() {
               },
             },
           ],
-          [  // event order
-            ['onBeforeRequest', 'onErrorOccurred']
+          [
+            // event order
+            ['onBeforeRequest', 'onErrorOccurred'],
           ]);
       navigateAndWait(getURL('does_not_exist.html'));
     },
@@ -494,15 +504,28 @@ loadScript.then(async function() {
               },
             },
           ],
-          [  // event order
+          [
+            // event order
             [
-              'onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
-              'onHeadersReceived-1', 'onResponseStarted-1', 'onCompleted-1',
-              'onBeforeRequest-2', 'onBeforeSendHeaders-2', 'onSendHeaders-2',
-              'onHeadersReceived-2', 'onResponseStarted-2', 'onCompleted-2',
-              'onBeforeRequest-3', 'onBeforeSendHeaders-3', 'onSendHeaders-3',
-              'onHeadersReceived-3', 'onResponseStarted-3', 'onCompleted-3'
-            ]
+              'onBeforeRequest-1',
+              'onBeforeSendHeaders-1',
+              'onSendHeaders-1',
+              'onHeadersReceived-1',
+              'onResponseStarted-1',
+              'onCompleted-1',
+              'onBeforeRequest-2',
+              'onBeforeSendHeaders-2',
+              'onSendHeaders-2',
+              'onHeadersReceived-2',
+              'onResponseStarted-2',
+              'onCompleted-2',
+              'onBeforeRequest-3',
+              'onBeforeSendHeaders-3',
+              'onSendHeaders-3',
+              'onHeadersReceived-3',
+              'onResponseStarted-3',
+              'onCompleted-3',
+            ],
           ],
           {urls: ['<all_urls>']},  // filter
           ['requestHeaders', 'responseHeaders']);

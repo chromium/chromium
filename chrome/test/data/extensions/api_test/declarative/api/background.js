@@ -13,10 +13,11 @@ const inputRule0 = {
   // No 'id', this should be filled by the API.
   conditions: [
     new RequestMatcher({url: {hostPrefix: 'test1'}}),
-    new RequestMatcher({url: {hostPrefix: 'test2'}})
+    new RequestMatcher({url: {hostPrefix: 'test2'}}),
   ],
   actions: [
-    new CancelRequest(), new RedirectRequest({redirectUrl: 'http://foobar.com'})
+    new CancelRequest(),
+    new RedirectRequest({redirectUrl: 'http://foobar.com'}),
   ],
   // No 'priority', this should be filled by the API.
 };
@@ -25,10 +26,11 @@ const outputRule0 = {
   id: '_0_',
   conditions: [
     new RequestMatcher({url: {hostPrefix: 'test1'}}),
-    new RequestMatcher({url: {hostPrefix: 'test2'}})
+    new RequestMatcher({url: {hostPrefix: 'test2'}}),
   ],
   actions: [
-    new CancelRequest(), new RedirectRequest({redirectUrl: 'http://foobar.com'})
+    new CancelRequest(),
+    new RedirectRequest({redirectUrl: 'http://foobar.com'}),
   ],
   priority: 100,
 };

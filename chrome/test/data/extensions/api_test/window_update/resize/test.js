@@ -64,7 +64,7 @@ chrome.test.runTests([
           'left': 0,
           'width': 500,
           'height': 400,
-          'type': 'normal'
+          'type': 'normal',
         },
         pass(function(win1) {
           chrome.windows.getCurrent(pass(function(win2) {
@@ -88,7 +88,7 @@ chrome.test.runTests([
           'left': 0,
           'width': 500,
           'height': 500,
-          'type': 'normal'
+          'type': 'normal',
         },
         pass(changeWidth));
   },
@@ -100,7 +100,7 @@ chrome.test.runTests([
           'left': 0,
           'width': 300,
           'height': 400,
-          'type': 'popup'
+          'type': 'popup',
         },
         pass(changeWidth));
   },
@@ -112,7 +112,7 @@ chrome.test.runTests([
           'left': 0,
           'width': 150,
           'height': 200,
-          'type': 'panel'
+          'type': 'panel',
         },
         pass(changeWidth));
   },

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var address = '11:12:13:14:15:16';
-var uuid = '8e3ad063-db38-4289-aa8f-b30e4223cf40';
+const address = '11:12:13:14:15:16';
+const uuid = '8e3ad063-db38-4289-aa8f-b30e4223cf40';
 
 function testConnect() {
   chrome.test.assertEq(1, sockets.length);
@@ -24,7 +24,7 @@ function startTests() {
 
 function expectError(message) {
   if (!chrome.runtime.lastError) {
-    chrome.test.fail("Expected an error");
+    chrome.test.fail('Expected an error');
   }
   chrome.test.assertEq(message, chrome.runtime.lastError.message);
 }
@@ -48,27 +48,23 @@ function createConnectedSocket(address, uuid, callback) {
 }
 
 function runSocketErrorTests(callback) {
-  chrome.bluetoothSocket.connect(1234, address, uuid,
-    function() {
-      expectError("Socket not found");
+  chrome.bluetoothSocket.connect(1234, address, uuid, function() {
+    expectError('Socket not found');
 
-      createConnectedSocket('aa:aa:aa:aa:aa:aa', uuid,
-        function(socket) {
-          expectError("Device not found");
+    createConnectedSocket('aa:aa:aa:aa:aa:aa', uuid, function(socket) {
+      expectError('Device not found');
 
-          createConnectedSocket(address, 'not a valid uuid',
-            function(socket) {
-              expectError("Invalid UUID");
+      createConnectedSocket(address, 'not a valid uuid', function(socket) {
+        expectError('Invalid UUID');
 
-              createConnectedSocket(address, '1234',
-                function(socket) {
-                  expectError("Permission denied");
+        createConnectedSocket(address, '1234', function(socket) {
+          expectError('Permission denied');
 
-                  callback();
-                });
-            });
+          callback();
         });
+      });
     });
+  });
 }
 
 createConnectedSocket(address, uuid,

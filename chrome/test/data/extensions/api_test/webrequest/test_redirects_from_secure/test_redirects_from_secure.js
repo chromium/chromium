@@ -4,8 +4,9 @@
 
 function assertRedirectSucceeds(url, redirectURL, callback) {
   navigateAndWait(url, function(tab) {
-    if (callback)
+    if (callback) {
       callback();
+    }
     chrome.test.assertEq(redirectURL, tab.url);
   });
 }

@@ -313,7 +313,7 @@ chrome.test.runTests([
       {
         name: 'fixed6',
         type: OptionType.FIXED,
-        value: [42.0, 43.0]
+        value: [42.0, 43.0],
       },  // OK, mapped.
       {name: 'fixed7', type: OptionType.FIXED, value: [42.5, 43.5]},  // OK.
     ];
@@ -332,7 +332,7 @@ chrome.test.runTests([
           {name: 'fixed4', result: OperationResult.WRONG_TYPE},
           {name: 'fixed5', result: OperationResult.SUCCESS},
           {name: 'fixed6', result: OperationResult.SUCCESS},
-          {name: 'fixed7', result: OperationResult.SUCCESS}
+          {name: 'fixed7', result: OperationResult.SUCCESS},
         ]),
         new Set(response.results));
     chrome.test.assertNe(null, response.options);
@@ -375,7 +375,7 @@ chrome.test.runTests([
           {name: 'int8', result: OperationResult.WRONG_TYPE},
           {name: 'int9', result: OperationResult.WRONG_TYPE},
           {name: 'int10', result: OperationResult.WRONG_TYPE},
-          {name: 'int11', result: OperationResult.WRONG_TYPE}
+          {name: 'int11', result: OperationResult.WRONG_TYPE},
         ]),
         new Set(response.results));
     chrome.test.assertNe(null, response.options);
@@ -402,7 +402,7 @@ chrome.test.runTests([
           {name: 'bool1', result: OperationResult.SUCCESS},
           {name: 'bool2', result: OperationResult.WRONG_TYPE},
           {name: 'bool3', result: OperationResult.WRONG_TYPE},
-          {name: 'bool4', result: OperationResult.WRONG_TYPE}
+          {name: 'bool4', result: OperationResult.WRONG_TYPE},
         ]),
         new Set(response.results));
     chrome.test.assertNe(null, response.options);
@@ -431,7 +431,7 @@ chrome.test.runTests([
           {name: 'string2', result: OperationResult.SUCCESS},
           {name: 'string3', result: OperationResult.WRONG_TYPE},
           {name: 'string4', result: OperationResult.WRONG_TYPE},
-          {name: 'string5', result: OperationResult.WRONG_TYPE}
+          {name: 'string5', result: OperationResult.WRONG_TYPE},
         ]),
         new Set(response.results));
     chrome.test.assertNe(null, response.options);

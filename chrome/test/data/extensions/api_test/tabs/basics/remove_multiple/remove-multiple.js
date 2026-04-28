@@ -94,7 +94,9 @@ loadScript.then(async function() {
 
       Promise
           .all([
-            onStorageChangedPromise1, onStorageChangedPromise2, removePromise
+            onStorageChangedPromise1,
+            onStorageChangedPromise2,
+            removePromise,
           ])
           .then(chrome.test.succeed);
     },

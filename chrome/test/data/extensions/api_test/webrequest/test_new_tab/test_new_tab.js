@@ -84,11 +84,16 @@ loadScript.then(async function() {
               },
             },
           ],
-          [  // event order
+          [
+            // event order
             [
-              'a-onBeforeRequest', 'a-onResponseStarted', 'a-onCompleted',
-              'b-onBeforeRequest', 'b-onResponseStarted', 'b-onCompleted'
-            ]
+              'a-onBeforeRequest',
+              'a-onResponseStarted',
+              'a-onCompleted',
+              'b-onBeforeRequest',
+              'b-onResponseStarted',
+              'b-onCompleted',
+            ],
           ]);
       // Notify the api test that we're waiting for the user.
       chrome.test.notifyPass();

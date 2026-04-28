@@ -38,7 +38,7 @@ function deepCopy(obj) {
     return obj;
   }
   if (Array.isArray(obj)) {
-    const tmpArray = new Array();
+    const tmpArray = [];
     for (let i = 0; i < obj.length; i++) {
       tmpArray.push(deepCopy(obj[i]));
     }
@@ -271,8 +271,10 @@ function initListeners() {
 // Returns the usual order of navigation events.
 function navigationOrder(prefix) {
   return [
-    `${prefix}onBeforeNavigate`, `${prefix}onCommitted`,
-    `${prefix}onDOMContentLoaded`, `${prefix}onCompleted`
+    `${prefix}onBeforeNavigate`,
+    `${prefix}onCommitted`,
+    `${prefix}onDOMContentLoaded`,
+    `${prefix}onCompleted`,
   ];
 }
 
@@ -280,8 +282,10 @@ function navigationOrder(prefix) {
 // frame.
 function isIFrameOf(iframe, main_frame) {
   return [
-    `${main_frame}onCommitted`, `${iframe}onBeforeNavigate`,
-    `${iframe}onCompleted`, `${main_frame}onCompleted`
+    `${main_frame}onCommitted`,
+    `${iframe}onBeforeNavigate`,
+    `${iframe}onCompleted`,
+    `${main_frame}onCompleted`,
   ];
 }
 

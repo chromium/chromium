@@ -6,8 +6,9 @@ chrome.test.getConfig(function(config) {
   const testUrl = `http://b.com:${config.testServer.port}` +
       '/extensions/api_test/executescript/css_origin/test.html';
   chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-    if (changeInfo.status != 'complete')
+    if (changeInfo.status != 'complete') {
       return;
+    }
     chrome.tabs.onUpdated.removeListener(listener);
     chrome.test.runTests([
       // Until we have tabs.removeCSS we just have to target a different
@@ -85,7 +86,7 @@ chrome.test.getConfig(function(config) {
         chrome.tabs.executeScript(tabId, injectDetails,
             chrome.test.callbackFail(
                 'CSS origin should be specified only for CSS code.'));
-      }
+      },
     ]);
   });
   chrome.tabs.create({ url: testUrl });

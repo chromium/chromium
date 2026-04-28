@@ -11,7 +11,7 @@ chrome.test.runTests([
           'url': chrome.runtime.getURL('popup.html'),
           'type': 'popup',
           'width': 200,
-          'height': 200
+          'height': 200,
         },
         chrome.test.callbackPass(function(win) {
           chrome.test.assertEq(200, win.width);

@@ -52,7 +52,7 @@ chrome.test.getConfig(function(config) {
                 'data': wallpaperRequest.response,
                 'layout': 'CENTER_CROPPED',
                 'filename': 'test',
-                'thumbnail': wantThumbnail
+                'thumbnail': wantThumbnail,
               },
               callback);
         } else {
@@ -106,7 +106,7 @@ chrome.test.getConfig(function(config) {
           {
             'url': baseURL + 'test1.jpg',
             'layout': 'CENTER_CROPPED',
-            'filename': 'test'
+            'filename': 'test',
           },
           fail(expectedError));
     },
@@ -125,7 +125,7 @@ chrome.test.getConfig(function(config) {
           {
             'url': baseURL + 'test_image_high_resolution.jpg',
             'layout': 'CENTER_CROPPED',
-            'filename': 'test'
+            'filename': 'test',
           },
           fail('Set wallpaper was canceled.'));
 
@@ -133,7 +133,7 @@ chrome.test.getConfig(function(config) {
           {
             'url': baseURL + 'test.jpg',
             'layout': 'CENTER_CROPPED',
-            'filename': 'test'
+            'filename': 'test',
           },
           pass());
     },

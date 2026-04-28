@@ -31,8 +31,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -48,8 +48,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'typed',
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -63,8 +63,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -78,8 +78,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
 
             {
@@ -94,8 +94,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: subframeUrl
-              }
+                url: subframeUrl,
+              },
             },
             {
               label: 'subframe-onCommitted',
@@ -112,8 +112,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: subframeUrl
-              }
+                url: subframeUrl,
+              },
             },
             {
               label: 'subframe-onDOMContentLoaded',
@@ -128,8 +128,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: subframeUrl
-              }
+                url: subframeUrl,
+              },
             },
             {
               label: 'subframe-onCompleted',
@@ -144,8 +144,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: subframeUrl
-              }
+                url: subframeUrl,
+              },
             },
 
             {
@@ -157,8 +157,8 @@ loadScript.then(async function() {
                 sourceTabId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -171,8 +171,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onCommitted',
@@ -188,8 +188,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -203,8 +203,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'b-onCompleted',
@@ -218,17 +218,19 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 1,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
-            }
+                url: getURL('b.html'),
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('subframe-'),
+            navigationOrder('a-'),
+            navigationOrder('subframe-'),
             navigationOrder('b-'),
             [
-              'a-onCompleted', 'b-onCreatedNavigationTarget',
-              'b-onBeforeNavigate'
-            ]
+              'a-onCompleted',
+              'b-onCreatedNavigationTarget',
+              'b-onBeforeNavigate',
+            ],
           ]);
 
       // Notify the api test that we're waiting for the user.

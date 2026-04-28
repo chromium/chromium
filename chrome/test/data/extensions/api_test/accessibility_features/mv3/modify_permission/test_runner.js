@@ -98,7 +98,7 @@ function runSetterTest(initiallyEnabledFeatures, initiallyDisabledFeatures) {
  */
 const TEST_FUNCTIONS = {
   'getterTest': runGetterTest,
-  'setterTest': runSetterTest
+  'setterTest': runSetterTest,
 };
 
 /**

@@ -45,7 +45,7 @@ const tests = [
         {
           'id': extensionId,
           'iconUrl': 'extension/icon.png',
-          'manifest': manifest
+          'manifest': manifest,
         },
         function() {},
     );

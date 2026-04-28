@@ -8,7 +8,7 @@ chrome.test.runTests([
       chrome.test.assertEq('30001', evt.deviceId);
       chrome.test.assertEq(60, evt.level);
     });
-  }
+  },
 ]);
 
 chrome.test.sendMessage('loaded');

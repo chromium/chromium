@@ -25,7 +25,7 @@ chrome.windows.onFocusChanged.addListener(function(id) {
 });
 
 const noFilter = {
-  windowTypes: ['app', 'devtools', 'normal', 'panel', 'popup']
+  windowTypes: ['app', 'devtools', 'normal', 'panel', 'popup'],
 };
 chrome.windows.onCreated.addListener(function(win) {
   recordEvents('unfiltered', 'create', win.id, win.type);

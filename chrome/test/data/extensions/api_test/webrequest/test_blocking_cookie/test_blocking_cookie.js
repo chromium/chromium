@@ -105,8 +105,12 @@ loadScript.then(async function() {
           [
             // event order
             [
-              'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-              'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+              'onBeforeRequest',
+              'onBeforeSendHeaders',
+              'onSendHeaders',
+              'onHeadersReceived',
+              'onResponseStarted',
+              'onCompleted',
             ],
           ],
           {urls: ['<all_urls>']},
@@ -222,8 +226,12 @@ loadScript.then(async function() {
           [
             // event order
             [
-              'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-              'onHeadersReceived', 'onResponseStarted', 'onCompleted'
+              'onBeforeRequest',
+              'onBeforeSendHeaders',
+              'onSendHeaders',
+              'onHeadersReceived',
+              'onResponseStarted',
+              'onCompleted',
             ],
           ],
           {urls: ['<all_urls>']},

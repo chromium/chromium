@@ -24,8 +24,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('f.html')
-              }
+                url: getURL('f.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -38,8 +38,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('f.html')
-              }
+                url: getURL('f.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -50,8 +50,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('f.html')
-              }
+                url: getURL('f.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -62,8 +62,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('f.html')
-              }
+                url: getURL('f.html'),
+              },
             },
             {
               label: 'a-onReferenceFragmentUpdated',
@@ -76,8 +76,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('f.html#foo')
-              }
+                url: getURL('f.html#foo'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -88,8 +88,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}3`
-              }
+                url: `${urlTest}3`,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -102,8 +102,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: `${urlTest}3`
-              }
+                url: `${urlTest}3`,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -114,8 +114,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}3`
-              }
+                url: `${urlTest}3`,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -126,16 +126,18 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}3`
-              }
-            }
+                url: `${urlTest}3`,
+              },
+            },
           ],
           [
             navigationOrder('a-'),
             [
-              'a-onCompleted', 'b-onBeforeNavigate',
-              'a-onReferenceFragmentUpdated', 'b-onCommitted'
-            ]
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'a-onReferenceFragmentUpdated',
+              'b-onCommitted',
+            ],
           ]);
 
       chrome.tabs.update(tab.id, {url: getURL(`f.html?${port}`)});
@@ -155,8 +157,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('g.html')
-              }
+                url: getURL('g.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -169,8 +171,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('g.html')
-              }
+                url: getURL('g.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -181,8 +183,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('g.html')
-              }
+                url: getURL('g.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -193,8 +195,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('g.html')
-              }
+                url: getURL('g.html'),
+              },
             },
             {
               label: 'a-onReferenceFragmentUpdated',
@@ -207,8 +209,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('g.html#foo')
-              }
+                url: getURL('g.html#foo'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -219,8 +221,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}4`
-              }
+                url: `${urlTest}4`,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -233,8 +235,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: `${urlTest}4`
-              }
+                url: `${urlTest}4`,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -245,8 +247,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}4`
-              }
+                url: `${urlTest}4`,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -257,16 +259,18 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}4`
-              }
-            }
+                url: `${urlTest}4`,
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
+            navigationOrder('a-'),
+            navigationOrder('b-'),
             [
-              'a-onCompleted', 'b-onBeforeNavigate',
-              'a-onReferenceFragmentUpdated'
-            ]
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'a-onReferenceFragmentUpdated',
+            ],
           ]);
 
       chrome.tabs.update(tabId, {url: getURL(`g.html?${port}`)});

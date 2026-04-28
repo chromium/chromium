@@ -589,7 +589,7 @@ const defaultTests = [
         chrome.autotestPrivate.ShelfAlignmentType.LEFT,
         chrome.autotestPrivate.ShelfAlignmentType.BOTTOM,
         chrome.autotestPrivate.ShelfAlignmentType.RIGHT,
-        chrome.autotestPrivate.ShelfAlignmentType.BOTTOM
+        chrome.autotestPrivate.ShelfAlignmentType.BOTTOM,
       ];
       var l = alignments.length;
       for (var i = 0; i < l; i++) {
@@ -1348,7 +1348,7 @@ const policyTests = [
                 'level': 'mandatory',
                 'scope': 'user',
                 'source': 'cloud',
-                'value': true
+                'value': true,
               },
             },
             'deviceLocalAccountPolicies': {},

@@ -186,8 +186,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('h.html')
-              }
+                url: getURL('h.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -203,8 +203,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('h.html')
-              }
+                url: getURL('h.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -218,8 +218,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('h.html')
-              }
+                url: getURL('h.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -233,8 +233,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'a-onHistoryStateUpdated',
@@ -250,8 +250,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('empty.html')
-              }
+                url: getURL('empty.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -265,8 +265,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}5`
-              }
+                url: `${urlTest}5`,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -283,8 +283,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: `${urlTest}5`
-              }
+                url: `${urlTest}5`,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -299,8 +299,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}5`
-              }
+                url: `${urlTest}5`,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -315,13 +315,14 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: `${urlTest}5`
-              }
-            }
+                url: `${urlTest}5`,
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
-            ['b-onBeforeNavigate', 'a-onHistoryStateUpdated', 'a-onCompleted']
+            navigationOrder('a-'),
+            navigationOrder('b-'),
+            ['b-onBeforeNavigate', 'a-onHistoryStateUpdated', 'a-onCompleted'],
           ]);
 
       chrome.tabs.update(tab.id, {url: getURL(`h.html?${port}`)});

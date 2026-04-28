@@ -8,7 +8,7 @@ Object.defineProperty(Object.prototype, 'windowExposedByDefault', {
   enumerable: true,
   get() {
     return 'hahaha';
-  }
+  },
 });
 chrome.webNavigation.onBeforeNavigate.addListener(function() {
   chrome.test.notifyPass();

@@ -13,8 +13,9 @@ function generateSenderIds(size) {
 function toArrayDefinitionString(senderIds) {
   let idsString = '[';
   senderIds.forEach(function(element, index) {
-    if (index > 0)
+    if (index > 0) {
       idsString += ', ';
+    }
     idsString += `"${element}"`;
   });
   idsString += ']';

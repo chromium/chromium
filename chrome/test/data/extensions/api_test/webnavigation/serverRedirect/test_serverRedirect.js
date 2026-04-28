@@ -30,8 +30,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoadRedirect
-              }
+                url: urlLoadRedirect,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -47,8 +47,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: ['server_redirect'],
                 transitionType: 'link',
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -62,8 +62,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -77,9 +77,9 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoad
-              }
-            }
+                url: urlLoad,
+              },
+            },
           ],
           [navigationOrder('a-')]);
       chrome.tabs.update(tab.id, {url: `${urlLoadRedirect}?${urlLoad}`});

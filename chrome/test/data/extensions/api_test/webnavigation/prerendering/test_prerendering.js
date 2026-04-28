@@ -201,13 +201,17 @@ ready.then(async function() {
             // *-2: for prerendering.
             // *-3: for prerendering activation.
             [
-              'onBeforeNavigate-1', 'onCommitted-1', 'onDOMContentLoaded-1',
-              'onCompleted-1'
+              'onBeforeNavigate-1',
+              'onCommitted-1',
+              'onDOMContentLoaded-1',
+              'onCompleted-1',
             ],
             expectedPrerenderedOrder,
             [
-              'onBeforeNavigate-3', 'onCommitted-3', 'onDOMContentLoaded-3',
-              'onCompleted-3'
+              'onBeforeNavigate-3',
+              'onCommitted-3',
+              'onDOMContentLoaded-3',
+              'onCompleted-3',
             ],
             ['onBeforeNavigate-1', 'onBeforeNavigate-2', 'onBeforeNavigate-3'],
           ],

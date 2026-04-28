@@ -7,7 +7,7 @@ const bounds = {
   top: 0,
   left: 0,
   width: 0,
-  height: 0
+  height: 0,
 };
 
 chrome.windows.onBoundsChanged.addListener(function(window) {

@@ -20,7 +20,7 @@ function failOnSuccess() {
 
 const service = {
   uuid: '00001234-0000-1000-8000-00805f9b34fb',
-  isPrimary: true
+  isPrimary: true,
 };
 // Create then remove a service.
 chrome.bluetoothLowEnergy.createService(service, function(serviceId) {

@@ -25,8 +25,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -39,8 +39,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'typed',
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -51,8 +51,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -63,8 +63,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlLoad
-              }
+                url: urlLoad,
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -75,8 +75,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 1,
                 timeStamp: 0,
-                url: urlTarget
-              }
+                url: urlTarget,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -89,8 +89,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlTarget
-              }
+                url: urlTarget,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -101,8 +101,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 1,
                 timeStamp: 0,
-                url: urlTarget
-              }
+                url: urlTarget,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -113,18 +113,19 @@ onload = async function() {
                 processId: 1,
                 tabId: 1,
                 timeStamp: 0,
-                url: urlTarget
-              }
+                url: urlTarget,
+              },
             },
             {
               label: 'onTabReplaced',
               event: 'onTabReplaced',
-              details: {replacedTabId: 0, tabId: 1, timeStamp: 0}
-            }
+              details: {replacedTabId: 0, tabId: 1, timeStamp: 0},
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
-            ['a-onCompleted', 'b-onCompleted', 'onTabReplaced']
+            navigationOrder('a-'),
+            navigationOrder('b-'),
+            ['a-onCompleted', 'b-onCompleted', 'onTabReplaced'],
           ]);
 
       // Notify the api test that we're waiting for the user.

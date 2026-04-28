@@ -446,20 +446,36 @@ runTests([function simpleLoad() {
         // *-3: for a script sub-resource in the prerendering page.
         // *-4: for fetch request made after the page activation.
         [
-          'onBeforeRequest-1', 'onBeforeSendHeaders-1', 'onSendHeaders-1',
-          'onHeadersReceived-1', 'onResponseStarted-1', 'onCompleted-1'
+          'onBeforeRequest-1',
+          'onBeforeSendHeaders-1',
+          'onSendHeaders-1',
+          'onHeadersReceived-1',
+          'onResponseStarted-1',
+          'onCompleted-1',
         ],
         [
-          'onBeforeRequest-2', 'onBeforeSendHeaders-2', 'onSendHeaders-2',
-          'onHeadersReceived-2', 'onResponseStarted-2', 'onCompleted-2'
+          'onBeforeRequest-2',
+          'onBeforeSendHeaders-2',
+          'onSendHeaders-2',
+          'onHeadersReceived-2',
+          'onResponseStarted-2',
+          'onCompleted-2',
         ],
         [
-          'onBeforeRequest-3', 'onBeforeSendHeaders-3', 'onSendHeaders-3',
-          'onHeadersReceived-3', 'onResponseStarted-3', 'onCompleted-3'
+          'onBeforeRequest-3',
+          'onBeforeSendHeaders-3',
+          'onSendHeaders-3',
+          'onHeadersReceived-3',
+          'onResponseStarted-3',
+          'onCompleted-3',
         ],
         [
-          'onBeforeRequest-4', 'onBeforeSendHeaders-4', 'onSendHeaders-4',
-          'onHeadersReceived-4', 'onResponseStarted-4', 'onCompleted-4'
+          'onBeforeRequest-4',
+          'onBeforeSendHeaders-4',
+          'onSendHeaders-4',
+          'onHeadersReceived-4',
+          'onResponseStarted-4',
+          'onCompleted-4',
         ],
       ],
       {urls: ['<all_urls>']},  // filter

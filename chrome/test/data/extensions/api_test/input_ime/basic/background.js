@@ -74,7 +74,7 @@ function setCandidatesTest() {
             id: 3,
             label: 'third',
             annotation: 'The third one',
-          }
+          },
         ],
       },
       chrome.test.callbackPass());
@@ -107,7 +107,7 @@ function setMenuItemsTest() {
             style: 'radio',
             visible: true,
             enabled: true,
-          }
+          },
         ],
       },
       chrome.test.callbackPass());
@@ -125,7 +125,7 @@ function updateMenuItemsTest() {
           {
             id: 'Menu 2',
             visible: false,
-          }
+          },
         ],
       },
       chrome.test.callbackPass());

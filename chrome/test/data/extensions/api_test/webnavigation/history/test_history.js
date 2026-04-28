@@ -25,8 +25,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -42,8 +42,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -57,8 +57,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -72,8 +72,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('b.html')
-              }
+                url: getURL('b.html'),
+              },
             },
             {
               label: 'a-onHistoryStateUpdated',
@@ -89,9 +89,9 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('b.html')
-              }
-            }
+                url: getURL('b.html'),
+              },
+            },
           ],
           [navigationOrder('a-')]);
       chrome.tabs.update(tab.id, {url: getURL('a.html')});
@@ -112,8 +112,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('c.html')
-              }
+                url: getURL('c.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -129,8 +129,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('c.html')
-              }
+                url: getURL('c.html'),
+              },
             },
             {
               label: 'a-onHistoryStateUpdated',
@@ -146,8 +146,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -161,8 +161,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('d.html')
-              }
+                url: getURL('d.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -176,13 +176,17 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('d.html')
-              }
-            }
+                url: getURL('d.html'),
+              },
+            },
           ],
           [
             navigationOrder('a-'),
-            ['a-onCommitted', 'a-onHistoryStateUpdated', 'a-onDOMContentLoaded']
+            [
+              'a-onCommitted',
+              'a-onHistoryStateUpdated',
+              'a-onDOMContentLoaded',
+            ],
           ]);
       chrome.tabs.update(tab.id, {url: getURL('c.html')});
     },

@@ -34,6 +34,7 @@ const testNonexistentHostnameResolution = function() {
 };
 
 chrome.test.runTests([
-  testIPLiteralResolution, testHostnameResolution,
-  testNonexistentHostnameResolution
+  testIPLiteralResolution,
+  testHostnameResolution,
+  testNonexistentHostnameResolution,
 ]);

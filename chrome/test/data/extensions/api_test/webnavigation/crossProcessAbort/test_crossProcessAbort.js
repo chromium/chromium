@@ -30,8 +30,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: initialUrl
-              }
+                url: initialUrl,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -44,8 +44,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: initialUrl
-              }
+                url: initialUrl,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -56,8 +56,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: initialUrl
-              }
+                url: initialUrl,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -68,8 +68,8 @@ onload = async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: initialUrl
-              }
+                url: initialUrl,
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -80,8 +80,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: crossSiteUrl
-              }
+                url: crossSiteUrl,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -94,8 +94,8 @@ onload = async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: crossSiteUrl
-              }
+                url: crossSiteUrl,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -106,8 +106,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: crossSiteUrl
-              }
+                url: crossSiteUrl,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -118,8 +118,8 @@ onload = async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: crossSiteUrl
-              }
+                url: crossSiteUrl,
+              },
             },
             {
               label: 'c-onBeforeNavigate',
@@ -130,8 +130,8 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: sameSiteUrl
-              }
+                url: sameSiteUrl,
+              },
             },
             {
               label: 'c-onErrorOccurred',
@@ -143,16 +143,20 @@ onload = async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: sameSiteUrl
-              }
+                url: sameSiteUrl,
+              },
             },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'),
+            navigationOrder('a-'),
+            navigationOrder('b-'),
             [
-              'a-onCompleted', 'b-onBeforeNavigate', 'c-onBeforeNavigate',
-              'c-onErrorOccurred', 'b-onCommitted'
-            ]
+              'a-onCompleted',
+              'b-onBeforeNavigate',
+              'c-onBeforeNavigate',
+              'c-onErrorOccurred',
+              'b-onCommitted',
+            ],
           ]);
 
       chrome.tabs.update(

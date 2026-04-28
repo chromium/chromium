@@ -39,8 +39,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCommitted',
@@ -56,8 +56,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onDOMContentLoaded',
@@ -71,8 +71,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'main-onCompleted',
@@ -86,8 +86,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlMain
-              }
+                url: urlMain,
+              },
             },
             {
               label: 'a.com-onBeforeNavigate',
@@ -101,8 +101,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame1
-              }
+                url: urlFrame1,
+              },
             },
             {
               label: 'a.com-onCommitted',
@@ -119,8 +119,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: urlFrame1
-              }
+                url: urlFrame1,
+              },
             },
             {
               label: 'a.com-onDOMContentLoaded',
@@ -135,8 +135,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame1
-              }
+                url: urlFrame1,
+              },
             },
             {
               label: 'a.com-onCompleted',
@@ -151,8 +151,8 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame1
-              }
+                url: urlFrame1,
+              },
             },
             {
               label: 'b.com-onBeforeNavigate',
@@ -166,8 +166,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame2
-              }
+                url: urlFrame2,
+              },
             },
             {
               label: 'b.com-onCommitted',
@@ -184,8 +184,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'manual_subframe',
-                url: urlFrame2
-              }
+                url: urlFrame2,
+              },
             },
             {
               label: 'b.com-onDOMContentLoaded',
@@ -200,8 +200,8 @@ loadScript.then(async function() {
                 processId: 2,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame2
-              }
+                url: urlFrame2,
+              },
             },
             {
               label: 'b.com-onCompleted',
@@ -216,8 +216,8 @@ loadScript.then(async function() {
                 processId: 2,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame2
-              }
+                url: urlFrame2,
+              },
             },
             {
               label: 'c.com-onBeforeNavigate',
@@ -231,8 +231,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame3
-              }
+                url: urlFrame3,
+              },
             },
             {
               label: 'c.com-onCommitted',
@@ -249,8 +249,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'manual_subframe',
-                url: urlFrame3
-              }
+                url: urlFrame3,
+              },
             },
             {
               label: 'c.com-onDOMContentLoaded',
@@ -265,8 +265,8 @@ loadScript.then(async function() {
                 processId: 3,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame3
-              }
+                url: urlFrame3,
+              },
             },
             {
               label: 'c.com-onCompleted',
@@ -281,9 +281,9 @@ loadScript.then(async function() {
                 processId: 3,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlFrame3
-              }
-            }
+                url: urlFrame3,
+              },
+            },
           ],
           [
             navigationOrder('main-'),

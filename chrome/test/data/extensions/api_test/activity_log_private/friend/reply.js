@@ -326,7 +326,7 @@ function executeDOMChangesOnTabUpdated() {
     'ondragleave',  'ondragover',  'ondragstart', 'ondrop',      'oninput',
     'onkeydown',    'onkeypress',  'onkeyup',     'onmousedown', 'onmouseenter',
     'onmouseleave', 'onmousemove', 'onmouseout',  'onmouseover', 'onmouseup',
-    'onmousewheel'
+    'onmousewheel',
   ];
 
   // Access to each hook can be monitored for Element, Document, and Window.

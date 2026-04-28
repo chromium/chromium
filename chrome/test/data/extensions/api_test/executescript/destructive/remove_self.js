@@ -66,8 +66,9 @@ function testChild() {
     let expected = parseInt(TEST_HOST.match(/\d+/)[0]);
     document.addEventListener(eventName, function() {
       // Synchronously remove the frame in the mutation event.
-      if (--expected === 0)
+      if (--expected === 0) {
         doRemove();
+      }
     });
 
     // Fallback in case the mutation events are not triggered.
@@ -75,10 +76,11 @@ function testChild() {
       // The window.onload event signals that the document and its resources
       // have finished loading, so we don't expect any other parser-initiated
       // DOM mutations after that point.
-      if (document.readyState === 'complete')
+      if (document.readyState === 'complete') {
         resolve();
-      else
+      } else {
         window.addEventListener('load', resolve);
+      }
     }).then(function() {
       if (expected > 0) {
         expected = 0;

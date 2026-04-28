@@ -18,7 +18,7 @@ const MENU_ITEMS = [
     visible: true,
     checked: false,
     enabled: true,
-  }
+  },
 ];
 
 const MENU_ITEMS_UPDATE = [
@@ -37,7 +37,7 @@ const MENU_ITEMS_UPDATE = [
     visible: false,
     checked: false,
     enabled: false,
-  }
+  },
 ];
 
 const MENU_ITEMS_ACTIVATED = [
@@ -56,7 +56,7 @@ const MENU_ITEMS_ACTIVATED = [
     visible: true,
     checked: true,
     enabled: true,
-  }
+  },
 ];
 
 const compareMenuItems = function(items1, items2) {

@@ -18,7 +18,7 @@ let expected = [
         id: '2',
         parentId: '0',
         index: 1,
-        title: 'Other bookmarks'
+        title: 'Other bookmarks',
       },
       {
         id: '4',
@@ -33,7 +33,7 @@ let expected = [
             index: 0,
             title: 'Managed Bookmark',
             url: 'http://www.chromium.org/',
-            unmodifiable: 'managed'
+            unmodifiable: 'managed',
           },
           {
             id: '6',
@@ -41,7 +41,7 @@ let expected = [
             index: 1,
             title: 'Managed Folder',
             children: [],
-            unmodifiable: 'managed'
+            unmodifiable: 'managed',
           },
         ],
       },
@@ -62,17 +62,17 @@ function otherBookmarks() {
 let node1 = {
   parentId: '1',
   title: 'bar baz',
-  url: 'http://www.example.com/hello'
+  url: 'http://www.example.com/hello',
 };
 let node2 = {
   parentId: '1',
   title: 'foo quux',
-  url: 'http://www.example.com/bar'
+  url: 'http://www.example.com/bar',
 };
 let node3 = {
   parentId: '1',
   title: 'Foo bar baz',
-  url: 'http://www.google.com/hello/quux'
+  url: 'http://www.google.com/hello/quux',
 };
 
 const pass = chrome.test.callbackPass;
@@ -218,7 +218,7 @@ function run() {
       const node = {
         parentId: '1',
         title: 'google',
-        url: 'http://www.google.com/'
+        url: 'http://www.google.com/',
       };
       chrome.test.listenOnce(chrome.bookmarks.onCreated, function(id, created) {
         node.id = created.id;
@@ -261,7 +261,7 @@ function run() {
       const node = {
         parentId: '0',
         title: 'g404',
-        url: 'http://www.google.com/404'
+        url: 'http://www.google.com/404',
       };
       chrome.bookmarks.create(node, fail(error));
     },
@@ -271,7 +271,7 @@ function run() {
       const node = {
         parentId: '4',
         title: 'g404',
-        url: 'http://www.google.com/404'
+        url: 'http://www.google.com/404',
       };
       chrome.bookmarks.create(node, fail(error));
     },
@@ -586,17 +586,17 @@ function run() {
           node1 = {
             parentId: '1',
             title: 'bar baz',
-            url: 'http://www.example.com/hello'
+            url: 'http://www.example.com/hello',
           };
           node2 = {
             parentId: '1',
             title: 'foo quux',
-            url: 'http://www.example.com/bar'
+            url: 'http://www.example.com/bar',
           };
           node3 = {
             parentId: '1',
             title: 'Foo bar baz',
-            url: 'http://www.google.com/hello/quux'
+            url: 'http://www.google.com/hello/quux',
           };
           createNodes(bookmarksBar(), [node1, node2, node3], pass(function() {
                         verifyTreeIsExpected(pass());

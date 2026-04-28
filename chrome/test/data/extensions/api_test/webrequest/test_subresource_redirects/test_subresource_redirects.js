@@ -19,8 +19,9 @@ function assertRedirectSucceeds(url, redirectURL, callback) {
   // Load a page to be sure webRequest listeners are set up.
   navigateAndWait(getURL('simpleLoad/b.html'), function() {
     passCallback = pass((response) => {
-      if (callback)
+      if (callback) {
         callback();
+      }
       chrome.test.assertEq(response.url, redirectURL);
     });
     fetch(url)
@@ -28,8 +29,9 @@ function assertRedirectSucceeds(url, redirectURL, callback) {
           passCallback(response);
         })
         .catch((e) => {
-          if (callback)
+          if (callback) {
             callback();
+          }
           chrome.test.fail(e);
         });
   });
@@ -39,13 +41,15 @@ function assertRedirectFails(url, callback) {
   // Load a page to be sure webRequest listeners are set up.
   navigateAndWait(getURL('simpleLoad/b.html'), function() {
     passCallback = pass(() => {
-      if (callback)
+      if (callback) {
         callback();
+      }
     });
     fetch(url)
         .then((response) => {
-          if (callback)
+          if (callback) {
             callback();
+          }
           chrome.test.fail();
         })
         .catch((e) => {

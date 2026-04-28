@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   const style = getComputedStyle(element);
   const response = {
     color: style.getPropertyValue('color'),
-    backgroundColor: style.getPropertyValue('background-color')
+    backgroundColor: style.getPropertyValue('background-color'),
   };
   sendResponse(response);
 });

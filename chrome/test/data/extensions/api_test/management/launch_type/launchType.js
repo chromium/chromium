@@ -30,7 +30,7 @@ function testSetLaunchType(id, type, error, listener) {
 }
 
 function getAvailableLaunchTypes(app) {
-  const types = Array();
+  const types = [];
   if (app.type == 'packaged_app') {
     types.push('OPEN_AS_WINDOW');
     return types;

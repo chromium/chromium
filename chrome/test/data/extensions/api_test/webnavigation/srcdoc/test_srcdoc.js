@@ -25,8 +25,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCommitted',
@@ -42,8 +42,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'link',
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -57,8 +57,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'a-onCompleted',
@@ -72,8 +72,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: getURL('a.html')
-              }
+                url: getURL('a.html'),
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -87,8 +87,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: 'about:srcdoc'
-              }
+                url: 'about:srcdoc',
+              },
             },
             {
               label: 'b-onCommitted',
@@ -105,8 +105,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'auto_subframe',
-                url: 'about:srcdoc'
-              }
+                url: 'about:srcdoc',
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -121,8 +121,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: 'about:srcdoc'
-              }
+                url: 'about:srcdoc',
+              },
             },
             {
               label: 'b-onCompleted',
@@ -137,12 +137,14 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: 'about:srcdoc'
-              }
-            }
+                url: 'about:srcdoc',
+              },
+            },
           ],
           [
-            navigationOrder('a-'), navigationOrder('b-'), isIFrameOf('b-', 'a-')
+            navigationOrder('a-'),
+            navigationOrder('b-'),
+            isIFrameOf('b-', 'a-'),
           ]);
       chrome.tabs.update(tab.id, {url: getURL('a.html')});
     },

@@ -119,7 +119,8 @@ function setCertificates() {
   return new Promise(resolve => {
     chrome.certificateProvider.setCertificates(
         {
-          clientCertificates: [validCert, ...getInvalidClientCertificateInfos()]
+          clientCertificates:
+              [validCert, ...getInvalidClientCertificateInfos()],
         },
         () => {
           const success = !chrome.runtime.lastError;

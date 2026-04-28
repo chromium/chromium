@@ -23,7 +23,7 @@ const tests = [
           'id': localizedId,
           'manifest': manifest,
           'localizedName': 'Le Title',
-          'locale': 'fr'
+          'locale': 'fr',
         },
         callbackPass(function(result) {
           assertEq(result, '');

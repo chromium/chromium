@@ -32,8 +32,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onCommitted',
@@ -49,8 +49,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'typed',
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onDOMContentLoaded',
@@ -64,8 +64,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'a-onCompleted',
@@ -79,8 +79,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlA
-              }
+                url: urlA,
+              },
             },
             {
               label: 'b-onBeforeNavigate',
@@ -93,8 +93,8 @@ loadScript.then(async function() {
                 processId: -1,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onCommitted',
@@ -110,8 +110,8 @@ loadScript.then(async function() {
                 timeStamp: 0,
                 transitionQualifiers: [],
                 transitionType: 'typed',
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onDOMContentLoaded',
@@ -125,8 +125,8 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
+                url: urlB,
+              },
             },
             {
               label: 'b-onCompleted',
@@ -140,9 +140,9 @@ loadScript.then(async function() {
                 processId: 0,
                 tabId: 0,
                 timeStamp: 0,
-                url: urlB
-              }
-            }
+                url: urlB,
+              },
+            },
           ],
           [navigationOrder('a-'), navigationOrder('b-')]);
 

@@ -371,7 +371,8 @@ runTests([
             },
           },
         ],
-        [  // event order
+        [
+          // event order
           [
             'onBeforeRequest-1',     'onBeforeSendHeaders-1',
             'onSendHeaders-1',       'onHeadersReceived-1',
@@ -384,8 +385,8 @@ runTests([
             'onBeforeRedirect-3',    'onBeforeRequest-4',
             'onBeforeSendHeaders-4', 'onSendHeaders-4',
             'onHeadersReceived-4',   'onResponseStarted-4',
-            'onCompleted-4'
-          ]
+            'onCompleted-4',
+          ],
         ],
         {urls: ['<all_urls>']},  // filter
         ['requestHeaders', 'responseHeaders']);

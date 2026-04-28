@@ -36,7 +36,7 @@ function setUp(callback) {
           chrome.fileSystemProvider.mount(
               {
                 fileSystemId: SECOND_FILE_SYSTEM_ID,
-                displayName: 'ice-cream.zip'
+                displayName: 'ice-cream.zip',
               },
               chrome.test.callbackPass(fulfill));
         }),

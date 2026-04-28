@@ -5,8 +5,8 @@
 chrome.bluetoothSocket.create(
   function(socket) {
     if (!chrome.runtime.lastError) {
-      chrome.test.fail("Expected an error");
+      chrome.test.fail('Expected an error');
     }
-    chrome.test.assertEq("Permission denied", chrome.runtime.lastError.message);
+    chrome.test.assertEq('Permission denied', chrome.runtime.lastError.message);
     chrome.test.succeed();
   });

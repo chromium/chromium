@@ -4,11 +4,12 @@
 
 chrome.hid.onDeviceAdded.addListener(function (device) {
   if (device.vendorId == 6353 && device.productId == 22768) {
-    chrome.test.sendMessage("success");
+    chrome.test.sendMessage('success');
   } else {
-    console.error("Got unexpected device: vid:" + device.vendorId +
-                  " pid:" + device.productId);
-    chrome.test.sendMessage("failure");
+    console.error(
+        'Got unexpected device: vid:' + device.vendorId +
+        ' pid:' + device.productId);
+    chrome.test.sendMessage('failure');
   }
 });
-chrome.test.sendMessage("loaded");
+chrome.test.sendMessage('loaded');
