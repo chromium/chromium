@@ -142,6 +142,12 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   int GetHorizontalTabStripLeadingMargin(
       const BrowserLayoutParams& params) const;
 
+  // Returns whether to make small adjustments to avoid visual "cracking" due to
+  // discrepancies between pixel and dip scaling; see
+  // https://crbug.com/436278099 for more information on the Pixel Canvas
+  // project which aims to permanently avoid this issue.
+  bool AvoidCrackingForFractionalDisplay() const;
+
   // These cached values serve as a starting point when an expand-on-hover state
   // for the vertical tab strip is animated directly to the expanded state. They
   // are cached every time the animation state is calculated except during the

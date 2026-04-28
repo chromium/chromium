@@ -173,6 +173,20 @@ int BrowserViewTabbedLayoutImpl::GetHorizontalTabStripLeadingMargin(
   return leading_margin;
 }
 
+bool BrowserViewTabbedLayoutImpl::AvoidCrackingForFractionalDisplay() const {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  // This is primarily an issue on Linux and Windows; add other platforms here
+  // as needed.
+  if (auto* const widget = views().browser_view->GetWidget()) {
+    if (const auto display = widget->GetNearestDisplay()) {
+      const float scale = display->device_scale_factor();
+      return scale != std::floor(scale);
+    }
+  }
+#endif
+  return false;
+}
+
 std::pair<gfx::Size, gfx::Size>
 BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
     const BrowserLayoutParams& params) const {
@@ -624,6 +638,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
 
   BrowserLayoutParams params = browser_params;
   bool needs_exclusion = true;
+  const bool adjust_for_cracking = AvoidCrackingForFractionalDisplay();
   const TabStripType tab_strip_type = GetTabStripType();
   HorizontalLayout horizontal_layout = CalculateHorizontalLayout(params);
 
@@ -701,8 +716,11 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       if (delegate().GetBrowserWindowState() != WindowState::kFullscreen) {
         IncreasePaddingToMinimum(params, GetMinimumGrabHandlePadding());
       }
-      params.InsetHorizontal(horizontal_layout.vertical_tab_strip_width,
-                             /*leading=*/true);
+      int inset_amount = horizontal_layout.vertical_tab_strip_width;
+      if (adjust_for_cracking) {
+        inset_amount -= 1;
+      }
+      params.InsetHorizontal(inset_amount, /*leading=*/true);
 
       // Let the vertical tab strip animate out over the content.
       if (vertical_tab_strip_animation.current_motion) {
@@ -833,9 +851,15 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Lay out the main area background.
   ProposedLayout* main_background_layout = nullptr;
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
+    gfx::Rect main_background_bounds = params.visual_client_area;
+    if (adjust_for_cracking &&
+        main_background_bounds.y() > browser_params.visual_client_area.y()) {
+      main_background_bounds.Outset(gfx::Outsets::TLBR(1, 0, 0, 0));
+    }
     main_background_layout = &layout.AddChild(
         views().main_background_region, params.visual_client_area,
-        horizontal_layout.has_toolbar_height_side_panel());
+        horizontal_layout.has_toolbar_height_side_panel() ||
+            adjust_for_cracking);
   }
 
   // Lay out toolbar-height side panel.
