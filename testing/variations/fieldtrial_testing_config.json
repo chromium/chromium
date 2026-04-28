@@ -7583,21 +7583,6 @@
             ]
         }
     ],
-    "CredentialManagementThirdPartyWebApiRequestForwarding": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialManagementThirdPartyWebApiRequestForwarding"
-                    ]
-                }
-            ]
-        }
-    ],
     "CredentialManagementUnifiedUi": [
         {
             "platforms": [

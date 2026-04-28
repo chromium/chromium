@@ -12,6 +12,6 @@ namespace credential_management::features {
 // Chrome can forward the Credential Management API requests to 3P password
 // managers.
 BASE_FEATURE(kCredentialManagementThirdPartyWebApiRequestForwarding,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace credential_management::features
