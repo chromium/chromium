@@ -32,11 +32,12 @@ main {
   width: 100%;
 }
 
-:host([app-mode='profile-picker']) #headerContainer {
+:host(:not([revamp-enabled])) #headerContainer,
+:host([revamp-enabled][app-mode='profile-picker']) #headerContainer {
   padding-bottom: 24px;
 }
 
-:host([app-mode='first-run']) #headerContainer {
+:host([revamp-enabled][app-mode='first-run']) #headerContainer {
   display: flex;
   height: 200px;
   justify-content: center;
@@ -48,12 +49,13 @@ main {
   z-index: 1;
 }
 
-:host([app-mode='profile-picker']) #avatarContainer {
+:host(:not([revamp-enabled])) #avatarContainer,
+:host([revamp-enabled][app-mode='profile-picker']) #avatarContainer {
   margin-inline: auto;
   position: relative;
 }
 
-:host([app-mode='first-run']) #avatarContainer {
+:host([revamp-enabled][app-mode='first-run']) #avatarContainer {
   position: absolute;
   top: 40%;
 }
@@ -171,7 +173,7 @@ main {
     width: 64px;
   }
 
-  :host([app-mode='first-run']) #headerContainer {
+  :host([revamp-enabled][app-mode='first-run']) #headerContainer {
     height: 140px;
   }
 

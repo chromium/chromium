@@ -53,6 +53,11 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
         reflect: true,
         attribute: 'app-mode',
       },
+      revampEnabled_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'revamp-enabled',
+      },
       isDarkMode_: {type: Boolean},
     };
   }
@@ -62,12 +67,12 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   override accessor title: string = '';
   accessor subtitle: string = '';
   accessor appMode: AppMode = AppMode.FIRST_RUN;
+  protected accessor revampEnabled_: boolean =
+      loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
   protected accessor isDarkMode_: boolean = false;
 
   private disableAnimations_: boolean =
       loadTimeData.getBoolean('disableAnimations');
-  private isFirstRunDesktopRevampEnabled_: boolean =
-      loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
   private darkModeListener_: (e: MediaQueryListEvent) => void;
   private matchMedia_: MediaQueryList;
 
@@ -95,8 +100,7 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   }
 
   protected shouldShowAnimations_(): boolean {
-    return this.appMode === AppMode.FIRST_RUN &&
-        this.isFirstRunDesktopRevampEnabled_;
+    return this.appMode === AppMode.FIRST_RUN && this.revampEnabled_;
   }
 
   protected shouldDisableAnimations_(): boolean {

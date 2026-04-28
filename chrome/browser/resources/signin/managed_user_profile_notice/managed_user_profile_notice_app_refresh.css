@@ -24,14 +24,16 @@
   min-width: 600px;
 }
 
-:host([app-mode='profile-picker']) {
+:host(:not([revamp-enabled])),
+:host([revamp-enabled][app-mode='profile-picker']) {
   background-image: url('images/profile_picker_light_background.svg');
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 @media (prefers-color-scheme: dark) {
-  :host([app-mode='profile-picker']) {
+  :host(:not([revamp-enabled])),
+  :host([revamp-enabled][app-mode='profile-picker']) {
     background-image: url('images/profile_picker_dark_background.svg');
   }
 }
