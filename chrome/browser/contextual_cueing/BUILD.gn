@@ -6,7 +6,6 @@ source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_controller.h",
     "contextual_cueing_enums.h",
-    "contextual_cueing_prefs.h",
     "contextual_cueing_service.h",
     "contextual_cueing_service_factory.h",
     "contextual_cueing_web_contents_observer.h",
@@ -34,7 +33,6 @@ source_set("impl") {
 
   sources = [
     "contextual_cueing_controller.cc",
-    "contextual_cueing_prefs.cc",
     "contextual_cueing_service.cc",
     "contextual_cueing_service_factory.cc",
     "contextual_cueing_web_contents_observer.cc",
@@ -58,7 +56,6 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/prefs",
     "//components/sync/service",
     "//content/public/browser",
     "//ui/menus",

@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -668,28 +667,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kSidePanelShowing, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, UserOptedOut) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.activetab.com/abc"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  base::HistogramTester histogram_tester;
-  SeedExecutionResult(MakeCompleteResponse());
-
-  // User opts out.
-  browser()->profile()->GetPrefs()->SetBoolean(kContextualCueingDisabled, true);
-
-  SimulateFilterPassed();
-
-  optimization_guide::RetryForHistogramUntilCountReached(
-      &histogram_tester, "ContextualCueing.V2.Decision", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.V2.Decision",
-      ContextualCueingDecision::kDisabledForUser, 1);
 }
 
 // TODO(crbug.com/503910711): Add a test for hiding on navigation

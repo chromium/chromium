@@ -117,10 +117,6 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Cue not shown: no eligible cue surfaces">
     Cue could not be shown because there were no eligible cue surfaces.
   </int>
-  <int value="24" label="Cue not shown: disabled for user">
-    Cue could not be shown because it is disabled for the user (opt-out,
-    enterprise policy, etc.).
-  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->

@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -126,8 +125,7 @@ ContextualCueingController::ContextualCueingController(
       sync_service_(SyncServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile())),
       template_url_service_(TemplateURLServiceFactory::GetForProfile(
-          browser_window_interface_->GetProfile())),
-      profile_prefs_(browser_window_interface_->GetProfile()->GetPrefs()) {
+          browser_window_interface_->GetProfile())) {
   if (page_content_annotations_service_) {
     page_content_annotations_service_->AddObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
@@ -413,12 +411,6 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
 }
 
 bool ContextualCueingController::IsAllowedToShowCue() {
-  if (profile_prefs_->GetBoolean(
-          contextual_cueing::kContextualCueingDisabled)) {
-    RecordContextualCueingDecision(ContextualCueingDecision::kDisabledForUser);
-    return false;
-  }
-
   if (!sync_service_ ||
       !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory)) {
