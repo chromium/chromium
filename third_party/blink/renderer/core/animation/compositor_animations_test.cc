@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -1925,9 +1926,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   std::unique_ptr<cc::KeyframeModel> keyframe_model =
       ConvertToCompositorAnimation(*effect);
-  // Time based animations implicitly fill forwards to remain active until
-  // the subsequent commit.
-  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
+  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1947,9 +1946,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::NORMAL, keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
-  // Time based animations implicitly fill forwards to remain active until
-  // the subsequent commit.
-  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
+  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -3823,7 +3820,8 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
       cc::Animation* cc_animation = timeline->GetAnimationById(animation_id);
       cc::KeyframeEffect* effect = cc_animation->keyframe_effect();
       for (const auto& km : effect->keyframe_models()) {
-        EXPECT_EQ(km->run_state(), gfx::KeyframeModel::RunState::PAUSED);
+        EXPECT_EQ(km->run_state(),
+                  gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
       }
     }
   };
@@ -3846,6 +3844,108 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
   target->classList().remove({"multiple-animations"}, ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
   test_for_n_triggers(0);
+}
+
+TEST_F(CompositorAnimationTriggerTest, PausedExclusiveFillMode) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      .fill-both {
+        timeline-trigger: --trigger view();
+        animation: expand .5s both;
+        animation-trigger: --trigger none;
+      }
+      .fill-none {
+        timeline-trigger: --trigger2 view();
+        animation: expand .5s none;
+        animation-trigger: --trigger2 none;
+      }
+      div {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="fill_both_target" class="fill-both"></div>
+    <div id="fill_none_target" class="fill-none"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Grab the Blink animations.
+  Element* fill_both_target = GetElement("fill_both_target");
+  Animation* fill_both_animation =
+      fill_both_target->GetElementAnimations()->Animations().begin()->key;
+  ASSERT_TRUE(fill_both_animation);
+
+  Element* fill_none_target = GetElement("fill_none_target");
+  Animation* fill_none_animation =
+      fill_none_target->GetElementAnimations()->Animations().begin()->key;
+  ASSERT_TRUE(fill_none_animation);
+
+  cc::AnimationHost* host = GetAnimationHostImpl();
+  const cc::AnimationHost::IdToTriggerMap& triggers =
+      host->GetTriggersForTesting();
+
+  EXPECT_EQ(triggers.size(), 2);
+
+  auto get_km = [&](Animation* animation) {
+    int timeline_id = (*animation->GetTriggers().begin())
+                          ->CompositorTrigger()
+                          ->GetAnimationDataForTest()
+                          .begin()
+                          ->timeline_id;
+    cc::AnimationTimeline* timeline = host->GetTimelineById(timeline_id);
+
+    cc::Animation* cc_animation = timeline->GetAnimationById(
+        animation->GetCompositorAnimation()->CcAnimation()->id());
+    return cc::KeyframeModel::ToCcKeyframeModel(
+        cc_animation->keyframe_effect()->keyframe_models().front().get());
+  };
+
+  auto verify_state = [&](bool expect_finished) {
+    cc::KeyframeModel* fill_both_km = get_km(fill_both_animation);
+    cc::KeyframeModel* fill_none_km = get_km(fill_none_animation);
+
+    EXPECT_EQ(fill_both_km->run_state(),
+              gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
+    EXPECT_EQ(fill_none_km->run_state(),
+              gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
+
+    base::TimeTicks monotonic_time =
+        GetLayerTreeHostImpl()->CurrentBeginFrameArgs().frame_time;
+
+    EXPECT_EQ(fill_both_km->IsFinishedAtMonotonicTime(monotonic_time),
+              expect_finished);
+    EXPECT_EQ(fill_none_km->IsFinishedAtMonotonicTime(monotonic_time),
+              expect_finished);
+
+    // fill_both_km has fill mode BOTH, so it should always be in effect.
+    EXPECT_TRUE(fill_both_km->InEffect(monotonic_time));
+
+    // fill_none_km has fill mode NONE, so it should not be in effect in
+    // before/after phases.
+    EXPECT_FALSE(fill_none_km->InEffect(monotonic_time));
+  };
+
+  // Verify state before the animation is played.
+  verify_state(/*expect_finished=*/false);
+
+  // Finish the blink animations, the trigger should cause cc animations to be
+  // created for the cc animations.
+  fill_both_animation->finish(ASSERT_NO_EXCEPTION);
+  fill_none_animation->finish(ASSERT_NO_EXCEPTION);
+
+  // Run another frame to commit.
+  Compositor().BeginFrame();
+
+  // Verify state after the animation is finished.
+  verify_state(/*expect_finished=*/true);
 }
 
 TEST_F(CompositorAnimationTriggerTest, ChangeTimelineTrigger) {

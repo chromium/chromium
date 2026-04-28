@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
+#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace blink {
 
@@ -318,7 +319,8 @@ void AnimationTrigger::UpdateCompositorTriggerAnimations(
     // playing.
     if (pause_keyframe_models) {
       cc_animation->Pause(
-          base::Seconds(animation->CurrentTimeInternal()->InSecondsF()));
+          base::Seconds(animation->CurrentTimeInternal()->InSecondsF()),
+          cc::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
     }
   }
 

@@ -14,7 +14,7 @@ namespace {
 // This should match the RunState enum.
 static constexpr auto s_runStateNames = std::to_array<const char*>(
     {"WAITING_FOR_TARGET_AVAILABILITY", "WAITING_FOR_DELETION", "STARTING",
-     "RUNNING", "PAUSED", "FINISHED", "ABORTED",
+     "RUNNING", "PAUSED", "PAUSED_EXCLUSIVE", "FINISHED", "ABORTED",
      "ABORTED_BUT_NEEDS_COMPLETION"});
 
 static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
@@ -26,6 +26,10 @@ static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
 
 std::string KeyframeModel::ToString(RunState state) {
   return s_runStateNames[state];
+}
+
+bool KeyframeModel::IsPaused(RunState run_state) {
+  return run_state == PAUSED || run_state == PAUSED_EXCLUSIVE;
 }
 
 std::unique_ptr<KeyframeModel> KeyframeModel::Create(
@@ -49,11 +53,13 @@ KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
       playback_rate_(1),
       fill_mode_(FillMode::BOTH),
       start_delay_(base::TimeDelta()),
-      hold_time_(std::nullopt) {}
+      hold_time_(std::nullopt),
+      auto_fills_on_finish_(false) {}
 
 KeyframeModel::~KeyframeModel() {
-  if (run_state() == RUNNING || run_state() == PAUSED)
+  if (run_state() == RUNNING || IsPaused(run_state())) {
     SetRunState(ABORTED, base::TimeTicks());
+  }
 }
 
 int KeyframeModel::TargetProperty() const {
@@ -63,12 +69,17 @@ int KeyframeModel::TargetProperty() const {
 void KeyframeModel::SetRunState(RunState run_state,
                                 base::TimeTicks monotonic_time) {
   run_state_ = run_state;
+  if ((run_state_ == STARTING || run_state_ == RUNNING) &&
+      auto_fills_on_finish_) {
+    EnsureFillsWhenFinished();
+  }
 }
 
-void KeyframeModel::Pause(base::TimeDelta hold_time) {
+void KeyframeModel::Pause(base::TimeDelta hold_time, RunState pause_run_state) {
+  CHECK(IsPaused(pause_run_state));
   start_time_.reset();
   set_hold_time(hold_time);
-  SetRunState(PAUSED, base::TimeTicks());
+  SetRunState(pause_run_state, base::TimeTicks());
 }
 
 void KeyframeModel::Reverse(base::TimeTicks monotonic_time) {
@@ -94,7 +105,9 @@ KeyframeModel::Phase KeyframeModel::CalculatePhaseForTesting(
 KeyframeModel::Phase KeyframeModel::CalculatePhase(
     base::TimeDelta local_time) const {
   if ((local_time < start_delay_) ||
-      (local_time == start_delay_ && playback_rate_ < 0)) {
+      (local_time == start_delay_ &&
+       ((playback_rate_ < 0) ||
+        (playback_rate_ > 0 && run_state_ == PAUSED_EXCLUSIVE)))) {
     return KeyframeModel::Phase::BEFORE;
   }
   // TODO(crbug.com/41428771): By spec end time = max(start delay + duration +
@@ -106,7 +119,9 @@ KeyframeModel::Phase KeyframeModel::CalculatePhase(
         std::max(start_delay_ + active_duration, base::TimeDelta());
   }
   if ((local_time > active_after_boundary_time) ||
-      (local_time == active_after_boundary_time && playback_rate_ > 0)) {
+      (local_time == active_after_boundary_time &&
+       ((playback_rate_ > 0) ||
+        (playback_rate_ < 0 && run_state_ == PAUSED_EXCLUSIVE)))) {
     return KeyframeModel::Phase::AFTER;
   }
   return KeyframeModel::Phase::ACTIVE;
@@ -158,6 +173,11 @@ bool KeyframeModel::IsFinishedAt(base::TimeTicks monotonic_time) const {
     return false;
   }
 
+  return IsFinishedAtMonotonicTime(monotonic_time);
+}
+
+bool KeyframeModel::IsFinishedAtMonotonicTime(
+    base::TimeTicks monotonic_time) const {
   base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
   base::TimeDelta active_time = local_time - start_delay_;
 
@@ -292,6 +312,48 @@ base::TimeDelta KeyframeModel::CalculateHoldTime(base::TimeTicks monotonic_time,
 base::TimeDelta KeyframeModel::CalculateEndTime() const {
   // TODO(crbug.com/41428771): Add support for end delay.
   return curve_->Duration() * iterations_ + start_delay_;
+}
+
+// TODO(https://b.corp.google.com/issues/497867796#comment5): Currently, only
+// KeyframeModels created by Blink set auto_fills_on_finish_ to true. Ideally,
+// we would always reflect the fill mode set by Blink. However, altering the
+// fill mode is the simpler way to ensure that KeyframeModels that are finished
+// by virtue of their current start time and/or hold time but haven't yet been
+// played (this can happen for animation triggers [1]), respect their true fill
+// mode. We should see if there is a less complicated way to accomplish this
+// without modifying the fill mode.
+//
+// [1] https://drafts.csswg.org/animation-triggers-1
+void KeyframeModel::EnsureFillsWhenFinished() {
+  if (playback_rate() >= 0) {
+    switch (fill_mode()) {
+      case FillMode::NONE:
+        set_fill_mode(FillMode::FORWARDS);
+        break;
+      case FillMode::BACKWARDS:
+        set_fill_mode(FillMode::BOTH);
+        break;
+      case FillMode::FORWARDS:
+      case FillMode::BOTH:
+        break;
+      case FillMode::AUTO:
+        NOTREACHED();
+    }
+  } else {
+    switch (fill_mode()) {
+      case FillMode::NONE:
+        set_fill_mode(FillMode::BACKWARDS);
+        break;
+      case FillMode::FORWARDS:
+        set_fill_mode(FillMode::BOTH);
+        break;
+      case FillMode::BACKWARDS:
+      case FillMode::BOTH:
+        break;
+      case FillMode::AUTO:
+        NOTREACHED();
+    }
+  }
 }
 
 }  // namespace gfx

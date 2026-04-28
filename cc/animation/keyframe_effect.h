@@ -100,7 +100,9 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   // Sets the hold_time of each KeyframeModel to the specified value and
   // clears the start time.
-  void Pause(base::TimeDelta hold_time);
+  void Pause(base::TimeDelta hold_time,
+             gfx::KeyframeModel::RunState pause_run_state =
+                 gfx::KeyframeModel::RunState::PAUSED);
 
   void AddKeyframeModel(
       std::unique_ptr<gfx::KeyframeModel> keyframe_model) override;

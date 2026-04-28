@@ -165,6 +165,8 @@ void AnimationHost::RemoveAnimationTimeline(
 }
 
 void AnimationHost::RemoveTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  DCHECK(trigger->id());
+  EraseTrigger(trigger);
   id_to_trigger_map_.Write(*this).erase(trigger->id());
   SetNeedsPushProperties();
 }

@@ -214,10 +214,11 @@ void KeyframeEffect::UpdateTickingState() {
   }
 }
 
-void KeyframeEffect::Pause(base::TimeDelta hold_time) {
+void KeyframeEffect::Pause(base::TimeDelta hold_time,
+                           gfx::KeyframeModel::RunState pause_run_state) {
   bool did_pause = false;
   for (auto& keyframe_model : keyframe_models()) {
-    keyframe_model->Pause(hold_time);
+    keyframe_model->Pause(hold_time, pause_run_state);
     did_pause = true;
   }
 
@@ -1095,6 +1096,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
         case gfx::KeyframeModel::STARTING:
         case gfx::KeyframeModel::RUNNING:
         case gfx::KeyframeModel::PAUSED:
+        case gfx::KeyframeModel::PAUSED_EXCLUSIVE:
           keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED,
                                       monotonic_time);
           keyframe_model_finished = true;

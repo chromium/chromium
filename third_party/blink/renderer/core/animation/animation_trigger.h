@@ -69,7 +69,9 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
       const PaintArtifactCompositor* paint_artifact_compositor);
   virtual void CreateCompositorTrigger() {}
   virtual void DestroyCompositorTrigger();
-  cc::AnimationTrigger* CompositorTrigger() { return nullptr; }
+  cc::AnimationTrigger* CompositorTrigger() {
+    return compositor_trigger_.get();
+  }
 
   void Dispose();
 

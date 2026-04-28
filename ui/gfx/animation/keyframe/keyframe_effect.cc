@@ -167,7 +167,7 @@ void KeyframeEffect::TickKeyframeModel(base::TimeTicks monotonic_time,
                                        KeyframeModel* keyframe_model) {
   if ((keyframe_model->run_state() != KeyframeModel::STARTING &&
        keyframe_model->run_state() != KeyframeModel::RUNNING &&
-       keyframe_model->run_state() != KeyframeModel::PAUSED &&
+       !KeyframeModel::IsPaused(keyframe_model->run_state()) &&
        keyframe_model->run_state() != KeyframeModel::WAITING_FOR_DELETION) ||
       !keyframe_model->HasActiveTime(monotonic_time)) {
     return;
@@ -308,7 +308,7 @@ void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time,
         keyframe_model->iterations() == std::numeric_limits<double>::infinity())
       continue;
     if (keyframe_model->run_state() == KeyframeModel::RUNNING ||
-        keyframe_model->run_state() == KeyframeModel::PAUSED) {
+        KeyframeModel::IsPaused(keyframe_model->run_state())) {
       animated_properties[keyframe_model->TargetProperty()] = true;
     }
   }
@@ -334,7 +334,7 @@ KeyframeModel* KeyframeEffect::GetRunningKeyframeModelForProperty(
     int target_property) const {
   for (auto& keyframe_model : keyframe_models_) {
     if ((keyframe_model->run_state() == KeyframeModel::RUNNING ||
-         keyframe_model->run_state() == KeyframeModel::PAUSED) &&
+         KeyframeModel::IsPaused(keyframe_model->run_state())) &&
         keyframe_model->TargetProperty() == target_property) {
       return keyframe_model.get();
     }

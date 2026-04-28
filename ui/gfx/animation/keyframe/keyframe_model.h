@@ -29,12 +29,19 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // keyframe model that was aborted for some reason, but needs to be finished.
   // Currently this is for impl-only scroll offset KeyframeModels that need to
   // be completed on the main thread.
+  // PAUSED_EXCLUSIVE means that the before-active boundary is excluded from the
+  // active phase when playback rate is positive, i.e the before-active boundary
+  // is considered to be in the before phase. Similarly, the active-after
+  // boundary is excluded from the active phase when playback rate is negative.
+  // Currently, PAUSED_EXCLUSIVE only applies to triggered animations[1]
+  // [1] https://drafts.csswg.org/animation-triggers-1/
   enum RunState {
     WAITING_FOR_TARGET_AVAILABILITY = 0,
     WAITING_FOR_DELETION,
     STARTING,
     RUNNING,
     PAUSED,
+    PAUSED_EXCLUSIVE,
     FINISHED,
     ABORTED,
     ABORTED_BUT_NEEDS_COMPLETION,
@@ -49,6 +56,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
   enum class Phase { BEFORE, ACTIVE, AFTER };
 
+  static bool IsPaused(RunState run_state);
   static std::unique_ptr<KeyframeModel> Create(
       std::unique_ptr<AnimationCurve> curve,
       int keyframe_model_id,
@@ -70,7 +78,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
   // Pause the keyframe effect at |hold_time|. Note that this clears the start
   // time.
-  void Pause(base::TimeDelta hold_time);
+  void Pause(base::TimeDelta hold_time, RunState pause_run_state = PAUSED);
 
   // Reverse the playback direction of the keyframe effect by negating its
   // playback rate.
@@ -108,6 +116,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     hold_time_ = hold_time;
   }
 
+  bool auto_fills_on_finish() const { return auto_fills_on_finish_; }
+  void set_auto_fills_on_finish(bool n) { auto_fills_on_finish_ = n; }
+
   // This is the number of times that the keyframe model will play. If this
   // value is zero or negative, the keyframe model will not play. If it is
   // std::numeric_limits<double>::infinity(), then the keyframe model will loop
@@ -123,6 +134,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   AnimationCurve* curve() { return curve_.get(); }
   const AnimationCurve* curve() const { return curve_.get(); }
 
+  // Returns true if the local time is at or beyond the "finish" end of the
+  // animation in the relevant playback rate direction. The "finish" end is the
+  // |active duration| if playback_rate_ > 0, and 0 if playback_rate_ < 0.
+  bool IsFinishedAtMonotonicTime(base::TimeTicks monotonic_time) const;
   bool IsFinishedAt(base::TimeTicks monotonic_time) const;
   bool is_finished() const {
     return run_state_ == FINISHED || run_state_ == ABORTED ||
@@ -176,6 +191,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
  private:
   KeyframeModel::Phase CalculatePhase(base::TimeDelta local_time) const;
+  void EnsureFillsWhenFinished();
 
   // Return local time for this keyframe model given the absolute monotonic
   // time.
@@ -229,6 +245,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // https://www.w3.org/TR/web-animations-1/#start-delay
   base::TimeDelta start_delay_;
   std::optional<base::TimeDelta> hold_time_;
+  bool auto_fills_on_finish_ = false;
 };
 
 }  // namespace gfx

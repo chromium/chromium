@@ -102,6 +102,7 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   to_return->set_direction(direction());
   to_return->set_playback_rate(playback_rate());
   to_return->set_fill_mode(fill_mode());
+  to_return->set_auto_fills_on_finish(auto_fills_on_finish());
   DCHECK(!to_return->is_controlling_instance_);
   to_return->is_controlling_instance_ = true;
 #if DCHECK_IS_ON()
@@ -183,8 +184,7 @@ void KeyframeModel::PushPropertiesTo(KeyframeModel* other) const {
          "model ids are reused.";
 #endif
   other->element_id_ = element_id_;
-  if (run_state() == KeyframeModel::PAUSED ||
-      other->run_state() == KeyframeModel::PAUSED) {
+  if (IsPaused(run_state()) || IsPaused(other->run_state())) {
     other->ForceRunState(run_state());
     other->set_hold_time(hold_time());
   }

@@ -185,6 +185,7 @@ class CORE_EXPORT CompositorAnimations {
     double adjusted_iteration_count;
     double playback_rate;
     Timing::FillMode fill_mode;
+    bool auto_fills_on_finish;
     double iteration_start;
     base::TimeDelta start_delay;
   };

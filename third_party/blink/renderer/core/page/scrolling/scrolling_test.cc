@@ -3773,6 +3773,7 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // Activate the timeline (see ScrollTimeline::IsActive), so that it will be
   // ticked during the next LTHI::Animate.
   impl_host->PromoteScrollTimelinesPendingToActive();
+  cc_animation->animation_host()->PromoteScrollTimelinesPendingToActive();
 
   // Second frame: LTHI::Animate transitions to RunState::STARTING. Pass
   // raster=true to also reach LTHI::UpdateAnimationState, which transitions

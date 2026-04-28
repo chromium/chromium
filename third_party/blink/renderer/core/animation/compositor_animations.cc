@@ -799,42 +799,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   out.fill_mode = timing.fill_mode == Timing::FillMode::AUTO
                       ? Timing::FillMode::NONE
                       : timing.fill_mode;
-
-  // If we have a monotonic timeline we ensure that the animation will fill
-  // after finishing until it is removed by a subsequent main thread commit.
-  // This allows developers to apply a post animation style or start a
-  // subsequent animation without flicker.
-  if (is_monotonic_timeline || is_boundary_aligned) {
-    if (animation_playback_rate >= 0) {
-      switch (out.fill_mode) {
-        case Timing::FillMode::BOTH:
-        case Timing::FillMode::FORWARDS:
-          break;
-        case Timing::FillMode::BACKWARDS:
-          out.fill_mode = Timing::FillMode::BOTH;
-          break;
-        case Timing::FillMode::NONE:
-          out.fill_mode = Timing::FillMode::FORWARDS;
-          break;
-        case Timing::FillMode::AUTO:
-          NOTREACHED();
-      }
-    } else {
-      switch (out.fill_mode) {
-        case Timing::FillMode::BOTH:
-        case Timing::FillMode::BACKWARDS:
-          break;
-        case Timing::FillMode::FORWARDS:
-          out.fill_mode = Timing::FillMode::BOTH;
-          break;
-        case Timing::FillMode::NONE:
-          out.fill_mode = Timing::FillMode::BACKWARDS;
-          break;
-        case Timing::FillMode::AUTO:
-          NOTREACHED();
-      }
-    }
-  }
+  out.auto_fills_on_finish = is_monotonic_timeline || is_boundary_aligned;
 
   out.iteration_start = timing.iteration_start;
 
@@ -1139,6 +1104,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
     keyframe_model->set_direction(compositor_timing.direction);
     keyframe_model->set_playback_rate(compositor_timing.playback_rate);
     keyframe_model->set_fill_mode(compositor_timing.fill_mode);
+    keyframe_model->set_auto_fills_on_finish(
+        compositor_timing.auto_fills_on_finish);
     keyframe_models.push_back(std::move(keyframe_model));
   }
   DCHECK(!keyframe_models.empty());

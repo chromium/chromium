@@ -230,6 +230,7 @@ bool ScrollOffsetAnimationImpl::IsAnimating() const {
     case KeyframeModel::STARTING:
     case KeyframeModel::RUNNING:
     case KeyframeModel::PAUSED:
+    case KeyframeModel::PAUSED_EXCLUSIVE:
       return true;
     case KeyframeModel::WAITING_FOR_DELETION:
     case KeyframeModel::FINISHED:

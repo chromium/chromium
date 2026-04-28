@@ -310,8 +310,9 @@ void Animation::PauseKeyframeModelForTesting(int keyframe_model_id,
   keyframe_effect()->PauseKeyframeModelForTesting(keyframe_model_id, hold_time);
 }
 
-void Animation::Pause(base::TimeDelta hold_time) {
-  keyframe_effect()->Pause(hold_time);
+void Animation::Pause(base::TimeDelta hold_time,
+                      KeyframeModel::RunState run_state) {
+  keyframe_effect()->Pause(hold_time, run_state);
 }
 
 void Animation::RemoveKeyframeModel(int keyframe_model_id) {
