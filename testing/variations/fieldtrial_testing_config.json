@@ -13394,6 +13394,24 @@
             ]
         }
     ],
+    "IOSImageOptimizationsExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextMenuPreviewDownsampleImage",
+                        "NTPBackgroundDownsampleImage",
+                        "SnapshotCompressedJPEGQuality",
+                        "SnapshotDownsampleImage"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
