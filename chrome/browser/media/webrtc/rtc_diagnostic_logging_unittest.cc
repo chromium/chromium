@@ -975,4 +975,62 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(future.Wait());
 }
 
+TEST_F(RTCDiagnosticLoggingTest,
+       FinishRtcDiagnosticLogging_CallbackAfterFileClosed) {
+  const GURL url("https://example.google.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::test::TestFuture<void> event_log_future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", event_log_future.GetCallback());
+  EXPECT_TRUE(event_log_future.Wait());
+
+  bool observer_called = false;
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() { observer_called = true; }));
+
+  base::test::TestFuture<void> future;
+  content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
+      *main_rfh(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(observer_called);
+}
+
+TEST_F(RTCDiagnosticLoggingTest,
+       CancelRtcDiagnosticLogging_CallbackAfterFileClosed) {
+  const GURL url("https://example.google.com");
+  NavigateAndCommit(url);
+  SetRtcEventLogPolicyAndAddPeerConnection(main_rfh(), url);
+
+  base::test::TestFuture<const std::string&> start_future;
+  content::GetContentClientForTesting()->browser()->StartRtcDiagnosticLogging(
+      *main_rfh(), /*should_upload_on_stop=*/true, {},
+      start_future.GetCallback());
+  EXPECT_TRUE(start_future.Wait());
+
+  base::test::TestFuture<void> event_log_future;
+  rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
+      *main_rfh(), "session_id", event_log_future.GetCallback());
+  EXPECT_TRUE(event_log_future.Wait());
+
+  bool observer_called = false;
+  EXPECT_CALL(remote_observer_, OnRemoteLogStopped(testing::_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() { observer_called = true; }));
+
+  base::test::TestFuture<void> future;
+  content::GetContentClientForTesting()->browser()->CancelRtcDiagnosticLogging(
+      *main_rfh(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(observer_called);
+}
+
 #endif

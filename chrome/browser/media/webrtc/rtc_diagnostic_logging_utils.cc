@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -144,33 +146,28 @@ void StartRtcDiagnosticLogging(
   WebRtcLoggingController::WebApiSettings web_api_settings{
       .should_upload_on_stop = should_upload_on_stop, .origin = origin};
 
-  base::OnceClosure closure = base::BindOnce(
-      [](std::string uuid,
-         base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run(uuid);
-      },
-      std::move(uuid), std::move(callback));
-
   controller->StartLogging(
       base::BindOnce(
           [](scoped_refptr<WebRtcLoggingController> controller,
              std::unique_ptr<WebRtcLogMetaDataMap> metadata,
-             const url::Origin origin, base::OnceClosure closure, bool success,
-             const std::string&) {
+             const url::Origin origin, std::string uuid,
+             base::OnceCallback<void(const std::string&)> callback,
+             bool success, const std::string&) {
             if (success && VerifySettings(controller.get(), origin)) {
               controller->SetMetaData(
                   std::move(metadata),
                   base::BindOnce(
-                      [](base::OnceClosure closure, bool, const std::string&) {
-                        std::move(closure).Run();
-                      },
-                      std::move(closure)));
+                      [](std::string uuid,
+                         base::OnceCallback<void(const std::string&)> callback,
+                         bool,
+                         const std::string&) { std::move(callback).Run(uuid); },
+                      std::move(uuid), std::move(callback)));
             } else {
-              std::move(closure).Run();
+              std::move(callback).Run(uuid);
             }
           },
           base::WrapRefCounted(controller), std::move(metadata_map), origin,
-          std::move(closure)),
+          std::move(uuid), std::move(callback)),
       web_api_settings);
 #else
   std::move(callback).Run(uuid);
@@ -186,21 +183,33 @@ void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
     return;
   }
 
+  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  if (auto* manager =
+          ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
+    manager->FinishLogging(frame_host.GetProcess()->GetDeprecatedID(), barrier);
+  } else {
+    barrier.Run();
+  }
+
   const url::Origin origin = frame_host.GetLastCommittedOrigin();
 
   controller->StopLogging(base::BindOnce(
       [](scoped_refptr<WebRtcLoggingController> controller,
-         const url::Origin origin, base::OnceClosure callback, bool success,
+         const url::Origin origin, base::RepeatingClosure barrier, bool success,
          const std::string& error) {
-        std::move(callback).Run();
         if (success && VerifySettings(controller.get(), origin) &&
             !controller->web_api_settings()->should_upload_on_stop) {
           std::string log_id = base::NumberToString(
               base::Time::Now().InSecondsFSinceUnixEpoch());
-          controller->StoreLog(log_id, base::DoNothing());
+          controller->StoreLog(
+              log_id, base::BindOnce([](base::RepeatingClosure b, bool,
+                                        const std::string&) { b.Run(); },
+                                     std::move(barrier)));
+        } else {
+          barrier.Run();
         }
       },
-      base::WrapRefCounted(controller), origin, std::move(callback)));
+      base::WrapRefCounted(controller), origin, std::move(barrier)));
 #else
   std::move(callback).Run();
 #endif
@@ -215,17 +224,26 @@ void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
     return;
   }
 
+  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  if (auto* manager =
+          ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
+    manager->CancelLogging(frame_host.GetProcess()->GetDeprecatedID(), barrier);
+  } else {
+    barrier.Run();
+  }
+
   controller->set_upload_log_on_render_close(false);
   controller->set_should_upload_on_stop(false);
   controller->StopLogging(base::BindOnce(
       [](scoped_refptr<WebRtcLoggingController> controller,
-         base::OnceClosure callback, bool success, const std::string& error) {
+         base::RepeatingClosure barrier, bool success,
+         const std::string& error) {
         controller->DiscardLog(base::BindOnce(
-            [](base::OnceClosure callback, bool success,
-               const std::string& error) { std::move(callback).Run(); },
-            std::move(callback)));
+            [](base::RepeatingClosure barrier, bool success,
+               const std::string& error) { std::move(barrier).Run(); },
+            std::move(barrier)));
       },
-      base::WrapRefCounted(controller), std::move(callback)));
+      base::WrapRefCounted(controller), std::move(barrier)));
 #else
   std::move(callback).Run();
 #endif
