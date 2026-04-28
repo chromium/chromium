@@ -62,6 +62,8 @@ public class BottomBarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mHomeActionSupplier =
             ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<PropertyModel> mMenuActionSupplier =
+            ObservableSuppliers.createNullable();
 
     private Activity mActivity;
     private FrameLayout mParent;
@@ -72,6 +74,7 @@ public class BottomBarCoordinatorUnitTest {
     public void setUp() {
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
+        when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -144,5 +147,23 @@ public class BottomBarCoordinatorUnitTest {
 
         View homeStub = mCoordinator.getView().findViewById(R.id.home_stub);
         assertNotNull(homeStub);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/false")
+    public void testInitialization_withAppMenu_bindsAppMenu() {
+        verify(mActionRegistry).get(ActionId.APP_MENU);
+
+        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        assertNotNull(menuButton);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
+    public void testInitialization_withoutAppMenu_doesNotBindAppMenu() {
+        verify(mActionRegistry, never()).get(ActionId.APP_MENU);
+
+        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        assertNull(menuButton);
     }
 }

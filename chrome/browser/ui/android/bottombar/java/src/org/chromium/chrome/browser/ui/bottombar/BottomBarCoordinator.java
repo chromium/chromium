@@ -79,6 +79,15 @@ public class BottomBarCoordinator implements BottomBar {
                             homeContainer,
                             HomeActionButtonBinder::bind));
         }
+
+        if (BottomBarConfigUtils.shouldIncludeAppMenuButton()) {
+            BottomBarButtonContainer menuContainer =
+                    mView.findViewById(R.id.app_menu_button_container);
+            menuContainer.inflateStub();
+            menuContainer.setVisibility(View.VISIBLE);
+            mBindings.add(
+                    new ActionViewBinding(actionRegistry.get(ActionId.APP_MENU), menuContainer));
+        }
     }
 
     @Override

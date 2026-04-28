@@ -75,6 +75,7 @@ found in the LICENSE file.
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 
     <org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer
+        android:id="@+id/app_menu_button_container"
         android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"

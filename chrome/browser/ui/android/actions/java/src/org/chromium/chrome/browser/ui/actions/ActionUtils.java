@@ -71,6 +71,15 @@ public class ActionUtils {
                 R.drawable.ic_home_24dp,
                 R.string.accessibility_toolbar_btn_home,
                 R.string.accessibility_toolbar_btn_home);
+
+        // Register app menu.
+        registerAction(
+                registry,
+                ActionId.APP_MENU,
+                ActionProperties.BASE_KEYS,
+                org.chromium.components.browser_ui.widget.R.drawable.ic_more_vert_24dp,
+                R.string.accessibility_toolbar_btn_menu,
+                R.string.accessibility_toolbar_btn_menu);
     }
 
     /**

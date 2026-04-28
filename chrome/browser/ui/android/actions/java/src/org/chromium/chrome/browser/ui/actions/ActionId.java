@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @IntDef({
     ActionId.HOME_BUTTON,
     ActionId.TAB_SWITCHER,
-    ActionId.MENU,
+    ActionId.APP_MENU,
     ActionId.BACK_BUTTON,
     ActionId.NEW_TAB,
     ActionId.GLIC,
@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 public @interface ActionId {
     int HOME_BUTTON = 0;
     int TAB_SWITCHER = 1;
-    int MENU = 2;
+    int APP_MENU = 2;
     int BACK_BUTTON = 3;
     int NEW_TAB = 4;
     int GLIC = 5;
