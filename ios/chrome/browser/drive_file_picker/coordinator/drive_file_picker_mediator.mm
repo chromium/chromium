@@ -116,24 +116,23 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   // Observer for the authentication service.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authenticationServiceObserverBridge;
+  // Whether this mediator is at the root level of the file picker.
+  BOOL _isRoot;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      collection:
-                          (std::unique_ptr<DriveFilePickerCollection>)collection
                          options:(DriveFilePickerOptions)options
+                          isRoot:(BOOL)isRoot
                  identityManager:(signin::IdentityManager*)identityManager
            authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
     CHECK(webState);
-    CHECK(collection);
     CHECK(identityManager);
     CHECK(authenticationService);
-    CHECK(identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     _webState = webState->GetWeakPtr();
-    _collection = std::move(collection);
     _options = options;
+    _isRoot = isRoot;
     _fetchedDriveItems = {};
     _identityManager = identityManager;
     _authenticationService = authenticationService;
@@ -184,17 +183,12 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     return;
   }
   _driveService = driveService;
-  if (_driveService) {
-    _driveList = _driveService->CreateList(_collection->GetIdentity());
-    _driveDownloader =
-        _driveService->CreateFileDownloader(_collection->GetIdentity());
-  }
 }
 
 #pragma mark - Public methods
 
 - (void)disconnect {
-  if (_collection->IsRoot() && _webState && !_webState->IsBeingDestroyed()) {
+  if (_isRoot && _webState && !_webState->IsBeingDestroyed()) {
     ChooseFileTabHelper* tab_helper =
         ChooseFileTabHelper::FromWebState(_webState.get());
 

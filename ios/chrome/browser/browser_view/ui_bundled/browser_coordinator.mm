@@ -3355,9 +3355,13 @@ const char kChromeAppStoreUrl[] =
   if (!tab_helper || !tab_helper->IsChoosingFiles()) {
     return;
   }
-  if (!AuthenticationServiceFactory::GetForProfile(self.profile)
-           ->HasPrimaryIdentity()) {
-    // Drive can’t be accessed if the user has no primary identity.
+  if (!(base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut) ||
+        AuthenticationServiceFactory::GetForProfile(self.profile)
+            ->HasPrimaryIdentity())) {
+    // Drive can be accessed if either:
+    //   - The user has a primary identity, or
+    //   - The kIOSChooseFromDriveSignedOut flag is enabled.
+    // Since neither of these are true, the file picker is not presented.
     tab_helper->SetIsPresentingFilePicker(false);
     return;
   }

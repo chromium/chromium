@@ -96,6 +96,8 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
       // No text.
       return nil;
+    case signin_metrics::AccessPoint::kDriveFilePickerIos:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHOOSE_FROM_DRIVE);
     case signin_metrics::AccessPoint::kStartPage:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -136,7 +138,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kAddressBubble:
     case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
-    case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:

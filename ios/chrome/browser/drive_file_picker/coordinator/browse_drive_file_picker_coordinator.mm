@@ -96,8 +96,8 @@
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
-                 collection:std::move(_collection)
                     options:_options
+                     isRoot:NO
             identityManager:IdentityManagerFactory::GetForProfile(profile)
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 profile)];
@@ -109,7 +109,6 @@
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher;
-  _mediator.metricsHelper = _metricsHelper;
 
   _viewController.delegate = self;
   _viewController.driveFilePickerHandler = HandlerForProtocol(
@@ -119,7 +118,9 @@
       YES;
 
   _viewController.mutator = _mediator;
+  [_mediator setCollection:std::move(_collection)];
   _mediator.consumer = _viewController;
+  _mediator.metricsHelper = _metricsHelper;
 }
 
 - (void)stop {

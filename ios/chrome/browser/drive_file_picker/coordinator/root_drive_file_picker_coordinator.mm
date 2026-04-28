@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -53,6 +54,7 @@
 @end
 
 @implementation RootDriveFilePickerCoordinator {
+  SigninCoordinator* _addAccountCoordinator;
   SigninCoordinator* _signinCoordinator;
   DriveFilePickerNavigationController* _navigationController;
   DriveFilePickerMediator* _mediator;
@@ -99,21 +101,12 @@
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
-  _currentIdentity = authenticationService->GetPrimaryIdentity();
   _imageFetcher = std::make_unique<DriveFilePickerImageFetcher>(
       profile->GetSharedURLLoaderFactory());
-  _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
-  _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _viewController.driveFilePickerHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
-  _navigationController = [[DriveFilePickerNavigationController alloc]
-      initWithRootViewController:_viewController];
-
-  CHECK(_currentIdentity);
   _mediator = [[DriveFilePickerMediator alloc]
            initWithWebState:_webState.get()
-                 collection:DriveFilePickerCollection::GetRoot(_currentIdentity)
                     options:DriveFilePickerOptions::Default()
+                     isRoot:YES
             identityManager:IdentityManagerFactory::GetForProfile(profile)
       authenticationService:authenticationService];
   _mediator.delegate = self;
@@ -123,49 +116,22 @@
   _mediator.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _mediator.imageFetcher = _imageFetcher.get();
-  _mediator.metricsHelper = _metricsHelper;
-
-  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-  _navigationController.presentationController.delegate = self;
-  if (ui::GetDeviceFormFactor() ==
-      ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
-    _navigationController.sheetPresentationController.prefersGrabberVisible =
-        YES;
-    // TODO(crbug.com/441764702): Add `mediumDetent` back.
-    _navigationController.sheetPresentationController.detents = @[
-      [UISheetPresentationControllerDetent largeDetent],
-    ];
-    _navigationController.sheetPresentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierLarge;
-  } else {
-    _navigationController.sheetPresentationController.prefersGrabberVisible =
-        NO;
-    _navigationController.sheetPresentationController.detents =
-        @[ [UISheetPresentationControllerDetent largeDetent] ];
-    _navigationController.sheetPresentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierLarge;
+  if (base::FeatureList::IsEnabled(kIOSChooseFromDriveSignedOut)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(
+            self.profile->GetOriginalProfile());
+    bool signedIn = (identity_manager && identity_manager->HasPrimaryAccount(
+                                             signin::ConsentLevel::kSignin));
+    if (!signedIn) {
+      [self showSignIn];
+      return;
+    }
   }
-
-  [self.baseViewController presentViewController:_navigationController
-                                        animated:YES
-                                      completion:nil];
-
-  _viewController.mutator = _mediator;
-  _mediator.consumer = _viewController;
-
-  // Add tap gesture recognizer to window, to handle tap-to-dismiss.
-  _tapToDismissGestureRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(didTapToDismiss:)];
-  _tapToDismissGestureRecognizer.numberOfTapsRequired = 1;
-  _tapToDismissGestureRecognizer.cancelsTouchesInView = NO;
-  _tapToDismissGestureRecognizer.delegate = self;
-  [self.baseViewController.view.window
-      addGestureRecognizer:_tapToDismissGestureRecognizer];
+  [self startRootFilePicker];
 }
 
 - (void)stop {
-  [self stopSigninCoordinator];
+  [self stopAddAccountCoordinator];
   [_metricsHelper reportOutcomeMetrics];
   [self.baseViewController.view.window
       removeGestureRecognizer:_tapToDismissGestureRecognizer];
@@ -180,6 +146,8 @@
   _viewController.driveFilePickerHandler = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -305,42 +273,98 @@
 
 #pragma mark - Private
 
+- (void)startRootFilePicker {
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  _currentIdentity = authenticationService->GetPrimaryIdentity();
+
+  _viewController = [[DriveFilePickerTableViewController alloc] init];
+  _viewController.driveFilePickerHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
+  _navigationController = [[DriveFilePickerNavigationController alloc]
+      initWithRootViewController:_viewController];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.presentationController.delegate = self;
+  if (ui::GetDeviceFormFactor() ==
+      ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
+    _navigationController.sheetPresentationController.prefersGrabberVisible =
+        YES;
+    // TODO(crbug.com/441764702): Add `mediumDetent` back.
+    _navigationController.sheetPresentationController.detents = @[
+      [UISheetPresentationControllerDetent largeDetent],
+    ];
+    _navigationController.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  } else {
+    _navigationController.sheetPresentationController.prefersGrabberVisible =
+        NO;
+    _navigationController.sheetPresentationController.detents =
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
+    _navigationController.sheetPresentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }
+
+  [self.baseViewController presentViewController:_navigationController
+                                        animated:YES
+                                      completion:nil];
+
+  _viewController.mutator = _mediator;
+  CHECK(_currentIdentity);
+  [_mediator
+      setCollection:DriveFilePickerCollection::GetRoot(_currentIdentity)];
+  _mediator.consumer = _viewController;
+  _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
+  _mediator.metricsHelper = _metricsHelper;
+
+  // Add tap gesture recognizer to window, to handle tap-to-dismiss.
+  _tapToDismissGestureRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(didTapToDismiss:)];
+  _tapToDismissGestureRecognizer.numberOfTapsRequired = 1;
+  _tapToDismissGestureRecognizer.cancelsTouchesInView = NO;
+  _tapToDismissGestureRecognizer.delegate = self;
+  [self.baseViewController.view.window
+      addGestureRecognizer:_tapToDismissGestureRecognizer];
+}
+
 - (void)stopChildBrowseCoordinator {
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator.delegate = nil;
   _childBrowseCoordinator = nil;
 }
 
-- (void)stopSigninCoordinator {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
+- (void)stopAddAccountCoordinator {
+  [_addAccountCoordinator stop];
+  _addAccountCoordinator = nil;
 }
 
 - (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
                                      result:(SigninCoordinatorResult)result
                          completionIdentity:
                              (id<SystemIdentity>)completionIdentity {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
   if (result == SigninCoordinatorResultSuccess) {
     CHECK(completionIdentity);
     [self addAndSelectNewIdentity:completionIdentity];
   } else {
     [self reportAddingIdentityFailure];
   }
-  [self stopSigninCoordinator];
+  [self stopAddAccountCoordinator];
 }
 
 // Initiate the add account flow.
 - (void)showAddAccount {
-  if (_signinCoordinator.viewWillPersist) {
+  if (_addAccountCoordinator.viewWillPersist) {
     return;
   }
-  [_signinCoordinator stop];
+  [_addAccountCoordinator stop];
   __weak __typeof(self) weakSelf = self;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kDriveFilePickerIos;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
-  _signinCoordinator = [SigninCoordinator
+  _addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:_navigationController
                                           browser:signin::GetRegularBrowser(
                                                       self.browser)
@@ -349,14 +373,52 @@
                                    prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _signinCoordinator.signinCompletion =
+  _addAccountCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
         id<SystemIdentity> completionIdentity) {
         [weakSelf addAccountCompletionWithCoordinator:coordinator
                                                result:result
                                    completionIdentity:completionIdentity];
       };
+  [_addAccountCoordinator start];
+}
+
+- (void)showSignIn {
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
+  __weak __typeof(self) weakSelf = self;
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kSigninOnly
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::kDriveFilePickerIos
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:^(SigninCoordinator* coordinator,
+                          SigninCoordinatorResult result,
+                          id<SystemIdentity> identity) {
+               [weakSelf handleSignInResult:result identity:identity];
+             }];
+
+  _signinCoordinator =
+      [SigninCoordinator signinCoordinatorWithCommand:command
+                                              browser:self.browser
+                                   baseViewController:self.baseViewController];
   [_signinCoordinator start];
+}
+
+- (void)handleSignInResult:(SigninCoordinatorResult)result
+                  identity:(id<SystemIdentity>)identity {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+  if (result == SigninCoordinatorResultSuccess) {
+    [self startRootFilePicker];
+    return;
+  }
+  id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
+  [driveFilePickerHandler hideDriveFilePicker];
 }
 
 // Called when user interrupted a download/upload.

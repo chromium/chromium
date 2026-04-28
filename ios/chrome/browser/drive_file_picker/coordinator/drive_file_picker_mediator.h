@@ -59,9 +59,8 @@ class AuthenticationService;
 
 // Initializes the mediator.
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      collection:
-                          (std::unique_ptr<DriveFilePickerCollection>)collection
                          options:(DriveFilePickerOptions)options
+                          isRoot:(BOOL)isRoot
                  identityManager:(signin::IdentityManager*)identityManager
            authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;

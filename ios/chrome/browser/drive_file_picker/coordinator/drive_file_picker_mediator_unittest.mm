@@ -333,17 +333,23 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     }
     mediator_ = [[DriveFilePickerMediator alloc]
              initWithWebState:web_state_.get()
-                   collection:std::move(collection)
                       options:DriveFilePickerOptions::Default()
+                       isRoot:YES
               identityManager:_identityManager
         authenticationService:auth_service_];
     mediator_.delegate = fake_delegate_;
     mediator_.driveService = drive_service_;
     mediator_.accountManagerService = _accountManagerService;
     mediator_.driveFilePickerHandler = fake_drive_file_picker_handler_;
+    [mediator_ setCollection:std::move(collection)];
     mediator_.imageFetcher = image_fetcher_.get();
     mediator_.metricsHelper = metrics_helper_;
     mediator_.consumer = fake_consumer_;
+    if (drive_list_->IsExecutingQuery()) {
+      drive_list_->SetListItemsCompletionQuitClosure(
+          task_environment_.QuitClosure());
+      task_environment_.RunUntilQuit();
+    }
   }
 
   // Starts file selection in the WebState.

@@ -7461,6 +7461,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT" desc="Button that the user can press if they are not the profile that Chrome found (opposite of 'Continue as Joe Doe'). The user will be able to choose another account and sign-in with it.">
         Choose another account
       </message>
+      <message name="IDS_IOS_SIGNIN_PROMO_CHOOSE_FROM_DRIVE" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears when the user attempts to choose a file from Google Drive while signed out. We want users to read this promo and sign in.">
+        Access files in your Google Drive any time.
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_CLOSE_ACCESSIBILITY" desc="Accessibility label to describe the close button action in the sign-in promo element.">
         Close sign-in promo
       </message>

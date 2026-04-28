@@ -5,6 +5,8 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/drive_file_picker/test/drive_file_picker_app_interface.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -65,6 +67,18 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
                     grey_enabled(), nil);
 }
 
+// Matcher for consistency sign-in promo.
+id<GREYMatcher> SigninPromo() {
+  return grey_allOf(
+      grey_accessibilityID(kConsistencySigninAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for consistency sign-in promo primary button.
+id<GREYMatcher> SigninPromoPrimaryButton() {
+  return chrome_test_util::ConsistencySigninPrimaryButtonMatcher();
+}
+
 }  // namespace
 
 @interface DriveFilePickerTestCase : ChromeTestCase
@@ -75,6 +89,11 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kIOSChooseFromDrive);
+
+  if ([self isRunningTest:@selector(testFileSelectionSignedOut)]) {
+    config.features_enabled.push_back(kIOSChooseFromDriveSignedOut);
+  }
+
   return config;
 }
 
@@ -329,6 +348,49 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile2")]
       assertWithMatcher:grey_selected()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile3")]
+      assertWithMatcher:grey_selected()];
+
+  // Tap the "Confirm" button.
+  [[EarlGrey selectElementWithMatcher:ConfirmButtonMatcher(/* enabled= */ YES)]
+      performAction:grey_tap()];
+}
+
+// Tests that a single file can be selected and submitted to the page when not
+// signed in.
+- (void)testFileSelectionSignedOut {
+  // Initialize the Drive file picker.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [DriveFilePickerAppInterface startChoosingMultipleFilesInCurrentWebState];
+  [DriveFilePickerAppInterface showDriveFilePicker];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SigninPromo()];
+  [[EarlGrey selectElementWithMatcher:SigninPromoPrimaryButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      DriveFilePickerNavigationViewControllerMatcher()];
+
+  // Create a test drive file.
+  [DriveFilePickerAppInterface beginDriveListResult];
+  [DriveFilePickerAppInterface addDriveItemWithIdentifier:@"kTestDriveFile1"
+                                                     name:@"File 1"
+                                                 isFolder:NO
+                                                 mimeType:nil
+                                              canDownload:YES];
+  [DriveFilePickerAppInterface endDriveListResult];
+
+  // Open "My Drive".
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kDriveFilePickerMyDriveItemIdentifier)]
+      performAction:grey_tap()];
+
+  // Select a file.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile1")]
+      performAction:grey_tap()];
+
+  // Check that the file appears as selected.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"kTestDriveFile1")]
       assertWithMatcher:grey_selected()];
 
   // Tap the "Confirm" button.
