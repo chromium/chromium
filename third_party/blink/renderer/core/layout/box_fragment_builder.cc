@@ -391,11 +391,20 @@ EBreakBetween BoxFragmentBuilder::JoinedBreakBetweenValue(
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
 }
 
-void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
-                                                 bool is_block_direction) {
+void BoxFragmentBuilder::MoveChildrenInDirection(
+    LayoutUnit offset,
+    bool is_block_direction,
+    std::optional<AdditionalOffsetAdjustment> additional_offset_adjustment) {
+  if (!offset && !additional_offset_adjustment) {
+    return;
+  }
   DCHECK(is_new_fc_);
-  DCHECK_NE(is_block_direction ? FragmentBlockSize() : FragmentInlineSize(),
-            kIndefiniteSize);
+  if (!additional_offset_adjustment) {
+    // Per-child adjustments can handle an indefinite container size.
+    // Otherwise, movement in this axis requires a definite fragment size.
+    DCHECK_NE(is_block_direction ? FragmentBlockSize() : FragmentInlineSize(),
+              kIndefiniteSize);
+  }
   DCHECK(oof_positioned_descendants_.empty());
 
   has_moved_children_ = true;
@@ -410,6 +419,7 @@ void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
     }
   }
 
+  // TODO(celestepan): Handle fill-reverse for inflow bounds.
   if (inflow_bounds_) {
     if (is_block_direction) {
       inflow_bounds_->offset.block_offset += offset;
@@ -418,20 +428,21 @@ void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
     }
   }
 
-  for (auto& child : children_) {
-    if (is_block_direction) {
-      child.offset.block_offset += offset;
-    } else {
-      child.offset.inline_offset += offset;
+  auto MoveChild = [&](LogicalFragmentLink& child) {
+    if (additional_offset_adjustment) {
+      additional_offset_adjustment->Run(child);
     }
+    LayoutUnit& child_offset = is_block_direction ? child.offset.block_offset
+                                                  : child.offset.inline_offset;
+    child_offset += offset;
+  };
+
+  for (auto& child : children_) {
+    MoveChild(child);
   }
 
   for (auto& child : children_with_size_dependent_propagation_) {
-    if (is_block_direction) {
-      child.offset.block_offset += offset;
-    } else {
-      child.offset.inline_offset += offset;
-    }
+    MoveChild(child);
   }
 
   for (auto& candidate : oof_positioned_candidates_) {

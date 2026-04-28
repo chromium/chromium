@@ -449,6 +449,7 @@ blink_core_sources_layout = [
   "logical_box_fragment.cc",
   "logical_box_fragment.h",
   "logical_fragment.h",
+  "logical_fragment_link.cc",
   "logical_fragment_link.h",
   "map_coordinates_flags.h",
   "mathml/layout_mathml_block.cc",

@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -720,10 +721,17 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void CheckNoBlockFragmentation() const;
 #endif
 
+  using AdditionalOffsetAdjustment =
+      base::RepeatingCallback<void(LogicalFragmentLink&)>;
+
   // Moves all the children by `offset` in the block or inline direction.
   // (Ensure that any baselines, OOFs, etc, are also moved by the appropriate
-  // amount).
-  void MoveChildrenInDirection(LayoutUnit offset, bool is_block_direction);
+  // amount). If `additional_offset_adjustment` is provided, apply it to each
+  // child before the shared `offset`.
+  void MoveChildrenInDirection(LayoutUnit offset,
+                               bool is_block_direction,
+                               std::optional<AdditionalOffsetAdjustment>
+                                   additional_offset_adjustment = std::nullopt);
 
   void SetMathItalicCorrection(LayoutUnit italic_correction) {
     math_italic_correction_ = italic_correction;
