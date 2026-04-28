@@ -64,8 +64,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         assertTrue(!!composebox);
         assertFalse(composebox.hasAttribute('hidden'));
 
-        // Hide the compose box (enter basic mode).
-        proxy.callbackRouterRemote.hideInput();
+        // Enter basic mode.
+        proxy.callbackRouterRemote.enterBasicMode();
         await proxy.callbackRouterRemote.$.flushForTesting();
 
         // With flag enabled, hidden attribute should NOT be present.
@@ -80,8 +80,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             '0', flexCenterStyle.zIndex,
             'Flex center container z-index should be 0');
 
-        // Restore the compose box.
-        proxy.callbackRouterRemote.restoreInput();
+        // Restore the compose box (exit basic mode).
+        proxy.callbackRouterRemote.exitBasicMode();
         await proxy.callbackRouterRemote.$.flushForTesting();
         assertFalse(composebox.hasAttribute('hidden'));
 
@@ -346,7 +346,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
             appElement.isNavigatingForTesting(),
             'Should be navigating after navigation starts');
 
-        proxy.callbackRouterRemote.hideInput();
+        proxy.callbackRouterRemote.enterBasicMode();
         await proxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -563,7 +563,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         await microtasksFinished();
 
         // Force into basic mode initially.
-        proxy.callbackRouterRemote.hideInput();
+        proxy.callbackRouterRemote.enterBasicMode();
         await proxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
