@@ -80,6 +80,8 @@ class AccessibilityAnnotatorBackendImpl
       base::span<const history::VisitID> visit_ids) override;
   void ClearContentAnnotationsCache() override;
   base::Value GetDebugUICacheData() const override;
+  void GetAnnotationsForDebugUI(
+      base::OnceCallback<void(base::Value)> callback) override;
   void AddContentAnnotation(history::VisitID visit_id,
                             ContentAnnotationsData data,
                             base::OnceCallback<void(bool)> callback) override;
@@ -164,6 +166,17 @@ class AccessibilityAnnotatorBackendImpl
   // observers.
   void OnContentAnnotationsCleared(base::OnceCallback<void(bool)> callback,
                                    bool success);
+
+  // Formats a single `ContentAnnotationsData` entry into a `base::Value`.
+  base::Value FormatContentAnnotationsDataForDebugUI(
+      history::VisitID visit_id,
+      const ContentAnnotationsData& data) const;
+
+  // Callback for `GetAllContentAnnotations` when used by the debug UI.
+  void OnGetAllContentAnnotationsForDebugUI(
+      base::OnceCallback<void(base::Value)> callback,
+      std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
+          all_annotations);
 
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;

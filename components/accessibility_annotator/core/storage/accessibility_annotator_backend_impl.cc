@@ -459,22 +459,57 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   base::ListValue result;
   for (const std::pair<history::VisitID, ContentAnnotationsData>& item :
        content_annotations_cache_) {
-    base::DictValue entry;
-    entry.Set("visit_id", base::NumberToString(item.first));
-    entry.Set("navigation_timestamp",
-              base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(
-                  item.second.navigation_timestamp)));
-    entry.Set("url", item.second.url.spec());
-    entry.Set("title", item.second.page_title);
-    entry.Set("classifier_results", item.second.classifier_results.Clone());
-    if (item.second.tab_id) {
-      entry.Set("tab_id", *item.second.tab_id);
-    }
-    entry.Set("content_annotation", optimization_guide::proto::ToValue(
-                                        item.second.content_annotation));
-    result.Append(std::move(entry));
+    result.Append(
+        FormatContentAnnotationsDataForDebugUI(item.first, item.second));
   }
   return base::Value(std::move(result));
+}
+
+void AccessibilityAnnotatorBackendImpl::GetAnnotationsForDebugUI(
+    base::OnceCallback<void(base::Value)> callback) {
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
+    GetAllContentAnnotations(
+        base::BindOnce(&AccessibilityAnnotatorBackendImpl::
+                           OnGetAllContentAnnotationsForDebugUI,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(GetDebugUICacheData());
+}
+
+base::Value
+AccessibilityAnnotatorBackendImpl::FormatContentAnnotationsDataForDebugUI(
+    history::VisitID visit_id,
+    const ContentAnnotationsData& data) const {
+  base::DictValue entry;
+  entry.Set("visit_id", base::NumberToString(visit_id));
+  entry.Set("navigation_timestamp",
+            base::UTF16ToUTF8(
+                base::TimeFormatShortDateAndTime(data.navigation_timestamp)));
+  entry.Set("url", data.url.spec());
+  entry.Set("title", data.page_title);
+  entry.Set("classifier_results", data.classifier_results.Clone());
+  if (data.tab_id) {
+    entry.Set("tab_id", *data.tab_id);
+  }
+  entry.Set("content_annotation",
+            optimization_guide::proto::ToValue(data.content_annotation));
+  return base::Value(std::move(entry));
+}
+
+void AccessibilityAnnotatorBackendImpl::OnGetAllContentAnnotationsForDebugUI(
+    base::OnceCallback<void(base::Value)> callback,
+    std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
+        all_annotations) {
+  base::ListValue result;
+  for (const std::pair<history::VisitID, ContentAnnotationsData>& item :
+       all_annotations) {
+    result.Append(
+        FormatContentAnnotationsDataForDebugUI(item.first, item.second));
+  }
+  std::move(callback).Run(base::Value(std::move(result)));
 }
 
 void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(

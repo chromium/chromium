@@ -109,6 +109,11 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // Pulls cache data into a base::Value for use in the debug UI.
   virtual base::Value GetDebugUICacheData() const = 0;
 
+  // Pulls data for the debug UI. If the database storage feature is enabled,
+  // this will fetch from the database; otherwise, it will fetch from the cache.
+  virtual void GetAnnotationsForDebugUI(
+      base::OnceCallback<void(base::Value)> callback) = 0;
+
   // Adds a content annotation to the database. `callback` is called with the
   // boolean result of the addition.
   virtual void AddContentAnnotation(

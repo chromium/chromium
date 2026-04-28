@@ -156,7 +156,11 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataEmpty) {
   EXPECT_TRUE(result.GetList().empty());
 }
 
-TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
+TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIFromCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAccessibilityAnnotatorDatabaseStorage);
+
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   base::test::ScopedRestoreDefaultTimezone timezone("UTC");
   history::VisitID visit_id(123);
@@ -178,7 +182,10 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
   data.content_annotation = std::move(content_annotation);
   backend_->SetContentAnnotationsCacheData(visit_id, std::move(data));
 
-  base::Value result = backend_->GetDebugUICacheData();
+  base::test::TestFuture<base::Value> future;
+  backend_->GetAnnotationsForDebugUI(future.GetCallback());
+  base::Value result = future.Take();
+
   ASSERT_TRUE(result.is_list());
   const base::ListValue& list = result.GetList();
   ASSERT_EQ(list.size(), 1u);
@@ -205,6 +212,63 @@ TEST_F(AccessibilityAnnotatorBackendTest, GetDebugUICacheDataWithEntries) {
                                 "orders",
                                 base::ListValue().Append(base::DictValue().Set(
                                     "id", "order_123")))))));
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, GetAnnotationsForDebugUIFromDb) {
+  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
+  base::test::ScopedRestoreDefaultTimezone timezone("UTC");
+  history::VisitID visit_id(1);
+  std::string page_title = "DB Page Title";
+
+  base::DictValue classifier_results;
+  classifier_results.Set("url_match_result", "db category");
+  base::DictValue expected_classifier = classifier_results.Clone();
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData(page_title);
+  data.classifier_results = std::move(classifier_results);
+  data.content_annotation.set_description("Test description");
+  data.content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data.content_annotation.mutable_structured_data()->add_orders()->set_id(
+      "order_456");
+
+  // Add to the database.
+  base::test::TestFuture<bool> add_future;
+  backend_->AddContentAnnotation(visit_id, std::move(data),
+                                 add_future.GetCallback());
+  ASSERT_TRUE(add_future.Get());
+
+  // Get annotations from the database for the debug UI and verify the result.
+  base::test::TestFuture<base::Value> annotations_future;
+  backend_->GetAnnotationsForDebugUI(annotations_future.GetCallback());
+  base::Value result = annotations_future.Take();
+
+  ASSERT_TRUE(result.is_list());
+  const base::ListValue& list = result.GetList();
+  ASSERT_EQ(list.size(), 1u);
+
+  EXPECT_THAT(
+      list[0].GetDict(),
+      DictionaryHasValues(
+          base::DictValue()
+              .Set("url", GURL(kExampleUrl).spec())
+              .Set("title", page_title)
+              .Set("tab_id", 123)
+              .Set("visit_id", "1")
+              .Set("navigation_timestamp",
+                   "4/10/26, 10:00:00\xe2\x80\xaf"
+                   "AM")
+              .Set("classifier_results", std::move(expected_classifier))
+              .Set("content_annotation",
+                   base::DictValue()
+                       .Set("description", "Test description")
+                       .Set("status", "CONFIRMED")
+                       .Set("structured_data",
+                            base::DictValue().Set(
+                                "orders",
+                                base::ListValue().Append(base::DictValue().Set(
+                                    "id", "order_456")))))));
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, SetContentAnnotationsCacheData) {
