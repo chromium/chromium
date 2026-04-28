@@ -660,6 +660,10 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
        true},  // Other noise/params
       {GURL("https://www.google.com/search?udm=50&q=%20"),
        false},  // Whitespace
+      {GURL("https://www.google.com/search?udm=50&smstk=test"),
+       false},  // smstk present
+      {GURL("https://www.google.com/search?udm=50&smstk="),
+       true},  // smstk empty
   };
 
   ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com")))
