@@ -133,6 +133,7 @@ class CORE_EXPORT PointerEventFactory
   PointerTarget* GetPointerDownTarget(PointerId) const;
   PointerTarget* GetPointerUpTarget(PointerId) const;
   void RemovePointerTargets(PointerId);
+  void HandlePseudoElementRemoved(PseudoElement& pseudo);
 
   void Trace(Visitor*) const;
 

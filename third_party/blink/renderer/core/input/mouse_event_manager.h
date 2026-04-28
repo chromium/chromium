@@ -93,6 +93,7 @@ class CORE_EXPORT MouseEventManager final
 
   void NodeChildrenWillBeRemoved(ContainerNode&);
   void NodeWillBeRemoved(Node&);
+  void HandlePseudoElementRemoval(PseudoElement&);
 
   void SendBoundaryEvents(EventTarget* exited_target,
                           bool original_exited_target_removed,
@@ -217,7 +218,8 @@ class CORE_EXPORT MouseEventManager final
   bool HoverStateDirty();
 
   // NOTE: If adding a new field to this class please ensure that it is
-  // cleared in |MouseEventManager::clear()|.
+  // cleared in |MouseEventManager::clear()| and updated in
+  // |MouseEventManager::HandlePseudoElementRemoval()| if it's a target.
 
   const Member<LocalFrame> frame_;
   Member<ScrollManager> scroll_manager_;
