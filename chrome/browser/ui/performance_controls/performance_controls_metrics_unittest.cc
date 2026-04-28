@@ -23,6 +23,10 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 using performance_manager::user_tuning::PerformanceDetectionManager;
 }
@@ -44,6 +48,13 @@ class PerformanceControlsMetricsTest
 };
 
 TEST_F(PerformanceControlsMetricsTest, DailyMetricsResets) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::HistogramTester histogram_tester;
 
   const std::string message_count_histogram_name =
@@ -144,6 +155,13 @@ class PerformanceControlsNotificationTest
 
 TEST_F(PerformanceControlsNotificationTest,
        RecordsNotificationAcceptPercentage) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::HistogramTester histogram_tester;
   const std::string message_count_histogram_name =
       "PerformanceControls.Intervention.DailyAcceptancePercentage";
