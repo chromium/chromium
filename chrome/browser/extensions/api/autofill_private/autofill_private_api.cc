@@ -259,8 +259,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetAccountInfoFunction::Run() {
   }
 
   if (!adm->has_initial_load_finished()) {
-    return RespondNow(Error(base::StrCat(
-        {"Get account info - ", kErrorAddressDataManagerLoadingUnfinished})));
+    return RespondNow(NoArguments());
   }
 
   std::optional<api::autofill_private::AccountInfo> account_info =
@@ -446,8 +445,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetAddressListFunction::Run() {
         {"Get address list - ", kErrorAddressDataManagerUnavailable})));
   }
   if (!adm->has_initial_load_finished()) {
-    return RespondNow(Error(base::StrCat(
-        {"Get address list - ", kErrorAddressDataManagerLoadingUnfinished})));
+    return RespondNow(ArgumentList(
+        api::autofill_private::GetAddressList::Results::Create({})));
   }
   autofill_util::AddressEntryList address_list =
       autofill_util::GenerateAddressList(*adm);
@@ -640,9 +639,8 @@ AutofillPrivateGetCreditCardListFunction::Run() {
         {"Get credit card list - ", kErrorPaymentsDataManagerUnavailable})));
   }
   if (!paydm->is_payments_data_loaded()) {
-    return RespondNow(
-        Error(base::StrCat({"Get credit card list - ",
-                            kErrorPaymentsDataManagerLoadingUnfinished})));
+    return RespondNow(ArgumentList(
+        api::autofill_private::GetCreditCardList::Results::Create({})));
   }
   autofill_util::CreditCardEntryList credit_card_list =
       autofill_util::GenerateCreditCardList(*paydm);
@@ -765,8 +763,8 @@ ExtensionFunction::ResponseAction AutofillPrivateGetIbanListFunction::Run() {
         {"Get iban list - ", kErrorPaymentsDataManagerUnavailable})));
   }
   if (!paydm->is_payments_data_loaded()) {
-    return RespondNow(Error(base::StrCat(
-        {"Get iban list - ", kErrorPaymentsDataManagerLoadingUnfinished})));
+    return RespondNow(
+        ArgumentList(api::autofill_private::GetIbanList::Results::Create({})));
   }
   autofill_util::IbanEntryList iban_list =
       autofill_util::GenerateIbanList(*paydm);
@@ -878,9 +876,8 @@ AutofillPrivateGetPayOverTimeIssuerListFunction::Run() {
                             kErrorPaymentsDataManagerUnavailable})));
   }
   if (!paydm->is_payments_data_loaded()) {
-    return RespondNow(
-        Error(base::StrCat({"Get pay over time issuer list - ",
-                            kErrorPaymentsDataManagerLoadingUnfinished})));
+    return RespondNow(ArgumentList(
+        api::autofill_private::GetPayOverTimeIssuerList::Results::Create({})));
   }
   autofill_util::PayOverTimeIssuerEntryList pay_over_time_issuer_list =
       autofill_util::GeneratePayOverTimeIssuerList(*paydm);
