@@ -17,8 +17,8 @@ import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.browser_ui.widget.scrim.ScrimView;
 

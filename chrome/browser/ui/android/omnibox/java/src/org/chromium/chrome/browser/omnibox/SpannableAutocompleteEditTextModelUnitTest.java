@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.test.R;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

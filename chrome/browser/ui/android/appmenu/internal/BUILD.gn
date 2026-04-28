@@ -69,7 +69,7 @@ android_resources("java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
 
-  resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
+  resources_package = "org.chromium.chrome.browser.ui.appmenu"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",

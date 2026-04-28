@@ -175,10 +175,12 @@ robolectric_library("junit") {
 
 android_library("recent_tabs_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.recent_tabs"
   sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:test_support_javalib",

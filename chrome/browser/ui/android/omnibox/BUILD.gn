@@ -674,5 +674,5 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
-  resources_package = "org.chromium.chrome.browser.omnibox.test"
+  resources_package = "org.chromium.chrome.browser.omnibox"
 }

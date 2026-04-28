@@ -246,7 +246,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",

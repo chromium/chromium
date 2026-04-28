@@ -11,7 +11,7 @@ import android.view.View;
 
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
 /**

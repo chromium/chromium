@@ -13,8 +13,8 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.R;
 
 /**
  * Bottom Sheet that appears to move a tab or list of tabs to a tab group.

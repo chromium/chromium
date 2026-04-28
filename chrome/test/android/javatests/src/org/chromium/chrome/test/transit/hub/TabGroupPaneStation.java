@@ -17,9 +17,9 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.components.omnibox.OmniboxFeatures;

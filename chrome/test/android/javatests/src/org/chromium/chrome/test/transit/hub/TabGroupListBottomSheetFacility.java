@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupsExistCondition;

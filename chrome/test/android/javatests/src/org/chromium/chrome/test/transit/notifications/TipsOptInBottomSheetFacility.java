@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
 import org.chromium.ui.widget.ButtonCompat;
 

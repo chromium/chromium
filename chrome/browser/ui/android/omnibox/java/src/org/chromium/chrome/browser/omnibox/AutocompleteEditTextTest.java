@@ -43,7 +43,6 @@ import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 

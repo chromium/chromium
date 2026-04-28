@@ -22,7 +22,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
 import java.util.ArrayList;

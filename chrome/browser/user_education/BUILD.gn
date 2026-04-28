@@ -60,7 +60,7 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
     ]
-    resources_package = "org.chromium.chrome.browser.user_education.test"
+    resources_package = "org.chromium.chrome.browser.user_education"
   }
 } else {  # !is_android
   source_set("user_education") {

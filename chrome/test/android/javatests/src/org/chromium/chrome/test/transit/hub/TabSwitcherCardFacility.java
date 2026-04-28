@@ -27,8 +27,8 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.VeryLongPressAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
-import org.chromium.chrome.test.R;
 
 /** Base class for Card Facilities in the Tab Switcher. */
 public abstract class TabSwitcherCardFacility extends Facility<TabSwitcherStation> {

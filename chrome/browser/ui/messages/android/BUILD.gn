@@ -81,7 +81,7 @@ robolectric_library("junit") {
 
 android_library("unit_device_javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.ui.messages.test"
+  resources_package = "org.chromium.chrome.browser.ui.messages"
 
   sources = [
     "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarRenderTest.java",

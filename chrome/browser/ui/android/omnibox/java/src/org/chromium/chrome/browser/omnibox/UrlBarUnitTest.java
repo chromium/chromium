@@ -69,7 +69,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
-import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.test.util.MockitoHelper;

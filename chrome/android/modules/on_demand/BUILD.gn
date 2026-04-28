@@ -70,7 +70,7 @@ android_library("data_importer_service_impl_java") {
 
 android_library("data_importer_service_impl_java_test") {
   testonly = true
-  resources_package = "org.chromium.chrome.test"
+  resources_package = "org.chromium.chrome"
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/data_import/DataImporterServiceImplTest.java",

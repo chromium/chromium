@@ -253,7 +253,9 @@ public class RestoreTabsTest {
         // With the addition of hub search, check that the last tab is completely visible to verify.
         onView(
                         allOf(
-                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
+                                withId(
+                                        org.chromium.chrome.browser.recent_tabs.R.id
+                                                .tab_list_recycler_view),
                                 isDescendantOfA(withId(tabSwitcherAncestorViewId))))
                 .check(
                         (v, noMatchException) -> {

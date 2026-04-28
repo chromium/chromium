@@ -18,7 +18,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.test.R;
+import org.chromium.chrome.R;
 
 /**
  * A snackbar shown at the bottom of the Activity.

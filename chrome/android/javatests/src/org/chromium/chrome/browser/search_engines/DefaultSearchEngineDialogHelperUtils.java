@@ -15,8 +15,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.R;
 
 /** Utilities for interacting with a {@link DefaultSearchEngineDialogHelper}. */
 public class DefaultSearchEngineDialogHelperUtils {

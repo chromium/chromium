@@ -13,9 +13,9 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 
 /** Incognito tab switcher pane station. */

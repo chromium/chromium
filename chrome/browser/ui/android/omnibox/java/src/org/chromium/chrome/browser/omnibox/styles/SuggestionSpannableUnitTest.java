@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.omnibox.R;
 
 /** Tests for {@link SuggestionSpannable}. */
 @RunWith(BaseRobolectricTestRunner.class)

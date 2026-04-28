@@ -17,9 +17,9 @@ import android.view.View;
 
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfCoordinator;
 import org.chromium.chrome.browser.pdf.PdfPage;
-import org.chromium.chrome.test.R;
 
 /** The screen that shows a native PDF page within a tabbed activity. */
 public class PdfCtaPageStation extends CtaPageStation {

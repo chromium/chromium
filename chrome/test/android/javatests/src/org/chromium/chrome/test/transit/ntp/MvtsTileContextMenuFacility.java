@@ -15,9 +15,9 @@ import org.hamcrest.TypeSafeMatcher;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.ui.ListMenuFacility;

@@ -165,7 +165,7 @@ generate_jni("jni_headers") {
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.browser.feed.test"
+  resources_package = "org.chromium.chrome.browser.feed"
 
   sources = [ "java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProviderImplTest.java" ]
 
@@ -295,5 +295,5 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
-  resources_package = "org.chromium.chrome.browser.feed.test"
+  resources_package = "org.chromium.chrome.browser.feed"
 }
