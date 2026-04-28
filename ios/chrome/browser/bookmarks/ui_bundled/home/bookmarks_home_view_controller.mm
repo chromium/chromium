@@ -644,7 +644,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
         fallbackToGoogleServer:(BOOL)fallbackToGoogleServer {
   const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
-  if (node->is_folder()) {
+  if (!node || node->is_folder()) {
     return;
   }
 
@@ -1787,6 +1787,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // Selects all editable bookmark nodes currently displayed.
 - (void)didTapSelectAll {
+  if (!_bookmarkModel) {
+    return;
+  }
   std::set<const bookmarks::BookmarkNode*> allEditableNodes;
   NSArray<TableViewItem*>* items = [self.tableViewModel
       itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -1795,8 +1798,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     if (item.type == BookmarksHomeItemTypeBookmark) {
       BookmarksHomeNodeItem* nodeItem =
           base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-      const bookmarks::BookmarkNode* node = nodeItem.bookmarkNode;
-      if ([self isNodeEditableByUser:node]) {
+      const bookmarks::BookmarkNode* node =
+          [nodeItem bookmarkNode:_bookmarkModel.get()];
+      if (node && [self isNodeEditableByUser:node]) {
         allEditableNodes.insert(node);
       }
     }
@@ -1927,9 +1931,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       self.mediator.displayedNode,
       self.mediator.displayedNode->children().size(), folderTitle);
 
-  BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
-      initWithType:BookmarksHomeItemTypeBookmark
-      bookmarkNode:self.mediator.editingFolderNode];
+  BookmarksHomeNodeItem* nodeItem =
+      [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
+                                 bookmarkNode:self.mediator.editingFolderNode];
   nodeItem.shouldDisplayCloudSlashIcon = [self.mediator
       shouldDisplayCloudSlashIconWithBookmarkNode:self.mediator.displayedNode];
   [self.tableViewModel addItem:nodeItem
@@ -1967,6 +1971,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // function is used to restore the row selection.  It also updates
 // selectedNodesForEditMode in case some selected nodes are removed.
 - (void)restoreRowSelection {
+  if (!_bookmarkModel) {
+    return;
+  }
   // Create a new selectedNodesForEditMode set to check if some selected nodes
   // are removed.
   std::set<const BookmarkNode*> newEditNodes;
@@ -1978,8 +1985,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   for (TableViewItem* item in items) {
     BookmarksHomeNodeItem* nodeItem =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-    const BookmarkNode* node = nodeItem.bookmarkNode;
-    if (self.mediator.selectedNodesForEditMode.contains(node)) {
+    const BookmarkNode* node = [nodeItem bookmarkNode:_bookmarkModel.get()];
+    if (node && self.mediator.selectedNodesForEditMode.contains(node)) {
       newEditNodes.insert(node);
       // Reselect the row of this node.
       NSIndexPath* itemPath = [self.tableViewModel indexPathForItem:nodeItem];
@@ -2054,6 +2061,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // Returns YES if the given node can be edited by user.
 - (BOOL)isNodeEditableByUser:(const BookmarkNode*)node {
+  CHECK(node, base::NotFatalUntil::M155);
   // Note that IsNodeManaged() below returns false for Bookmarks Bar, Mobile
   // Bookmarks, and Other Bookmarks since the user can add, delete, and edit
   // items within those folders. IsNodeManaged() returns true for the
@@ -2077,12 +2085,15 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 // Returns the bookmark node associated with `indexPath`.
 - (const BookmarkNode*)nodeAtIndexPath:(NSIndexPath*)indexPath {
+  if (!_bookmarkModel) {
+    return nullptr;
+  }
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
 
   if (item.type == BookmarksHomeItemTypeBookmark) {
     BookmarksHomeNodeItem* nodeItem =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-    return nodeItem.bookmarkNode;
+    return [nodeItem bookmarkNode:_bookmarkModel.get()];
   }
 
   NOTREACHED(base::NotFatalUntil::M152) << "Unexpected item type " << item.type;
@@ -2421,9 +2432,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // Displays the UITableView edit mode and selects the row containing the
 // `_externalBookmark`.
 - (void)editExternalBookmarkIfSet {
-  if (!_externalBookmark) {
+  if (!_bookmarkModel || !_externalBookmark) {
     return;
   }
+  bookmarks::BookmarkModel* bookmarkModel = _bookmarkModel.get();
 
   [self setTableViewEditing:YES];
   NSArray<NSIndexPath*>* paths = [self.tableViewModel
@@ -2433,7 +2445,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     BookmarksHomeNodeItem* node =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(
             [self.tableViewModel itemAtIndexPath:path]);
-    if (node.bookmarkNode == _externalBookmark) {
+    if ([node bookmarkNode:bookmarkModel] == _externalBookmark) {
       [self.tableView selectRowAtIndexPath:path
                                   animated:NO
                             scrollPosition:UITableViewScrollPositionMiddle];
@@ -2852,8 +2864,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (item.type == BookmarksHomeItemTypeBookmark) {
     BookmarksHomeNodeItem* nodeItem =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-    if (nodeItem.bookmarkNode->is_folder() &&
-        nodeItem.bookmarkNode == self.mediator.editingFolderNode) {
+    const bookmarks::BookmarkNode* node =
+        _bookmarkModel ? [nodeItem bookmarkNode:_bookmarkModel.get()] : nullptr;
+    if (node && node->is_folder() && node == self.mediator.editingFolderNode) {
       TableViewBookmarksFolderCell* tableCell =
           base::apple::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
       // Delay starting edit, so that the cell is fully created. This is
@@ -2878,6 +2891,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (!_bookmarkModel) {
+    return NO;
+  }
+
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if (item.type != BookmarksHomeItemTypeBookmark) {
     // Can only edit bookmarks.
@@ -2895,14 +2912,17 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // swipe-to-delete if editing bookmarks is allowed.
   BookmarksHomeNodeItem* nodeItem =
       base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-  const BookmarkNode* node = nodeItem.bookmarkNode;
-  return [self isEditBookmarksEnabled] && [self isUrlOrFolder:node] &&
+  const BookmarkNode* node = [nodeItem bookmarkNode:_bookmarkModel.get()];
+  return node && [self isEditBookmarksEnabled] && [self isUrlOrFolder:node] &&
          [self isNodeEditableByUser:node];
 }
 
 - (void)tableView:(UITableView*)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
      forRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (!_bookmarkModel) {
+    return;
+  }
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if (item.type != BookmarksHomeItemTypeBookmark) {
     // Can only commit edits for bookmarks.
@@ -2912,7 +2932,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     BookmarksHomeNodeItem* nodeItem =
         base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-    const BookmarkNode* node = nodeItem.bookmarkNode;
+    const BookmarkNode* node = [nodeItem bookmarkNode:_bookmarkModel.get()];
+    if (!node) {
+      return;
+    }
     std::set<const BookmarkNode*> nodes;
     nodes.insert(node);
     [self deleteBookmarkNodes:nodes

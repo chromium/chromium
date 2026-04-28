@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -17,20 +18,20 @@ class BookmarkNode;
 // single bookmark.
 @interface BookmarksHomeNodeItem : TableViewItem
 
-// The BookmarkNode that backs this item.
-@property(nonatomic, readwrite, assign)
-    const bookmarks::BookmarkNode* bookmarkNode;
-
 // Whether a slashed cloud should be displayed.
 @property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
 
 // Attributes for the favicon.
 @property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
-- (instancetype)initWithType:(NSInteger)type
-                bookmarkNode:(const bookmarks::BookmarkNode*)node
-    NS_DESIGNATED_INITIALIZER;
+// The node is not retained.
++ (instancetype)makeItemWithType:(NSInteger)type
+                    bookmarkNode:(const bookmarks::BookmarkNode*)node;
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
+
+// Returns the node associated to this item if it still exists, otherwise nil.
+- (const bookmarks::BookmarkNode*)bookmarkNode:
+    (const bookmarks::BookmarkModel*)model;
 
 @end
 

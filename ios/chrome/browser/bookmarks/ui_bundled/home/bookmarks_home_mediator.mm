@@ -244,9 +244,9 @@ bool IsABookmarkNodeSectionForIdentifier(
       [self shouldDisplayCloudSlashIconWithBookmarkNode:self.displayedNode];
   // Add all bookmarks and folders of the currently displayed node to the table.
   for (const auto& child : self.displayedNode->children()) {
-    BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:child.get()];
+    BookmarksHomeNodeItem* nodeItem =
+        [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
+                                   bookmarkNode:child.get()];
     nodeItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
     [self.consumer.tableViewModel
                         addItem:nodeItem
@@ -314,9 +314,9 @@ bool IsABookmarkNodeSectionForIdentifier(
       continue;
     }
 
-    BookmarksHomeNodeItem* item = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:permanentNode];
+    BookmarksHomeNodeItem* item =
+        [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
+                                   bookmarkNode:permanentNode];
     item.shouldDisplayCloudSlashIcon =
         [self shouldDisplayCloudSlashIconWithBookmarkNode:permanentNode];
     [self.consumer.tableViewModel addItem:item
@@ -614,13 +614,17 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (BookmarksHomeNodeItem*)itemForNode:(const BookmarkNode*)bookmarkNode {
+  bookmarks::BookmarkModel* model = _bookmarkModel.get();
+  if (!model) {
+    return nil;
+  }
   NSArray<TableViewItem*>* items = [self.consumer.tableViewModel
       itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   for (TableViewItem* item in items) {
     if (item.type == BookmarksHomeItemTypeBookmark) {
       BookmarksHomeNodeItem* nodeItem =
           base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
-      if (nodeItem.bookmarkNode == bookmarkNode) {
+      if ([nodeItem bookmarkNode:model] == bookmarkNode) {
         return nodeItem;
       }
     }
@@ -936,9 +940,9 @@ bool IsABookmarkNodeSectionForIdentifier(
       bookmarks::GetBookmarksMatchingProperties(_bookmarkModel.get(), query,
                                                 kMaxBookmarksSearchResults);
   for (const BookmarkNode* node : nodes) {
-    BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:node];
+    BookmarksHomeNodeItem* nodeItem =
+        [BookmarksHomeNodeItem makeItemWithType:BookmarksHomeItemTypeBookmark
+                                   bookmarkNode:node];
     nodeItem.shouldDisplayCloudSlashIcon =
         [self shouldDisplayCloudSlashIconWithBookmarkNode:node];
     [self.consumer.tableViewModel
