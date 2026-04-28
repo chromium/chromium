@@ -586,6 +586,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
         boolean finishSuccess = ActivityFinisher.finishAll();
+        JniTestInstancesSnapshot.clearAllForTesting();
         for (ClassCleanupHook hook : getClassCleanupHooks()) {
             hook.onAfterTestClass(getTestClass().getJavaClass());
         }
