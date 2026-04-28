@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -35,7 +37,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -266,6 +270,70 @@ INSTANTIATE_TEST_SUITE_P(
     /** prefix */,
     WebAppInstallDialogClosedTest,
     testing::Combine(testing::Values(InstallOsType::kOther),
+                     testing::Values(InstallDialogType::kSimple,
+                                     InstallDialogType::kDetailed,
+                                     InstallDialogType::kDiy)),
+    [](const testing::TestParamInfo<WebAppInstallDialogTestParams>& info) {
+      std::string os_type = base::ToString(std::get<0>(info.param));
+      std::string dialog_type = base::ToString(std::get<1>(info.param));
+      return os_type + "_" + dialog_type;
+    });
+
+class WebAppInstallDialogCheckboxTest : public WebAppInstallDialogBrowserTest {
+ protected:
+  WebAppInstallOptionsView* NavigateToAndGetOptionsView() {
+    ShowUi("InstallOptions");
+    EXPECT_TRUE(widget_);
+
+    views::View* options_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            WebAppInstallOptionsView::kViewId,
+            views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+    EXPECT_TRUE(options_view);
+    if (!options_view) {
+      return nullptr;
+    }
+    return static_cast<WebAppInstallOptionsView*>(options_view);
+  }
+
+  void CompleteInstallationAndVerifyDialogAccepted() {
+    // Accept the dialog until the installation is completed (InstallOptions ->
+    // Progress -> Successful).
+    widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+    widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+
+    // Close the dialog.
+    views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
+    widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+    destruction_waiter.Wait();
+
+    EXPECT_EQ(dialog_accepted_, true);
+    ASSERT_TRUE(dialog_install_info_);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
+                       VerifyCrosCheckboxUnchecked) {
+  WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
+  ASSERT_TRUE(options_view);
+  options_view->SetPinToShelfCheckedForTesting(false);
+  CompleteInstallationAndVerifyDialogAccepted();
+  EXPECT_EQ(dialog_install_info_->add_to_quick_launch_bar, false);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogCheckboxTest,
+                       VerifyCrosCheckboxChecked) {
+  WebAppInstallOptionsView* options_view = NavigateToAndGetOptionsView();
+  ASSERT_TRUE(options_view);
+  options_view->SetPinToShelfCheckedForTesting(true);
+  CompleteInstallationAndVerifyDialogAccepted();
+  EXPECT_EQ(dialog_install_info_->add_to_quick_launch_bar, true);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* prefix */,
+    WebAppInstallDialogCheckboxTest,
+    testing::Combine(testing::Values(InstallOsType::kCros),
                      testing::Values(InstallDialogType::kSimple,
                                      InstallDialogType::kDetailed,
                                      InstallDialogType::kDiy)),

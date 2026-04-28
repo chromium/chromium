@@ -28,6 +28,7 @@ class ProgressDelay;
 class WebAppScreenshotFetcher;
 class WebAppInstallFlowView;
 class WebAppInstallProgressView;
+class WebAppInstallOptionsView;
 struct WebAppInstallInfo;
 
 enum class InstallDialogStep {
@@ -83,6 +84,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
   bool OnOkButtonClicked() override;
 
   void OnProgress(std::optional<double> percent);
+  void OnAccept() override;
 
   base::WeakPtr<WebAppInstallFlowDialogDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -93,6 +95,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
   InstallOsType os_type_;
   base::WeakPtr<WebAppInstallFlowView> flow_view_;
   base::WeakPtr<WebAppInstallProgressView> progress_view_;
+  base::WeakPtr<WebAppInstallOptionsView> options_view_;
 
  private:
   void OnLearnMoreButtonClicked();

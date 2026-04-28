@@ -127,8 +127,6 @@ void LogInstallInfoForFallbackData(base::DictValue& dict,
   dict.Set("name", install_info.title.AsDebugValue());
 }
 
-
-
 static bool& ShouldBypassVisibilityChecks() {
   static bool g_bypass_visibility_checking = false;
   return g_bypass_visibility_checking;
@@ -673,7 +671,9 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
   finalize_options.overwrite_existing_manifest_fields = true;
   finalize_options.add_to_applications_menu = true;
   finalize_options.add_to_desktop = true;
-  finalize_options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
+  finalize_options.add_to_quick_launch_bar =
+      web_app_info_->add_to_quick_launch_bar.value_or(
+          kAddAppsToQuickLaunchBarByDefault);
 
   DCHECK(app_lock_);
   auto* profile =

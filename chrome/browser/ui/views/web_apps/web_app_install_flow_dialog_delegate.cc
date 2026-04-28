@@ -197,6 +197,14 @@ void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
       base::DoNothing());
 }
 
+void WebAppInstallFlowDialogDelegate::OnAccept() {
+  if (options_view_) {
+    install_info_->add_to_quick_launch_bar =
+        options_view_->IsPinToShelfChecked();
+  }
+  WebAppInstallDialogDelegate::OnAccept();
+}
+
 // Updates dialog title based on current step.
 void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
     InstallDialogStep step) {
@@ -290,8 +298,11 @@ void WebAppInstallFlowDialogDelegate::Show(
               delegate_weak_ptr));
 
   // kInstallerOptions
-  install_step_to_view[InstallDialogStep::kInstallerOptions] =
+  auto options_view =
       std::make_unique<WebAppInstallOptionsView>(os_type, title, icon_image);
+  delegate->options_view_ = options_view->GetWeakPtr();
+  install_step_to_view[InstallDialogStep::kInstallerOptions] =
+      std::move(options_view);
 
   // kProgress
   auto progress_view = std::make_unique<WebAppInstallProgressView>();

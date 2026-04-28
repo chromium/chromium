@@ -18,8 +18,11 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace web_app {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallOptionsView, kViewId);
 
 // TODO(crbug.com/496279290): Pass web app icon and origin as constructor
 // arguments.
@@ -29,6 +32,7 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
     const gfx::ImageSkia& icon_image) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(10), 10));
+  SetProperty(views::kElementIdentifierKey, kViewId);
   InitView(os_type, title, icon_image);
 }
 
@@ -147,6 +151,16 @@ void WebAppInstallOptionsView::InitView(InstallOsType os_type,
 
 bool WebAppInstallOptionsView::IsPinToShelfChecked() const {
   return pin_to_shelf_checkbox_ && pin_to_shelf_checkbox_->GetChecked();
+}
+
+void WebAppInstallOptionsView::SetPinToShelfCheckedForTesting(bool checked) {
+  if (pin_to_shelf_checkbox_) {
+    pin_to_shelf_checkbox_->SetChecked(checked);
+  }
+}
+
+base::WeakPtr<WebAppInstallOptionsView> WebAppInstallOptionsView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool WebAppInstallOptionsView::IsAddDesktopShortcutChecked() const {
