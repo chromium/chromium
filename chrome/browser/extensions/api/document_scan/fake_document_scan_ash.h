@@ -23,14 +23,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   FakeDocumentScanAsh(const FakeDocumentScanAsh&&) = delete;
   ~FakeDocumentScanAsh() override;
 
-  // crosapi::mojom::DocumentScan overrides:
-  void OpenScanner(const std::string& client_id,
-                   const std::string& scanner_id,
-                   OpenScannerCallback callback) override;
-  void SetOptions(const std::string& scanner_handle,
-                  std::vector<crosapi::mojom::OptionSettingPtr> options,
-                  SetOptionsCallback callback) override;
-
   void CloseScanner(const std::string& scanner_handle);
 
   void SetOpenScannerResponse(const std::string& connection_string,
@@ -46,8 +38,6 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
     std::string client_id;
     std::string connection_string;
   };
-
-  size_t handle_count_ = 0;  // How many times a handle has been issued.
 
   // Map from connection strings to the OpenScannerResponsePtr that should be
   // returned.

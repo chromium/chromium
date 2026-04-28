@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
+#include <algorithm>
+
 #include "base/notreached.h"
+#include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 
 namespace extensions::api::document_scan {
@@ -51,6 +54,12 @@ OperationResult ConvertLorgnetteOperationResult(
       break;
   }
   NOTREACHED();
+}
+
+OpenScannerResponse ConvertLorgnetteOpenScannerResponse(
+    const lorgnette::OpenScannerResponse& input) {
+  return crosapi::mojom::OpenScannerResponse::From(input)
+      .To<api::document_scan::OpenScannerResponse>();
 }
 
 CancelScanResponse ConvertLorgnetteCancelScanResponse(
@@ -111,6 +120,124 @@ ReadScanDataResponse ConvertLorgnetteReadScanDataResponse(
     output.estimated_completion = input.estimated_completion();
   }
   return output;
+}
+
+SetOptionsResponse TransformLorgnetteSetOptionsResponse(
+    const lorgnette::SetOptionsResponse& input,
+    const std::vector<std::string>& invalid_option_names) {
+  SetOptionsResponse output = crosapi::mojom::SetOptionsResponse::From(input)
+                                  .To<api::document_scan::SetOptionsResponse>();
+  for (const std::string& invalid_name : invalid_option_names) {
+    SetOptionResult& result = output.results.emplace_back();
+    result.name = invalid_name;
+    result.result = OperationResult::kWrongType;
+  }
+  return output;
+}
+
+std::optional<lorgnette::ScannerOption>
+TransformOptionSettingToLorgnetteScannerOption(const OptionSetting& setting) {
+  lorgnette::ScannerOption option;
+  option.set_name(setting.name);
+
+  switch (setting.type) {
+    case OptionType::kNone:
+    case OptionType::kUnknown:
+      option.set_option_type(lorgnette::TYPE_UNKNOWN);
+      if (setting.value.has_value()) {
+        return std::nullopt;
+      }
+      break;
+    case OptionType::kBool:
+      option.set_option_type(lorgnette::TYPE_BOOL);
+      if (setting.value.has_value()) {
+        if (setting.value->as_boolean.has_value()) {
+          option.set_bool_value(*setting.value->as_boolean);
+        } else {
+          return std::nullopt;
+        }
+      }
+      break;
+    case OptionType::kInt: {
+      option.set_option_type(lorgnette::TYPE_INT);
+      if (setting.value.has_value()) {
+        if (setting.value->as_integer.has_value()) {
+          option.mutable_int_value()->add_value(*setting.value->as_integer);
+        } else if (setting.value->as_integers.has_value()) {
+          for (int i : *setting.value->as_integers) {
+            option.mutable_int_value()->add_value(i);
+          }
+        } else if (setting.value->as_number.has_value()) {
+          double d = *setting.value->as_number;
+          double int_part = 0.0;
+          if (d >= std::numeric_limits<int32_t>::min() &&
+              d <= std::numeric_limits<int32_t>::max() &&
+              std::modf(d, &int_part) == 0.0) {
+            option.mutable_int_value()->add_value(
+                base::checked_cast<int32_t>(d));
+          } else {
+            return std::nullopt;
+          }
+        } else if (setting.value->as_numbers.has_value()) {
+          std::vector<int32_t> ints;
+          for (double d : *setting.value->as_numbers) {
+            double int_part = 0.0;
+            if (d >= std::numeric_limits<int32_t>::min() &&
+                d <= std::numeric_limits<int32_t>::max() &&
+                std::modf(d, &int_part) == 0.0) {
+              ints.push_back(base::checked_cast<int32_t>(d));
+            } else {
+              return std::nullopt;
+            }
+          }
+          for (int i : ints) {
+            option.mutable_int_value()->add_value(i);
+          }
+        } else {
+          return std::nullopt;
+        }
+      }
+      break;
+    }
+    case OptionType::kFixed:
+      option.set_option_type(lorgnette::TYPE_FIXED);
+      if (setting.value.has_value()) {
+        if (setting.value->as_number.has_value()) {
+          option.mutable_fixed_value()->add_value(*setting.value->as_number);
+        } else if (setting.value->as_numbers.has_value()) {
+          for (double d : *setting.value->as_numbers) {
+            option.mutable_fixed_value()->add_value(d);
+          }
+        } else if (setting.value->as_integer.has_value()) {
+          option.mutable_fixed_value()->add_value(*setting.value->as_integer);
+        } else if (setting.value->as_integers.has_value()) {
+          for (int i : *setting.value->as_integers) {
+            option.mutable_fixed_value()->add_value(i);
+          }
+        } else {
+          return std::nullopt;
+        }
+      }
+      break;
+    case OptionType::kString:
+      option.set_option_type(lorgnette::TYPE_STRING);
+      if (setting.value.has_value()) {
+        if (setting.value->as_string.has_value()) {
+          option.set_string_value(*setting.value->as_string);
+        } else {
+          return std::nullopt;
+        }
+      }
+      break;
+    case OptionType::kButton:
+      option.set_option_type(lorgnette::TYPE_BUTTON);
+      break;
+    case OptionType::kGroup:
+      option.set_option_type(lorgnette::TYPE_GROUP);
+      break;
+  }
+
+  return option;
 }
 
 }  // namespace extensions::api::document_scan

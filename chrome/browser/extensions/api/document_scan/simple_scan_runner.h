@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -31,13 +30,9 @@ class SimpleScanRunner {
   using SimpleScanCallback = base::OnceCallback<void(
       std::optional<api::document_scan::ScanResults> scan_results,
       std::optional<std::string> error)>;
-  using SimpleScanRunnerCallback =
-      base::OnceCallback<void(crosapi::mojom::ScanFailureMode,
-                              const std::optional<std::string>&)>;
 
   SimpleScanRunner(content::BrowserContext* browser_context,
-                   scoped_refptr<const Extension> extension,
-                   crosapi::mojom::DocumentScan* document_scan);
+                   scoped_refptr<const Extension> extension);
 
   ~SimpleScanRunner();
 
@@ -49,21 +44,21 @@ class SimpleScanRunner {
   void OnSimpleScanListReceived(
       bool force_virtual_usb_printer,
       const std::optional<lorgnette::ListScannersResponse>& response);
-  void OnOpenScannerResponse(crosapi::mojom::OpenScannerResponsePtr response);
+  void OnOpenScannerResponse(
+      const std::optional<lorgnette::OpenScannerResponse>& response);
   void OnStartPreparedScanResponse(
       const std::optional<lorgnette::StartPreparedScanResponse>& response);
   void OnReadScanDataResponse(
       const std::optional<lorgnette::ReadScanDataResponse>& response);
   void OnCloseScannerResponse(
       const std::optional<lorgnette::CloseScannerResponse>& response);
-  void OnSimpleScanCompleted(crosapi::mojom::ScanFailureMode failure_mode);
+  void OnSimpleScanCompleted(bool success);
 
   void OpenFirstScanner();
   void ReadScanData();
 
   const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
-  const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
 
   // List of potential scanners to open.
   std::vector<std::string> scanner_ids_;
@@ -76,7 +71,7 @@ class SimpleScanRunner {
   std::string scanner_handle_;
   std::string job_handle_;
   std::vector<uint8_t> scan_data_;
-  crosapi::mojom::ScanFailureMode scan_result_;
+  bool success_ = false;
 
   base::WeakPtrFactory<SimpleScanRunner> weak_ptr_factory_{this};
 };

@@ -21,14 +21,6 @@ class DocumentScanAsh : public mojom::DocumentScan {
 
   void BindReceiver(mojo::PendingReceiver<mojom::DocumentScan> receiver);
 
-  // crosapi::mojom::DocumentScan:
-  void OpenScanner(const std::string& client_id,
-                   const std::string& scanner_id,
-                   OpenScannerCallback callback) override;
-  void SetOptions(const std::string& scanner_handle,
-                  std::vector<mojom::OptionSettingPtr> options,
-                  SetOptionsCallback callback) override;
-
  private:
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.

@@ -771,5 +771,49 @@ TEST(DocumentScanTypeConvertersTest, ConvertLorgnetteGetCurrentConfigResponse) {
   EXPECT_THAT(output.groups.value()[0].members, ElementsAre("group-member"));
 }
 
+TEST(DocumentScanTypeConvertersTest,
+     TransformOptionSettingToLorgnetteScannerOption_AutoSet) {
+  document_scan::OptionSetting input;
+  input.name = "option1";
+  input.type = document_scan::OptionType::kInt;
+
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "option1");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
+  EXPECT_FALSE(output->has_int_value());
+}
+
+TEST(DocumentScanTypeConvertersTest,
+     TransformOptionSettingToLorgnetteScannerOption_IntValue) {
+  document_scan::OptionSetting input;
+  input.name = "option1";
+  input.type = document_scan::OptionType::kInt;
+  input.value.emplace();
+  input.value->as_integer = 42;
+
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "option1");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
+  ASSERT_TRUE(output->has_int_value());
+  EXPECT_THAT(output->int_value().value(), ElementsAre(42));
+}
+
+TEST(DocumentScanTypeConvertersTest,
+     TransformOptionSettingToLorgnetteScannerOption_TypeMismatch) {
+  document_scan::OptionSetting input;
+  input.name = "option1";
+  input.type = document_scan::OptionType::kBool;
+  input.value.emplace();
+  input.value->as_integer = 42;
+
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  EXPECT_FALSE(output.has_value());
+}
+
 }  // namespace
 }  // namespace mojo

@@ -23,14 +23,6 @@ namespace crosapi {
 
 namespace {
 
-Profile* GetProfile() {
-  if (!user_manager::UserManager::IsInitialized() ||
-      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
-    return nullptr;
-  }
-  return ProfileManager::GetPrimaryUserProfile();
-}
-
 // Supports the static_cast() in ProtobufResultToMojoResult() below.
 static_assert(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE ==
               static_cast<int>(mojom::ScanFailureMode::kNoFailure));
@@ -47,47 +39,6 @@ static_assert(lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN ==
 static_assert(lorgnette::SCAN_FAILURE_MODE_IO_ERROR ==
               static_cast<int>(mojom::ScanFailureMode::kIoError));
 
-void OpenScannerAdapter(
-    const std::string& scanner_id,
-    DocumentScanAsh::OpenScannerCallback callback,
-    const std::optional<lorgnette::OpenScannerResponse>& response_in) {
-  if (!response_in) {
-    auto response_out = mojom::OpenScannerResponse::New();
-    response_out->scanner_id = scanner_id;
-    response_out->result = mojom::ScannerOperationResult::kInternalError;
-    std::move(callback).Run(std::move(response_out));
-    return;
-  }
-  std::move(callback).Run(
-      mojom::OpenScannerResponse::From(response_in.value()));
-}
-
-void SetOptionsAdapter(
-    const std::string& scanner_handle,
-    std::vector<std::string> option_names,
-    std::vector<std::string> invalid_option_names,
-    DocumentScanAsh::SetOptionsCallback callback,
-    const std::optional<lorgnette::SetOptionsResponse>& response_in) {
-  if (!response_in) {
-    auto response = mojom::SetOptionsResponse::New();
-    response->scanner_handle = scanner_handle;
-    for (const std::string& option_name : option_names) {
-      auto result = mojom::SetOptionResult::New();
-      result->name = option_name;
-      result->result = mojom::ScannerOperationResult::kInternalError;
-      response->results.emplace_back(std::move(result));
-    }
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-  lorgnette::SetOptionsResponse response = response_in.value();
-  for (const std::string& invalid_name : invalid_option_names) {
-    (*response.mutable_results())[invalid_name] =
-        lorgnette::OperationResult::OPERATION_RESULT_WRONG_TYPE;
-  }
-  std::move(callback).Run(mojom::SetOptionsResponse::From(response));
-}
-
 }  // namespace
 
 DocumentScanAsh::DocumentScanAsh() = default;
@@ -97,49 +48,6 @@ DocumentScanAsh::~DocumentScanAsh() = default;
 void DocumentScanAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DocumentScan> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
-}
-
-void DocumentScanAsh::OpenScanner(const std::string& client_id,
-                                  const std::string& scanner_id,
-                                  OpenScannerCallback callback) {
-  lorgnette::OpenScannerRequest request;
-  request.mutable_scanner_id()->set_connection_string(scanner_id);
-  request.set_client_id(client_id);
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->OpenScanner(
-          std::move(request),
-          base::BindOnce(&OpenScannerAdapter, scanner_id, std::move(callback)));
-}
-
-void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
-                                 std::vector<mojom::OptionSettingPtr> options,
-                                 SetOptionsCallback callback) {
-  lorgnette::SetOptionsRequest request;
-  request.mutable_scanner()->set_token(scanner_handle);
-  // Keep track of all of the option names.  This is used if we don't get a
-  // valid response from the backend.  All of these options will get sent back
-  // to the caller with an error result.
-  std::vector<std::string> option_names;
-  // Separately, keep track of any invalid options names (where the type
-  // specified for the value does not equal the type of the option).  These
-  // options will get sent back to the caller with an appropriate error result.
-  std::vector<std::string> invalid_option_names;
-  for (const mojom::OptionSettingPtr& option_request : options) {
-    option_names.emplace_back(option_request->name);
-
-    auto maybe_option =
-        option_request.To<std::optional<lorgnette::ScannerOption>>();
-    if (maybe_option.has_value()) {
-      *request.add_options() = maybe_option.value();
-    } else {
-      invalid_option_names.emplace_back(option_request->name);
-    }
-  }
-
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->SetOptions(request, base::BindOnce(&SetOptionsAdapter, scanner_handle,
-                                           option_names, invalid_option_names,
-                                           std::move(callback)));
 }
 
 }  // namespace crosapi

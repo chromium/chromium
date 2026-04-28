@@ -416,14 +416,6 @@ interface DocumentScan {
   // CloseScanner@4 was removed.
   // ReadScanData@6 was removed.
   // StartPreparedScan@5 was removed.
-
-  // Open an exclusive handle to a scanner returned from `GetScannerList()`.
-  [MinVersion=2]
-  OpenScanner@3(string client_id, string scanner_id)
-      => (OpenScannerResponse response);
-
-  // Sets the options for a scanner opened by `OpenScanner()`.
-  [MinVersion=4]
-  SetOptions@7(string scanner_handle, array<OptionSetting> options)
-      => (SetOptionsResponse response);
+  // OpenScanner@3 was removed.
+  // SetOptions@7 was removed.
 };

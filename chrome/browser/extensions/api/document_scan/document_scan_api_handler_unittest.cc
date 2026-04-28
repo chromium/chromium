@@ -16,14 +16,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
-#include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +30,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -121,10 +118,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
                      .Build();
     ExtensionRegistry::Get(testing_profile_)->AddEnabled(extension_);
 
-    document_scan_api_handler_ = DocumentScanAPIHandler::CreateForTesting(
-        testing_profile_, &document_scan_);
-    GetLorgnetteScannerManager()->SetCloseScannerCallback(base::BindRepeating(
-        &FakeDocumentScanAsh::CloseScanner, base::Unretained(&document_scan_)));
+    document_scan_api_handler_ =
+        std::make_unique<DocumentScanAPIHandler>(testing_profile_);
     GetLorgnetteScannerManager()->SetCloseScannerResult(
         lorgnette::OPERATION_RESULT_SUCCESS);
     GetLorgnetteScannerManager()->SetCancelScanResult(
@@ -141,8 +136,6 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     create_services_subscription_.reset();
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
-
-  FakeDocumentScanAsh& GetDocumentScan() { return document_scan_; }
 
  protected:
   std::unique_ptr<DocumentScanAPIHandler> document_scan_api_handler_;
@@ -216,17 +209,16 @@ class DocumentScanAPIHandlerTest : public testing::Test {
         future.GetCallback());
     auto response = future.Get().value_or(lorgnette::ListScannersResponse());
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-    for (auto& scanner : scanners) {
-      auto open_response = crosapi::mojom::OpenScannerResponse::New();
-      open_response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-      open_response->scanner_id = scanner.name();
-      open_response->scanner_handle = scanner.name() + "-handle";
-      open_response->options.emplace();
-      open_response->options.value()["option1"] =
-          mojo::ConvertForTesting(CreateTestScannerOption("option1", 5));
-      document_scan_.SetOpenScannerResponse(scanner.name(),
-                                            std::move(open_response));
 
+    lorgnette::ScannerConfig config_template;
+    lorgnette::ScannerOption option1;
+    option1.set_name("option1");
+    option1.set_option_type(lorgnette::TYPE_INT);
+    option1.mutable_int_value()->add_value(5);
+    (*config_template.mutable_options())["option1"] = option1;
+
+    for (auto& scanner : scanners) {
+      scanner_manager->AddScanner(scanner, config_template);
       response.mutable_scanners()->Add(std::move(scanner));
     }
     scanner_manager->SetGetScannerInfoListResponse(response);
@@ -302,7 +294,6 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingProfile> testing_profile_;
-  FakeDocumentScanAsh document_scan_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::optional<base::CallbackListSubscription> create_services_subscription_;
 };
@@ -335,14 +326,18 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_UnsupportedMimeTypesError) {
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_OpenFails) {
   auto scanner_info = CreateTestScannerInfo();
-  auto open_response = crosapi::mojom::OpenScannerResponse::New();
-  open_response->scanner_id = scanner_info.name();
-  open_response->result = crosapi::mojom::ScannerOperationResult::kDeviceBusy;
-
-  // A scanner is returned in the list, but it can't be opened.
+  std::string scanner_id = scanner_info.name();
   AddScanners({std::move(scanner_info)});
-  GetDocumentScan().SetOpenScannerResponse(open_response->scanner_id,
-                                           std::move(open_response));
+
+  // Open it once so it's busy.
+  lorgnette::OpenScannerRequest request;
+  request.mutable_scanner_id()->set_connection_string(scanner_id);
+  request.set_client_id("different-client-id");
+  base::test::TestFuture<const std::optional<lorgnette::OpenScannerResponse>&>
+      open_future;
+  GetLorgnetteScannerManager()->OpenScanner(request, open_future.GetCallback());
+  ASSERT_TRUE(open_future.Get().has_value());
+  ASSERT_EQ(open_future.Get()->result(), lorgnette::OPERATION_RESULT_SUCCESS);
 
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
@@ -809,6 +804,24 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondOpenClosesFirstHandle) {
   EXPECT_FALSE(options_response2.groups.has_value());
 }
 
+TEST_F(DocumentScanAPIHandlerTest, OpenScanner_DBusFailure) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+  EXPECT_FALSE(scanner_id.empty());
+
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
+
+  OpenScannerFuture future;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          future.GetCallback());
+  const api::document_scan::OpenScannerResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_id, scanner_id);
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kInternalError);
+  EXPECT_FALSE(response.scanner_handle.has_value());
+  EXPECT_FALSE(response.options.has_value());
+}
+
 TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_NoScanner) {
   GetOptionGroupsFuture future;
   document_scan_api_handler_->GetOptionGroups(extension_, "badscanner",
@@ -1001,6 +1014,27 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_SetBeforeOpenFails) {
   EXPECT_FALSE(response.options.has_value());
 }
 
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_DBusFailure) {
+  std::string handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(handle.empty());
+
+  auto settings =
+      CreateTestOptionSettingList(1, api::document_scan::OptionType::kInt);
+
+  GetLorgnetteScannerManager()->SimulateDBusFailure(true);
+
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, handle, std::move(settings), future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_handle, handle);
+  ASSERT_EQ(response.results.size(), 1U);
+  EXPECT_EQ(response.results[0].result,
+            api::document_scan::OperationResult::kInternalError);
+  EXPECT_FALSE(response.options.has_value());
+}
+
 // Tests the special mappings for TYPE_FIXED options.  Also indirectly tests
 // getting back multiple results and an updated set of options.
 TEST_F(DocumentScanAPIHandlerTest, SetOptions_FixedTypeMappings) {
@@ -1059,12 +1093,12 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_FixedTypeMappings) {
   EXPECT_EQ(GetResultByName(response.results, "option7"),
             std::optional(api::document_scan::OperationResult::kSuccess));
 
-  // Verify that all supplied options are present, but assume the option value
-  // conversions have already been tested by the TypeConverter unit tests.
+  // Verify that successfully set options are present, but assume the option
+  // value conversions have already been tested by the TypeConverter unit tests.
   ASSERT_TRUE(response.options.has_value());
-  for (size_t i = 1; i <= 7; i++) {
-    EXPECT_TRUE(response.options->additional_properties.contains(
-        base::StringPrintf("option%zu", i)));
+  for (const auto& result : response.results) {
+    EXPECT_EQ(result.result == api::document_scan::OperationResult::kSuccess,
+              response.options->additional_properties.contains(result.name));
   }
 }
 
@@ -1155,12 +1189,12 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_IntTypeMappings) {
   EXPECT_EQ(GetResultByName(response.results, "option13"),
             std::optional(api::document_scan::OperationResult::kWrongType));
 
-  // Verify that all supplied options are present, but assume the option value
-  // conversions have already been tested by the TypeConverter unit tests.
+  // Verify that successfully set options are present, but assume the option
+  // value conversions have already been tested by the TypeConverter unit tests.
   ASSERT_TRUE(response.options.has_value());
-  for (size_t i = 1; i <= 13; i++) {
-    EXPECT_TRUE(response.options->additional_properties.contains(
-        base::StringPrintf("option%zu", i)));
+  for (const auto& result : response.results) {
+    EXPECT_EQ(result.result == api::document_scan::OperationResult::kSuccess,
+              response.options->additional_properties.contains(result.name));
   }
 }
 
@@ -1220,12 +1254,12 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_BoolTypeMappings) {
   EXPECT_EQ(GetResultByName(response.results, "option7"),
             std::optional(api::document_scan::OperationResult::kWrongType));
 
-  // Verify that all supplied options are present, but assume the option value
-  // conversions have already been tested by the TypeConverter unit tests.
+  // Verify that successfully set options are present, but assume the option
+  // value conversions have already been tested by the TypeConverter unit tests.
   ASSERT_TRUE(response.options.has_value());
-  for (size_t i = 1; i <= 7; i++) {
-    EXPECT_TRUE(response.options->additional_properties.contains(
-        base::StringPrintf("option%zu", i)));
+  for (const auto& result : response.results) {
+    EXPECT_EQ(result.result == api::document_scan::OperationResult::kSuccess,
+              response.options->additional_properties.contains(result.name));
   }
 }
 
@@ -1285,12 +1319,12 @@ TEST_F(DocumentScanAPIHandlerTest, SetOptions_StringTypeMappings) {
   EXPECT_EQ(GetResultByName(response.results, "option7"),
             std::optional(api::document_scan::OperationResult::kWrongType));
 
-  // Verify that all supplied options are present, but assume the option value
-  // conversions have already been tested by the TypeConverter unit tests.
+  // Verify that successfully set options are present, but assume the option
+  // value conversions have already been tested by the TypeConverter unit tests.
   ASSERT_TRUE(response.options.has_value());
-  for (size_t i = 1; i <= 7; i++) {
-    EXPECT_TRUE(response.options->additional_properties.contains(
-        base::StringPrintf("option%zu", i)));
+  for (const auto& result : response.results) {
+    EXPECT_EQ(result.result == api::document_scan::OperationResult::kSuccess,
+              response.options->additional_properties.contains(result.name));
   }
 }
 

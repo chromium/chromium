@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -172,6 +173,27 @@ FakeLorgnetteScannerManager::FakeLorgnetteScannerManager() = default;
 
 FakeLorgnetteScannerManager::~FakeLorgnetteScannerManager() = default;
 
+FakeLorgnetteScannerManager::ScannerSession::ScannerSession() = default;
+FakeLorgnetteScannerManager::ScannerSession::ScannerSession(
+    ScannerSession&& other) noexcept = default;
+FakeLorgnetteScannerManager::ScannerSession&
+FakeLorgnetteScannerManager::ScannerSession::operator=(
+    ScannerSession&& other) noexcept = default;
+FakeLorgnetteScannerManager::ScannerSession::~ScannerSession() = default;
+
+FakeLorgnetteScannerManager::ScannerState::ScannerState(
+    std::string scanner_id,
+    lorgnette::ScannerConfig template_config)
+    : scanner_id(std::move(scanner_id)),
+      template_config(std::move(template_config)) {}
+
+FakeLorgnetteScannerManager::ScannerState::ScannerState(
+    ScannerState&& other) noexcept = default;
+FakeLorgnetteScannerManager::ScannerState&
+FakeLorgnetteScannerManager::ScannerState::operator=(
+    ScannerState&& other) noexcept = default;
+FakeLorgnetteScannerManager::ScannerState::~ScannerState() = default;
+
 void FakeLorgnetteScannerManager::GetScannerNames(
     GetScannerNamesCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -197,24 +219,60 @@ void FakeLorgnetteScannerManager::GetScannerCapabilities(
 void FakeLorgnetteScannerManager::OpenScanner(
     const lorgnette::OpenScannerRequest& request,
     OpenScannerCallback callback) {
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  lorgnette::OpenScannerResponse response;
+  *response.mutable_scanner_id() = request.scanner_id();
+
+  const std::string& scanner_id = request.scanner_id().connection_string();
+  auto it = std::ranges::find_if(scanners_, [&scanner_id](const auto& state) {
+    return state.scanner_id == scanner_id;
+  });
+
+  if (it == scanners_.end()) {
+    response.set_result(lorgnette::OPERATION_RESULT_MISSING);
+  } else if (it->active_session.has_value() &&
+             it->active_session->client_id != request.client_id()) {
+    response.set_result(lorgnette::OPERATION_RESULT_DEVICE_BUSY);
+  } else {
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+    response.mutable_config()->CopyFrom(it->template_config);
+    std::string scanner_handle = CreateFreshHandle();
+    response.mutable_config()->mutable_scanner()->set_token(scanner_handle);
+    it->active_session.emplace();
+    it->active_session->client_id = request.client_id();
+    it->active_session->config = response.config();
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), open_scanner_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::CloseScanner(
     const lorgnette::CloseScannerRequest& request,
     CloseScannerCallback callback) {
-  if (close_scanner_callback_) {
-    close_scanner_callback_.Run(
-        request.has_scanner() ? request.scanner().token() : std::string());
-  }
-
   std::optional<lorgnette::CloseScannerResponse> response;
   if (close_scanner_result_.has_value()) {
     response.emplace();
     response->set_result(*close_scanner_result_);
     if (request.has_scanner()) {
       *response->mutable_scanner() = request.scanner();
+    }
+
+    if (*close_scanner_result_ == lorgnette::OPERATION_RESULT_SUCCESS &&
+        request.has_scanner()) {
+      const std::string& handle = request.scanner().token();
+      auto it = std::ranges::find_if(scanners_, [&handle](const auto& s) {
+        return s.active_session.has_value() &&
+               s.active_session->config.scanner().token() == handle;
+      });
+      if (it != scanners_.end()) {
+        it->active_session.reset();
+      }
     }
   }
 
@@ -225,8 +283,88 @@ void FakeLorgnetteScannerManager::CloseScanner(
 void FakeLorgnetteScannerManager::SetOptions(
     const lorgnette::SetOptionsRequest& request,
     SetOptionsCallback callback) {
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  lorgnette::SetOptionsResponse response;
+  *response.mutable_scanner() = request.scanner();
+
+  const std::string& scanner_handle = request.scanner().token();
+  lorgnette::ScannerConfig* config = nullptr;
+  for (auto& s : scanners_) {
+    if (s.active_session.has_value() &&
+        s.active_session->config.scanner().token() == scanner_handle) {
+      config = &s.active_session->config;
+      break;
+    }
+  }
+  if (!config) {
+    *response.mutable_scanner() = request.scanner();
+    for (const lorgnette::ScannerOption& setting : request.options()) {
+      (*response.mutable_results())[setting.name()] =
+          lorgnette::OPERATION_RESULT_INVALID;
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+    return;
+  }
+
+  for (const lorgnette::ScannerOption& setting : request.options()) {
+    lorgnette::OperationResult result = lorgnette::OPERATION_RESULT_SUCCESS;
+    lorgnette::ScannerOption* option =
+        &(*config->mutable_options())[setting.name()];
+    if (option->name().empty()) {
+      // This entry was just newly inserted.
+      option->set_name(setting.name());
+      option->set_option_type(setting.option_type());
+    }
+
+    // Make sure type and value match.
+    switch (setting.value_case()) {
+      case lorgnette::ScannerOption::kBoolValue:
+        if (option->option_type() == lorgnette::TYPE_BOOL) {
+          option->set_bool_value(setting.bool_value());
+        } else {
+          result = lorgnette::OPERATION_RESULT_WRONG_TYPE;
+        }
+        break;
+      case lorgnette::ScannerOption::kIntValue:
+        if (option->option_type() == lorgnette::TYPE_INT) {
+          *option->mutable_int_value() = setting.int_value();
+        } else {
+          result = lorgnette::OPERATION_RESULT_WRONG_TYPE;
+        }
+        break;
+      case lorgnette::ScannerOption::kFixedValue:
+        if (option->option_type() == lorgnette::TYPE_FIXED) {
+          *option->mutable_fixed_value() = setting.fixed_value();
+        } else {
+          result = lorgnette::OPERATION_RESULT_WRONG_TYPE;
+        }
+        break;
+      case lorgnette::ScannerOption::kStringValue:
+        if (option->option_type() == lorgnette::TYPE_STRING) {
+          option->set_string_value(setting.string_value());
+        } else {
+          result = lorgnette::OPERATION_RESULT_WRONG_TYPE;
+        }
+        break;
+      case lorgnette::ScannerOption::VALUE_NOT_SET:
+        // No value specified, it will be auto-set.
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    (*response.mutable_results())[setting.name()] = result;
+  }
+
+  response.mutable_config()->CopyFrom(*config);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), set_options_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::GetCurrentConfig(
@@ -257,8 +395,7 @@ void FakeLorgnetteScannerManager::StartPreparedScan(
     } else {
       response->set_result(*start_prepared_scan_result_);
       if (response->result() == lorgnette::OPERATION_RESULT_SUCCESS) {
-        response->mutable_job_handle()->set_token(base::StrCat(
-            {"job-handle-", base::NumberToString(++job_handle_count_)}));
+        response->mutable_job_handle()->set_token(CreateFreshHandle());
       }
     }
   }
@@ -376,6 +513,16 @@ void FakeLorgnetteScannerManager::CancelScan(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
+void FakeLorgnetteScannerManager::SimulateDBusFailure(bool simulate) {
+  simulate_dbus_failure_ = simulate;
+}
+
+void FakeLorgnetteScannerManager::AddScanner(
+    const lorgnette::ScannerInfo& scanner_info,
+    const lorgnette::ScannerConfig& config_template) {
+  scanners_.emplace_back(scanner_info.name(), config_template);
+}
+
 void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
     const std::vector<std::string>& scanner_names) {
   scanner_names_ = scanner_names;
@@ -391,19 +538,9 @@ void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
   scanner_capabilities_ = scanner_capabilities;
 }
 
-void FakeLorgnetteScannerManager::SetOpenScannerResponse(
-    const std::optional<lorgnette::OpenScannerResponse>& response) {
-  open_scanner_response_ = response;
-}
-
 void FakeLorgnetteScannerManager::SetCloseScannerResult(
     std::optional<lorgnette::OperationResult> result) {
   close_scanner_result_ = std::move(result);
-}
-
-void FakeLorgnetteScannerManager::SetSetOptionsResponse(
-    const std::optional<lorgnette::SetOptionsResponse>& response) {
-  set_options_response_ = response;
 }
 
 void FakeLorgnetteScannerManager::ConfigureGetCurrentConfigResponse(
@@ -435,11 +572,6 @@ void FakeLorgnetteScannerManager::SetCancelScanResult(
   cancel_scan_result_ = std::move(result);
 }
 
-void FakeLorgnetteScannerManager::SetCloseScannerCallback(
-    base::RepeatingCallback<void(const std::string& scanner_handle)> callback) {
-  close_scanner_callback_ = std::move(callback);
-}
-
 void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
     const lorgnette::ScanSettings& settings) {
   const auto match =
@@ -448,6 +580,10 @@ void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
     SetScanResponse(
         std::initializer_list<std::string>{CreateJpeg(match->second)});
   }
+}
+
+std::string FakeLorgnetteScannerManager::CreateFreshHandle() {
+  return base::StrCat({"handle-", base::NumberToString(handle_count_++)});
 }
 
 }  // namespace ash
