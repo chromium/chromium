@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/intelligence/bwg/metrics",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features/features.h",
