@@ -131,6 +131,14 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
 
+    // TODO(crbug.com/507248945): This is a temporary fix for an iPadOS 26 bug where
+    // tapping on the tab strip triggers the status bar "scroll to top" gesture on the underlying web view.
+    // Adding a passive gesture to the tab strip claims touches on empty space, preventing the iPadOS 26
+    // status bar gesture from intercepting them.
+    let recognizer = UITapGestureRecognizer(target: self, action: #selector(tabStripTapped))
+    recognizer.cancelsTouchesInView = false
+    collectionView.addGestureRecognizer(recognizer)
+
     let trailingPlaceholder = UIView()
     trailingPlaceholder.translatesAutoresizingMaskIntoConstraints = false
     trailingPlaceholder.backgroundColor = view.backgroundColor
@@ -507,6 +515,13 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
   }
 
   // MARK: - Private
+
+  /// Action for the passive gesture recognizer to claim touches on empty space.
+  @objc private func tabStripTapped() {
+    // This method is intentionally empty. Its purpose is to claim touches
+    // for the app's gesture system and prevent the system status bar gesture
+    // from intercepting them on empty space.
+  }
 
   /// Collapses or expands the group at `indexPath`.
   func collapseOrExpandGroup(at indexPath: IndexPath) {
