@@ -14,7 +14,7 @@
 
 namespace enterprise_connectors::test {
 
-class FakeFilesRequestHandler : public FilesRequestHandler {
+class FakeFilesRequestHandler : public FilesRequestHandlerBase {
  public:
   using FakeFileRequestCallback =
       base::OnceCallback<void(base::FilePath path,
@@ -37,11 +37,11 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
                           const std::string& content_transfer_method,
                           DeepScanAccessPoint access_point,
                           const std::vector<base::FilePath>& paths,
-                          CompletionCallback callback);
+                          FilesRequestHandler::CompletionCallback callback);
 
   ~FakeFilesRequestHandler() override;
 
-  static std::unique_ptr<FilesRequestHandler> Create(
+  static std::unique_ptr<FilesRequestHandlerBase> Create(
       FakeFileUploadCallback fake_file_upload_callback,
       ContentAnalysisInfo* content_analysis_info,
       BinaryUploadService* upload_service,
@@ -62,6 +62,12 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
       const base::FilePath& path,
       std::unique_ptr<BinaryUploadRequest> request) override;
 
+  void FileRequestCallbackForTesting(
+      base::FilePath path,
+      ScanRequestUploadResult result,
+      enterprise_connectors::ContentAnalysisResponse response);
+
+  std::vector<base::FilePath> paths_;
   FakeFileUploadCallback fake_file_upload_callback_;
   base::WeakPtrFactory<FakeFilesRequestHandler> weak_ptr_factory_{this};
 };

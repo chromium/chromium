@@ -42,4 +42,16 @@ BinaryUploadService* RequestHandlerBase::GetBinaryUploadService() {
   return upload_service_.get();
 }
 
+base::TimeTicks RequestHandlerBase::upload_start_time() const {
+  return upload_start_time_;
+}
+
+DeepScanAccessPoint RequestHandlerBase::access_point() const {
+  return access_point_;
+}
+
+ContentAnalysisInfoBase* RequestHandlerBase::content_analysis_info() const {
+  return content_analysis_info_.get();
+}
+
 }  // namespace enterprise_connectors

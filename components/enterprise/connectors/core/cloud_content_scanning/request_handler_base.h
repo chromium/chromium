@@ -62,6 +62,10 @@ class RequestHandlerBase {
     return request_tokens_to_ack_final_actions_;
   }
 
+  base::TimeTicks upload_start_time() const;
+  DeepScanAccessPoint access_point() const;
+  ContentAnalysisInfoBase* content_analysis_info() const;
+
  private:
   // Uploads the actual requests. To be implemented by child classes.
   // Returns true if uploading is occurring in the background and false if there

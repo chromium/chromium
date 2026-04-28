@@ -194,7 +194,8 @@ void FilesRequestHandlerBase::OnGotFileInfo(
     return;
   }
 
-  UploadFileForDeepScanning(result, std::move(request));
+  UploadFileForDeepScanning(result, delegate_->GetPath(index),
+                            std::move(request));
 }
 
 void FilesRequestHandlerBase::FinishRequestEarly(
@@ -221,6 +222,7 @@ void FilesRequestHandlerBase::FinishRequestEarly(
 
 void FilesRequestHandlerBase::UploadFileForDeepScanning(
     ScanRequestUploadResult result,
+    const base::FilePath& path,
     std::unique_ptr<BinaryUploadRequest> request) {
   BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service) {
@@ -294,6 +296,14 @@ void FilesRequestHandlerBase::FileRequestStartCallback(
     size_t index,
     const BinaryUploadRequest& request) {
   delegate_->SetFileScanStartTime(index);
+}
+
+size_t FilesRequestHandlerBase::file_result_count() const {
+  return file_result_count_;
+}
+
+const std::string& FilesRequestHandlerBase::content_transfer_method() const {
+  return content_transfer_method_;
 }
 
 }  // namespace enterprise_connectors

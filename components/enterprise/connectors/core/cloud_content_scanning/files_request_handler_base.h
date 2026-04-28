@@ -150,9 +150,26 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   // Reports a user cancellation for the file at `index`.
   void ReportCanceledFile(size_t index);
 
+  size_t file_result_count() const;
+  const std::string& content_transfer_method() const;
+
  protected:
   // Initiates scanning for all files managed by the delegate.
   bool UploadDataImpl() override;
+
+  // Upload the request for deep scanning using the binary upload service.
+  // These methods exist so they can be overridden in tests as needed.
+  // The `result` argument exists as an optimization to finish the request early
+  // when the result is known in advance to avoid using the upload service.
+  virtual void UploadFileForDeepScanning(
+      ScanRequestUploadResult result,
+      const base::FilePath& path,
+      std::unique_ptr<BinaryUploadRequest> request);
+
+  void FileRequestCallback(
+      size_t index,
+      ScanRequestUploadResult upload_result,
+      enterprise_connectors::ContentAnalysisResponse response);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Success);
@@ -173,18 +190,6 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   // required data to safe-browsing ui.
   void FinishRequestEarly(std::unique_ptr<BinaryUploadRequest> request,
                           ScanRequestUploadResult result);
-
-  // Upload the request for deep scanning using the binary upload service.
-  // These methods exist so they can be overridden in tests as needed.
-  // The `result` argument exists as an optimization to finish the request early
-  // when the result is known in advance to avoid using the upload service.
-  void UploadFileForDeepScanning(ScanRequestUploadResult result,
-                                 std::unique_ptr<BinaryUploadRequest> request);
-
-  void FileRequestCallback(
-      size_t index,
-      ScanRequestUploadResult upload_result,
-      enterprise_connectors::ContentAnalysisResponse response);
 
   void FileRequestStartCallback(size_t index,
                                 const BinaryUploadRequest& request);

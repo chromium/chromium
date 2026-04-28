@@ -418,7 +418,7 @@ bool FileTransferAnalysisDelegate::BypassRequiresJustification(
   return it->second.requires_justification;
 }
 
-FilesRequestHandler*
+FilesRequestHandlerBase*
 FileTransferAnalysisDelegate::GetFilesRequestHandlerForTesting() {
   return request_handler_.get();
 }

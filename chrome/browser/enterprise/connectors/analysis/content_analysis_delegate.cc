@@ -598,7 +598,7 @@ void ContentAnalysisDelegate::FilesRequestCallback(
   MaybeCompleteScanRequest();
 }
 
-FilesRequestHandler*
+FilesRequestHandlerBase*
 ContentAnalysisDelegate::GetFilesRequestHandlerForTesting() {
   return files_request_handler_.get();
 }

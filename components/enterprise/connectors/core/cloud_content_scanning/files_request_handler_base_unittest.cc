@@ -203,9 +203,12 @@ TEST_F(FilesRequestHandlerBaseTest, UploadDataImpl) {
 TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Success) {
   auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
   auto* delegate = delegate_ptr.get();
+  base::FilePath path;
 
   EXPECT_CALL(*delegate, GetFileCount()).WillRepeatedly(testing::Return(1));
   EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
+  EXPECT_CALL(*delegate, GetPath(testing::_))
+      .WillRepeatedly(testing::ReturnRef(path));
   FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
                                   url_, "content_transfer_method",
                                   DeepScanAccessPoint::UPLOAD,

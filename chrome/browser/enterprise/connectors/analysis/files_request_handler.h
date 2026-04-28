@@ -27,37 +27,35 @@ namespace enterprise_connectors {
 
 class FileAnalysisRequestBase;
 
-// Handles deep scanning requests for multiple files which are specified by
-// `paths_`. Files are scanned in parallel and piped to the BinaryUploadService
-// `upload_service_`. On completion of the scan, `callback_` is called with the
-// scanning results. After the scanning is complete, ReportWarningBypass can be
-// called to report a warning bypass of all warned files.
-class FilesRequestHandler : public RequestHandlerBase {
+// Implementation of `FilesRequestHandlerBase::Delegate` for Clank and desktop
+// platforms.
+class FilesRequestHandler : public FilesRequestHandlerBase::Delegate {
  public:
   // Callback that informs caller of scanning verdicts for each file.
   using CompletionCallback =
       base::OnceCallback<void(std::vector<RequestHandlerResult>)>;
 
-  // A factory function used in tests to create fake FilesRequestHandler
+  // A factory function used in tests to create fake FilesRequestHandlerBase
   // instances.
-  using Factory = base::RepeatingCallback<std::unique_ptr<FilesRequestHandler>(
-      ContentAnalysisInfo* content_analysis_info,
-      BinaryUploadService* upload_service,
-      Profile* profile,
-      GURL url,
-      const std::string& source,
-      const std::string& destination,
-      const std::string& content_transfer_method,
-      DeepScanAccessPoint access_point,
-      const std::vector<base::FilePath>& paths,
-      CompletionCallback callback)>;
+  using Factory =
+      base::RepeatingCallback<std::unique_ptr<FilesRequestHandlerBase>(
+          ContentAnalysisInfo* content_analysis_info,
+          BinaryUploadService* upload_service,
+          Profile* profile,
+          GURL url,
+          const std::string& source,
+          const std::string& destination,
+          const std::string& content_transfer_method,
+          DeepScanAccessPoint access_point,
+          const std::vector<base::FilePath>& paths,
+          CompletionCallback callback)>;
 
-  // Create an instance of FilesRequestHandler. If a factory is set, it will be
-  // used instead.
+  // Create an instance of FilesRequestHandlerBase. If a factory is set, it will
+  // be used instead.
   // Note that `analysis_settings` is saved as const reference and not copied.
   // The calling side is responsible that `analysis_settings` is not destroyed
   // before scanning is completed.
-  static std::unique_ptr<FilesRequestHandler> Create(
+  static std::unique_ptr<FilesRequestHandlerBase> Create(
       ContentAnalysisInfo* content_analysis_info,
       BinaryUploadService* upload_service,
       Profile* profile,
@@ -73,74 +71,48 @@ class FilesRequestHandler : public RequestHandlerBase {
   static void SetFactoryForTesting(Factory factory);
   static void ResetFactoryForTesting();
 
-  ~FilesRequestHandler() override;
-
-  void ReportWarningBypass(
-      std::optional<std::u16string> user_justification) override;
-
- protected:
-  FilesRequestHandler(ContentAnalysisInfo* content_analysis_info,
-                      BinaryUploadService* upload_service,
-                      Profile* profile,
-                      GURL url,
+  FilesRequestHandler(Profile* profile,
                       const std::string& source,
                       const std::string& destination,
-                      const std::string& content_transfer_method,
-                      DeepScanAccessPoint access_point,
                       const std::vector<base::FilePath>& paths,
                       CompletionCallback callback);
 
-  bool UploadDataImpl() override;
+  ~FilesRequestHandler() override;
 
-  void FileRequestCallbackForTesting(
-      base::FilePath path,
-      ScanRequestUploadResult result,
-      enterprise_connectors::ContentAnalysisResponse response);
+  // FilesRequestHandlerBase::Delegate overrides:
+  std::unique_ptr<FileAnalysisRequestBase> CreateFileRequest(
+      size_t index,
+      const AnalysisSettings& settings,
+      base::OnceCallback<void(ScanRequestUploadResult, ContentAnalysisResponse)>
+          callback,
+      base::OnceCallback<void(const BinaryUploadRequest&)>
+          request_start_callback) override;
+  void ReportWarningBypass(std::optional<std::u16string> user_justification,
+                           const ContentAnalysisInfoBase& info,
+                           const std::string& trigger,
+                           const std::string& content_transfer_method) override;
+  bool UploadDataImpl() override;
+  void UpdateFileInfo(size_t index,
+                      BinaryUploadRequest::Data data,
+                      BinaryUploadRequest* request) override;
+  void OnGotHash(size_t index, std::string hash) override;
+  void UpdateRequestHandlerResult(size_t index,
+                                  RequestHandlerResult result,
+                                  ContentAnalysisResponse response) override;
+  const base::FilePath& GetPath(size_t index) const override;
+  const FilesRequestHandlerBase::FileInfo& GetFileInfo(size_t index) override;
+  size_t GetFileCount() const override;
+  void SetFileScanStartTime(size_t index) override;
+  const base::TimeTicks GetFileScanStartTime(size_t index) override;
+  ReportingEventRouter* GetReportingEventRouter() override;
+  void MaybeCompleteScanRequest() override;
+  std::string GetSource() override;
+  std::string GetDestination() override;
+  void SetHandler(FilesRequestHandlerBase* handler) override;
+  void MaybeCancelAndReport() override;
+  void MarkFileAsReported(size_t index) override;
 
  private:
-  // Prepares an upload request for the file at `path`.  If the file
-  // cannot be uploaded it will have a failure verdict added to `result_`.
-  enterprise_connectors::FileAnalysisRequestBase* PrepareFileRequest(
-      size_t index);
-
-  // Called when the file info for `path` has been fetched. Also begins the
-  // upload process.
-  void OnGotFileInfo(std::unique_ptr<BinaryUploadRequest> request,
-                     size_t index,
-                     ScanRequestUploadResult result,
-                     BinaryUploadRequest::Data data);
-
-  void OnGotHash(size_t index, std::string hash);
-
-  // Called when a request is finished early without uploading it.
-  // This is, e.g., called for encrypted files and responsible for posting the
-  // required data to safe-browsing ui.
-  void FinishRequestEarly(std::unique_ptr<BinaryUploadRequest> request,
-                          ScanRequestUploadResult result);
-
-  // Upload the request for deep scanning using the binary upload service.
-  // These methods exist so they can be overridden in tests as needed.
-  // The `result` argument exists as an optimization to finish the request early
-  // when the result is known in advance to avoid using the upload service.
-  virtual void UploadFileForDeepScanning(
-      ScanRequestUploadResult result,
-      const base::FilePath& path,
-      std::unique_ptr<BinaryUploadRequest> request);
-
-  void FileRequestCallback(
-      size_t index,
-      ScanRequestUploadResult result,
-      enterprise_connectors::ContentAnalysisResponse response);
-
-  void FileRequestStartCallback(size_t index,
-                                const BinaryUploadRequest& request);
-
-  void MaybeCompleteScanRequest();
-
-  // If feature is enabled and if there are any files that have not been
-  // reported yet, cancel them and report the cancellation.
-  void MaybeCancelAndReport();
-
   void MaybeTrackCancellation();
 
   void CreateFileOpeningJob(
@@ -151,29 +123,18 @@ class FilesRequestHandler : public RequestHandlerBase {
   // files on parallel threads. Always nullptr for non-file content scanning.
   scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job_;
 
+  raw_ptr<FilesRequestHandlerBase> handler_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+
   std::vector<base::FilePath> paths_;
   std::vector<FilesRequestHandlerBase::FileInfo> file_info_;
-
-  // The number of file scans that have completed. If more than one file is
-  // requested for scanning in `data_`, each is scanned in parallel with
-  // separate requests.
-  size_t file_result_count_ = 0;
-
   std::vector<RequestHandlerResult> results_;
 
   // Scanning responses of files that got DLP warning verdicts.
-  std::map<size_t, enterprise_connectors::ContentAnalysisResponse>
-      file_warnings_;
-
-  // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
-  // more data should be upload for `this` at that point.
-  bool throttled_ = false;
+  std::map<size_t, ContentAnalysisResponse> file_warnings_;
 
   std::string source_;
   std::string destination_;
-  std::string content_transfer_method_;
-  raw_ptr<Profile> profile_ = nullptr;
-
   CompletionCallback callback_;
 
   std::vector<base::TimeTicks> start_times_;

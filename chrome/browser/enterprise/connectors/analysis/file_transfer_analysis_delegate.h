@@ -25,7 +25,7 @@ class RecursiveOperationDelegate;
 
 namespace enterprise_connectors {
 
-class FilesRequestHandler;
+class FilesRequestHandlerBase;
 
 // `FileTransferAnalysisDelegate` handles scanning and reporting of ChromeOS
 // file system transfers.
@@ -164,7 +164,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   // Returns whether a user justification is required for the given tag.
   bool BypassRequiresJustification(const std::string& tag) const;
 
-  FilesRequestHandler* GetFilesRequestHandlerForTesting();
+  FilesRequestHandlerBase* GetFilesRequestHandlerForTesting();
 
   // ContentAnalysisInfo:
   const AnalysisSettings& settings() const override;
@@ -210,7 +210,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   bool warning_is_bypassed_{false};
 
   std::unique_ptr<storage::RecursiveOperationDelegate> get_file_urls_delegate_;
-  std::unique_ptr<FilesRequestHandler> request_handler_;
+  std::unique_ptr<FilesRequestHandlerBase> request_handler_;
 
   base::WeakPtrFactory<FileTransferAnalysisDelegate> weak_ptr_factory_{this};
 };

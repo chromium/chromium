@@ -19,23 +19,25 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
     const std::string& content_transfer_method,
     DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
-    CompletionCallback callback)
-    : FilesRequestHandler(content_analysis_info,
-                          upload_service,
-                          profile,
-                          url,
-                          source,
-                          destination,
-                          content_transfer_method,
-                          access_point,
-                          paths,
-                          std::move(callback)),
+    FilesRequestHandler::CompletionCallback callback)
+    : FilesRequestHandlerBase(
+          content_analysis_info,
+          upload_service,
+          url,
+          content_transfer_method,
+          access_point,
+          std::make_unique<FilesRequestHandler>(profile,
+                                                source,
+                                                destination,
+                                                paths,
+                                                std::move(callback))),
+      paths_(paths),
       fake_file_upload_callback_(fake_file_upload_callback) {}
 
 FakeFilesRequestHandler::~FakeFilesRequestHandler() = default;
 
 // static
-std::unique_ptr<FilesRequestHandler> FakeFilesRequestHandler::Create(
+std::unique_ptr<FilesRequestHandlerBase> FakeFilesRequestHandler::Create(
     FakeFileUploadCallback fake_file_upload_callback,
     ContentAnalysisInfo* content_analysis_info,
     BinaryUploadService* upload_service,
@@ -61,6 +63,16 @@ void FakeFilesRequestHandler::UploadFileForDeepScanning(
       result, path, std::move(request),
       base::BindOnce(&FakeFilesRequestHandler::FileRequestCallbackForTesting,
                      GetWeakPtr()));
+}
+
+void FakeFilesRequestHandler::FileRequestCallbackForTesting(
+    base::FilePath path,
+    ScanRequestUploadResult result,
+    enterprise_connectors::ContentAnalysisResponse response) {
+  auto it = std::ranges::find(paths_, path);
+  CHECK(it != paths_.end());
+  size_t index = std::distance(paths_.begin(), it);
+  FileRequestCallback(index, result, response);
 }
 
 base::WeakPtr<FakeFilesRequestHandler> FakeFilesRequestHandler::GetWeakPtr() {
