@@ -196,12 +196,13 @@ void SendLogEntryToVLogOrErrorLog(
   const bool show_file = true;
   const bool show_type = true;
   const bool show_level = log_entry.log_level != LOG_LEVEL_ERROR;
-  std::string output =
-      LogEntryToString(log_entry, show_time, show_file, show_type, show_level);
-  if (log_entry.log_level == LOG_LEVEL_ERROR)
-    LOG(ERROR) << output;
-  else
-    VLOG(1) << output;
+  if (log_entry.log_level == LOG_LEVEL_ERROR) {
+    LOG(ERROR) << LogEntryToString(log_entry, show_time, show_file, show_type,
+                                   show_level);
+  } else {
+    VLOG(1) << LogEntryToString(log_entry, show_time, show_file, show_type,
+                                show_level);
+  }
 }
 
 bool LogEntryMatches(const DeviceEventLogImpl::LogEntry& first,
