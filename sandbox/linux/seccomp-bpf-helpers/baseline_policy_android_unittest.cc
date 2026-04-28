@@ -124,6 +124,22 @@ BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Blocked, BaselinePolicyAndroid) {
   BPF_ASSERT_EQ(EINVAL, errno);
 }
 
+// Verify that seccomp(SECCOMP_GET_ACTION_AVAIL, 0, nullptr) always returns
+// EPERM. Some android platform code uses this particular combination to detect
+// the presence of a chromium seccomp (b/507048056). Note that passing nullptr
+// as 4th argument is never valid and would return an EFAULT even without a
+// sandbox. If at any point in the future chromium seccomp needs to allow
+// seccomp(SECCOMP_GET_ACTION_AVAIL), ensure to keep a filter that
+// fails the combination of SECCOMP_GET_ACTION_AVAIL + nullptr with EPERM.
+BPF_TEST_C(BaselinePolicyAndroid,
+            SeccompGetActionAvail_Blocked,
+            BaselinePolicyAndroid) {
+  errno = 0;
+  BPF_ASSERT_EQ(-1, syscall(__NR_seccomp, /*SECCOMP_GET_ACTION_AVAIL*/ 2, 0u,
+                            nullptr));
+  BPF_ASSERT_EQ(EPERM, errno);
+}
+
 BPF_DEATH_TEST_C(BaselinePolicyAndroid,
                  Ioctl_Blocked_Crash,
                  DEATH_SEGV_MESSAGE(GetIoctlErrorMessageContentForTests()),
