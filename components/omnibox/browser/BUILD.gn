@@ -68,6 +68,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "price_tracking_disabled.icon",
     "product.icon",
     "product_chrome_refresh.icon",
+    "reply_rotated180.icon",
     "search_spark.icon",
     "secure_page_info_chrome_refresh.icon",
     "share_chrome_refresh.icon",

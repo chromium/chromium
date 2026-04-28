@@ -71,6 +71,8 @@ namespace searchbox_internal {
 
 const char* kSearchSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/search_spark.svg";
+const char* kReplyRotated180IconResourceName =
+    "//resources/cr_components/searchbox/icons/reply_rotated180.svg";
 }  // namespace searchbox_internal
 
 namespace {
@@ -573,6 +575,8 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kPedalsIconResourceName;
+  } else if (icon.name == omnibox::kReplyRotated180Icon.name) {
+    return searchbox_internal::kReplyRotated180IconResourceName;
   } else if (icon.name == omnibox::kSearchSparkIcon.name) {
     return searchbox_internal::kSearchSparkIconResourceName;
   } else if (icon.name == omnibox::kSparkIcon.name) {

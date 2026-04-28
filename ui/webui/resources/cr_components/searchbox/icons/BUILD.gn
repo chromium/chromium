@@ -48,6 +48,7 @@ generate_grd("build_grdp") {
     "page_cr23.svg",
     "page.svg",
     "page_spark.svg",
+    "reply_rotated180.svg",
     "search_cr23.svg",
     "search_spark.svg",
     "share_cr23.svg",

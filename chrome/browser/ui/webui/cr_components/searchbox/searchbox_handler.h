@@ -41,6 +41,7 @@ namespace searchbox_internal {
 // Internal constants for icon resource paths shared by SearchboxHandler and its
 // subclasses.
 extern const char* kSearchSparkIconResourceName;
+extern const char* kReplyRotated180IconResourceName;
 }  // namespace searchbox_internal
 
 // Base class for browser-side handlers that handle bi-directional communication

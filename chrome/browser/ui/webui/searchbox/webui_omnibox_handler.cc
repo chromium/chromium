@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
@@ -279,6 +280,14 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
       match, line, edit_model, bookmark_model, suggestion_groups_map,
       turl_service);
 
+  // Override contextual search spark loupe icon for GROUP_CONTEXTUAL_SEARCH.
+  // Results on the omnibox webui will use an arrow icon instead.
+  if (mojom_match &&
+      match.suggestion_group_id == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
+    mojom_match.value()->icon_path =
+        searchbox_internal::kReplyRotated180IconResourceName;
+  }
+
   mojom_match.value()->has_instant_keyword =
       match.HasInstantKeyword(turl_service);
   if (mojom_match && !match.HasInstantKeyword(turl_service) &&
@@ -292,30 +301,6 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
   }
 
   return mojom_match;
-}
-
-std::string WebuiOmniboxHandler::AutocompleteIconToResourceName(
-    const gfx::VectorIcon& icon) const {
-  // The default icon for contextual suggestions is the subdirectory arrow right
-  // icon. If there is a header enabled (which is when the lens chip is
-  // showing), use the search spark loupe instead.
-  const auto& input = autocomplete_controller()->input();
-  bool has_toolbelt_lens_action =
-      autocomplete_controller()->contextual_search_provider() &&
-      autocomplete_controller()
-          ->contextual_search_provider()
-          ->HasToolbeltLensAction();
-  const auto* client =
-      autocomplete_controller()->autocomplete_provider_client();
-  bool has_lens_search_chip =
-      client->IsOmniboxNextLensSearchChipEnabled() &&
-      ContextualSearchProvider::LensEntrypointEligible(input, client);
-  if ((has_toolbelt_lens_action || has_lens_search_chip) &&
-      icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return searchbox_internal::kSearchSparkIconResourceName;
-  }
-
-  return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
 
 // TODO(crbug.com/469098088): Use something other than

@@ -130,7 +130,7 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
   return omnibox_feature_configs::ContextualSearch::Get()
                  .open_lens_action_ui_tweaks
              ? vector_icons::kGoogleLensLogoIcon
-             : vector_icons::kGoogleLensMonochromeLogoIcon;
+             : omnibox::kSearchSparkIcon;
 #else
   return vector_icons::kSearchChromeRefreshIcon;
 #endif
