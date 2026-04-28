@@ -156,7 +156,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateWithUnknownError) {
   std::unique_ptr<BackendSession> session = model_->CreateSession(
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
-  java_helper_.SetGenerateResult(
+  java_helper_.settings().SetGenerateResult(
       BackendSessionImplAndroid::GenerateResult::kUnknownError);
 
   TestResponseHolder response_holder;

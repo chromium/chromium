@@ -34,7 +34,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         // If true, the callbacks will be called asynchronously through a different thread. This
         // field should be set before generate() is called.
         private boolean mCallbackOnDifferentThread;
-        private @GenerateResult int mGenerateResult;
+        private final MockAiCoreSettings mSettings;
         private boolean mNativeDestroyed;
         // Below are the params received in the generate() call.
         private SessionResponder mResponder;
@@ -43,10 +43,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         private final ModelExecutionFeature mFeature;
         private final SessionParams mParams;
 
-        public MockAiCoreSessionBackend(ModelExecutionFeature feature, SessionParams params) {
+        public MockAiCoreSessionBackend(
+                ModelExecutionFeature feature, SessionParams params, MockAiCoreSettings settings) {
             mFeature = feature;
             mParams = params;
-            mGenerateResult = GenerateResult.SUCCESS;
+            mSettings = settings;
         }
 
         @Override
@@ -83,7 +84,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
                 new Thread(
                                 () -> {
                                     responder.onResponse(sb.toString());
-                                    responder.onComplete(mGenerateResult);
+                                    responder.onComplete(mSettings.getGenerateResult());
                                 })
                         .start();
                 return;
@@ -92,7 +93,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             if (mCompleteAsync) {
                 mResponder = responder;
             } else {
-                responder.onComplete(mGenerateResult);
+                responder.onComplete(mSettings.getGenerateResult());
             }
         }
 
@@ -124,7 +125,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             if (mNativeDestroyed) {
                 return;
             }
-            mResponder.onComplete(mGenerateResult);
+            mResponder.onComplete(mSettings.getGenerateResult());
         }
     }
 
@@ -236,13 +237,17 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         List<MockAiCoreModelDownloaderBackend> mDownloaderBackends = new ArrayList<>();
         // If non-null, newly created downloader backends will auto-respond to checkStatus().
         Integer mDefaultStatusCheckResult;
+        private final MockAiCoreSettings mSettings;
 
-        public MockAiCoreFactory() {}
+        public MockAiCoreFactory(MockAiCoreSettings settings) {
+            mSettings = settings;
+        }
 
         @Override
         public AiCoreSessionBackend createSessionBackend(
                 ModelExecutionFeature feature, SessionParams params) {
-            MockAiCoreSessionBackend sessionBackend = new MockAiCoreSessionBackend(feature, params);
+            MockAiCoreSessionBackend sessionBackend =
+                    new MockAiCoreSessionBackend(feature, params, mSettings);
             mSessionBackends.add(sessionBackend);
             return sessionBackend;
         }
@@ -294,11 +299,31 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         }
     }
 
+    /** Encapsulates generate result configuration. */
+    public static class MockAiCoreSettings {
+        private @GenerateResult int mGenerateResult = GenerateResult.SUCCESS;
+
+        @CalledByNative
+        public void setGenerateResult(int generateResult) {
+            mGenerateResult = generateResult;
+        }
+
+        public @GenerateResult int getGenerateResult() {
+            return mGenerateResult;
+        }
+    }
+
     private MockAiCoreFactory mMockAiCoreFactory;
+    private final MockAiCoreSettings mSettings = new MockAiCoreSettings();
 
     @CalledByNative
     public static OnDeviceModelBridgeNativeUnitTestHelper create() {
         return new OnDeviceModelBridgeNativeUnitTestHelper();
+    }
+
+    @CalledByNative
+    public MockAiCoreSettings getMockAiCoreSettings() {
+        return mSettings;
     }
 
     @CalledByNative
@@ -354,7 +379,7 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     @CalledByNative
     public void setMockAiCoreFactory() {
-        mMockAiCoreFactory = new MockAiCoreFactory();
+        mMockAiCoreFactory = new MockAiCoreFactory(mSettings);
         ServiceLoaderUtil.setInstanceForTesting(AiCoreFactory.class, mMockAiCoreFactory);
     }
 
@@ -371,11 +396,6 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void resumeOnCompleteCallback() {
         mMockAiCoreFactory.getLastSessionBackend().resumeOnCompleteCallback();
-    }
-
-    @CalledByNative
-    public void setGenerateResult(int generateResult) {
-        mMockAiCoreFactory.getLastSessionBackend().mGenerateResult = generateResult;
     }
 
     @CalledByNative

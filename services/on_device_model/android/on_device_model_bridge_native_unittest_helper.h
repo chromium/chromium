@@ -12,6 +12,18 @@
 
 namespace on_device_model {
 
+class OnDeviceModelBridgeNativeUnitTestSettings {
+ public:
+  OnDeviceModelBridgeNativeUnitTestSettings();
+  ~OnDeviceModelBridgeNativeUnitTestSettings();
+
+  void Init(base::android::ScopedJavaGlobalRef<jobject>* java_helper);
+  void SetGenerateResult(BackendSessionImplAndroid::GenerateResult result);
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> java_settings_;
+};
+
 // A test helper for calling the Java test helper. This allows centralizing the
 // JNI calls and avoiding `-Wunused-function` warnings in multiple places.
 class OnDeviceModelBridgeNativeUnitTestHelper {
@@ -35,7 +47,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
       float temperature);
   void VerifyGenerateOptions(int index, int max_output_tokens);
 
-  void SetGenerateResult(BackendSessionImplAndroid::GenerateResult result);
+  OnDeviceModelBridgeNativeUnitTestSettings& settings() { return settings_; }
 
   void SetCompleteAsync();
   void SetCallbackOnDifferentThread();
@@ -64,6 +76,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;
+  OnDeviceModelBridgeNativeUnitTestSettings settings_;
 };
 
 }  // namespace on_device_model
