@@ -78,6 +78,62 @@ std::optional<DeviceStatisticsTracker::Platform> PlatformFromProto(
   NOTREACHED();
 }
 
+std::optional<DeviceStatisticsTracker::PlatformAndFormFactor>
+PlatformAndFormFactorFromProto(
+    sync_pb::SyncEnums::OsType os_type,
+    sync_pb::SyncEnums::DeviceFormFactor form_factor) {
+  using Platform = DeviceStatisticsTracker::Platform;
+  using PlatformAndFormFactor = DeviceStatisticsTracker::PlatformAndFormFactor;
+
+  std::optional<Platform> platform = PlatformFromProto(os_type);
+  if (!platform) {
+    return std::nullopt;
+  }
+
+  switch (*platform) {
+    case Platform::kWindows:
+      return form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP
+                 ? PlatformAndFormFactor::kWindowsDesktop
+                 : PlatformAndFormFactor::kWindowsOther;
+    case Platform::kMac:
+      return form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP
+                 ? PlatformAndFormFactor::kMacDesktop
+                 : PlatformAndFormFactor::kMacOther;
+    case Platform::kLinux:
+      return form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP
+                 ? PlatformAndFormFactor::kLinuxDesktop
+                 : PlatformAndFormFactor::kLinuxOther;
+    case Platform::kChromeOS:
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP) {
+        return PlatformAndFormFactor::kChromeOSDesktop;
+      }
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET) {
+        return PlatformAndFormFactor::kChromeOSTablet;
+      }
+      return PlatformAndFormFactor::kChromeOSOther;
+    case Platform::kAndroid:
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE) {
+        return PlatformAndFormFactor::kAndroidPhone;
+      }
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET) {
+        return PlatformAndFormFactor::kAndroidTablet;
+      }
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP) {
+        return PlatformAndFormFactor::kAndroidDesktop;
+      }
+      return PlatformAndFormFactor::kAndroidOther;
+    case Platform::kIOS:
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE) {
+        return PlatformAndFormFactor::kIOSPhone;
+      }
+      if (form_factor == sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET) {
+        return PlatformAndFormFactor::kIOSTablet;
+      }
+      return PlatformAndFormFactor::kIOSOther;
+  }
+  NOTREACHED();
+}
+
 std::optional<DeviceStatisticsTracker::Platform> GetLocalPlatform() {
 #if BUILDFLAG(IS_WIN)
   return DeviceStatisticsTracker::Platform::kWindows;
@@ -112,6 +168,36 @@ bool IsOptedInToHistory(const sync_pb::DeviceInfoSpecifics device_info) {
 }
 
 }  // namespace
+
+// static
+DeviceStatisticsTracker::Platform DeviceStatisticsTracker::GetPlatform(
+    PlatformAndFormFactor platform_and_form_factor) {
+  switch (platform_and_form_factor) {
+    case PlatformAndFormFactor::kWindowsDesktop:
+    case PlatformAndFormFactor::kWindowsOther:
+      return Platform::kWindows;
+    case PlatformAndFormFactor::kMacDesktop:
+    case PlatformAndFormFactor::kMacOther:
+      return Platform::kMac;
+    case PlatformAndFormFactor::kLinuxDesktop:
+    case PlatformAndFormFactor::kLinuxOther:
+      return Platform::kLinux;
+    case PlatformAndFormFactor::kChromeOSDesktop:
+    case PlatformAndFormFactor::kChromeOSTablet:
+    case PlatformAndFormFactor::kChromeOSOther:
+      return Platform::kChromeOS;
+    case PlatformAndFormFactor::kAndroidPhone:
+    case PlatformAndFormFactor::kAndroidTablet:
+    case PlatformAndFormFactor::kAndroidDesktop:
+    case PlatformAndFormFactor::kAndroidOther:
+      return Platform::kAndroid;
+    case PlatformAndFormFactor::kIOSPhone:
+    case PlatformAndFormFactor::kIOSTablet:
+    case PlatformAndFormFactor::kIOSOther:
+      return Platform::kIOS;
+  }
+  NOTREACHED();
+}
 
 DeviceStatisticsTracker::DeviceStatisticsTracker(
     signin::IdentityManager* identity_manager,
@@ -271,8 +357,9 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 
       base::flat_map<Platform, bool> history_opt_in_by_platform;
       for (const DeviceData& device : *other_devices) {
-        if (device.platform != GetLocalPlatform()) {
-          history_opt_in_by_platform[device.platform] |= device.history_opt_in;
+        Platform platform = GetPlatform(device.platform_and_form_factor);
+        if (platform != GetLocalPlatform()) {
+          history_opt_in_by_platform[platform] |= device.history_opt_in;
         }
       }
       size_t other_platforms = history_opt_in_by_platform.size();
@@ -315,7 +402,12 @@ void DeviceStatisticsTracker::AllRequestsDone() {
             absl::StrFormat(
                 "Sync.DeviceStatistics.Outcome.%s.PlatformOfAdditionalClient2",
                 infix),
-            device.platform);
+            GetPlatform(device.platform_and_form_factor));
+        base::UmaHistogramEnumeration(
+            absl::StrFormat("Sync.DeviceStatistics.Outcome.%s."
+                            "PlatformAndFormFactorOfAdditionalClient2",
+                            infix),
+            device.platform_and_form_factor);
       }
     }
   }
@@ -450,7 +542,8 @@ DeviceStatisticsTracker::GetOverallPlatformsOutcome() const {
     if (other_devices.has_value() && !other_devices->empty()) {
       bool has_other_platform = false;
       for (const DeviceData& device : *other_devices) {
-        if (!local_platform || device.platform != *local_platform) {
+        if (!local_platform ||
+            GetPlatform(device.platform_and_form_factor) != *local_platform) {
           has_other_platform = true;
           break;
         }
@@ -638,19 +731,26 @@ DeviceStatisticsTracker::DeduplicateEntities(
         continue;
       }
 
-      // Figure out the platform/OS of the device, and skip unknown or
-      // uninteresting ones.
-      std::optional<DeviceStatisticsTracker::Platform> platform =
-          PlatformFromProto(entity.specifics().device_info().os_type());
-      if (!platform) {
+      // Figure out the platform/OS and form factor of the device, and skip
+      // unknown or uninteresting ones.
+      std::optional<DeviceStatisticsTracker::PlatformAndFormFactor>
+          platform_and_form_factor = PlatformAndFormFactorFromProto(
+              entity.specifics().device_info().os_type(),
+              entity.specifics().device_info().device_form_factor());
+      if (!platform_and_form_factor) {
         continue;
       }
+
+      std::optional<DeviceStatisticsTracker::Platform> platform =
+          PlatformFromProto(entity.specifics().device_info().os_type());
+      CHECK(platform);
+      CHECK_EQ(GetPlatform(*platform_and_form_factor), *platform);
 
       // Figure out whether the device has opted in to history.
       bool history_opt_in =
           IsOptedInToHistory(entity.specifics().device_info());
 
-      deduped_devices.emplace_back(*platform, history_opt_in);
+      deduped_devices.emplace_back(*platform_and_form_factor, history_opt_in);
     }
   }
 

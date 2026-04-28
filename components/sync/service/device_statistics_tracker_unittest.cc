@@ -44,9 +44,32 @@ class DeviceStatisticsTrackerTest : public testing::Test {
                                base::Unretained(this));
   }
 
-  sync_pb::SyncEntity CreateDeviceInfo(std::string_view cache_guid,
-                                       sync_pb::SyncEnums_OsType platform,
-                                       bool history_opt_in) {
+  sync_pb::SyncEnums_DeviceFormFactor GetDefaultFormFactor(
+      sync_pb::SyncEnums_OsType os_type) const {
+    switch (os_type) {
+      case sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_MAC:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_LINUX:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_CHROME_OS_ASH:
+        return sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+      case sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_IOS:
+        return sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+      case sync_pb::SyncEnums_OsType_OS_TYPE_CHROME_OS_LACROS:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_FUCHSIA:
+      case sync_pb::SyncEnums_OsType_OS_TYPE_UNSPECIFIED:
+        return sync_pb::
+            SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+    }
+    NOTREACHED();
+  }
+
+  sync_pb::SyncEntity CreateDeviceInfo(
+      std::string_view cache_guid,
+      sync_pb::SyncEnums_OsType platform,
+      bool history_opt_in,
+      std::optional<sync_pb::SyncEnums_DeviceFormFactor> form_factor =
+          std::nullopt) {
     const base::Time now = base::Time::Now();
 
     sync_pb::SyncEntity entity;
@@ -57,6 +80,8 @@ class DeviceStatisticsTrackerTest : public testing::Test {
         *entity.mutable_specifics()->mutable_device_info();
     device.set_cache_guid(cache_guid);
     device.set_os_type(platform);
+    device.set_device_form_factor(
+        form_factor.value_or(GetDefaultFormFactor(platform)));
     if (history_opt_in) {
       device.mutable_invalidation_fields()->add_interested_data_type_ids(
           sync_pb::EntitySpecifics::kHistoryDeleteDirectiveFieldNumber);
@@ -721,8 +746,18 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOtherPlatformsMetrics) {
       /*expected_count=*/2);
   histogram_tester.ExpectBucketCount(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kWindowsDesktop,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
       "PlatformOfAdditionalClient2",
       DeviceStatisticsTracker::Platform::kMac,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kMacDesktop,
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
@@ -756,8 +791,18 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOtherPlatformsMetrics) {
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
       "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kIOSPhone,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
       "PlatformOfAdditionalClient2",
       DeviceStatisticsTracker::Platform::kLinux,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kLinuxDesktop,
       /*expected_count=*/1);
 }
 
@@ -1117,6 +1162,77 @@ TEST_F(DeviceStatisticsTrackerTest, ExcludesIGSADevices) {
       "Sync.DeviceStatistics.Outcome.PrimaryAccount."
       "PlatformOfAdditionalClient2",
       DeviceStatisticsTracker::Platform::kWindows,
+      /*expected_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, RecordsPlatformAndFormFactorMetrics) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(identity_test_env_.identity_manager(),
+                                  GURL("https://example.com/"),
+                                  CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  std::vector<sync_pb::SyncEntity> device_infos;
+
+  // Add a Windows Desktop device.
+  device_infos.push_back(
+      CreateDeviceInfo("guid1", sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+                       false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_DESKTOP));
+
+  // Add an Android Tablet device.
+  device_infos.push_back(
+      CreateDeviceInfo("guid2", sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+                       false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET));
+
+  // Add a ChromeOS Tablet device.
+  device_infos.push_back(
+      CreateDeviceInfo("guid4", sync_pb::SyncEnums_OsType_OS_TYPE_CHROME_OS_ASH,
+                       false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TABLET));
+
+  // Add an iOS Phone device.
+  device_infos.push_back(
+      CreateDeviceInfo("guid5", sync_pb::SyncEnums_OsType_OS_TYPE_IOS, false,
+                       sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE));
+
+  // Add a Linux "Other" device (e.g. TV).
+  device_infos.push_back(
+      CreateDeviceInfo("guid6", sync_pb::SyncEnums_OsType_OS_TYPE_LINUX, false,
+                       sync_pb::SyncEnums::DEVICE_FORM_FACTOR_TV));
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  fake_requests_[primary.gaia]->SimulateSuccess(device_infos);
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kWindowsDesktop,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kAndroidTablet,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kChromeOSTablet,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kIOSPhone,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kLinuxOther,
       /*expected_count=*/1);
 }
 

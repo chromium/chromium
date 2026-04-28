@@ -156,6 +156,32 @@ class DeviceStatisticsTracker {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsPlatform)
 
+  // LINT.IfChange(SyncDeviceStatisticsPlatformAndFormFactor)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PlatformAndFormFactor {
+    kWindowsDesktop = 0,
+    kWindowsOther = 1,
+    kMacDesktop = 2,
+    kMacOther = 3,
+    kLinuxDesktop = 4,
+    kLinuxOther = 5,
+    kChromeOSDesktop = 6,
+    kChromeOSTablet = 7,
+    kChromeOSOther = 8,
+    kAndroidPhone = 9,
+    kAndroidTablet = 10,
+    kAndroidDesktop = 11,
+    kAndroidOther = 12,
+    kIOSPhone = 13,
+    kIOSTablet = 14,
+    kIOSOther = 15,
+    kMaxValue = kIOSOther
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsPlatformAndFormFactor)
+
+  static Platform GetPlatform(PlatformAndFormFactor platform_and_form_factor);
+
   // LINT.IfChange(SyncDeviceStatisticsHistoryOptInDevicesSummary)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -186,11 +212,13 @@ class DeviceStatisticsTracker {
 
  private:
   struct DeviceData {
-    DeviceData(Platform platform, bool history_opt_in)
-        : platform(platform), history_opt_in(history_opt_in) {}
+    DeviceData(PlatformAndFormFactor platform_and_form_factor,
+               bool history_opt_in)
+        : platform_and_form_factor(platform_and_form_factor),
+          history_opt_in(history_opt_in) {}
     ~DeviceData() = default;
 
-    const Platform platform;
+    const PlatformAndFormFactor platform_and_form_factor;
     const bool history_opt_in;
   };
 

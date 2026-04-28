@@ -1206,6 +1206,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsPlatform) -->
 
+<!-- LINT.IfChange(SyncDeviceStatisticsPlatformAndFormFactor) -->
+
+<enum name="SyncDeviceStatisticsPlatformAndFormFactor">
+  <int value="0" label="Windows Desktop"/>
+  <int value="1" label="Windows Other Form Factor"/>
+  <int value="2" label="Mac Desktop"/>
+  <int value="3" label="Mac Other Form Factor"/>
+  <int value="4" label="Linux Desktop"/>
+  <int value="5" label="Linux Other Form Factor"/>
+  <int value="6" label="ChromeOS Desktop"/>
+  <int value="7" label="ChromeOS Tablet"/>
+  <int value="8" label="ChromeOS Other Form Factor"/>
+  <int value="9" label="Android Phone"/>
+  <int value="10" label="Android Tablet"/>
+  <int value="11" label="Android Desktop"/>
+  <int value="12" label="Android Other Form Factor"/>
+  <int value="13" label="iOS Phone"/>
+  <int value="14" label="iOS Tablet"/>
+  <int value="15" label="iOS Other Form Factor"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsPlatformAndFormFactor) -->
+
 <!-- LINT.IfChange(SyncDeviceStatisticsRequestOutcome) -->
 
 <enum name="SyncDeviceStatisticsRequestOutcome">

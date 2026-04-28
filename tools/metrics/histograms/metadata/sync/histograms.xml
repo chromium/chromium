@@ -1241,6 +1241,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformAndFormFactorOfAdditionalClient2"
+    enum="SyncDeviceStatisticsPlatformAndFormFactor" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform and form factor of each additional
+    syncing client (i.e. not counting this client) of each non-primary account.
+    Multiple clients with the same platform and form factor are recorded
+    individually. Recorded at most once per day (30 seconds after profile
+    initialization), but with one sample per other client.
+  </summary>
+</histogram>
+
+<histogram
     name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformOfAdditionalClient2"
     enum="SyncDeviceStatisticsPlatform" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
@@ -1377,6 +1391,20 @@ chromium-metrics-reviews@google.com.
     account where at least one client on that platform is opted in to history
     sync. Recorded at most once per day (30 seconds after profile
     initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformAndFormFactorOfAdditionalClient2"
+    enum="SyncDeviceStatisticsPlatformAndFormFactor" expires_after="2026-10-18">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform and form factor of each additional
+    syncing client (i.e. not counting this client) of the primary account.
+    Multiple clients with the same platform and form factor are recorded
+    individually. Recorded at most once per day (30 seconds after profile
+    initialization), but with one sample per other client.
   </summary>
 </histogram>
 
