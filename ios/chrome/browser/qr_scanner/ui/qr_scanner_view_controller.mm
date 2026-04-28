@@ -68,12 +68,12 @@ using base::UserMetricsAction;
 
 #pragma mark - QRScannerCameraControllerDelegate
 
-- (void)receiveQRScannerResult:(NSString*)result loadImmediately:(BOOL)load {
-  result = [self sanitizedStringWithString:result];
-
+- (void)receiveQRScannerResult:(NSString*)rawResult loadImmediately:(BOOL)load {
+  NSString* result = [self sanitizedStringWithString:rawResult];
+  BOOL sanitized = ![result isEqualToString:rawResult];
   GURL url = GURL(base::SysNSStringToUTF8(result));
-  if (url.is_valid() && !url.SchemeIsHTTPOrHTTPS()) {
-    // Only HTTP(S) URLs are supported.
+  if (url.is_valid() && (!url.SchemeIsHTTPOrHTTPS() || sanitized)) {
+    // Only unmodified HTTP(S) URLs are supported.
     // For other URLs, add quotes so they are considered as search terms instead
     // of URLs.
     result = [NSString stringWithFormat:@"\"%@\"", result];
@@ -133,6 +133,11 @@ using base::UserMetricsAction;
 
 // Remove characters that might confuse users when originating from a QR code.
 - (NSString*)sanitizedStringWithString:(NSString*)string {
+  if (!string) {
+    return @"";
+  }
+
+  // Remove control, newline, non-base, and illegal characters.
   NSMutableCharacterSet* badCharacters =
       [NSMutableCharacterSet controlCharacterSet];
   [badCharacters
@@ -141,8 +146,19 @@ using base::UserMetricsAction;
       formUnionWithCharacterSet:[NSCharacterSet nonBaseCharacterSet]];
   [badCharacters
       formUnionWithCharacterSet:[NSCharacterSet illegalCharacterSet]];
-  return [[string componentsSeparatedByCharactersInSet:badCharacters]
-      componentsJoinedByString:@""];
+
+  NSString* cleaned =
+      [[string componentsSeparatedByCharactersInSet:badCharacters]
+          componentsJoinedByString:@""];
+
+  // Replace whitespace with spaces, trim, and remove duplicates.
+  NSArray* components =
+      [cleaned componentsSeparatedByCharactersInSet:
+                   [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  NSPredicate* predicate = [NSPredicate predicateWithFormat:@"SELF != ''"];
+  NSArray* filteredComponents =
+      [components filteredArrayUsingPredicate:predicate];
+  return [filteredComponents componentsJoinedByString:@" "];
 }
 
 #pragma mark - Testing Additions
