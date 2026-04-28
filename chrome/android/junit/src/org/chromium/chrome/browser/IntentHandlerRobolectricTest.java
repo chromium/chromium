@@ -7,6 +7,8 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -33,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -65,6 +68,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,6 +196,8 @@ public class IntentHandlerRobolectricTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    @Mock IntentHandler.Natives mNativeMock;
+
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ShadowPowerManager mShadowPowerManager;
@@ -233,6 +239,10 @@ public class IntentHandlerRobolectricTest {
     public void setUp() {
         // To allow use of Origin.
         LibraryLoader.getInstance().ensureMainDexInitialized();
+
+        lenient().doReturn(true).when(mNativeMock).validateUrl(eq(new GURL(GOOGLE_URL)));
+        IntentHandlerJni.setInstanceForTesting(mNativeMock);
+
         IntentHandler.setTestIntentsEnabled(false);
         mIntent = new Intent();
         Context appContext = ApplicationProvider.getApplicationContext();

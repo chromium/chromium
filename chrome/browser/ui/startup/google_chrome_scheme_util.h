@@ -26,11 +26,6 @@ bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg);
 // `StripGoogleChromeScheme`.
 std::optional<GURL> ExtractGoogleChromeSchemeInnerUrl(const GURL& url);
 
-// Validates the URL whether it is allowed to be opened at launching. Dangerous
-// schemes are excluded to prevent untrusted external applications from opening
-// them.
-bool ValidateUrl(const GURL& url);
-
 }  // namespace startup
 
 #endif  // CHROME_BROWSER_UI_STARTUP_GOOGLE_CHROME_SCHEME_UTIL_H_

@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -229,26 +228,6 @@ TEST(GoogleChromeSchemeUtilTest, ExtractGoogleChromeSchemeInnerUrl) {
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_FALSE(result.has_value());
   }
-}
-
-TEST(GoogleChromeSchemeUtilTest, ValidateUrl) {
-  EXPECT_TRUE(ValidateUrl(GURL("http://google.com")));
-  EXPECT_TRUE(ValidateUrl(GURL("https://google.com")));
-  EXPECT_TRUE(ValidateUrl(GURL("file:///tmp/test")));
-  EXPECT_TRUE(ValidateUrl(GURL("about:blank")));
-
-  // chrome:// settings
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(ValidateUrl(GURL("chrome://settings")));
-#else
-  EXPECT_FALSE(ValidateUrl(GURL("chrome://settings")));
-#endif
-
-  // javascript
-  EXPECT_FALSE(ValidateUrl(GURL("javascript:alert(1)")));
-
-  // Invalid GURL
-  EXPECT_FALSE(ValidateUrl(GURL("")));
 }
 
 }  // namespace startup

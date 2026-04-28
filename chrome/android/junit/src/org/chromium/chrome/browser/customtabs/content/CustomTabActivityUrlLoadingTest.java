@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentHandlerJni;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -59,12 +62,17 @@ public class CustomTabActivityUrlLoadingTest {
     private CustomTabIntentHandler mIntentHandler;
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
+    @Mock IntentHandler.Natives mIntentHandlerNativeMock;
 
     @Before
     public void setUp() {
         Origin.setOpaqueOriginFactoryForTesting(() -> null);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
+
+        doReturn(true).when(mIntentHandlerNativeMock).validateUrl(eq(new GURL(INITIAL_URL)));
+        doReturn(true).when(mIntentHandlerNativeMock).validateUrl(eq(new GURL(OTHER_URL)));
+        IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         // Ensure the test can read the Autofill pref. Assume it's turned off by default.
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(

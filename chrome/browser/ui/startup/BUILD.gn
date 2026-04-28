@@ -32,6 +32,7 @@ source_set("startup") {
   sources = [
     "bad_flags_prompt.h",
     "bidding_and_auction_consented_debugging_infobar_delegate.h",
+    "url_util.h",
   ]
   public_deps = [
     "//components/infobars/core",
@@ -121,6 +122,7 @@ source_set("impl") {
   sources = [
     "bad_flags_prompt.cc",
     "bidding_and_auction_consented_debugging_infobar_delegate.cc",
+    "url_util.cc",
   ]
   deps = [
     ":startup",
@@ -133,6 +135,7 @@ source_set("impl") {
     "//chrome/browser/actor",
     "//chrome/browser/devtools",
     "//chrome/browser/first_run",
+    "//chrome/browser/headless",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -207,7 +210,6 @@ source_set("impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/extensions",
-      "//chrome/browser/headless",
       "//chrome/browser/headless:command_processor",
       "//chrome/browser/lifetime",
       "//chrome/browser/obsolete_system",
@@ -389,11 +391,15 @@ if (!is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [ "url_util_unittest.cc" ]
+  deps = [
+    ":startup",
+    "//base",
+    "//base/test:test_support",
+  ]
 
   if (!is_android) {
-    sources = [
+    sources += [
       "google_chrome_scheme_util_unittest.cc",
       "launch_mode_recorder_unittest.cc",
       "startup_browser_creator_impl_unittest.cc",
@@ -402,9 +408,6 @@ source_set("unit_tests") {
       "startup_tab_provider_unittest.cc",
     ]
     deps += [
-      ":startup",
-      "//base",
-      "//base/test:test_support",
       "//chrome/browser:shell_integration",
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
