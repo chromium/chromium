@@ -47,7 +47,7 @@ export function getHtml(this: WebuiBrowserAppElement) {
         @click="${this.onForwardClick_}"
         @contextmenu="${this.onForwardContextmenu_}"></cr-icon-button>
       <cr-icon-button class="${this.reloadOrStopIcon_}"
-        title="${this.reloadOrStopTooltip_()}'"
+        title="${this.reloadOrStopTooltip_()}"
         @click="${this.onReloadOrStopClick_}"></cr-icon-button>
       <div id="addressBox">
         <cr-searchbox id="address"></cr-searchbox>
