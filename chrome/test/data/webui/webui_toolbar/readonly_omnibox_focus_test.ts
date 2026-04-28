@@ -4,10 +4,10 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, OmniboxActionName, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
 import {type OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
 import {type ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/readonly_omnibox.js';
 
@@ -141,14 +141,16 @@ suite('ReadOnlyOmniboxFocus', function() {
     other.focus();
     uiHandler.reset();
 
-    // Focus us. Should also sync selection.
+    // Focus us.
     omnibox.$.textInput.focus();
     await microtasksFinished();
     assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
     let args = uiHandler.getArgs('onOmniboxAction');
-    assertEquals(OmniboxActionName.kFocus, args[0].name);
-    assertEquals(1, args[0].selection.start);
-    assertEquals(5, args[0].selection.end);
+
+    assertTrue(!!args[0].focusChange);
+    assertTrue(args[0].focusChange.hasFocus);
+    assertEquals(1, args[0].focusChange.selection.start);
+    assertEquals(5, args[0].focusChange.selection.end);
 
     // Synthesize some events. Note that these do not actually affect the
     // value of the input, but they do trigger forwarding.
@@ -160,10 +162,10 @@ suite('ReadOnlyOmniboxFocus', function() {
     await microtasksFinished();
     assertEquals(2, uiHandler.getCallCount('onOmniboxAction'));
     args = uiHandler.getArgs('onOmniboxAction');
-    assertEquals(OmniboxActionName.kKeyDown, args[1].name);
-    assertEquals(1, args[1].selection.start);
-    assertEquals(5, args[1].selection.end);
-    assertEquals('Escape', args[1].text);
+    assertTrue(!!args[1].key);
+    assertEquals(1, args[1].key.selection.start);
+    assertEquals(5, args[1].key.selection.end);
+    assertEquals('Escape', args[1].key.key);
 
     // Synthetic input will report the current actual state.
     omnibox.$.textInput.value = 'abcdefgh';
@@ -176,17 +178,18 @@ suite('ReadOnlyOmniboxFocus', function() {
     await microtasksFinished();
     assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
     args = uiHandler.getArgs('onOmniboxAction');
-    assertEquals(OmniboxActionName.kTextInput, args[2].name);
-    assertEquals(3, args[2].selection.start);
-    assertEquals(2, args[2].selection.end);
-    assertEquals('abcdefgh', args[2].text);
+    assertTrue(!!args[2].textInput);
+    assertEquals(3, args[2].textInput.selection.start);
+    assertEquals(2, args[2].textInput.selection.end);
+    assertEquals('abcdefgh', args[2].textInput.text);
 
     // Now blur.
     other.focus();
     assertEquals(4, uiHandler.getCallCount('onOmniboxAction'));
     args = uiHandler.getArgs('onOmniboxAction');
-    assertEquals(OmniboxActionName.kBlur, args[3].name);
-    assertEquals(3, args[3].selection.start);
-    assertEquals(2, args[3].selection.end);
+    assertTrue(!!args[3].focusChange);
+    assertFalse(args[3].focusChange.hasFocus);
+    assertEquals(3, args[3].focusChange.selection.start);
+    assertEquals(2, args[3].focusChange.selection.end);
   });
 });

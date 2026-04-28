@@ -28,7 +28,6 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 // handles 2 at most now.
 import {
   LhsChipIdentifier,
-  OmniboxActionName,
   OmniboxTextColor,
   SecurityChipIcon,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
@@ -42,7 +41,6 @@ export {
   LhsChipIdentifier,
   LocationBarElement,
   LocationIconElement,
-  OmniboxActionName,
   OmniboxTextColor,
   ReadonlyOmniboxElement,
   SecurityChipIcon,

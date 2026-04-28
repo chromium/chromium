@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 
 #include "base/notimplemented.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -134,43 +133,57 @@ void WebUILocationBar::PropagateOmniboxUpdate(
 
 void WebUILocationBar::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {
-  switch (action->name) {
-    case toolbar_ui_api::mojom::OmniboxActionName::kFocus:
-      // TODO(crbug.com/500653057): Key state, though Views impl doesn't have
-      // it.
-      omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  switch (action->which()) {
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kFocusChange:
+      OnOmniboxFocusChange(*action->get_focus_change());
       break;
-    case toolbar_ui_api::mojom::OmniboxActionName::kBlur:
-      omnibox_controller_->edit_model()->OnKillFocus();
-      if (auto* popup_closer =
-              omnibox_controller_->client()->GetOmniboxPopupCloser()) {
-        popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
-      }
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kTextInput:
+      OnOmniboxTextInput(*action->get_text_input());
       break;
-    case toolbar_ui_api::mojom::OmniboxActionName::kTextInput:
-      omnibox_view_->SetUserText(base::UTF8ToUTF16(action->text));
-      break;
-    case toolbar_ui_api::mojom::OmniboxActionName::kKeyDown:
-      // TODO(crbug.com/500653057): Handle modifier keys.
-      // TODO(crbug.com/500653057): Convert to DomKey (with some caching
-      // since the converter is slow) once the JS end is more selective about
-      // what it sends.
-      if (action->text == "Enter") {
-        omnibox_controller_->edit_model()->OpenCurrentSelection(
-            base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
-            /*via_keyboard=*/true);
-      } else if (action->text == "Escape") {
-        omnibox_controller_->edit_model()->OnEscapeKeyPressed();
-      } else if (action->text == "ArrowUp") {
-        omnibox_controller_->edit_model()->OnUpOrDownPressed(false, false);
-      } else if (action->text == "ArrowDown") {
-        omnibox_controller_->edit_model()->OnUpOrDownPressed(true, false);
-      }
-      // And a bunch of subtler stuff.
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kKey:
+      OnOmniboxKey(*action->get_key());
       break;
   }
 
   UpdateLocationBarFlagsState();
+}
+
+void WebUILocationBar::OnOmniboxFocusChange(
+    const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
+  if (focus_change.has_focus) {
+    // TODO(crbug.com/500653057): Key state, though Views impl doesn't have it.
+    omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  } else {
+    omnibox_controller_->edit_model()->OnKillFocus();
+    if (auto* popup_closer =
+            omnibox_controller_->client()->GetOmniboxPopupCloser()) {
+      popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
+    }
+  }
+}
+
+void WebUILocationBar::OnOmniboxTextInput(
+    const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
+  omnibox_view_->SetUserText(text_input.text);
+}
+
+void WebUILocationBar::OnOmniboxKey(
+    const toolbar_ui_api::mojom::OmniboxActionKey& key) {
+  // TODO(crbug.com/500653057): Handle modifier keys.
+  // TODO(crbug.com/500653057): Convert to DomKey (with some caching
+  // since the converter is slow) once the JS end is more selective about
+  // what it sends.
+  if (key.key == "Enter") {
+    omnibox_controller_->edit_model()->OpenCurrentSelection(
+        base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
+        /*via_keyboard=*/true);
+  } else if (key.key == "Escape") {
+    omnibox_controller_->edit_model()->OnEscapeKeyPressed();
+  } else if (key.key == "ArrowUp") {
+    omnibox_controller_->edit_model()->OnUpOrDownPressed(false, false);
+  } else if (key.key == "ArrowDown") {
+    omnibox_controller_->edit_model()->OnUpOrDownPressed(true, false);
+  }
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,

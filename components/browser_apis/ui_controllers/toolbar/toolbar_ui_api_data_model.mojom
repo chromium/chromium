@@ -72,22 +72,31 @@ enum ToolbarButtonType {
   kHome,
 };
 
-enum OmniboxActionName {
-  kFocus,
-  kBlur,
-  kTextInput,
-  kKeyDown,
+struct OmniboxActionFocusChange {
+  bool has_focus = false;
+  gfx.mojom.Range selection;
 };
 
-struct OmniboxAction {
-  OmniboxActionName name;
-  // Set for kTextInput and kKeyDown
-  // For kTextInput, it's the entire user-entered text, and thus should be
-  // considered untrusted.
-  // For kKeyDown it's the KeyboardEvent.key of the event; nothing else
-  // should be stored in this field.
-  string text;
+struct OmniboxActionTextInput {
+  // The entire user-entered text (not including any displayed inline
+  // autocompletion). Should be considered untrusted.
+  mojo_base.mojom.String16 text;
   gfx.mojom.Range selection;
+};
+
+struct OmniboxActionKey {
+  // For now this is just key down, but will likely be more in the future.
+
+  // KeyboardEvent.key of the event; nothing else should be stored in this
+  // field.
+  string key;
+  gfx.mojom.Range selection;
+};
+
+union OmniboxAction {
+  OmniboxActionFocusChange focus_change;
+  OmniboxActionTextInput text_input;
+  OmniboxActionKey key;
 };
 
 struct ReloadControlState {

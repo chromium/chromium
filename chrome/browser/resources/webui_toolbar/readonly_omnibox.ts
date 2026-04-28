@@ -13,7 +13,7 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
 import type {OmniboxTextPortion} from './toolbar_ui_api_data_model.mojom-webui.js';
-import {OmniboxActionName, OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export interface ReadonlyOmniboxElement {
   $: {
@@ -105,9 +105,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // TODO(crbug.com/500653057): sync up the readonly view to avoid roundtrip/
     // flicker.
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      name: OmniboxActionName.kBlur,
-      text: '',
-      selection: this.getSelection(),
+      focusChange: {
+        hasFocus: false,
+        selection: this.getSelection(),
+      },
     });
   }
 
@@ -119,17 +120,19 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // mostly selects all but you can drag-select to get that specific
     // selection. Focus restore only seems to happen on keyboard focus.
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      name: OmniboxActionName.kFocus,
-      text: '',
-      selection: this.getSelection(),
+      focusChange: {
+        hasFocus: true,
+        selection: this.getSelection(),
+      },
     });
   }
 
   private onInputInput(): void {
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      name: OmniboxActionName.kTextInput,
-      text: this.$.textInput.value,
-      selection: this.getSelection(),
+      textInput: {
+        text: this.$.textInput.value,
+        selection: this.getSelection(),
+      },
     });
   }
 
@@ -138,10 +141,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault();
     }
+
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
-      name: OmniboxActionName.kKeyDown,
-      text: event.key,
-      selection: this.getSelection(),
+      key: {
+        key: event.key,
+        selection: this.getSelection(),
+      },
     });
   }
 

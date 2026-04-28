@@ -112,6 +112,11 @@ class WebUILocationBar : public LocationBar,
   friend class WebUILocationBarTest;
 
   void OnMovedOrShown(ui::TrackedElement* element);
+  void OnOmniboxFocusChange(
+      const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
+  void OnOmniboxTextInput(
+      const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input);
+  void OnOmniboxKey(const toolbar_ui_api::mojom::OmniboxActionKey& key);
 
   void UpdateLocationBarFlagsState();
 
