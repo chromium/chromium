@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {

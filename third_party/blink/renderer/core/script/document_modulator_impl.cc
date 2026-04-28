@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

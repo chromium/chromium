@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

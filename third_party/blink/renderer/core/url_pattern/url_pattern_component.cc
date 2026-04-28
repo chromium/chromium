@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_dummy_url_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/liburlpattern/part.h"
 #include "third_party/liburlpattern/pattern.h"

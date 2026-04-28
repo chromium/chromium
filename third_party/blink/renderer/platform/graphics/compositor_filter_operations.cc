@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/rect.h"
 

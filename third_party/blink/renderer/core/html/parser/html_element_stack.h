@@ -28,7 +28,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_ELEMENT_STACK_H_
 
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {

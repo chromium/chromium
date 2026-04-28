@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_POSITION_TRY_DESCRIPTORS_H_
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

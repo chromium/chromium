@@ -29,8 +29,6 @@
 
 #include "third_party/blink/renderer/core/layout/shapes/ellipse_shape.h"
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-
 namespace blink {
 
 static inline float EllipseXIntercept(float y, float rx, float ry) {
