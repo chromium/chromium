@@ -51,7 +51,7 @@ const initiators = {
 // These events are recorded in capturedUnexpectedData instead of
 // capturedEventData.
 // This is set by subtests, so we can't use `const` here.
-let ignoreUnexpected = false;
+let ignoreUnexpected = false;  // eslint-disable-line prefer-const
 
 // This is a debugging aid to print all received events as well as the
 // information whether they were expected.

@@ -27,8 +27,9 @@ let l1LeafCert = null;
 const INVALID_CERT = new Uint8Array([1, 2, 3, 4, 5]);
 // These variables are manipulated by the C++ side in some test cases. As such,
 // they are not marked `const`.
+// eslint-disable-next-line prefer-const
 let supportedAlgorithms = ['RSASSA_PKCS1_v1_5_SHA1'];
-let supportedLegacyHashes = ['SHA1'];
+let supportedLegacyHashes = ['SHA1'];  // eslint-disable-line prefer-const
 
 function getInvalidClientCertificateInfos() {
   const badDer = {

@@ -18,7 +18,7 @@ let initialized = false;
 
 // This is assigned in subtests to output more logs; as such, we can't use
 // a const variable here.
-let debug = false;
+let debug = false;  // eslint-disable-line prefer-const
 
 // Helper function. Turns a function returning an object in a callback into a
 // promise. It helps keeping the code at the same indentation level.
