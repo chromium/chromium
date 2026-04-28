@@ -44,6 +44,9 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.Locale;
+import java.util.Set;
+
 /**
  * The class responsible for setting up PdfPage.
  *
@@ -55,6 +58,14 @@ import org.chromium.url.Origin;
 public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDelegate {
     private static final String TAG = "PdfCoordinator";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
+
+    // PDF link annotations are untrusted input (ISO 32000-1 §12.6.4.7 leaves scheme policy
+    // to the viewer). Restrict to schemes that have a meaningful web-navigation or
+    // communication semantic, mirroring the defaults used by pdf.js
+    // (PDFLinkService.getAnchorUrl) and Adobe Reader's Trust Manager. Blocks dangerous
+    // schemes such as javascript:, data:, file:, content:, intent:, chrome:, devtools:.
+    private static final Set<String> ALLOWED_LINK_SCHEMES =
+            Set.of("http", "https", "mailto", "tel", "ftp");
 
     static final String JSON_KEY_FILE_METADATA = "file_metadata";
     static final String JSON_KEY_FILE_URI = "file_uri";
@@ -534,6 +545,10 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     @Override
     public boolean onLinkClicked(Uri uri) {
         if (!PdfUtils.isInlinePdfV2Enabled()) {
+            return false;
+        }
+        String scheme = uri.getScheme();
+        if (scheme == null || !ALLOWED_LINK_SCHEMES.contains(scheme.toLowerCase(Locale.ROOT))) {
             return false;
         }
         LoadUrlParams params = new LoadUrlParams(uri.toString(), PAGE_TRANSITION_TYPE);
