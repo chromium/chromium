@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/notimplemented.h"
+#include "base/rand_util.h"
 #include "cc/layers/layer.h"
 #include "cc/slim/layer.h"
 #include "components/input/features.h"
@@ -568,25 +569,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       drop_data_ = std::make_unique<DropData>();
       drop_data_->did_originate_from_renderer = false;
       drop_data_->document_is_handling_drag = document_is_handling_drag_;
-      JNIEnv* env = AttachCurrentThread();
-      std::vector<std::vector<std::string>> filenames;
-      base::android::Java2dStringArrayTo2dStringVector(
-          env, event.GetJavaFilenames(), &filenames);
-      for (const auto& info : filenames) {
-        CHECK_EQ(info.size(), 2u);
-        drop_data_->filenames.push_back(
-            ui::FileInfo(base::FilePath(info[0]), base::FilePath(info[1])));
-      }
-      if (!event.GetJavaText().is_null()) {
-        drop_data_->text = ConvertJavaStringToUTF16(env, event.GetJavaText());
-      }
-      if (!event.GetJavaHtml().is_null()) {
-        drop_data_->html = ConvertJavaStringToUTF16(env, event.GetJavaHtml());
-      }
-      if (!event.GetJavaUrl().is_null()) {
-        GURL url(ConvertJavaStringToUTF16(env, event.GetJavaUrl()));
-        drop_data_->url_infos.emplace_back(std::move(url), std::u16string());
-      }
+      PopulateDropDataFromEvent(event, drop_data_.get());
 
       OnPerformDrop(event.location(), event.screen_location());
       break;

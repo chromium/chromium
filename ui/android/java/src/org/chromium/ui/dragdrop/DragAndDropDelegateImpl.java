@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.DragAndDropPermissions;
@@ -239,6 +240,30 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
      * @return ClipData based on the dropData type.
      */
     protected @Nullable ClipData buildClipData(DropDataAndroid dropData) {
+        return addCustomDataToClipData(buildClipDataInternal(dropData), dropData);
+    }
+
+    private @Nullable ClipData addCustomDataToClipData(
+            @Nullable ClipData clipData, DropDataAndroid dropData) {
+        if (clipData == null || clipData.getDescription() == null) {
+            return clipData;
+        }
+
+        PersistableBundle extras = clipData.getDescription().getExtras();
+        if (extras == null) {
+            extras = new PersistableBundle();
+        }
+        if (dropData.customData != null) {
+            extras.putString(DropDataAndroid.EXTRA_CUSTOM_DATA, dropData.customData);
+        }
+        if (dropData.effectAllowed != null) {
+            extras.putString(DropDataAndroid.EXTRA_EFFECT_ALLOWED, dropData.effectAllowed);
+        }
+        clipData.getDescription().setExtras(extras);
+        return clipData;
+    }
+
+    protected @Nullable ClipData buildClipDataInternal(DropDataAndroid dropData) {
         @DragTargetType int type = getDragTargetType(dropData);
         switch (type) {
             case DragTargetType.TEXT:

@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -30,6 +31,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.input.InputFeatureMap;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -660,6 +662,12 @@ public class EventForwarder {
         if (mNativeEventForwarder == 0) {
             return false;
         }
+        PersistableBundle extras = clipDescription != null ? clipDescription.getExtras() : null;
+        String customData =
+                extras != null ? extras.getString(DropDataAndroid.EXTRA_CUSTOM_DATA) : null;
+        String effectAllowed =
+                extras != null ? extras.getString(DropDataAndroid.EXTRA_EFFECT_ALLOWED) : null;
+
         String[] mimeTypes =
                 new String[clipDescription != null ? clipDescription.getMimeTypeCount() : 0];
         for (int i = 0; i < mimeTypes.length; i++) {
@@ -742,7 +750,9 @@ public class EventForwarder {
                         filenames.toArray(new String[][] {}),
                         text,
                         html,
-                        url);
+                        url,
+                        customData,
+                        effectAllowed);
         return true;
     }
 
@@ -984,7 +994,9 @@ public class EventForwarder {
                 String[][] filenames,
                 @Nullable String text,
                 @Nullable String html,
-                @Nullable String url);
+                @Nullable String url,
+                @Nullable String customData,
+                @Nullable String effectAllowed);
 
         boolean onGestureEvent(long nativeEventForwarder, int type, long timeMs, float delta);
 

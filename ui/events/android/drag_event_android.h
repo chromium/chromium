@@ -33,7 +33,9 @@ class EVENTS_EXPORT DragEventAndroid {
                    const base::android::JavaRef<jobjectArray>& filenames,
                    const base::android::JavaRef<jstring>& text,
                    const base::android::JavaRef<jstring>& html,
-                   const base::android::JavaRef<jstring>& url);
+                   const base::android::JavaRef<jstring>& url,
+                   const base::android::JavaRef<jstring>& custom_data,
+                   const base::android::JavaRef<jstring>& effect_allowed);
 
   DragEventAndroid(const DragEventAndroid&) = delete;
   DragEventAndroid& operator=(const DragEventAndroid&) = delete;
@@ -44,6 +46,9 @@ class EVENTS_EXPORT DragEventAndroid {
   const gfx::PointF& location() const { return location_; }
   const gfx::PointF& screen_location() const { return screen_location_; }
   const std::vector<std::u16string>& mime_types() const { return *mime_types_; }
+
+  base::android::ScopedJavaLocalRef<jstring> GetJavaCustomData() const;
+  base::android::ScopedJavaLocalRef<jstring> GetJavaEffectAllowed() const;
 
   base::android::ScopedJavaLocalRef<jstring> GetJavaContent() const;
   base::android::ScopedJavaLocalRef<jobjectArray> GetJavaFilenames() const;
@@ -69,6 +74,8 @@ class EVENTS_EXPORT DragEventAndroid {
   base::android::ScopedJavaGlobalRef<jstring> text_;
   base::android::ScopedJavaGlobalRef<jstring> html_;
   base::android::ScopedJavaGlobalRef<jstring> url_;
+  base::android::ScopedJavaGlobalRef<jstring> custom_data_;
+  base::android::ScopedJavaGlobalRef<jstring> effect_allowed_;
 };
 
 }  // namespace ui

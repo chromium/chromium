@@ -40,7 +40,7 @@ public final class DragDropGlobalStateTest {
 
     @Before
     public void setup() {
-        mDropData = DropDataAndroid.create(M_TEXT, null, null, null, null);
+        mDropData = DropDataAndroid.create(M_TEXT, null, null, null, null, null, null);
     }
 
     @Test

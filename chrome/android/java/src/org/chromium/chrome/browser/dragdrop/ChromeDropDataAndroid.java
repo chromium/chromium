@@ -17,7 +17,7 @@ public abstract class ChromeDropDataAndroid extends DropDataAndroid {
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
-        super(null, null, null, null, null);
+        super(null, null, null, null, null, null, null);
         allowDragToCreateInstance = builder.mAllowDragToCreateInstance;
         windowId = builder.mWindowId;
     }

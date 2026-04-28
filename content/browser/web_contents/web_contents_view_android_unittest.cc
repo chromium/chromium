@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/jni_string.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/clipboard_types.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/events/android/drag_event_android.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {
@@ -91,6 +93,36 @@ TEST_F(WebContentsViewAndroidTest, StartDragging_BlockedByPolicy) {
 
   EXPECT_TRUE(view()->was_called());
   EXPECT_TRUE(view()->system_drag_ended_called());
+}
+
+TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
+  view()->set_allowed(true);
+
+  // Simulate drop with custom data JSON and effectAllowed.
+  std::vector<std::u16string> mime_types;
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  std::string custom_data_json = "{\"my-key\":\"my-value\"}";
+  base::android::ScopedJavaLocalRef<jstring> j_custom_data =
+      base::android::ConvertUTF8ToJavaString(env, custom_data_json);
+
+  base::android::ScopedJavaLocalRef<jstring> j_effect_allowed =
+      base::android::ConvertUTF8ToJavaString(env, "move");
+
+  // Action 3 is ACTION_DROP.
+  ui::DragEventAndroid drop_event(
+      env, 3, gfx::PointF(), gfx::PointF(), mime_types,
+      base::android::JavaRef<jstring>(), base::android::JavaRef<jobjectArray>(),
+      base::android::JavaRef<jstring>(), base::android::JavaRef<jstring>(),
+      base::android::JavaRef<jstring>(), j_custom_data, j_effect_allowed);
+
+  view()->OnDragEvent(drop_event);
+
+  // Verify that drop_data_ was populated from Java data.
+  DropData* restored_data = view()->GetDropData();
+  ASSERT_TRUE(restored_data);
+  EXPECT_EQ(restored_data->custom_data[u"my-key"], u"my-value");
+  EXPECT_EQ(restored_data->source_effect_allowed, u"move");
 }
 
 }  // namespace
