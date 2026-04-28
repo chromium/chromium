@@ -25,6 +25,9 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
 // Enables the collection of policies in a Chrome Profile signals report.
 BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the collection of certificates in a Chrome Profile signals report.
+BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the versioned content bindings in signal reports.
 BASE_FEATURE(kContentBindingVersioningEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -55,6 +58,10 @@ bool IsDetectedAgentSignalCollectionEnabled() {
 
 bool IsPolicyDataCollectionEnabled() {
   return base::FeatureList::IsEnabled(kPolicyDataCollectionEnabled);
+}
+
+bool IsCertificateCollectionEnabled() {
+  return base::FeatureList::IsEnabled(kCertificateCollectionEnabled);
 }
 
 bool IsContentBindingVersioningEnabled() {

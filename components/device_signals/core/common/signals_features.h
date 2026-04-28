@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kProfileSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kBrowserSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kDetectedAgentSignalCollectionEnabled);
 BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
+BASE_DECLARE_FEATURE(kCertificateCollectionEnabled);
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabled);
 
 // Signals reporting related feature parameters.
@@ -35,6 +36,8 @@ bool IsBrowserSignalsReportingEnabled();
 bool IsDetectedAgentSignalCollectionEnabled();
 // Returns true if policy collection feature has been enabled.
 bool IsPolicyDataCollectionEnabled();
+// Returns true if certificate collection feature has been enabled.
+bool IsCertificateCollectionEnabled();
 // Returns true if content binding versioning feature has been enabled.
 bool IsContentBindingVersioningEnabled();
 
