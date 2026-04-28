@@ -535,7 +535,7 @@
         Features on some sites may not work
       </message>
       <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_ONE" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of possible functional impacts and that there are means of addressing it.">
-        If a site doesn't work as expected, you can try temporarily allowing third-party cookies for a specific site you visit
+        If a site doesn't work as expected, you can try allowing third-party cookies for a specific site you visit
       </message>
       <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="This text is for a bullet that provides key considerations about the second setting option. It informs the user of advanced settings they can use to modify the scope of impact of selecting the “Block third-party cookies” option.">
         You can create exceptions in Settings to always allow specific sites to use third-party cookies
