@@ -5,45 +5,49 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/custom_tabs_handle_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:baselineAligned="false">
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/custom_tabs_handle_height"
-        android:id="@+id/custom_tabs_handle_view"
-        android:background="@drawable/custom_tabs_handle_view_shape">
-        <org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar
-            android:id="@+id/drag_bar"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <FrameLayout
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/custom_tabs_handle_height"
+          android:id="@+id/custom_tabs_handle_view"
+          android:background="@drawable/custom_tabs_handle_view_shape">
+          <org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar
+              android:id="@+id/drag_bar"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/custom_tabs_handle_height"
+              android:importantForAccessibility="no"
+              android:background="@drawable/custom_tabs_handle_view_shape">
+          </org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar>
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/custom_tabs_content_background"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_tabs_handle_height"
-            android:importantForAccessibility="no"
-            android:background="@drawable/custom_tabs_handle_view_shape">
-        </org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabDragBar>
-        <ImageView
-            android:id="@+id/drag_handle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/drag_handlebar"
-            android:paddingTop="@dimen/custom_tabs_drag_handle_padding_top"
-            android:paddingBottom="@dimen/custom_tabs_drag_handle_padding_bottom"
-            android:paddingStart="@dimen/custom_tabs_drag_handle_padding_side"
-            android:paddingEnd="@dimen/custom_tabs_drag_handle_padding_side"
-            android:contentDescription="@string/accessibility_custom_tab_drag_handle"
-            android:tint="@macro/drag_handle_color" />
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/custom_tabs_content_background"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-    </FrameLayout>
-</LinearLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        </FrameLayout>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/drag_handlebar"
+        android:paddingTop="@dimen/custom_tabs_drag_handle_padding_top"
+        android:paddingBottom="@dimen/custom_tabs_drag_handle_padding_bottom"
+        android:paddingStart="@dimen/custom_tabs_drag_handle_padding_side"
+        android:paddingEnd="@dimen/custom_tabs_drag_handle_padding_side"
+        android:contentDescription="@string/accessibility_custom_tab_drag_handle"
+        android:tint="@macro/drag_handle_color" />
+</FrameLayout>
