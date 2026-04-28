@@ -5,9 +5,15 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
+
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -20,7 +26,20 @@ public class ActorOverlayView extends FrameLayout {
         super(context, attrs);
         setClickable(true);
         setFocusable(true);
-        setBackground(InnerGlowDrawable.createMainWebpageGlow(context));
+
+        InnerGlowDrawable normalDrawable = InnerGlowDrawable.createMainWebpageGlow(context);
+        InnerGlowDrawable normalDrawableForHover = InnerGlowDrawable.createMainWebpageGlow(context);
+
+        int hoverColor = ContextCompat.getColor(context, R.color.actor_overlay_hover_color);
+        Drawable hoverHighlight = new ColorDrawable(hoverColor);
+        Drawable hoverDrawable =
+                new LayerDrawable(new Drawable[] {hoverHighlight, normalDrawableForHover});
+
+        StateListDrawable stateListDrawable = new StateListDrawable();
+        stateListDrawable.addState(new int[] {android.R.attr.state_hovered}, hoverDrawable);
+        stateListDrawable.addState(new int[] {}, normalDrawable);
+
+        setBackground(stateListDrawable);
     }
 
     /**

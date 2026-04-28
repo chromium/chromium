@@ -14,11 +14,10 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A custom drawable that draws an inner glow effect using two layers of inner shadows. */
 @NullMarked
@@ -108,7 +107,7 @@ public class InnerGlowDrawable extends Drawable {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         RectF rect = new RectF(getBounds());
         // Draw the large soft glow first.
         canvas.drawRect(rect, mSoftGlowPaint);

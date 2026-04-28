@@ -20,6 +20,7 @@ found in the LICENSE file.
     <color name="baseline_primary_40">#0B57D0</color>
     <color name="baseline_primary_40_alpha_6">#0F0B57D0</color>
     <color name="baseline_primary_40_alpha_12">#1F0B57D0</color>
+    <color name="baseline_primary_40_alpha_24">#3D0B57D0</color>
     <color name="baseline_primary_40_alpha_65" tools:ignore="UnusedResources">#6A0B57D0</color>
     <color name="baseline_primary_30">#0842A0</color>
     <color name="baseline_primary_20">#062E6F</color>
