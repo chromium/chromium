@@ -7773,13 +7773,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "privacy-sandbox-ads-api-ux-enhancements",
-    "owners": [
-      "jacobstanley@google.com",
-      "koilos@google.com"],
-    "expiry_milestone": 137
-  },
-  {
     "name": "privacy-sandbox-enrollment-overrides",
     "owners": [
       "lbrady@chromium.org",

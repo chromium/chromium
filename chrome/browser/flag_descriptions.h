@@ -3863,12 +3863,6 @@ inline constexpr char kPrivacySandboxAdTopicsContentParityDescription[] =
     "Consent Dialog. All of these changes are subject to regional "
     "availability.";
 
-inline constexpr char kPrivacySandboxAdsApiUxEnhancementsName[] =
-    "Privacy Sandbox Ads API UX Enhancements";
-inline constexpr char kPrivacySandboxAdsApiUxEnhancementsDescription[] =
-    "Enables UI and text updates to the Privacy Sandbox Ads APIs Notice and "
-    "Consent UX, and settings pages to improve user comprehension";
-
 inline constexpr char kPrivacySandboxEnrollmentOverridesName[] =
     "Privacy Sandbox Enrollment Overrides";
 inline constexpr char kPrivacySandboxEnrollmentOverridesDescription[] =

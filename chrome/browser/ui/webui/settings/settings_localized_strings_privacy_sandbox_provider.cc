@@ -302,10 +302,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
            chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL,
            l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)},
           nullptr));
-  html_source->AddBoolean(
-      "isPrivacySandboxAdsApiUxEnhancementsEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
   // Site Suggested Ads Page - Ads API UX Enhancements
   html_source->AddString(
       "siteSuggestedAdsPageLearnMoreBullet3V2",

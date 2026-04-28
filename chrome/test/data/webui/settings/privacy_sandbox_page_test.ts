@@ -279,7 +279,6 @@ suite('TopicsSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
-      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;

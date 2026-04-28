@@ -145,10 +145,6 @@ extern const base::FeatureParam<int> kPrivacySandboxDebouncingDelayMilliseconds;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// If true, displays the Ads APIs UX Enancements.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
-
 // If true, enable showing notices through the notice framework.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxNoticeFramework);

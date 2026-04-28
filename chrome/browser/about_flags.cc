@@ -10771,11 +10771,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableManagementPromotionBanner)},
 #endif
 
-    {"privacy-sandbox-ads-api-ux-enhancements",
-     flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsName,
-     flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements)},
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"enable-oauth-multilogin-cookies-binding",
      flag_descriptions::kEnableOAuthMultiloginCookiesBindingName,
