@@ -5,6 +5,8 @@
 #ifndef SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_TFLITE_H_
 #define SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_TFLITE_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -38,6 +40,15 @@ class ContextImplTflite final : public WebNNContextImpl {
       ScopedTrace scoped_trace,
       bool is_incognito);
 
+  // Factory method for running without GPU dependencies (e.g., in the renderer
+  // process).
+  static WebNNContextImplPtr CreateForRenderer(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<ContextProviderTflite> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+
   ContextImplTflite(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -53,6 +64,14 @@ class ContextImplTflite final : public WebNNContextImpl {
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;
+
+  // Constructor for running without GPU dependencies.
+  ContextImplTflite(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<ContextProviderTflite> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
@@ -93,7 +112,11 @@ class ContextImplTflite final : public WebNNContextImpl {
 
   std::string_view GetBackendName() const override;
 
-  const bool is_incognito_;
+  // Only be used in the GPU-process flow to indicate whether the profile is in
+  // incognito.
+  // For the TFLite in renderer-process, The incognito mode flag will be checked
+  // on the browser side to create temporary weight files or invalid files.
+  const std::optional<bool> is_incognito_;
   base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };
 

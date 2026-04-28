@@ -56,6 +56,12 @@ blink_modules_sources("ml") {
     "//third_party/blink/renderer/modules/webgpu",
   ]
 
+  if (webnn_tflite_in_renderer) {
+    # Factory for the in-process TFLite/LiteRT WebNNContextProvider used by
+    # the renderer-process CPU backend.
+    deps += [ "//services/webnn/public/cpp:in_process_context_provider" ]
+  }
+
   if (webnn_enable_graph_dump) {
     sources += [
       "webnn/ml_graph_transform/utils/ml_graph_dump.cc",

@@ -7,7 +7,10 @@ import("//services/webnn/public/webnn_features.gni")
 
 buildflag_header("buildflags") {
   header = "webnn_buildflags.h"
-  flags = [ "WEBNN_ENABLE_GRAPH_DUMP=$webnn_enable_graph_dump" ]
+  flags = [
+    "WEBNN_ENABLE_GRAPH_DUMP=$webnn_enable_graph_dump",
+    "WEBNN_TFLITE_IN_RENDERER=$webnn_tflite_in_renderer",
+  ]
 }
 
 component("cpp") {
@@ -53,6 +56,28 @@ component("cpp") {
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
+}
+
+# Provides a factory function for creating an in-process TFLite/LiteRT
+# WebNNContextProvider.
+if (webnn_tflite_in_renderer) {
+  source_set("in_process_context_provider") {
+    sources = [
+      "in_process_context_provider.cc",
+      "in_process_context_provider.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//mojo/public/cpp/system",
+    ]
+
+    deps = [
+      "//mojo/public/cpp/bindings",
+      "//services/webnn:webnn_service",
+      "//services/webnn/public/mojom",
+    ]
+  }
 }
 
 if (is_win) {

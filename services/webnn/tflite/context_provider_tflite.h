@@ -21,13 +21,7 @@ namespace webnn::tflite {
 class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
     : public mojom::WebNNContextProvider {
  public:
-  // Callback type for creating weights files. Used by renderer-process
-  // contexts that need to request file creation from the browser process.
-  using CreateWeightsFileCallback =
-      base::RepeatingCallback<void(base::OnceCallback<void(base::File)>)>;
-
   ContextProviderTflite(
-      CreateWeightsFileCallback create_weights_file_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   ~ContextProviderTflite() override;
 
@@ -41,11 +35,17 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
   // Creates a weights file via the browser process.
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
+  base::WeakPtr<ContextProviderTflite> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
  private:
-  // Callback to create weights files in the browser process.
-  CreateWeightsFileCallback create_weights_file_callback_;
+  void OnCreateWebNNContextImpl(
+      CreateWebNNContextCallback callback,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      WebNNContextImpl::WebNNContextImplPtr context_impl);
 
   // Task runner for the main thread (where the Mojo pipe lives).
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

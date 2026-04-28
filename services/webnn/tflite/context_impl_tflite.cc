@@ -70,6 +70,36 @@ ContextImplTflite::ContextImplTflite(
                        std::move(main_task_runner)),
       is_incognito_(is_incognito) {}
 
+// static
+WebNNContextImpl::WebNNContextImplPtr ContextImplTflite::CreateForRenderer(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<ContextProviderTflite> context_provider,
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
+  DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+  auto task_runner = owning_task_runner;
+  return WebNNContextImplPtr(
+      new ContextImplTflite(std::move(receiver), std::move(context_provider),
+                            std::move(options), std::move(owning_task_runner),
+                            std::move(main_task_runner)),
+      OnTaskRunnerDeleter(std::move(task_runner)));
+}
+
+ContextImplTflite::ContextImplTflite(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<ContextProviderTflite> context_provider,
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    : WebNNContextImpl(std::move(receiver),
+                       std::move(context_provider),
+                       ContextBackendUma::kTFLite,
+                       GraphBuilderTflite::GetContextProperties(),
+                       std::move(options),
+                       std::move(owning_task_runner),
+                       std::move(main_task_runner)) {}
+
 ContextImplTflite::~ContextImplTflite() = default;
 
 base::WeakPtr<WebNNContextImpl> ContextImplTflite::AsWeakPtr() {
@@ -86,7 +116,7 @@ void ContextImplTflite::CreateGraphImpl(
     base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
         constant_tensor_operands,
     CreateGraphImplCallback callback) {
-  if (is_incognito_) {
+  if (is_incognito_.value_or(false)) {
     // In incognito mode, weights are stored in the Flatbuffer model file
     // rather than an external weights file.
     GraphImplTflite::CreateAndBuild(
