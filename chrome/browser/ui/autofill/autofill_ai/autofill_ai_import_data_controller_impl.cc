@@ -102,7 +102,6 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
   // Don't show the bubble if it's already visible.
   if (bubble_view() || !MaySetUpBubble()) {
     if (!prompt_result_callback.is_null()) {
-      // TODO(crbug.com/489354073): Pass the correct UI context.
       std::move(prompt_result_callback)
           .Run(AutofillClient::AutofillAiBubbleResult::kUnknown, {});
     }
@@ -129,9 +128,9 @@ void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
   if (GetSaveUpdateState().close_on_accept) {
     OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
   } else if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(GetSaveUpdateState().prompt_result_callback)
-        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted, {});
+        .Run(AutofillClient::AutofillAiBubbleResult::kAccepted,
+             {GetNoticeStringId(), GetPrimaryButtonTextId(IsSavePrompt())});
   }
 }
 
@@ -144,7 +143,7 @@ std::u16string AutofillAiImportDataControllerImpl::GetPrimaryAccountEmail()
 std::u16string
 AutofillAiImportDataControllerImpl::GetSaveUpdateDialogPrimaryButtonText()
     const {
-  return GetPrimaryButtonText(IsSavePrompt());
+  return l10n_util::GetStringUTF16(GetPrimaryButtonTextId(IsSavePrompt()));
 }
 
 bool AutofillAiImportDataControllerImpl::IsSavePrompt() const {
@@ -309,9 +308,22 @@ void AutofillAiImportDataControllerImpl::MaybeRunSaveUpdateCallback(
     AutofillClient::AutofillAiBubbleResult result) {
   if (IsSaveUpdatePrompt() &&
       !GetSaveUpdateState().prompt_result_callback.is_null()) {
-    // TODO(crbug.com/489354073): Pass the correct UI context.
     std::move(GetSaveUpdateState().prompt_result_callback).Run(result, {});
   }
+}
+
+int AutofillAiImportDataControllerImpl::GetNoticeStringId() const {
+  if (IsWalletableEntity()) {
+    if (IsSavePrompt() && base::FeatureList::IsEnabled(
+                              features::kAutofillAiWalletPrivatePasses)) {
+      return IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW;
+    }
+    return IsSavePrompt()
+               ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
+               : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE;
+  }
+  return IsSavePrompt() ? IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE
+                        : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE;
 }
 
 AutofillAiImportDataControllerImpl::SaveUpdateState::SaveUpdateState(

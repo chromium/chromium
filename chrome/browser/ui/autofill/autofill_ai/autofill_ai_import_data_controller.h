@@ -96,6 +96,9 @@ class AutofillAiImportDataController {
   // Called when the Autofill AI save or update bubble is closed.
   virtual void OnBubbleClosed(
       AutofillClient::AutofillAiBubbleResult result) = 0;
+
+  // Returns the notice string id shown as the footer text.
+  virtual int GetNoticeStringId() const = 0;
 };
 
 }  // namespace autofill

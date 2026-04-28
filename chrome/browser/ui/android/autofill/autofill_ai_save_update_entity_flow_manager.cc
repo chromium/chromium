@@ -136,7 +136,8 @@ AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
       web_contents_,
       entity.record_type() == EntityInstance::RecordType::kServerWallet));
   message->SetDescriptionMaxLines(kDescriptionMaxLines);
-  message->SetPrimaryButtonText(GetPrimaryButtonText(!old_entity));
+  message->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(GetPrimaryButtonTextId(!old_entity)));
   message->SetPrimaryButtonTextMaxLines(1);
   message->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(GetMessageIconResourceId(entity)));

@@ -52,6 +52,8 @@ class AutofillAiImportDataBubbleViewBrowsertest
     ON_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
         .WillByDefault(
             Return(IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
+    ON_CALL(mock_controller(), GetNoticeStringId())
+        .WillByDefault(Return(IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE));
   }
 
   void DismissUi() override { bubble_ = nullptr; }
@@ -170,6 +172,8 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
       .WillByDefault(Return(details));
+  ON_CALL(mock_controller(), GetNoticeStringId())
+      .WillByDefault(Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE));
   ShowAndVerifyUi();
 }
 
@@ -180,6 +184,9 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(true));
   ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
+  ON_CALL(mock_controller(), GetNoticeStringId())
+      .WillByDefault(
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
   ON_CALL(mock_controller(), GetPrimaryAccountEmail())
       .WillByDefault(Return(u"machadodeassis@gmail.com"));
   std::vector<EntityAttributeUpdateDetails> details = {
@@ -209,6 +216,9 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE)));
   ON_CALL(mock_controller(), IsSavePrompt()).WillByDefault(Return(false));
   ON_CALL(mock_controller(), IsWalletableEntity()).WillByDefault(Return(true));
+  ON_CALL(mock_controller(), GetNoticeStringId())
+      .WillByDefault(
+          Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
   ON_CALL(mock_controller(), GetPrimaryAccountEmail())
       .WillByDefault(Return(u"machadodeassis@gmail.com"));
   std::vector<EntityAttributeUpdateDetails> details = {
@@ -267,6 +277,8 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataBubbleViewBrowsertest,
           EntityAttributeUpdateType::kNewEntityAttributeUnchanged)};
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
       .WillByDefault(Return(details));
+  ON_CALL(mock_controller(), GetNoticeStringId())
+      .WillByDefault(Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE));
   ShowAndVerifyUi();
 }
 

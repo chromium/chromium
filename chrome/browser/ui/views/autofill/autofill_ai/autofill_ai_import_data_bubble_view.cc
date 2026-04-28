@@ -206,10 +206,8 @@ AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
 
 std::unique_ptr<views::Label>
 AutofillAiImportDataBubbleView::GetLocalEntitySubtitle() const {
-  std::u16string subtitle_text = l10n_util::GetStringUTF16(
-      controller_->IsSavePrompt()
-          ? IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE
-          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE);
+  std::u16string subtitle_text =
+      l10n_util::GetStringUTF16(controller_->GetNoticeStringId());
   return views::Builder<views::Label>()
       .SetText(std::move(subtitle_text))
       .SetTextStyle(views::style::STYLE_BODY_4)
@@ -235,20 +233,18 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
     const std::u16string manage_info_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
 
-    formatted_text = l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE_NEW,
-        {google_wallet_text, manage_info_text, google_wallet_text,
-         account_email},
-        &offsets);
+    formatted_text =
+        l10n_util::GetStringFUTF16(controller_->GetNoticeStringId(),
+                                   {google_wallet_text, manage_info_text,
+                                    google_wallet_text, account_email},
+                                   &offsets);
 
     link_range = gfx::Range(offsets[1], offsets[1] + manage_info_text.size());
 
   } else {
     formatted_text = l10n_util::GetStringFUTF16(
-        controller_->IsSavePrompt()
-            ? IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
-            : IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
-        {google_wallet_text, account_email}, &offsets);
+        controller_->GetNoticeStringId(), {google_wallet_text, account_email},
+        &offsets);
 
     link_range = gfx::Range(offsets[0], offsets[0] + google_wallet_text.size());
   }

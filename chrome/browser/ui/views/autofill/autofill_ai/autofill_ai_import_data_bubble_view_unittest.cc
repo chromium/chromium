@@ -15,6 +15,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -110,6 +111,8 @@ void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
   ON_CALL(mock_controller(), GetUpdatedAttributesDetails())
       .WillByDefault(Return(details));
   ON_CALL(mock_controller(), CloseOnAccept()).WillByDefault(Return(true));
+  ON_CALL(mock_controller(), GetNoticeStringId())
+      .WillByDefault(Return(IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE));
 
   auto view_unique = std::make_unique<AutofillAiImportDataBubbleView>(
       views::BubbleAnchor(anchor_widget_->GetContentsView()),

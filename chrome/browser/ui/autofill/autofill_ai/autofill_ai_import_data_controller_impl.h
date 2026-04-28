@@ -63,6 +63,7 @@ class AutofillAiImportDataControllerImpl
       const override;
   bool IsSavePrompt() const override;
   bool CloseOnAccept() const override;
+  int GetNoticeStringId() const override;
 
   // BubbleControllerBase:
   bool CanBeReshown() const override;

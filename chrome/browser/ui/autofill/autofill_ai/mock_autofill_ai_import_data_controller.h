@@ -53,6 +53,7 @@ class MockAutofillAiImportDataController
               OnBubbleClosed,
               (AutofillClient::AutofillAiBubbleResult),
               (override));
+  MOCK_METHOD(int, GetNoticeStringId, (), (const override));
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
