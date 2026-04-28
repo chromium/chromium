@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "base/time/time_override.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/test_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
@@ -70,6 +71,12 @@ std::unique_ptr<KeyedService> CreateFakeProfileSessionDurationsService(
   return std::make_unique<FakeProfileSessionDurationsService>();
 }
 
+// Create a test Feature Engagement Tracker.
+std::unique_ptr<KeyedService> BuildFeatureEngagementTestTracker(
+    ProfileIOS* profile) {
+  return feature_engagement::CreateTestTracker();
+}
+
 }  // namespace
 
 class SessionMetricsProfileAgentTest : public PlatformTest {
@@ -82,6 +89,9 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
         base::BindOnce(&CreateFakeProfileSessionDurationsService));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementTestTracker));
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
@@ -99,6 +109,30 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     return static_cast<FakeProfileSessionDurationsService*>(
         IOSProfileSessionDurationsServiceFactory::GetForProfile(
             profile_.get()));
+  }
+
+  void SimulateActiveDayForTime(const char* time_string,
+                                SceneState* scene_state,
+                                SceneActivationLevel activation_level =
+                                    SceneActivationLevelForegroundInactive) {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromUTCString(time_string, &time));
+    time = time.LocalMidnight();
+    SimulateActiveDayForTime(time, scene_state, activation_level);
+  }
+
+  void SimulateActiveDayForTime(const base::Time& time,
+                                SceneState* scene_state,
+                                SceneActivationLevel activation_level =
+                                    SceneActivationLevelForegroundInactive) {
+    SetNowOverride(time);
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile());
+    scene_state.activationLevel = activation_level;
+    base::RunLoop run_loop;
+    tracker->AddOnInitializedCallback(
+        base::IgnoreArgs<bool>(run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   PrefService* local_state() { return &local_state_; }
@@ -241,6 +275,8 @@ TEST_F(SessionMetricsProfileAgentTest, MultipleScenes) {
 // Tests that the number of recent active days is emitted on session start and
 // end.
 TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOnSessionStateChange) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SessionMetricsProfileAgentTest::NowOverride, nullptr, nullptr);
   base::HistogramTester histogram_tester;
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
@@ -251,16 +287,8 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOnSessionStateChange) {
   // The session starts when the scene enters the foreground. The number of
   // recent active days should be recorded if it hasn't been recorded today.
   local_state()->SetTime(prefs::kLastRecordedActiveDay, base::Time());
-  scene.activationLevel = SceneActivationLevelForegroundInactive;
 
-  // Wait for the Feature Engagement Tracker to call its initialization
-  // callbacks.
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile());
-  base::RunLoop run_loop;
-  tracker->AddOnInitializedCallback(
-      base::IgnoreArgs<bool>(run_loop.QuitClosure()));
-  run_loop.Run();
+  SimulateActiveDayForTime("2025-01-15", scene);
 
   histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 1);
   histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 1);
@@ -269,14 +297,8 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOnSessionStateChange) {
   // Going to background stops the session. The number of recent active days
   // should be recorded if it hasn't been recorded today.
   local_state()->SetTime(prefs::kLastRecordedActiveDay, base::Time());
-  scene.activationLevel = SceneActivationLevelBackground;
 
-  // Wait for the Feature Engagement Tracker to call its initialization
-  // callbacks.
-  base::RunLoop run_loop2;
-  tracker->AddOnInitializedCallback(
-      base::IgnoreArgs<bool>(run_loop2.QuitClosure()));
-  run_loop2.Run();
+  SimulateActiveDayForTime("2025-01-15", scene, SceneActivationLevelBackground);
 
   histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 2);
   histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 2);
@@ -302,17 +324,8 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOncePerDay) {
   EXPECT_TRUE(base::Time::FromUTCString("2025-01-15", &last_recorded_time));
   last_recorded_time = last_recorded_time.LocalMidnight();
   local_state()->SetTime(prefs::kLastRecordedActiveDay, last_recorded_time);
-  SetNowOverride(last_recorded_time + base::Hours(3));
-  scene.activationLevel = SceneActivationLevelForegroundInactive;
 
-  // Wait for the Feature Engagement Tracker to call its initialization
-  // callbacks.
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile());
-  base::RunLoop run_loop;
-  tracker->AddOnInitializedCallback(
-      base::IgnoreArgs<bool>(run_loop.QuitClosure()));
-  run_loop.Run();
+  SimulateActiveDayForTime(last_recorded_time + base::Hours(3), scene);
 
   histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 0);
   histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 0);
@@ -323,19 +336,82 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOncePerDay) {
   // Going to background stops the session. The number of recent active days
   // should be recorded if it has been more than a day since last recorded.
   base::Time next_day = last_recorded_time + base::Hours(30);
-  SetNowOverride(next_day);
-  scene.activationLevel = SceneActivationLevelBackground;
 
-  // Wait for the Feature Engagement Tracker to call its initialization
-  // callbacks.
-  base::RunLoop run_loop2;
-  tracker->AddOnInitializedCallback(
-      base::IgnoreArgs<bool>(run_loop2.QuitClosure()));
-  run_loop2.Run();
+  SimulateActiveDayForTime(next_day, scene, SceneActivationLevelBackground);
 
   histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 1);
   histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 1);
   histogram_tester.ExpectTotalCount(kActiveDays28Histogram, 1);
   next_day = next_day.LocalMidnight();
   EXPECT_EQ(local_state()->GetTime(prefs::kLastRecordedActiveDay), next_day);
+}
+
+// Tests that the emitted number of recent active days is as expected.
+TEST_F(SessionMetricsProfileAgentTest, ActiveDaysCount) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SessionMetricsProfileAgentTest::NowOverride, nullptr, nullptr);
+  base::HistogramTester histogram_tester;
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
+
+  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  scene.profileState = profile_state();
+  [profile_state() sceneStateConnected:scene];
+
+  // The session starts when the scene enters the foreground. The number of
+  // recent active days should be incremented and recorded at most once per day.
+  local_state()->SetTime(prefs::kLastRecordedActiveDay, base::Time());
+
+  SimulateActiveDayForTime("2025-01-01", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+  SimulateActiveDayForTime("2025-01-02", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+  SimulateActiveDayForTime("2025-01-03", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+  SimulateActiveDayForTime("2025-01-07", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 1, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 2, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 3, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 1, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 2, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 3, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 1, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 2, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 3, 1);
+
+  // Test more edge cases when past active days are no longer in the window.
+  SimulateActiveDayForTime("2025-01-08", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 4, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 4, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 4, 1);
+
+  SimulateActiveDayForTime("2025-01-09", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 4, 2);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 5, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 5, 1);
+
+  SimulateActiveDayForTime("2025-01-14", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+  SimulateActiveDayForTime("2025-01-15", scene);
+  scene.activationLevel = SceneActivationLevelBackground;
+  SimulateActiveDayForTime("2025-01-16", scene);
+
+  histogram_tester.ExpectBucketCount(kActiveDays7Histogram, 3, 4);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 6, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays14Histogram, 7, 2);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 6, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 7, 1);
+  histogram_tester.ExpectBucketCount(kActiveDays28Histogram, 8, 1);
+
+  histogram_tester.ExpectTotalCount(kActiveDays7Histogram, 9);
+  histogram_tester.ExpectTotalCount(kActiveDays14Histogram, 9);
+  histogram_tester.ExpectTotalCount(kActiveDays28Histogram, 9);
 }

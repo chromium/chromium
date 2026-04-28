@@ -196,20 +196,21 @@
   }
 
   localState->SetTime(prefs::kLastRecordedActiveDay, nowMidnight);
-  tracker->NotifyEvent(feature_engagement::events::kChromeActiveSessionDay);
 
   for (const auto& [config, count] : tracker->ListEvents(
            feature_engagement::kIPHiOSActiveDaysTrackingFeature)) {
     if (config.name == feature_engagement::events::kChromeActiveSessionDay) {
-      if (config.window == 7) {
+      if (config.window == 8) {
         base::UmaHistogramCounts100("IOS.PreviousActiveDays7", count);
-      } else if (config.window == 14) {
+      } else if (config.window == 15) {
         base::UmaHistogramCounts100("IOS.PreviousActiveDays14", count);
-      } else if (config.window == 28) {
+      } else if (config.window == 29) {
         base::UmaHistogramCounts100("IOS.PreviousActiveDays28", count);
       }
     }
   }
+
+  tracker->NotifyEvent(feature_engagement::events::kChromeActiveSessionDay);
 }
 
 @end

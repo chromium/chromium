@@ -601,13 +601,13 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
 
     config.event_configs.insert(
         EventConfig(feature_engagement::events::kChromeActiveSessionDay,
-                    Comparator(ANY, 0), 7, kMaxStoragePeriod));
+                    Comparator(ANY, 0), 8, kMaxStoragePeriod));
     config.event_configs.insert(
         EventConfig(feature_engagement::events::kChromeActiveSessionDay,
-                    Comparator(ANY, 0), 14, kMaxStoragePeriod));
+                    Comparator(ANY, 0), 15, kMaxStoragePeriod));
     config.event_configs.insert(
         EventConfig(feature_engagement::events::kChromeActiveSessionDay,
-                    Comparator(ANY, 0), 28, kMaxStoragePeriod));
+                    Comparator(ANY, 0), 29, kMaxStoragePeriod));
     return config;
   } else {
     return std::nullopt;

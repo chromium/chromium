@@ -438,6 +438,7 @@ source_set("unit_tests") {
     ":test_utils",
     "//base/test:test_support",
     "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:features",
