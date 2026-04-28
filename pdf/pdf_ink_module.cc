@@ -131,6 +131,18 @@ void CheckColorIsWithinRange(int color) {
   CHECK_LE(color, 255);
 }
 
+SkColor GetColorFromDict(const base::DictValue& dict) {
+  const base::DictValue& color = *dict.FindDict("color");
+  int color_r = color.FindInt("r").value();
+  int color_g = color.FindInt("g").value();
+  int color_b = color.FindInt("b").value();
+
+  CheckColorIsWithinRange(color_r);
+  CheckColorIsWithinRange(color_g);
+  CheckColorIsWithinRange(color_b);
+  return SkColorSetRGB(color_r, color_g, color_b);
+}
+
 ink::Rect GetEraserRect(const gfx::PointF& center) {
   return ink::Rect::FromTwoPoints(
       {center.x() - kEraserSize, center.y() - kEraserSize},
@@ -1474,22 +1486,13 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   }
 
   // All brush types except the eraser should have a color and size.
-  const base::DictValue* color = data->FindDict("color");
-  CHECK(color);
-
-  int color_r = color->FindInt("r").value();
-  int color_g = color->FindInt("g").value();
-  int color_b = color->FindInt("b").value();
-
-  CheckColorIsWithinRange(color_r);
-  CheckColorIsWithinRange(color_g);
-  CheckColorIsWithinRange(color_b);
+  SkColor color = GetColorFromDict(*data);
 
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
-  pending_drawing_brush_state_ = PendingDrawingBrushState{
-      SkColorSetRGB(color_r, color_g, color_b), size, brush_type.value()};
+  pending_drawing_brush_state_ =
+      PendingDrawingBrushState{color, size, brush_type.value()};
 
   // Do not adjust current tool state if a drawing stroke is already
   // in-progress.  Changes to the tool state will only apply to subsequent
@@ -1561,19 +1564,22 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   int page_index = data.FindInt("pageIndex").value();
 
   const base::DictValue& text_attributes = *data.FindDict("textAttributes");
+  SkColor color = GetColorFromDict(text_attributes);
   float font_size = text_attributes.FindDouble("size").value();
+
   // Note: `pdf_zoom` is similar to GetZoom() but GetZoom() is multiplied by
   // device scale factor while this value isn't. Additionally `pdf_zoom` comes
   // from the frontend at the exact same time as the annotation commit happens
   // to avoid any potential sync race issues between the frontend and backend.
   double pdf_zoom = data.FindDouble("pdfZoom").value();
+
   const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
   gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
                      text_box_rect.FindDouble("locationY").value(),
                      text_box_rect.FindDouble("width").value(),
                      text_box_rect.FindDouble("height").value());
 
-  client_->DrawText(page_index, ink_info, font_size, pdf_zoom, textbox);
+  client_->DrawText(page_index, ink_info, color, font_size, pdf_zoom, textbox);
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

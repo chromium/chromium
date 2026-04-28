@@ -25,6 +25,8 @@
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
+using SkColor = uint32_t;
+
 namespace gfx {
 class PointF;
 }
@@ -70,6 +72,7 @@ class PdfInkModuleClient {
   // CSS screen coordinates.
   virtual void DrawText(int page_index,
                         base::span<const InkTextInfo> text_info,
+                        SkColor color,
                         float css_font_size,
                         double pdf_zoom,
                         const gfx::RectF& textbox) {}

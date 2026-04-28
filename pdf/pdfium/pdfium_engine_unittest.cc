@@ -3066,12 +3066,59 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
-      /*css_font_size=*/10.0f, /*pdf_zoom=*/1.0f,
+      /*color=*/SK_ColorBLACK, /*css_font_size=*/10.0f, /*pdf_zoom=*/1.0,
       /*textbox=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f));
 
   // Verify the rendering of text for in-memory PDF.
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("applied_text_hello.png")));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
+}
+
+TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  constexpr gfx::Size kPageSizeInPoints(200, 200);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+
+  // Add the default font.
+  sk_sp<SkTypeface> default_font = skia::DefaultTypeface();
+  sk_sp<SkData> serialized_font = default_font->serialize();
+  FontId font_id = static_cast<FontId>(default_font->uniqueID());
+  engine->AddFont(font_id, gfx::SkDataToSpan(serialized_font));
+
+  // Convert a string to glyphs.
+  constexpr std::string_view kTextToDraw = "orange";
+  std::vector<SkGlyphID> sk_glyphs(kTextToDraw.size());
+  size_t glyph_count = default_font->textToGlyphs(
+      kTextToDraw.data(), kTextToDraw.size(), SkTextEncoding::kUTF8, sk_glyphs);
+  ASSERT_EQ(glyph_count, sk_glyphs.size());
+  std::vector<uint32_t> glyphs(sk_glyphs.begin(), sk_glyphs.end());
+
+  // Draw some orange text.
+  engine->DrawText(
+      kPageIndex,
+      {InkTextInfo(
+          font_id, glyphs,
+          /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
+          /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+          /*is_horizontal=*/true)},
+      /*color=*/SkColorSetRGB(0xFF, 0x63, 0x0C), /*css_font_size=*/10.0f,
+      /*pdf_zoom=*/1.0,
+      /*textbox=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f));
+
+  // Verify the rendering of orange text for in-memory PDF.
+  const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
+      GetTestDataPathWithPlatformSuffix("applied_text_orange.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
 }
 

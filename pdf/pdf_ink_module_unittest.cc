@@ -302,6 +302,7 @@ class FakeClient : public PdfInkModuleClient {
               DrawText,
               (int page_index,
                base::span<const InkTextInfo> text_info,
+               SkColor color,
                float css_font_size,
                double pdf_zoom,
                const gfx::RectF& textbox),
@@ -960,6 +961,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
   data.Set("pdfZoom", 2.0f);
 
   base::DictValue text_attributes;
+  text_attributes.Set(
+      "color", base::DictValue().Set("r", 255).Set("g", 111).Set("b", 99));
   text_attributes.Set("size", 12.0f);
   data.Set("textAttributes", std::move(text_attributes));
 
@@ -998,7 +1001,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
                            /*glyph_positions=*/std::vector<gfx::Vector2dF>(2),
                            /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
                            /*is_horizontal=*/true)),
-                       12.0f, 2.0f, gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f)));
+                       SkColorSetRGB(255, 111, 99), 12.0f, 2.0f,
+                       gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f)));
 
   base::DictValue message = base::DictValue()
                                 .Set("type", "finishTextAnnotation")

@@ -5084,6 +5084,7 @@ FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
 
 void PDFiumEngine::DrawText(int page_index,
                             base::span<const InkTextInfo> text_info,
+                            SkColor color,
                             float css_font_size,
                             double pdf_zoom,
                             const gfx::RectF& textbox) {
@@ -5110,6 +5111,10 @@ void PDFiumEngine::DrawText(int page_index,
     ScopedFPDFPageObject text_object(
         FPDFPageObj_CreateTextObj(doc(), font, pdf_font_size));
     CHECK(text_object);
+    CHECK(FPDFPageObj_SetFillColor(text_object.get(), /*R=*/SkColorGetR(color),
+                                   /*G=*/SkColorGetG(color),
+                                   /*B=*/SkColorGetB(color),
+                                   /*A=*/255));
     CHECK(FPDFText_SetCharcodes(text_object.get(), item.glyphs.data(),
                                 item.glyphs.size()));
     FS_MATRIX matrix{1, 0, 0, 1, run_rect.x(), run_rect.y()};
