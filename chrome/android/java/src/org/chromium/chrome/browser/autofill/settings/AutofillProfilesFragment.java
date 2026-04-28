@@ -212,7 +212,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             addAddAddressButton(screen);
         }
         // LINT.ThenChange(:DynamicPreferences)
-        mFormsAiDelegate.addAutofillAiEntities(screen);
+        mFormsAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
         updateDynamicPreferences(getProfile());
     }
 

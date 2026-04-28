@@ -44,6 +44,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** A delegate class to handle shared logic for Forms AI settings fragments. */
 @NullMarked
@@ -127,7 +128,7 @@ public class FormsAiDelegate {
                 == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
-    void addAutofillAiEntities(PreferenceScreen screen) {
+    void addAutofillAiEntities(PreferenceScreen screen, @Nullable Set<Integer> typeFilter) {
         EntityDataManager entityDataManager =
                 EntityDataManagerFactory.getForProfile(mFragment.getProfile());
         if (entityDataManager == null) {
@@ -152,6 +153,10 @@ public class FormsAiDelegate {
         for (Map.Entry<EntityType, List<EntityInstanceWithLabels>> entry :
                 instancesToList.entrySet()) {
             EntityType type = entry.getKey();
+            if (typeFilter != null && !typeFilter.contains(type.getTypeName())) {
+                continue;
+            }
+
             List<EntityInstanceWithLabels> entities = entry.getValue();
 
             boolean isEnabled = type.isEnabled();
