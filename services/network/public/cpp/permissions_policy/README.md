@@ -61,7 +61,7 @@ Run `tools/metrics/histograms/update_permissions_policy_enum.py`
 to update enums.xml from the mojo enum.
 
 3. Append the new feature name to the `PermissionsPolicyFeature` enum in
-`third_party/blink/public/devtools_protocol/browser_protocol.pdl`.
+`third_party/blink/public/devtools_protocol/domains/Page.pdl`.
 
 4. Add the new feature name to `third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt`
 and `third_party/blink/web_tests/wpt_internal/isolated-permissions-policy/permissions_policy.https.html`.
