@@ -96,9 +96,10 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9TransferFunctions) {
   };
 
   for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::TransferID))); i++) {
-    VideoColorSpace color_space = VideoColorSpace::REC709();
-    color_space.transfer = VideoColorSpace::GetTransferID(i);
-    bool found = kSupportedTransfers.find(color_space.transfer) !=
+    auto color_space = VideoColorSpace(
+        VideoColorSpace::PrimaryID::BT709, VideoColorSpace::GetTransferID(i),
+        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
+    bool found = kSupportedTransfers.find(color_space.transfer()) !=
                  kSupportedTransfers.end();
     if (found)
       num_found++;
@@ -128,9 +129,10 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Primaries) {
   };
 
   for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::PrimaryID))); i++) {
-    VideoColorSpace color_space = VideoColorSpace::REC709();
-    color_space.primaries = VideoColorSpace::GetPrimaryID(i);
-    bool found = kSupportedPrimaries.find(color_space.primaries) !=
+    VideoColorSpace color_space = VideoColorSpace(
+        VideoColorSpace::GetPrimaryID(i), VideoColorSpace::TransferID::BT709,
+        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
+    bool found = kSupportedPrimaries.find(color_space.primaries()) !=
                  kSupportedPrimaries.end();
     if (found)
       num_found++;
@@ -155,14 +157,16 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Matrix) {
       VideoColorSpace::MatrixID::SMPTE240M,
       VideoColorSpace::MatrixID::YCOCG,
       VideoColorSpace::MatrixID::YDZDX,
-      VideoColorSpace::MatrixID::BT2020_CL,
+      // NOTE: BT2020_CL (10) is no longer supported — GetMatrixID(10) returns
+      // INVALID. See crbug.com/333906350.
   };
 
   for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::MatrixID))); i++) {
-    VideoColorSpace color_space = VideoColorSpace::REC709();
-    color_space.matrix = VideoColorSpace::GetMatrixID(i);
+    VideoColorSpace color_space = VideoColorSpace(
+        VideoColorSpace::PrimaryID::BT709, VideoColorSpace::TransferID::BT709,
+        VideoColorSpace::GetMatrixID(i), gfx::ColorSpace::RangeID::LIMITED);
     bool found =
-        kSupportedMatrix.find(color_space.matrix) != kSupportedMatrix.end();
+        kSupportedMatrix.find(color_space.matrix()) != kSupportedMatrix.end();
     if (found)
       num_found++;
     EXPECT_EQ(found,
@@ -307,8 +311,10 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeWithHdrMetadataBasics) {
 
   // All combinations of combinations of color gamuts and transfer functions
   // should be supported.
-  color_space.primaries = VideoColorSpace::PrimaryID::SMPTEST431_2;
-  color_space.transfer = VideoColorSpace::TransferID::SMPTEST2084;
+  color_space = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST431_2,
+                                VideoColorSpace::TransferID::SMPTEST2084,
+                                VideoColorSpace::MatrixID::BT709,
+                                gfx::ColorSpace::RangeID::LIMITED);
   EXPECT_TRUE(IsDecoderSupportedVideoType(
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
 #if defined(ENABLE_LIBVPX)
@@ -322,8 +328,10 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space,
        gfx::HdrMetadataType::kSmpteSt2086}));
 
-  color_space.primaries = VideoColorSpace::PrimaryID::BT2020;
-  color_space.transfer = VideoColorSpace::TransferID::ARIB_STD_B67;
+  color_space = VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                                VideoColorSpace::TransferID::ARIB_STD_B67,
+                                VideoColorSpace::MatrixID::BT709,
+                                gfx::ColorSpace::RangeID::LIMITED);
   EXPECT_TRUE(IsDecoderSupportedVideoType(
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
 #if defined(ENABLE_LIBVPX)
@@ -490,6 +498,640 @@ TEST(SupportedTypesTest, MayHaveAndAllowSelectOSSoftwareEncoder) {
   EXPECT_EQ(MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec::kH264),
             (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) &&
                 !IsOpenH264SoftwareEncoderEnabled());
+}
+
+TEST(SupportedTypesTest, ColorSpaceSupport_UnusualButValid_VP9) {
+  // VP9 calls IsColorSpaceSupported(). All combinations below use valid
+  // (non-INVALID) enum values and should be accepted.
+  constexpr int kLevel = 0;
+
+  // BT2020 primaries + BT709 transfer (wide-gamut SDR).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // SMPTEST432_1 primaries + SMPTEST2084 transfer (DCI-P3 HDR).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST432_1,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // SMPTEST431_2 primaries + BT709 transfer (DCI cinema SDR).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST431_2,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // BT470M primaries + GAMMA22 transfer + FCC matrix (legacy NTSC).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT470M,
+                       VideoColorSpace::TransferID::GAMMA22,
+                       VideoColorSpace::MatrixID::FCC,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // FILM primaries + BT709 transfer.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::FILM,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // NOTE: BT2020_CL (MatrixID 10) is no longer supported — ToGfxMatrixID
+  // maps it to INVALID, causing IsColorSpaceSupported to reject it.
+  // See crbug.com/333906350.
+
+  // SMPTEST428_1 primaries + SMPTEST428_1 transfer (XYZ cinema).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
+                       VideoColorSpace::TransferID::SMPTEST428_1,
+                       VideoColorSpace::MatrixID::YDZDX,
+                       gfx::ColorSpace::RangeID::FULL)}));
+
+  // BT709 primaries + LOG transfer.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::LOG,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // BT709 primaries + LINEAR transfer.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::LINEAR,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // RGB matrix with BT709 primaries and transfer.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::RGB,
+                       gfx::ColorSpace::RangeID::FULL)}));
+}
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST(SupportedTypesTest, ColorSpaceSupport_UnusualButValid_AV1) {
+  constexpr int kLevel = 0;
+
+  // Wide-gamut SDR: BT2020 + BT709.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // DCI-P3 HDR: SMPTEST432_1 + SMPTEST2084.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST432_1,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // NOTE: BT2020_CL no longer supported — see crbug.com/333906350.
+
+  // XYZ cinema: SMPTEST428_1 + SMPTEST428_1.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
+                       VideoColorSpace::TransferID::SMPTEST428_1,
+                       VideoColorSpace::MatrixID::YDZDX,
+                       gfx::ColorSpace::RangeID::FULL)}));
+
+  // RGB matrix.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::RGB,
+                       gfx::ColorSpace::RangeID::FULL)}));
+}
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+
+// H264 does not call IsColorSpaceSupported() — it returns true unconditionally
+// (when proprietary codecs are enabled). Verify this behavior, including that
+// H264 accepts color spaces that other codecs would reject.
+TEST(SupportedTypesTest, ColorSpaceSupport_H264_BypassesColorSpaceCheck) {
+  constexpr int kLevel = 1;
+
+  // H264 accepts EBU_3213_E primaries.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                                 VideoColorSpace::TransferID::BT709,
+                                 VideoColorSpace::MatrixID::BT709,
+                                 gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // H264 accepts all-INVALID color space components.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                                 VideoColorSpace::TransferID::INVALID,
+                                 VideoColorSpace::MatrixID::INVALID,
+                                 gfx::ColorSpace::RangeID::INVALID)}));
+
+  // H264 also accepts valid unusual combinations.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                                 VideoColorSpace::TransferID::SMPTEST2084,
+                                 VideoColorSpace::MatrixID::BT2020_NCL,
+                                 gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+// HEVC calls IsColorSpaceSupported() when HEVC decoding is unconditionally
+// enabled, so it rejects invalid color spaces unlike H264.
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
+TEST(SupportedTypesTest, ColorSpaceSupport_UnusualButValid_HEVC) {
+  constexpr int kLevel = 0;
+
+  // HDR10: BT2020 + PQ.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kHEVC, HEVCPROFILE_MAIN10, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // NOTE: BT2020_CL no longer supported — see crbug.com/333906350.
+
+  // HEVC accepts EBU_3213_E (has a valid gfx::ColorSpace mapping).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kHEVC, HEVCPROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_RejectedPrimaries) {
+  constexpr int kLevel = 0;
+
+  // EBU_3213_E is accepted (has a valid gfx::ColorSpace mapping).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // INVALID primary is rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_RejectedTransfer) {
+  constexpr int kLevel = 0;
+
+  // INVALID transfer is the only rejected transfer value.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::INVALID,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_RejectedMatrix) {
+  constexpr int kLevel = 0;
+
+  // INVALID matrix is the only rejected matrix value.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::INVALID,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_RejectedRange) {
+  constexpr int kLevel = 0;
+
+  // INVALID range is rejected even when primary/transfer/matrix are valid.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_AllInvalid) {
+  constexpr int kLevel = 0;
+
+  // All INVALID components should be rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::INVALID,
+                       VideoColorSpace::MatrixID::INVALID,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  // AV1 should also reject all-INVALID.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::INVALID,
+                       VideoColorSpace::MatrixID::INVALID,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_MixedSupportedAndUnsupported) {
+  constexpr int kLevel = 0;
+
+  // Supported primary + unsupported (INVALID) transfer -> rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::INVALID,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // EBU_3213_E primary + supported transfer -> accepted.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // Supported primary + supported transfer + INVALID matrix -> rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::INVALID,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // All valid except INVALID range -> rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+}
+
+TEST(SupportedTypesTest, ColorSpaceBoundary_UnspecifiedComponentsAccepted) {
+  constexpr int kLevel = 0;
+
+  // UNSPECIFIED primaries, transfer, and matrix should all be accepted.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                       VideoColorSpace::TransferID::UNSPECIFIED,
+                       VideoColorSpace::MatrixID::UNSPECIFIED,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // UNSPECIFIED primary with specified transfer and matrix.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // Specified primary with UNSPECIFIED transfer and matrix.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::UNSPECIFIED,
+                       VideoColorSpace::MatrixID::UNSPECIFIED,
+                       gfx::ColorSpace::RangeID::FULL)}));
+}
+
+TEST(SupportedTypesTest, ProfileColorSpace_VP9Profile0WithBT2020) {
+  constexpr int kLevel = 0;
+
+  // VP9 Profile 0 should accept BT2020 primaries. The profile check and
+  // color space check are independent — Profile 0 is always supported, and
+  // BT2020 is a valid primary.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::BT2020_10,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // Profile 0 with full BT2020 HDR (PQ transfer).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+#if defined(ARCH_CPU_X86_FAMILY) ||                             \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)) || \
+    (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
+TEST(SupportedTypesTest, ProfileColorSpace_VP9Profile2WithHDR) {
+  // VP9 Profile 2 support depends on high bit depth support in libvpx.
+  // On architectures where Profile 2 is supported, HDR color spaces
+  // should also be accepted.
+  constexpr int kLevel = 0;
+
+  // Profile 2 with PQ transfer (HDR10).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // Profile 2 with HLG transfer.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::ARIB_STD_B67,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // Profile 2 should still reject INVALID color spaces.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+#endif
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST(SupportedTypesTest, ProfileColorSpace_AV1MainWithBT2020PQ) {
+  constexpr int kLevel = 0;
+
+  // AV1 Main profile with BT2020 primaries and PQ transfer (HDR10).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // AV1 Main profile with HLG.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::ARIB_STD_B67,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // AV1 should reject invalid color spaces even with valid profile.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+
+TEST(SupportedTypesTest, ProfileColorSpace_H264High10WithBT2020) {
+  constexpr int kLevel = 1;
+
+  // H264 High 10 profile with BT2020 primaries. H264 doesn't check
+  // IsColorSpaceSupported, so this is accepted regardless of color space.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_HIGH10PROFILE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                                 VideoColorSpace::TransferID::SMPTEST2084,
+                                 VideoColorSpace::MatrixID::BT2020_NCL,
+                                 gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // H264 High 10 even accepts INVALID color spaces.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_HIGH10PROFILE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                                 VideoColorSpace::TransferID::INVALID,
+                                 VideoColorSpace::MatrixID::INVALID,
+                                 gfx::ColorSpace::RangeID::INVALID)}));
+}
+
+TEST(SupportedTypesTest, HdrMetadata_DolbyVision) {
+  // DolbyVision with SmpteSt2086 + PQ transfer should be accepted
+  // (IsDecoderSupportedHdrMetadata checks transfer, not codec).
+  // Note: DV decoder support itself is platform-dependent, so we only test
+  // that HDR metadata validation doesn't independently reject it.
+  const VideoColorSpace kPqColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                                      VideoColorSpace::TransferID::SMPTEST2084,
+                                      VideoColorSpace::MatrixID::BT2020_NCL,
+                                      gfx::ColorSpace::RangeID::LIMITED);
+
+  // DV + SmpteSt2094_10 is always rejected (not Dolby Vision RPU metadata).
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, 0, kPqColorSpace,
+       gfx::HdrMetadataType::kSmpteSt2094_10}));
+
+  // DV + SmpteSt2094_40 is always rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, 0, kPqColorSpace,
+       gfx::HdrMetadataType::kSmpteSt2094_40}));
+
+  // DV + SmpteSt2086 with non-PQ transfer is rejected by HDR metadata check.
+  const VideoColorSpace kHlgColorSpace(
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::TransferID::ARIB_STD_B67,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kDolbyVision, DOLBYVISION_PROFILE5, 0, kHlgColorSpace,
+       gfx::HdrMetadataType::kSmpteSt2086}));
+}
+
+// Gap 2: H264 + HDR metadata. H264 bypasses color space checks but
+// IsDecoderSupportedHdrMetadata still runs before codec dispatch.
+TEST(SupportedTypesTest, HdrMetadata_H264) {
+  constexpr int kLevel = 1;
+
+  // H264 + SmpteSt2086 + PQ transfer: metadata check passes, H264 returns
+  // true unconditionally.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsDecoderSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+                 VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                                 VideoColorSpace::TransferID::SMPTEST2084,
+                                 VideoColorSpace::MatrixID::BT2020_NCL,
+                                 gfx::ColorSpace::RangeID::LIMITED),
+                 gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // H264 + SmpteSt2086 + non-PQ transfer: rejected by HDR metadata check
+  // (before codec dispatch).
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::ARIB_STD_B67,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // H264 + SmpteSt2094_10: always rejected regardless of codec.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kH264, H264PROFILE_BASELINE, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2094_10}));
+}
+
+// Gap 3: UNSPECIFIED transfer + HDR metadata. IsHDR() returns false for
+// UNSPECIFIED, so SmpteSt2086 should be rejected since transfer != PQ.
+TEST(SupportedTypesTest, HdrMetadata_UnspecifiedTransfer) {
+  // UNSPECIFIED transfer with SmpteSt2086 metadata → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::UNSPECIFIED,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // UNSPECIFIED transfer without metadata → accepted (VP8 doesn't check
+  // color space).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::UNSPECIFIED,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+}
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
+TEST(SupportedTypesTest, ColorSpaceSupport_HEVC_AlwaysValidated) {
+  // HEVC should reject INVALID color space regardless of platform support
+  // configuration.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kHEVC, HEVCPROFILE_MAIN, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // HEVC accepts EBU_3213_E (has a valid gfx::ColorSpace mapping).
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kHEVC, HEVCPROFILE_MAIN, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // HEVC should reject INVALID range.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kHEVC, HEVCPROFILE_MAIN, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
+
+// Gap 5: VP8 does not call IsColorSpaceSupported — it accepts any color space.
+TEST(SupportedTypesTest, ColorSpaceSupport_VP8_NoValidation) {
+  // VP8 accepts EBU_3213_E.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::EBU_3213_E,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED)}));
+
+  // VP8 accepts all-INVALID color space components.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, 0,
+       VideoColorSpace(VideoColorSpace::PrimaryID::INVALID,
+                       VideoColorSpace::TransferID::INVALID,
+                       VideoColorSpace::MatrixID::INVALID,
+                       gfx::ColorSpace::RangeID::INVALID)}));
+}
+
+// Gap 6: SmpteSt2086 metadata with various non-PQ HDR-adjacent transfers.
+// Only PQ (SMPTEST2084) should be accepted; all others must be rejected.
+TEST(SupportedTypesTest, HdrMetadata_SmpteSt2086_RequiresPQ) {
+  constexpr int kLevel = 0;
+
+  // PQ transfer + SmpteSt2086 → accepted.
+  EXPECT_TRUE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::SMPTEST2084,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // BT2020_10 transfer + SmpteSt2086 → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::BT2020_10,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // BT2020_12 transfer + SmpteSt2086 → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::BT2020_12,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // LINEAR transfer + SmpteSt2086 → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::LINEAR,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // BT709 transfer + SmpteSt2086 → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                       VideoColorSpace::TransferID::BT709,
+                       VideoColorSpace::MatrixID::BT709,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
+
+  // HLG (ARIB_STD_B67) transfer + SmpteSt2086 → rejected.
+  EXPECT_FALSE(IsDecoderSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kLevel,
+       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                       VideoColorSpace::TransferID::ARIB_STD_B67,
+                       VideoColorSpace::MatrixID::BT2020_NCL,
+                       gfx::ColorSpace::RangeID::LIMITED),
+       gfx::HdrMetadataType::kSmpteSt2086}));
 }
 
 }  // namespace media

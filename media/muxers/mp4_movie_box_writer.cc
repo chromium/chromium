@@ -672,11 +672,11 @@ void Mp4MovieColorInformationBoxWriter::Write(BoxByteStream& writer) {
   writer.StartBox(mp4::FOURCC_COLR);
   writer.WriteU32(mp4::FOURCC_NCLX);
 
-  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.primaries));
-  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.transfer));
-  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.matrix));
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.primaries()));
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.transfer()));
+  writer.WriteU16(static_cast<uint16_t>(box_->video_color_space.matrix()));
 
-  gfx::ColorSpace::RangeID range = box_->video_color_space.range;
+  gfx::ColorSpace::RangeID range = box_->video_color_space.range();
   writer.WriteU8(range == gfx::ColorSpace::RangeID::FULL ? 0x80 : 0x00);
 
   writer.EndBox();
@@ -1012,13 +1012,13 @@ void Mp4MovieVPCodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
   constexpr uint8_t bit_depth = 8u;
   constexpr uint8_t chroma_sub_sampling = 0u;
   uint8_t video_full_range_flag =
-      video_color_space.range == gfx::ColorSpace::RangeID::FULL ? 1u : 0u;
+      video_color_space.range() == gfx::ColorSpace::RangeID::FULL ? 1u : 0u;
 
   writer.WriteU8(bit_depth << 4 | chroma_sub_sampling << 1 |
                  video_full_range_flag);
-  writer.WriteU8(static_cast<uint8_t>(video_color_space.primaries));
-  writer.WriteU8(static_cast<uint8_t>(video_color_space.transfer));
-  writer.WriteU8(static_cast<uint8_t>(video_color_space.matrix));
+  writer.WriteU8(static_cast<uint8_t>(video_color_space.primaries()));
+  writer.WriteU8(static_cast<uint8_t>(video_color_space.transfer()));
+  writer.WriteU8(static_cast<uint8_t>(video_color_space.matrix()));
   writer.WriteU16(/*codecInitializationData Size*/ 0);
 
   writer.EndBox();

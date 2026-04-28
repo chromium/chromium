@@ -129,22 +129,22 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
   layer.bVideoSignalTypePresent = true;
   layer.bColorDescriptionPresent = true;
 
-  if (itu_cs.primaries != VideoColorSpace::PrimaryID::INVALID &&
-      itu_cs.primaries != VideoColorSpace::PrimaryID::UNSPECIFIED) {
-    layer.uiColorPrimaries = static_cast<unsigned char>(itu_cs.primaries);
+  if (itu_cs.primaries() != VideoColorSpace::PrimaryID::INVALID &&
+      itu_cs.primaries() != VideoColorSpace::PrimaryID::UNSPECIFIED) {
+    layer.uiColorPrimaries = static_cast<unsigned char>(itu_cs.primaries());
   }
-  if (itu_cs.transfer != VideoColorSpace::TransferID::INVALID &&
-      itu_cs.transfer != VideoColorSpace::TransferID::UNSPECIFIED) {
+  if (itu_cs.transfer() != VideoColorSpace::TransferID::INVALID &&
+      itu_cs.transfer() != VideoColorSpace::TransferID::UNSPECIFIED) {
     layer.uiTransferCharacteristics =
-        static_cast<unsigned char>(itu_cs.transfer);
+        static_cast<unsigned char>(itu_cs.transfer());
   }
-  if (itu_cs.matrix != VideoColorSpace::MatrixID::INVALID &&
-      itu_cs.matrix != VideoColorSpace::MatrixID::UNSPECIFIED) {
-    layer.uiColorMatrix = static_cast<unsigned char>(itu_cs.matrix);
+  if (itu_cs.matrix() != VideoColorSpace::MatrixID::INVALID &&
+      itu_cs.matrix() != VideoColorSpace::MatrixID::UNSPECIFIED) {
+    layer.uiColorMatrix = static_cast<unsigned char>(itu_cs.matrix());
   }
-  if (itu_cs.range == gfx::ColorSpace::RangeID::FULL ||
-      itu_cs.range == gfx::ColorSpace::RangeID::LIMITED) {
-    layer.bFullRange = itu_cs.range == gfx::ColorSpace::RangeID::FULL;
+  if (itu_cs.range() == gfx::ColorSpace::RangeID::FULL ||
+      itu_cs.range() == gfx::ColorSpace::RangeID::LIMITED) {
+    layer.bFullRange = itu_cs.range() == gfx::ColorSpace::RangeID::FULL;
   }
 }
 

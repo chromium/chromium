@@ -797,22 +797,22 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
 
 void Av1VideoEncoder::UpdateEncoderColorSpace() {
   auto aom_cs = VideoColorSpace::FromGfxColorSpace(last_frame_color_space_);
-  if (aom_cs.primaries != VideoColorSpace::PrimaryID::INVALID) {
+  if (aom_cs.primaries() != VideoColorSpace::PrimaryID::INVALID) {
     auto status = aom_codec_control(codec_.get(), AV1E_SET_COLOR_PRIMARIES,
-                                    static_cast<int>(aom_cs.primaries));
+                                    static_cast<int>(aom_cs.primaries()));
     if (status != AOM_CODEC_OK)
       LogAomErrorMessage(codec_.get(), "Failed to set color primaries", status);
   }
-  if (aom_cs.transfer != VideoColorSpace::TransferID::INVALID) {
+  if (aom_cs.transfer() != VideoColorSpace::TransferID::INVALID) {
     auto status =
         aom_codec_control(codec_.get(), AV1E_SET_TRANSFER_CHARACTERISTICS,
-                          static_cast<int>(aom_cs.transfer));
+                          static_cast<int>(aom_cs.transfer()));
     if (status != AOM_CODEC_OK)
       LogAomErrorMessage(codec_.get(), "Failed to set color transfer", status);
   }
-  if (aom_cs.matrix != VideoColorSpace::MatrixID::INVALID) {
+  if (aom_cs.matrix() != VideoColorSpace::MatrixID::INVALID) {
     auto status = aom_codec_control(codec_.get(), AV1E_SET_MATRIX_COEFFICIENTS,
-                                    static_cast<int>(aom_cs.matrix));
+                                    static_cast<int>(aom_cs.matrix()));
     if (status != AOM_CODEC_OK)
       LogAomErrorMessage(codec_.get(), "Failed to set color matrix", status);
   }

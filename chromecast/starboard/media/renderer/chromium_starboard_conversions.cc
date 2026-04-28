@@ -155,7 +155,7 @@ std::optional<StarboardColorMetadata> ToSbColorMetadata(
     color_metadata.max_fall = 0;
   }
 
-  switch (color_space.primaries) {
+  switch (color_space.primaries()) {
     case VideoColorSpace::PrimaryID::INVALID:
     case VideoColorSpace::PrimaryID::BT709:
     case VideoColorSpace::PrimaryID::UNSPECIFIED:
@@ -168,15 +168,15 @@ std::optional<StarboardColorMetadata> ToSbColorMetadata(
     case VideoColorSpace::PrimaryID::SMPTEST428_1:
     case VideoColorSpace::PrimaryID::SMPTEST431_2:
     case VideoColorSpace::PrimaryID::SMPTEST432_1:
-      color_metadata.primaries = static_cast<int>(color_space.primaries);
+      color_metadata.primaries = static_cast<int>(color_space.primaries());
       break;
     default:
       LOG(ERROR) << "Unsupported color space primaries: "
-                 << static_cast<int>(color_space.primaries);
+                 << static_cast<int>(color_space.primaries());
       return std::nullopt;
   }
 
-  switch (color_space.transfer) {
+  switch (color_space.transfer()) {
     case VideoColorSpace::TransferID::INVALID:
     case VideoColorSpace::TransferID::BT709:
     case VideoColorSpace::TransferID::UNSPECIFIED:
@@ -194,15 +194,15 @@ std::optional<StarboardColorMetadata> ToSbColorMetadata(
     case VideoColorSpace::TransferID::BT2020_12:
     case VideoColorSpace::TransferID::SMPTEST2084:
     case VideoColorSpace::TransferID::SMPTEST428_1:
-      color_metadata.transfer = static_cast<int>(color_space.transfer);
+      color_metadata.transfer = static_cast<int>(color_space.transfer());
       break;
     default:
       LOG(ERROR) << "Unsupported color space transfer: "
-                 << static_cast<int>(color_space.transfer);
+                 << static_cast<int>(color_space.transfer());
       return std::nullopt;
   }
 
-  switch (color_space.matrix) {
+  switch (color_space.matrix()) {
     case VideoColorSpace::MatrixID::RGB:
     case VideoColorSpace::MatrixID::BT709:
     case VideoColorSpace::MatrixID::UNSPECIFIED:
@@ -215,28 +215,28 @@ std::optional<StarboardColorMetadata> ToSbColorMetadata(
     case VideoColorSpace::MatrixID::BT2020_CL:
     case VideoColorSpace::MatrixID::YDZDX:
     case VideoColorSpace::MatrixID::INVALID:
-      color_metadata.matrix = static_cast<int>(color_space.matrix);
+      color_metadata.matrix = static_cast<int>(color_space.matrix());
       break;
     default:
       LOG(ERROR) << "Unsupported color space matrix: "
-                 << static_cast<int>(color_space.matrix);
+                 << static_cast<int>(color_space.matrix());
       return std::nullopt;
   }
 
-  switch (color_space.range) {
+  switch (color_space.range()) {
     case gfx::ColorSpace::RangeID::INVALID:
     case gfx::ColorSpace::RangeID::LIMITED:
     case gfx::ColorSpace::RangeID::FULL:
     case gfx::ColorSpace::RangeID::DERIVED:
-      color_metadata.range = static_cast<int>(color_space.range);
+      color_metadata.range = static_cast<int>(color_space.range());
       break;
     default:
       LOG(ERROR) << "Unsupported color space range: "
-                 << static_cast<int>(color_space.range);
+                 << static_cast<int>(color_space.range());
       return std::nullopt;
   }
 
-  // color_space.primaries (::media::VideoColorSpace::PrimaryID)
+  // color_space.primaries() (::media::VideoColorSpace::PrimaryID)
   // does not support any value equivalent to Starboard's
   // kSbMediaPrimaryIdCustom. Thus, we don't need to populate
   // custom_primary_matrix. Just zero it, in case something reads from it.

@@ -297,10 +297,10 @@ template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
     base::DictValue result;
-    FIELD_SERIALIZE("primaries", value.primaries);
-    FIELD_SERIALIZE("transfer", value.transfer);
-    FIELD_SERIALIZE("matrix", value.matrix);
-    FIELD_SERIALIZE("range", value.range);
+    FIELD_SERIALIZE("primaries", value.primaries());
+    FIELD_SERIALIZE("transfer", value.transfer());
+    FIELD_SERIALIZE("matrix", value.matrix());
+    FIELD_SERIALIZE("range", value.range());
     return base::Value(std::move(result));
   }
 };

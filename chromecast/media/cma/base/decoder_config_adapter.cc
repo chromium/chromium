@@ -344,11 +344,12 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
       ToEncryptionScheme(config.encryption_scheme());
 
   video_config.primaries =
-      static_cast<PrimaryID>(config.color_space_info().primaries);
+      static_cast<PrimaryID>(config.color_space_info().primaries());
   video_config.transfer =
-      static_cast<TransferID>(config.color_space_info().transfer);
-  video_config.matrix = static_cast<MatrixID>(config.color_space_info().matrix);
-  video_config.range = static_cast<RangeID>(config.color_space_info().range);
+      static_cast<TransferID>(config.color_space_info().transfer());
+  video_config.matrix =
+      static_cast<MatrixID>(config.color_space_info().matrix());
+  video_config.range = static_cast<RangeID>(config.color_space_info().range());
 
   std::optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
   if (hdr_metadata) {
