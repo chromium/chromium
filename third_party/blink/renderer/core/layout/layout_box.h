@@ -299,19 +299,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // The enclosing rectangle of the background with given opacity requirement.
   PhysicalRect PhysicalBackgroundRect(BackgroundRectType) const;
 
-  // This returns the content area of the box (excluding padding and border).
-  // The only difference with contentBoxRect is that ComputedCSSContentBoxRect
-  // does include the intrinsic padding in the content box as this is what some
-  // callers expect (like getComputedStyle).
-  PhysicalRect ComputedCSSContentBoxRect() const {
-    NOT_DESTROYED();
-    return PhysicalRect(
-        BorderLeft() + ComputedCSSPaddingLeft(),
-        BorderTop() + ComputedCSSPaddingTop(),
-        ClientWidth() - ComputedCSSPaddingLeft() - ComputedCSSPaddingRight(),
-        ClientHeight() - ComputedCSSPaddingTop() - ComputedCSSPaddingBottom());
-  }
-
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,

@@ -2334,9 +2334,18 @@ std::optional<gfx::SizeF> ComputedStyleUtils::UsedBoxSize(
     return size;
   }
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
-    return gfx::SizeF(box->StyleRef().BoxSizing() == EBoxSizing::kBorderBox
-                          ? box->PhysicalBorderBoxRect().size
-                          : box->ComputedCSSContentBoxRect().size);
+    if (box->StyleRef().BoxSizing() == EBoxSizing::kBorderBox) {
+      return gfx::SizeF(box->PhysicalBorderBoxRect().size);
+    }
+    // For "content-box", use the "computed" padding, instead of the "used".
+    // This is important for a <table> with collapsed borders to round-trip.
+    //
+    // FIXME: When layout scrollbars are present this doesn't round-trip, and
+    // differs from Firefox.
+    const PhysicalSize padding_box_size = box->PhysicalPaddingBoxRect().size;
+    const PhysicalBoxStrut computed_padding = box->ComputedPaddingOutsets();
+    return gfx::SizeF(padding_box_size.width - computed_padding.HorizontalSum(),
+                      padding_box_size.height - computed_padding.VerticalSum());
   }
   return std::nullopt;
 }

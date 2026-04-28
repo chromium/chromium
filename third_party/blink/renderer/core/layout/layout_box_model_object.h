@@ -198,6 +198,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return ComputedCSSPadding(StyleRef().PaddingRight());
   }
 
+  PhysicalBoxStrut ComputedPaddingOutsets() const {
+    NOT_DESTROYED();
+    return {ComputedCSSPaddingTop(), ComputedCSSPaddingRight(),
+            ComputedCSSPaddingBottom(), ComputedCSSPaddingLeft()};
+  }
+
   // These functions are used during layout.
   // - Table override them to exclude padding with collapsing borders.
   virtual LayoutUnit PaddingTop() const {
