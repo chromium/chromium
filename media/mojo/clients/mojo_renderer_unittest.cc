@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/clients/mojo_renderer.h"
+
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -21,7 +24,6 @@
 #include "media/base/test_helpers.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/default_cdm_factory.h"
-#include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -33,6 +35,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -232,6 +235,34 @@ TEST_F(MojoRendererTest, Initialize_Success) {
   Initialize();
 }
 
+// Regression test for crbug.com/503617302.
+TEST_F(MojoRendererTest, Initialize_Twice) {
+  // Create a service directly to bypass client-side checks in MojoRenderer.
+  auto mock_renderer = std::make_unique<StrictMock<MockRenderer>>();
+  mojo::Remote<mojom::Renderer> remote;
+  auto receiver_ref = MojoRendererService::Create(
+      &mojo_cdm_service_context_, std::move(mock_renderer),
+      remote.BindNewPipeAndPassReceiver());
+
+  mojo::PendingAssociatedRemote<mojom::RendererClient> client_remote_1;
+  auto client_receiver_1 = client_remote_1.InitWithNewEndpointAndPassReceiver();
+  std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams;
+  mojo::PendingRemote<mojom::DemuxerStream> stream_remote;
+  auto stream_receiver = stream_remote.InitWithNewPipeAndPassReceiver();
+  streams.push_back(std::move(stream_remote));
+  remote->Initialize(std::move(client_remote_1), std::move(streams),
+                     base::DoNothing());
+
+  mojo::PendingAssociatedRemote<mojom::RendererClient> client_remote_2;
+  auto client_receiver_2 = client_remote_2.InitWithNewEndpointAndPassReceiver();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote->Initialize(std::move(client_remote_2), std::nullopt,
+                     base::DoNothing());
+
+  EXPECT_EQ("MojoRendererService is already initialized",
+            bad_message_observer.WaitForBadMessage());
+}
 TEST_F(MojoRendererTest, Initialize_Failure) {
   CreateAudioStream();
   // Mojo Renderer only expects a boolean result, which will be translated

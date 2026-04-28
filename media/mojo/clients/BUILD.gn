@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//gpu/ipc/common:test_support",
     "//media:test_support",
     "//media/mojo:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
   ]
