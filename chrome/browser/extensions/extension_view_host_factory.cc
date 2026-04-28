@@ -11,9 +11,9 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
@@ -128,7 +128,9 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
 
  private:
   Browser* FindBrowser() const {
-    return chrome::FindBrowserWithTab(web_contents_);
+    auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+        web_contents_);
+    return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
   }
 
   raw_ptr<content::WebContents> web_contents_;

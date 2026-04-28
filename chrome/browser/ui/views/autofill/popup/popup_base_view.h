@@ -25,7 +25,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace autofill {
 
@@ -61,7 +61,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   void NotifyAXSelection(views::View& view) override;
 
   // Returns the browser in which this popup is shown.
-  Browser* GetBrowser();
+  BrowserWindowInterface* GetBrowser();
 
  protected:
   PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,

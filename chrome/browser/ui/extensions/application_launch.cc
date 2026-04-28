@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/extensions/web_file_handlers/multiclient_util.h"
@@ -585,7 +586,8 @@ void LaunchAppWithCallback(
         apps::OpenExtensionApplicationTab(profile, app_id);
     if (app_tab) {
       container = apps::LaunchContainer::kLaunchContainerTab;
-      app_browser = chrome::FindBrowserWithTab(app_tab);
+      app_browser =
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(app_tab);
     } else {
       // Open an empty browser window as the app_id is invalid.
       app_browser = apps::CreateBrowserWithNewTabPage(profile);

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -148,11 +149,13 @@ TabStripModel*
 AutoPictureInPictureTabStripObserverHelper::GetCurrentTabStripModel() const {
   // If this WebContents isn't in a normal browser window, then auto
   // picture-in-picture is not supported.
-  auto* browser = chrome::FindBrowserWithTab(GetObservedWebContents());
-  if (!browser || !browser->is_type_normal()) {
+  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      GetObservedWebContents());
+  if (!browser ||
+      browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
     return nullptr;
   }
-  return browser->tab_strip_model();
+  return browser->GetTabStripModel();
 }
 
 content::WebContents*

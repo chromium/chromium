@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -5051,7 +5052,9 @@ void RenderViewContextMenu::OpenTextQueryInLens() {
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {
-  return chrome::FindBrowserWithTab(embedder_web_contents_);
+  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      embedder_web_contents_);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 ToastController* RenderViewContextMenu::GetToastController() const {

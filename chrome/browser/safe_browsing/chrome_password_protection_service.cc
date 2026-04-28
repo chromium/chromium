@@ -109,9 +109,9 @@
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
 
@@ -1158,7 +1158,9 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.
-    chrome::ShowPasswordCheck(chrome::FindBrowserWithTab(web_contents));
+    chrome::ShowPasswordCheck(
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents));
     password_manager::LogPasswordCheckReferrer(
         password_manager::PasswordCheckReferrer::kPhishGuardDialog);
 #endif

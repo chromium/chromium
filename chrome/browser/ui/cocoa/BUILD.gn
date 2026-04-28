@@ -154,6 +154,7 @@ source_set("cocoa") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/javascript_dialogs",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",

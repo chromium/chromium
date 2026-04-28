@@ -22,9 +22,10 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
@@ -110,7 +111,9 @@ AppHomePageHandler::~AppHomePageHandler() {
 }
 
 Browser* AppHomePageHandler::GetCurrentBrowser() {
-  return chrome::FindBrowserWithTab(web_ui_->GetWebContents());
+  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_ui_->GetWebContents());
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {

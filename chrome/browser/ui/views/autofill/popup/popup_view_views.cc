@@ -936,7 +936,7 @@ void PopupViewViews::SetSelectedCell(
 }
 
 void PopupViewViews::ShowIPHFeaturePromos() {
-  Browser* browser = GetBrowser();
+  BrowserWindowInterface* browser = GetBrowser();
   if (!browser) {
     return;
   }
@@ -1070,8 +1070,8 @@ void PopupViewViews::InitViews() {
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
                        .Build());
 
-  Browser* browser = GetBrowser();
-  if (Profile* profile = browser ? browser->profile() : nullptr) {
+  BrowserWindowInterface* browser = GetBrowser();
+  if (Profile* profile = browser ? browser->GetProfile() : nullptr) {
     auto* favicon_service =
         LargeIconServiceFactory::GetForBrowserContext(profile);
     auto* image_fetcher =
