@@ -35,6 +35,7 @@
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -698,14 +699,15 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
   info_list.clear();
   info_list.push_back(disp_1_info);
   display_manager()->OnNativeDisplaysChanged(info_list);
-  // We need to spin this run loop to wait for a new mouse event to be
-  // dispatched so that the viewport widget is re-created.
-  base::RunLoop().RunUntilIdle();
-  root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(1u, root_windows.size());
-  viewport_widget = controller()->GetViewportWidgetForTesting();
-  ASSERT_NE(nullptr, viewport_widget);
-  EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    root_windows = Shell::GetAllRootWindows();
+    if (root_windows.size() != 1u) {
+      return false;
+    }
+    viewport_widget = controller()->GetViewportWidgetForTesting();
+    return viewport_widget &&
+           viewport_widget->GetNativeView()->GetRootWindow() == root_windows[0];
+  }));
   EXPECT_EQ(gfx::Rect(0, 0, 600, viewport_1_height),
             viewport_widget->GetWindowBoundsInScreen());
 }
