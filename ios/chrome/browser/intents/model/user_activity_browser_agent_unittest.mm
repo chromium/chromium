@@ -358,21 +358,10 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityShortcutActions) {
   }
   // Setup.
   NSArray* parametersToTest = @[
-    @[
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionNewTab), @(NO_ACTION)
-    ],
-    @[
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionNewIncognitoTab),
-      @(NO_ACTION)
-    ],
-    @[
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionVoiceSearch),
-      @(START_VOICE_SEARCH)
-    ],
-    @[
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionQRScanner),
-      @(START_QR_CODE_SCANNER)
-    ]
+    @[ spotlight::kSpotlightActionNewTab, @(NO_ACTION) ],
+    @[ spotlight::kSpotlightActionNewIncognitoTab, @(NO_ACTION) ],
+    @[ spotlight::kSpotlightActionVoiceSearch, @(START_VOICE_SEARCH) ],
+    @[ spotlight::kSpotlightActionQRScanner, @(START_QR_CODE_SCANNER) ]
   ];
 
   for (id parameters in parametersToTest) {

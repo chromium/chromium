@@ -94,6 +94,56 @@ enum class UserActivityType {
 };
 // LINT.ThenChange(ios/chrome/browser/intents/model/user_activity_compatibility_util.mm)
 
+// Possible Spotlight action types.
+enum class SpotlightActionType {
+  kUnknown,
+  kNewTab,
+  kNewIncognitoTab,
+  kVoiceSearch,
+  kQRScanner,
+  kSetDefaultBrowser,
+  kLens,
+};
+
+// Returns the Spotlight action type of `item_id`.
+SpotlightActionType SpotlightActionTypeOf(NSString* item_id) {
+  if (!item_id) {
+    return SpotlightActionType::kUnknown;
+  }
+
+  NSString* domain_prefix =
+      [NSString stringWithFormat:@"%@.", spotlight::StringFromSpotlightDomain(
+                                             spotlight::DOMAIN_ACTIONS)];
+  if (![item_id hasPrefix:domain_prefix]) {
+    return SpotlightActionType::kUnknown;
+  }
+
+  NSString* action_string = [item_id substringFromIndex:[domain_prefix length]];
+
+  struct ActionMapping {
+    NSString* action_string;
+    SpotlightActionType action_type;
+  };
+  const ActionMapping kActionMap[] = {
+      {spotlight::kSpotlightActionNewTab, SpotlightActionType::kNewTab},
+      {spotlight::kSpotlightActionNewIncognitoTab,
+       SpotlightActionType::kNewIncognitoTab},
+      {spotlight::kSpotlightActionVoiceSearch,
+       SpotlightActionType::kVoiceSearch},
+      {spotlight::kSpotlightActionQRScanner, SpotlightActionType::kQRScanner},
+      {spotlight::kSpotlightActionSetDefaultBrowser,
+       SpotlightActionType::kSetDefaultBrowser},
+      {spotlight::kSpotlightActionLens, SpotlightActionType::kLens},
+  };
+
+  for (const auto& item : kActionMap) {
+    if ([action_string isEqualToString:item.action_string]) {
+      return item.action_type;
+    }
+  }
+  return SpotlightActionType::kUnknown;
+}
+
 // Returns the Browser for the given `target_mode` from `scene_state`.
 Browser* GetBrowserForTargetMode(SceneState* scene_state,
                                  ApplicationModeForTabOpening target_mode) {
@@ -132,6 +182,7 @@ void RecordMetricsForSiriShortcut(IntentType intent_type) {
 
 // Records metrics for handle a user activity of `user_activity_type`.
 void RecordMetrics(UserActivityType user_activity_type,
+                   SpotlightActionType spotlight_action_type,
                    NSUserActivity* user_activity) {
   switch (user_activity_type) {
     case UserActivityType::kHandoff:
@@ -146,53 +197,45 @@ void RecordMetrics(UserActivityType user_activity_type,
       base::UmaHistogramEnumeration(kAppLaunchSource,
                                     AppLaunchSource::SPOTLIGHT_CHROME);
       if (domain == spotlight::DOMAIN_ACTIONS) {
-        NSString* action =
-            [item_id substringFromIndex:[spotlight::StringFromSpotlightDomain(
-                                            spotlight::DOMAIN_ACTIONS) length] +
-                                        1];
-        if ([action isEqualToString:
-                        base::SysUTF8ToNSString(
-                            spotlight::kSpotlightActionNewIncognitoTab)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
-        } else if ([action isEqualToString:
-                               base::SysUTF8ToNSString(
-                                   spotlight::kSpotlightActionVoiceSearch)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
-        } else if ([action isEqualToString:
-                               base::SysUTF8ToNSString(
-                                   spotlight::kSpotlightActionQRScanner)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
-        } else if ([action isEqualToString:
-                               base::SysUTF8ToNSString(
-                                   spotlight::kSpotlightActionNewTab)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
-        } else if ([action
-                       isEqualToString:
-                           base::SysUTF8ToNSString(
-                               spotlight::kSpotlightActionSetDefaultBrowser)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
-        } else if ([action
-                       isEqualToString:base::SysUTF8ToNSString(
-                                           spotlight::kSpotlightActionLens)]) {
-          base::UmaHistogramEnumeration(
-              spotlight::kSpotlightActionsHistogram,
-              spotlight::SPOTLIGHT_ACTION_LENS_PRESSED,
-              spotlight::SPOTLIGHT_ACTION_COUNT);
+        switch (spotlight_action_type) {
+          case SpotlightActionType::kNewIncognitoTab:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kVoiceSearch:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kQRScanner:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kNewTab:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kSetDefaultBrowser:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kLens:
+            base::UmaHistogramEnumeration(
+                spotlight::kSpotlightActionsHistogram,
+                spotlight::SPOTLIGHT_ACTION_LENS_PRESSED,
+                spotlight::SPOTLIGHT_ACTION_COUNT);
+            break;
+          case SpotlightActionType::kUnknown:
+            break;
         }
       }
       break;
@@ -330,7 +373,6 @@ UserActivityType UserActivityTypeOf(NSUserActivity* user_activity) {
       return item.activity_type;
     }
   }
-
   return UserActivityType::kInvalid;
 }
 
@@ -560,6 +602,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
 @implementation TaskRequestForUserActivity {
   NSUserActivity* _userActivity;
   UserActivityType _userActivityType;
+  SpotlightActionType _spotlightActionType;
   ApplicationModeForTabOpening _targetMode;
 }
 
@@ -569,7 +612,13 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _userActivity = userActivity;
     _userActivityType = UserActivityTypeOf(userActivity);
-    RecordMetrics(_userActivityType, userActivity);
+    _spotlightActionType = SpotlightActionType::kUnknown;
+    if (_userActivityType == UserActivityType::kSpotlight) {
+      NSString* item_id =
+          userActivity.userInfo[CSSearchableItemActivityIdentifier];
+      _spotlightActionType = SpotlightActionTypeOf(item_id);
+    }
+    RecordMetrics(_userActivityType, _spotlightActionType, userActivity);
   }
   return self;
 }
@@ -605,7 +654,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kSpotlight:
-      // TODO(crbug.com/492115056): Add implementation.
+      [self handleSpotlightUserActivityWithSceneState:sceneState];
       break;
     case UserActivityType::kSearchInChrome: {
       URLAndCallback urlAndCallback = GetURLAndCallbackFromSearchInChromeIntent(
@@ -824,6 +873,45 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   // when there is an enterprise policy (incognito forced or incognito disabled)
   // a toast is not displayed, this is different compared to old implementation.
   // Confirm the correct behavior and update code accordingly.
+}
+
+- (void)handleSpotlightUserActivityWithSceneState:(SceneState*)sceneState {
+  NSString* itemId =
+      [_userActivity.userInfo objectForKey:CSSearchableItemActivityIdentifier];
+  spotlight::Domain domain = spotlight::SpotlightDomainFromString(itemId);
+
+  if (!itemId || domain == spotlight::DOMAIN_UNKNOWN) {
+    return;
+  }
+
+  if (domain == spotlight::DOMAIN_ACTIONS) {
+    switch (_spotlightActionType) {
+      case SpotlightActionType::kNewIncognitoTab:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kVoiceSearch:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kQRScanner:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kNewTab:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kSetDefaultBrowser:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kLens:
+        // TODO(crbug.com/492115056): Add implementation.
+        break;
+      case SpotlightActionType::kUnknown:
+        break;
+    }
+  } else {
+    // Handle the case where the Spotlight search result has been indexed with a
+    // URL.
+    // TODO(crbug.com/492115056): Add implementation.
+  }
 }
 
 @end

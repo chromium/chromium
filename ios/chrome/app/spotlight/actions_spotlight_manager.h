@@ -12,12 +12,12 @@
 namespace spotlight {
 
 // Keys for Spotlight actions.
-extern const char kSpotlightActionNewTab[];
-extern const char kSpotlightActionNewIncognitoTab[];
-extern const char kSpotlightActionVoiceSearch[];
-extern const char kSpotlightActionQRScanner[];
-extern const char kSpotlightActionSetDefaultBrowser[];
-extern const char kSpotlightActionLens[];
+extern NSString* const kSpotlightActionNewTab;
+extern NSString* const kSpotlightActionNewIncognitoTab;
+extern NSString* const kSpotlightActionVoiceSearch;
+extern NSString* const kSpotlightActionQRScanner;
+extern NSString* const kSpotlightActionSetDefaultBrowser;
+extern NSString* const kSpotlightActionLens;
 
 // Enum used to record the actions performed by the user.
 enum {

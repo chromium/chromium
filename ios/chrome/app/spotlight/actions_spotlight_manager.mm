@@ -39,12 +39,12 @@ NSString* SpotlightActionFromString(NSString* query) {
 namespace spotlight {
 
 // Constants for Spotlight action links.
-const char kSpotlightActionNewTab[] = "OpenNewTab";
-const char kSpotlightActionNewIncognitoTab[] = "OpenIncognitoTab";
-const char kSpotlightActionVoiceSearch[] = "OpenVoiceSearch";
-const char kSpotlightActionQRScanner[] = "OpenQRScanner";
-const char kSpotlightActionSetDefaultBrowser[] = "SetDefaultBrowser";
-const char kSpotlightActionLens[] = "OpenLensFromSpotlight";
+NSString* const kSpotlightActionNewTab = @"OpenNewTab";
+NSString* const kSpotlightActionNewIncognitoTab = @"OpenIncognitoTab";
+NSString* const kSpotlightActionVoiceSearch = @"OpenVoiceSearch";
+NSString* const kSpotlightActionQRScanner = @"OpenQRScanner";
+NSString* const kSpotlightActionSetDefaultBrowser = @"SetDefaultBrowser";
+NSString* const kSpotlightActionLens = @"OpenLensFromSpotlight";
 
 // The histogram used to record user actions performed on the spotlight actions.
 const char kSpotlightActionsHistogram[] = "IOS.Spotlight.Action";
@@ -58,38 +58,33 @@ BOOL SetStartupParametersForSpotlightAction(
     AppStartupParameters* startupParams) {
   DCHECK(startupParams);
   NSString* action = SpotlightActionFromString(query);
-  if ([action isEqualToString:base::SysUTF8ToNSString(
-                                  kSpotlightActionNewIncognitoTab)]) {
+  if ([action isEqualToString:kSpotlightActionNewIncognitoTab]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
     [startupParams setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
                  forceApplicationMode:NO];
-  } else if ([action isEqualToString:base::SysUTF8ToNSString(
-                                         kSpotlightActionVoiceSearch)]) {
+  } else if ([action isEqualToString:kSpotlightActionVoiceSearch]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
     [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
                  forceApplicationMode:NO];
     [startupParams setPostOpeningAction:START_VOICE_SEARCH];
-  } else if ([action isEqualToString:base::SysUTF8ToNSString(
-                                         kSpotlightActionQRScanner)]) {
+  } else if ([action isEqualToString:kSpotlightActionQRScanner]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
     [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
                  forceApplicationMode:NO];
     [startupParams setPostOpeningAction:START_QR_CODE_SCANNER];
-  } else if ([action isEqualToString:base::SysUTF8ToNSString(
-                                         kSpotlightActionNewTab)]) {
+  } else if ([action isEqualToString:kSpotlightActionNewTab]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
     [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
                  forceApplicationMode:NO];
-  } else if ([action isEqualToString:base::SysUTF8ToNSString(
-                                         kSpotlightActionSetDefaultBrowser)]) {
+  } else if ([action isEqualToString:kSpotlightActionSetDefaultBrowser]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
@@ -98,8 +93,7 @@ BOOL SetStartupParametersForSpotlightAction(
                               URLWithString:UIApplicationOpenSettingsURLString]
                   options:{}
         completionHandler:nil];
-  } else if ([action isEqualToString:base::SysUTF8ToNSString(
-                                         kSpotlightActionLens)]) {
+  } else if ([action isEqualToString:kSpotlightActionLens]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_LENS_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
@@ -184,28 +178,23 @@ BOOL SetStartupParametersForSpotlightAction(
 - (void)reindexActionsToSpotlight:(BOOL)isGoogleDefaultSearchEngine {
   NSString* voiceSearchTitle =
       l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE);
-  NSString* voiceSearchAction =
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionVoiceSearch);
+  NSString* voiceSearchAction = spotlight::kSpotlightActionVoiceSearch;
 
   NSString* newTabTitle =
       l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE);
-  NSString* newTabAction =
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionNewTab);
+  NSString* newTabAction = spotlight::kSpotlightActionNewTab;
 
   NSString* incognitoTitle = l10n_util::GetNSString(
       IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE);
-  NSString* incognitoAction =
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionNewIncognitoTab);
+  NSString* incognitoAction = spotlight::kSpotlightActionNewIncognitoTab;
 
   NSString* qrScannerTitle =
       l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE);
-  NSString* qrScannerAction =
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionQRScanner);
+  NSString* qrScannerAction = spotlight::kSpotlightActionQRScanner;
 
   NSString* defaultBrowserTitle =
       l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER);
-  NSString* defaultBrowserAction =
-      base::SysUTF8ToNSString(spotlight::kSpotlightActionSetDefaultBrowser);
+  NSString* defaultBrowserAction = spotlight::kSpotlightActionSetDefaultBrowser;
 
   NSMutableArray<CSSearchableItem*>* spotlightItems = [NSMutableArray array];
 
@@ -223,8 +212,7 @@ BOOL SetStartupParametersForSpotlightAction(
   if (useLens) {
     NSString* lensTitle =
         l10n_util::GetNSString(IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE);
-    NSString* lensAction =
-        base::SysUTF8ToNSString(spotlight::kSpotlightActionLens);
+    NSString* lensAction = spotlight::kSpotlightActionLens;
     [spotlightItems addObject:[self itemForAction:lensAction title:lensTitle]];
   }
 
