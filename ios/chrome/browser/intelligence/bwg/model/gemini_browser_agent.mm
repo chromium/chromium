@@ -296,7 +296,11 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   }
 
   if (IsFullscreenRefactoringEnabled()) {
-    FullscreenBrowserAgent::FromBrowser(browser_)->RemoveObserver(this);
+    FullscreenBrowserAgent* fullscreenBrowserAgent =
+        FullscreenBrowserAgent::FromBrowser(browser_);
+    if (fullscreenBrowserAgent) {
+      fullscreenBrowserAgent->RemoveObserver(this);
+    }
   }
 
   if (IsGeminiCopresenceWithFullscreenDisablerEnabled()) {
