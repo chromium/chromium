@@ -193,3 +193,22 @@ android_library("javatests") {
     "//url:url_java",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "tab_bottom_sheet_browsertest.cc",
+    "tab_bottom_sheet_test_feature.cc",
+    "tab_bottom_sheet_test_feature.h",
+  ]
+  deps = [
+    ":android",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_list",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
