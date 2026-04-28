@@ -115,4 +115,12 @@ bool IsCobaltDeveloperModeEnabled() {
 BASE_FEATURE(kCertVerificationWorkaroundKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSScriptMessageConversionDurationLogging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsScriptMessageConversionDurationLoggingEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIOSScriptMessageConversionDurationLogging);
+}
+
 }  // namespace web::features

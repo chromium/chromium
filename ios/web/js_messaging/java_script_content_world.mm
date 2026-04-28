@@ -8,8 +8,11 @@
 
 #import "base/check_op.h"
 #import "base/debug/crash_logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "ios/web/common/features.h"
 #import "ios/web/javascript_flags.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
@@ -82,9 +85,22 @@ std::optional<ScriptMessage> GetMessage(WKScriptMessage* script_message,
     url = net::GURLWithNSURL(ns_url);
   }
 
-  return ScriptMessage(web::ValueResultFromWKResult(script_message.body),
-                       web_controller.isUserInteracting,
-                       script_message.frameInfo.mainFrame, url);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  std::optional<ScriptMessage> message =
+      ScriptMessage(web::ValueResultFromWKResult(script_message.body),
+                    web_controller.isUserInteracting,
+                    script_message.frameInfo.mainFrame, url);
+  if (base::FeatureList::IsEnabled(
+          web::features::kIOSScriptMessageConversionDurationLogging) &&
+      base::TimeTicks::IsHighResolution()) {
+    const base::TimeTicks end_time = base::TimeTicks::Now();
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "IOS.Web.JSMessaging.ScriptMessageConversion.Duration",
+        end_time - start_time, /*min=*/base::Microseconds(1),
+        /*max=*/base::Seconds(5), /*number of buckets=*/100);
+  }
+
+  return message;
 }
 
 }  // namespace

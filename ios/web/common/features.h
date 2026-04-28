@@ -144,6 +144,10 @@ bool IsCobaltDeveloperModeEnabled();
 // workaround is working as intended.
 BASE_DECLARE_FEATURE(kCertVerificationWorkaroundKillSwitch);
 
+// Feature flag to enable logging the time it takes to convert a WKScriptMessage
+// object into a web::ScriptMessage object.
+BASE_DECLARE_FEATURE(kIOSScriptMessageConversionDurationLogging);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
