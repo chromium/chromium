@@ -1919,6 +1919,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "contextual-tasks-back-button-expands-side-panel",
+    "owners": ["nguyenbryan@chromium.org", "chrome-contextual-tasks-eng@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-context",
     "owners": ["sophiechang@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 150

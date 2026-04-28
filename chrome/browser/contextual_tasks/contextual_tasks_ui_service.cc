@@ -929,13 +929,66 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
     url_params.url = url_params.url.ReplaceComponents(replacements);
   }
-
-  // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksUrl(url_params.url)) {
     if (is_from_embedded_page) {
       DCHECK(false) << "Unexpected URL from embedded page " << url_params.url;
       return true;
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    // If the navigation is a back/forward navigation, the resulting URL is a
+    // contextual tasks URL, and the panel is open, this indicates that the user
+    // is navigating back to the full tab contextual tasks page. Instead of
+    // allowing the navigation, move contextual tasks from the panel to a full
+    // tab and close the current tab.
+    bool is_forward_back_navigation =
+        url_params.transition & ui::PAGE_TRANSITION_FORWARD_BACK;
+    if (base::FeatureList::IsEnabled(
+            kContextualTasksBackButtonExpandsSidePanel) &&
+        !url_params.is_renderer_initiated && is_forward_back_navigation &&
+        tab) {
+      auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+          tab->GetBrowserWindowInterface());
+      if (controller->IsPanelOpenForContextualTask()) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::WeakPtr<tabs::TabInterface> weak_tab) {
+                  if (!weak_tab) {
+                    return;
+                  }
+                  auto* browser = weak_tab->GetBrowserWindowInterface();
+                  if (!browser) {
+                    return;
+                  }
+                  auto* controller =
+                      contextual_tasks::ContextualTasksPanelController::From(
+                          browser);
+                  if (controller &&
+                      controller->IsPanelOpenForContextualTask()) {
+                    controller->MoveTaskUiToNewTab();
+                    // TODO(crbug.com/497899043): Restore history stack.
+                    auto* tab_strip_model = browser->GetTabStripModel();
+                    if (tab_strip_model) {
+                      int index =
+                          tab_strip_model->GetIndexOfTab(weak_tab.get());
+                      if (index != TabStripModel::kNoTab) {
+                        tab_strip_model->CloseWebContentsAt(
+                            index, TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL);
+                      }
+                    }
+                  }
+                },
+                tab->GetWeakPtr()));
+        OMNIBOX_LOG("nav_trace")
+            << "ContextualTasks navigation trace: HandleNavigationImpl "
+               "closing tab and expanding side panel";
+        return true;
+      }
+    }
+#endif
+
+    // Else, allow any navigation to the contextual tasks host.
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: HandleNavigationImpl "
            "returning early, navigating to contextual tasks host";

@@ -10,11 +10,16 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -42,7 +47,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
 using testing::_;
+using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -55,6 +65,17 @@ class WebContents;
 namespace contextual_tasks {
 
 namespace {
+
+class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
+ public:
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RefreshContext, (), (override));
+  MOCK_METHOD(void,
+              SetContextualTasksPanelController,
+              (ContextualTasksPanelController*),
+              (override));
+};
 
 constexpr char kTestUrl[] = "https://example.com";
 constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
@@ -1521,6 +1542,79 @@ TEST_F(ContextualTasksUiServiceTest,
       web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Intercept navigation to contextual tasks URL on back/forward navigation
+// if kContextualTasksBackButtonExpandsSidePanel is enabled.
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_BackButtonExpandsSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kContextualTasksBackButtonExpandsSidePanel);
+
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init;
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ON_CALL(testing::Const(mock_browser_window), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  auto tab_list_registration =
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+          unowned_user_data_host, mock_tab_list);
+
+  TestTabStripModelDelegate delegate;
+  delegate.SetBrowserWindowInterface(&mock_browser_window);
+  TabStripModel tab_strip_model(&delegate, profile_.get());
+  ON_CALL(mock_browser_window, GetTabStripModel())
+      .WillByDefault(Return(&tab_strip_model));
+
+  NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider;
+  auto mock_panel_host =
+      std::make_unique<NiceMock<MockContextualTasksPanelHost>>();
+  ON_CALL(*mock_panel_host, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  ON_CALL(*mock_panel_host, IsPanelInitialized()).WillByDefault(Return(true));
+
+  auto coordinator = std::make_unique<ContextualTasksSidePanelCoordinator>(
+      &mock_browser_window, std::move(mock_panel_host),
+      &mock_active_task_context_provider, nullptr);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+
+  // The WebContents must be added to the tab strip model to get a valid index.
+  tab_strip_model.AppendWebContents(std::move(web_contents), true);
+  EXPECT_EQ(tab_strip_model.count(), 1);
+  tabs::TabInterface* tab = tab_strip_model.GetTabAtIndex(0);
+
+  GURL navigated_url("chrome://contextual-tasks");
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(
+          navigated_url, false,
+          ui::PageTransitionFromInt(
+              ui::PageTransition::PAGE_TRANSITION_LINK |
+              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
+      tab->GetContents(), tab,
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that the tab was closed as part of expanding the side panel.
+  EXPECT_EQ(tab_strip_model.count(), 0);
+}
+#endif
 
 class MockCookieSynchronizer : public ContextualTasksCookieSynchronizer {
  public:
