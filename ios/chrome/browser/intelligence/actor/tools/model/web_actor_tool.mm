@@ -6,7 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -17,8 +17,8 @@ void WebActorTool::ResolveTargetFrame(
     const optimization_guide::proto::ActionTarget& target,
     ActionTargetJavaScriptFeature::TargetFrameCallback callback) {
   if (!web_state || !web_frame) {
-    std::move(callback).Run(base::unexpected(
-        ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
+    std::move(callback).Run(base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies)));
     return;
   }
 

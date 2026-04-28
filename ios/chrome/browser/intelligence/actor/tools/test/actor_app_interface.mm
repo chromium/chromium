@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -33,7 +33,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   if (!profile) {
     completion([NSError
         errorWithDomain:kActorAppInterfaceErrorDomain
-                   code:ActorToolErrorNoProfile
+                   code:ActorToolExecutionResultNoProfile
                userInfo:@{NSLocalizedDescriptionKey : @"No profile"}]);
     return;
   }
@@ -43,7 +43,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   if (!service) {
     completion([NSError
         errorWithDomain:kActorAppInterfaceErrorDomain
-                   code:ActorToolErrorNoService
+                   code:ActorToolExecutionResultNoService
                userInfo:@{NSLocalizedDescriptionKey : @"No service"}]);
     return;
   }
@@ -52,7 +52,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   if (!action.ParseFromArray([actionProto bytes], [actionProto length])) {
     completion([NSError
         errorWithDomain:kActorAppInterfaceErrorDomain
-                   code:ActorToolErrorInvalidProto
+                   code:ActorToolExecutionResultInvalidProto
                userInfo:@{NSLocalizedDescriptionKey : @"Invalid proto"}]);
     return;
   }
@@ -67,10 +67,10 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   if (!tools_result.has_value()) {
     NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
         "Failed to create tools: %s",
-        actor::GetActorToolErrorMessage(tools_result.error()).c_str()));
+        actor::GetToolExecutionResultMessage(tools_result.error()).c_str()));
     NSError* error =
-        [NSError errorWithDomain:kActorAppInterfaceErrorDomain
-                            code:(NSInteger)tools_result.error().code
+        [NSError errorWithDomain:@"mojom::ActionResultCode"
+                            code:(NSInteger)tools_result.error().code()
                         userInfo:@{NSLocalizedDescriptionKey : errorMsg}];
     completion(error);
     return;
@@ -92,7 +92,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   if (results.empty()) {
     NSError* error = [NSError
         errorWithDomain:kActorAppInterfaceErrorDomain
-                   code:ActorToolErrorNoActuationResults
+                   code:ActorToolExecutionResultNoActuationResults
                userInfo:@{
                  NSLocalizedDescriptionKey : @"No action results returned"
                }];
@@ -101,14 +101,14 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   }
 
   const auto& result = results[0];
-  if (result.tool_result.has_value()) {
+  if (result.tool_result.IsOk()) {
     completion(nil);
   } else {
     NSString* errorMsg = base::SysUTF8ToNSString(
-        GetActorToolErrorMessage(result.tool_result.error()));
+        GetToolExecutionResultMessage(result.tool_result));
     NSError* error =
-        [NSError errorWithDomain:@"ActorToolErrorCode"
-                            code:(NSInteger)result.tool_result.error().code
+        [NSError errorWithDomain:@"mojom::ActionResultCode"
+                            code:(NSInteger)result.tool_result.code()
                         userInfo:@{NSLocalizedDescriptionKey : errorMsg}];
     completion(error);
   }

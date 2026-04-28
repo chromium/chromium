@@ -161,11 +161,11 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
   int32_t failedActionIndex = -1;
   for (size_t i = 0; i < result.action_results.size(); ++i) {
     const auto& actionResult = result.action_results[i];
-    if (!actionResult.tool_result.has_value()) {
+    if (!actionResult.tool_result.IsOk()) {
       overallSuccess = false;
       failedActionIndex = i;
       actionsResult.set_error_message(
-          actor::GetActorToolErrorMessage(actionResult.tool_result.error()));
+          actor::GetToolExecutionResultMessage(actionResult.tool_result));
       break;
     }
   }
@@ -228,7 +228,7 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
   auto toolsResult = _actorService->CreateActorTools(actions, taskID);
   if (!toolsResult.has_value()) {
     completionBlock(CreateSerializedFailureActionsResult(
-        actor::GetActorToolErrorMessage(toolsResult.error())));
+        actor::GetToolExecutionResultMessage(toolsResult.error())));
     return;
   }
 

@@ -10,7 +10,7 @@
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -19,14 +19,14 @@ namespace actor {
 HistoryTool::~HistoryTool() = default;
 
 // static
-base::expected<std::unique_ptr<HistoryTool>, ActorToolError>
+base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
 HistoryTool::Create(const optimization_guide::proto::HistoryBackAction& action,
                     ProfileIOS* profile) {
   return CreateInternal(action, profile);
 }
 
 // static
-base::expected<std::unique_ptr<HistoryTool>, ActorToolError>
+base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
 HistoryTool::Create(
     const optimization_guide::proto::HistoryForwardAction& action,
     ProfileIOS* profile) {
@@ -36,8 +36,8 @@ HistoryTool::Create(
 void HistoryTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_->IsRealized() ||
       !web_state_->GetNavigationManager()) {
-    std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
@@ -49,15 +49,15 @@ void HistoryTool::Execute(ToolExecutionCallback callback) {
       std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
       std::move(callback).Run(
-          ToolExecutionResult(ActorToolErrorCode::kHistoryBackNotPossible));
+          ToolExecutionResult(InternalToolErrorCode::kHistoryBackNotPossible));
     }
   } else {
     if (navigation_manager->CanGoForward()) {
       navigation_manager->GoForward();
       std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
-      std::move(callback).Run(
-          ToolExecutionResult(ActorToolErrorCode::kHistoryForwardNotPossible));
+      std::move(callback).Run(ToolExecutionResult(
+          InternalToolErrorCode::kHistoryForwardNotPossible));
     }
   }
 }
@@ -68,11 +68,11 @@ base::WeakPtr<web::WebState> HistoryTool::GetTargetWebState() const {
 
 // static
 template <typename HistoryAction>
-base::expected<std::unique_ptr<HistoryTool>, ActorToolError>
+base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
 HistoryTool::CreateInternal(const HistoryAction& action, ProfileIOS* profile) {
   if (!action.has_tab_id()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
   auto resolution_result = ResolveTab(action.tab_id(), profile);
   if (!resolution_result.has_value()) {

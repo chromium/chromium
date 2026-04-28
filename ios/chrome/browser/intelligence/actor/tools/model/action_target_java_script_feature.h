@@ -10,7 +10,7 @@
 #import "base/no_destructor.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace base {
@@ -35,7 +35,7 @@ class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
   };
 
   using TargetFrameCallback = base::OnceCallback<void(
-      base::expected<TargetFrameResult, ActorToolError> result)>;
+      base::expected<TargetFrameResult, ToolExecutionResult> result)>;
 
   static ActionTargetJavaScriptFeature* GetInstance();
 
@@ -73,9 +73,9 @@ class ActionTargetJavaScriptFeature : public web::JavaScriptFeature {
                               int depth,
                               const base::Value* result);
 
-  base::expected<web::WebFrame*, ActorToolError> GetWebFrameByRemoteFrameToken(
-      web::WebState* web_state,
-      const std::string& remote_frame_token);
+  base::expected<web::WebFrame*, ToolExecutionResult>
+  GetWebFrameByRemoteFrameToken(web::WebState* web_state,
+                                const std::string& remote_frame_token);
 };
 
 }  // namespace actor

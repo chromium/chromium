@@ -4,9 +4,8 @@
 
 source_set("public") {
   sources = [
-    "actor_tool_error.h",
-    "actor_tool_error.mm",
     "actor_tool_types.h",
+    "actor_tool_types.mm",
   ]
   deps = [ "//base" ]
   public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
@@ -14,7 +13,7 @@ source_set("public") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "actor_tool_error_unittest.mm" ]
+  sources = [ "tool_execution_result_unittest.mm" ]
   deps = [
     ":public",
     "//base/test:test_support",

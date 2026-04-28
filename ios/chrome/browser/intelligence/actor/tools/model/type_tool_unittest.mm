@@ -13,7 +13,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -50,12 +50,12 @@ TEST_F(TypeToolTest, Create_MissingTabId) {
   action.mutable_type()->set_mode(
       optimization_guide::proto::TypeAction::APPEND);
 
-  base::expected<std::unique_ptr<TypeTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(TypeToolTest, Create_NoWebStateForTabId) {
@@ -65,11 +65,11 @@ TEST_F(TypeToolTest, Create_NoWebStateForTabId) {
   action.mutable_type()->set_mode(
       optimization_guide::proto::TypeAction::APPEND);
 
-  base::expected<std::unique_ptr<TypeTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationTargetTabNotFound,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
+            result.error().internal_code().value());
 }
 
 TEST_F(TypeToolTest, Create_MissingText) {
@@ -85,12 +85,12 @@ TEST_F(TypeToolTest, Create_MissingText) {
       optimization_guide::proto::TypeAction::APPEND);
   action.mutable_type()->mutable_target()->set_content_node_id(123);
 
-  base::expected<std::unique_ptr<TypeTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(TypeToolTest, Create_MissingMode) {
@@ -105,12 +105,12 @@ TEST_F(TypeToolTest, Create_MissingMode) {
   action.mutable_type()->set_text("test");
   action.mutable_type()->mutable_target()->set_content_node_id(123);
 
-  base::expected<std::unique_ptr<TypeTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(TypeToolTest, Create_MissingTarget) {
@@ -127,12 +127,12 @@ TEST_F(TypeToolTest, Create_MissingTarget) {
   action.mutable_type()->set_mode(
       optimization_guide::proto::TypeAction::APPEND);
 
-  base::expected<std::unique_ptr<TypeTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
@@ -162,9 +162,9 @@ TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -196,9 +196,9 @@ TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -239,9 +239,9 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 }  // namespace actor

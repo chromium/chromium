@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -37,11 +37,11 @@ namespace {
 void LogToolCreationFailed(AggregatedJournal* journal,
                            ActorTaskId task_id,
                            const std::string& tool_name,
-                           const ActorToolError& error) {
+                           const ToolExecutionResult& error) {
   CHECK(journal);
 
   std::vector<JournalDetails> details = {
-      {"error", GetActorToolErrorMessage(error)}};
+      {"error", GetToolExecutionResultMessage(error)}};
 
   journal->Log(
       GURL(), task_id,
@@ -104,18 +104,18 @@ CreateActorToolsResult ActorService::CreateActorTools(
 
     if (action.action_case() ==
         optimization_guide::proto::Action::ACTION_NOT_SET) {
-      ActorToolError error{ActorToolErrorCode::kUnsupportedAction};
+      ToolExecutionResult error{InternalToolErrorCode::kUnsupportedAction};
       LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
       return base::unexpected(error);
     }
 
     if (IsToolDisabled(action.action_case())) {
-      ActorToolError error{ActorToolErrorCode::kToolDisabledByFeature};
+      ToolExecutionResult error{InternalToolErrorCode::kToolDisabledByFeature};
       LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
       return base::unexpected(error);
     }
 
-    base::expected<std::unique_ptr<ActorTool>, ActorToolError>
+    base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
         create_tool_result = tool_factory_->CreateTool(action, profile_);
 
     if (!create_tool_result.has_value()) {

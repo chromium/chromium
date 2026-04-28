@@ -10,7 +10,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
 
@@ -107,8 +107,8 @@ void EndAsyncEntry(AggregatedJournal::PendingAsyncEntry* entry,
   CHECK(entry);
 
   std::vector<JournalDetails> details;
-  if (!tool_result.has_value()) {
-    details.push_back({"error", GetActorToolErrorMessage(tool_result.error())});
+  if (!tool_result.IsOk()) {
+    details.push_back({"error", GetToolExecutionResultMessage(tool_result)});
   }
   entry->EndEntry(std::move(details));
 }
@@ -180,7 +180,7 @@ void ActorEngine::ExecuteNextAction() {
 }
 
 void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
-  if (!result.tool_result.has_value()) {
+  if (!result.tool_result.IsOk()) {
     CompleteActions(std::move(result));
     return;
   }
@@ -205,7 +205,7 @@ void ActorEngine::OnToolExecutionComplete(ToolExecutionResult tool_result) {
 }
 
 void ActorEngine::FinishedToolInvoke(ActionResult result) {
-  bool success = result.tool_result.has_value();
+  bool success = result.tool_result.IsOk();
 
   if (!success) {
     CompleteActions(std::move(result));
@@ -220,7 +220,7 @@ void ActorEngine::FinishedToolInvoke(ActionResult result) {
 }
 
 void ActorEngine::FinishedUiPostInvoke(ActionResult result) {
-  if (!result.tool_result.has_value()) {
+  if (!result.tool_result.IsOk()) {
     CompleteActions(std::move(result));
     return;
   }
@@ -228,7 +228,7 @@ void ActorEngine::FinishedUiPostInvoke(ActionResult result) {
 }
 
 void ActorEngine::CompleteActions(ActionResult result) {
-  bool success = result.tool_result.has_value();
+  bool success = result.tool_result.IsOk();
 
   // Successful tool results are already appended in `FinishedToolInvoke`,
   // therefore only record/overwrite the result if it is a failure.

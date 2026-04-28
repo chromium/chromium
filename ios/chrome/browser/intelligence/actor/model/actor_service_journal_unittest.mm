@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -34,7 +34,7 @@ class MockActorTool : public ActorTool {
 
 class MockActorToolFactory : public ActorToolFactory {
  public:
-  MOCK_METHOD((base::expected<std::unique_ptr<ActorTool>, ActorToolError>),
+  MOCK_METHOD((base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>),
               CreateTool,
               (const optimization_guide::proto::Action& action,
                ProfileIOS* profile),
@@ -61,7 +61,7 @@ TEST_F(ActorServiceJournalTest, ToolCreationFails) {
   auto mock_factory = std::make_unique<MockActorToolFactory>();
   EXPECT_CALL(*mock_factory, CreateTool(testing::_, testing::_))
       .WillOnce(testing::Return(base::unexpected(
-          ActorToolError{ActorToolErrorCode::kUnsupportedAction})));
+          ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction))));
   ActorService service(profile_.get(), std::move(mock_factory));
 
   optimization_guide::proto::Action action;
@@ -83,8 +83,8 @@ TEST_F(ActorServiceJournalTest, ToolCreationFails) {
 
   ASSERT_EQ(1u, logs[1].details.size());
   EXPECT_EQ("error", logs[1].details[0].key);
-  EXPECT_EQ(GetActorToolErrorMessage(
-                ActorToolError{ActorToolErrorCode::kUnsupportedAction}),
+  EXPECT_EQ(GetToolExecutionResultMessage(
+                ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction)),
             logs[1].details[0].value);
 }
 
@@ -99,7 +99,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
       .WillOnce([](ToolExecutionCallback callback) {
         std::move(callback).Run(
-            ToolExecutionResult(ActorToolErrorCode::kNavigationInvalidURL));
+            ToolExecutionResult(InternalToolErrorCode::kNavigationInvalidURL));
       });
 
   ActorService service(profile_.get(), std::move(mock_factory));
@@ -137,8 +137,8 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
   // Verify error detail in End log
   ASSERT_EQ(1u, logs[8].details.size());
   EXPECT_EQ("error", logs[8].details[0].key);
-  EXPECT_EQ(GetActorToolErrorMessage(
-                ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}),
+  EXPECT_EQ(GetToolExecutionResultMessage(ToolExecutionResult(
+                InternalToolErrorCode::kNavigationInvalidURL)),
             logs[8].details[0].value);
 }
 

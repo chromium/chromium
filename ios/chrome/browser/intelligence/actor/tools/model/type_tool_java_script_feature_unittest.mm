@@ -8,7 +8,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::TypeAction;
@@ -73,14 +73,14 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsNonDict) {
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
-  EXPECT_FALSE(coordinate_result.has_value());
-  EXPECT_EQ(coordinate_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  EXPECT_FALSE(coordinate_result.IsOk());
+  EXPECT_EQ(coordinate_result.internal_code().value(),
+            InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 
   auto node_id_result = node_id_future.Get();
-  EXPECT_FALSE(node_id_result.has_value());
-  EXPECT_EQ(node_id_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  EXPECT_FALSE(node_id_result.IsOk());
+  EXPECT_EQ(node_id_result.internal_code().value(),
+            InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 }
 
 TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
@@ -97,16 +97,18 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
-  EXPECT_FALSE(coordinate_result.has_value());
-  EXPECT_EQ(coordinate_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(coordinate_result.error().message, "Custom JS Error");
+  EXPECT_FALSE(coordinate_result.IsOk());
+  EXPECT_EQ(
+      coordinate_result.internal_code().value(),
+      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
+  EXPECT_EQ(coordinate_result.message().value(), "Custom JS Error");
 
   auto node_id_result = node_id_future.Get();
-  EXPECT_FALSE(node_id_result.has_value());
-  EXPECT_EQ(node_id_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(node_id_result.error().message, "Custom JS Error");
+  EXPECT_FALSE(node_id_result.IsOk());
+  EXPECT_EQ(
+      node_id_result.internal_code().value(),
+      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
+  EXPECT_EQ(node_id_result.message().value(), "Custom JS Error");
 }
 
 TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
@@ -121,13 +123,13 @@ TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
                   node_id_future.GetCallback());
 
   auto coordinate_result = coordinate_future.Get();
-  EXPECT_FALSE(coordinate_result.has_value());
-  EXPECT_EQ(coordinate_result.error().code,
-            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_FALSE(coordinate_result.IsOk());
+  EXPECT_EQ(coordinate_result.internal_code().value(),
+            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
   auto node_id_result = node_id_future.Get();
-  EXPECT_FALSE(node_id_result.has_value());
-  EXPECT_EQ(node_id_result.error().code,
-            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_FALSE(node_id_result.IsOk());
+  EXPECT_EQ(node_id_result.internal_code().value(),
+            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
 }
 
 TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
@@ -139,7 +141,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
   feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
@@ -151,7 +153,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
   feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 }  // namespace actor

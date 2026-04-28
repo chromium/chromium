@@ -9,7 +9,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::ScrollAction;
@@ -94,14 +94,14 @@ TEST_F(ScrollToolJavaScriptFeatureTest, JsReturnsNonDict) {
                       scroll_to_future.GetCallback());
 
   auto scroll_result = scroll_future.Get();
-  EXPECT_FALSE(scroll_result.has_value());
-  EXPECT_EQ(scroll_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  EXPECT_FALSE(scroll_result.IsOk());
+  EXPECT_EQ(scroll_result.internal_code().value(),
+            InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 
   auto scroll_to_result = scroll_to_future.Get();
-  EXPECT_FALSE(scroll_to_result.has_value());
-  EXPECT_EQ(scroll_to_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureGotInvalidResult);
+  EXPECT_FALSE(scroll_to_result.IsOk());
+  EXPECT_EQ(scroll_to_result.internal_code().value(),
+            InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, JsReturnsError) {
@@ -118,16 +118,18 @@ TEST_F(ScrollToolJavaScriptFeatureTest, JsReturnsError) {
                       scroll_to_future.GetCallback());
 
   auto scroll_result = scroll_future.Get();
-  EXPECT_FALSE(scroll_result.has_value());
-  EXPECT_EQ(scroll_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(scroll_result.error().message, "Custom JS Error");
+  EXPECT_FALSE(scroll_result.IsOk());
+  EXPECT_EQ(
+      scroll_result.internal_code().value(),
+      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
+  EXPECT_EQ(scroll_result.message().value(), "Custom JS Error");
 
   auto scroll_to_result = scroll_to_future.Get();
-  EXPECT_FALSE(scroll_to_result.has_value());
-  EXPECT_EQ(scroll_to_result.error().code,
-            ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
-  EXPECT_EQ(scroll_to_result.error().message, "Custom JS Error");
+  EXPECT_FALSE(scroll_to_result.IsOk());
+  EXPECT_EQ(
+      scroll_to_result.internal_code().value(),
+      InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution);
+  EXPECT_EQ(scroll_to_result.message().value(), "Custom JS Error");
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, WebFrameInvalidated) {
@@ -143,13 +145,13 @@ TEST_F(ScrollToolJavaScriptFeatureTest, WebFrameInvalidated) {
                       scroll_to_future.GetCallback());
 
   auto scroll_result = scroll_future.Get();
-  EXPECT_FALSE(scroll_result.has_value());
-  EXPECT_EQ(scroll_result.error().code,
-            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_FALSE(scroll_result.IsOk());
+  EXPECT_EQ(scroll_result.internal_code().value(),
+            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
   auto scroll_to_result = scroll_to_future.Get();
-  EXPECT_FALSE(scroll_to_result.has_value());
-  EXPECT_EQ(scroll_to_result.error().code,
-            ActorToolErrorCode::kActorTargetWebFrameInvalidated);
+  EXPECT_FALSE(scroll_to_result.IsOk());
+  EXPECT_EQ(scroll_to_result.internal_code().value(),
+            InternalToolErrorCode::kActorTargetWebFrameInvalidated);
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByCoordinate_Success) {
@@ -161,7 +163,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByCoordinate_Success) {
   feature()->Scroll(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByIdentifier_Success) {
@@ -173,7 +175,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByIdentifier_Success) {
   feature()->Scroll(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByCoordinate_Success) {
@@ -185,7 +187,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByCoordinate_Success) {
   feature()->ScrollTo(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByIdentifier_Success) {
@@ -197,7 +199,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByIdentifier_Success) {
   feature()->ScrollTo(GetMainFrame(feature()), action, future.GetCallback());
 
   auto result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
 }
 
 }  // namespace actor

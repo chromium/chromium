@@ -12,10 +12,10 @@ extern NSString* const kActorAppInterfaceErrorDomain;
 
 // Error codes for ActorAppInterface.
 typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
-  ActorToolErrorNoProfile = 1,
-  ActorToolErrorNoService = 2,
-  ActorToolErrorInvalidProto = 3,
-  ActorToolErrorNoActuationResults = 4,
+  ActorToolExecutionResultNoProfile = 1,
+  ActorToolExecutionResultNoService = 2,
+  ActorToolExecutionResultInvalidProto = 3,
+  ActorToolExecutionResultNoActuationResults = 4,
 };
 
 // App interface to interact with the ActorService from integration tests.

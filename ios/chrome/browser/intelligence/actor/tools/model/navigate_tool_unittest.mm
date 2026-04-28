@@ -9,7 +9,7 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -74,20 +74,20 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://example.com");
 
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
       NavigateTool::Create(action.navigate(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 
   action.mutable_navigate()->clear_url();
   action.mutable_navigate()->set_tab_id(1);
 
   result = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
@@ -96,11 +96,11 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
   // Intentionally don't add a WebState to the browser for the target tab id.
   action.mutable_navigate()->set_tab_id(1);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
       NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationTargetTabNotFound,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
+            result.error().internal_code().value());
 }
 
 TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
@@ -115,8 +115,8 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -126,9 +126,9 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(NavigateToolTest, Execute_InvalidUrl) {
@@ -141,8 +141,8 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   action.mutable_navigate()->set_url("");
   action.mutable_navigate()->set_tab_id(tab_id);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -150,8 +150,9 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kNavigationInvalidURL, result.error().code);
+  ASSERT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kNavigationInvalidURL,
+            result.internal_code().value());
 }
 
 TEST_F(NavigateToolTest, Execute_Success) {
@@ -168,8 +169,8 @@ TEST_F(NavigateToolTest, Execute_Success) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -177,7 +178,7 @@ TEST_F(NavigateToolTest, Execute_Success) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       url_loading_observer_.last_transition_type_,
@@ -205,15 +206,15 @@ TEST_F(NavigateToolTest,
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
-  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(future.Get().IsOk());
   EXPECT_NE(browser_->GetWebStateList()->GetActiveWebState(), target_web_state);
   EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(),
             browser_->GetWebStateList()->GetWebStateAt(1));
@@ -239,8 +240,8 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -258,7 +259,7 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.IsOk());
   EXPECT_EQ(GURL(kUrl), url_loading_observer_.last_url_);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       url_loading_observer_.last_transition_type_,
@@ -280,8 +281,8 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActorToolError> maybe_tool =
-      NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -289,8 +290,9 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kNavigationTabNotRealized, result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kNavigationTabNotRealized,
+            result.internal_code().value());
 }
 
 }  // namespace actor

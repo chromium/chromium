@@ -28,9 +28,9 @@ class SelectTool : public WebActorTool {
   ~SelectTool() override;
 
   // Validates and creates a SelectTool instance.
-  static base::expected<std::unique_ptr<SelectTool>, ActorToolError> Create(
-      const optimization_guide::proto::SelectAction& action,
-      ProfileIOS* profile);
+  static base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
+  Create(const optimization_guide::proto::SelectAction& action,
+         ProfileIOS* profile);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -43,7 +43,7 @@ class SelectTool : public WebActorTool {
   void OnTargetFrameResolved(
       ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
-                     ActorToolError> result);
+                     ToolExecutionResult> result);
 
   optimization_guide::proto::SelectAction action_;
   base::WeakPtr<web::WebState> web_state_;

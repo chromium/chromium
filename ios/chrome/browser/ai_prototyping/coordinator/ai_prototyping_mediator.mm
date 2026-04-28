@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
@@ -616,7 +616,7 @@
   if (!tools_result.has_value()) {
     NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
         "Failed to create tools: %s",
-        actor::GetActorToolErrorMessage(tools_result.error()).c_str()));
+        actor::GetToolExecutionResultMessage(tools_result.error()).c_str()));
     [self.consumer updateQueryResult:errorMsg
                           forFeature:AIPrototypingFeature::kActorTools];
     actorService->StopTask(task_id, actor::ActorTaskStoppedReason::kModelError);
@@ -653,12 +653,12 @@
     std::string tool_name = tool_name_opt.value_or("Unknown tool");
 
     summary_str += " - " + tool_name + ": ";
-    if (result.tool_result.has_value()) {
+    if (result.tool_result.IsOk()) {
       summary_str += "SUCCESS\n";
     } else {
       summary_str +=
-          "ERROR: " +
-          actor::GetActorToolErrorMessage(result.tool_result.error()) + "\n";
+          "ERROR: " + actor::GetToolExecutionResultMessage(result.tool_result) +
+          "\n";
     }
   }
 

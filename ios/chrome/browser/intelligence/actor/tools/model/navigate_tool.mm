@@ -8,7 +8,7 @@
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -21,12 +21,12 @@ namespace actor {
 NavigateTool::~NavigateTool() = default;
 
 // static
-base::expected<std::unique_ptr<NavigateTool>, ActorToolError>
+base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
 NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
                      ProfileIOS* profile) {
   if (!action.has_tab_id() || !action.has_url()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
   auto resolution_result = ResolveTab(action.tab_id(), profile);
@@ -44,15 +44,15 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
 // ActorService.
 void NavigateTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_ || !web_state_list_ || !url_loader_) {
-    std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
   GURL url(url_);
   if (!url.is_valid()) {
     std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kNavigationInvalidURL));
+        ToolExecutionResult(InternalToolErrorCode::kNavigationInvalidURL));
     return;
   }
 
@@ -60,7 +60,7 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   // haven't been activated yet. They do not support navigation.
   if (!web_state_->IsRealized()) {
     std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kNavigationTabNotRealized));
+        ToolExecutionResult(InternalToolErrorCode::kNavigationTabNotRealized));
 
     return;
   }

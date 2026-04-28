@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
@@ -22,7 +22,7 @@ namespace actor {
 ActorToolFactory::ActorToolFactory() = default;
 ActorToolFactory::~ActorToolFactory() = default;
 
-base::expected<std::unique_ptr<ActorTool>, ActorToolError>
+base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
 ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
                              ProfileIOS* profile) {
   // LINT.IfChange(CreateTool)
@@ -47,7 +47,7 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return ScrollToTool::Create(action.scroll_to(), profile);
     default:
       return base::unexpected(
-          ActorToolError{ActorToolErrorCode::kUnsupportedAction});
+          ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));
   }
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:SupportedCapabilities)
 }

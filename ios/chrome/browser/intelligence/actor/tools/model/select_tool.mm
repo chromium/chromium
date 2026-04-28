@@ -12,7 +12,7 @@
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -23,12 +23,12 @@ namespace actor {
 SelectTool::~SelectTool() = default;
 
 // static
-base::expected<std::unique_ptr<SelectTool>, ActorToolError> SelectTool::Create(
-    const optimization_guide::proto::SelectAction& action,
-    ProfileIOS* profile) {
+base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
+SelectTool::Create(const optimization_guide::proto::SelectAction& action,
+                   ProfileIOS* profile) {
   if (!action.has_tab_id()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
   auto resolution_result = ResolveTab(action.tab_id(), profile);
@@ -37,13 +37,13 @@ base::expected<std::unique_ptr<SelectTool>, ActorToolError> SelectTool::Create(
   }
 
   if (!action.has_value()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
   if (!action.has_target()) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
   const auto& target = action.target();
@@ -52,8 +52,8 @@ base::expected<std::unique_ptr<SelectTool>, ActorToolError> SelectTool::Create(
       target.has_content_node_id() && target.has_document_identifier();
 
   if (!can_target_by_coordinate && !can_target_by_node_id) {
-    return base::unexpected(
-        ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
+    return base::unexpected(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
   }
 
   return std::unique_ptr<SelectTool>(
@@ -62,15 +62,15 @@ base::expected<std::unique_ptr<SelectTool>, ActorToolError> SelectTool::Create(
 
 void SelectTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
-    std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
   web::WebFramesManager* frames_manager =
       js_feature_->GetWebFramesManager(web_state_.get());
   if (!frames_manager || !frames_manager->GetMainWebFrame()) {
-    std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 
@@ -94,10 +94,9 @@ SelectTool::SelectTool(const optimization_guide::proto::SelectAction& action,
 void SelectTool::OnTargetFrameResolved(
     ToolExecutionCallback callback,
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
-                   ActorToolError> result) {
+                   ToolExecutionResult> result) {
   if (!result.has_value()) {
-    std::move(callback).Run(ToolExecutionResult(result.error().external_code,
-                                                result.error().message));
+    std::move(callback).Run(result.error());
     return;
   }
 
@@ -105,8 +104,8 @@ void SelectTool::OnTargetFrameResolved(
       result.value();
   web::WebFrame* target_web_frame = targeting_result.frame;
   if (!target_web_frame) {
-    std::move(callback).Run(
-        ToolExecutionResult(ActorToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kExecutionMissingDependencies));
     return;
   }
 

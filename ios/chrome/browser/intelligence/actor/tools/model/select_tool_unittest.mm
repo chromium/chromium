@@ -9,7 +9,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -53,8 +53,8 @@ TEST_F(SelectToolTest, Create_MissingTabId) {
 
   auto result = SelectTool::Create(action, profile());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code,
-            ActorToolErrorCode::kCreationMissingRequiredFields);
+  EXPECT_EQ(result.error().internal_code().value(),
+            InternalToolErrorCode::kCreationMissingRequiredFields);
 }
 
 TEST_F(SelectToolTest, Create_NoWebStateForTabId) {
@@ -64,11 +64,11 @@ TEST_F(SelectToolTest, Create_NoWebStateForTabId) {
   action.mutable_target()->mutable_coordinate()->set_x(1);
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
-  base::expected<std::unique_ptr<SelectTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
       SelectTool::Create(action, profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationTargetTabNotFound,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
+            result.error().internal_code().value());
 }
 
 TEST_F(SelectToolTest, Create_MissingValueField) {
@@ -79,8 +79,8 @@ TEST_F(SelectToolTest, Create_MissingValueField) {
 
   auto result = SelectTool::Create(action, profile());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code,
-            ActorToolErrorCode::kCreationMissingRequiredFields);
+  EXPECT_EQ(result.error().internal_code().value(),
+            InternalToolErrorCode::kCreationMissingRequiredFields);
 }
 
 TEST_F(SelectToolTest, Create_MissingTarget) {
@@ -90,8 +90,8 @@ TEST_F(SelectToolTest, Create_MissingTarget) {
 
   auto result = SelectTool::Create(action, profile());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().code,
-            ActorToolErrorCode::kCreationMissingRequiredFields);
+  EXPECT_EQ(result.error().internal_code().value(),
+            InternalToolErrorCode::kCreationMissingRequiredFields);
 }
 
 TEST_F(SelectToolTest, Create_ByCoordinates_Success) {
@@ -137,9 +137,9 @@ TEST_F(SelectToolTest, Execute_WebStateDestroyed_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(SelectToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -169,9 +169,9 @@ TEST_F(SelectToolTest, Execute_NoWebFramesManager_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(SelectToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -210,9 +210,9 @@ TEST_F(SelectToolTest, Execute_NoMainFrame_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 }  // namespace actor

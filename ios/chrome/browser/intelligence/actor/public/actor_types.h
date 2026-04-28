@@ -19,7 +19,8 @@ class ActorTool;
 
 // Result of creating a batch of ActorTools from Action protos.
 using CreateActorToolsResult =
-    base::expected<std::vector<std::unique_ptr<ActorTool>>, ActorToolError>;
+    base::expected<std::vector<std::unique_ptr<ActorTool>>,
+                   ToolExecutionResult>;
 
 // Strongly typed, performant unique ID representing an ActorTask.
 using ActorTaskId = base::IdType32<class ActorTaskIdMarker>;

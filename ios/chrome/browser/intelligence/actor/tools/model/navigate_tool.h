@@ -27,16 +27,16 @@ class WebState;
 
 namespace actor {
 
-struct ActorToolError;
+struct ToolExecutionResult;
 
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool {
  public:
   ~NavigateTool() override;
 
-  static base::expected<std::unique_ptr<NavigateTool>, ActorToolError> Create(
-      const optimization_guide::proto::NavigateAction& action,
-      ProfileIOS* profile);
+  static base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
+  Create(const optimization_guide::proto::NavigateAction& action,
+         ProfileIOS* profile);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

@@ -23,7 +23,7 @@ class WebState;
 
 namespace actor {
 
-struct ActorToolError;
+struct ToolExecutionResult;
 
 // Tool to wait for a duration.
 class WaitTool : public ActorTool {
@@ -31,7 +31,7 @@ class WaitTool : public ActorTool {
   ~WaitTool() override;
 
   // Creates the tool using the given `action`.
-  static base::expected<std::unique_ptr<WaitTool>, ActorToolError> Create(
+  static base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> Create(
       const optimization_guide::proto::WaitAction& action,
       ProfileIOS* profile);
 

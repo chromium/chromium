@@ -27,7 +27,7 @@ class MockTool : public ActorTool {
       std::move(callback).Run(ToolExecutionResult::Ok());
     } else {
       std::move(callback).Run(
-          ToolExecutionResult(ActorToolErrorCode::kUnsupportedAction));
+          ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
     }
   }
 
@@ -103,7 +103,7 @@ TEST_F(ActorEngineTest, ActSuccess) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(results.size(), 1ul);
-  EXPECT_TRUE(results[0].tool_result.has_value());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
 }
 
 // Tests that a single action failing aborts the engine sequence and returns a
@@ -130,7 +130,7 @@ TEST_F(ActorEngineTest, ActFailure) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(results.size(), 1ul);
-  EXPECT_FALSE(results[0].tool_result.has_value());
+  EXPECT_FALSE(results[0].tool_result.IsOk());
 }
 
 // Tests that a sequence where the first action succeeds and the second fails
@@ -158,8 +158,8 @@ TEST_F(ActorEngineTest, ActSequenceSuccessFailure) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(results.size(), 2ul);
-  EXPECT_TRUE(results[0].tool_result.has_value());
-  EXPECT_FALSE(results[1].tool_result.has_value());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_FALSE(results[1].tool_result.IsOk());
 }
 
 // Tests that an empty sequence of actions completes immediately with success
@@ -212,8 +212,8 @@ TEST_F(ActorEngineTest, ActMultipleSuccess) {
 
   EXPECT_TRUE(callback_called);
   EXPECT_EQ(results.size(), 2ul);
-  EXPECT_TRUE(results[0].tool_result.has_value());
-  EXPECT_TRUE(results[1].tool_result.has_value());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  EXPECT_TRUE(results[1].tool_result.IsOk());
 }
 
 // Tests the helper method that maps the 1-based `next_action_index_` to the
@@ -234,10 +234,10 @@ TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
   SetNextActionIndex(1);
 
   CompleteActions(ActionResult(
-      ToolExecutionResult(ActorToolErrorCode::kUnsupportedAction)));
+      ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid)));
 
   EXPECT_EQ(GetActionResults().size(), 1ul);
-  EXPECT_FALSE(GetActionResults()[0].tool_result.has_value());
+  EXPECT_FALSE(GetActionResults()[0].tool_result.IsOk());
   EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
 }
 

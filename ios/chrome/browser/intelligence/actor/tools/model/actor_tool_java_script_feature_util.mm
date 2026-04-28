@@ -7,7 +7,7 @@
 #import "base/functional/callback.h"
 #import "base/values.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
 
@@ -17,7 +17,7 @@ void ParseJavaScriptResult(ToolExecutionCallback callback,
   // TODO(crbug.com/505037793): return a timeout error here.
   if (!result || !result->is_dict()) {
     std::move(callback).Run(ToolExecutionResult(
-        ActorToolErrorCode::kJavascriptFeatureGotInvalidResult));
+        InternalToolErrorCode::kJavascriptFeatureGotInvalidResult));
     return;
   }
   const base::DictValue& result_dict = result->GetDict();
@@ -26,7 +26,7 @@ void ParseJavaScriptResult(ToolExecutionCallback callback,
     const std::string* error_message = result_dict.FindString("message");
     std::move(callback).Run(ToolExecutionResult(
         // TODO(crbug.com/505037793): return more tool-specific errors.
-        ActorToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution,
+        InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution,
         error_message ? *error_message : "Unknown error in JS."));
     return;
   }

@@ -48,9 +48,9 @@ class ActorTool {
 
  protected:
   // Resolves the given `tab_id` to its associated objects in regular Browsers.
-  // Returns an ActorToolError if the tab or its associated objects are not
+  // Returns an ToolExecutionResult if the tab or its associated objects are not
   // found.
-  static base::expected<TabResolutionResult, ActorToolError> ResolveTab(
+  static base::expected<TabResolutionResult, ToolExecutionResult> ResolveTab(
       int32_t tab_id,
       ProfileIOS* profile);
 };

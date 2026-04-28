@@ -13,7 +13,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 class ProfileIOS;
 
@@ -30,9 +30,9 @@ class ScrollTool : public WebActorTool {
  public:
   ~ScrollTool() override;
 
-  static base::expected<std::unique_ptr<ScrollTool>, ActorToolError> Create(
-      const optimization_guide::proto::ScrollAction& action,
-      ProfileIOS* profile);
+  static base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
+  Create(const optimization_guide::proto::ScrollAction& action,
+         ProfileIOS* profile);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -46,7 +46,7 @@ class ScrollTool : public WebActorTool {
       optimization_guide::proto::ScrollAction action,
       ToolExecutionCallback callback,
       base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
-                     ActorToolError> result);
+                     ToolExecutionResult> result);
 
   optimization_guide::proto::ScrollAction action_;
   base::WeakPtr<web::WebState> web_state_;

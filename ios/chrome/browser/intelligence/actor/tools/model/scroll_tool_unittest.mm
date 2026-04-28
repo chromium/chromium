@@ -13,7 +13,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -50,12 +50,12 @@ TEST_F(ScrollToolTest, Create_MissingTabId) {
       optimization_guide::proto::ScrollAction::DOWN);
   action.mutable_scroll()->set_distance(100);
 
-  base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Create_NoWebStateForTabId) {
@@ -65,11 +65,11 @@ TEST_F(ScrollToolTest, Create_NoWebStateForTabId) {
       optimization_guide::proto::ScrollAction::DOWN);
   action.mutable_scroll()->set_distance(100);
 
-  base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationTargetTabNotFound,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
+            result.error().internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Create_MissingDirection) {
@@ -85,12 +85,12 @@ TEST_F(ScrollToolTest, Create_MissingDirection) {
   action.mutable_scroll()->mutable_target()->mutable_coordinate()->set_y(50);
   action.mutable_scroll()->set_distance(100);
 
-  base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Create_MissingDistance) {
@@ -107,12 +107,12 @@ TEST_F(ScrollToolTest, Create_MissingDistance) {
   action.mutable_scroll()->set_direction(
       optimization_guide::proto::ScrollAction::DOWN);
 
-  base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kCreationMissingRequiredFields,
-            result.error().code);
+  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
+            result.error().internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Create_MissingTarget_Supported) {
@@ -129,7 +129,7 @@ TEST_F(ScrollToolTest, Create_MissingTarget_Supported) {
       optimization_guide::proto::ScrollAction::DOWN);
   action.mutable_scroll()->set_distance(100);
 
-  base::expected<std::unique_ptr<ScrollTool>, ActorToolError> result =
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
       ScrollTool::Create(action.scroll(), profile_.get());
 
   EXPECT_TRUE(result.has_value());
@@ -162,9 +162,9 @@ TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -196,9 +196,9 @@ TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -239,9 +239,9 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
   tool->Execute(future.GetCallback());
 
   ToolExecutionResult result = future.Get();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActorToolErrorCode::kExecutionMissingDependencies,
-            result.error().code);
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
+            result.internal_code().value());
 }
 
 }  // namespace actor

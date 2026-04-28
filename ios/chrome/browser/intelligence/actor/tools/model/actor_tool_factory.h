@@ -10,7 +10,7 @@
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 class ProfileIOS;
 
@@ -25,9 +25,9 @@ class ActorToolFactory {
   // Creates an ActorTool based on the provided action proto.
   //
   // This is virtual for testing.
-  virtual base::expected<std::unique_ptr<ActorTool>, ActorToolError> CreateTool(
-      const optimization_guide::proto::Action& action,
-      ProfileIOS* profile);
+  virtual base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
+  CreateTool(const optimization_guide::proto::Action& action,
+             ProfileIOS* profile);
 
   // Returns the list of supported capabilities by this tool factory.
   virtual std::vector<optimization_guide::proto::Action::ActionCase>

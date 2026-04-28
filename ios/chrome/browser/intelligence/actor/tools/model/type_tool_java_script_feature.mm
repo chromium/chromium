@@ -12,7 +12,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 namespace {
@@ -50,7 +50,7 @@ void TypeToolJavaScriptFeature::Type(
 
   if (!target_frame) {
     std::move(callback).Run(ToolExecutionResult(
-        ActorToolErrorCode::kActorTargetWebFrameInvalidated));
+        InternalToolErrorCode::kActorTargetWebFrameInvalidated));
     return;
   }
 
@@ -83,7 +83,7 @@ void TypeToolJavaScriptFeature::Type(
   if (!sent) {
     std::move(cb_for_error)
         .Run(ToolExecutionResult(
-            ActorToolErrorCode::
+            InternalToolErrorCode::
                 kJavascriptFeatureFailedToCallJavaScriptFunction));
   }
 }
