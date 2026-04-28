@@ -28,7 +28,6 @@ import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchManager;
 import org.chromium.android_webview.AwPrefetchParameters;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1022,7 +1021,6 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         @Override
         public void onStatusUpdated(int statusCode, @Nullable Bundle extras) {
-            Log.e("Sayed", "Status code is" + statusCode);
             mOnStatusUpdatedHelper.notifyCalled(statusCode, extras);
         }
 
