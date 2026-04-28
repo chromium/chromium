@@ -217,6 +217,11 @@ TEST_P(AudioFileReaderTest, FLAC) {
           base::Microseconds(288414), 12720, 12719);
 }
 
+TEST_P(AudioFileReaderTest, FLAC_WithMask) {
+  RunTest("with_mask.flac", "9.04,3.45,11.95,4.69,10.32,2.10,", 4, 44100,
+          base::Microseconds(1875012), 82689, 82688);
+}
+
 TEST_P(AudioFileReaderTest, Vorbis) {
   // TODO(crbug.com/485920243): The total samples should be 15435.
   RunTest("sfx.ogg", "2.17,3.31,5.15,6.33,5.97,4.35,", 1, 44100,

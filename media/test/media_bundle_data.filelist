@@ -533,4 +533,5 @@ data/webm_ebml_element
 data/webm_info_element
 data/webm_vorbis_track_entry
 data/webm_vp8_track_entry
+data/with_mask.flac
 data/yellow_pink_gradient_lossless.webp

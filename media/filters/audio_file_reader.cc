@@ -266,14 +266,13 @@ void AudioFileReader::OnOutput(scoped_refptr<AudioBuffer> buffer) {
   }
 
   // Ensure that there are no unsupported midstream configuration changes.
+  // We allow channel layout changes as long as the channel count remains the
+  // same, to handle cases where FFmpeg refines the layout during decoding.
   if (buffer->sample_rate() != config_->samples_per_second() ||
-      buffer->channel_count() != config_->channels() ||
-      buffer->channel_layout() != config_->channel_layout()) {
+      buffer->channel_count() != config_->channels()) {
     DLOG(ERROR) << "Unsupported midstream configuration change! sample_rate="
                 << buffer->sample_rate() << " (expected "
                 << config_->samples_per_second()
-                << "), channel_layout=" << buffer->channel_layout()
-                << " (expected " << config_->channel_layout()
                 << "), channels=" << buffer->channel_count() << " (expected "
                 << config_->channels() << "\")";
 

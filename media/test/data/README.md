@@ -136,6 +136,9 @@ Fragmented audio-only 44.1kHz FLAC in MP4 file, created using:
 ffmpeg -i sfx.flac -map 0:0 -acodec copy -strict -2 -movflags frag_keyframe+empty_moov+default_base_moof sfx-flac_frag.mp4
 ```
 
+#### with_mask.flac
+A 4-channel FLAC file with a `WAVEFORMATEXTENSIBLE_CHANNEL_MASK` tag. Used to verify that `AudioFileReader` can handle files where FFmpeg refines the channel layout during decoding without failing due to "unsupported midstream configuration change".
+
 ### VVC
 
 #### bear_180p.vvc
