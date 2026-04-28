@@ -53,32 +53,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       // Public properties
       //========================================================================
 
-      /**
-       * Whether the secondary side can be shown based on the feature state and
-       * the width available to the dropdown.
-       */
-      canShowSecondarySide: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      /**
-       * Whether the secondary side was at any point available to be shown.
-       */
-      hadSecondarySide: {
-        type: Boolean,
-        reflect: true,
-        notify: true,
-      },
-
-      /*
-       * Whether the secondary side is currently available to be shown.
-       */
-      hasSecondarySide: {
-        type: Boolean,
-        reflect: true,
-      },
-
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -94,8 +68,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
         notify: true,
       },
-
-      showThumbnail: {type: Boolean},
 
       //========================================================================
       // Private properties
@@ -123,10 +95,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     };
   }
 
-  accessor showThumbnail: boolean = false;
-  accessor canShowSecondarySide: boolean = false;
-  accessor hadSecondarySide: boolean = false;
-  accessor hasSecondarySide: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
@@ -268,18 +236,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       return placeholderText;
     }
     return this.i18n('searchBoxHint');
-  }
-
-  protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
-    this.selectedMatchIndex = e.detail.value;
-  }
-
-  protected onHadSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
-    this.hadSecondarySide = e.detail.value;
-  }
-
-  protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
-    this.hasSecondarySide = e.detail.value;
   }
 }
 

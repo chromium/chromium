@@ -49,15 +49,9 @@ export function getHtml(this: SearchboxElement) {
         role="listbox" .result="${this.result}"
         selected-match-index="${this.selectedMatchIndex}"
         @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-        ?can-show-secondary-side="${this.canShowSecondarySide}"
-        ?had-secondary-side="${this.hadSecondarySide}"
-        @had-secondary-side-changed="${this.onHadSecondarySideChanged_}"
-        ?has-secondary-side="${this.hasSecondarySide}"
-        @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
         @match-focusin="${this.onMatchFocusin}"
         @match-click="${this.onMatchClick}"
-        ?hidden="${!this.dropdownIsVisible}"
-        ?show-thumbnail="${this.showThumbnail}">
+        ?hidden="${!this.dropdownIsVisible}">
     </cr-searchbox-dropdown>
   </div>
 </div>
