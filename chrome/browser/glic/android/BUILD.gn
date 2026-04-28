@@ -9,6 +9,8 @@ generate_jni("jni_headers") {
   sources = [
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
   ]
@@ -36,6 +38,8 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
@@ -110,6 +114,8 @@ source_set("jni_bridges") {
 
 source_set("android") {
   sources = [
+    "glic_actor_login_bridge.cc",
+    "glic_actor_login_bridge.h",
     "glic_enabling_android.cc",
     "glic_keyed_service_android.cc",
     "glic_keyed_service_android.h",
@@ -121,9 +127,15 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/affiliations",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/password_manager/actor_login:factories",
+    "//chrome/browser/password_manager/factories",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
+    "//components/password_manager/core/browser/ui",
     "//skia",
     "//third_party/jni_zero",
     "//ui/android",
