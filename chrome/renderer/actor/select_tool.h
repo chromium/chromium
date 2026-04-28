@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACTOR_SELECT_TOOL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -43,6 +44,8 @@ class SelectTool : public ToolBase {
 
   mojom::SelectActionPtr action_;
   std::optional<TargetAndValue> validated_target_and_value_;
+
+  base::WeakPtrFactory<SelectTool> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

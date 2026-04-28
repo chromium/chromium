@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
 #include "chrome/common/actor/action_result.h"
@@ -52,7 +53,19 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
       << "Execute tool was called before validation";
   WebSelectElement select = validated_target_and_value_.value().select;
   WebString value = validated_target_and_value_.value().option_value;
+
+  // Use a weak pointer to check if `this` is still valid after SetValue()
+  // returns, as it synchronously dispatches DOM events that might destroy the
+  // owning frame and this tool.
+  base::WeakPtr<SelectTool> weak_this = weak_ptr_factory_.GetWeakPtr();
   select.SetValue(value, /*send_events=*/true);
+
+  if (!weak_this) {
+    // If the tool was destroyed, its owner (ToolExecutor) is also likely being
+    // destroyed (e.g. due to frame detachment). Since the callback is bound to
+    // a weak pointer of the ToolExecutor, running it would be a no-op.
+    return;
+  }
 
   frame_->GetWebFrame()->View()->CancelPagePopup();
 

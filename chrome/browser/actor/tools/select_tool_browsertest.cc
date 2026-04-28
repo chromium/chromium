@@ -36,6 +36,8 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 };
@@ -404,6 +406,52 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 
   EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), listbox_select_id),
             "delta");
+}
+
+// Regression test for UAF in Glic actor tools.
+// See crbug.com/506377279.
+IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+                       SelectTool_HandlesSynchronousFrameDetachment) {
+  GURL outer_url = embedded_https_test_server().GetURL(
+      "a.test", "/actor/select_tool_uaf_outer.html");
+  GURL mid_url = embedded_https_test_server().GetURL(
+      "b.test", "/actor/select_tool_uaf_mid.html");
+  GURL inner_url = embedded_https_test_server().GetURL(
+      "a.test", "/actor/select_tool_uaf_inner.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), outer_url));
+  content::WaitForLoadStop(web_contents());
+
+  // Set mid iframe src
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("document.getElementById('mid').src = $1", mid_url)));
+  content::WaitForLoadStop(web_contents());
+
+  content::RenderFrameHost* mid_rfh = content::ChildFrameAt(main_frame(), 0);
+  ASSERT_TRUE(mid_rfh);
+
+  // Set inner iframe src
+  ASSERT_TRUE(content::ExecJs(
+      mid_rfh, content::JsReplace("document.getElementById('inner').src = $1",
+                                  inner_url)));
+  content::WaitForLoadStop(web_contents());
+
+  content::RenderFrameHost* inner_rfh = content::ChildFrameAt(mid_rfh, 0);
+  ASSERT_TRUE(inner_rfh);
+
+  const std::string select_id = "#s";
+  const int32_t select_dom_node_id =
+      GetDOMNodeId(*inner_rfh, select_id).value();
+
+  // Trigger SelectTool on the inner frame.
+  std::unique_ptr<ToolRequest> action =
+      MakeSelectRequest(*inner_rfh, select_dom_node_id, "b");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // With the fix, this should not crash the renderer.
+  ASSERT_TRUE(result.Wait());
 }
 
 }  // namespace

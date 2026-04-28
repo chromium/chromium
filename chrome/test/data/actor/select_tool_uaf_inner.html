@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <select id="s">
+    <option value="a">a</option>
+    <option value="b">b</option>
+  </select>
+  <script>
+    const s = document.getElementById('s');
+    s.addEventListener('change', () => {
+      // Remove the mid iframe from the top window.
+      // Since mid is cross-origin, removing it synchronously detaches this frame.
+      parent.parent.document.getElementById('mid').remove();
+    });
+  </script>
+</body>
+</html>
