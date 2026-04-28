@@ -23,6 +23,7 @@ import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
@@ -1389,7 +1390,15 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "BaseLockTrySpin",
                 "When enabled, base::Lock will try to acquire the lock in user space multiple times"
-                        + " before blocking in the kernel.")
+                        + " before blocking in the kernel."),
+        Flag.baseFeature(
+                ContentFeatureList.PREFETCH_OFF_THE_MAIN_THREAD,
+                "Allow chromium navigational prefetch infrastructure to starting prefetch requests"
+                        + " from off the main thread."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD,
+                "Allow the WebView Prefetch API to start main resource prefetch requests from off"
+                        + " the main thread."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
