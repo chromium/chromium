@@ -5822,6 +5822,10 @@
       status: "stable",
     },
     {
+      name: "TextAreaScrollTopPreview",
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },

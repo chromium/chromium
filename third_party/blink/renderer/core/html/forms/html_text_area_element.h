@@ -139,6 +139,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool IsAutoDirectionalityFormAssociated() const final { return true; }
   int scrollWidth() override;
   int scrollHeight() override;
+  double scrollTop() override;
   void ChildrenChanged(const ChildrenChange&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;

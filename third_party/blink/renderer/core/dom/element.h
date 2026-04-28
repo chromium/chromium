@@ -566,7 +566,7 @@ class CORE_EXPORT Element : public ContainerNode {
   int clientHeight();
   double currentCSSZoom();
   double scrollLeft();
-  double scrollTop();
+  virtual double scrollTop();
   void setScrollLeft(double);
   void setScrollTop(double);
   virtual int scrollWidth();

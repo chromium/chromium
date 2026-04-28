@@ -550,4 +550,35 @@ TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionJSBetweenTag) {
   EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordJS());
 }
 
+// crbug.com/506163510
+TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollTopLeak) {
+  LoadAhem();
+  SetBodyContent(R"HTML(
+    <textarea id=test style="width: 100px; height: 30px; letter-spacing: 2000px; overflow: auto;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+
+  // Set suggested value (simulate autofill preview)
+  textarea.SetSuggestedValue("XXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  textarea.setScrollTop(1e9);
+  double preview_scroll_top = static_cast<Element&>(textarea).scrollTop();
+  textarea.setScrollTop(0);
+
+  // The preview value should NOT leak via scrollTop.
+  EXPECT_EQ(preview_scroll_top, 0);
+
+  // Verify it does not scale with length
+  textarea.SetSuggestedValue("XXXXXXXXXXXXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  textarea.setScrollTop(1e9);
+  double preview_scroll_top_2 = static_cast<Element&>(textarea).scrollTop();
+  textarea.setScrollTop(0);
+
+  EXPECT_EQ(preview_scroll_top_2, 0);
+}
+
 }  // namespace blink
