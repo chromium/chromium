@@ -34,6 +34,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -408,6 +409,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    @EnsuresNonNull("mToolbarManager")
     protected void initializeToolbar() {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         boolean shouldEnableOmnibox =
@@ -444,6 +446,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivityLifecycleDispatcher,
                             mActivityTabProvider);
 
+            assert mFindToolbarManager != null;
             super.initializeToolbar();
 
             mToolbarManager.setOptionalButtonDelegate(mToolbarButtonsCoordinator);
@@ -459,12 +462,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mToolbarButtonsCoordinator);
 
             if (shouldEnableOmnibox) {
+                assert omniboxParams != null;
                 toolbar.setOmniboxParams(omniboxParams);
             }
 
             return;
         }
 
+        assert mFindToolbarManager != null;
         super.initializeToolbar();
 
         // TODO(crbug.com/402213312): Move as much of this as possible into
@@ -519,7 +524,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(
-            Supplier<Tracker> trackerSupplier) {
+            Supplier<@Nullable Tracker> trackerSupplier) {
         return new CustomTabAdaptiveToolbarBehavior(
                 mActivity,
                 mActivityTabProvider,

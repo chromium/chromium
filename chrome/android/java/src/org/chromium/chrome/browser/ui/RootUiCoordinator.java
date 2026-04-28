@@ -1833,6 +1833,7 @@ public class RootUiCoordinator
      * {@link Toolbar}.
      */
     @RequiresNonNull("mFindToolbarManager")
+    @EnsuresNonNull("mToolbarManager")
     protected void initializeToolbar() {
         try (TraceEvent te = TraceEvent.scoped("RootUiCoordinator.initializeToolbar")) {
             final View controlContainer = mActivity.findViewById(R.id.control_container);

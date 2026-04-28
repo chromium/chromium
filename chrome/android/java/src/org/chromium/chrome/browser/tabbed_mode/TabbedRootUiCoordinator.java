@@ -46,6 +46,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -273,6 +274,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.UiAndroidFeatureList;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
@@ -946,6 +948,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    @EnsuresNonNull("mToolbarManager")
     protected void initializeToolbar() {
         if (OpenInAppUtils.isOpenInAppAvailable()) {
             View controlContainer = mActivity.findViewById(R.id.control_container);
