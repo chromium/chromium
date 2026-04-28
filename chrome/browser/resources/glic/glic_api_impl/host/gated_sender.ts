@@ -8,7 +8,7 @@ import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, RequestReq
 interface QueuedMessage {
   order: number;
   requestType: string;
-  payload: any;
+  payload: unknown;
   transfer: Transferable[];
 }
 
@@ -54,7 +54,10 @@ export class GatedSender {
     messages.sort((a, b) => a.order - b.order);
     messages.forEach((message) => {
       this.sender.requestNoResponse(
-          message.requestType as any, message.payload, message.transfer);
+          message.requestType as keyof AllRequestTypesWithoutReturn,
+          message.payload as
+              RequestRequestType<keyof AllRequestTypesWithoutReturn>,
+          message.transfer);
     });
   }
 

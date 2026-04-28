@@ -4,7 +4,7 @@
 
 export class OneShotTimer {
   private timerId: number|undefined;
-  private promiseReject: ((reason?: any) => void)|undefined;
+  private promiseReject: ((reason?: unknown) => void)|undefined;
 
   constructor(private delayMs: number) {}
 

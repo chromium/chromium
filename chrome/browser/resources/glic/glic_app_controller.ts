@@ -54,10 +54,10 @@ interface PageElementTypes {
 }
 
 const $: PageElementTypes = new Proxy({}, {
-  get(_target: any, prop: string) {
-    return getRequiredElement(prop);
-  },
-});
+                              get(_target: object, prop: string) {
+                                return getRequiredElement(prop);
+                              },
+                            }) as unknown as PageElementTypes;
 
 type PanelId = 'loadingPanel'|'guestPanel'|'offlinePanel'|'errorPanel'|
     'unavailablePanel'|'disabledByAdminPanel'|'signInPanel';

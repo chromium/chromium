@@ -67,7 +67,9 @@ suite('Queue', () => {
 });
 
 suite('GlicApiHost', () => {
-  setup(() => {});
+  interface TestPayload {
+    field: string;
+  }
 
   function createSenders() {
     const stubSender = new StubSender();
@@ -85,7 +87,9 @@ suite('GlicApiHost', () => {
 
     gatedSender.setGating(false);
     assertEquals(1, stubSender.sentMessages.length);
-    assertEquals('hi', stubSender.sentMessages[0]?.requestPayload.field);
+    assertEquals(
+        'hi',
+        (stubSender.sentMessages[0]?.requestPayload as TestPayload).field);
   });
 
   test('GatedSender.sendWhenActive while ungated', () => {
@@ -93,7 +97,9 @@ suite('GlicApiHost', () => {
     gatedSender.setGating(false);
     gatedSender.sendWhenActive('requestType' as any, {field: 'hi'});
     assertEquals(1, stubSender.sentMessages.length);
-    assertEquals('hi', stubSender.sentMessages[0]?.requestPayload.field);
+    assertEquals(
+        'hi',
+        (stubSender.sentMessages[0]?.requestPayload as TestPayload).field);
   });
 
   test('GatedSender.sendIfActiveOrDrop while ungated', () => {
@@ -102,7 +108,9 @@ suite('GlicApiHost', () => {
     gatedSender.sendIfActiveOrDrop('requestType' as any, {field: 'hi'});
 
     assertEquals(1, stubSender.sentMessages.length);
-    assertEquals('hi', stubSender.sentMessages[0]?.requestPayload.field);
+    assertEquals(
+        'hi',
+        (stubSender.sentMessages[0]?.requestPayload as TestPayload).field);
   });
 
   test('GatedSender.sendIfActiveOrDrop while gated', () => {
@@ -129,9 +137,12 @@ suite('GlicApiHost', () => {
     gatedSender.setGating(false);
 
     assertEquals(3, stubSender.sentMessages.length);
-    assertEquals('B', stubSender.sentMessages[0]?.requestPayload.field);
-    assertEquals('C', stubSender.sentMessages[1]?.requestPayload.field);
-    assertEquals('D', stubSender.sentMessages[2]?.requestPayload.field);
+    assertEquals(
+        'B', (stubSender.sentMessages[0]?.requestPayload as TestPayload).field);
+    assertEquals(
+        'C', (stubSender.sentMessages[1]?.requestPayload as TestPayload).field);
+    assertEquals(
+        'D', (stubSender.sentMessages[2]?.requestPayload as TestPayload).field);
   });
 
   test('GatedSender sends queued messages in order', () => {
@@ -146,9 +157,12 @@ suite('GlicApiHost', () => {
     gatedSender.setGating(false);
 
     assertEquals(3, stubSender.sentMessages.length);
-    assertEquals('A', stubSender.sentMessages[0]?.requestPayload.field);
-    assertEquals('C', stubSender.sentMessages[1]?.requestPayload.field);
-    assertEquals('D', stubSender.sentMessages[2]?.requestPayload.field);
+    assertEquals(
+        'A', (stubSender.sentMessages[0]?.requestPayload as TestPayload).field);
+    assertEquals(
+        'C', (stubSender.sentMessages[1]?.requestPayload as TestPayload).field);
+    assertEquals(
+        'D', (stubSender.sentMessages[2]?.requestPayload as TestPayload).field);
   });
 
   test('GatedSender toggle gating doesnt send messages more than once', () => {

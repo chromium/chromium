@@ -272,7 +272,8 @@ export class GlicInternalsAppElement extends CrLitElement {
         [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
     console.info(this.invokeLogs_[0]);
 
-    let surface: any = {defaultSurface: {}};
+    let surface: {defaultSurface: object}|
+        {newTab: object} = {defaultSurface: {}};
     if (this.invokeSurfaceType_ === 'newTab') {
       surface = {newTab: {}};
     }

@@ -41,10 +41,10 @@ export class BrowserProxyImpl implements BrowserProxy {
           const prop = Reflect.get(target, name, receiver);
           if (!target.hasOwnProperty(name)) {
             if (typeof prop === 'function') {
-              return function(this: PageHandlerRemote, ...args: any) {
+              return function(this: PageHandlerRemote, ...args: unknown[]) {
                 /* eslint no-console: ["error", { allow: ["log"] }] */
                 console.log('PageHandler#', name, args);
-                return (prop as any).apply(this, args);
+                return (prop as Function).apply(this, args);
               };
             }
           }

@@ -4,18 +4,21 @@
 
 // A queue for running async tasks in serial.
 export class TaskQueue {
-  private queue:
-      Array<{task: () => Promise<any>, promise: PromiseWithResolvers<any>}> =
-          [];
+  private queue: Array<
+      {task: () => Promise<unknown>, resolver: PromiseWithResolvers<unknown>}> =
+      [];
   private running = false;
 
   // Adds a task to the queue. Returns a promise that will be resolved when the
   // task is completes.
   add<T>(task: () => Promise<T>): Promise<T> {
-    const promise = Promise.withResolvers<T>();
-    this.queue.push({task, promise});
+    const resolver = Promise.withResolvers<T>();
+    this.queue.push({
+      task,
+      resolver: resolver as PromiseWithResolvers<unknown>,
+    });
     this.runTasks();
-    return promise.promise;
+    return resolver.promise;
   }
 
   private async runTasks(): Promise<void> {
@@ -24,12 +27,12 @@ export class TaskQueue {
     }
     this.running = true;
     while (this.queue.length > 0) {
-      const {task, promise} = this.queue.shift()!;
+      const {task, resolver} = this.queue.shift()!;
       try {
         const result = await task();
-        promise.resolve(result);
+        resolver.resolve(result);
       } catch (e) {
-        promise.reject(e);
+        resolver.reject(e);
       }
     }
     this.running = false;

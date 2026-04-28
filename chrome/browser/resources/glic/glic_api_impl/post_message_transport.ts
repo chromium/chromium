@@ -26,7 +26,7 @@ export declare interface RequestMessage extends MessageBase {
   // response is not desired.
   requestId?: number;
   // A payload. Each type of request has a distinct payload type.
-  requestPayload: any;
+  requestPayload: unknown;
 }
 
 // Responses sent over postMessage have this structure. Responses are messages
@@ -36,7 +36,7 @@ declare interface ResponseMessage extends MessageBase {
   responseId: number;
   // A payload. Each type of response has a distinct payload type. Not set if
   // exception is set.
-  responsePayload?: any;
+  responsePayload?: unknown;
   // An error that occurred during processing the request. If this is set,
   // responsePayload will not be set.
   exception?: TransferableException;
@@ -44,8 +44,8 @@ declare interface ResponseMessage extends MessageBase {
 
 // Something that has postMessage() - probably a window or WindowProxy.
 declare interface PostMessageSender {
-  postMessage(message: any, targetOrigin: string, transfer?: Transferable[]):
-      void;
+  postMessage(
+      message: unknown, targetOrigin: string, transfer?: Transferable[]): void;
 }
 
 export function newSenderId(): string {
@@ -79,7 +79,7 @@ class MessageLogger {
         requestType !== 'glicWebClientCheckResponsive';
   }
 
-  maybeLogMessage(requestType: string, message: string, payload: any) {
+  maybeLogMessage(requestType: string, message: string, payload: unknown) {
     if (!this.shouldLogMessage(requestType)) {
       return;
     }
@@ -178,7 +178,7 @@ export class PostMessageRouter extends MessageLogger {
   }
 
   sendRequest(
-      type: string, requestId: number|undefined, requestPayload: any,
+      type: string, requestId: number|undefined, requestPayload: unknown,
       transfer: Transferable[] = []) {
     const request = {
       glicRequest: true,
@@ -192,8 +192,8 @@ export class PostMessageRouter extends MessageLogger {
   }
 
   sendResponse(
-      type: string, senderId: string, responseId: number, responsePayload: any,
-      exception: TransferableException|undefined,
+      type: string, senderId: string, responseId: number,
+      responsePayload: unknown, exception: TransferableException|undefined,
       transfer: Transferable[] = []) {
     const response: ResponseMessage = {
       type,
@@ -362,10 +362,10 @@ export interface PostMessageRequestHandler {
    * @param payload The payload, from request_types.ts.
    * @returns The response to be returned to the client.
    */
-  handleRawRequest(type: string, payload: any, extras: ResponseExtras):
+  handleRawRequest(type: string, payload: unknown, extras: ResponseExtras):
       Promise<{
         /** The payload of the response. */
-        payload: any,
+        payload: unknown,
       }|undefined>;
 
   /** Called when each request is received. */
@@ -440,7 +440,7 @@ export function createBidirectionalPostMessageTransport(
 }
 
 // Converts a value to JSON for debug logging.
-function toDebugJson(v: any): string {
+function toDebugJson(v: unknown): string {
   return JSON.stringify(v, (_key, value) => {
     // stringify throws on bigint, so convert it.
     if (typeof value === 'bigint') {

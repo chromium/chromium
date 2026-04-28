@@ -22,7 +22,7 @@ export declare interface Observer<T> {
    * Called if the Observable emits an error. If an error is emitted, no
    * additional updates will be sent.
    */
-  error?(err: any): void;
+  error?(err: unknown): void;
   /**
    * Called when the Observable completes. If complete is called, no additional
    * updates will be sent.

@@ -189,7 +189,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
           subscriber.unsubscribe();
         }
       },
-      error: (_err: any) => {
+      error: (_err: unknown) => {
         this.host.sender.requestNoResponse(
             'glicBrowserOnExperimentalTriggeringUpdate', {
               observationId: payload.observationId,
@@ -844,14 +844,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserWebClientInitialized', {success, exception});
   }
 
-  async handleRawRequest(type: string, payload: any, extras: ResponseExtras):
-      Promise<{payload: any}|undefined> {
+  async handleRawRequest(
+      type: string, payload: unknown,
+      extras: ResponseExtras): Promise<{payload: unknown}|undefined> {
     if (!this.handlerFunctionNames.has(type)) {
       return;
     }
-    const handlerFunction = (this.webClientMessageHandler as any)[type];
-    const response = await handlerFunction.call(
-        this.webClientMessageHandler, payload, extras);
+
+    type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
+        Promise<{payload: unknown}>;
+    type IndexableWebClientMessageHandler = Record<string, HandlerFunction>;
+
+    const response =
+        await (this.webClientMessageHandler as unknown as
+               IndexableWebClientMessageHandler)[type]!(payload, extras);
     if (!response) {
       return;
     }
@@ -1684,7 +1690,7 @@ class CaptureRegionObservable extends ObservableValueImpl<CaptureRegionResult> {
     }
   }
 
-  override error(e: any) {
+  override error(e: Error) {
     if (this.isStopped()) {
       return;
     }

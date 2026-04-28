@@ -27,9 +27,15 @@ declare global {
 }
 // </if>
 
+declare global {
+  interface Window {
+    WebView: unknown;
+  }
+}
+
 export function isFullWebView(webview: WebViewType):
     webview is chrome.webviewTag.WebView {
   // Bypass field check because WebView is added dynamically to the window
   // object.
-  return webview.constructor === (window as any).WebView;
+  return webview.constructor === window.WebView;
 }

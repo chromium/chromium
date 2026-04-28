@@ -2172,7 +2172,7 @@ export declare interface Observer<T> {
   /** Called when the Observable emits a value. */
   next?(value: T): void;
   /** Called if the Observable emits an error. */
-  error?(err: any): void;
+  error?(err: unknown): void;
   /** Called when the Observable completes. */
   complete?(): void;
 }

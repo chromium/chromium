@@ -167,7 +167,8 @@ import type * as glicApi from '../glic_api/glic_api.js';
                                            f'{mojom_ns}.{enum_name} | null',
                                            f'glicApi.{enum_name} | undefined'),
                   file=out)
-        print('export function enumToClient(val: any): any {', file=out)
+        print('export function enumToClient(val: unknown): unknown {',
+              file=out)
         print('  return val ?? undefined;', file=out)
         print('}', file=out)
         print('', file=out)
@@ -182,7 +183,8 @@ import type * as glicApi from '../glic_api/glic_api.js';
                                            f'glicApi.{enum_name} | undefined',
                                            f'{mojom_ns}.{enum_name} | null'),
                   file=out)
-        print('export function enumFromClient(val: any): any {', file=out)
+        print('export function enumFromClient(val: unknown): unknown {',
+              file=out)
         print('  return val ?? null;', file=out)
         print('}', file=out)
         return out.getvalue()

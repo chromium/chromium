@@ -124,8 +124,8 @@ export class GlicApiCommunicator implements PostMessageRequestHandler {
   }
 
   // PostMessageRequestHandler impl.
-  handleRawRequest(type: string, payload: any, extras: ResponseExtras):
-      Promise<{payload: any}|undefined> {
+  handleRawRequest(type: string, payload: unknown, extras: ResponseExtras):
+      Promise<{payload: unknown}|undefined> {
     this.stopBootstrapPing();
 
     if (type === 'glicBrowserWebClientCreated') {
@@ -471,9 +471,14 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   // PostMessageRequestHandler implementation.
-  async handleRawRequest(type: string, payload: any, extras: ResponseExtras):
-      Promise<{payload: any}|undefined> {
-    const handlerFunction = (this.messageHandler as any)[type];
+  async handleRawRequest(
+      type: string, payload: unknown,
+      extras: ResponseExtras): Promise<{payload: unknown}|undefined> {
+    type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
+        Promise<{payload: unknown}>;
+    type IndexableMessageHandler = Record<string, HandlerFunction>;
+    const handlerFunction =
+        (this.messageHandler as unknown as IndexableMessageHandler)[type]!;
     if (typeof handlerFunction !== 'function') {
       console.warn(`GlicApiHost: Unknown message type ${type}`);
       return;
@@ -490,7 +495,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
         Object.hasOwn(BACKGROUND_RESPONSES, type)) {
       const backgroundResponse =
           BACKGROUND_RESPONSES[type as keyof typeof BACKGROUND_RESPONSES] as
-          HostBackgroundResponse<any>;
+          HostBackgroundResponse<unknown>;
       if (Object.hasOwn(backgroundResponse, 'throws')) {
         const friendlyName =
             type.replaceAll(/^glicBrowser|^glicWebClient/g, '');
@@ -500,11 +505,13 @@ export class GlicApiHost implements PostMessageRequestHandler {
         console.warn(`Using background request behavior for ${type}`);
       }
       if (Object.hasOwn(backgroundResponse, 'does')) {
-        response = await (backgroundResponse as HostBackgroundResponseDoes<any>)
-                       .does();
+        response =
+            await (backgroundResponse as HostBackgroundResponseDoes<unknown>)
+                .does();
       } else {
         response =
-            (backgroundResponse as HostBackgroundResponseReturns<any>).returns;
+            (backgroundResponse as HostBackgroundResponseReturns<unknown>)
+                .returns;
       }
     } else {
       response =
@@ -540,7 +547,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
       return;
     }
     const requestTypeNumber: number|undefined =
-        (HOST_REQUEST_TYPES as any)[histogramSuffix];
+        (HOST_REQUEST_TYPES as unknown as
+         Record<string, number>)[histogramSuffix];
     if (!requestTypeNumber) {
       return;
     }

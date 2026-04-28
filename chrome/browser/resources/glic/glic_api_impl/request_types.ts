@@ -21,10 +21,10 @@ readability, and ensures that each name is unique.
 export interface RequestDef {
   // The type of payload sent. Defaults to 'undefined', which means the request
   // has no request payload.
-  request?: any;
+  request?: unknown;
   // The type of response payload. Defaults to 'void', which means the request
   // sends no response payload.
-  response?: any;
+  response?: unknown;
   /**
    * Whether the request can be processed in the background.
    *
@@ -1104,14 +1104,14 @@ type ArrayElement<ArrayType extends unknown[]> =
 type TransferableTypes = ArrayBuffer|Blob;
 type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
 type CheckStructuredClonable<T> =
-    T extends StructuredClonableBasicType ? never : T extends any[] ?
+    T extends StructuredClonableBasicType ? never : T extends unknown[] ?
     CheckStructuredClonable<ArrayElement<T>>:
     T extends Map<infer K, infer V>?
     (CheckStructuredClonable<K>&CheckStructuredClonable<V>) :
     T extends Function ?
     ['Function not structured cloneable', T] :
-    T extends Promise<any>? ['Promise not structured cloneable', T] :
-                            CheckStructuredClonableObject<T>;
+    T extends Promise<unknown>? ['Promise not structured cloneable', T] :
+                                CheckStructuredClonableObject<T>;
 type CheckStructuredClonableObject<T> = T extends TransferableTypes ?
     never :
     AllValues<{[K in keyof T] -?: CheckStructuredClonable<T[K]>;}>;

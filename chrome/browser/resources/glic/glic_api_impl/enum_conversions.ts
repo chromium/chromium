@@ -245,7 +245,7 @@ export function enumToClient(
 export function enumToClient(
   val: mojomGlic.WebUseCounter | null):
     glicApi.WebUseCounter | undefined;
-export function enumToClient(val: any): any {
+export function enumToClient(val: unknown): unknown {
   return val ?? undefined;
 }
 
@@ -483,6 +483,6 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.WebUseCounter | undefined):
     mojomGlic.WebUseCounter | null;
-export function enumFromClient(val: any): any {
+export function enumFromClient(val: unknown): unknown {
   return val ?? null;
 }

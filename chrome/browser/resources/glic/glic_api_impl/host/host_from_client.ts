@@ -7,6 +7,7 @@
 
 import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
@@ -1192,7 +1193,7 @@ class TabFaviconHandlerImpl implements TabFaviconHandlerInterface {
         'glicWebClientTabFaviconChanged',
         {observationId: this.observationId, tabRemoved: true});
   }
-  onTabFaviconChanged(favicon: any): void {
+  onTabFaviconChanged(favicon: BitmapN32|null): void {
     const extras = new ResponseExtras();
     let faviconImage: RgbaImage|undefined = undefined;
     if (favicon) {
