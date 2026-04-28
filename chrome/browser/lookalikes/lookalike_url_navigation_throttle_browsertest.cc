@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -246,6 +248,15 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
       : https_server_(std::make_unique<net::EmbeddedTestServer>(
             net::EmbeddedTestServer::TYPE_HTTPS)) {}
 
+  void SetUp() override {
+    // TODO(b:507481593): Some tests are failing when enabling these features.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features*/ {},
+        /*disabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
+                               omnibox::internal::kWebUIOmniboxAimPopup});
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -420,7 +431,6 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
       base::HistogramTester* histograms,
       const GURL& navigated_url,
       NavigationSuggestionEvent expected_event) {
-
     history::HistoryService* const history_service =
         HistoryServiceFactory::GetForProfile(
             browser->profile(), ServiceAccessType::EXPLICIT_ACCESS);
@@ -468,6 +478,7 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<LookalikeTestHelper> test_helper_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
