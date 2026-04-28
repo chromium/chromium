@@ -345,7 +345,7 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
 
   // Check if the model needs validation, which may mark it pending validation,
   // blocking session creation.
-  if (!access_controller().ShouldValidateModel(model_metadata_->version())) {
+  if (!access_controller().MaybeBeginValidation(model_metadata_->version())) {
     return;
   }
 

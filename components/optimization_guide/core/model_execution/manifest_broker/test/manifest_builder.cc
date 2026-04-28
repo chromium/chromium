@@ -162,6 +162,15 @@ ManifestBuilder& ManifestBuilder::SetFeatureConfig(DeviceCategory device,
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetValidationTask(
+    DeviceCategory device,
+    proto::ValidationTask task) {
+  proto::DeviceCategoryConfig& category_config =
+      (*manifest_.mutable_category_configs())[base::ToString(device)];
+  *category_config.mutable_validations() = std::move(task);
+  return *this;
+}
+
 proto::Manifest ManifestBuilder::Build() {
   return manifest_;
 }

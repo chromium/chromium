@@ -392,6 +392,8 @@ if (build_with_model_execution) {
       "model_execution/manifest_broker/manifest_monitor.h",
       "model_execution/manifest_broker/manifest_solution_factory.cc",
       "model_execution/manifest_broker/manifest_solution_factory.h",
+      "model_execution/manifest_broker/manifest_validation.cc",
+      "model_execution/manifest_broker/manifest_validation.h",
     ]
     deps = [
       ":features",

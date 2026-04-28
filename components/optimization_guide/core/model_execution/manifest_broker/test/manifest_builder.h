@@ -104,6 +104,9 @@ class ManifestBuilder {
                                     const std::string& name,
                                     proto::Any config);
 
+  ManifestBuilder& SetValidationTask(DeviceCategory device,
+                                     proto::ValidationTask task);
+
   proto::Manifest Build();
 
  private:

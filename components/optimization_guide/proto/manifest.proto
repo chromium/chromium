@@ -137,6 +137,18 @@ message UseCaseConfig {
   bool background_download = 2;
 }
 
+message ValidationTask {
+  // Device will only do validation if this version is different from their
+  // most recent validation version.
+  string version = 1;
+  // The use case to do validation with. Validation will be performed once
+  // the necessary assets for the use case are available, but the use case
+  // assets will not be requested for download by the validation.
+  string use_case = 2;
+  // The prompt and expected outputs.
+  OnDeviceModelValidationConfig config = 3;
+}
+
 // Device category specific configuration.
 message DeviceCategoryConfig {
   // A mapping from a BrokerClient-visible use-case name to the configuration
@@ -147,6 +159,10 @@ message DeviceCategoryConfig {
   // These are opaque to the Broker, and are intended to allow the feature to
   // configure how use cases are selected based on feature specific parameters.
   map<string, Any> feature_configs = 2;
+
+  // Optional validation executions to be performed by this device, once assets
+  // are available.
+  ValidationTask validations = 3 [features.field_presence = EXPLICIT];
 }
 
 // The top-level message in the manifest file of manifest component.

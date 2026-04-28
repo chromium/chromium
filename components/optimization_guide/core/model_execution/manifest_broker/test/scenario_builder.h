@@ -40,6 +40,8 @@ class ScenarioBuilder final {
   ScenarioBuilder& SetFeatureConfig(DeviceCategory category,
                                     const std::string& use_case,
                                     const proto::Any& config);
+  ScenarioBuilder& SetValidationTask(DeviceCategory category,
+                                     proto::ValidationTask task);
 
   void Finish();
 

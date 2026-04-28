@@ -117,7 +117,24 @@ void OnDeviceModelAccessController::OnGpuBlocked() {
   is_gpu_blocked_ = true;
 }
 
-bool OnDeviceModelAccessController::ShouldValidateModel(
+bool OnDeviceModelAccessController::HasRemainingValidationAttempts(
+    std::string_view version) const {
+  if (!features::IsOnDeviceModelValidationEnabled()) {
+    return false;
+  }
+  ValidationState state = GetValidationState();
+  if (state.component_version != version) {
+    state = ValidationState();
+  }
+  // Don't need to re-validate on success.
+  if (state.result == OnDeviceModelValidationResult::kSuccess) {
+    return false;
+  }
+  return state.attempt_count <
+         features::GetOnDeviceModelValidationAttemptCount();
+}
+
+bool OnDeviceModelAccessController::MaybeBeginValidation(
     std::string_view component_version) {
   if (!features::IsOnDeviceModelValidationEnabled()) {
     return false;

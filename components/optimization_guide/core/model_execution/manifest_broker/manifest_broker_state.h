@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_validation.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_classifier_controller.h"
@@ -95,6 +96,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   PerformanceClassifier performance_classifier_;
   std::vector<ModelBrokerImpl::InitCallback> init_callbacks_;
   ManifestMonitor manifest_monitor_;
+  ManifestValidator manifest_validator_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;
   mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   base::WeakPtrFactory<ManifestBrokerState> weak_ptr_factory_{this};

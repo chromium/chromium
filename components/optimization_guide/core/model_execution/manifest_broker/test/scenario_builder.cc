@@ -116,6 +116,13 @@ ScenarioBuilder& ScenarioBuilder::SetFeatureConfig(DeviceCategory category,
   return *this;
 }
 
+ScenarioBuilder& ScenarioBuilder::SetValidationTask(
+    DeviceCategory category,
+    proto::ValidationTask task) {
+  builder.SetValidationTask(category, std::move(task));
+  return *this;
+}
+
 void ScenarioBuilder::Finish() {
   manifest_directory_->Add(builder.Build());
   state_->UpdateManifest(std::move(manifest_directory_));

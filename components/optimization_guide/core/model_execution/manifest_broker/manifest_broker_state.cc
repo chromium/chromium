@@ -16,6 +16,7 @@
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_validation.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -61,7 +62,8 @@ ManifestBrokerState::ManifestBrokerState(
                               base::Unretained(this)),
           base::DoNothing()),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
-      manifest_monitor_(local_state, performance_classifier_, *delegate_) {
+      manifest_monitor_(local_state, performance_classifier_, *delegate_),
+      manifest_validator_(access_controller_, model_broker_impl_) {
   service_client_.set_on_disconnect_fn(
       base::BindRepeating(&ManifestBrokerState::OnServiceDisconnected,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -202,6 +204,15 @@ void ManifestBrokerState::OnInitComplete() {
   init_callbacks_.clear();
   for (auto& callback : callbacks_to_run) {
     std::move(callback).Run(GetPossibleOnDeviceCapabilities());
+  }
+
+  if (manifest_monitor_.manifest().has_value()) {
+    const auto& manifest = *manifest_monitor_.manifest();
+    const auto& category_config = manifest.GetDeviceCategoryConfig();
+    if (category_config.has_validations()) {
+      manifest_validator_.MaybeExecuteValidationTask(
+          category_config.validations());
+    }
   }
 }
 
