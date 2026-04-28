@@ -52,7 +52,8 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
-import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
+import org.chromium.chrome.browser.ntp.search.NtpSearchBox;
+import org.chromium.chrome.browser.ntp.search.NtpSearchBoxFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
@@ -133,7 +134,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final boolean mEnableLogs;
 
     private @Nullable LogoCoordinator mLogoCoordinator;
-    private @Nullable SearchBoxCoordinator mSearchBoxCoordinator;
+    private @Nullable NtpSearchBox mSearchBoxCoordinator;
     private @Nullable MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
     private @Nullable OnSearchBoxScrollListener mSearchBoxScrollListener;
     private @Nullable UiConfig mUiConfig;
@@ -331,7 +332,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         mSearchBoxCoordinator =
-                new SearchBoxCoordinator(
+                NtpSearchBoxFactory.createSearchBox(
                         mActivity,
                         mNewTabPageLayout,
                         mIsTablet,

@@ -896,6 +896,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/SessionRecentlyClosedEntry.java",
   "java/src/org/chromium/chrome/browser/ntp/SnapScrollHelperImpl.java",
   "java/src/org/chromium/chrome/browser/ntp/TitleUtil.java",
+  "java/src/org/chromium/chrome/browser/ntp/search/NtpSearchBox.java",
+  "java/src/org/chromium/chrome/browser/ntp/search/NtpSearchBoxFactory.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxContainerView.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxCoordinator.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxMediator.java",
