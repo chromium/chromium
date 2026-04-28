@@ -81,9 +81,10 @@ class ContentAnnotationsTable {
   std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
   GetAllContentAnnotations();
 
-  // Deletes records from content_annotations table by visit_ids. Returns true
-  // on success.
-  bool DeleteContentAnnotations(base::span<const history::VisitID> visit_ids);
+  // Deletes records from content_annotations table by visit_ids. Returns the
+  // list of visit_ids that were actually deleted.
+  std::vector<history::VisitID> DeleteContentAnnotations(
+      base::span<const history::VisitID> visit_ids);
 
   // Clears all records from content_annotations table. Returns true on success.
   bool ClearAllContentAnnotations();

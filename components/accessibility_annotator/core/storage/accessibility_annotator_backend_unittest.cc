@@ -989,5 +989,154 @@ TEST_F(AccessibilityAnnotatorBackendTest, DeleteContentAnnotationsFromDb) {
               testing::ElementsAre(Pair(visit_id_3, testing::_)));
 }
 
+TEST_F(AccessibilityAnnotatorBackendTest,
+       AddContentAnnotationToDbNotifiesObserver) {
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  history::VisitID visit_id(123);
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData("Test Page Title");
+  data.content_annotation.set_description("Test description");
+  data.classifier_results.Set("category", "test_category");
+
+  EXPECT_CALL(
+      observer,
+      OnContentAnnotationsAdded(
+          Eq(visit_id),
+          AllOf(
+              Field(&AccessibilityAnnotatorBackend::ContentAnnotationsData::
+                        page_title,
+                    Eq("Test Page Title")),
+              Field(&AccessibilityAnnotatorBackend::ContentAnnotationsData::
+                        content_annotation,
+                    Property(&optimization_guide::proto::ContentAnnotation::
+                                 description,
+                             Eq("Test description"))),
+              Field(&AccessibilityAnnotatorBackend::ContentAnnotationsData::
+                        classifier_results,
+                    base::test::IsJson("{\"category\":\"test_category\"}")))));
+
+  base::test::TestFuture<bool> success_future;
+  backend_->AddContentAnnotation(visit_id, std::move(data),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  backend_->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       DeleteContentAnnotationFromDbNotifiesObserver) {
+  history::VisitID visit_id(123);
+  base::test::TestFuture<bool> add_future;
+  backend_->AddContentAnnotation(visit_id,
+                                 CreateContentAnnotationsData("Title"),
+                                 add_future.GetCallback());
+  ASSERT_TRUE(add_future.Get());
+
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  // Only visit_id should be in the notification.
+  EXPECT_CALL(observer,
+              OnContentAnnotationsDeleted(testing::ElementsAre(visit_id)));
+
+  base::test::TestFuture<bool> success_future;
+  // Attempt to delete content annotations from the database, including a
+  // visit ID that doesn't exist.
+  backend_->DeleteContentAnnotations({visit_id, 999},
+                                     success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  backend_->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ClearAllContentAnnotationsFromDbNotifiesObserver) {
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  base::test::TestFuture<bool> add_future;
+  backend_->AddContentAnnotation(123, CreateContentAnnotationsData("Title"),
+                                 add_future.GetCallback());
+  ASSERT_TRUE(add_future.Get());
+
+  EXPECT_CALL(observer, OnContentAnnotationsCleared());
+
+  base::test::TestFuture<bool> success_future;
+  backend_->ClearAllContentAnnotations(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  backend_->RemoveObserver(&observer);
+}
+
+// Tests that adding a content annotation doesn't notify observers
+// when the database is not initialized.
+TEST_F(AccessibilityAnnotatorBackendTest, AddContentAnnotationBeforeInit) {
+  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
+      std::make_unique<AccessibilityAnnotatorBackendImpl>(
+          /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
+          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+          temp_dir_.GetPath().AppendASCII("AddBeforeInit"));
+
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend->AddObserver(&observer);
+  EXPECT_CALL(observer, OnContentAnnotationsAdded).Times(0);
+
+  base::test::TestFuture<bool> future;
+  backend->AddContentAnnotation(static_cast<history::VisitID>(1),
+                                CreateContentAnnotationsData("Title"),
+                                future.GetCallback());
+  EXPECT_FALSE(future.Get());
+
+  backend->RemoveObserver(&observer);
+}
+
+// Tests that deleting content annotations doesn't notify observers when the
+// database is not initialized.
+TEST_F(AccessibilityAnnotatorBackendTest, DeleteContentAnnotationsBeforeInit) {
+  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
+      std::make_unique<AccessibilityAnnotatorBackendImpl>(
+          /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
+          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+          temp_dir_.GetPath().AppendASCII("DeleteBeforeInit"));
+
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend->AddObserver(&observer);
+  EXPECT_CALL(observer, OnContentAnnotationsDeleted).Times(0);
+
+  base::test::TestFuture<bool> future;
+  backend->DeleteContentAnnotations({static_cast<history::VisitID>(1)},
+                                    future.GetCallback());
+  // Implementation returns true if the DB is not open but nothing was deleted.
+  EXPECT_TRUE(future.Get());
+
+  backend->RemoveObserver(&observer);
+}
+
+// Tests that clearing all content annotations doesn't notify
+// observers when the database is not initialized.
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ClearAllContentAnnotationsBeforeInit) {
+  std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend =
+      std::make_unique<AccessibilityAnnotatorBackendImpl>(
+          /*history_service=*/nullptr, /*os_crypt_async=*/nullptr,
+          syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+          temp_dir_.GetPath().AppendASCII("ClearBeforeInit"));
+
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend->AddObserver(&observer);
+  EXPECT_CALL(observer, OnContentAnnotationsCleared).Times(0);
+
+  base::test::TestFuture<bool> future;
+  backend->ClearAllContentAnnotations(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+
+  backend->RemoveObserver(&observer);
+}
+
 }  // namespace
 }  // namespace accessibility_annotator

@@ -148,6 +148,23 @@ class AccessibilityAnnotatorBackendImpl
       const optimization_guide::proto::StructuredData& source_structured_data,
       optimization_guide::proto::StructuredData* target_structured_data);
 
+  // Called when a content annotation is added to the database to notify
+  // observers.
+  void OnContentAnnotationAdded(history::VisitID visit_id,
+                                ContentAnnotationsData data,
+                                base::OnceCallback<void(bool)> callback,
+                                bool success);
+
+  // Called when content annotations are deleted from the database to notify
+  // observers.
+  void OnContentAnnotationsDeleted(base::OnceCallback<void(bool)> callback,
+                                   std::vector<history::VisitID> visit_ids);
+
+  // Called when content annotations are cleared from the database to notify
+  // observers.
+  void OnContentAnnotationsCleared(base::OnceCallback<void(bool)> callback,
+                                   bool success);
+
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
   std::unique_ptr<AccessibilityAnnotationSyncBridge>

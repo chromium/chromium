@@ -114,8 +114,10 @@ TEST_F(ContentAnnotationsTableTest, DeleteContentAnnotations) {
   // Verify that content annotations are present in the table.
   EXPECT_EQ(table_.GetAllContentAnnotations().size(), 3u);
 
-  // Successfully delete multiple rows.
-  EXPECT_TRUE(table_.DeleteContentAnnotations({visit_id_1, visit_id_2}));
+  // Successfully delete multiple rows and check that only the ones that existed
+  // are returned.
+  EXPECT_THAT(table_.DeleteContentAnnotations({visit_id_1, visit_id_2, 999}),
+              testing::UnorderedElementsAre(visit_id_1, visit_id_2));
 
   EXPECT_EQ(table_.GetAllContentAnnotations().size(), 1u);
   EXPECT_FALSE(table_.GetContentAnnotation(visit_id_1).has_value());
@@ -173,7 +175,7 @@ TEST_F(ContentAnnotationsTableTest, FunctionsFailWithoutInit) {
   EXPECT_FALSE(uninitialized_table.AddContentAnnotation(visit_id, data));
   EXPECT_FALSE(uninitialized_table.GetContentAnnotation(visit_id).has_value());
   EXPECT_TRUE(uninitialized_table.GetAllContentAnnotations().empty());
-  EXPECT_FALSE(uninitialized_table.DeleteContentAnnotations({visit_id}));
+  EXPECT_TRUE(uninitialized_table.DeleteContentAnnotations({visit_id}).empty());
   EXPECT_FALSE(uninitialized_table.ClearAllContentAnnotations());
 }
 

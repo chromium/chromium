@@ -59,7 +59,8 @@ class AccessibilityAnnotatorDatabase {
       history::VisitID visit_id);
   std::vector<std::pair<history::VisitID, ContentAnnotationsData>>
   GetAllContentAnnotations();
-  bool DeleteContentAnnotations(base::span<const history::VisitID> visit_ids);
+  std::vector<history::VisitID> DeleteContentAnnotations(
+      base::span<const history::VisitID> visit_ids);
   bool ClearAllContentAnnotations();
 
  private:

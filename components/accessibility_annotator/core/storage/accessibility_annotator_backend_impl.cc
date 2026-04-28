@@ -384,6 +384,49 @@ void AccessibilityAnnotatorBackendImpl::MergeContentAnnotationStructuredData(
       ValidateAndPrepareFlightReservationForMerge);
 }
 
+void AccessibilityAnnotatorBackendImpl::OnContentAnnotationAdded(
+    history::VisitID visit_id,
+    ContentAnnotationsData data,
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  if (success) {
+    observers_.Notify(
+        &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded,
+        visit_id, data);
+  }
+
+  if (callback) {
+    std::move(callback).Run(success);
+  }
+}
+
+void AccessibilityAnnotatorBackendImpl::OnContentAnnotationsDeleted(
+    base::OnceCallback<void(bool)> callback,
+    std::vector<history::VisitID> visit_ids) {
+  if (!visit_ids.empty()) {
+    observers_.Notify(
+        &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsDeleted,
+        visit_ids);
+  }
+
+  if (callback) {
+    std::move(callback).Run(true);
+  }
+}
+
+void AccessibilityAnnotatorBackendImpl::OnContentAnnotationsCleared(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
+  if (success) {
+    observers_.Notify(
+        &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsCleared);
+  }
+
+  if (callback) {
+    std::move(callback).Run(success);
+  }
+}
+
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
     base::span<const history::VisitID> visit_ids) {
   std::vector<history::VisitID> deleted_ids;
@@ -439,8 +482,11 @@ void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(
     ContentAnnotationsData data,
     base::OnceCallback<void(bool)> callback) {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::AddContentAnnotation)
-      .WithArgs(visit_id, std::move(data))
-      .Then(std::move(callback));
+      .WithArgs(visit_id, data.Clone())
+      .Then(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationAdded,
+          weak_ptr_factory_.GetWeakPtr(), visit_id, std::move(data),
+          std::move(callback)));
 }
 
 void AccessibilityAnnotatorBackendImpl::GetContentAnnotation(
@@ -464,13 +510,17 @@ void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
     base::OnceCallback<void(bool)> callback) {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::DeleteContentAnnotations)
       .WithArgs(std::move(visit_ids))
-      .Then(std::move(callback));
+      .Then(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsDeleted,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations(
     base::OnceCallback<void(bool)> callback) {
   db_.AsyncCall(&AccessibilityAnnotatorDatabase::ClearAllContentAnnotations)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(
+          &AccessibilityAnnotatorBackendImpl::OnContentAnnotationsCleared,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AccessibilityAnnotatorBackendImpl::GetSyncAnnotationsByTypes(

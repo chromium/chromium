@@ -142,7 +142,7 @@ TEST_F(AccessibilityAnnotatorDatabaseTest,
   EXPECT_FALSE(db_->AddContentAnnotation(visit_id, CreateTestData()));
   EXPECT_FALSE(db_->GetContentAnnotation(visit_id).has_value());
   EXPECT_TRUE(db_->GetAllContentAnnotations().empty());
-  EXPECT_FALSE(db_->DeleteContentAnnotations({visit_id}));
+  EXPECT_TRUE(db_->DeleteContentAnnotations({visit_id}).empty());
   EXPECT_FALSE(db_->ClearAllContentAnnotations());
 }
 
@@ -220,8 +220,9 @@ TEST_F(AccessibilityAnnotatorDatabaseTest, DeleteContentAnnotations) {
   // Verify that the content annotations are present in the database.
   EXPECT_EQ(db_->GetAllContentAnnotations().size(), 3u);
 
-  // Delete multiple content annotations.
-  EXPECT_TRUE(db_->DeleteContentAnnotations({visit_id_1, visit_id_2}));
+  // Delete multiple content annotations, including one that doesn't exist.
+  EXPECT_THAT(db_->DeleteContentAnnotations({visit_id_1, visit_id_2, 999}),
+              testing::UnorderedElementsAre(visit_id_1, visit_id_2));
 
   // Verify that the content annotations are deleted from the database and the
   // expected content annotation remains.

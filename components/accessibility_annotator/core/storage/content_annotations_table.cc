@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/database_utils/url_converter.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -182,33 +183,37 @@ ContentAnnotationsTable::GetAllContentAnnotations() {
   return results;
 }
 
-bool ContentAnnotationsTable::DeleteContentAnnotations(
+std::vector<history::VisitID> ContentAnnotationsTable::DeleteContentAnnotations(
     base::span<const history::VisitID> visit_ids) {
-  if (!db_ || !encryptor_) {
-    return false;
-  }
-
-  if (visit_ids.empty()) {
-    return true;
+  if (!db_ || !encryptor_ || visit_ids.empty()) {
+    return {};
   }
 
   sql::Transaction transaction(db_);
   if (!transaction.Begin()) {
-    return false;
+    return {};
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM content_annotations WHERE visit_id = ?"));
+  std::vector<std::string> placeholders(visit_ids.size(), "?");
+  std::string query = "DELETE FROM content_annotations WHERE visit_id IN (" +
+                      base::JoinString(placeholders, ",") +
+                      ") RETURNING visit_id";
 
-  for (history::VisitID visit_id : visit_ids) {
-    statement.Reset(true);
-    statement.BindInt64(0, visit_id);
-    if (!statement.Run()) {
-      return false;
-    }
+  sql::Statement statement(db_->GetUniqueStatement(query));
+  for (size_t i = 0; i < visit_ids.size(); ++i) {
+    statement.BindInt64(static_cast<int>(i), visit_ids[i]);
   }
 
-  return transaction.Commit();
+  std::vector<history::VisitID> deleted_ids;
+  deleted_ids.reserve(visit_ids.size());
+  while (statement.Step()) {
+    deleted_ids.push_back(statement.ColumnInt64(0));
+  }
+
+  if (!statement.Succeeded() || !transaction.Commit()) {
+    return {};
+  }
+  return deleted_ids;
 }
 
 bool ContentAnnotationsTable::ClearAllContentAnnotations() {
