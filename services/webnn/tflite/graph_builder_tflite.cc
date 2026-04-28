@@ -4281,18 +4281,68 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
 
   if (conv2d.kind == mojom::Conv2d::Kind::kDirect) {
     // Calculate the im2col temp tensor size [batch_size * output_height *
-    // output_width * input_channels * filter_height, filter_width].
+    // output_width * input_channels * filter_height * filter_width].
     const base::CheckedNumeric<int32_t> im2col_elements =
         base::CheckedNumeric<int32_t>(input_shape[0]) * output_shape[1] *
         output_shape[2] * input_channels * filter_size2d.height *
         filter_size2d.width;
 
-    // Check indirection buffer size.
-    const base::CheckedNumeric<int32_t> checked_indirection_buffer_size =
-        im2col_elements * base::CheckedNumeric<int32_t>(sizeof(void*));
-
     // Check against the 32-bit signed integer limit to avoid overflow in
     // TFLite.
+    if (!im2col_elements.IsValid()) {
+      return base::unexpected(
+          "Conv2d doesn't support configurations that require an internal "
+          "computation buffer exceeding the INT32_MAX elements.");
+    }
+
+    // Check indirection buffer size for the XNNPack kernel. The formula
+    // depends on whether XNNPack uses the dwconv path or the igemm path.
+    // See third_party/xnnpack/src/src/operators/convolution-nhwc.c.
+    //
+    // `mr` is a runtime GEMM tile size chosen by XNNPack based on hardware;
+    // use a conservative upper bound since the exact value is unknown at
+    // graph build time.
+    constexpr int32_t kMaxMr = 16;
+    auto checked_kernel_size =
+        base::CheckedNumeric<int32_t>(filter_size2d.height);
+    checked_kernel_size *= base::CheckedNumeric<int32_t>(filter_size2d.width);
+    auto checked_output_height = base::CheckedNumeric<int32_t>(output_shape[1]);
+    auto checked_output_width = base::CheckedNumeric<int32_t>(output_shape[2]);
+    auto checked_indirection_buffer_size =
+        base::CheckedNumeric<int32_t>(sizeof(void*));
+    if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                                 conv2d.groups)) {
+      // dwconv path: sizeof(void*) * (primary_tile - kernel_size +
+      //     output_height * (kernel_size + (output_width - 1) * step_width *
+      //     kernel_height))
+      //
+      // Use a conservative upper bound for primary_tile value (max 25 across
+      // all architectures). See
+      // third_party/xnnpack/src/src/configs/dwconv-config.c
+      //
+      // Use kernel_width as a conservative upper bound for step_width
+      // (step_width = min(stride_width, kernel_width) when dilation == 1,
+      // or kernel_width otherwise).
+      constexpr int32_t kMaxPrimaryTile = 25;
+      checked_output_width -= 1;
+      checked_output_width *=
+          base::CheckedNumeric<int32_t>(filter_size2d.width);
+      checked_output_width *=
+          base::CheckedNumeric<int32_t>(filter_size2d.height);
+      checked_output_width += checked_kernel_size;
+      checked_output_width *= checked_output_height;
+      checked_output_width += kMaxPrimaryTile;
+      checked_output_width -= checked_kernel_size;
+      checked_indirection_buffer_size *= checked_output_width;
+    } else {
+      // igemm path: sizeof(void*) * kernel_size *
+      //     round_up(output_height * output_width, mr)
+      checked_output_height *= checked_output_width;
+      checked_output_height = RoundUp(checked_output_height, kMaxMr);
+      checked_indirection_buffer_size *= checked_kernel_size;
+      checked_indirection_buffer_size *= checked_output_height;
+    }
+
     if (!checked_indirection_buffer_size.IsValid()) {
       return base::unexpected(
           "Conv2d doesn't support configurations that require an internal "
@@ -4308,12 +4358,53 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
         input_size2d.width * filter_size2d.height * filter_size2d.width *
         output_channels;
 
-    // Check indirection buffer size.
-    const base::CheckedNumeric<int32_t> checked_indirection_buffer_size =
-        col2im_elements * base::CheckedNumeric<int32_t>(sizeof(void*));
-
     // Check against the 32-bit signed integer limit to avoid overflow in
     // TFLite.
+    if (!col2im_elements.IsValid()) {
+      return base::unexpected(
+          "convTranspose2d doesn't support configurations that require an "
+          "internal computation buffer exceeding INT32_MAX elements.");
+    }
+
+    // Check indirection buffer size for the XNNPack kernel. The formula
+    // depends on whether XNNPack uses the subconv2d path or the igemm path.
+    // See third_party/xnnpack/src/src/operators/deconvolution-nhwc.c.
+    //
+    // `mr` is a runtime GEMM tile size chosen by XNNPack based on hardware;
+    // use a conservative upper bound since the exact value is unknown at
+    // graph build time.
+    constexpr int32_t kMaxMr = 16;
+    auto checked_kernel_size =
+        base::CheckedNumeric<int32_t>(filter_size2d.height);
+    checked_kernel_size *= base::CheckedNumeric<int32_t>(filter_size2d.width);
+    auto checked_output_height = base::CheckedNumeric<int32_t>(output_shape[1]);
+    auto checked_output_width = base::CheckedNumeric<int32_t>(output_shape[2]);
+    auto checked_indirection_buffer_size =
+        base::CheckedNumeric<int32_t>(sizeof(void*));
+    if (std::max(conv2d.strides->height, conv2d.strides->width) > 1 &&
+        conv2d.strides->width <= filter_size2d.width &&
+        conv2d.strides->height <= filter_size2d.height) {
+      // subconv2d path: sizeof(void*) * kernel_size * output_height *
+      //     stride_width * round_up(ceil(output_width / stride_width), mr)
+      auto checked_stride_width =
+          base::CheckedNumeric<int32_t>(conv2d.strides->width);
+      checked_output_width += checked_stride_width;
+      checked_output_width -= 1;
+      checked_output_width /= checked_stride_width;
+      checked_output_width = RoundUp(checked_output_width, kMaxMr);
+      checked_indirection_buffer_size *= checked_kernel_size;
+      checked_indirection_buffer_size *= checked_output_height;
+      checked_indirection_buffer_size *= checked_stride_width;
+      checked_indirection_buffer_size *= checked_output_width;
+    } else {
+      // igemm path: sizeof(void*) * kernel_size *
+      //     round_up(output_height * output_width, mr)
+      checked_output_height *= checked_output_width;
+      checked_output_height = RoundUp(checked_output_height, kMaxMr);
+      checked_indirection_buffer_size *= checked_kernel_size;
+      checked_indirection_buffer_size *= checked_output_height;
+    }
+
     if (!checked_indirection_buffer_size.IsValid()) {
       return base::unexpected(
           "convTranspose2d doesn't support configurations that require an "
