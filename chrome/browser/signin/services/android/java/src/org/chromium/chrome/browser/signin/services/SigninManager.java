@@ -179,4 +179,7 @@ public interface SigninManager {
      * @return Whether the user has accepted signing into a Managed Account.
      */
     boolean getUserAcceptedAccountManagement();
+
+    /** Returns whether fetching the list of accounts from the device eventually succeeded. */
+    boolean didAccountsFetchSucceed();
 }

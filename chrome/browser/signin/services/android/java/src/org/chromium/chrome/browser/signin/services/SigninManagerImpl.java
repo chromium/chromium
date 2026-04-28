@@ -135,7 +135,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 onCoreAccountInfosChanged();
             }
         } else if (accountsPromise.isFulfilled()
-                && (didAccountFetchSucceed() || !accountsPromise.getResult().isEmpty())) {
+                && (didAccountsFetchSucceed() || !accountsPromise.getResult().isEmpty())) {
             seedThenReloadAllAccountsFromSystem(
                     mAccountManagerFacade.getAccounts().getResult(),
                     CoreAccountInfo.getIdFrom(identityManager.getPrimaryAccountInfo()));
@@ -162,7 +162,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         var accountsPromise = mAccountManagerFacade.getAccounts();
         assert accountsPromise.isFulfilled();
         List<AccountInfo> accounts = accountsPromise.getResult();
-        if (!didAccountFetchSucceed() && accounts.isEmpty()) {
+        if (!didAccountsFetchSucceed() && accounts.isEmpty()) {
             // If the account fetch did not succeed, the AccountManagerFacade falls back to an empty
             // list. Do nothing when this is the case.
             return;
@@ -573,7 +573,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 .getUserAcceptedAccountManagement(mNativeSigninManagerAndroid);
     }
 
-    private boolean didAccountFetchSucceed() {
+    @Override
+    public boolean didAccountsFetchSucceed() {
         return mAccountManagerFacade.didAccountFetchSucceed();
     }
 
