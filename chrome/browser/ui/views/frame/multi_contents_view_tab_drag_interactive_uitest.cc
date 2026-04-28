@@ -95,9 +95,14 @@ void Poll(base::RepeatingCallback<bool()> condition,
 class QuitTabDraggingObserver {
  public:
   explicit QuitTabDraggingObserver(TabStripRegionView* tab_strip_view) {
-    tab_strip_view->GetDragContext()->SetDragControllerCallbackForTesting(
-        base::BindOnce(&QuitTabDraggingObserver::OnDragControllerSet,
-                       weak_ptr_factory_.GetWeakPtr()));
+    TabDragContext* context = tab_strip_view->GetDragContext();
+    if (auto* controller = context->GetDragController()) {
+      OnDragControllerSet(controller);
+    } else {
+      context->SetDragControllerCallbackForTesting(
+          base::BindOnce(&QuitTabDraggingObserver::OnDragControllerSet,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   QuitTabDraggingObserver(const QuitTabDraggingObserver&) = delete;
@@ -205,8 +210,8 @@ class MultiContentsViewTabDragEntrypointsUiTest
   // Returns a `DragStep` that releases the left mouse button.
   DragStep ReleaseMouse() {
     return base::BindOnce([](base::OnceClosure callback) {
-      ui_controls::SendMouseEvents(ui_controls::LEFT, ui_controls::UP);
-      std::move(callback).Run();
+      ui_controls::SendMouseEventsNotifyWhenDone(
+          ui_controls::LEFT, ui_controls::UP, std::move(callback));
     });
   }
 
