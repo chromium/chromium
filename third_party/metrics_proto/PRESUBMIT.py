@@ -14,7 +14,6 @@ README = 'README.chromium'
 PRESUBMIT = 'PRESUBMIT.py'
 PRESUBMIT_TEST = 'PRESUBMIT_test.py'
 OWNERS = 'OWNERS'
-BUILD_GN = 'BUILD.gn'
 
 
 def IsMetricsProtoPath(input_api, path):
@@ -28,8 +27,7 @@ def IsReadmeFile(input_api, path):
 
 def IsImportedFile(input_api, path):
   return (not input_api.os_path.basename(path) in (PRESUBMIT, PRESUBMIT_TEST,
-                                                  OWNERS, DIR_METADATA,
-                                                  BUILD_GN) and
+                                                  OWNERS, DIR_METADATA) and
           IsMetricsProtoPath(input_api, path))
 
 
