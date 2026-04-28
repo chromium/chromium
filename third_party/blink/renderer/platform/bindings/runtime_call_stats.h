@@ -246,9 +246,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
   V(ProcessStyleSheet)    \
   V(UpdateStyle)
 
-#define LAYOUT_COUNTERS(V) \
-  V(UpdateLayout)          \
-  V(UpdateLayerPositionsAfterLayout)
+#define LAYOUT_COUNTERS(V) V(UpdateLayout)
 
 #define CALLBACK_COUNTERS(V)                       \
   BINDINGS_METHOD(V, ElementGetBoundingClientRect) \
