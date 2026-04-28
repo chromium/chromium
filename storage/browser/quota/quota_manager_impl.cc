@@ -1606,7 +1606,7 @@ void QuotaManagerImpl::UpdateQuotaInternalsDiskAvailability(
     int64_t available_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-  CHECK_GE(total_space, available_space, base::NotFatalUntil::M148);
+  CHECK_GE(total_space, available_space, base::NotFatalUntil::M151);
 
   info->total_space = total_space;
   info->available_space = available_space;
@@ -1630,7 +1630,7 @@ void QuotaManagerImpl::FinallySendDiskAvailabilityAndTempPoolSize(
     std::unique_ptr<AccumulateQuotaInternalsInfo> info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(info->total_space, 0, base::NotFatalUntil::M148);
-  CHECK_GE(info->total_space, info->available_space, base::NotFatalUntil::M148);
+  CHECK_GE(info->total_space, info->available_space, base::NotFatalUntil::M151);
   CHECK_GE(info->temp_pool_size, 0, base::NotFatalUntil::M148);
 
   std::move(callback).Run(info->total_space, info->available_space,
