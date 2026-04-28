@@ -17,5 +17,5 @@ declare_args() {
   # - On Linux it slows down the build.
   enable_precompiled_headers =
       !is_official_build && !use_remoteexec && cc_wrapper == "" && !is_linux &&
-      !use_clang_modules
+      !use_clang_modules && !clang_use_unsafe_buffers_plugin
 }

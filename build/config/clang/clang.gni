@@ -54,10 +54,12 @@ declare_args() {
   # coding guidelines, etc. Only used when compiling with Chromium's Clang.
   # Setting this enables all of the functionality of the plugin.
   clang_use_chrome_plugins = is_clang && current_os != "zos"
+}
 
+declare_args() {
   # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr
   # functionality of the plugin.
-  clang_use_raw_ptr_plugin = false
+  clang_use_raw_ptr_plugin = clang_use_chrome_plugins
 
   enable_check_raw_ptr_fields =
       build_with_chromium && !is_official_build &&
@@ -73,7 +75,8 @@ declare_args() {
 
   # Use this instead of clang_use_chrome_plugins to enable just the unsafe
   # buffers functionality of the plugin
-  clang_use_unsafe_buffers_plugin = false
+  clang_use_unsafe_buffers_plugin =
+      clang_use_chrome_plugins && clang_unsafe_buffers_paths != ""
 
   clang_base_path = default_clang_base_path
 
