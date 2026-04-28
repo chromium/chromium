@@ -56,6 +56,7 @@ source_set("notification_client") {
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 

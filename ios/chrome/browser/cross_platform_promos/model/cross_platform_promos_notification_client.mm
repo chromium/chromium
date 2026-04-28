@@ -6,18 +6,31 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/values.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 CrossPlatformPromosNotificationClient::CrossPlatformPromosNotificationClient(
     ProfileIOS* profile)
     : PushNotificationClient(PushNotificationClientId::kCrossPlatformPromos,
-                             profile) {}
+                             profile) {
+  // Ensure cross-platform promos are enabled by default in the pref.
+  PrefService* prefs = profile->GetPrefs();
+  const base::DictValue& permissions =
+      prefs->GetDict(prefs::kFeaturePushNotificationPermissions);
+  if (!permissions.FindBool(kCrossPlatformPromosNotificationKey)) {
+    ScopedDictPrefUpdate update(prefs,
+                                prefs::kFeaturePushNotificationPermissions);
+    update->Set(kCrossPlatformPromosNotificationKey, true);
+  }
+}
 
 namespace {
 
