@@ -237,7 +237,7 @@ void RouteStdioToConsole(bool create_console_if_not_found) {
   // log-lines in output.
   enum { kOutputBufferSize = 64 * 1024 };
 
-  if (freopen("CONOUT$", "w", stdout)) {
+  if (freopen("CONOUT$", "w+", stdout)) {
     setvbuf(stdout, nullptr, _IOLBF, kOutputBufferSize);
     // Overwrite FD 1 for the benefit of any code that uses this FD
     // directly.  This is safe because the CRT allocates FDs 0, 1 and
@@ -246,7 +246,7 @@ void RouteStdioToConsole(bool create_console_if_not_found) {
     // _open() after startup.
     _dup2(_fileno(stdout), 1);
   }
-  if (freopen("CONOUT$", "w", stderr)) {
+  if (freopen("CONOUT$", "w+", stderr)) {
     setvbuf(stderr, nullptr, _IOLBF, kOutputBufferSize);
     _dup2(_fileno(stderr), 2);
   }
