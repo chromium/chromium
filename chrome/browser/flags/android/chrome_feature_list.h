@@ -220,7 +220,6 @@ BASE_DECLARE_FEATURE(kMoveToFrontInLaunchIntentDispatcher);
 BASE_DECLARE_FEATURE(kMultiInstanceSharedPrefsMigration);
 BASE_DECLARE_FEATURE(kMvcUpdateViewWhenModelChanged);
 BASE_DECLARE_FEATURE(kNavBarColorAnimation);
-BASE_DECLARE_FEATURE(kNewTabPageCustomizationForMvt);
 BASE_DECLARE_FEATURE(kNewTabPageCustomizationV2);
 BASE_DECLARE_FEATURE(kNotificationPermissionVariant);
 BASE_DECLARE_FEATURE(kNotificationTrampoline);

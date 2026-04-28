@@ -169,11 +169,6 @@ inline constexpr char kNewTabPageCustomizationV2Name[] =
 inline constexpr char kNewTabPageCustomizationV2Description[] =
     "Allows users to customize the new tab page, like appearance.";
 
-inline constexpr char kNewTabPageCustomizationForMvtName[] =
-    "Customize the new tab page for Most Visiteid Tiles";
-inline constexpr char kNewTabPageCustomizationForMvtDescription[] =
-    "Allows users to enable or disable the Most Visiteid Tiles section";
-
 inline constexpr char kAndroidAppearanceSettingsName[] = "Appearance Settings";
 inline constexpr char kAndroidAppearanceSettingsDescription[] =
     "Enables the Appearance Settings preference screen.";
