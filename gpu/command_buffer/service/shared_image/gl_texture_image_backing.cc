@@ -69,7 +69,7 @@ class GLTextureImageRepresentationImpl : public GLTextureImageRepresentation {
 
  private:
   // GLTextureImageRepresentation:
-  gles2::Texture* GetTexture(int plane_index) override {
+  gles2::Texture* GetTexture(size_t plane_index) override {
     DCHECK(format().IsValidPlaneIndex(plane_index));
     return textures_[plane_index];
   }
@@ -98,7 +98,7 @@ class GLTexturePassthroughImageRepresentationImpl
  private:
   // GLTexturePassthroughImageRepresentation:
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override {
+      size_t plane_index) override {
     DCHECK(format().IsValidPlaneIndex(plane_index));
     return textures_[plane_index];
   }

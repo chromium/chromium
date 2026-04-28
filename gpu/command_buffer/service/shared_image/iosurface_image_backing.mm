@@ -353,7 +353,7 @@ IOSurfaceBackingEGLState::~IOSurfaceBackingEGLState() {
   }
 }
 
-GLuint IOSurfaceBackingEGLState::GetGLServiceId(int plane_index) const {
+GLuint IOSurfaceBackingEGLState::GetGLServiceId(size_t plane_index) const {
   return GetGLTexture(plane_index)->service_id();
 }
 
@@ -398,7 +398,7 @@ class IOSurfaceImageBacking::GLTextureIRepresentation final
  private:
   // GLTexturePassthroughImageRepresentation:
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override {
+      size_t plane_index) override {
     return egl_state_->GetGLTexture(plane_index);
   }
 

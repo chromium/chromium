@@ -30,7 +30,7 @@ class GLTextureAndroidImageRepresentation
   GLTextureAndroidImageRepresentation& operator=(
       const GLTextureAndroidImageRepresentation&) = delete;
 
-  gles2::Texture* GetTexture(int plane_index) override;
+  gles2::Texture* GetTexture(size_t plane_index) override;
 
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;

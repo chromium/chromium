@@ -73,9 +73,9 @@ struct IOSurfaceBackingEGLState : base::RefCounted<IOSurfaceBackingEGLState> {
       GLuint gl_target,
       std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures);
   GLenum GetGLTarget() const { return gl_target_; }
-  GLuint GetGLServiceId(int plane_index) const;
+  GLuint GetGLServiceId(size_t plane_index) const;
   const scoped_refptr<gles2::TexturePassthrough>& GetGLTexture(
-      int plane_index) const {
+      size_t plane_index) const {
     return gl_textures_[plane_index];
   }
   bool BeginAccess(bool readonly);

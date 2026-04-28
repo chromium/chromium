@@ -46,7 +46,7 @@ GLTexturePassthroughOzoneImageRepresentation::
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughOzoneImageRepresentation::GetTexturePassthrough(
-    int plane_index) {
+    size_t plane_index) {
   return textures_holder_->texture(plane_index);
 }
 

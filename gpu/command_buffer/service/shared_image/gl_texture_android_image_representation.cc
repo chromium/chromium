@@ -27,8 +27,8 @@ GLTextureAndroidImageRepresentation::~GLTextureAndroidImageRepresentation() {
 }
 
 gles2::Texture* GLTextureAndroidImageRepresentation::GetTexture(
-    int plane_index) {
-  DCHECK_EQ(plane_index, 0);
+    size_t plane_index) {
+  DCHECK_EQ(plane_index, 0u);
   return texture_;
 }
 

@@ -31,7 +31,7 @@ class GLTexturePassthroughD3DImageRepresentation
   bool NeedsSuspendAccessForDXGIKeyedMutex() const override;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override;
+      size_t plane_index) override;
 
   void* GetEGLImage();
 

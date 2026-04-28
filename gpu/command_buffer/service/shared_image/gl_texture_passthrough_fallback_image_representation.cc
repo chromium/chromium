@@ -96,9 +96,8 @@ GLTexturePassthroughFallbackImageRepresentation::
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughFallbackImageRepresentation::GetTexturePassthrough(
-    int plane_index) {
-  CHECK_GE(plane_index, 0);
-  CHECK_LT(static_cast<size_t>(plane_index), plane_textures_.size());
+    size_t plane_index) {
+  CHECK_LT(plane_index, plane_textures_.size());
   return plane_textures_[plane_index].passthrough_texture();
 }
 

@@ -34,7 +34,7 @@ class GLTexturePassthroughOzoneImageRepresentation
 
   // GLTexturePassthroughImageRepresentation implementation.
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override;
+      size_t plane_index) override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 

@@ -159,7 +159,7 @@ class WrappedGLTextureCompoundImageRepresentation
     compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
-  gpu::TextureBase* GetTextureBase(int plane_index) final {
+  gpu::TextureBase* GetTextureBase(size_t plane_index) final {
     return wrapped_->GetTextureBase(plane_index);
   }
 
@@ -167,7 +167,7 @@ class WrappedGLTextureCompoundImageRepresentation
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
 
-  gles2::Texture* GetTexture(int plane_index) final {
+  gles2::Texture* GetTexture(size_t plane_index) final {
     return wrapped_->GetTexture(plane_index);
   }
 
@@ -207,7 +207,7 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
     compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
-  gpu::TextureBase* GetTextureBase(int plane_index) final {
+  gpu::TextureBase* GetTextureBase(size_t plane_index) final {
     return wrapped_->GetTextureBase(plane_index);
   }
 
@@ -216,7 +216,7 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   }
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) final {
+      size_t plane_index) final {
     return wrapped_->GetTexturePassthrough(plane_index);
   }
 

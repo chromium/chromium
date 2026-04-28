@@ -33,7 +33,7 @@ class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
       : GLTextureImageRepresentation(manager, backing, tracker),
         textures_(std::move(textures)) {}
 
-  gles2::Texture* GetTexture(int plane_index) override {
+  gles2::Texture* GetTexture(size_t plane_index) override {
     DCHECK(backing()->format().IsValidPlaneIndex(plane_index));
     return textures_[plane_index];
   }
@@ -58,7 +58,7 @@ class TestGLTexturePassthroughImageRepresentation
         textures_(std::move(textures)) {}
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override {
+      size_t plane_index) override {
     DCHECK(backing()->format().IsValidPlaneIndex(plane_index));
     return textures_[plane_index];
   }

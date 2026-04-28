@@ -53,7 +53,7 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
   // holder.
   void DestroyTextures();
 
-  const scoped_refptr<gles2::TexturePassthrough>& texture(int plane_index) {
+  const scoped_refptr<gles2::TexturePassthrough>& texture(size_t plane_index) {
     return textures_[plane_index];
   }
 

@@ -111,7 +111,7 @@ class EGLImageBacking::GLRepresentationShared {
     mode_ = RepresentationAccessMode::kNone;
   }
 
-  const scoped_refptr<TextureHolder>& texture_holder(int plane_index) const {
+  const scoped_refptr<TextureHolder>& texture_holder(size_t plane_index) const {
     return texture_holders_[plane_index];
   }
 
@@ -143,7 +143,7 @@ class EGLImageBacking::GLTextureEGLImageRepresentation
 
   void EndAccess() override { shared_.EndAccess(); }
 
-  gles2::Texture* GetTexture(int plane_index) override {
+  gles2::Texture* GetTexture(size_t plane_index) override {
     CHECK(format().IsValidPlaneIndex(plane_index));
     return shared_.texture_holder(plane_index)->texture();
   }
@@ -177,7 +177,7 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
   void EndAccess() override { shared_.EndAccess(); }
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override {
+      size_t plane_index) override {
     CHECK(format().IsValidPlaneIndex(plane_index));
     // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(shared_.texture_holder(plane_index)->texture_passthrough());

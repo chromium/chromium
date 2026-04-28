@@ -255,8 +255,8 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   GLTextureVideoImageRepresentation& operator=(
       const GLTextureVideoImageRepresentation&) = delete;
 
-  gles2::Texture* GetTexture(int plane_index) override {
-    DCHECK_EQ(plane_index, 0);
+  gles2::Texture* GetTexture(size_t plane_index) override {
+    DCHECK_EQ(plane_index, 0u);
     return texture_;
   }
 
@@ -302,8 +302,8 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       const GLTexturePassthroughVideoImageRepresentation&) = delete;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override {
-    DCHECK_EQ(plane_index, 0);
+      size_t plane_index) override {
+    DCHECK_EQ(plane_index, 0u);
     return passthrough_texture_;
   }
 

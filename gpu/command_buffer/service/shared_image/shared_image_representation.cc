@@ -165,7 +165,7 @@ bool GLTextureImageRepresentationBase::SupportsMultipleConcurrentReadAccess() {
 // GLTextureImageRepresentation
 
 gpu::TextureBase* GLTextureImageRepresentation::GetTextureBase(
-    int plane_index) {
+    size_t plane_index) {
   return GetTexture(plane_index);
 }
 
@@ -198,7 +198,7 @@ void GLTextureImageRepresentation::UpdateClearedStateOnBeginAccess() {
 // GLTexturePassthroughImageRepresentation
 
 gpu::TextureBase* GLTexturePassthroughImageRepresentation::GetTextureBase(
-    int plane_index) {
+    size_t plane_index) {
   return GetTexturePassthrough(plane_index).get();
 }
 
@@ -515,7 +515,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
 
 sk_sp<SkImage>
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
-    int plane_index,
+    size_t plane_index,
     SharedContextState* context_state,
     SkImages::TextureReleaseProc texture_release_proc,
     SkImages::ReleaseContext release_context) {
@@ -754,7 +754,7 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
 }
 
 sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
-    CreateSkImageForPlane(int plane_index,
+    CreateSkImageForPlane(size_t plane_index,
                           SharedContextState* context_state,
                           SkImages::TextureReleaseProc texture_release_proc,
                           SkImages::ReleaseContext release_context) {

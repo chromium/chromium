@@ -172,7 +172,8 @@ ExternalVkImageGLRepresentation::ExternalVkImageGLRepresentation(
 
 ExternalVkImageGLRepresentation::~ExternalVkImageGLRepresentation() = default;
 
-gles2::Texture* ExternalVkImageGLRepresentation::GetTexture(int plane_index) {
+gles2::Texture* ExternalVkImageGLRepresentation::GetTexture(
+    size_t plane_index) {
   return textures_[plane_index];
 }
 
@@ -200,7 +201,7 @@ ExternalVkImageGLPassthroughRepresentation::
 
 const scoped_refptr<gles2::TexturePassthrough>&
 ExternalVkImageGLPassthroughRepresentation::GetTexturePassthrough(
-    int plane_index) {
+    size_t plane_index) {
   return textures_[plane_index];
 }
 

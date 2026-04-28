@@ -110,7 +110,7 @@ void SharedImageBacking::OnContextLost() {
   have_context_ = false;
 }
 
-SkImageInfo SharedImageBacking::AsSkImageInfo(int plane_index) const {
+SkImageInfo SharedImageBacking::AsSkImageInfo(size_t plane_index) const {
   gfx::Size plane_size = format_.GetPlaneSize(plane_index, size_);
   return SkImageInfo::Make(plane_size.width(), plane_size.height(),
                            viz::ToClosestSkColorType(format(), plane_index),

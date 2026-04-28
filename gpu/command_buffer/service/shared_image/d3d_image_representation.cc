@@ -64,7 +64,7 @@ bool GLTexturePassthroughD3DImageRepresentation::
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
-    int plane_index) {
+    size_t plane_index) {
   return gl_texture_holders_[plane_index]->texture_passthrough();
 }
 
