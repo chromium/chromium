@@ -12,6 +12,6 @@ const char kRemoteProxiedRequestsAllowedAdditionalOrigin[] =
 const char kPermitEnterpriseAttestationOriginList[] =
     "webauthn-permit-enterprise-attestation";
 
-const char kGpmPinResetReauthUrlSwitch[] = "webauthn-gpm-pin-reset-reauth-url";
+const char kGpmMagicArchUrlSwitch[] = "webauthn-gpm-magic-arch-url";
 
 }  // namespace webauthn::switches

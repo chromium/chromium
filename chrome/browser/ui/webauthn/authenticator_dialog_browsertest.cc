@@ -12,14 +12,16 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -41,6 +43,8 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -64,6 +68,61 @@
 namespace {
 
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
+
+constexpr std::string_view kTestMagicArchHtmlSuccess =
+    R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  chrome.setClientEncryptionKeys(
+      function() {},
+      "1234",
+      new Map([["hw_protected", [{epoch: 1, key: new ArrayBuffer(32)}]]]));
+});
+</script></head><body><p>Test MagicArch</p></body></html>)";
+
+constexpr std::string_view kTestMagicArchHtmlResetSuccessButton =
+    R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  window.location = '/embedded/passkeys/reset/done#success';
+});
+</script></head><body><p>Test MagicArch</p></body></html>)";
+
+constexpr std::string_view kTestMagicArchHtmlResetErrorButton =
+    R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  window.location = '/embedded/passkeys/reset/error#fail';
+});
+</script></head><body><p>Test MagicArch</p></body></html>)";
+
+constexpr std::string_view kTestMagicArchHtmlResetSuccessCloseWindow =
+    R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  window.location = '/embedded/passkeys/reset/done';
+});
+</script></head><body><p>Test MagicArch</p></body></html>)";
+
+constexpr std::string_view kTestMagicArchHtmlResetErrorCloseWindow =
+    R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  window.location = '/embedded/passkeys/reset/error';
+});
+</script></head><body><p>Test MagicArch</p></body></html>)";
+
+constexpr std::string_view kTestReauthHtml =
+    R"(<html><head><title>Test Reauth</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("rapt") === null) {
+    url.searchParams.set("rapt", "RAPT");
+    window.location.href = url.href;
+  }
+});
+</script></head><body><p>Test Reauth</p></body></html>)";
 
 void UpdateModelBeforeStartFlow(
     AuthenticatorRequestDialogModel* model,
@@ -924,6 +983,30 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+enum MagicArchUnlockResponse {
+  // Magic Arch recovery is unexpected and will crash the test.
+  kNone,
+
+  // Simulates successful recovery of the security domain secret.
+  kRecoverySuccess,
+
+  // Simulates successful reset of the security domain secret, and the user
+  // clicking the button acknowledging this.
+  kResetSuccessButton,
+
+  // Simulates an error when resetting of the security domain secret, and the
+  // user clicking the button acknowledging this.
+  kResetErrorButton,
+
+  // Simulates successful reset of the security domain secret. The user will
+  // close the window manually.
+  kResetSuccessCloseWindow,
+
+  // Simulates an error when resetting of the security domain secret. The user
+  // will close the window manually.
+  kResetErrorCloseWindow,
+};
+
 // Tests the UI steps that show a pop-up window.
 class AuthenticatorWindowTest : public InProcessBrowserTest {
  public:
@@ -939,9 +1022,8 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kGaiaUrl,
                                     https_server_.base_url().spec());
-    command_line->AppendSwitchASCII(
-        webauthn::switches::kGpmPinResetReauthUrlSwitch,
-        https_server_.GetURL("/encryption/pin/reset").spec());
+    command_line->AppendSwitchASCII(webauthn::switches::kGpmMagicArchUrlSwitch,
+                                    https_server_.base_url().spec());
   }
 
   void SetUpOnMainThread() override {
@@ -956,6 +1038,18 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
             ->GetPrimaryMainFrame());
   }
 
+  void TearDownOnMainThread() override {
+    if (model_) {
+      // Close the dialog before the entire browser is torn down.
+      model_->SetStep(AuthenticatorRequestDialogModel::Step::kClosed);
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void set_magic_arch_response(MagicArchUnlockResponse response) {
+    magic_arch_response_ = response;
+  }
+
  protected:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -966,43 +1060,42 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
     const GURL url = request.GetURL();
     const std::string_view path = url.path();
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-
-    if (path == "/encryption/unlock/desktop") {
+    if (path.contains("/encryption/unlock/")) {
       response->set_code(net::HTTP_OK);
-      response->set_content(R"(<html><head><title>Test MagicArch</title>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  chrome.setClientEncryptionKeys(
-      function() {},
-      "1234",
-      new Map([["hw_protected", [{epoch: 1, key: new ArrayBuffer(32)}]]]));
-});
-</script></head><body><p>Test MagicArch</p></body></html>)");
+      switch (magic_arch_response_) {
+        case kNone:
+          NOTREACHED() << "Unexpected passkey unlock request";
+        case kRecoverySuccess:
+          response->set_content(kTestMagicArchHtmlSuccess);
+          break;
+        case kResetSuccessButton:
+          response->set_content(kTestMagicArchHtmlResetSuccessButton);
+          break;
+        case kResetErrorButton:
+          response->set_content(kTestMagicArchHtmlResetErrorButton);
+          break;
+        case kResetSuccessCloseWindow:
+          response->set_content(kTestMagicArchHtmlResetSuccessCloseWindow);
+          break;
+        case kResetErrorCloseWindow:
+          response->set_content(kTestMagicArchHtmlResetErrorCloseWindow);
+          break;
+      }
     } else if (path == "/encryption/pin/reset") {
       response->set_code(net::HTTP_OK);
-      response->set_content(R"(<html><head><title>Test Reauth</title>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const url = new URL(window.location.href);
-  if (url.searchParams.get("rapt") === null) {
-    url.searchParams.set("rapt", "RAPT");
-    window.location.href = url.href;
-  }
-});
-</script></head><body><p>Test Reauth</p></body></html>)");
+      response->set_content(kTestReauthHtml);
+    } else if (path.starts_with("/embedded/passkeys/reset")) {
+      response->set_code(net::HTTP_OK);
+      response->set_content("");
     } else {
-      LOG(ERROR) << "Unknown network request: " << url.spec();
       response->set_code(net::HTTP_NOT_FOUND);
     }
 
     return response;
   }
-};
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// This test doesn't work on Chrome OS because
-// `trusted_vault_encryption_key_tab_helper.cc` will not send the keys to the
-// EnclaveManager, since Chrome OS doesn't use the enclave.
+  MagicArchUnlockResponse magic_arch_response_ = kNone;
+};
 
 // Quits the browser (and thus finishes the test) when keys are received by the
 // EnclaveManager.
@@ -1018,7 +1111,6 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
 
   // EnclaveManager::Observer
   void OnKeysStored() override {
-    LOG(INFO) << "QuitBrowserWhenKeysStored::OnKeysStored";
     EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
         ->RemoveObserver(this);
     browser_ = nullptr;
@@ -1033,6 +1125,7 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
 };
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {
+  set_magic_arch_response(kRecoverySuccess);
   QuitBrowserWhenKeysStored observer(browser());
 
   // This should open a pop-up to MagicArch. The fake MagicArch, configured
@@ -1043,7 +1136,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {
 
   RunUntilBrowserProcessQuits();
 }
-#endif
 
 class QuitBrowserWhenReauthTokenReceived
     : public AuthenticatorRequestDialogModel::Observer {
@@ -1056,7 +1148,6 @@ class QuitBrowserWhenReauthTokenReceived
 
   // AuthenticatorRequestDialogModel::Observer
   void OnGPMReauthComplete(std::string token) override {
-    LOG(INFO) << "QuitBrowserWhenReauthTokenReceived::OnGPMReauthComplete";
     CHECK_EQ(token, "RAPT");
     model_->observers.RemoveObserver(this);
     model_ = nullptr;
@@ -1081,9 +1172,118 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, ReauthForPinReset) {
   RunUntilBrowserProcessQuits();
 }
 
+class OnGPMPasskeysResetStepListener
+    : public AuthenticatorRequestDialogModel::Observer {
+ public:
+  OnGPMPasskeysResetStepListener(AuthenticatorRequestDialogModel* model,
+                                 base::OnceCallback<void(bool)> callback)
+      : model_(model), callback_(std::move(callback)) {
+    observation_.Observe(model_);
+  }
+
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
+    observation_.Reset();
+  }
+
+  // AuthenticatorRequestDialogModel::Observer
+  void OnGPMPasskeysReset(bool success) override {
+    // UI code moves to a step that renders as a dialog.
+    model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMError);
+    std::move(callback_).Run(success);
+  }
+
+ private:
+  base::ScopedObservation<AuthenticatorRequestDialogModel,
+                          OnGPMPasskeysResetStepListener>
+      observation_{this};
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  base::OnceCallback<void(bool)> callback_;
+};
+
+class PasskeyResetPageObserver : public content::WebContentsObserver {
+ public:
+  PasskeyResetPageObserver(content::WebContents* web_contents,
+                           base::OnceCallback<void(bool)> callback)
+      : content::WebContentsObserver(web_contents),
+        callback_(std::move(callback)) {}
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    const GURL& url = navigation_handle->GetURL();
+    if (url.path().contains("/embedded/passkeys/reset/done")) {
+      std::move(callback_).Run(true);
+    } else if (url.path().contains("/embedded/passkeys/reset/error")) {
+      std::move(callback_).Run(false);
+    }
+  }
+
+ private:
+  base::OnceCallback<void(bool)> callback_;
+};
+
+// Tests that upon reporting that the security domain was reset and the user
+// clicks the button to acknowledge this, Chrome moves on to the next step.
+// Regression step for crbug.com/503420438.
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, SecurityDomainResetButton) {
+  for (bool success : {false, true}) {
+    SCOPED_TRACE(success);
+    set_magic_arch_response(success ? kResetSuccessButton : kResetErrorButton);
+    base::test::TestFuture<bool> future;
+    OnGPMPasskeysResetStepListener observer(model_.get(), future.GetCallback());
+    model_->SetStep(
+        AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(future.Get(), success);
+  }
+}
+
+// Tests that upon reporting that the security domain was reset and the user
+// closes the window, Chrome moves on to the next step.
+// Regression step for crbug.com/503420438.
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest,
+                       SecurityDomainResetCloseWindow) {
+  for (bool success : {false, true}) {
+    SCOPED_TRACE(success);
+    set_magic_arch_response(success ? kResetSuccessCloseWindow
+                                    : kResetErrorCloseWindow);
+
+    // Set up a listener for the model.
+    base::test::TestFuture<bool> result_future;
+    OnGPMPasskeysResetStepListener observer(model_.get(),
+                                            result_future.GetCallback());
+
+    // Set up a listener for the web contents popup.
+    ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+
+    // Start the process of opening a window and loading the Magic Arch URL.
+    model_->SetStep(
+        AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+
+    // Wait for the web contents popup to show up.
+    content::WebContents* popup = tab_waiter.Wait();
+
+    // Wait for the reset page to be shown.
+    base::test::TestFuture<bool> reset_future;
+    PasskeyResetPageObserver reset_page_observer(popup,
+                                                 reset_future.GetCallback());
+    ASSERT_TRUE(reset_future.Wait());
+    ASSERT_EQ(reset_future.Get(), success);
+
+    // At this point, the result should not be ready yet.
+    EXPECT_FALSE(result_future.IsReady());
+
+    // Close the popup, which should trigger getting the result.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([popup] { popup->Close(); }));
+    ASSERT_TRUE(result_future.Wait());
+    EXPECT_EQ(result_future.Get(), success);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
   // Test that closing the window (e.g. due to a timeout) doesn't cause any
   // issues.
+  set_magic_arch_response(kRecoverySuccess);
   model_->SetStep(
       AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);

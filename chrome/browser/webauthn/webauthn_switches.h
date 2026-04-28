@@ -17,8 +17,8 @@ extern const char kRemoteProxiedRequestsAllowedAdditionalOrigin[];
 // creating a WebAuthn credential.
 extern const char kPermitEnterpriseAttestationOriginList[];
 
-// The reauth URL for changing the Password Manager PIN.
-extern const char kGpmPinResetReauthUrlSwitch[];
+// The domain for Magic Arch.
+extern const char kGpmMagicArchUrlSwitch[];
 
 }  // namespace webauthn::switches
 
