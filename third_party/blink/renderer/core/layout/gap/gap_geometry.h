@@ -495,8 +495,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // considered to be spanner-adjacent "edges". These intersections are
   // adjacent to spanner main gaps and need to be treated as edge
   // intersections so that insets are applied correctly.
-  // TODO(crbug.com/440123087): If we get rid of percentage insets for gaps, we
-  // can remove this.
   mutable HashSet<wtf_size_t> multicol_spanner_adjacent_intersections_;
 };
 

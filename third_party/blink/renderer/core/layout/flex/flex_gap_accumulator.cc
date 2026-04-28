@@ -37,8 +37,6 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
     gap_geometry->SetInlineGapSize(gap_between_items_);
   }
 
-  // TODO(crbug.com/440123087): Risky since they could in theory be used after
-  // moved. Clean up to not move members. Change members to unique_ptrs
   if (!cross_gaps_.empty()) {
     gap_geometry->SetCrossGaps(std::move(cross_gaps_));
   }
