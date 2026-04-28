@@ -79,10 +79,7 @@ MATCHER_P(DebugLog, debug_string, "") {
 
 class MP4StreamParserTest : public testing::Test {
  public:
-  MP4StreamParserTest()
-      : configs_received_(false),
-        lower_bound_(kMaxDecodeTimestamp),
-        verifying_keyframeness_sequence_(false) {
+  MP4StreamParserTest() {
     base::flat_set<int> audio_object_types;
     audio_object_types.insert(kISO_14496_3);
     parser_.reset(
@@ -92,15 +89,20 @@ class MP4StreamParserTest : public testing::Test {
  protected:
   StrictMock<MockMediaLog> media_log_;
   std::unique_ptr<MP4StreamParser> parser_;
-  bool configs_received_;
+  bool configs_received_ = false;
   std::unique_ptr<MediaTracks> media_tracks_;
   AudioDecoderConfig audio_decoder_config_;
   VideoDecoderConfig video_decoder_config_;
-  DecodeTimestamp lower_bound_;
-  StreamParser::TrackId audio_track_id_;
-  StreamParser::TrackId video_track_id_;
-  bool verifying_keyframeness_sequence_;
+  DecodeTimestamp lower_bound_ = kMaxDecodeTimestamp;
+  StreamParser::TrackId audio_track_id_ = 0;
+  StreamParser::TrackId video_track_id_ = 0;
+  bool verifying_keyframeness_sequence_ = false;
   StrictMock<base::MockRepeatingCallback<void(Keyframeness)>> keyframeness_cb_;
+
+  // If `capture_video_buffers` is true, then retain all parsed buffers from
+  // `video_track_id_` in `video_buffers_`.
+  bool capture_video_buffers_ = false;
+  std::vector<scoped_refptr<StreamParserBuffer>> video_buffers_;
 
   // Note this is similar to a StreamParserTestBase method, so may benefit from
   // utility method or inheritance if they don't diverge.
@@ -197,6 +199,10 @@ class MP4StreamParserTest : public testing::Test {
                  << ", dur=" << buf->duration().InSecondsF();
         // Ensure that track ids are properly assigned on all emitted buffers.
         EXPECT_EQ(track_id, buf->track_id());
+
+        if (track_id == video_track_id_ && capture_video_buffers_) {
+          video_buffers_.push_back(buf);
+        }
 
         // Let single-track tests verify the sequence of keyframes/nonkeyframes.
         if (verifying_keyframeness_sequence_) {
@@ -1169,17 +1175,41 @@ TEST_F(MP4StreamParserTest, MultiTrackFile) {
   EXPECT_EQ(audio_track2.language().value(), "und");
 }
 
-TEST_F(MP4StreamParserTest, TimedMetadataTrackDetected) {
+TEST_F(MP4StreamParserTest, TimedMetadataTrack) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kMP4TimedMetadataTrack, features::kHdrAgtm},
                                 {});
 
   auto params = GetDefaultInitParametersExpectations();
+  params.liveness = StreamLiveness::kRecorded;
   params.detected_video_track_count = 1;
-  params.detected_audio_track_count = 1;
+  params.detected_audio_track_count = 0;
   params.detected_metadata_track_count = 1;
+  params.duration = base::Milliseconds(1500);
   InitializeParserWithInitParametersExpectations(params);
-  ParseMP4File("agtm-metadata-track-frag.mp4", 16 * 1024 * 1024);
+  capture_video_buffers_ = true;
+
+  scoped_refptr<DecoderBuffer> buffer;
+  buffer = ReadTestDataFile("agtm-metadata-track-frag.mp4");
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
+  parser_->Flush();
+
+  buffer = ReadTestDataFile("agtm-metadata-track-frag.m4s");
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
+  parser_->Flush();
+
+  uint32_t video_buffers_with_agtm = 0;
+  uint32_t video_buffers_total = 0;
+  for (const auto& buf : video_buffers_) {
+    if (buf->track_id() == video_track_id_) {
+      video_buffers_total++;
+      if (buf->side_data() && buf->side_data()->hdr_metadata.HasAgtm()) {
+        video_buffers_with_agtm++;
+      }
+    }
+  }
+  EXPECT_GT(video_buffers_total, 0u);
+  EXPECT_EQ(video_buffers_with_agtm, video_buffers_total);
 }
 
 // <cos(θ), sin(θ), θ expressed as a rotation Enum>

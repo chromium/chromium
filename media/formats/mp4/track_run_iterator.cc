@@ -293,8 +293,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
     const SampleDescription& stsd =
         trak->media.information.sample_table.description;
-    if (stsd.type != kAudio && stsd.type != kVideo) {
-      // TODO(https://crbug.com/490319976): Do not discard metadata samples.
+    if (stsd.type != kAudio && stsd.type != kVideo && stsd.type != kMetadata) {
       DVLOG(1) << "Skipping unhandled track type";
       continue;
     }
@@ -350,25 +349,33 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       const TrackEncryption* track_encryption = nullptr;
       const ProtectionSchemeInfo* sinf = nullptr;
       tri.track_type = stsd.type;
-      if (tri.track_type == kAudio) {
-        RCHECK(!stsd.audio_entries.empty());
-        if (desc_idx >= stsd.audio_entries.size())
-          desc_idx = 0;
-        tri.audio_description = &stsd.audio_entries[desc_idx];
-        sinf = &tri.audio_description->sinf;
-        track_encryption = &tri.audio_description->sinf.info.track_encryption;
-      } else if (tri.track_type == kVideo) {
-        RCHECK(!stsd.video_entries.empty());
-        if (desc_idx >= stsd.video_entries.size())
-          desc_idx = 0;
-        tri.video_description = &stsd.video_entries[desc_idx];
-        sinf = &tri.video_description->sinf;
-        track_encryption = &tri.video_description->sinf.info.track_encryption;
-      } else {
-        NOTREACHED();
+      switch (tri.track_type) {
+        case kAudio:
+          RCHECK(!stsd.audio_entries.empty());
+          if (desc_idx >= stsd.audio_entries.size()) {
+            desc_idx = 0;
+          }
+          tri.audio_description = &stsd.audio_entries[desc_idx];
+          sinf = &tri.audio_description->sinf;
+          track_encryption = &tri.audio_description->sinf.info.track_encryption;
+          break;
+        case kVideo:
+          RCHECK(!stsd.video_entries.empty());
+          if (desc_idx >= stsd.video_entries.size()) {
+            desc_idx = 0;
+          }
+          tri.video_description = &stsd.video_entries[desc_idx];
+          sinf = &tri.video_description->sinf;
+          track_encryption = &tri.video_description->sinf.info.track_encryption;
+          break;
+        case kMetadata:
+          // Encrypted metadata tracks are not supported.
+          break;
+        default:
+          NOTREACHED();
       }
 
-      if (!sinf->HasSupportedScheme()) {
+      if (!sinf || !sinf->HasSupportedScheme()) {
         tri.encryption_scheme = EncryptionScheme::kUnencrypted;
       } else {
         tri.encryption_scheme = sinf->IsCbcsEncryptionScheme()
@@ -795,10 +802,21 @@ uint32_t TrackRunIterator::GetGroupDescriptionIndex(
 }
 
 bool TrackRunIterator::IsSampleEncrypted(size_t sample_index) const {
-  uint32_t index = GetGroupDescriptionIndex(sample_index);
-  return (index == 0)
-             ? track_encryption().is_encrypted
-             : GetSampleEncryptionInfoEntry(*run_itr_, index)->is_encrypted;
+  switch (run_itr_->track_type) {
+    case kAudio:
+    case kVideo: {
+      // Only audio and video tracks support encryption.
+      uint32_t index = GetGroupDescriptionIndex(sample_index);
+      return (index == 0)
+                 ? track_encryption().is_encrypted
+                 : GetSampleEncryptionInfoEntry(*run_itr_, index)->is_encrypted;
+    }
+    case kInvalid:
+    case kMetadata:
+    case kText:
+    case kHint:
+      return false;
+  }
 }
 
 const std::vector<uint8_t>& TrackRunIterator::GetKeyId(

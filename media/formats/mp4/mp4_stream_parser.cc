@@ -1045,10 +1045,10 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     buffer_type = DemuxerStream::AUDIO;
   } else if (video_track_ids_.count(runs_->track_id())) {
     buffer_type = DemuxerStream::VIDEO;
-  }
-
-  // Skip this entire track if it's not one we're interested in
-  if (buffer_type == DemuxerStream::UNKNOWN) {
+  } else if (metadata_tracks_.count(runs_->track_id())) {
+    // Leave metadata samples' buffer type as UNKNOWN.
+  } else {
+    // Skip this entire track if it's not one we're interested in
     if (!runs_->AdvanceRun()) {
       return ParseResult::kError;
     }

@@ -591,20 +591,10 @@ FourCC MetadataIT35SampleEntry::BoxType() const {
 bool MetadataIT35SampleEntry::Parse(BoxReader* reader) {
   RCHECK(reader->SkipBytes(6) && reader->Read2(&data_reference_index));
 
-  // Read the null-terminated description string byte-by-byte.
-  // TODO(https://crbug.com/490319976): This is not present in the revised
-  // proposal. Remove it from the implementation.
-  while (true) {
-    uint8_t c = 0;
-    RCHECK(reader->Read1(&c));
-    if (c == 0) {
-      break;
-    }
-  }
-
-  size_t remaining_size = reader->box_size() - reader->pos();
+  uint8_t it35_identifier_length = 0;
+  RCHECK(reader->Read1(&it35_identifier_length));
   std::vector<uint8_t> it35_prefix;
-  RCHECK(reader->ReadVec(&it35_prefix, remaining_size));
+  RCHECK(reader->ReadVec(&it35_prefix, it35_identifier_length));
 
   if (gfx::HdrMetadataAgtm::IsEnabled() && MatchesAgtmT35(it35_prefix)) {
     it35_prefix_type = IT35PrefixType::kSmpteSt2094App5;
