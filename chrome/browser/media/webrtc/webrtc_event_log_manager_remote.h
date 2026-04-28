@@ -171,7 +171,6 @@ class WebRtcRemoteEventLogManager final
   // Stops logging all the peer connections associated with the renderer
   // process. If StopLoggingAction is kStore, the logs are stored and uploaded,
   // otherwise the logs are deleted.
-  enum class StopLoggingAction { kStore, kDelete };
   void StopLogging(int render_process_id,
                    StopLoggingAction action,
                    base::OnceClosure callback);

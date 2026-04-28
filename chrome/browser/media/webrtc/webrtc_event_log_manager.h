@@ -424,10 +424,9 @@ class WebRtcEventLogManager final
       base::OnceCallback<void(bool, const std::string&, const std::string&)>
           reply);
 
-  void StopLoggingInternal(
-      int render_process_id,
-      WebRtcRemoteEventLogManager::StopLoggingAction action,
-      base::OnceClosure callback);
+  void StopLoggingInternal(int render_process_id,
+                           StopLoggingAction action,
+                           base::OnceClosure callback);
 
   void ClearCacheForBrowserContextInternal(BrowserContextId browser_context_id,
                                            const base::Time& delete_begin,

@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -381,7 +382,7 @@ void WebRtcEventLogManager::FinishLogging(int render_process_id,
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::StopLoggingInternal,
                      base::Unretained(this), render_process_id,
-                     WebRtcRemoteEventLogManager::StopLoggingAction::kStore,
+                     StopLoggingAction::kStore,
                      base::BindPostTask(content::GetUIThreadTaskRunner({}),
                                         std::move(callback))));
 }
@@ -393,7 +394,7 @@ void WebRtcEventLogManager::CancelLogging(int render_process_id,
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::StopLoggingInternal,
                      base::Unretained(this), render_process_id,
-                     WebRtcRemoteEventLogManager::StopLoggingAction::kDelete,
+                     StopLoggingAction::kDelete,
                      base::BindPostTask(content::GetUIThreadTaskRunner({}),
                                         std::move(callback))));
 }
@@ -1161,13 +1162,13 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
       base::BindOnce(std::move(reply), result, log_id, error_message));
 }
 
-void WebRtcEventLogManager::StopLoggingInternal(
-    int render_process_id,
-    WebRtcRemoteEventLogManager::StopLoggingAction action,
-    base::OnceClosure callback) {
+void WebRtcEventLogManager::StopLoggingInternal(int render_process_id,
+                                                StopLoggingAction action,
+                                                base::OnceClosure callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  remote_logs_manager_.StopLogging(render_process_id, action,
-                                   std::move(callback));
+  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  local_logs_manager_.StopLogging(render_process_id, action, barrier);
+  remote_logs_manager_.StopLogging(render_process_id, action, barrier);
 }
 
 void WebRtcEventLogManager::ClearCacheForBrowserContextInternal(

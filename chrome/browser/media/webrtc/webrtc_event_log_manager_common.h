@@ -117,6 +117,8 @@ extern const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[];
 extern const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[];
 extern const char kBrowserContextNotFound[];
 
+enum class StopLoggingAction { kStore, kDelete };
+
 // Values for the histogram for the result of the API call to collect
 // a WebRTC event log.
 // Must match the numbering of WebRtcEventLoggingApiEnum in enums.xml.

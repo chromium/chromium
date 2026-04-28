@@ -140,7 +140,7 @@ constexpr int kFrameId = 57;
 PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph, int lid) {
   const BrowserContext* browser_context = rph->GetBrowserContext();
   const auto browser_context_id = GetBrowserContextId(browser_context);
-  return PeerConnectionKey(rph->GetDeprecatedID(), lid, browser_context_id,
+  return PeerConnectionKey(rph->GetID().value(), lid, browser_context_id,
                            kFrameId);
 }
 
@@ -809,6 +809,20 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
         base::BindOnce([](base::WaitableEvent* event) { event->Signal(); },
                        &event));
     event.Wait();
+  }
+
+  void StopLoggingLocal(int rph_id,
+                        StopLoggingAction action,
+                        base::OnceClosure reply) {
+    event_log_manager_->GetTaskRunnerForTesting()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](WebRtcEventLogManager* manager, int rph_id,
+                          StopLoggingAction action, base::OnceClosure reply) {
+                         manager->local_logs_manager_.StopLogging(
+                             rph_id, action, std::move(reply));
+                       },
+                       base::Unretained(event_log_manager_.get()), rph_id,
+                       action, std::move(reply)));
   }
 
   void SuppressUploading() {
@@ -1525,6 +1539,30 @@ TEST_F(WebRtcEventLogManagerTest, DisableLocalLoggingReturnsIfAlreadyDisabled) {
   EXPECT_FALSE(DisableLocalLogging());
 }
 
+TEST_F(WebRtcEventLogManagerTest, LocalManagerStopLoggingDeletesFile) {
+  SetLocalLogsObserver(&local_observer_);
+
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+
+  std::optional<base::FilePath> log_file_path;
+  EXPECT_CALL(local_observer_, OnLocalEventLogStarted(key, _))
+      .WillOnce(SaveFilePathTo(&log_file_path));
+
+  ASSERT_TRUE(EnableLocalLogging());
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  WaitForPendingTasks();
+
+  ASSERT_TRUE(log_file_path.has_value());
+  ASSERT_TRUE(base::PathExists(*log_file_path));
+
+  base::RunLoop run_loop;
+  StopLoggingLocal(rph_->GetID().value(), StopLoggingAction::kDelete,
+                   run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(*log_file_path));
+}
+
 TEST_F(WebRtcEventLogManagerTest,
        OnWebRtcEventLogWriteReturnsFalseAndFalseWhenAllLoggingDisabled) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
@@ -2023,7 +2061,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleActiveFiles) {
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetID().value()) +
                       base::NumberToString(kLid));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(true, false));
@@ -2287,7 +2325,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogFilenameMatchesExpectedFormat) {
   base::FilePath expected_path = local_logs_base_path;
   expected_path = local_logs_base_path.InsertBeforeExtension(
       FILE_PATH_LITERAL("_") + date + FILE_PATH_LITERAL("_") + time +
-      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetDeprecatedID()) +
+      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetID().value()) +
       FILE_PATH_LITERAL("_") + NumberToStringType(kLid));
   expected_path = expected_path.AddExtension(local_log_extension_);
 
@@ -2331,7 +2369,7 @@ TEST_F(WebRtcEventLogManagerTest,
   base::FilePath expected_path_1 = local_logs_base_path;
   expected_path_1 = local_logs_base_path.InsertBeforeExtension(
       FILE_PATH_LITERAL("_") + date + FILE_PATH_LITERAL("_") + time +
-      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetDeprecatedID()) +
+      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetID().value()) +
       FILE_PATH_LITERAL("_") + NumberToStringType(kLid));
   expected_path_1 = expected_path_1.AddExtension(local_log_extension_);
 
@@ -2855,7 +2893,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetID().value()) +
                       base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));
@@ -2901,7 +2939,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetID().value()) +
                       base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));
@@ -3767,7 +3805,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLoggingFinishedKeepsFile) {
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
 
   base::test::TestFuture<void> future;
-  WebRtcEventLogManager::GetInstance()->FinishLogging(rph_->GetDeprecatedID(),
+  WebRtcEventLogManager::GetInstance()->FinishLogging(rph_->GetID().value(),
                                                       future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
@@ -3790,7 +3828,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLoggingCancelledDeletesFile) {
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
 
   base::test::TestFuture<void> future;
-  WebRtcEventLogManager::GetInstance()->CancelLogging(rph_->GetDeprecatedID(),
+  WebRtcEventLogManager::GetInstance()->CancelLogging(rph_->GetID().value(),
                                                       future.GetCallback());
   EXPECT_TRUE(future.Wait());
 

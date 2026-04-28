@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -49,6 +50,10 @@ class WebRtcLocalEventLogManager final {
                            const std::string& message);
 
   void RenderProcessHostExitedDestroyed(int render_process_id);
+
+  void StopLogging(int render_process_id,
+                   StopLoggingAction action,
+                   base::OnceClosure callback);
 
   // This function is public, but this entire class is a protected
   // implementation detail of WebRtcEventLogManager, which hides this
