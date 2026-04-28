@@ -10,7 +10,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -18,6 +21,8 @@
 #include "components/accessibility_annotator/core/storage/test_accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +36,41 @@ using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Optional;
+using ::testing::Pair;
 using ::testing::Property;
+
+MATCHER_P(EqualsAnnotations, expected_ref, "") {
+  const AccessibilityAnnotatorBackend::ContentAnnotationsData& expected =
+      expected_ref.get();
+
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field("page_title",
+                         &AccessibilityAnnotatorBackend::
+                             ContentAnnotationsData::page_title,
+                         expected.page_title),
+          testing::Field(
+              "tab_id",
+              &AccessibilityAnnotatorBackend::ContentAnnotationsData::tab_id,
+              expected.tab_id),
+          testing::Field("content_annotation",
+                         &AccessibilityAnnotatorBackend::
+                             ContentAnnotationsData::content_annotation,
+                         base::test::EqualsProto(expected.content_annotation)),
+          testing::Field("classifier_results",
+                         &AccessibilityAnnotatorBackend::
+                             ContentAnnotationsData::classifier_results,
+                         testing::Eq(std::ref(expected.classifier_results))),
+          testing::Field("navigation_timestamp",
+                         &AccessibilityAnnotatorBackend::
+                             ContentAnnotationsData::navigation_timestamp,
+                         expected.navigation_timestamp),
+          testing::Field(
+              "url",
+              &AccessibilityAnnotatorBackend::ContentAnnotationsData::url,
+              expected.url)),
+      arg, result_listener);
+}
 
 constexpr std::string_view kExampleUrl = "https://example.com/";
 
@@ -53,21 +92,22 @@ CreateContentAnnotationsData(std::string_view page_title) {
 
 class AccessibilityAnnotatorBackendTest : public testing::Test {
  public:
-  AccessibilityAnnotatorBackendTest() = default;
-  ~AccessibilityAnnotatorBackendTest() override = default;
-
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
     backend_ = std::make_unique<AccessibilityAnnotatorBackendImpl>(
-        /*history_service=*/nullptr,
-        /*os_crypt_async=*/nullptr,
+        /*history_service=*/nullptr, os_crypt_async_.get(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         temp_dir_.GetPath().AppendASCII("TestDB"));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAccessibilityAnnotatorDatabaseStorage};
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<AccessibilityAnnotatorBackendImpl> backend_;
 };
 
@@ -806,6 +846,147 @@ TEST_F(AccessibilityAnnotatorBackendTest,
   EXPECT_EQ(sd.flight_reservations(0).flight_number(), "AA123");
   EXPECT_EQ(sd.flight_reservations(0).departure_airport(), "SFO");
   EXPECT_EQ(sd.flight_reservations(0).arrival_airport(), "LAX");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, AddAndGetContentAnnotationFromDb) {
+  history::VisitID visit_id(123);
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData("Test Page Title");
+  data.content_annotation.set_description("Test description");
+  data.classifier_results.Set("category", "test_category");
+
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<
+      std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>>
+      get_future;
+
+  // Add the content annotation to the database.
+  backend_->AddContentAnnotation(visit_id, data.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Get());
+
+  // Retrieve the content annotation from the database and verify its contents.
+  backend_->GetContentAnnotation(visit_id, get_future.GetCallback());
+  EXPECT_THAT(get_future.Get(), Optional(EqualsAnnotations(std::ref(data))));
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       GetNonExistentContentAnnotationFromDb) {
+  base::test::TestFuture<
+      std::optional<AccessibilityAnnotatorBackend::ContentAnnotationsData>>
+      future;
+  backend_->GetContentAnnotation(999, future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, GetAllContentAnnotationsFromDb) {
+  history::VisitID visit_id1(1);
+  history::VisitID visit_id2(2);
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1 =
+      CreateContentAnnotationsData("Test Page Title 1");
+  data1.content_annotation.set_description("Test description 1");
+  data1.classifier_results.Set("category", "test_category");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2 =
+      CreateContentAnnotationsData("Test Page Title 2");
+  data2.content_annotation.set_description("Test description 2");
+  data2.classifier_results.Set("category", "test_category");
+
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<std::vector<std::pair<
+      history::VisitID, AccessibilityAnnotatorBackend::ContentAnnotationsData>>>
+      get_future;
+
+  // Add two content annotations to the database.
+  backend_->AddContentAnnotation(visit_id1, data1.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  backend_->AddContentAnnotation(visit_id2, data2.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Verify that both content annotations are retrieved from the database.
+  backend_->GetAllContentAnnotations(get_future.GetCallback());
+  EXPECT_THAT(get_future.Get(),
+              testing::UnorderedElementsAre(
+                  Pair(visit_id1, EqualsAnnotations(std::ref(data1))),
+                  Pair(visit_id2, EqualsAnnotations(std::ref(data2)))));
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, ClearAllContentAnnotationsFromDb) {
+  history::VisitID visit_id1(1);
+  history::VisitID visit_id2(2);
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data =
+      CreateContentAnnotationsData("Test Page Title");
+  data.content_annotation.set_description("Test description");
+  data.classifier_results.Set("category", "test_category");
+
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<std::vector<std::pair<
+      history::VisitID, AccessibilityAnnotatorBackend::ContentAnnotationsData>>>
+      get_future;
+
+  // Add two content annotations to the database.
+  backend_->AddContentAnnotation(visit_id1, data.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  backend_->AddContentAnnotation(visit_id2, data.Clone(),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Verify that the database is not empty.
+  backend_->GetAllContentAnnotations(get_future.GetCallback());
+  ASSERT_EQ(get_future.Take().size(), 2u);
+
+  // Clear all content annotations from the database successfully.
+  backend_->ClearAllContentAnnotations(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Verify that the database is empty after clearing all content annotations.
+  backend_->GetAllContentAnnotations(get_future.GetCallback());
+  EXPECT_TRUE(get_future.Take().empty());
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, DeleteContentAnnotationsFromDb) {
+  history::VisitID visit_id_1(1);
+  history::VisitID visit_id_2(2);
+  history::VisitID visit_id_3(3);
+
+  base::test::TestFuture<bool> success_future;
+  base::test::TestFuture<std::vector<std::pair<
+      history::VisitID, AccessibilityAnnotatorBackend::ContentAnnotationsData>>>
+      get_future;
+
+  // Add the content annotations to the database.
+  backend_->AddContentAnnotation(visit_id_1,
+                                 CreateContentAnnotationsData("Title 1"),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+  backend_->AddContentAnnotation(visit_id_2,
+                                 CreateContentAnnotationsData("Title 2"),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+  backend_->AddContentAnnotation(visit_id_3,
+                                 CreateContentAnnotationsData("Title 3"),
+                                 success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Verify that the content annotations are present in the database.
+  backend_->GetAllContentAnnotations(get_future.GetCallback());
+  EXPECT_EQ(get_future.Take().size(), 3u);
+
+  // Delete two content annotations from the database successfully.
+  backend_->DeleteContentAnnotations({visit_id_1, visit_id_2},
+                                     success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  // Verify that only the remaining content annotation is present in the
+  // database.
+  backend_->GetAllContentAnnotations(get_future.GetCallback());
+  EXPECT_THAT(get_future.Take(),
+              testing::ElementsAre(Pair(visit_id_3, testing::_)));
 }
 
 }  // namespace

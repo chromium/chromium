@@ -434,6 +434,45 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   return base::Value(std::move(result));
 }
 
+void AccessibilityAnnotatorBackendImpl::AddContentAnnotation(
+    history::VisitID visit_id,
+    ContentAnnotationsData data,
+    base::OnceCallback<void(bool)> callback) {
+  db_.AsyncCall(&AccessibilityAnnotatorDatabase::AddContentAnnotation)
+      .WithArgs(visit_id, std::move(data))
+      .Then(std::move(callback));
+}
+
+void AccessibilityAnnotatorBackendImpl::GetContentAnnotation(
+    history::VisitID visit_id,
+    base::OnceCallback<void(std::optional<ContentAnnotationsData>)> callback) {
+  db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetContentAnnotation)
+      .WithArgs(visit_id)
+      .Then(std::move(callback));
+}
+
+void AccessibilityAnnotatorBackendImpl::GetAllContentAnnotations(
+    base::OnceCallback<
+        void(std::vector<std::pair<history::VisitID, ContentAnnotationsData>>)>
+        callback) {
+  db_.AsyncCall(&AccessibilityAnnotatorDatabase::GetAllContentAnnotations)
+      .Then(std::move(callback));
+}
+
+void AccessibilityAnnotatorBackendImpl::DeleteContentAnnotations(
+    std::vector<history::VisitID> visit_ids,
+    base::OnceCallback<void(bool)> callback) {
+  db_.AsyncCall(&AccessibilityAnnotatorDatabase::DeleteContentAnnotations)
+      .WithArgs(std::move(visit_ids))
+      .Then(std::move(callback));
+}
+
+void AccessibilityAnnotatorBackendImpl::ClearAllContentAnnotations(
+    base::OnceCallback<void(bool)> callback) {
+  db_.AsyncCall(&AccessibilityAnnotatorDatabase::ClearAllContentAnnotations)
+      .Then(std::move(callback));
+}
+
 void AccessibilityAnnotatorBackendImpl::GetSyncAnnotationsByTypes(
     EntityTypeEnumSet types,
     base::OnceCallback<void(

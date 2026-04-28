@@ -80,6 +80,22 @@ class AccessibilityAnnotatorBackendImpl
       base::span<const history::VisitID> visit_ids) override;
   void ClearContentAnnotationsCache() override;
   base::Value GetDebugUICacheData() const override;
+  void AddContentAnnotation(history::VisitID visit_id,
+                            ContentAnnotationsData data,
+                            base::OnceCallback<void(bool)> callback) override;
+  void GetContentAnnotation(
+      history::VisitID visit_id,
+      base::OnceCallback<void(std::optional<ContentAnnotationsData>)> callback)
+      override;
+  void GetAllContentAnnotations(
+      base::OnceCallback<void(
+          std::vector<std::pair<history::VisitID, ContentAnnotationsData>>)>
+          callback) override;
+  void DeleteContentAnnotations(
+      std::vector<history::VisitID> visit_ids,
+      base::OnceCallback<void(bool)> callback) override;
+  void ClearAllContentAnnotations(
+      base::OnceCallback<void(bool)> callback) override;
 
   const base::circular_deque<optimization_guide::proto::ContentAnnotation>&
   GetMergedMultipageAnnotationsForTesting() const {
@@ -137,6 +153,8 @@ class AccessibilityAnnotatorBackendImpl
   std::unique_ptr<AccessibilityAnnotationSyncBridge>
       accessibility_annotation_sync_bridge_;
 
+  // TODO(crbug.com/496384941): Once the DebugUI reads from the persistent
+  // database, the cache and its related functions should be cleaned up.
   // Stores annotations keyed by the visit ID they are associated with. The
   // cache size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is
   // full, the least recently used entry is evicted.

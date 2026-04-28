@@ -59,6 +59,31 @@ class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
   MOCK_METHOD(void, ClearContentAnnotationsCache, (), (override));
   MOCK_METHOD(base::Value, GetDebugUICacheData, (), (const, override));
   MOCK_METHOD(void,
+              AddContentAnnotation,
+              (history::VisitID,
+               ContentAnnotationsData,
+               base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              GetContentAnnotation,
+              (history::VisitID,
+               base::OnceCallback<void(std::optional<ContentAnnotationsData>)>),
+              (override));
+  MOCK_METHOD(
+      void,
+      GetAllContentAnnotations,
+      (base::OnceCallback<void(
+           std::vector<std::pair<history::VisitID, ContentAnnotationsData>>)>),
+      (override));
+  MOCK_METHOD(void,
+              DeleteContentAnnotations,
+              (std::vector<history::VisitID>, base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
+              ClearAllContentAnnotations,
+              (base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
               GetSyncAnnotationsByTypes,
               (EntityTypeEnumSet,
                base::OnceCallback<void(

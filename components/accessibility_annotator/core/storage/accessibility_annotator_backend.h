@@ -64,6 +64,9 @@ class AccessibilityAnnotatorBackend : public KeyedService {
     ContentAnnotationsData(const ContentAnnotationsData&) = delete;
     ContentAnnotationsData& operator=(const ContentAnnotationsData&) = delete;
 
+    ContentAnnotationsData Clone() const;
+
+    // LINT.IfChange(ContentAnnotationsDataMembers)
     std::string page_title;
     std::optional<int> tab_id;
     optimization_guide::proto::ContentAnnotation content_annotation;
@@ -71,6 +74,7 @@ class AccessibilityAnnotatorBackend : public KeyedService {
     base::Time navigation_timestamp;
     history::VisitID visit_id = history::kInvalidVisitID;
     GURL url;
+    // LINT.ThenChange(//components/accessibility_annotator/core/storage/accessibility_annotator_backend.cc:ContentAnnotationsDataClone)
   };
 
   ~AccessibilityAnnotatorBackend() override = default;
@@ -104,6 +108,39 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
   // Pulls cache data into a base::Value for use in the debug UI.
   virtual base::Value GetDebugUICacheData() const = 0;
+
+  // Adds a content annotation to the database. `callback` is called with the
+  // boolean result of the addition.
+  virtual void AddContentAnnotation(
+      history::VisitID visit_id,
+      ContentAnnotationsData data,
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Gets the content annotation from the database for the given `visit_id`.
+  // `callback` is called with the annotation data if found, or
+  // std::nullopt if not found.
+  virtual void GetContentAnnotation(
+      history::VisitID visit_id,
+      base::OnceCallback<void(std::optional<ContentAnnotationsData>)>
+          callback) = 0;
+
+  // Gets all content annotations from the database. `callback` is called with
+  // a vector of pairs of visit IDs and their corresponding content annotations.
+  virtual void GetAllContentAnnotations(
+      base::OnceCallback<void(
+          std::vector<std::pair<history::VisitID, ContentAnnotationsData>>)>
+          callback) = 0;
+
+  // Deletes content annotations from the database for the given `visit_ids`.
+  // `callback` is called with the boolean result of the deletion.
+  virtual void DeleteContentAnnotations(
+      std::vector<history::VisitID> visit_ids,
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Clears all content annotations from the database. `callback` is called with
+  // the boolean result of the clearing.
+  virtual void ClearAllContentAnnotations(
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Returns sync annotations from the sync bridge that match the given entity
   // types.
