@@ -11,8 +11,8 @@ import {getCss} from './motion_overlay.css.js';
 import {getHtml} from './motion_overlay.html.js';
 import type {IndigoTextOverlayElement} from './text_overlay.js';
 
+const SWIPE_DURATION_MS: number = 2000;
 const LOADING_CIRCLES_START_DELAY_MS: number = 1300;
-const FINISHED_TIMEOUT_MS: number = 2000;
 const TEXT_OVERLAY_START_DELAY_MS: number = 1000;
 
 export interface IndigoMotionOverlayElement {
@@ -107,7 +107,7 @@ export class IndigoMotionOverlayElement extends CrLitElement {
 
     window.setTimeout(() => {
       this.fire('motion-complete');
-    }, FINISHED_TIMEOUT_MS);
+    }, SWIPE_DURATION_MS);
   }
 
   private calculateDimensions_() {
@@ -125,6 +125,7 @@ export class IndigoMotionOverlayElement extends CrLitElement {
     this.style.setProperty('--minor-axis', `${minorAxis}px`);
     this.style.setProperty('--border-width', `${borderWidth}px`);
     this.style.setProperty('--gap', `${gap}px`);
+    this.style.setProperty('--indigo-swipe-duration', `${SWIPE_DURATION_MS}ms`);
   }
 }
 

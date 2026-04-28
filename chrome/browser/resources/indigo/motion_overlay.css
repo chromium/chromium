@@ -16,6 +16,8 @@
   --indigo-loading-circle-dark-rgb: 41, 124, 241;
   --indigo-loading-circle-light-rgb: 183, 203, 255;
   --indigo-mask-color: black;
+  --indigo-blur-min: 1vw;
+  --indigo-blur-max: 5vw;
 
   position: absolute;
   top: 0;
@@ -122,11 +124,11 @@
 
 @keyframes blurOpacityTransition {
   0% {
-    backdrop-filter: blur(20px) brightness(1.0);
+    backdrop-filter: blur(var(--indigo-blur-min)) brightness(1.0);
   }
 
   100% {
-    backdrop-filter: blur(100px) brightness(1.0);
+    backdrop-filter: blur(var(--indigo-blur-max)) brightness(1.0);
   }
 }
 
@@ -165,14 +167,17 @@
 
 :host([animation-state='entry']) #swipeEllipse1,
 :host([animation-state='entry']) #swipeEllipse2 {
-  animation: swipe-entry 2s ease-in-out forwards,
-            swipeColorTransition-entry 2s linear forwards;
+  animation: swipe-entry var(--indigo-swipe-duration) ease-in-out forwards,
+             swipeColorTransition-entry var(--indigo-swipe-duration)
+                 linear forwards;
 }
 
 :host([animation-state='exit']) #swipeEllipse1,
 :host([animation-state='exit']) #swipeEllipse2 {
-  animation: swipe-exit 1.8s ease-in-out forwards,
-            swipeColorTransition-exit 2s linear forwards;
+  animation: swipe-exit calc(var(--indigo-swipe-duration) - 0.2s)
+                 ease-in-out forwards,
+             swipeColorTransition-exit var(--indigo-swipe-duration)
+                 linear forwards;
 }
 
 #swipeEllipse2 {
@@ -187,7 +192,7 @@
   height: 300%;
   top: 0;
   left: 0;
-  backdrop-filter: blur(20px) brightness(1.0);
+  backdrop-filter: blur(var(--indigo-blur-min)) brightness(1.0);
   background-color: var(--indigo-blur-layer-bg-color);
   mask-image: linear-gradient(to bottom,
       transparent 0%,
@@ -199,12 +204,16 @@
 }
 
 :host([animation-state='entry']) #blurLayer {
-  animation: blurDiagonalTransition-entry 2s ease-in-out forwards,
-             blurOpacityTransition 4s ease-in-out 2s forwards;
+  animation: blurDiagonalTransition-entry var(--indigo-swipe-duration)
+                 ease-in-out forwards,
+             blurOpacityTransition calc(var(--indigo-swipe-duration) * 2)
+                 ease-in-out var(--indigo-swipe-duration) forwards;
 }
 
 :host([animation-state='exit']) #blurLayer {
-  animation: blurDiagonalTransition-exit 2s ease-in-out forwards;
+  animation: blurDiagonalTransition-exit var(--indigo-swipe-duration)
+                 ease-in-out forwards;
+  backdrop-filter: blur(var(--indigo-blur-max)) brightness(1.0);
 }
 
 #loadingCircleDark,
