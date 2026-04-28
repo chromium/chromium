@@ -13,8 +13,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "third_party/icu/fuzzers/fuzzer_utils.h"
 
-IcuEnvironment* env = new IcuEnvironment();
-
 namespace content_settings {
 
 namespace {
@@ -27,6 +25,7 @@ ContentSettingsPattern Parse(std::string_view pattern_spec) {
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static IcuEnvironment env;
   std::string_view pattern_spec(reinterpret_cast<const char*>(data), size);
 
   // Parse the fuzzer-generated |pattern_spec| to obtain |canonical_pattern|.
