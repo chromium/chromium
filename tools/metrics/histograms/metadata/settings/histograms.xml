@@ -1369,7 +1369,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SessionDuration" units="ms"
-    expires_after="2026-08-23">
+    expires_after="2026-10-25">
   <owner>adelm@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>

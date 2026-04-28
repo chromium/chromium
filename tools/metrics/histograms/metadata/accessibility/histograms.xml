@@ -3608,7 +3608,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
-    expires_after="2026-08-01">
+    expires_after="2026-10-25">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>

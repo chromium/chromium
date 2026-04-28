@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Triggering) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Triggering{Profile}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-10-25">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
