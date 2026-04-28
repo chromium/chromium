@@ -181,6 +181,32 @@ Element* ClipboardCommands::FindEventTargetForClipboardEvent(
     return frame.Selection().GetDocument().body();
   }
 
+  // Use ComputeContainerNode() instead of AnchorNode() to find the element
+  // that contains the selection start. For kBeforeAnchor and kAfterAnchor
+  // position types, the container is the parent of the anchor node.
+  if (RuntimeEnabledFeatures::ClipboardEventTargetUsesContainerNodeEnabled()) {
+    const VisibleSelection& selection =
+        frame.Selection().ComputeVisibleSelectionInDOMTree();
+    const Position& start = selection.Start();
+    Node* container = start.ComputeContainerNode();
+    if (!container) {
+      return frame.GetDocument()->body();
+    }
+
+    Element* target = DynamicTo<Element>(container);
+    if (!target) {
+      // Container is not an element (e.g., text node), get its parent element.
+      target = container->parentElement();
+    }
+    if (!target) {
+      return frame.GetDocument()->body();
+    }
+    if (target->IsInUserAgentShadowRoot()) {
+      return target->OwnerShadowHost();
+    }
+    return target;
+  }
+
   return FindEventTargetFrom(
       frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
 }
@@ -641,6 +667,10 @@ class CORE_EXPORT PasteImageResourceObserver final
   }
 
  private:
+  // Note: This method intentionally does not use ComputeContainerNode() like
+  // ClipboardCommands::FindEventTargetForClipboardEvent(). Image paste
+  // operations are triggered by user action on a specific element, so the
+  // existing AnchorNode() behavior via FindEventTargetFrom() is appropriate.
   Element* FindEventTargetForClipboardEvent() const {
     if (source_ == EditorCommandSource::kMenuOrKeyBinding &&
         frame_->Selection().IsHidden()) {

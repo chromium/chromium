@@ -1143,6 +1143,14 @@
       status: "stable",
     },
     {
+      // Uses ComputeContainerNode() instead of AnchorNode() for clipboard event
+      // targeting so that kBeforeAnchor/kAfterAnchor selections correctly target
+      // the containing parent element rather than the element itself.
+      // See https://crbug.com/40684204
+      name: "ClipboardEventTargetUsesContainerNode",
+      status: "stable",
+    },
+    {
       // Support ClipboardItemData of Promise<DOMString> type according to spec
       // https://w3c.github.io/clipboard-apis/#typedefdef-clipboarditemdata
       name: "ClipboardItemWithDOMStringSupport",

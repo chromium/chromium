@@ -1,0 +1,184 @@
+<!doctype html>
+<title>Clipboard events should not target a single textarea when selection is outside it</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<textarea id="ta">some text</textarea>
+<div id="wrapper"><textarea id="ta2">nested text</textarea></div>
+<script>
+
+test(function() {
+  let pasteTargets = [];
+  document.addEventListener('paste', function(e) {
+    pasteTargets.push(e.target);
+  }, { once: true });
+
+  // Clear selection and move it outside the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartBefore(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('paste');
+
+  assert_equals(pasteTargets.length, 1, 'Should have received one paste event.');
+  assert_not_equals(pasteTargets[0], ta,
+      'Paste event target should NOT be the textarea when selection is before it.');
+  assert_equals(pasteTargets[0], document.body,
+      'Paste event target should be the body element.');
+}, 'Paste event target is body, not textarea, when selection is before the textarea.');
+
+test(function() {
+  let pasteTargets = [];
+  document.addEventListener('paste', function(e) {
+    pasteTargets.push(e.target);
+  }, { once: true });
+
+  // Place selection after the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartAfter(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('paste');
+
+  assert_equals(pasteTargets.length, 1, 'Should have received one paste event.');
+  assert_not_equals(pasteTargets[0], ta,
+      'Paste event target should NOT be the textarea when selection is after it.');
+  assert_equals(pasteTargets[0], document.body,
+      'Paste event target should be the body element.');
+}, 'Paste event target is body, not textarea, when selection is after the textarea.');
+
+test(function() {
+  let copyTargets = [];
+  document.addEventListener('copy', function(e) {
+    copyTargets.push(e.target);
+  }, { once: true });
+
+  // Place selection after the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartAfter(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('copy');
+
+  assert_equals(copyTargets.length, 1, 'Should have received one copy event.');
+  assert_not_equals(copyTargets[0], ta,
+      'Copy event target should NOT be the textarea when selection is after it.');
+  assert_equals(copyTargets[0], document.body,
+      'Copy event target should be the body element.');
+}, 'Copy event target is body, not textarea, when selection is after the textarea.');
+
+test(function() {
+  let cutTargets = [];
+  document.addEventListener('cut', function(e) {
+    cutTargets.push(e.target);
+  }, { once: true });
+
+  // Place selection after the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartAfter(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('cut');
+
+  assert_equals(cutTargets.length, 1, 'Should have received one cut event.');
+  assert_not_equals(cutTargets[0], ta,
+      'Cut event target should NOT be the textarea when selection is after it.');
+  assert_equals(cutTargets[0], document.body,
+      'Cut event target should be the body element.');
+}, 'Cut event target is body, not textarea, when selection is after the textarea.');
+
+test(function() {
+  let copyTargets = [];
+  document.addEventListener('copy', function(e) {
+    copyTargets.push(e.target);
+  }, { once: true });
+
+  // Place selection before the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartBefore(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('copy');
+
+  assert_equals(copyTargets.length, 1, 'Should have received one copy event.');
+  assert_not_equals(copyTargets[0], ta,
+      'Copy event target should NOT be the textarea when selection is before it.');
+  assert_equals(copyTargets[0], document.body,
+      'Copy event target should be the body element.');
+}, 'Copy event target is body, not textarea, when selection is before the textarea.');
+
+test(function() {
+  let cutTargets = [];
+  document.addEventListener('cut', function(e) {
+    cutTargets.push(e.target);
+  }, { once: true });
+
+  // Place selection before the textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartBefore(ta);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('cut');
+
+  assert_equals(cutTargets.length, 1, 'Should have received one cut event.');
+  assert_not_equals(cutTargets[0], ta,
+      'Cut event target should NOT be the textarea when selection is before it.');
+  assert_equals(cutTargets[0], document.body,
+      'Cut event target should be the body element.');
+}, 'Cut event target is body, not textarea, when selection is before the textarea.');
+
+// Regression tests: verify selection inside textarea still targets textarea correctly.
+test(function() {
+  let pasteTargets = [];
+  document.addEventListener('paste', function(e) {
+    pasteTargets.push(e.target);
+  }, { once: true });
+
+  ta.focus();
+  ta.setSelectionRange(0, 4);  // Select "some" inside textarea
+
+  testRunner.execCommand('paste');
+
+  assert_equals(pasteTargets.length, 1, 'Should have received one paste event.');
+  assert_equals(pasteTargets[0], ta,
+      'Paste event target should be the textarea when selection is inside it.');
+}, 'Paste event target is textarea when selection is inside the textarea.');
+
+// Test nested element structure: selection before nested textarea should target wrapper div.
+test(function() {
+  let pasteTargets = [];
+  document.addEventListener('paste', function(e) {
+    pasteTargets.push(e.target);
+  }, { once: true });
+
+  // Blur any focused element from previous test.
+  document.activeElement?.blur();
+
+  // Clear selection and move it before the nested textarea.
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.setStartBefore(ta2);
+  range.collapse(true);
+  window.getSelection().addRange(range);
+
+  testRunner.execCommand('paste');
+
+  assert_equals(pasteTargets.length, 1, 'Should have received one paste event.');
+  assert_not_equals(pasteTargets[0], ta2,
+      'Paste event target should NOT be the nested textarea when selection is before it.');
+  assert_equals(pasteTargets[0], wrapper,
+      'Paste event target should be the wrapper div, not body.');
+}, 'Paste event target is wrapper div when selection is before nested textarea.');
+</script>
