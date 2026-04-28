@@ -40,6 +40,8 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     test::ThemeServiceChangedWaiter waiter_;
   };
 
+  void SetUpOnMainThread() override;
+
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
   OmniboxHeaderView* GetHeaderViewAt(int index) {

@@ -9,7 +9,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -942,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
-                       AccesibilityAttributePopupForId) {
+                       AccessibilityAttributePopupForId) {
   CreatePopupForTestQuery();
   popup_view()->UpdatePopupAppearance();
   edit_model()->SetPopupSelection(OmniboxPopupSelection(0));
