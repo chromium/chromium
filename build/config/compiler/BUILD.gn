@@ -1645,7 +1645,7 @@ config("compiler_cpu_abi") {
         "-mcmodel=medium",
       ]
     } else if (current_cpu == "s390x") {
-      if (is_clang) {
+      if (is_clang && current_os != "zos") {
         cflags += [ "--target=s390x-unknown-linux-gnu" ]
         ldflags += [ "--target=s390x-unknown-linux-gnu" ]
       }
@@ -2617,7 +2617,8 @@ config("export_dynamic") {
 # 2. Remove the thin_archive config, so that the .a file actually contains all
 #    .o files, instead of just references to .o files in the build directoy
 config("thin_archive") {
-  if ((is_apple && use_lld) || (is_linux && !is_clang) || current_os == "aix") {
+  if ((is_apple && use_lld) || (is_linux && !is_clang) || current_os == "aix" ||
+      current_os == "zos") {
     # The macOS and iOS linker ld64.ldd doesn't support thin archive without
     # symbol table, gcc on linux also throws the error `archive has no index`.
     # AIX does support -s option, not -S option.
@@ -2791,7 +2792,7 @@ if (is_win) {
         "-Wl,-no_function_starts",
       ]
     }
-  } else if (current_os != "aix" && current_os != "zos") {
+  } else if (current_os != "aix") {
     # Non-Mac Posix flags.
     # Aix does not support these.
 

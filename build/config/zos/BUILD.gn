@@ -10,6 +10,12 @@ import("//build/toolchain/toolchain.gni")
 # are z/OS-specific.
 
 config("compiler") {
+  include_dirs = [
+    "//third_party/zoslib/include",
+    "//third_party/zoslib/include-wrappers/c++",
+    "//third_party/zoslib/include-wrappers",
+  ]
+
   defines = [
     "_AE_BIMODAL=1",
     "_ALL_SOURCE",
@@ -24,6 +30,7 @@ config("compiler") {
     "_XOPEN_SOURCE=600",
     "_XOPEN_SOURCE_EXTENDED",
     "PATH_MAX=1024",
+    "ZOSLIB_ALIGNED_NEWDEL",
     "ZOSLIB_OVERRIDE_CLIB",
   ]
 
@@ -32,9 +39,10 @@ config("compiler") {
     "-fno-xl-pragma-pack",
     "-fzos-le-char-mode=ascii",
     "-m64",
-    "-march=arch14",
-    "-mzos-target=zosv2r4",
+    "-march=z14",
+    "-mzos-target=zosv2r5",
     "-Wno-unknown-pragmas",
+    "-Wno-ignored-pragmas",
   ]
 
   cflags_cc = []
@@ -44,5 +52,8 @@ config("compiler") {
     "-fno-integrated-as",
   ]
 
-  ldflags = []
+  ldflags = [
+    "-m64",
+    "-march=z14",
+  ]
 }

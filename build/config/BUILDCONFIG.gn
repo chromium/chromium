@@ -427,6 +427,10 @@ if (is_debug) {
   default_compiler_configs += [ "//build/config:release" ]
 }
 
+if (current_os == "zos") {
+  default_compiler_configs += [ "//build/config/zos:compiler" ]
+}
+
 # Static libraries and source sets use only the compiler ones.
 set_defaults("static_library") {
   configs = default_compiler_configs
