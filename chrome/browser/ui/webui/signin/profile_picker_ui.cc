@@ -61,12 +61,6 @@ bool IsBrowserSigninAllowed() {
 #if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
-  if (base::FeatureList::IsEnabled(
-          switches::
-              kProfileCreationFrictionReductionExperimentRemoveSigninStep)) {
-    return false;
-  }
-
   policy::PolicyService* policy_service = g_browser_process->policy_service();
   DCHECK(policy_service);
   const policy::PolicyMap& policies = policy_service->GetPolicies(

@@ -4269,15 +4269,6 @@ inline constexpr char
              "prefills the name requirement in profile customization bubble";
 
 inline constexpr char
-    kProfileCreationFrictionReductionExperimentRemoveSigninStepName[] =
-        "Remove sign-in step from profile creation for friction reduction "
-        "experiment";
-inline constexpr char
-    kProfileCreationFrictionReductionExperimentRemoveSigninStepDescription[] =
-        "As part of the profile creation friction reduction experiment, "
-        "removes the sign-in step";
-
-inline constexpr char
     kProfileCreationFrictionReductionExperimentSkipCustomizeProfileName[] =
         "Skip customize profile step for friction reduction experiment";
 inline constexpr char

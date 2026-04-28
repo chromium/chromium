@@ -19302,25 +19302,6 @@
             ]
         }
     ],
-    "ProfileExperimentsM1FrictionReduction": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "ProfileCreationFrictionReductionExperimentPrefillNameRequirement",
-                        "ProfileCreationFrictionReductionExperimentRemoveSigninStep",
-                        "ProfileCreationFrictionReductionExperimentSkipCustomizeProfile"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProfileExperimentsM1UsabilityHypothesis": [
         {
             "platforms": [

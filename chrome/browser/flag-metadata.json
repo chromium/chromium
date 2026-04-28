@@ -7840,11 +7840,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "profile-creation-friction-reduction-experiment-remove-signin-step",
-    "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "profile-creation-friction-reduction-experiment-skip-customize-profile",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 160
