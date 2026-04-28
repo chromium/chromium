@@ -21,5 +21,5 @@ found in the LICENSE file.
          content:// URIs for downloads. This may no longer work if/when users
          are allowed to save files elsewhere. -->
     <external-path name="downloads" path="Download/" />
-    <external-path name="net_export" path="Download/net-export/" />
+    <external-files-path name="net_export" path="Download/net-export/" />
 </paths>

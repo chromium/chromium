@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.share;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
@@ -42,16 +43,13 @@ public abstract class IntentHelper {
         send.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
         if (!TextUtils.isEmpty(fileToAttach)) {
             File fileIn = new File(fileToAttach);
-            Uri fileUri;
-            // Attempt to use a content Uri, for greater compatibility.  If the path isn't set
-            // up to be shared that way with a <paths> meta-data element, just use a file Uri
-            // instead.
-            try {
-                fileUri = FileProviderUtils.getContentUriFromFile(fileIn);
-            } catch (IllegalArgumentException ex) {
-                fileUri = Uri.fromFile(fileIn);
-            }
+            // Use FileProvider, and let it throw if misconfigured so you catch it in dev
+            Uri fileUri = FileProviderUtils.getContentUriFromFile(fileIn);
+
             send.putExtra(Intent.EXTRA_STREAM, fileUri);
+            send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            // Required for some email clients to "see" the attachment in the ClipData
+            send.setClipData(ClipData.newRawUri("", fileUri));
         }
 
         try {
