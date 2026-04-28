@@ -19,6 +19,7 @@
 # attached to the entry under them, and blank lines should be preserved.
 
 # Include loop with sys/cdefs.h
+alloca.h
 android/api-level.h, textual
 
 # We need posix_types_32.h to define __kernel_mode_t in the same TU. This way
@@ -28,12 +29,18 @@ asm-generic/posix_types.h, textual, lazy
 # Inherently textual
 assert.h, textual
 
+# avx512 headers are missing from clang modulemap.
+avx512dqintrin.h, textual, lazy
+
 # This isn't guarded, so it needs to be textual to prevent duplicate
 # definitions.
 bits/mbstate_t.h, textual=False, lazy
 
 # If this is textual it complains that pid_types isn't accessible from sched.h
 bits/timespec.h, textual=False, lazy
+
+endian.h
+features.h
 
 # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
 # if linux/limits.h is non-textual, then limits.h undefs the limits.h
@@ -44,10 +51,21 @@ limits.h, textual
 
 # See above comment about limits.h
 linux/limits.h, textual
+locale.h
+
+pthread.h
+sched.h
+setjmp.h
+signal.h
+strings.h
 
 # In an include loop with features.h, but not on android
 sys/cdefs.h, textual=not is_android
+sys/select.h
 
+sys/types.h
+sys/ucontext.h
+time.h
 unistd.h
 
 # include_next works differently with modules

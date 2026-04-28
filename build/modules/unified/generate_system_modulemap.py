@@ -302,8 +302,9 @@ cd "{os.getcwd()}"
       try:
         rel = str(full.relative_to(sysroot))
         rel = _STRIP_PREFIX.sub('', rel)
-        private = rel not in extra_public_headers
-        if rel in _FORCE_TEXTUAL:
+        short = rel if full.is_relative_to(sysroot) else full.name
+        private = short not in extra_public_headers
+        if short in _FORCE_TEXTUAL:
           textual = eval(_FORCE_TEXTUAL[rel], context)
         else:
           textual = 'bits' in pathlib.Path(rel).parts
@@ -350,6 +351,10 @@ def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
     headers.sort()
 
     for header in headers:
+      if header.private and header.textual:
+        # Private textual headers are semantically equivalent of not being in
+        # the modulemap, so we can just ignore them.
+        continue
       private = 'private ' if header.private else ''
       textual = 'textual ' if header.textual else ''
       # The module name of submodules is arbitrary and doesn't matter.
