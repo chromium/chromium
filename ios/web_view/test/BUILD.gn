@@ -189,9 +189,7 @@ test("ios_web_view_inttests") {
 
   deps = [ ":inttests" ]
 
-  bundle_deps = [
-    "//ios/web_view/framework:web_view+bundle",
-  ]
+  bundle_deps = [ "//ios/web_view/framework:web_view+bundle" ]
 
   assert_no_deps = ios_assert_no_deps
 }
