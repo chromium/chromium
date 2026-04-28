@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -28,8 +29,11 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -283,6 +287,84 @@ TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   EXPECT_EQ(
       child->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()),
       Color::FromRGB(0, 0, 255));
+}
+
+// Regression test for crbug.com/406795493. Custom highlight markers cannot be
+// produced for text inside a display-locked subtree, because TextIterator
+// (used by DocumentMarkerController to materialize markers) skips locked
+// content. HighlightRegistry caches its validation work using DOM and style
+// versions only, so once it runs while the subtree is locked it does not
+// know to re-walk those ranges when the subtree later unlocks. The fix
+// schedules a fresh validation pass from DisplayLockContext::Unlock(); this
+// test verifies that contract directly by observing the registry's
+// force-validation flag immediately after unlock and the marker presence
+// after the next lifecycle update.
+TEST_F(DisplayLockContextTest,
+       HighlightRegistryRevalidatedAfterContentVisibilityUnlock) {
+  SetHtmlInnerHTML(R"HTML(
+    <body>
+      <div id="target" style="content-visibility: hidden">
+        <span id="text">abc</span>
+      </div>
+    </body>
+  )HTML");
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetDisplayLockContext());
+  ASSERT_TRUE(target->GetDisplayLockContext()->IsLocked());
+
+  auto* text_element = GetDocument().getElementById(AtomicString("text"));
+  ASSERT_TRUE(text_element);
+  auto* text = To<Text>(text_element->firstChild());
+  ASSERT_TRUE(text);
+
+  HighlightRegistry* registry =
+      HighlightRegistry::From(*GetDocument().domWindow());
+  auto* range =
+      MakeGarbageCollected<Range>(GetDocument(), text, 0, text, text->length());
+  HeapVector<Member<AbstractRange>> range_vector;
+  range_vector.push_back(range);
+  registry->SetForTesting(AtomicString("test-highlight"),
+                          Highlight::Create(range_vector));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // ValidateHighlightMarkers ran while |target| was locked, so TextIterator
+  // could not produce a marker for the contained text.
+  EXPECT_TRUE(
+      GetDocument()
+          .Markers()
+          .MarkersFor(*text, DocumentMarker::MarkerTypes::CustomHighlight())
+          .empty());
+  // The cache should be primed: a subsequent validation pass with no DOM or
+  // style changes would short-circuit without the fix.
+  EXPECT_FALSE(registry->GetForceMarkersValidationForTesting());
+
+  // Unlock the subtree without going through a full style mutation. This
+  // exercises the DisplayLockContext::Unlock() path that the fix instruments.
+  // Mirror LockAfterAppendStyleDirtyBits: pair UnlockImmediate with clearing
+  // the |content-visibility: hidden| style so the next style recalc does not
+  // re-lock the element.
+  UnlockImmediate(target->GetDisplayLockContext());
+  target->setAttribute(html_names::kStyleAttr, g_empty_atom);
+
+  // The fix must schedule a fresh highlight validation pass from Unlock(),
+  // before any subsequent lifecycle update has a chance to bump the DOM or
+  // style version. Without the fix, the registry never learns that the
+  // previously-locked ranges need to be revisited.
+  EXPECT_TRUE(registry->GetForceMarkersValidationForTesting())
+      << "DisplayLockContext::Unlock should call HighlightRegistry::"
+         "ScheduleRepaint so that custom highlight markers are rebuilt for "
+         "the now-visible subtree (crbug.com/406795493).";
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(
+      1u, GetDocument()
+              .Markers()
+              .MarkersFor(*text, DocumentMarker::MarkerTypes::CustomHighlight())
+              .size());
 }
 
 TEST_F(DisplayLockContextTest, LockedElementIsNotSearchableViaFindInPage) {

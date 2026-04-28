@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -609,6 +611,20 @@ void DisplayLockContext::Unlock() {
   MarkAncestorsForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   MarkNeedsCullRectUpdate();
+
+  // Custom highlight markers are produced by walking ranges with
+  // TextIterator, which silently skips text inside display-locked subtrees.
+  // The HighlightRegistry validation cache is keyed on DOM and style
+  // versions only, so it does not know that ranges intersecting this subtree
+  // need to be revisited now that the subtree is visible. Force a fresh
+  // validation pass on the next lifecycle update.
+  if (LocalDOMWindow* window = document_->domWindow()) {
+    if (auto* registry =
+            Supplement<LocalDOMWindow>::From<HighlightRegistry>(*window);
+        registry && registry->size()) {
+      registry->ScheduleRepaint();
+    }
+  }
 }
 
 bool DisplayLockContext::CanDirtyStyle() const {

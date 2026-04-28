@@ -62,6 +62,10 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   void ValidateHighlightMarkers();
   void ScheduleRepaint();
 
+  bool GetForceMarkersValidationForTesting() const {
+    return force_markers_validation_;
+  }
+
   enum OverlayStackingPosition {
     kOverlayStackingPositionBelow = -1,
     kOverlayStackingPositionEquivalent = 0,
