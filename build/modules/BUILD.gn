@@ -13,16 +13,14 @@ group("modules") {
 }
 
 config("strict_deps") {
-  if (enable_strict_deps && is_clang) {
-    # This could theoretically be enabled for C as well as C++ in the future,
-    # but is not as simple as just "switch to cflags".
-    # We would need to generate modulemap files for libc + sysroot instead
-    # of libc++ + sysroot.
-    cflags_cc = [
-      "-Wprivate-header",
-      "-fmodules-strict-decluse",
-    ]
-  }
+  # This could theoretically be enabled for C as well as C++ in the future,
+  # but is not as simple as just "switch to cflags".
+  # We would need to generate modulemap files for libc + sysroot instead
+  # of libc++ + sysroot.
+  cflags_cc = [
+    "-Wprivate-header",
+    "-fmodules-strict-decluse",
+  ]
 }
 
 if (use_unified_system_module) {
@@ -71,13 +69,10 @@ if (use_unified_system_module) {
     public = system_headers
     use_libcxx_modules = false
 
-    # We enable strict deps for this target regardless of whether strict deps is
-    # enabled, because if this target fails the layering check, then that
-    # reveals a bug in generate_system_modulemap.
-    cflags_cc = [
-      "-Wprivate-header",
-      "-fmodules-strict-decluse",
-    ]
+    # We disable strict deps here for two reasons:
+    # 1) To minify the size of the modulemap.
+    # 2) The clang modulemap is underspecified in some cases.
+    strict_deps = false
 
     public_configs = [ "//build/config/compiler:libcxx_module" ]
 
