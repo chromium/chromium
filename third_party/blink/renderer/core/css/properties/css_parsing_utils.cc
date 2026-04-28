@@ -1799,6 +1799,7 @@ const CSSUrlData* CollectUrlData(const StringView& url,
 //
 // https://drafts.csswg.org/css-values-5/#request-url-modifiers
 bool ConsumeUrlRequestModifiers(CSSParserTokenStream& stream,
+                                const CSSParserContext& context,
                                 CSSUrlRequestModifiers& modifiers) {
   CSSUrlRequestModifiers result;
   while (!stream.AtEnd()) {
@@ -1886,6 +1887,15 @@ bool ConsumeUrlRequestModifiers(CSSParserTokenStream& stream,
     }
     stream.ConsumeWhitespace();
   }
+  if (result.cross_origin != kCrossOriginAttributeNotSet) {
+    context.Count(WebFeature::kCSSURLRequestModifierCrossOrigin);
+  }
+  if (!result.integrity.IsNull()) {
+    context.Count(WebFeature::kCSSURLRequestModifierIntegrity);
+  }
+  if (result.referrer_policy) {
+    context.Count(WebFeature::kCSSURLRequestModifierReferrerPolicy);
+  }
   modifiers = std::move(result);
   return true;
 }
@@ -1927,7 +1937,7 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
         // There is content after the URL string. Try to parse URL modifiers
         // if the feature is enabled.
         if (!RuntimeEnabledFeatures::CSSURLRequestModifiersEnabled() ||
-            !ConsumeUrlRequestModifiers(stream, modifiers)) {
+            !ConsumeUrlRequestModifiers(stream, context, modifiers)) {
           return CSSParserToken(kEOFToken);
         }
       }

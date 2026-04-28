@@ -227,7 +227,9 @@ cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
-bool ConsumeUrlRequestModifiers(CSSParserTokenStream&, CSSUrlRequestModifiers&);
+bool ConsumeUrlRequestModifiers(CSSParserTokenStream&,
+                                const CSSParserContext&,
+                                CSSUrlRequestModifiers&);
 CORE_EXPORT CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream&,
                                                   const CSSParserContext&);
 

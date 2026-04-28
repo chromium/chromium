@@ -79,6 +79,7 @@ namespace {
 // This may still consume tokens if it fails
 AtomicString ConsumeStringOrURI(
     CSSParserTokenStream& stream,
+    const CSSParserContext& context,
     base::optional_ref<CSSUrlRequestModifiers> modifiers) {
   const CSSParserToken& token = stream.Peek();
 
@@ -109,7 +110,8 @@ AtomicString ConsumeStringOrURI(
           modifiers.has_value();
       const bool consumed_modifiers =
           should_consume_modifiers &&
-          css_parsing_utils::ConsumeUrlRequestModifiers(stream, *modifiers);
+          css_parsing_utils::ConsumeUrlRequestModifiers(stream, context,
+                                                        *modifiers);
       if ((!should_consume_modifiers || consumed_modifiers) &&
           stream.UncheckedAtEnd()) {
         DCHECK_EQ(uri.GetType(), kStringToken);
@@ -943,7 +945,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       // @import rules have a URI component that is not technically part of the
       // prelude.
       CSSUrlRequestModifiers modifiers;
-      AtomicString uri = ConsumeStringOrURI(stream, modifiers);
+      AtomicString uri = ConsumeStringOrURI(stream, *context_, modifiers);
       stream.EnsureLookAhead();
       return ConsumeImportRule(std::move(uri), stream, modifiers);
     }
@@ -1210,7 +1212,8 @@ StyleRuleNamespace* CSSParserImpl::ConsumeNamespaceRule(
         stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
   }
 
-  AtomicString uri(ConsumeStringOrURI(stream, /*modifiers=*/std::nullopt));
+  AtomicString uri(
+      ConsumeStringOrURI(stream, *context_, /*modifiers=*/std::nullopt));
   if (uri.IsNull()) {
     // Parse error, expected string or URI.
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleNamespace);

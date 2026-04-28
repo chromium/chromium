@@ -155,4 +155,35 @@ TEST_F(StyleUseCounterTest, CSSDiscardedIfWithValidArgumentGrammar) {
       "list-item)): true_val; else: false_val;); }"));
 }
 
+TEST_F(StyleUseCounterTest, CSSURLRequestModifiers) {
+  ScopedCSSURLRequestModifiersForTest scoped(true);
+
+  EXPECT_FALSE(
+      IsCountedOnParsing(WebFeature::kCSSURLRequestModifierCrossOrigin,
+                         "body { background-image: url('/image.png'); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      WebFeature::kCSSURLRequestModifierCrossOrigin,
+      "body { background-image: url('/image.png' cross-origin(anonymous)); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      WebFeature::kCSSURLRequestModifierIntegrity,
+      "body { background-image: url('/image.png' integrity('sha256-abc')); }"));
+  EXPECT_TRUE(IsCountedOnParsing(
+      WebFeature::kCSSURLRequestModifierReferrerPolicy,
+      "body { background-image: url('/image.png' referrer-policy(origin)); }"));
+
+  EXPECT_TRUE(
+      IsCountedOnParsing(WebFeature::kCSSURLRequestModifierCrossOrigin,
+                         "@import url('/style.css' cross-origin(anonymous));"));
+  EXPECT_TRUE(
+      IsCountedOnParsing(WebFeature::kCSSURLRequestModifierIntegrity,
+                         "@import url('/style.css' integrity('sha256-abc'));"));
+  EXPECT_TRUE(
+      IsCountedOnParsing(WebFeature::kCSSURLRequestModifierReferrerPolicy,
+                         "@import url('/style.css' referrer-policy(origin));"));
+
+  EXPECT_FALSE(IsCountedOnParsing(
+      WebFeature::kCSSURLRequestModifierCrossOrigin,
+      "body { background-image: url('/image.png' cross-origin(invalid)); }"));
+}
+
 }  // namespace blink

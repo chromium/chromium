@@ -5195,6 +5195,9 @@ enum WebFeature {
   kElementInternalsWithBehaviors = 5878,
   kHTMLSubmitButtonBehaviorUsage = 5879,
   kElementInternalsBehaviorsAccess = 5880,
+  kCSSURLRequestModifierCrossOrigin = 5881,
+  kCSSURLRequestModifierIntegrity = 5882,
+  kCSSURLRequestModifierReferrerPolicy = 5883,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

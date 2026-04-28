@@ -6522,6 +6522,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5878" label="ElementInternalsWithBehaviors"/>
   <int value="5879" label="HTMLSubmitButtonBehaviorUsage"/>
   <int value="5880" label="ElementInternalsBehaviorsAccess"/>
+  <int value="5881" label="CSSURLRequestModifierCrossOrigin"/>
+  <int value="5882" label="CSSURLRequestModifierIntegrity"/>
+  <int value="5883" label="CSSURLRequestModifierReferrerPolicy"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
