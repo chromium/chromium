@@ -310,6 +310,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // Android. Need to find an alternative.
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+
+  host_zoom_map_subscription_ =
+      content::HostZoomMap::GetDefaultForBrowserContext(profile)
+          ->AddZoomLevelChangedCallback(base::BindRepeating(
+              &ContextualTasksUI::OnZoomLevelChanged, base::Unretained(this)));
 #endif
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -673,6 +678,10 @@ void ContextualTasksUI::SetAimUrl(const GURL& url) {
   if (page_) {
     page_->SetAimUrl(url);
   }
+#if !BUILDFLAG(IS_ANDROID)
+  tracked_zoom_host_ = url.host();
+  UpdateZoom();
+#endif
 }
 
 void ContextualTasksUI::UpdateModelModeFromUrl(const GURL& url) {
@@ -1625,6 +1634,36 @@ base::RefCountedMemory* ContextualTasksUI::GetFaviconResourceBytes(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+void ContextualTasksUI::SyncZoom(bool site_to_webui) {
+  if (tracked_zoom_host_.empty()) {
+    return;
+  }
+
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetDefaultForBrowserContext(profile);
+
+  std::string webui_host(web_contents->GetLastCommittedURL().host());
+  double webui_zoom =
+      zoom_map->GetZoomLevelForHostAndScheme("https", webui_host);
+  double site_zoom =
+      zoom_map->GetZoomLevelForHostAndScheme("https", tracked_zoom_host_);
+
+  // Prevent infinite loops and handle floating-point precision issues by only
+  // updating if the difference is significant.
+  if (std::abs(webui_zoom - site_zoom) <= 0.01) {
+    return;
+  }
+
+  if (site_to_webui) {
+    zoom_map->SetZoomLevelForHost(webui_host, site_zoom);
+  } else {
+    zoom_map->SetZoomLevelForHost(tracked_zoom_host_, webui_zoom);
+  }
+}
+
 void ContextualTasksUI::UpdateZoom() {
   content::WebContents* web_contents = web_ui()->GetWebContents();
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
@@ -1635,6 +1674,7 @@ void ContextualTasksUI::UpdateZoom() {
 
   if (IsShownInTab()) {
     zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DEFAULT);
+    SyncZoom(/*site_to_webui=*/true);
   } else {
     zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
   }
@@ -1645,6 +1685,24 @@ void ContextualTasksUI::WebUIPrimaryPageChanged(content::Page& page) {
   // Update zoom when WebUI is loaded.
   UpdateZoom();
 }
+
+void ContextualTasksUI::OnZoomLevelChanged(
+    const content::HostZoomMap::ZoomLevelChange& change) {
+  if (change.mode != content::HostZoomMap::ZOOM_CHANGED_FOR_HOST) {
+    return;
+  }
+
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  std::string_view current_host = web_contents->GetLastCommittedURL().host();
+
+  if (change.host == tracked_zoom_host_) {
+    UpdateZoom();
+  } else if (!tracked_zoom_host_.empty() && !current_host.empty() &&
+             change.host == current_host) {
+    SyncZoom(/*site_to_webui=*/false);
+  }
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

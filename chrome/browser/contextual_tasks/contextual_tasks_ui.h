@@ -45,6 +45,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/host_zoom_map.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #endif
 
@@ -415,10 +416,24 @@ class ContextualTasksUI
       contextual_tasks_service_observation_{this};
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Updates zoom level for the WebUI
   void UpdateZoom();
+
+  // Sync zoom between WebUI and the tracked host.
+  void SyncZoom(bool site_to_webui);
 
   // content::WebUIController overrides:
   void WebUIPrimaryPageChanged(content::Page& page) override;
+
+  // Called when the zoom level for a host changes.
+  void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
+
+  // The host for which we are tracking zoom changes in the webview.
+  std::string tracked_zoom_host_;
+
+  // Observer for zoom changes for all hosts.
+  base::CallbackListSubscription host_zoom_map_subscription_;
+
 #endif
 
   WEB_UI_CONTROLLER_TYPE_DECL();
