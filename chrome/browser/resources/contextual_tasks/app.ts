@@ -232,9 +232,15 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         value: loadTimeData.getBoolean('showOnboardingTooltip'),
       },
+      energyEffectEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
+  protected accessor energyEffectEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
   protected accessor userName_: string =
