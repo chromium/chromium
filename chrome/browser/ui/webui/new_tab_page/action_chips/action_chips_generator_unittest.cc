@@ -342,10 +342,11 @@ TEST(ActionChipGeneratorTest, GenerateThreeStaticChipsWhenNoTabIsPassed) {
   GeneratorFixture generator_fixture;
   base::RunLoop run_loop;
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   std::vector<ActionChipPtr> actual;
   generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
@@ -400,11 +401,12 @@ TEST(ActionChipGeneratorTest, GenerateStaticChipsLimitedToThree) {
       .WillRepeatedly(Return(true));
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "true"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
+         {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "true"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -442,11 +444,11 @@ TEST(ActionChipGeneratorTest,
       .Times(0);
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "true"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "false"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
+         {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "true"}}}},
+      {ntp_features::kNtpNextCanvasChip});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -544,10 +546,11 @@ TEST_P(ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest,
       .WillRepeatedly(Return(GetParam().is_canvas_eligible));
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -927,10 +930,11 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutFallsBackToStaticOnFailure) {
           }));
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -1002,10 +1006,11 @@ TEST(ActionChipGeneratorTest, NewEndpointParseErrorFallsBackToStaticChips) {
           }));
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -1155,10 +1160,11 @@ TEST(ActionChipGeneratorTest, StaticChipsParamTakesPrecedenceOverNewEndpoint) {
       .Times(0);
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextEnableCanvasChipParam.name, "true"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;
@@ -1183,11 +1189,11 @@ TEST(ActionChipGeneratorTest,
   GeneratorFixture generator_fixture;
 
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpNextFeatures,
-      {{ntp_features::kNtpNextEnableCanvasChipParam.name, "false"},
-       {ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-       {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "false"}});
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpNextFeatures,
+        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
+         {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "false"}}}},
+      {ntp_features::kNtpNextCanvasChip});
 
   base::RunLoop run_loop;
   std::vector<ActionChipPtr> actual;

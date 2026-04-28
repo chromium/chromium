@@ -305,7 +305,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_realbox::IsNtpRealboxNextEnabled(profile));
   source->AddBoolean("searchboxCyclingPlaceholders",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
-                         ntp_realbox::kCyclingPlaceholders.Get());
+                         base::FeatureList::IsEnabled(
+                             ntp_realbox::kNtpRealboxCyclingPlaceholders));
   source->AddBoolean("multiLineEnabled",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
                          ntp_realbox::kMultiLineEnabled.Get());
@@ -643,7 +644,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       (aim_eligible || ntp_composebox::IsNtpComposeboxEnabled(profile)));
 
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile)) {
-    if (ntp_realbox::kCyclingPlaceholders.Get()) {
+    if (base::FeatureList::IsEnabled(
+            ntp_realbox::kNtpRealboxCyclingPlaceholders)) {
       source->AddLocalizedString(
           "searchBoxPlaceholder",
           IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE);

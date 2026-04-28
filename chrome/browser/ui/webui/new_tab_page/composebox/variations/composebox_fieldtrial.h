@@ -102,7 +102,7 @@ enum class PlaceholderText {
 extern const base::FeatureParam<PlaceholderText> kSteadyPlaceholder;
 
 // Whether to show a series of cycling placeholder texts on the search input UI.
-extern const base::FeatureParam<bool> kCyclingPlaceholders;
+BASE_DECLARE_FEATURE(kNtpRealboxCyclingPlaceholders);
 
 // Whether to enable multi-line input in the searchbox.
 extern const base::FeatureParam<bool> kMultiLineEnabled;
