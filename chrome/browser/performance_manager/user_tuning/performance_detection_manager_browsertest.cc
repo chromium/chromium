@@ -131,8 +131,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   EXPECT_FALSE(manager()->DiscardTabs(page_contexts));
 }
 
+#if BUILDFLAG(IS_MAC)
+// Flaky: https://crbug.com/500854310
+#define MAYBE_PreventDiscardActiveTab DISABLED_PreventDiscardActiveTab
+#else
+#define MAYBE_PreventDiscardActiveTab PreventDiscardActiveTab
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
-                       PreventDiscardActiveTab) {
+                       MAYBE_PreventDiscardActiveTab) {
   ASSERT_TRUE(AddTabAtIndex(1, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(AddTabAtIndex(2, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
 
