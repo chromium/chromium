@@ -1,0 +1,10 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<canvas><canvas id="foo" width="65536" height="65536"></canvas>
+<script>
+test(function() {
+    var canvas = document.getElementById('foo');
+    var url = canvas.toDataURL();
+}, "Calling toDataURL() on a huge canvas shouldn't crash.");
+</script>
