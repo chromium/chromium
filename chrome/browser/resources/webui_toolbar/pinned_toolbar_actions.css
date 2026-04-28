@@ -11,4 +11,5 @@
 
 :host {
   display: flex;
+  gap: var(--toolbar-icon-default-margin);
 }

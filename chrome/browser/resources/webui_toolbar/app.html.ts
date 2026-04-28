@@ -50,7 +50,8 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isPinnedToolbarActionsEnabled_ ? html`
     <pinned-toolbar-actions id="pinnedToolbarActions"
-        .state="${this.navigationControlsState_.pinnedToolbarActionsState}">
+        .state="${this.navigationControlsState_.pinnedToolbarActionsState}"
+        .hidden="${this.navigationControlsState_.pinnedToolbarActionsState.length === 0}">
     </pinned-toolbar-actions>
   ` : ''}
 <!--_html_template_end_-->`;

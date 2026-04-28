@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
@@ -2555,8 +2556,6 @@ class WebUIPinnedToolbarActionsBrowserTest
              features::kWebUIInProcessResourceLoadingV2,
              features::kInitialWebUISyncNavStartToCommit,
              tabs::kHorizontalTabStripComboButton,
-             // Need non-zero initial toolbar size, otherwise hidden on Mac.
-             features::kWebUIReloadButton,
              // Facilitate testing kActionSidePanelShowComments
              collaboration::features::kCollaborationComments,
              // Facilitate testing kActionsSidePanelShowContextualTasks
@@ -2689,6 +2688,29 @@ class WebUIPinnedToolbarActionsBrowserTest
     EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
   }
 
+  void VerifyPinnedToolbarWidth() {
+    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+    content::WebContents* web_contents = web_view->GetWebContents();
+    auto* pinned_actions = static_cast<WebUIPinnedToolbarActions*>(
+        webui_toolbar_view->GetPinnedToolbarActions());
+
+    // Verify HTML element width matches C++ calculated width.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 web_contents,
+                 base::StringPrintf(
+                     R"(
+        (() => {
+          const el = %s;
+          return el ? el.getBoundingClientRect().width : -1;
+        })();
+      )",
+                     GetButtonAppJS("#pinnedToolbarActions").c_str()))
+                 .ExtractInt() == pinned_actions->GetWidth();
+    }));
+  }
+
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   const std::vector<
@@ -2777,6 +2799,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
   for (const auto& [action_id, mojom_action] : kActionMappings) {
     PinAction(action_id, mojom_action);
+    EXPECT_NO_FATAL_FAILURE(VerifyPinnedToolbarWidth());
   }
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {

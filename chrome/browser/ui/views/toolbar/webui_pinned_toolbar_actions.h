@@ -61,6 +61,9 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   // Invoke an action that is currently displaying.
   void Invoke(toolbar_ui_api::mojom::PinnedToolbarAction action_id);
 
+  // Calculate width.
+  int GetWidth() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckPinnedToolbarActionColor);

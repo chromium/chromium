@@ -13,7 +13,8 @@
   border-radius: var(--toolbar-divider-corner-radius);
   display: block;
   height: var(--toolbar-divider-height);
-  margin-inline-end: var(--toolbar-divider-spacing);
+  margin-inline-end: calc(var(--toolbar-divider-spacing) -
+                          var(--toolbar-icon-default-margin));
   margin-inline-start: calc(var(--toolbar-divider-spacing) -
                             var(--toolbar-icon-default-margin));
   width: var(--toolbar-divider-width);

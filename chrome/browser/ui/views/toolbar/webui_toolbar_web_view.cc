@@ -318,10 +318,10 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
   button_count += features::IsWebUIAvatarButtonEnabled();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
   int width = button_count * size;
   if (button_count > 0) {
-    width += (button_count - 1) *
-             GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+    width += (button_count - 1) * gap;
   }
 
   if (location_bar_) {
@@ -331,6 +331,13 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
 
   if (features::IsWebUIBackForwardButtonEnabled()) {
     width += back_button_leading_margin_;
+  }
+
+  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+    if (int pinned_width = pinned_toolbar_actions_.GetWidth()) {
+      width += !!width * gap;  // Add gap if prior controls.
+      width += pinned_width;
+    }
   }
 
   return gfx::Size(width, size);

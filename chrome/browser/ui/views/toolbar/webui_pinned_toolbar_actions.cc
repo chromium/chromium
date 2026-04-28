@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
@@ -100,8 +101,12 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     add_state(id, /*highlighted=*/true);
   }
 
+  int old_width = GetWidth();
   webui_toolbar_web_view_->OnPinnedToolbarActionsStateChanged(
       std::move(states));
+  if (old_width != GetWidth()) {
+    webui_toolbar_web_view_->PreferredSizeChanged();
+  }
 }
 
 const std::vector<actions::ActionId>&
@@ -344,4 +349,25 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
                           screen_rect, views::MenuAnchorPosition::kTopLeft,
                           source_type);
   OnActionsChanged();
+}
+
+int WebUIPinnedToolbarActions::GetWidth() const {
+  const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  int width = 0;
+  for (const auto& it : webui_toolbar_web_view_->last_queued_state_
+                            .pinned_toolbar_actions_state) {
+    if (it->action == toolbar_ui_api::mojom::PinnedToolbarAction::kDivider) {
+      // Matches toolbar_divider.css
+      width += GetLayoutConstant(LayoutConstant::kToolbarDividerWidth) +
+               2 * GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing) -
+               2 * gap;
+    } else {
+      // Matches toolbar_button.css
+      width += GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+    }
+    // Matches gap from pinned_toolbar_actions.css
+    width += gap;
+  }
+  width -= !!width * gap;  // Remove last gap if there was a last gap.
+  return width;
 }
