@@ -461,13 +461,6 @@ bool IsReadAnythingReadabilitySelectTextEnabled() {
          base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);
 }
 
-// This feature is only for debug purposes and for security/privacy reasons,
-// should be never enabled by default .
-BASE_FEATURE(kScreenAIDebugMode, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsScreenAIDebugModeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
-}
-
 // This feature is only used in tests and must not be enabled by default.
 BASE_FEATURE(kScreenAITestMode, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsScreenAITestModeEnabled() {

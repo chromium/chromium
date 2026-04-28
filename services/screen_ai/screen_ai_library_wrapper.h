@@ -28,7 +28,10 @@ class ScreenAILibraryWrapper {
   // Loads the library from disk.
   virtual bool Load(const base::FilePath& library_path) = 0;
 
+  // To enable generating debug data when the library calls run, call this
+  // function (once) in `ScreenAIService::LoadLibrary`.
   virtual void EnableDebugMode() = 0;
+
   virtual void GetLibraryVersion(uint32_t& major, uint32_t& minor) = 0;
   virtual void SetFileContentFunctions(
       uint32_t (*get_file_content_size)(const char* relative_file_path),

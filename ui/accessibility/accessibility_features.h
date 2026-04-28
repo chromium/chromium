@@ -362,10 +362,6 @@ AX_BASE_EXPORT bool IsReadAnythingDocsLoadMoreButtonEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithReadability);
 AX_BASE_EXPORT bool IsReadAnythingWithReadabilityEnabled();
 
-// Write some ScreenAI library debug data in /tmp.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAIDebugMode);
-AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
-
 // ScreenAI library's Main Content Extraction service is enabled.
 AX_BASE_EXPORT bool IsScreenAIMainContentExtractionEnabled();
 

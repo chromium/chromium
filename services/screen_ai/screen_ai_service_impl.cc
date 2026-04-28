@@ -290,10 +290,6 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   library_->SetLogger();
 #endif
 
-  if (features::IsScreenAIDebugModeEnabled()) {
-    library_->EnableDebugMode();
-  }
-
   library_->SetFileContentFunctions(&ModelDataHolder::GetDataSize,
                                     &ModelDataHolder::CopyData);
 }
