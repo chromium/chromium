@@ -33,6 +33,7 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
                              base::RepeatingClosure on_copy_link);
 
   GlicSelectionWidgetDelegate(const gfx::Rect& anchor_rect,
+                              const gfx::Rect& window_bounds,
                               const std::u16string& selected_text,
                               base::RepeatingClosure on_ask_gemini,
                               base::RepeatingClosure on_copy,

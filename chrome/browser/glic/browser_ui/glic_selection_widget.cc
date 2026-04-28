@@ -186,9 +186,14 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
     base::RepeatingClosure on_copy_link) {
+  // Both `GetContainerBounds` and `GetTextSelectionBounds` (from which
+  // `anchor_rect` originates) return global screen coordinates in DIPs, so
+  // relative positions and scales are compatible.
+  gfx::Rect window_bounds =
+      web_contents ? web_contents->GetContainerBounds() : gfx::Rect();
   auto delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      anchor_rect, selected_text, std::move(on_ask_gemini), std::move(on_copy),
-      std::move(on_copy_link));
+      anchor_rect, window_bounds, selected_text, std::move(on_ask_gemini),
+      std::move(on_copy), std::move(on_copy_link));
   if (web_contents) {
     delegate->set_parent_window(platform_util::GetViewForWindow(
         web_contents->GetTopLevelNativeWindow()));
@@ -201,6 +206,7 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
 
 GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     const gfx::Rect& anchor_rect,
+    const gfx::Rect& window_bounds,
     const std::u16string& selected_text,
     base::RepeatingClosure on_ask_gemini,
     base::RepeatingClosure on_copy,
@@ -209,23 +215,6 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
                            views::BubbleBorder::TOP_LEFT,
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true) {
-  gfx::Rect adjusted_anchor = anchor_rect;
-  // Align the left edge of the bubble near the right edge of the selection,
-  // overlapping slightly so the icon sits under the end of the text.
-  int overlap = 24;
-  adjusted_anchor.set_x(
-      std::max(anchor_rect.x(), anchor_rect.right() - overlap));
-  adjusted_anchor.set_width(0);
-  adjusted_anchor.Inset(gfx::Insets::TLBR(0, 0, -8, 0));
-  SetAnchorRect(adjusted_anchor);
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetShowCloseButton(false);
-  // Remove default dialog margins so the custom button fills the entire bubble.
-  set_margins(gfx::Insets(0));
-  set_corner_radius(16);
-  SetBackgroundColor(ui::ColorVariant(ui::kColorSysBase));
-  SetCanActivate(false);
-
   auto button_click = [](base::RepeatingClosure original_click,
                          views::BubbleDialogDelegate* delegate) {
     if (delegate->GetWidget()) {
@@ -237,14 +226,49 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     }
   };
 
-  SetContentsView(std::make_unique<GlicSelectionContentsView>(
+  auto contents_view = std::make_unique<GlicSelectionContentsView>(
       selected_text,
       base::BindRepeating(button_click, std::move(on_ask_gemini),
                           base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_copy),
                           base::Unretained(this)),
       base::BindRepeating(button_click, std::move(on_copy_link),
-                          base::Unretained(this))));
+                          base::Unretained(this)));
+
+  int ask_gemini_width =
+      contents_view->children()[0]->GetPreferredSize().width();
+  int total_width = contents_view->GetPreferredSize().width();
+  SetContentsView(std::move(contents_view));
+
+  gfx::Rect adjusted_anchor = anchor_rect;
+  // Align the left edge of the bubble near the right edge of the selection,
+  // overlapping slightly so the center of the ask gemini button sits under the
+  // end of the text. The layout has 4px left inset.
+  int overlap = 4 + ask_gemini_width / 2;
+  int target_x = std::max(anchor_rect.x(), anchor_rect.right() - overlap);
+
+  // TODO(crbug.com/507481568): Handle cases where the widget spills off the
+  // bottom of the window, and use RTL code (see ui/gfx/text_utils.h) to flip
+  // the layout when needed.
+  if (!window_bounds.IsEmpty()) {
+    constexpr int kWindowEdgePadding = 16;
+    target_x = std::max(target_x, window_bounds.x() + kWindowEdgePadding);
+    if (target_x + total_width > window_bounds.right() - kWindowEdgePadding) {
+      target_x = window_bounds.right() - total_width - kWindowEdgePadding;
+    }
+  }
+
+  adjusted_anchor.set_x(target_x);
+  adjusted_anchor.set_width(0);
+  adjusted_anchor.Inset(gfx::Insets::TLBR(0, 0, -8, 0));
+  SetAnchorRect(adjusted_anchor);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetShowCloseButton(false);
+  // Remove default dialog margins so the custom button fills the entire bubble.
+  set_margins(gfx::Insets(0));
+  set_corner_radius(16);
+  SetBackgroundColor(ui::ColorVariant(ui::kColorSysBase));
+  SetCanActivate(false);
 }
 
 GlicSelectionWidgetDelegate::~GlicSelectionWidgetDelegate() = default;

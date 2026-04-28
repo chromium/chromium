@@ -30,7 +30,7 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   std::u16string selected_text = u"selected text";
 
   GlicSelectionWidgetDelegate* delegate = new GlicSelectionWidgetDelegate(
-      anchor_rect, selected_text,
+      anchor_rect, gfx::Rect(), selected_text,
       base::BindLambdaForTesting([&]() { ask_gemini_called = true; }),
       base::BindLambdaForTesting([&]() { copy_called = true; }),
       base::BindLambdaForTesting([&]() { copy_link_called = true; }));
