@@ -25927,25 +25927,6 @@
             ]
         }
     ],
-    "WebViewStartupTasksExperiment": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Phase3",
-                    "enable_features": [
-                        "WebViewStartupTasksYieldToNative"
-                    ],
-                    "disable_features": [
-                        "WebViewUseStartupTasksLogic",
-                        "WebViewUseStartupTasksLogicP2"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewTestNonembeddedLowEntropySource": [
         {
             "platforms": [
