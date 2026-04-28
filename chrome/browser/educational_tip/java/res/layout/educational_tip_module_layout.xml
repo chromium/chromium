@@ -33,7 +33,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:singleLine="true"
-            android:text="@string/educational_tip_module_title"
+            android:text="@string/educational_tip_module_name"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
     </LinearLayout>

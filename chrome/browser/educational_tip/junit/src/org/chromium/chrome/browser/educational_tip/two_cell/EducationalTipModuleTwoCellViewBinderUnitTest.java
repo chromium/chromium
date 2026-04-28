@@ -82,7 +82,7 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
                         mModel, mModuleView, EducationalTipModuleTwoCellViewBinder::bind);
         TextView moduleTitleView = mModuleView.findViewById(R.id.educational_tip_module_title);
         assertEquals(
-                mActivity.getString(R.string.educational_tip_module_title),
+                mActivity.getString(R.string.educational_tip_module_name),
                 moduleTitleView.getText().toString());
 
         String expectedTitle = "Test Module Title";

@@ -86,7 +86,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         mModel = new PropertyModel.Builder(EducationalTipModuleTwoCellProperties.ALL_KEYS).build();
         mModel.set(
                 MODULE_TITLE,
-                mActionDelegate.getContext().getString(R.string.educational_tip_module_title));
+                mActionDelegate.getContext().getString(R.string.educational_tip_module_name));
 
         mBottomSheetObserver =
                 EducationalTipModuleUtils.createBottomSheetObserver(

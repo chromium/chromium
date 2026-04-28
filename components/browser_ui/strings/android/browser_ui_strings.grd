@@ -1222,9 +1222,6 @@
       </message>
 
       <!-- Educational tip module strings -->
-      <message name="IDS_EDUCATIONAL_TIP_MODULE_TITLE" desc="Title of the educational tip module on NTP.">
-        Chrome Tips
-      </message>
       <message name="IDS_EDUCATIONAL_TIP_MODULE_NAME" desc="The string that is shown in settings to customize whether the educational tip card should be enabled.">
         Chrome tips
       </message>

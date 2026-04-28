@@ -112,7 +112,7 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
         PropertyModel model = mPropertyModelCaptor.getValue();
         // Module Title
         assertEquals(
-                mContext.getString(R.string.educational_tip_module_title),
+                mContext.getString(R.string.educational_tip_module_name),
                 model.get(EducationalTipModuleTwoCellProperties.MODULE_TITLE));
 
         // Item 1 (Enhanced Safe Browsing)
