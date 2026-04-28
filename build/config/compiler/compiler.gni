@@ -182,8 +182,9 @@ declare_args() {
   # .eh_frame section. To maintain debuggability, Soong appends compressed
   # unwind sections at a later stage, ensuring stack traces can still
   # be unwound offline.
-  exclude_unwind_tables =
-      (is_official_build && !is_android) || is_cronet_for_aosp_build
+  exclude_unwind_tables = (is_official_build &&
+                           (!is_android || current_cpu == "arm64" ||
+                            current_cpu == "x64")) || is_cronet_for_aosp_build
 
   # Where to redirect clang crash diagnoses
   clang_diagnostic_dir = rebase_path("//out/clang-crashreports", root_build_dir)
@@ -274,16 +275,15 @@ if (is_chromeos || (enable_cast_receiver && is_linux)) {
     enable_frame_pointers = true
   }
 } else if (is_android) {
-  enable_frame_pointers =
-      enable_profiling ||
-      # Ensure that stacks from arm64 crash dumps are usable (crbug.com/391706).
-      current_cpu == "arm64" ||
-      # For x86 Android, unwind tables are huge without frame pointers
-      # (crbug.com/762629). Enabling frame pointers grows the code size slightly
-      # but overall shrinks binaries considerably by avoiding huge unwind
-      # tables.
-      (current_cpu == "x86" && !exclude_unwind_tables && optimize_for_size) ||
-      using_sanitizer
+  enable_frame_pointers = enable_profiling ||
+                          # Ensure that stacks from arm64 and x64 crash dumps are usable (crbug.com/391706).
+                          current_cpu == "arm64" || current_cpu == "x64" ||
+                          # For x86 Android, unwind tables are huge without frame pointers
+                          # (crbug.com/762629). Enabling frame pointers grows the code size slightly
+                          # but overall shrinks binaries considerably by avoiding huge unwind
+                          # tables.
+                          (current_cpu == "x86" && !exclude_unwind_tables &&
+                           optimize_for_size) || using_sanitizer
 } else if (is_fuchsia) {
   # Fuchsia on arm64 could use shadow call stack for unwinding.
   enable_frame_pointers = current_cpu != "arm64"
