@@ -826,6 +826,7 @@ if (!is_android) {
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui:interactive_ui_tests",
       "//chrome/browser/glic/fre",
+      "//chrome/browser/glic/public:features",
       "//chrome/browser/glic/selection:interactive_ui_tests",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/glic/suggestions:test_support",
