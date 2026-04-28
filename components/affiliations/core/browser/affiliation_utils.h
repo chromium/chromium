@@ -178,6 +178,15 @@ struct FacetBrandingInfo {
   GURL icon_url;
 };
 
+// Corresponds to the |ChangePasswordPattern| message in affiliation_api.proto.
+struct ChangePasswordPattern {
+  std::string url_pattern_re2;
+  GURL change_password_url;
+
+  friend bool operator==(const ChangePasswordPattern&,
+                         const ChangePasswordPattern&) = default;
+};
+
 // Facet struct, corresponds to the |Facet| message in affiliation_api.proto.
 struct Facet {
   explicit Facet(FacetURI uri,
@@ -197,6 +206,7 @@ struct Facet {
   FacetURI uri;
   FacetBrandingInfo branding_info;
   GURL change_password_url;
+  std::vector<ChangePasswordPattern> change_password_patterns;
   std::string main_domain;
   // Whether the facet was synthesized during affiliation response parsing. True
   // means affiliation service didn't actually include it in the response.
