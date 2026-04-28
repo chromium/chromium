@@ -79,7 +79,7 @@ suite('ReadabilityImageClassifier', function() {
       // 1. Hero Image
       createImageTest('hero_image', 200, 100, 'p', '<img>', {
         style: 'width: 90vw;',
-        class: 'icon-class',
+        class: 'hero-style',
       }),
 
       // 2. Definitely Inline (small area)
@@ -116,7 +116,8 @@ suite('ReadabilityImageClassifier', function() {
     ];
 
     await Promise.all(imagePromises);
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // Wait for layout to be ready.
+    await new Promise(resolve => requestAnimationFrame(() => resolve(null)));
 
     ReadabilityImageClassifier.processImagesIn(testContainer);
 
@@ -125,13 +126,23 @@ suite('ReadabilityImageClassifier', function() {
       assertTrue(!!el, `Image #${id} should exist`);
       assertTrue(
           el.classList.contains(expectedClass),
-          `Image #${id} should have class ${expectedClass}`);
+          `Image #${id} should have class ${expectedClass}. Classes: ${
+              el.className}`);
+    };
+
+    const assertNotHasClass = (id: string, unexpectedClass: string) => {
+      const el = document.getElementById(id);
+      assertTrue(!!el, `Image #${id} should exist`);
+      assertFalse(
+          el.classList.contains(unexpectedClass),
+          `Image #${id} should NOT have class ${unexpectedClass}`);
     };
 
     const INLINE = ReadabilityImageClassifier.INLINE_CLASS;
     const FULL = ReadabilityImageClassifier.FULL_WIDTH_CLASS;
 
     assertHasClass('hero_image', FULL);
+    assertNotHasClass('hero_image', INLINE);
     assertHasClass('small_area', INLINE);
     assertHasClass('math_class', INLINE);
     assertHasClass('math_filename', INLINE);
