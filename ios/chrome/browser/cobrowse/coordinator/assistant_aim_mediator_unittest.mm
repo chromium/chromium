@@ -67,7 +67,7 @@ TEST_F(AssistantAIMMediatorTest, AbortsWhenMessageEmpty) {
 
   [[mock_delegate_ reject] assistantAIMMediatorDidLoadQuery:[OCMArg any]];
 
-  [mediator_ prepareLoadForQueryText:@"dummy" clientToAimMessage:message];
+  [mediator_ prepareLoadWithClientToAimMessage:message];
 
   [mock_delegate_ verify];
 }
@@ -82,7 +82,7 @@ TEST_F(AssistantAIMMediatorTest, AbortsWhenWebStateNull) {
 
   [[mock_delegate_ reject] assistantAIMMediatorDidLoadQuery:[OCMArg any]];
 
-  [mediator_ prepareLoadForQueryText:@"dummy" clientToAimMessage:message];
+  [mediator_ prepareLoadWithClientToAimMessage:message];
 
   [mock_delegate_ verify];
 }
@@ -96,7 +96,7 @@ TEST_F(AssistantAIMMediatorTest, LoadsSuccessfully) {
 
   [[mock_delegate_ expect] assistantAIMMediatorDidLoadQuery:mediator_];
 
-  [mediator_ prepareLoadForQueryText:@"dummy" clientToAimMessage:message];
+  [mediator_ prepareLoadWithClientToAimMessage:message];
 
   [mock_delegate_ verify];
 }

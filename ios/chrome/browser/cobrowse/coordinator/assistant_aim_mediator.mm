@@ -153,8 +153,8 @@ namespace {
 #pragma mark - ComposeboxURLLoader
 
 // Sends the query message to the page via the JavaScriptFeature.
-- (void)prepareLoadForQueryText:(__unused NSString*)queryText
-             clientToAimMessage:(const lens::ClientToAimMessage&)message {
+- (void)prepareLoadWithClientToAimMessage:
+    (const lens::ClientToAimMessage&)message {
   if (!_webState || !message.has_submit_query()) {
     return;
   }

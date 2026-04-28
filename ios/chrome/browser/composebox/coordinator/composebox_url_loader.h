@@ -14,9 +14,9 @@ class ClientToAimMessage;
 // Protocol for loading URLs in the composebox.
 @protocol ComposeboxURLLoader
 
-// Prepares for loading a new query text.
-- (void)prepareLoadForQueryText:(NSString*)queryText
-             clientToAimMessage:(const lens::ClientToAimMessage&)message;
+// Prepares for loading with a ClientToAimMessage.
+- (void)prepareLoadWithClientToAimMessage:
+    (const lens::ClientToAimMessage&)message;
 
 - (void)loadURLParams:(const UrlLoadParams&)URLLoadParams;
 

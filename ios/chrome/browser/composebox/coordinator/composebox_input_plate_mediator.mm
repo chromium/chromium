@@ -1211,7 +1211,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
       _contextualSearchSession->CreateClientToAimRequest(
           std::move(request_info));
 
-  [self.URLLoader prepareLoadForQueryText:text clientToAimMessage:message];
+  [self.URLLoader prepareLoadWithClientToAimMessage:message];
 }
 
 // Updates the tool mode when in image generation mode.
