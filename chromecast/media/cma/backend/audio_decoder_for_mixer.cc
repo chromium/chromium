@@ -487,6 +487,11 @@ void AudioDecoderForMixer::OnBufferDecoded(
   UpdateStatistics(delta);
 
   if (has_config) {
+    if (!IsValidConfig(config)) {
+      LOG(ERROR) << "Invalid audio config from decoder";
+      delegate_->OnPushBufferComplete(MediaPipelineBackend::kBufferFailed);
+      return;
+    }
     bool changed_config = false;
     if (config.samples_per_second != decoded_config_.samples_per_second) {
       LOG(INFO) << "Input sample rate changed from "
