@@ -7580,17 +7580,17 @@ bool ChromeContentBrowserClient::IsBuiltinComponent(
 void ChromeContentBrowserClient::StartRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
     bool should_upload_on_stop,
-    base::flat_map<std::string, std::string> metadata,
+    const base::flat_map<std::string, std::string>& metadata,
     base::OnceCallback<void(const std::string&)> callback) {
   rtc_diagnostic_logging::StartRtcDiagnosticLogging(
-      frame_host, should_upload_on_stop, std::move(metadata),
-      std::move(callback));
+      frame_host, should_upload_on_stop, metadata, std::move(callback));
 }
 
 void ChromeContentBrowserClient::FinishRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
+    const base::flat_map<std::string, std::string>& metadata,
     base::OnceClosure callback) {
-  rtc_diagnostic_logging::FinishRtcDiagnosticLogging(frame_host,
+  rtc_diagnostic_logging::FinishRtcDiagnosticLogging(frame_host, metadata,
                                                      std::move(callback));
 }
 

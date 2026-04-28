@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -105,6 +106,42 @@ bool IsDiagnosticEventLogCollectionAllowed(
 
   return false;
 }
+
+void DoFinishRtcDiagnosticLogging(
+    scoped_refptr<WebRtcLoggingController> controller,
+    const url::Origin origin,
+    content::ChildProcessId process_id,
+    base::OnceClosure callback,
+    bool /*set_metadata_success*/,
+    const std::string& /*set_metadata_error*/) {
+  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
+  // Stop event logging.
+  if (auto* manager =
+          ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
+    manager->FinishLogging(process_id.value(), barrier);
+  } else {
+    barrier.Run();
+  }
+
+  // Stop text logging.
+  controller->StopLogging(base::BindOnce(
+      [](scoped_refptr<WebRtcLoggingController> controller,
+         const url::Origin origin, base::RepeatingClosure barrier, bool success,
+         const std::string& error) {
+        if (success && VerifySettings(controller.get(), origin) &&
+            !controller->web_api_settings()->should_upload_on_stop) {
+          std::string log_id = base::NumberToString(
+              base::Time::Now().InSecondsFSinceUnixEpoch());
+          controller->StoreLog(
+              log_id, base::BindOnce([](base::RepeatingClosure b, bool,
+                                        const std::string&) { b.Run(); },
+                                     std::move(barrier)));
+        } else {
+          barrier.Run();
+        }
+      },
+      controller, origin, std::move(barrier)));
+}
 #endif
 
 }  // namespace
@@ -112,7 +149,7 @@ bool IsDiagnosticEventLogCollectionAllowed(
 void StartRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
     bool should_upload_on_stop,
-    base::flat_map<std::string, std::string> metadata,
+    const base::flat_map<std::string, std::string>& metadata,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -179,8 +216,10 @@ void StartRtcDiagnosticLogging(
 #endif
 }
 
-void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
-                                base::OnceClosure callback) {
+void FinishRtcDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    const base::flat_map<std::string, std::string>& metadata,
+    base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   auto* controller = GetControllerAndVerifySettings(frame_host);
@@ -189,33 +228,18 @@ void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
     return;
   }
 
-  base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
-  if (auto* manager =
-          ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
-    manager->FinishLogging(frame_host.GetProcess()->GetDeprecatedID(), barrier);
-  } else {
-    barrier.Run();
-  }
+  auto metadata_map =
+      std::make_unique<WebRtcLogMetaDataMap>(metadata.begin(), metadata.end());
+  metadata_map->erase("__uuid__");
 
   const url::Origin origin = frame_host.GetLastCommittedOrigin();
 
-  controller->StopLogging(base::BindOnce(
-      [](scoped_refptr<WebRtcLoggingController> controller,
-         const url::Origin origin, base::RepeatingClosure barrier, bool success,
-         const std::string& error) {
-        if (success && VerifySettings(controller.get(), origin) &&
-            !controller->web_api_settings()->should_upload_on_stop) {
-          std::string log_id = base::NumberToString(
-              base::Time::Now().InSecondsFSinceUnixEpoch());
-          controller->StoreLog(
-              log_id, base::BindOnce([](base::RepeatingClosure b, bool,
-                                        const std::string&) { b.Run(); },
-                                     std::move(barrier)));
-        } else {
-          barrier.Run();
-        }
-      },
-      base::WrapRefCounted(controller), origin, std::move(barrier)));
+  controller->SetMetaData(
+      std::move(metadata_map),
+      base::BindOnce(&DoFinishRtcDiagnosticLogging,
+                     base::WrapRefCounted(controller), origin,
+                     frame_host.GetProcess()->GetID(), std::move(callback)));
+
 #else
   std::move(callback).Run();
 #endif
@@ -234,7 +258,7 @@ void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
   base::RepeatingClosure barrier = base::BarrierClosure(2, std::move(callback));
   if (auto* manager =
           ::webrtc_event_logging::WebRtcEventLogManager::GetInstance()) {
-    manager->CancelLogging(frame_host.GetProcess()->GetDeprecatedID(), barrier);
+    manager->CancelLogging(frame_host.GetProcess()->GetID().value(), barrier);
   } else {
     barrier.Run();
   }

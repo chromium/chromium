@@ -74,7 +74,7 @@ void RTCLoggingDispatcherImpl::FinishDiagnosticLogging(
   }
 
   GetContentClient()->browser()->FinishRtcDiagnosticLogging(
-      render_frame_host(), std::move(callback));
+      render_frame_host(), {}, std::move(callback));
 }
 
 void RTCLoggingDispatcherImpl::CancelDiagnosticLogging(

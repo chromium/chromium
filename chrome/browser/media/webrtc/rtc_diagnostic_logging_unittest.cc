@@ -220,7 +220,8 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
       bool upload,
       StopAction stop_action,
       const base::flat_map<std::string, std::string>& metadata,
-      const GURL& url = GURL("https://example.com")) {
+      const GURL& url = GURL("https://example.com"),
+      const base::flat_map<std::string, std::string>& finish_metadata = {}) {
     NavigateAndCommit(url);
     content::RenderProcessHost* rph = main_rfh()->GetProcess();
 
@@ -247,7 +248,8 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
       base::test::TestFuture<void> stop_future;
       content::GetContentClientForTesting()
           ->browser()
-          ->FinishRtcDiagnosticLogging(*main_rfh(), stop_future.GetCallback());
+          ->FinishRtcDiagnosticLogging(*main_rfh(), finish_metadata,
+                                       stop_future.GetCallback());
       EXPECT_TRUE(stop_future.Wait());
     } else if (stop_action == StopAction::kCancel) {
       base::test::TestFuture<void> cancel_future;
@@ -644,7 +646,7 @@ TEST_F(RTCDiagnosticLoggingTest, OriginChangeBlocksLogging) {
   // Now, any operation should be unauthorized.
   base::test::TestFuture<void> stop_future;
   content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
-      *main_rfh(), stop_future.GetCallback());
+      *main_rfh(), {}, stop_future.GetCallback());
   EXPECT_TRUE(stop_future.Wait());
 
   // Logging should STILL be active because the Finish call was unauthorized.
@@ -672,7 +674,7 @@ TEST_F(RTCDiagnosticLoggingTest, AddMessagesAuthorized) {
   // Finish and verify.
   base::test::TestFuture<void> stop_future;
   content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
-      *main_rfh(), stop_future.GetCallback());
+      *main_rfh(), {}, stop_future.GetCallback());
   EXPECT_TRUE(stop_future.Wait());
   task_environment()->RunUntilIdle();
   agent_.reset();
@@ -838,7 +840,7 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogStartedAfterSessionIdSet) {
 
   base::test::TestFuture<void> stop_future;
   content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
-      *main_rfh(), stop_future.GetCallback());
+      *main_rfh(), {}, stop_future.GetCallback());
   EXPECT_TRUE(stop_future.Wait());
 
   EXPECT_TRUE(base::PathExists(log_file_path));
@@ -885,11 +887,53 @@ TEST_F(RTCDiagnosticLoggingTest, EventLogCancelledAfterSessionIdSet) {
                                     cancel_future.GetCallback());
   EXPECT_TRUE(cancel_future.Wait());
 
+  base::test::TestFuture<void> log_manager_future;
+  GetLogManagerTaskRunner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              log_manager_future.GetCallback());
+  EXPECT_TRUE(log_manager_future.Wait());
   EXPECT_FALSE(base::PathExists(log_file_path));
 
   if (base::PathExists(log_file_path.DirName())) {
     base::DeletePathRecursively(log_file_path.DirName());
   }
+}
+
+TEST_F(RTCDiagnosticLoggingTest, EventLogUuidNotOverwrittenInFinish) {
+  base::flat_map<std::string, std::string> start_metadata;
+  base::flat_map<std::string, std::string> finish_metadata;
+  finish_metadata["__uuid__"] = "fake_uuid";
+
+  auto [uuid, uploaded, uncompressed_log] = StartAndStopLogging(
+      /*upload=*/true, StopAction::kFinish, start_metadata,
+      GURL("https://example.com"), finish_metadata);
+
+  EXPECT_THAT(uncompressed_log, testing::HasSubstr(base::StringPrintf(
+                                    "__uuid__: %s", uuid.c_str())));
+  EXPECT_THAT(uncompressed_log, testing::Not(testing::HasSubstr("fake_uuid")));
+}
+
+TEST_F(RTCDiagnosticLoggingTest, MetadataMerged) {
+  base::flat_map<std::string, std::string> start_metadata;
+  start_metadata["key_preserved"] = "value_preserved";
+  start_metadata["key_overwritten"] = "value_start";
+
+  base::flat_map<std::string, std::string> finish_metadata;
+  finish_metadata["key_overwritten"] = "value_finish";
+  finish_metadata["key_new"] = "value_new";
+
+  auto [uuid, uploaded, uncompressed_log] = StartAndStopLogging(
+      /*upload=*/true, StopAction::kFinish, start_metadata,
+      GURL("https://example.com"), finish_metadata);
+
+  // Verify that the uploaded data contains only the merged metadata.
+  EXPECT_THAT(uploaded, testing::HasSubstr("name=\"key_preserved\""));
+  EXPECT_THAT(uploaded, testing::HasSubstr("value_preserved"));
+  EXPECT_THAT(uploaded, testing::HasSubstr("name=\"key_overwritten\""));
+  EXPECT_THAT(uploaded, testing::HasSubstr("value_finish"));
+  EXPECT_THAT(uploaded, testing::HasSubstr("name=\"key_new\""));
+  EXPECT_THAT(uploaded, testing::HasSubstr("value_new"));
+  // The uploaded data should NOT contain the overwritten start value.
+  EXPECT_THAT(uploaded, testing::Not(testing::HasSubstr("value_start")));
 }
 
 TEST_F(RTCDiagnosticLoggingTest,
@@ -1092,7 +1136,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   content::GetContentClientForTesting()->browser()->FinishRtcDiagnosticLogging(
-      *main_rfh(), future.GetCallback());
+      *main_rfh(), {}, future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(observer_called);

@@ -37,12 +37,14 @@ class MockContentBrowserClient : public ContentBrowserClient {
               StartRtcDiagnosticLogging,
               (RenderFrameHost&,
                bool,
-               (base::flat_map<std::string, std::string>),
+               (const base::flat_map<std::string, std::string>&),
                base::OnceCallback<void(const std::string&)>),
               (override));
   MOCK_METHOD(void,
               FinishRtcDiagnosticLogging,
-              (RenderFrameHost&, base::OnceClosure),
+              (RenderFrameHost&,
+               (const base::flat_map<std::string, std::string>&),
+               base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               CancelRtcDiagnosticLogging,
@@ -83,7 +85,7 @@ TEST_F(RTCLoggingDispatcherImplTest, StartDiagnosticLoggingForwardsToClient) {
   EXPECT_CALL(mock_client_,
               StartRtcDiagnosticLogging(Ref(*main_rfh()), true, metadata, _))
       .WillOnce([&](RenderFrameHost&, bool,
-                    base::flat_map<std::string, std::string>,
+                    const base::flat_map<std::string, std::string>&,
                     base::OnceCallback<void(const std::string&)> cb) {
         std::move(cb).Run(kUuid);
       });
@@ -94,9 +96,10 @@ TEST_F(RTCLoggingDispatcherImplTest, StartDiagnosticLoggingForwardsToClient) {
 }
 
 TEST_F(RTCLoggingDispatcherImplTest, FinishDiagnosticLoggingForwardsToClient) {
-  EXPECT_CALL(mock_client_, FinishRtcDiagnosticLogging(Ref(*main_rfh()), _))
-      .WillOnce(
-          [](RenderFrameHost&, base::OnceClosure cb) { std::move(cb).Run(); });
+  EXPECT_CALL(mock_client_, FinishRtcDiagnosticLogging(Ref(*main_rfh()), _, _))
+      .WillOnce([](RenderFrameHost&,
+                   const base::flat_map<std::string, std::string>&,
+                   base::OnceClosure cb) { std::move(cb).Run(); });
 
   base::test::TestFuture<void> future;
   remote_->FinishDiagnosticLogging(future.GetCallback());

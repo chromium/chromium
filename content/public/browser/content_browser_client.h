@@ -2603,13 +2603,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void StartRtcDiagnosticLogging(
       RenderFrameHost& frame_host,
       bool should_upload_on_stop,
-      base::flat_map<std::string, std::string> metadata,
+      const base::flat_map<std::string, std::string>& metadata,
       base::OnceCallback<void(const std::string&)> callback);
 
   // Finishes RTC diagnostic logging if a session is ongoing.
   // The results of logging are stored to disk and potentially uploaded.
-  virtual void FinishRtcDiagnosticLogging(RenderFrameHost& frame_host,
-                                          base::OnceClosure callback);
+  virtual void FinishRtcDiagnosticLogging(
+      RenderFrameHost& frame_host,
+      const base::flat_map<std::string, std::string>& metadata,
+      base::OnceClosure callback);
 
   // Cancels RTC diagnostic logging if a session is ongoing. If a session is
   // cancelled, the results of logging are not stored in a file or uploaded.

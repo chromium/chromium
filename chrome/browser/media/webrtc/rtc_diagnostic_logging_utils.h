@@ -25,7 +25,7 @@ namespace rtc_diagnostic_logging {
 void StartRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
     bool should_upload_on_stop,
-    base::flat_map<std::string, std::string> metadata,
+    const base::flat_map<std::string, std::string>& metadata,
     base::OnceCallback<void(const std::string&)> callback);
 
 // Finishes RTC diagnostic logging. If a logging session was started,
@@ -34,8 +34,10 @@ void StartRtcDiagnosticLogging(
 // the filesystem. If `should_upload_on_stop` was true when
 // StartRtcDiagnosticLogging was called, a best-effort attempt will be made to
 // upload the log.
-void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
-                                base::OnceClosure callback);
+void FinishRtcDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    const base::flat_map<std::string, std::string>& metadata,
+    base::OnceClosure callback);
 
 // Cancels RTC diagnostic logging. If a logging session was ongoing,
 // it will end and any logs will be discarded and not uploaded. The caller can
