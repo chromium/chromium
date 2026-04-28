@@ -117,14 +117,16 @@ HdcpValue GetHdcpValue(HdcpVersion hdcp_version) {
       // Keys should be always usable since there is no HDCP requirement.
       return HdcpValue::kHdcpAlawaysSupported;
     case HdcpVersion::kHdcpVersion1_0:
+      // HDCP Type 0 (HDCP version < 2.2): Minimum HDCP version is 1.0
+      return HdcpValue::kHdcp1;
     case HdcpVersion::kHdcpVersion1_1:
     case HdcpVersion::kHdcpVersion1_2:
     case HdcpVersion::kHdcpVersion1_3:
     case HdcpVersion::kHdcpVersion1_4:
     case HdcpVersion::kHdcpVersion2_0:
-      return HdcpValue::kHdcp1;
     case HdcpVersion::kHdcpVersion2_1:
     case HdcpVersion::kHdcpVersion2_2:
+      // HDCP Type 1 (HDCP version >= 2.2): Minimum HDCP version is 2.2
       return HdcpValue::kHdcp2;
     case HdcpVersion::kHdcpVersion2_3:
       // IsTypeSupported cannot differentiate between HDCP 2.2 and 2.3. For now,
