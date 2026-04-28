@@ -5,18 +5,22 @@
 #include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/lifetime/restartability_monitor.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -87,10 +91,21 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
   }
 
   // Close the default browser window the test starts with.
+  Profile* profile = browser()->profile();
+
+  // Keep the process and profile alive between windows.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
   CloseBrowserSynchronously(browser());
 
   // Open a new window. This ends the Zero Window state.
-  CreateBrowser(ProfileManager::GetLastUsedProfile());
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CreateBrowser(profile);
+  }
 
   // Verify the metric ran.
   // Note: We expect two samples here because both the real production observer

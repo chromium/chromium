@@ -12,6 +12,14 @@ static_assert(!BUILDFLAG(IS_ANDROID), "For non-Android Chrome only");
 
 namespace chrome {
 
+// The mode for a relaunch.
+enum class RelaunchMode {
+  // Restart and restore the session normally.
+  kNormal,
+  // Restart in the background (no window created).
+  kBackground,
+};
+
 // Starts an administrator-initiated relaunch process. On platforms other than
 // Chrome OS, this relaunches the browser and restores the user's session. On
 // Chrome OS, this restarts the entire OS. This differs from AttemptRelaunch in
@@ -57,6 +65,9 @@ void MarkAsCleanShutdown();
 // This currently checks if there is pending download, or if it needs to
 // handle unload handler.
 bool AreAllBrowsersCloseable();
+
+// Starts a user-initiated restart process with the given mode.
+void AttemptRestartWithMode(RelaunchMode mode);
 
 }  // namespace chrome
 

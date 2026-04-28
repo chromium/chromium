@@ -68,7 +68,8 @@ base::RepeatingCallbackList<void(bool)>& GetClosingAllBrowsersCallbackList() {
 using IgnoreUnloadHandlers =
     base::StrongAlias<class IgnoreUnloadHandlersTag, bool>;
 
-void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
+void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers,
+                            RelaunchMode mode) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
   // TODO(crbug.com/40180622): Unset SaveSessionState if the restart fails.
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -86,6 +87,9 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);
+  if (mode == RelaunchMode::kBackground) {
+    pref_service->SetBoolean(prefs::kRestartInBackgroundOnShutdown, true);
+  }
   KeepAliveRegistry::GetInstance()->SetRestarting();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -175,11 +179,16 @@ void CloseAllBrowsers() {
 }
 
 void AttemptRestart() {
-  AttemptRestartInternal(IgnoreUnloadHandlers(false));
+  AttemptRestartInternal(IgnoreUnloadHandlers(false), RelaunchMode::kNormal);
 }
+
+void AttemptRestartWithMode(RelaunchMode mode) {
+  AttemptRestartInternal(IgnoreUnloadHandlers(false), mode);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void RelaunchIgnoreUnloadHandlers() {
-  AttemptRestartInternal(IgnoreUnloadHandlers(true));
+  AttemptRestartInternal(IgnoreUnloadHandlers(true), RelaunchMode::kNormal);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

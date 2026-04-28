@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1539,6 +1541,86 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffPrerenderBrowserTest,
   EXPECT_TRUE(navigation_manager.was_activated());
   EXPECT_TRUE(navigation_manager.was_successful());
   EXPECT_EQ(g_handoff_url, prerender_url);
+}
+
+// Tests for the Smart Restart feature's interaction with the Dock.
+class AppControllerSmartRestartBrowserTest : public InProcessBrowserTest {
+ public:
+  AppControllerSmartRestartBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kSmartRestart);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that clicking the Dock icon successfully opens a browser window when
+// Smart Restart is enabled, even if the process started with
+// --no-startup-window.
+IN_PROC_BROWSER_TEST_F(AppControllerSmartRestartBrowserTest,
+                       SmartRestartDockClickUnblocksWindows) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  EXPECT_TRUE(cmd_line->HasSwitch(switches::kNoStartupWindow));
+
+  // The browser should have started with 0 windows due to the flag.
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Observe for the new browser that will be created.
+  ui_test_utils::BrowserCreatedObserver observer;
+
+  // Simulate Dock click (applicationShouldHandleReopen:).
+  AppController* app_controller = AppController.sharedController;
+  [app_controller applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
+
+  // The original process command line should remain unchanged (poisoned).
+  EXPECT_TRUE(cmd_line->HasSwitch(switches::kNoStartupWindow));
+
+  // A window should eventually open because LaunchBrowserStartup used a fresh
+  // command line (without the flag) for this specific user action.
+  observer.Wait();
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+}
+
+class AppControllerSmartRestartDisabledBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  AppControllerSmartRestartDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kSmartRestart);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the user is NOT marked as interacted if Smart Restart is
+// disabled.
+IN_PROC_BROWSER_TEST_F(AppControllerSmartRestartDisabledBrowserTest,
+                       SmartRestartDisabledDockClickDoesNotSetState) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  EXPECT_TRUE(cmd_line->HasSwitch(switches::kNoStartupWindow));
+
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  AppController* app_controller = AppController.sharedController;
+  [app_controller applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
+
+  // The flag should STAY because the feature is disabled.
+  EXPECT_TRUE(cmd_line->HasSwitch(switches::kNoStartupWindow));
+
+  // No window should open because the flag still suppresses it.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GlobalBrowserCollection::GetInstance()->GetSize() == 0u;
+  }));
 }
 
 }  // namespace

@@ -45,6 +45,13 @@ uint32_t RestartabilityState::GetRestartabilityStateFactor() const {
   return mask;
 }
 
+bool RestartabilityState::HasAnyActiveBlockers() const {
+  // A blocker is any bit EXCEPT the 'TotalBrowserCountZero' bit.
+  uint32_t active_blockers = GetRestartabilityStateFactor() &
+                             ~SmartRestartStateFactor::kTotalBrowserCountZero;
+  return active_blockers != SmartRestartStateFactor::kNone;
+}
+
 // static
 RestartabilityState RestartabilityMonitor::ComputeCurrentState() {
   RestartabilityState state;

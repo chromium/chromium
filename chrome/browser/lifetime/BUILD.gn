@@ -38,7 +38,9 @@ source_set("lifetime") {
       "application_lifetime_desktop.h",
       "browser_close_manager.h",
       "restartability_monitor.h",
+      "smart_restart_manager.h",
       "smart_restart_metrics_observer.h",
+      "smart_restart_policy.h",
     ]
     public_deps += [
       "//chrome/browser/ui/browser_window",
@@ -128,7 +130,9 @@ source_set("impl") {
       "application_lifetime_desktop.cc",
       "browser_close_manager.cc",
       "restartability_monitor.cc",
+      "smart_restart_manager.cc",
       "smart_restart_metrics_observer.cc",
+      "smart_restart_policy.cc",
     ]
     deps += [
       "//chrome/browser/background/glic",
@@ -140,6 +144,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/sessions",
       "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/startup",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/keep_alive_registry",
       "//ui/base/idle",

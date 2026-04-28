@@ -62,4 +62,29 @@ TEST_F(RestartabilityMonitorTest, ZeroBrowserCount) {
       state.GetRestartabilityStateFactor());
 }
 
+TEST_F(RestartabilityMonitorTest, HasAnyActiveBlockers_True) {
+  RestartabilityState state;
+  state.total_browser_count_is_zero = true;
+  state.download_count = 1;  // Blocker
+
+  EXPECT_TRUE(state.HasAnyActiveBlockers());
+}
+
+TEST_F(RestartabilityMonitorTest, HasAnyActiveBlockers_False) {
+  RestartabilityState state;
+  state.total_browser_count_is_zero = true;
+  // No other blockers
+
+  EXPECT_FALSE(state.HasAnyActiveBlockers());
+}
+
+TEST_F(RestartabilityMonitorTest, HasAnyActiveBlockers_Multiple) {
+  RestartabilityState state;
+  state.total_browser_count_is_zero = true;
+  state.has_incognito = true;     // Blocker
+  state.is_audio_playing = true;  // Blocker
+
+  EXPECT_TRUE(state.HasAnyActiveBlockers());
+}
+
 }  // namespace smart_restart

@@ -1813,6 +1813,11 @@ BASE_FEATURE(kClassManagementEnabledMetricsProvider,
 // will be used to make informed decisions about the future of the smart restart
 // feature.
 BASE_FEATURE(kSmartRestartMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSmartRestart, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kSmartRestartDelay{
+    &kSmartRestart, "restart_delay", base::Minutes(5)};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

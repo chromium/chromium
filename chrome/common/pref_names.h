@@ -1665,6 +1665,11 @@ inline constexpr char kDNSInterceptionChecksEnabled[] =
 inline constexpr char kRestartLastSessionOnShutdown[] =
     "restart.last.session.on.shutdown";
 
+// Whether to restart the current Chrome session automatically in the background
+// as the last thing before shutting everything down.
+inline constexpr char kRestartInBackgroundOnShutdown[] =
+    "restart.in.background.on.shutdown";
+
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether or not to show security warnings for some

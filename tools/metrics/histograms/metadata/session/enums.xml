@@ -132,6 +132,12 @@ chromium-metrics-reviews@google.com.
       label="Active download, Active media, Total Browser Count Zero"/>
 </enum>
 
+<enum name="SmartRestartExecutionOutcome">
+  <int value="0" label="Executed"/>
+  <int value="1" label="Cancelled by user"/>
+  <int value="2" label="Blocked by policy"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

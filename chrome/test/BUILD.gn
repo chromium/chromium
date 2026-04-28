@@ -3569,6 +3569,7 @@ if (!is_android) {
       "../browser/l10n_util_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
       "../browser/lifetime/browser_shutdown_browsertest.cc",
+      "../browser/lifetime/smart_restart_manager_browsertest.cc",
       "../browser/lifetime/smart_restart_metrics_observer_browsertest.cc",
       "../browser/local_network_access/local_network_access_browsertest.cc",
       "../browser/local_network_access/local_network_access_browsertest_base.cc",
@@ -9734,6 +9735,7 @@ test("unit_tests") {
   if (!is_android) {
     sources += [
       "../browser/lifetime/restartability_monitor_unittest.cc",
+      "../browser/lifetime/smart_restart_policy_unittest.cc",
       "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
       "../browser/policy/cloud/extension_install_policy_invalidator_unittest.cc",
       "../browser/policy/cloud/extension_install_policy_service_unittest.cc",

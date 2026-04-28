@@ -85,15 +85,15 @@ ShutdownType GetShutdownType();
 // Performs the shutdown tasks that need to be done before
 // BrowserProcess and the various threads go away.
 //
-// Returns true if the session should be restarted.
-bool ShutdownPreThreadsStop();
+// Returns the type of restart to perform.
+RestartMode ShutdownPreThreadsStop();
 
 // Records the shutdown retrics.
 void RecordShutdownMetrics();
 
-// Records the shutdown related prefs, and returns true if the browser should be
-// restarted on exit.
-bool RecordShutdownInfoPrefs();
+// Records the shutdown related prefs, and returns the type of restart to
+// perform on exit.
+RestartMode RecordShutdownInfoPrefs();
 
 // Performs the remaining shutdown tasks after all threads but the
 // main thread have been stopped.  This includes deleting g_browser_process.

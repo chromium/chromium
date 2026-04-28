@@ -39,6 +39,10 @@ struct RestartabilityState {
   // Returns a bitmask of `SmartRestartStateFactor` indicating whether the
   // browser can be restarted based on the snapshot state.
   uint32_t GetRestartabilityStateFactor() const;
+
+  // Returns true if there are any active factors blocking a restart (e.g.
+  // downloads, media, incognito).
+  bool HasAnyActiveBlockers() const;
 };
 
 class RestartabilityMonitor {

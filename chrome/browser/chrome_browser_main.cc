@@ -163,7 +163,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
-#include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
@@ -1687,15 +1686,6 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   // We setup to observe to the initial page load here to defer running
   // task posted via PostAfterStartupTask until its complete.
   AfterStartupTaskUtils::StartMonitoringStartup();
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Initialize the observer for smart restart metrics on desktop.
-  if (base::FeatureList::IsEnabled(features::kSmartRestartMetrics)) {
-    smart_restart_metrics_observer_ =
-        std::make_unique<smart_restart::SmartRestartMetricsObserver>(
-            UpgradeDetector::GetInstance());
-  }
-#endif
 }
 
 int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
@@ -2193,7 +2183,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // destroy before the tear-down.
   synthetic_trial_syncer_.reset();
 
-  restart_last_session_ = browser_shutdown::ShutdownPreThreadsStop();
+  restart_mode_ = browser_shutdown::ShutdownPreThreadsStop();
   browser_process_->StartTearDown();
 
   publisher_host_factory_resetter_.reset();
@@ -2216,22 +2206,15 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
     chrome_extra_part->PostDestroyThreads();
   }
 
-  browser_shutdown::RestartMode restart_mode =
-      browser_shutdown::RestartMode::kNoRestart;
+  browser_shutdown::RestartMode restart_mode = restart_mode_;
 
-  if (restart_last_session_) {
-    restart_mode = browser_shutdown::RestartMode::kRestartLastSession;
-
+  if (restart_mode == browser_shutdown::RestartMode::kRestartLastSession) {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     if (BackgroundModeManager::should_restart_in_background()) {
       restart_mode = browser_shutdown::RestartMode::kRestartInBackground;
     }
 #endif
   }
-
-  // SmartMetricsObserver must be destroyed before GlobalFeatures begins tear
-  // down in BrowserProcess::PostDestroyThreads().
-  smart_restart_metrics_observer_.reset();
 
   browser_process_->PostDestroyThreads();
 
@@ -2265,7 +2248,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 
     // It's impossible for there to also be a user-driven relaunch since the
     // browser never fully starts in this case.
-    DCHECK(!restart_last_session_);
+    DCHECK(restart_mode_ == browser_shutdown::RestartMode::kNoRestart);
     restart_mode = browser_shutdown::RestartMode::kRestartThisSession;
   }
 #endif

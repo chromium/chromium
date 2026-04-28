@@ -74,6 +74,11 @@ namespace on_device_translation {
 class OnDeviceTranslationInstaller;
 }
 
+namespace smart_restart {
+class SmartRestartManager;
+class SmartRestartMetricsObserver;
+}  // namespace smart_restart
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -259,6 +264,11 @@ class GlobalFeatures {
       on_device_translation_installer_;
 
   std::unique_ptr<ProfileLaunchObserver> profile_launch_observer_;
+
+  std::unique_ptr<smart_restart::SmartRestartMetricsObserver>
+      smart_restart_metrics_observer_;
+
+  std::unique_ptr<smart_restart::SmartRestartManager> smart_restart_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

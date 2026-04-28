@@ -110,6 +110,7 @@ void CheckAccessedOnCorrectThread() {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kRestartLastSessionOnShutdown, false);
+  registry->RegisterBooleanPref(prefs::kRestartInBackgroundOnShutdown, false);
 }
 
 void OnShutdownStarting(ShutdownType type) {
@@ -170,7 +171,7 @@ ShutdownType GetShutdownType() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ShutdownPreThreadsStop() {
+RestartMode ShutdownPreThreadsStop() {
 #if BUILDFLAG(IS_CHROMEOS)
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserShutdownStarted",
                                                      false);
@@ -186,14 +187,14 @@ bool ShutdownPreThreadsStop() {
     metrics->LogCleanShutdown();
   }
 
-  bool restart_last_session = RecordShutdownInfoPrefs();
+  RestartMode restart_mode = RecordShutdownInfoPrefs();
   g_browser_process->local_state()->CommitPendingWrite();
 
 #if BUILDFLAG(ENABLE_RLZ)
   rlz::RLZTracker::CleanupRlz();
 #endif
 
-  return restart_last_session;
+  return restart_mode;
 }
 
 void RecordShutdownMetrics() {
@@ -233,18 +234,26 @@ void RecordShutdownMetrics() {
   }
 }
 
-bool RecordShutdownInfoPrefs() {
+RestartMode RecordShutdownInfoPrefs() {
   CheckAccessedOnCorrectThread();
   PrefService* prefs = g_browser_process->local_state();
 
   // Check local state for the restart flag so we can restart the session later.
-  bool restart_last_session = false;
-  if (prefs->HasPrefPath(prefs::kRestartLastSessionOnShutdown)) {
-    restart_last_session =
-        prefs->GetBoolean(prefs::kRestartLastSessionOnShutdown);
+  RestartMode restart_mode = RestartMode::kNoRestart;
+  if (prefs->GetBoolean(prefs::kRestartLastSessionOnShutdown)) {
+    restart_mode = RestartMode::kRestartLastSession;
     prefs->ClearPref(prefs::kRestartLastSessionOnShutdown);
   }
-  return restart_last_session;
+
+  if (prefs->GetBoolean(prefs::kRestartInBackgroundOnShutdown)) {
+    // kRestartInBackgroundOnShutdown is only supported if we are already
+    // restarting the last session.
+    if (restart_mode == RestartMode::kRestartLastSession) {
+      restart_mode = RestartMode::kRestartInBackground;
+    }
+    prefs->ClearPref(prefs::kRestartInBackgroundOnShutdown);
+  }
+  return restart_mode;
 }
 
 void ShutdownPostThreadsStop(RestartMode restart_mode) {

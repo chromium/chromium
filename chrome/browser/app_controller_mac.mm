@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -214,10 +215,21 @@ void LaunchBrowserStartup(Profile* profile) {
 
   base::AutoReset<bool> auto_reset_in_run(&g_is_opening_new_window, true);
   StartupBrowserCreator browser_creator;
-  browser_creator.LaunchBrowser(
-      *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
-      chrome::startup::IsProcessStartup::kNo, chrome::startup::IsFirstRun::kYes,
-      /*restore_tabbed_browser=*/true);
+
+  // For user-initiated launches (e.g. Dock icon click), we use a fresh command
+  // line if SmartRestart is enabled. This prevents the new window from being
+  // suppressed by any --no-startup-window flag that might have been used during
+  // the initial background restart.
+  base::CommandLine command_line =
+      base::FeatureList::IsEnabled(features::kSmartRestart)
+          ? base::CommandLine(
+                base::CommandLine::ForCurrentProcess()->GetProgram())
+          : *base::CommandLine::ForCurrentProcess();
+
+  browser_creator.LaunchBrowser(command_line, profile, base::FilePath(),
+                                chrome::startup::IsProcessStartup::kNo,
+                                chrome::startup::IsFirstRun::kYes,
+                                /*restore_tabbed_browser=*/true);
 }
 
 // Creates an empty browser window with the given profile and returns a pointer

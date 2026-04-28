@@ -53,7 +53,11 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/lifetime/smart_restart_manager.h"
+#include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
 #include "chrome/browser/ui/startup/profile_launch_observer.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/common/chrome_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -143,6 +147,18 @@ void GlobalFeatures::PostBrowserProcessInit() {
 
 #if !BUILDFLAG(IS_ANDROID)
   profile_launch_observer_ = std::make_unique<ProfileLaunchObserver>();
+
+  if (base::FeatureList::IsEnabled(features::kSmartRestartMetrics)) {
+    smart_restart_metrics_observer_ =
+        std::make_unique<smart_restart::SmartRestartMetricsObserver>(
+            UpgradeDetector::GetInstance());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSmartRestart)) {
+    smart_restart_manager_ =
+        std::make_unique<smart_restart::SmartRestartManager>(
+            UpgradeDetector::GetInstance());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -197,6 +213,8 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 
 void GlobalFeatures::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
+  smart_restart_manager_.reset();
+  smart_restart_metrics_observer_.reset();
   profile_launch_observer_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 

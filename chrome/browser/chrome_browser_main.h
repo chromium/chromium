@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -44,10 +45,6 @@ class RunLoop;
 namespace content {
 class SyntheticTrialSyncer;
 }
-
-namespace smart_restart {
-class SmartRestartMetricsObserver;
-}  // namespace smart_restart
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 class PlatformAuthPolicyObserver;
@@ -196,7 +193,8 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.
-  bool restart_last_session_ = false;
+  browser_shutdown::RestartMode restart_mode_ =
+      browser_shutdown::RestartMode::kNoRestart;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -224,12 +222,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // created.
   // Must be deleted before `browser_process_`.
   std::unique_ptr<ProfileInitManager> profile_init_manager_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Observer that records metrics related to "Smart Restart" opportunities.
-  std::unique_ptr<smart_restart::SmartRestartMetricsObserver>
-      smart_restart_metrics_observer_;
-#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
   // Applies enterprise policies for platform auth SSO.
