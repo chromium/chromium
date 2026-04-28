@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_FEATURES_H_
 #define CHROME_BROWSER_UI_TABS_FEATURES_H_
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace tabs {
 
@@ -48,6 +50,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // to determine EOH state.
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kVerticalTabsExpandOnHoverUseVelocityHeuristic);
+// When using the velocity heuristic, this is the minimum time before EOH can be
+// triggered.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kVerticalTabsExpandOnHoverVelocityHeuristicDelay);
 // This in the minimum number of samples needed to calculate the heuristic.
 BASE_DECLARE_FEATURE_PARAM(
     int,
@@ -61,6 +67,16 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 BASE_DECLARE_FEATURE_PARAM(
     double,
     kVerticalTabsExpandOnHoverVelocityHeuristicThreshold);
+// Minimum distance from the inside edge of the vertical tab strip before EOH
+// can be triggered.
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge);
+// When distance from edge is set, only evaluate that parameter until this delay
+// is reached.
+BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
