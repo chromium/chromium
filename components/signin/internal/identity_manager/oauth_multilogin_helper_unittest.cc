@@ -525,7 +525,7 @@ class OAuthMultiloginHelperTest
   std::unique_ptr<MockTokenService> mock_token_service_;
   std::unique_ptr<OAuthMultiloginHelper> helper_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool should_return_device_bound_session_manager_ = true;
+  bool should_return_device_bound_session_manager_ = false;
   network::MockDeviceBoundSessionManager mock_device_bound_session_manager_;
   bool should_return_bound_session_delegate_ = true;
   raw_ptr<MockBoundSessionOAuthMultiLoginDelegate> bound_session_delegate_ =
@@ -1418,7 +1418,9 @@ class OAuthMultiloginHelperStandardBoundSessionsEnabledTest
              {switches::kEnableOAuthMultiloginCookiesBinding, {}},
              {switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
               {{"enforced", "true"}}}},
-            /*disabled_features=*/{}) {}
+            /*disabled_features=*/{}) {
+    SetShouldReturnDeviceBoundSessionManager(true);
+  }
 
  protected:
   std::string multilogin_url_with_cookie_enforcement() {
@@ -1999,7 +2001,9 @@ class OAuthMultiloginHelperStandardBoundSessionsEnabledPrototypeDisabledTest
             /*enabled_features=*/
             {{switches::kEnableOAuthMultiloginStandardCookiesBinding, {}}},
             /*disabled_features=*/{
-                switches::kEnableOAuthMultiloginCookiesBinding}) {}
+                switches::kEnableOAuthMultiloginCookiesBinding}) {
+    SetShouldReturnDeviceBoundSessionManager(true);
+  }
 };
 
 TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledPrototypeDisabledTest,

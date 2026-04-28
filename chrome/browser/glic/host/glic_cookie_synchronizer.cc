@@ -228,7 +228,7 @@ network::mojom::DeviceBoundSessionManager*
 GlicCookieSynchronizer::GetDeviceBoundSessionManagerForPartition() {
   if (!base::FeatureList::IsEnabled(
           switches::
-              kEnableOAuthMultiloginStandardCookiesBindingForGlicPartition)) {
+              kEnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions)) {
     return nullptr;
   }
   return GetStoragePartition()->GetDeviceBoundSessionManager();

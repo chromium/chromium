@@ -462,9 +462,7 @@ void OAuthMultiloginHelper::OnCookiesSet(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 OAuthMultiloginHelper::CookieBindingSupport
 OAuthMultiloginHelper::GetCookieBindingSupport() const {
-  if (partition_delegate_->GetDeviceBoundSessionManagerForPartition() &&
-      base::FeatureList::IsEnabled(
-          switches::kEnableOAuthMultiloginStandardCookiesBinding)) {
+  if (partition_delegate_->GetDeviceBoundSessionManagerForPartition()) {
     return CookieBindingSupport::kStandard;
   }
   if (bound_session_delegate_ &&

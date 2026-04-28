@@ -22,6 +22,11 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "base/feature_list.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace contextual_tasks {
 
 namespace {
@@ -70,7 +75,12 @@ ContextualTasksCookieSynchronizer::GetCookieManagerForPartition() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 network::mojom::DeviceBoundSessionManager*
 ContextualTasksCookieSynchronizer::GetDeviceBoundSessionManagerForPartition() {
-  return GetStoragePartition()->GetDeviceBoundSessionManager();;
+  if (!base::FeatureList::IsEnabled(
+          switches::
+              kEnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions)) {
+    return nullptr;
+  }
+  return GetStoragePartition()->GetDeviceBoundSessionManager();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
