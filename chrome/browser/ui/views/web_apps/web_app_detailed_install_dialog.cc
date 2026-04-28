@@ -405,6 +405,10 @@ namespace web_app {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kDetailedInstallDialogImageContainer);
 
+// TODO(crbug.com/507106728): Delete this implementation once
+// kWebAppInstallDialog is enabled by default and WebAppInstallIntroView
+// takes over.
+
 void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
     std::unique_ptr<web_app::WebAppInstallInfo> install_info,

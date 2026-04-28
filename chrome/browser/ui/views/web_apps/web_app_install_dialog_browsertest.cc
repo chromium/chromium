@@ -93,7 +93,8 @@ class TestWebAppScreenshotFetcher : public WebAppScreenshotFetcher {
   }
 
  private:
-  std::vector<gfx::Size> sizes_ = {gfx::Size(400, 300)};
+  std::vector<gfx::Size> sizes_ = {gfx::Size(400, 300), gfx::Size(400, 300),
+                                   gfx::Size(400, 300)};
   base::WeakPtrFactory<TestWebAppScreenshotFetcher> weak_ptr_factory_{this};
 };
 

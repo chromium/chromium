@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -21,6 +22,8 @@ class GURL;
 
 namespace web_app {
 
+class WebAppScreenshotFetcher;
+
 // A view that shows the app icon, name, origin, and a description for the
 // install dialog.
 class WebAppInstallIntroView : public views::View {
@@ -32,6 +35,8 @@ class WebAppInstallIntroView : public views::View {
       const std::u16string& app_name,
       const GURL& start_url,
       bool is_maskable,
+      const std::u16string& description,
+      base::WeakPtr<WebAppScreenshotFetcher> fetcher,
       base::RepeatingCallback<void(const std::u16string&)>
           text_tracker_callback);
   ~WebAppInstallIntroView() override;
@@ -42,6 +47,8 @@ class WebAppInstallIntroView : public views::View {
                          const std::u16string& app_name,
                          const GURL& start_url,
                          bool is_maskable,
+                         const std::u16string& description,
+                         base::WeakPtr<WebAppScreenshotFetcher> fetcher,
                          base::RepeatingCallback<void(const std::u16string&)>
                              text_tracker_callback);
 };

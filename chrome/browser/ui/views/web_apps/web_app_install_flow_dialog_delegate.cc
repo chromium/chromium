@@ -270,6 +270,7 @@ void WebAppInstallFlowDialogDelegate::Show(
 
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();
+  std::u16string description = install_info->description.value();
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker, install_type,
@@ -283,7 +284,7 @@ void WebAppInstallFlowDialogDelegate::Show(
   install_step_to_view[InstallDialogStep::kInstallDialog] =
       WebAppInstallIntroView::Create(
           install_type, icon_image, title, start_url,
-          dialog_image_info.is_maskable,
+          dialog_image_info.is_maskable, description, screenshot_fetcher,
           base::BindRepeating(
               &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
               delegate_weak_ptr));
