@@ -1044,6 +1044,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, TextureLayerAppendQuads) {
 
   // The hold on the image is released when context is lost.
   frame_sink_->OnContextLost();
+  frame_sink_->ReclaimResources(std::move(resources_to_return));
   EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 0);
 }
 
