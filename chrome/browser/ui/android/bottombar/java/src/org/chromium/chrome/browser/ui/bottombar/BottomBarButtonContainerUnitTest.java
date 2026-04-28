@@ -60,7 +60,7 @@ public class BottomBarButtonContainerUnitTest {
     @Test
     public void testGetTargetView_viewStub() {
         ViewStub stub = new ViewStub(mActivity);
-        stub.setLayoutResource(R.layout.bottom_bar_button_template);
+        stub.setLayoutResource(R.layout.bottom_bar_generic_template);
         mContainer.addView(stub);
         mContainer.onFinishInflate();
         mContainer.inflateStub();

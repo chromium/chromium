@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Helper methods for working with Action buttons. */
@@ -57,9 +58,19 @@ public class ActionUtils {
         registerAction(
                 registry,
                 ActionId.NEW_TAB,
+                ActionProperties.BASE_KEYS,
                 R.drawable.new_tab_icon,
                 R.string.button_new_tab,
                 R.string.new_tab_title);
+
+        // Register home button.
+        registerAction(
+                registry,
+                ActionId.HOME_BUTTON,
+                HomeActionProperties.ALL_KEYS,
+                R.drawable.ic_home_24dp,
+                R.string.accessibility_toolbar_btn_home,
+                R.string.accessibility_toolbar_btn_home);
     }
 
     /**
@@ -67,6 +78,7 @@ public class ActionUtils {
      *
      * @param registry The {@link ActionRegistry} to register to.
      * @param actionId The ID of the action.
+     * @param keys The property keys to use for the model.
      * @param iconResId The drawable resource ID for the icon.
      * @param contentDescriptionResId The string resource ID for the content description.
      * @param tooltipResId The string resource ID for the tooltip.
@@ -74,26 +86,30 @@ public class ActionUtils {
     public static void registerAction(
             ActionRegistry registry,
             @ActionId int actionId,
+            PropertyKey[] keys,
             @DrawableRes int iconResId,
             @StringRes int contentDescriptionResId,
             @StringRes int tooltipResId) {
-        PropertyModel model = createActionModel(iconResId, contentDescriptionResId, tooltipResId);
+        PropertyModel model =
+                createActionModel(keys, iconResId, contentDescriptionResId, tooltipResId);
         registry.register(actionId, model);
     }
 
     /**
      * Creates a property model for an action.
      *
+     * @param keys The property keys to use for the model.
      * @param iconResId The drawable resource ID for the icon.
      * @param contentDescriptionResId The string resource ID for the content description.
      * @param tooltipResId The string resource ID for the tooltip.
      * @return The constructed {@link PropertyModel}.
      */
     public static PropertyModel createActionModel(
+            PropertyKey[] keys,
             @DrawableRes int iconResId,
             @StringRes int contentDescriptionResId,
             @StringRes int tooltipResId) {
-        PropertyModel.Builder builder = new PropertyModel.Builder(ActionProperties.BASE_KEYS);
+        PropertyModel.Builder builder = new PropertyModel.Builder(keys);
         if (iconResId != Resources.ID_NULL) {
             builder.with(ActionProperties.ICON_ID, iconResId);
         }

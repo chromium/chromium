@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,7 +72,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Before
     public void setUp() {
         mTabSupplier.set(null);
-        when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
+        when(mActionRegistry.get(anyInt())).thenReturn(mActionSupplier);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(

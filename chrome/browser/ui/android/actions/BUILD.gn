@@ -37,6 +37,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/user_education:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

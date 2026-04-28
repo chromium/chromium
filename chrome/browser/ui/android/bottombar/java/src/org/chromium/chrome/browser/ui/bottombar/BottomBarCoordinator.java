@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.ActionViewBinding;
+import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,6 +59,17 @@ public class BottomBarCoordinator implements BottomBar {
                 new ActionViewBinding(
                         actionRegistry.get(ActionId.NEW_TAB),
                         mView.findViewById(R.id.new_tab_button)));
+
+        if (BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled()) {
+            BottomBarButtonContainer homeContainer = mView.findViewById(R.id.home_button_container);
+            homeContainer.setVisibility(View.VISIBLE);
+            homeContainer.inflateStub();
+            mBindings.add(
+                    new ActionViewBinding(
+                            actionRegistry.get(ActionId.HOME_BUTTON),
+                            homeContainer,
+                            HomeActionButtonBinder::bind));
+        }
     }
 
     @Override

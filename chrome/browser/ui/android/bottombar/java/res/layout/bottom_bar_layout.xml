@@ -18,6 +18,7 @@ found in the LICENSE file.
 
     <!-- TODO(crbug.com/504981728): Try to unify ids with the toolbar. -->
     <org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer
+        android:id="@+id/home_button_container"
         android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -28,7 +29,7 @@ found in the LICENSE file.
             android:layout_width="@dimen/toolbar_button_width"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout="@layout/bottom_bar_button_template" />
+            android:layout="@layout/bottom_bar_list_menu_template" />
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 
     <org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer
@@ -42,7 +43,7 @@ found in the LICENSE file.
             android:layout_width="@dimen/toolbar_button_width"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout="@layout/bottom_bar_button_template" />
+            android:layout="@layout/bottom_bar_generic_template" />
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 
     <org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer
@@ -84,7 +85,7 @@ found in the LICENSE file.
             android:layout_width="@dimen/toolbar_button_width"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout="@layout/bottom_bar_button_template" />
+            android:layout="@layout/bottom_bar_generic_template" />
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 
 </LinearLayout>

@@ -23,6 +23,7 @@ public class ActionViewBinding {
     private final NullableObservableSupplier<PropertyModel> mSupplier;
     private final View mView;
     private final Callback<@Nullable PropertyModel> mCallback = this::onPropertyModelChanged;
+    private final PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> mBinder;
     private @Nullable PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mMcp;
 
     /**
@@ -33,8 +34,23 @@ public class ActionViewBinding {
      *     action button.
      */
     public ActionViewBinding(NullableObservableSupplier<PropertyModel> supplier, View view) {
+        this(supplier, view, ActionButtonBinder::bind);
+    }
+
+    /**
+     * Creates a new {@link ActionViewBinding}.
+     *
+     * @param supplier The observable supplier for the action property model.
+     * @param view The view to bind the action to.
+     * @param binder The {@link ViewBinder} to use for binding the action model to the view.
+     */
+    public ActionViewBinding(
+            NullableObservableSupplier<PropertyModel> supplier,
+            View view,
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> binder) {
         mSupplier = supplier;
         mView = view;
+        mBinder = binder;
         mSupplier.addSyncObserverAndCallIfNonNull(mCallback);
     }
 
@@ -44,9 +60,7 @@ public class ActionViewBinding {
             mMcp = null;
         }
         if (actionModel != null) {
-            mMcp =
-                    PropertyModelChangeProcessor.create(
-                            actionModel, mView, ActionButtonBinder::bind);
+            mMcp = PropertyModelChangeProcessor.create(actionModel, mView, mBinder);
         }
     }
 

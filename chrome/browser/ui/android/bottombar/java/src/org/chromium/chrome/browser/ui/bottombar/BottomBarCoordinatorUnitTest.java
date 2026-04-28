@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +30,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -55,6 +59,8 @@ public class BottomBarCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mActionSupplier =
             ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<PropertyModel> mHomeActionSupplier =
+            ObservableSuppliers.createNullable();
 
     private Activity mActivity;
     private FrameLayout mParent;
@@ -63,6 +69,7 @@ public class BottomBarCoordinatorUnitTest {
     @Before
     public void setUp() {
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
+        when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -112,5 +119,26 @@ public class BottomBarCoordinatorUnitTest {
         assertTrue(mActionSupplier.hasObservers());
         mCoordinator.destroy();
         assertFalse(mActionSupplier.hasObservers());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false")
+    public void testInitialization_withHomeButton_bindsHomeButton() {
+        verify(mActionRegistry).get(ActionId.HOME_BUTTON);
+
+        View homeButton = mCoordinator.getView().findViewById(R.id.home_button);
+        assertNotNull(homeButton);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/true")
+    public void testInitialization_withoutHomeButton_doesNotBindHomeButton() {
+        verify(mActionRegistry, never()).get(ActionId.HOME_BUTTON);
+
+        View homeButton = mCoordinator.getView().findViewById(R.id.home_button);
+        assertNull(homeButton);
+
+        View homeStub = mCoordinator.getView().findViewById(R.id.home_stub);
+        assertNotNull(homeStub);
     }
 }

@@ -7,8 +7,9 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
-    "java/res/layout/bottom_bar_button_template.xml",
+    "java/res/layout/bottom_bar_generic_template.xml",
     "java/res/layout/bottom_bar_layout.xml",
+    "java/res/layout/bottom_bar_list_menu_template.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/toolbar:java_resources",
