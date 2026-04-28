@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -390,6 +391,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       AppBarPositionForView(self.view) == AppBarPosition::kBottom ? progress
                                                                   : 1.0;
   [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
+}
+
+- (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
+  CGFloat targetAlpha =
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+          ? animator.finalProgress
+          : 1.0;
+  [self setButtonsTitleAlpha:targetAlpha animationDuration:animator.duration];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving

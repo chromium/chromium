@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
@@ -76,6 +77,15 @@
   }
   _fullscreenProgress = progress;
   [self updateLayout];
+}
+
+- (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
+  __weak __typeof(self) weakSelf = self;
+  CGFloat finalProgress = animator.finalProgress;
+  [animator addAnimations:^{
+    [weakSelf updateForFullscreenProgress:finalProgress];
+    [weakSelf.view layoutIfNeeded];
+  }];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving

@@ -1,7 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/fullscreen/model",
-  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   # keep-sorted end
 ]
