@@ -24,7 +24,6 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",
     "//ios/web/common:user_agent",
-    "//ios/web/public/test/http_server",
     "//net",
     "//net:test_support",
     "//ui/base",

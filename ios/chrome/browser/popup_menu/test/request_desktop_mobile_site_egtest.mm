@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/functional/bind.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -13,20 +15,19 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
-#import "ios/web/public/test/http_server/data_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-const char kUserAgentTestURL[] =
-    "http://ios/testing/data/http_server_files/user_agent_test_page.html";
+const char kUserAgentTestPath[] = "/user_agent_test_page.html";
 
 const char kMobileSiteLabel[] = "Mobile";
 
@@ -79,51 +80,71 @@ GREYElementInteraction* RequestDesktopButton() {
 }
 
 // A ResponseProvider that provides user agent for httpServer request.
-class UserAgentResponseProvider : public web::DataResponseProvider {
- public:
-  bool CanHandleRequest(const Request& request) override { return true; }
+// Handles responses for the test server.
+std::unique_ptr<net::test_server::HttpResponse> HandleUserAgentRequest(
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
 
-  void GetResponseHeadersAndBody(
-      const Request& request,
-      scoped_refptr<net::HttpResponseHeaders>* headers,
-      std::string* response_body) override {
-    // Do not return anything if static plist file has been requested,
-    // as plain text is not a valid property list content.
-    if ([[base::SysUTF8ToNSString(request.url.spec()) pathExtension]
-            isEqualToString:@"plist"]) {
-      *headers =
-          web::ResponseProvider::GetResponseHeaders("", net::HTTP_NO_CONTENT);
-      return;
-    }
-
-    std::string purge_additions = "";
-    if (request.url.GetPath().contains(kPurgeURL)) {
-      purge_additions = kJavaScriptReload;
-    }
-
-    *headers = web::ResponseProvider::GetDefaultResponseHeaders();
-    std::optional<std::string> userAgent =
-        request.headers.GetHeader("User-Agent");
-    std::string desktop_product =
-        "CriOS/" + version_info::GetMajorVersionNumber();
-    std::string desktop_user_agent =
-        web::BuildDesktopUserAgent(desktop_product);
-    if (userAgent == desktop_user_agent) {
-      response_body->assign(std::string(kDesktopSiteLabel) + "\n" +
-                            purge_additions);
-    } else {
-      response_body->assign(std::string(kMobileSiteLabel) + "\n" +
-                            purge_additions);
-    }
+  // Do not return anything if static plist file has been requested,
+  // as plain text is not a valid property list content.
+  if ([[base::SysUTF8ToNSString(request.relative_url) pathExtension]
+          isEqualToString:@"plist"]) {
+    response->set_code(net::HTTP_NO_CONTENT);
+    return response;
   }
-};
+
+  // If the user agent test page is requested, return nullptr to allow the
+  // default file handler to serve it.
+  if (request.GetURL().path().find(kUserAgentTestPath) != std::string::npos) {
+    return nullptr;
+  }
+
+  std::string purge_additions = "";
+  if (request.GetURL().path().find(kPurgeURL) != std::string::npos) {
+    purge_additions = kJavaScriptReload;
+  }
+
+  std::optional<std::string> userAgent;
+  auto it = request.headers.find("User-Agent");
+  if (it != request.headers.end()) {
+    userAgent = it->second;
+  }
+
+  std::string desktop_product =
+      "CriOS/" + version_info::GetMajorVersionNumber();
+  std::string desktop_user_agent = web::BuildDesktopUserAgent(desktop_product);
+
+  if (userAgent == desktop_user_agent) {
+    response->set_content(std::string(kDesktopSiteLabel) + "\n" +
+                          purge_additions);
+  } else {
+    response->set_content(std::string(kMobileSiteLabel) + "\n" +
+                          purge_additions);
+  }
+
+  return response;
+}
 }  // namespace
 
 // Tests for the tools popup menu.
-@interface RequestDesktopMobileSiteTestCase : WebHttpServerChromeTestCase
+@interface RequestDesktopMobileSiteTestCase : ChromeTestCase
 @end
 
 @implementation RequestDesktopMobileSiteTestCase
+
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleUserAgentRequest));
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("ios/testing/data/http_server_files/"));
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
 
 #pragma mark - Helper
 
@@ -159,11 +180,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that requesting desktop site of a page works and the user agent
 // propagates to the next navigations in the same tab.
 - (void)testRequestDesktopSitePropagatesToNextNavigations {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -174,18 +191,14 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
                                         timeout:kWaitForUserAgentChangeTimeout];
 
   // Verify that desktop user agent propagates.
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
 }
 
 // Tests that requesting desktop site of a page works and the requested user
 // agent is kept when restoring the session.
 - (void)testRequestDesktopSiteKeptSessionRestoration {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -207,11 +220,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that requesting desktop site of a page works and desktop user agent
 // does not propagate to next the new tab.
 - (void)testRequestDesktopSiteDoesNotPropagateToNewTab {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -223,23 +232,19 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 
   // Verify that desktop user agent does not propagate to new tab.
   [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 }
 
 // Tests that when requesting desktop on another page and coming back to a page
 // that has been purged from memory, we still display the mobile page.
 - (void)testRequestDesktopSiteGoBackToMobilePurged {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(
-                              "http://" + std::string(kPurgeURL))];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/" + std::string(kPurgeURL))];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
 
   // Request and verify reception of the desktop site.
   [ChromeEarlGreyUI openToolsMenu];
@@ -270,12 +275,8 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   }
 #endif
 
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
   // Load the page in the non-default mode.
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
   [ChromeEarlGreyUI openToolsMenu];
@@ -303,11 +304,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that requesting mobile site of a page works and the user agent
 // propagates to the next navigations in the same tab.
 - (void)testRequestMobileSitePropagatesToNextNavigations {
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -324,7 +321,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
                                         timeout:kWaitForUserAgentChangeTimeout];
 
   // Verify that mobile user agent propagates.
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 }
 
@@ -349,7 +346,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that navigator.appVersion JavaScript API returns correct string for
 // mobile User Agent and the platform.
 - (void)testAppVersionJSAPIWithMobileUserAgent {
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kUserAgentTestURL)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kUserAgentTestPath)];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -390,11 +387,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   GREYAssertFalse([ChromeEarlGrey isMobileModeByDefault],
                   @"The default mode should be desktop.");
 
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
 
   // Change back to Mobile.
@@ -404,7 +397,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
 
   // Verify that mobile user agent propagates.
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 }
 
@@ -414,11 +407,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   GREYAssertTrue([ChromeEarlGrey isMobileModeByDefault],
                  @"The default mode should be mobile.");
 
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -438,11 +427,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   GREYAssertTrue([ChromeEarlGrey isMobileModeByDefault],
                  @"The default mode should be mobile.");
 
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new UserAgentResponseProvider());
-  web::test::SetUpHttpServer(std::move(provider));
-
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/1.com")];
   // Verify initial reception of the mobile site.
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
@@ -452,7 +437,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
                   @"The default mode should be desktop.");
 
   // Move to another page, loaded in desktop mode.
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/2.com")];
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
 
   // Go back to the Mobile page.
