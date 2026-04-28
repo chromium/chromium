@@ -88,6 +88,7 @@ class ImageDataFetcher {
 
   void OnURLLoaderComplete(const network::SimpleURLLoader* source,
                            ImageFetcherParams params,
+                           uint64_t flow_id,
                            std::optional<std::string> response_body);
 
   void FinishRequest(const network::SimpleURLLoader* source,
@@ -103,6 +104,8 @@ class ImageDataFetcher {
 
   // Upper limit for the number of bytes to download per image.
   std::optional<int64_t> max_download_bytes_;
+
+  uint64_t fetch_sequence_number_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

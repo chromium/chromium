@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "net/base/data_url.h"
 #include "net/base/load_flags.h"
@@ -105,6 +106,10 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
                                       const std::string& referrer,
                                       net::ReferrerPolicy referrer_policy,
                                       bool send_cookies) {
+  uint64_t flow_id =
+      reinterpret_cast<uint64_t>(this) ^ (++fetch_sequence_number_);
+  TRACE_EVENT("ui", "ImageDataFetcher::FetchImageData",
+              perfetto::Flow::ProcessScoped(flow_id));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Handle data urls explicitly since SimpleURLLoader doesn't.
@@ -144,14 +149,15 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
     loader->DownloadToString(
         url_loader_factory_.get(),
         base::BindOnce(&ImageDataFetcher::OnURLLoaderComplete,
-                       base::Unretained(this), loader.get(), std::move(params)),
+                       base::Unretained(this), loader.get(), std::move(params),
+                       flow_id),
         max_download_bytes_.value());
   } else {
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_.get(),
         base::BindOnce(&ImageDataFetcher::OnURLLoaderComplete,
-                       base::Unretained(this), loader.get(),
-                       std::move(params)));
+                       base::Unretained(this), loader.get(), std::move(params),
+                       flow_id));
   }
 
   std::unique_ptr<ImageDataFetcherRequest> request_track(
@@ -164,7 +170,10 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
 void ImageDataFetcher::OnURLLoaderComplete(
     const network::SimpleURLLoader* source,
     ImageFetcherParams params,
+    uint64_t flow_id,
     std::optional<std::string> response_body) {
+  TRACE_EVENT("ui", "ImageDataFetcher::OnURLLoaderComplete",
+              perfetto::Flow::ProcessScoped(flow_id));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_requests_.find(source) != pending_requests_.end());
   bool success = source->NetError() == net::OK;

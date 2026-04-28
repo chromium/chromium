@@ -110,6 +110,9 @@ class CachedImageFetcher : public ImageFetcher {
   // when only read only CachedImageFetchers are using it.
   bool read_only_;
 
+  // Used to generate unique flow IDs for tracing.
+  uint64_t request_sequence_number_ = 0;
+
   // Used to ensure that operations are performed on the sequence that this
   // object was created on.
   SEQUENCE_CHECKER(sequence_checker_);
