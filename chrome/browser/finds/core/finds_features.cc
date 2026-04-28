@@ -28,10 +28,10 @@ constexpr base::FeatureParam<int> kNotificationWindowTimeMinutes{
 
 constexpr base::FeatureParam<int> kFindsOptInPromoMaxInteractedCount{
     &kChromeFinds, "finds_opt_in_promo_max_interacted_count",
-    /*default_value=*/3};
+    /*default_value=*/2};
 
 constexpr base::FeatureParam<int> kFindsOptInPromoCooldownInDays{
-    &kChromeFinds, "finds_opt_in_promo_cooldown_in_days", /*default_value=*/3};
+    &kChromeFinds, "finds_opt_in_promo_cooldown_in_days", /*default_value=*/7};
 
 constexpr base::FeatureParam<int> kThemeUrlVisitCountForOptIn{
     &kChromeFinds, "finds_theme_url_visit_count_for_opt_in",
