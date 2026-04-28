@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
@@ -408,12 +409,39 @@ void ContextualCueingHelper::OnCueingDecision(
       (side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
        side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kToolbar));
 
-  const bool should_open_side_panel =
-      !existing_side_panel_open && decision_result->auto_open_eligible &&
-      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
+  bool is_split = tab_interface && tab_interface->IsSplit();
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  bool vertical_tabs_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  vertical_tabs_enabled =
+      profile->GetPrefs()->GetBoolean(::prefs::kVerticalTabsEnabled);
+#endif
+
+  bool should_open_side_panel =
+      decision_result->auto_open_eligible &&
+      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
+
+  if (should_open_side_panel) {
+    std::optional<GlicAutoOpenResult> prevented_reason;
+
+    if (existing_side_panel_open) {
+      prevented_reason =
+          GlicAutoOpenResult::kPreventedFromExistingSidePanelOpen;
+    } else if (is_split) {
+      prevented_reason = GlicAutoOpenResult::kPreventedFromSplitView;
+    } else if (vertical_tabs_enabled) {
+      prevented_reason = GlicAutoOpenResult::kPreventedFromVerticalTabs;
+    }
+
+    if (prevented_reason) {
+      base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
+                                    *prevented_reason);
+      should_open_side_panel = false;
+    }
+  }
+
   const bool is_auto_open_pdf_side_panel_cue =
       should_open_side_panel &&
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
@@ -451,9 +479,13 @@ void ContextualCueingHelper::OnCueingDecision(
         options.prompts.push_back(decision_result->prompt_suggestion);
       }
       glic_service->Invoke(tab_interface, std::move(options));
+      base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
+                                    GlicAutoOpenResult::kSuccess);
       return;
     }
     // Fall through to nudge if side panel open fails.
+    base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result",
+                                  GlicAutoOpenResult::kFailedUnknown);
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(
