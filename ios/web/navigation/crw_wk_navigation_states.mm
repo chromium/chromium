@@ -7,9 +7,41 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/stringprintf.h"
+#import "base/trace_event/trace_event.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/web_client.h"
+
+namespace {
+bool IsTerminalState(web::WKNavigationState state) {
+  return state == web::WKNavigationState::FINISHED ||
+         state == web::WKNavigationState::PROVISIONALY_FAILED ||
+         state == web::WKNavigationState::FAILED ||
+         state == web::WKNavigationState::NONE;
+}
+
+const char* NavigationStateToString(web::WKNavigationState state) {
+  switch (state) {
+    case web::WKNavigationState::NONE:
+      return "None";
+    case web::WKNavigationState::REQUESTED:
+      return "Requested";
+    case web::WKNavigationState::STARTED:
+      return "Started";
+    case web::WKNavigationState::REDIRECTED:
+      return "Redirected";
+    case web::WKNavigationState::PROVISIONALY_FAILED:
+      return "ProvisionalyFailed";
+    case web::WKNavigationState::COMMITTED:
+      return "Committed";
+    case web::WKNavigationState::FINISHED:
+      return "Finished";
+    case web::WKNavigationState::FAILED:
+      return "Failed";
+  }
+}
+}  // namespace
 
 // Holds a pair of state and creation order index.
 @interface CRWWKNavigationsStateRecord : NSObject {
@@ -103,6 +135,13 @@
 - (void)getLastAddedNavigation:(WKNavigation**)outNavigation
                         record:(CRWWKNavigationsStateRecord**)outRecord;
 
+// Tracing helpers.
+- (void)traceStateTransitionForRecord:(CRWWKNavigationsStateRecord*)record
+                             oldState:(web::WKNavigationState)oldState
+                             newState:(web::WKNavigationState)newState;
+
+- (void)traceRemoveNavigationForRecord:(CRWWKNavigationsStateRecord*)record;
+
 @end
 
 @implementation CRWWKNavigationStates
@@ -124,6 +163,8 @@
     forNavigation:(WKNavigation*)navigation {
   id key = [self keyForNavigation:navigation];
   CRWWKNavigationsStateRecord* record = [_records objectForKey:key];
+  web::WKNavigationState old_state =
+      record ? record.state : web::WKNavigationState::NONE;
   if (!record) {
     record =
         [[CRWWKNavigationsStateRecord alloc] initWithState:state
@@ -144,6 +185,8 @@
     record.committed = YES;
   }
 
+  [self traceStateTransitionForRecord:record oldState:old_state newState:state];
+
   // Workaround for a WKWebView bug where WKNavigation's can leak, leaving a
   // permanent pending URL, thus breaking the omnibox.  While it is possible
   // for navigations to finish out-of-order, it's an edge case that should be
@@ -163,6 +206,12 @@
       }
     }
     for (id recordKey in navigationsToRemove) {
+      CRWWKNavigationsStateRecord* recordObject =
+          [_records objectForKey:recordKey];
+      if (!IsTerminalState(recordObject.state)) {
+        [self traceRemoveNavigationForRecord:recordObject];
+      }
+
       [_records removeObjectForKey:recordKey];
     }
   }
@@ -181,6 +230,11 @@
   id key = [self keyForNavigation:navigation];
   CRWWKNavigationsStateRecord* record = [_records objectForKey:key];
   DCHECK(record);
+
+  if (!IsTerminalState(record.state)) {
+    [self traceRemoveNavigationForRecord:record];
+  }
+
   std::unique_ptr<web::NavigationContextImpl> context = [record releaseContext];
   [_records removeObjectForKey:key];
   return context;
@@ -273,6 +327,52 @@
   id key = [self keyForNavigation:navigation];
   CRWWKNavigationsStateRecord* record = [_records objectForKey:key];
   return record.committed;
+}
+
+#pragma mark - Tracing Helpers
+
+#define BEGIN_PAGE_LOAD_PHASE(state)                                        \
+  TRACE_EVENT_BEGIN("navigation", state,                                    \
+                    perfetto::NamedTrack("Page Load", record.index), "url", \
+                    (record.context ? record.context->GetUrl().spec() : ""));
+
+- (void)traceStateTransitionForRecord:(CRWWKNavigationsStateRecord*)record
+                             oldState:(web::WKNavigationState)oldState
+                             newState:(web::WKNavigationState)newState {
+  if (!IsTerminalState(oldState)) {
+    // End parent PageLoad if new state is terminal.
+    TRACE_EVENT_END("navigation",
+                    perfetto::NamedTrack("Page Load", record.index),
+                    "end_state", NavigationStateToString(newState));
+  }
+
+  switch (newState) {
+    case web::WKNavigationState::NONE:
+    case web::WKNavigationState::PROVISIONALY_FAILED:
+    case web::WKNavigationState::FINISHED:
+    case web::WKNavigationState::FAILED:
+      break;  // Terminal states should not begin a PageLoad event.
+    case web::WKNavigationState::REQUESTED:
+      BEGIN_PAGE_LOAD_PHASE("Requested");
+      break;
+    case web::WKNavigationState::STARTED:
+      BEGIN_PAGE_LOAD_PHASE("Started");
+      break;
+    case web::WKNavigationState::REDIRECTED:
+      BEGIN_PAGE_LOAD_PHASE("Redirected");
+      break;
+    case web::WKNavigationState::COMMITTED:
+      BEGIN_PAGE_LOAD_PHASE("Committed");
+      break;
+  }
+}
+
+- (void)traceRemoveNavigationForRecord:(CRWWKNavigationsStateRecord*)record {
+  if (!IsTerminalState(record.state)) {
+    TRACE_EVENT_END("navigation",
+                    perfetto::NamedTrack("Page Load", record.index),
+                    "end_state", "Cancelled");
+  }
 }
 
 @end
