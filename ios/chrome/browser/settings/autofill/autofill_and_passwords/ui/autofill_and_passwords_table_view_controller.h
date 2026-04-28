@@ -31,6 +31,10 @@
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillProfile:
     (AutofillAndPasswordsTableViewController*)controller;
 
+// Called when the user taps on the identity docs item.
+- (void)autofillAndPasswordsTableViewControllerDidSelectIdentityDocs:
+    (AutofillAndPasswordsTableViewController*)controller;
+
 @end
 
 // The TableView for Autofill and passwords settings page.

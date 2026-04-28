@@ -8,6 +8,10 @@ source_set("coordinator") {
     "autofill_and_passwords_coordinator.mm",
     "autofill_and_passwords_mediator.h",
     "autofill_and_passwords_mediator.mm",
+    "identity_docs_coordinator.h",
+    "identity_docs_coordinator.mm",
+    "identity_docs_mediator.h",
+    "identity_docs_mediator.mm",
   ]
   deps = [
     "//base",

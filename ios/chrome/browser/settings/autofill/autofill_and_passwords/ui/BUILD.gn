@@ -7,9 +7,13 @@ source_set("autofill_and_passwords") {
     "autofill_and_passwords_consumer.h",
     "autofill_and_passwords_table_view_controller.h",
     "autofill_and_passwords_table_view_controller.mm",
+    "identity_docs_consumer.h",
+    "identity_docs_table_view_controller.h",
+    "identity_docs_table_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",
     "//ios/chrome/browser/settings/ui_bundled:constants",

@@ -59,6 +59,10 @@ NSString* AutofillProfileItemDetailText(BOOL enabled) {
   return DetailTextForEnabledState(enabled);
 }
 
+NSString* IdentityDocsItemDetailText(BOOL enabled) {
+  return DetailTextForEnabledState(enabled);
+}
+
 TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
   NSString* passwordsSectionTitle =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -91,4 +95,13 @@ TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
       AutofillProfileItemDetailText(enabled),
       CustomSettingsRootSymbol(kLocationSymbol),
       kSettingsAddressesAndMoreCellId);
+}
+
+TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
+  NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
+  return DetailItemWithType(
+      SettingsItemTypeIdentityDocs, title,
+      IdentityDocsItemDetailText(enabled),
+      DefaultSettingsRootSymbol(kPersonTextRectangleSymbol),
+      kSettingsIdentityDocsCellId);
 }

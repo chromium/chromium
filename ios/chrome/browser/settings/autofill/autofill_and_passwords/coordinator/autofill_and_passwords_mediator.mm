@@ -57,6 +57,10 @@
     [_consumer setAutofillProfileEnabled:
                    _userPrefService->GetBoolean(
                        autofill::prefs::kAutofillProfileEnabled)];
+
+    // TODO(crbug.com/491417038): Introduce logic to enable/disable identity
+    // docs based on pref value.
+    [_consumer setIdentityDocsEnabled:YES];
   }
 }
 
