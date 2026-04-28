@@ -12,10 +12,13 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -49,9 +52,14 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
       base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
   FakeGlobalAcceleratorListener() = default;
+  FakeGlobalAcceleratorListener(const FakeGlobalAcceleratorListener&) = delete;
+  FakeGlobalAcceleratorListener& operator=(
+      const FakeGlobalAcceleratorListener&) = delete;
   ~FakeGlobalAcceleratorListener() override = default;
 
+  // ui::GlobalAcceleratorListener:
   void StartListening() override {}
+
   void StopListening() override {}
 
   bool StartListeningForAccelerator(const ui::Accelerator&) override {
@@ -101,6 +109,7 @@ class TestExtensionCommandsGlobalRegistry
         global_shortcut_listener_(global_shortcut_listener) {}
 
  protected:
+  // ExtensionCommandsGlobalRegistry:
   ui::GlobalAcceleratorListener* GetGlobalAcceleratorListener() const override {
     return global_shortcut_listener_;
   }

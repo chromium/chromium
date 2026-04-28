@@ -1830,6 +1830,7 @@ source_set("unit_tests") {
     "event_router_forwarder_unittest.cc",
     "extension_action_icon_factory_unittest.cc",
     "extension_action_runner_unittest.cc",
+    "extension_commands_global_registry_unittest.cc",
     "extension_error_controller_unittest.cc",
     "extension_garbage_collector_unittest.cc",
     "extension_install_prompt_unittest.cc",
@@ -1938,6 +1939,7 @@ source_set("unit_tests") {
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/accelerators/global_accelerator_listener",
     "//ui/display:test_support",
   ]
 
@@ -1997,7 +1999,6 @@ source_set("unit_tests") {
       "context_menu_matcher_unittest.cc",
       "error_console/error_console_unittest.cc",
       "extension_allowlist_unittest.cc",
-      "extension_commands_global_registry_unittest.cc",
       "extension_error_ui_default_unittest.cc",
       "extension_special_storage_policy_unittest.cc",
       "extension_telemetry_service_verdict_handler_unittest.cc",
@@ -2037,7 +2038,6 @@ source_set("unit_tests") {
       "//components/sync_bookmarks",
       "//components/webauthn/core/browser:test_support",
       "//extensions/browser:webstore_installer",
-      "//ui/base/accelerators/global_accelerator_listener",
       "//ui/base/clipboard:clipboard_test_support",
     ]
 
