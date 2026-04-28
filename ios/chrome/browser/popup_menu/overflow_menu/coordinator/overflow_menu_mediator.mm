@@ -1659,7 +1659,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
 
-  if (base::FeatureList::IsEnabled(kShareInOverflowMenu) &&
+  if ((base::FeatureList::IsEnabled(kShareInOverflowMenu) ||
+       (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible())) &&
       [self isCurrentURLWebURL]) {
     base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
                                   ShareThisPageLocation::kOverflowMenu);
