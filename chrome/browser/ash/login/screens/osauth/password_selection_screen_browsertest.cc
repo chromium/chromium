@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
 #include "password_selection_screen.h"
@@ -246,6 +247,30 @@ IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, LocalPasswordChoice) {
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
                    ->knowledge_factor_setup.local_password_forced);
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest,
+                       SAMLWithPolicyForcesLocalPassword) {
+  if (!GetParam()) {
+    // Not Applicable without the flag.
+    return;
+  }
+  SetAllowLocalPasswordPolicyForEnterpriseUsers();
+
+  StartLogin(/*asEnterpriseUser=*/true);
+
+  auto context = BorrowUserContext();
+  context->SetAuthFlow(UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+  StoreUserContext(std::move(context));
+
+  WaitForScreen();
+  WaitForScreenExit();
+
+  EXPECT_EQ(result_.value(),
+            PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED);
+  EXPECT_TRUE(LoginDisplayHost::default_host()
+                  ->GetWizardContextForTesting()
+                  ->knowledge_factor_setup.local_password_forced);
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordSelectionScreenTest, SmartCard) {

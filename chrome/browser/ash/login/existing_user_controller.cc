@@ -820,6 +820,13 @@ bool ExistingUserController::MaybeShowRemoveLocalAuthFactorsScreen(
     return false;
   }
 
+  user_manager::KnownUser known_user(
+      user_manager::UserManager::Get()->GetLocalState());
+  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML ||
+      known_user.IsUsingSAML(user_context.GetAccountId())) {
+    return false;
+  }
+
   if (!user_context.GetAccountId().is_valid()) {
     LOG(ERROR) << "Invalid AccountId detected";
   }

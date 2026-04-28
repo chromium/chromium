@@ -168,6 +168,8 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
   CHECK(user_context->HasAuthFactorsConfiguration());
   auth_factors_config_ = user_context->GetAuthFactorsConfiguration();
   has_online_password_ = user_context->GetOnlinePassword().has_value();
+  is_saml_flow_ =
+      user_context->GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML;
   account_id_ = user_context->GetAccountId();
 }
 
@@ -220,8 +222,24 @@ void PasswordSelectionScreen::ProcessOptions() {
         }
         return;
       }
-    case WizardContext::AuthChangeFlow::kInitialSetup:
+    case WizardContext::AuthChangeFlow::kInitialSetup: {
+      if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
+        CHECK(is_saml_flow_.has_value());
+        auto allowed_factors =
+            AuthPolicyConnector::Get()->AllowedLocalAuthFactors(account_id_);
+        bool local_factors_enabled_by_policy =
+            allowed_factors.has_value() && !allowed_factors->empty();
+        if (local_factors_enabled_by_policy && is_saml_flow_.value()) {
+          LOG(WARNING) << "Local auth factors are allowed via policy, forcing "
+                          "local password for SAML users";
+
+          context()->knowledge_factor_setup.local_password_forced = true;
+          exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+          return;
+        }
+      }
       break;
+    }
   }
 
   if (context()->skip_post_login_screens_for_tests) {
