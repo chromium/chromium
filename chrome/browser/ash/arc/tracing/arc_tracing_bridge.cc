@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -262,6 +263,8 @@ class ArcTracingDataSource
 
 }  // namespace
 
+BASE_FEATURE(kArcTracingDataSource, base::FEATURE_DISABLED_BY_DEFAULT);
+
 struct ArcTracingBridge::Category {
   // The name used by Android to trigger tracing.
   std::string name;
@@ -411,7 +414,9 @@ void ArcTracingBridge::OnArcTracingStopped(StopCallback callback,
 
 // static
 void ArcTracingBridge::EnsureFactoryBuilt() {
-  ArcTracingBridgeFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(kArcTracingDataSource)) {
+    ArcTracingBridgeFactory::GetInstance();
+  }
 }
 
 }  // namespace arc

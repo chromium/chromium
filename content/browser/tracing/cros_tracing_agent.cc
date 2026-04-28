@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -220,8 +221,12 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
 }  // namespace
 
+BASE_FEATURE(kCrOSTracingDataSource, base::FEATURE_DISABLED_BY_DEFAULT);
+
 void RegisterCrOSTracingDataSource() {
-  CrOSDataSource::GetInstance();
+  if (base::FeatureList::IsEnabled(kCrOSTracingDataSource)) {
+    CrOSDataSource::GetInstance();
+  }
 }
 
 }  // namespace content

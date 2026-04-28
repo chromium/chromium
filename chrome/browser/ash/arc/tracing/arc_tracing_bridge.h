@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -89,6 +90,8 @@ class ArcTracingBridge : public KeyedService,
   // so it must be the last member.
   base::WeakPtrFactory<ArcTracingBridge> weak_ptr_factory_{this};
 };
+
+BASE_DECLARE_FEATURE(kArcTracingDataSource);
 
 }  // namespace arc
 

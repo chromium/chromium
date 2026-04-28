@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -364,7 +365,9 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcSharesheetBridge::GetForBrowserContext(profile);
   ArcSurveyService::GetForBrowserContext(profile);
   ArcSystemUIBridge::GetForBrowserContext(profile);
-  ArcTracingBridge::GetForBrowserContext(profile);
+  if (base::FeatureList::IsEnabled(kArcTracingDataSource)) {
+    ArcTracingBridge::GetForBrowserContext(profile);
+  }
   ArcTtsService::GetForBrowserContext(profile);
   ArcUsbHostBridge::GetForBrowserContext(profile);
   ArcUsbHostPermissionManager::GetForBrowserContext(profile);

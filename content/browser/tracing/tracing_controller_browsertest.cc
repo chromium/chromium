@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/task/task_traits.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_config.h"
 #include "base/values.h"
@@ -37,6 +38,11 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "content/browser/tracing/cros_tracing_agent.h"
+#endif
+
+#if BUILDFLAG(IS_CASTOS)
+#include "content/browser/tracing/cast_tracing_agent.h"
 #endif
 
 using base::trace_event::TraceConfig;
@@ -398,7 +404,22 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_DoubleStopTracing) {
 #else
 #define MAYBE_SystemTraceEvents DISABLED_SystemTraceEvents
 #endif
-IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_SystemTraceEvents) {
+class SystemTraceTracingControllerTest : public TracingControllerTest {
+ public:
+  SystemTraceTracingControllerTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitAndEnableFeature(kCrOSTracingDataSource);
+#elif BUILDFLAG(IS_CASTOS)
+    feature_list_.InitAndEnableFeature(kCastTracingDataSource);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTraceTracingControllerTest,
+                       MAYBE_SystemTraceEvents) {
   TestStartAndStopTracingString(true /* enable_systrace */);
   EXPECT_TRUE(last_data().find("systemTraceEvents") != std::string::npos);
 }
