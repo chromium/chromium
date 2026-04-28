@@ -63,6 +63,14 @@ public class TabSwitcherActionButtonBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testTabCountAndIncognito() {
+        mModel.set(TabSwitcherActionProperties.TAB_COUNT, 5);
+        mModel.set(TabSwitcherActionProperties.IS_INCOGNITO, true);
+        verify(mView).setTabCount(5, true);
+    }
+
+    @Test
+    @SmallTest
     public void testHasNotificationDot() {
         mModel.set(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT, true);
         verify(mView).setNotificationDotVisible(true);
