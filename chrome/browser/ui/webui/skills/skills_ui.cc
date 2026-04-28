@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 
+#include "base/check_deref.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_metrics.h"
@@ -43,15 +48,17 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean(
       "isRefinementEnabled",
       base::FeatureList::IsEnabled(features::kSkillsRefinementEnabled));
-
-  content::URLDataSource::Add(profile,
-                              std::make_unique<SanitizedImageSource>(profile));
   source->AddBoolean(
       "isAutocompleteEnabled",
       base::FeatureList::IsEnabled(features::kSkillsAutocomplete));
   source->AddBoolean(
       "isPartnerPicksEnabled",
       base::FeatureList::IsEnabled(features::kSkillsPartnerPicks));
+  source->AddBoolean("shouldDisableBrowseSkillsPage",
+                     ShouldDisableBrowseSkillsPage());
+
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},
@@ -140,6 +147,20 @@ void SkillsUI::CreateDialogHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui())),
       initial_skill_, entrypoint_, dialog_type_, delegate_);
+}
+
+bool SkillsUI::ShouldDisableBrowseSkillsPage() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kSkills1PDisabledForNonEnLocales)) {
+    return false;
+  }
+
+  // Disable the browse skills page if the current locale is not English.
+  const ApplicationLocaleStorage& application_locale_storage =
+      CHECK_DEREF(CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
+                      .application_locale_storage());
+  return !base::StartsWith(application_locale_storage.Get(), "en",
+                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

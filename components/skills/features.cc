@@ -11,5 +11,7 @@ BASE_FEATURE(kSkillsMetricsProviderEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSkillsRefinementEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSkillsAutocomplete, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSkillsPartnerPicks, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSkills1PDisabledForNonEnLocales,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

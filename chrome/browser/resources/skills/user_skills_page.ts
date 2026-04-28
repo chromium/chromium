@@ -10,6 +10,7 @@ import './icons.html.js';
 import './error_page.js';
 import './skills_empty.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
@@ -37,6 +38,7 @@ export class UserSkillsPageElement extends CrLitElement {
       skills_: {type: Object},
       searchTerm_: {type: String},
       addSkillButtonDisabled_: {type: Boolean},
+      shouldDisableBrowseSkillsPage_: {type: Boolean},
     };
   }
 
@@ -44,6 +46,8 @@ export class UserSkillsPageElement extends CrLitElement {
   protected accessor skills_: Map<string, Skill> = new Map();
   protected accessor addSkillButtonDisabled_: boolean = false;
   protected accessor searchTerm_: string = '';
+  protected accessor shouldDisableBrowseSkillsPage_: boolean =
+      loadTimeData.getBoolean('shouldDisableBrowseSkillsPage');
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
   private listenerIds_: number[] = [];
   private addSkillButtonDisabledTimer_: number|undefined = undefined;
