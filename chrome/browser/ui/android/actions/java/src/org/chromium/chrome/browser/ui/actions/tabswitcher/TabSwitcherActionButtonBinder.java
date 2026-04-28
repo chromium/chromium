@@ -15,20 +15,27 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Binds the Tab Switcher action state to a {@link TabSwitcherButtonView}. */
 @NullMarked
 public class TabSwitcherActionButtonBinder {
-    public static void bind(
-            PropertyModel model, TabSwitcherButtonView view, PropertyKey propertyKey) {
+    /**
+     * Binds the given {@link PropertyModel} to the given {@link View} for the given {@link
+     * PropertyKey}.
+     */
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        view = ActionButtonBinder.resolveView(view);
+        assert view instanceof TabSwitcherButtonView : "View must be TabSwitcherButtonView";
+        TabSwitcherButtonView tabSwitcherButtonView = (TabSwitcherButtonView) view;
+
         if (propertyKey == TabSwitcherActionProperties.TAB_COUNT
                 || propertyKey == TabSwitcherActionProperties.IS_INCOGNITO) {
-            view.setTabCount(
+            tabSwitcherButtonView.setTabCount(
                     model.get(TabSwitcherActionProperties.TAB_COUNT),
                     model.get(TabSwitcherActionProperties.IS_INCOGNITO));
         } else if (propertyKey == TabSwitcherActionProperties.HAS_NOTIFICATION_DOT) {
-            view.setNotificationDotVisible(
+            tabSwitcherButtonView.setNotificationDotVisible(
                     model.get(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT));
         } else if (propertyKey == TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER) {
-            view.endRippleAnimation();
+            tabSwitcherButtonView.endRippleAnimation();
         } else {
-            ActionButtonBinder.bind(model, (View) view, propertyKey);
+            ActionButtonBinder.bind(model, view, propertyKey);
         }
     }
 }
