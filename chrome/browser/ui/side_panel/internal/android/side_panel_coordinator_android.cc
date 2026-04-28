@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 
 #define LOG_TAG "SidePanelCoordinatorAndroid"
 #define SPLOG(message)                                     \
@@ -150,8 +151,8 @@ void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
   }
   ClearCachedEntryViews(panel_type);
 
-  // TODO(crbug.com/493931023): Record metrics here
-  // (SidePanelMetrics::RecordSidePanelClosed).
+  SidePanelMetrics::RecordSidePanelClosed(panel_type,
+                                          opened_timestamp(panel_type));
 
   state_ = SidePanelState::kClosed;
 }
@@ -265,6 +266,14 @@ void SidePanelCoordinatorAndroid::Show(
   }
 
   SidePanelType entry_type = entry->type();
+  if (!IsSidePanelShowing(entry_type)) {
+    SetOpenedTimestamp(entry_type, base::TimeTicks::Now());
+    SidePanelMetrics::RecordSidePanelOpen(entry_type, open_trigger);
+  }
+
+  SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(entry_type,
+                                                            open_trigger);
+
   if (IsSidePanelShowing(entry_type)) {
     SPLOG("Show - Side panel is already showing.");
     std::optional<UniqueKey> current_entry_key = current_key(entry_type);
@@ -293,6 +302,9 @@ void SidePanelCoordinatorAndroid::Show(
       return;
     }
   }
+
+  SidePanelMetrics::RecordEntryShowTriggeredMetrics(
+      entry_type, entry->key().id(), open_trigger);
 
   waiter(entry_type)
       ->WaitForEntry(
