@@ -4255,6 +4255,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-web-signin-loading-dialog",
+    "owners": [ "mlbipin@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-webassembly-baseline",
     "owners": [ "clemensb@chromium.org", "wasm-team@google.com" ],
     // This flag is often used by developers and partners to test
@@ -4812,6 +4817,11 @@
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "force-enable-web-signin-loading-dialog",
+    "owners": [ "mlbipin@google.com", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "force-enable-webgpu-interop",

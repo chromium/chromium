@@ -595,11 +595,22 @@ inline constexpr char kEnableActivitylessSigninAllEntryPointDescription[] =
     "When enabled, activityless sign-in will be used for all entry points on "
     "Android.";
 
+inline constexpr char kEnableWebSigninLoadingDialogName[] =
+    "Enable Web Signin Loading Dialog";
+inline constexpr char kEnableWebSigninLoadingDialogDescription[] =
+    "Enables a dialog to be shown while users wait for cookies to be minted.";
+
 inline constexpr char kForceHistoryOptInScreenName[] =
     "Force history opt-in screen";
 inline constexpr char kForceHistoryOptInScreenDescription[] =
     "If enabled, the history opt-in screen will be forced to show up even if "
     "the user declined history sync too recently or too often";
+
+inline constexpr char kForceShowWebSigninLoadingDialogName[] =
+    "Force Web Signin Loading Dialog";
+inline constexpr char kForceShowWebSigninLoadingDialogDescription[] =
+    "Force show the web signin loading dialog while waiting for cookies "
+    "without a timeout.";
 
 inline constexpr char kFluidResizeName[] =
     "Enable Android desktop fluid resize";
