@@ -95,23 +95,20 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
     }
   }
 
-  // Sets the image in both the LRU cache and the disk. The full-resolution
-  // image is kept in the LRU cache for sharp in-session display and zoom
-  // transitions. A downsampled copy is written to disk to reduce storage and
-  // I/O.
+  // Downsample before caching so the LRU cache holds smaller images,
+  // reducing the overall memory footprint of snapshot storage.
   public func setImage(_ image: UIImage?, withSnapshotID snapshotID: SnapshotIDWrapper) {
     guard let image = image, snapshotID.valid() else {
       return
     }
 
-    lruCache.setObject(value: image, forKey: snapshotID)
-    let imageToWrite =
-      IsSnapshotDownsampleImageEnabled()
+    let optimizedImage = IsSnapshotDownsampleImageEnabled()
       ? Self.downsampledForStorage(image) : image
+    lruCache.setObject(value: optimizedImage, forKey: snapshotID)
     HistogramUtils.recordHistogram(
       "IOS.Snapshots.SnapshotImageMemoryFootprint",
       withMemoryKB: UiKitUtils.memoryFootprint(for: image))
-    fileManager.write(image: imageToWrite, snapshotID: snapshotID)
+    fileManager.write(image: optimizedImage, snapshotID: snapshotID)
 
     for observer in observers {
       observer.value?.didUpdateSnapshotStorage?(snapshotID: snapshotID)

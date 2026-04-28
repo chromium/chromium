@@ -168,21 +168,20 @@ UIImage* DownsampledForStorage(UIImage* image) {
     return;
   }
 
-  [_lruCache setObject:image forKey:snapshotID];
-
-  [self.observers didUpdateSnapshotStorageWithSnapshotID:snapshotIDWrapper];
-
-  // Downsample to half dimensions before writing to disk when the feature flag
-  // is enabled. The full-resolution image remains in the LRU cache for sharp
-  // in-session display.
-  UIImage* imageToWrite =
+  // Downsample before caching so the LRU cache holds smaller images,
+  // reducing the overall memory footprint of snapshot storage.
+  UIImage* optimizedImage =
       base::FeatureList::IsEnabled(kSnapshotDownsampleImage)
           ? DownsampledForStorage(image)
           : image;
+  [_lruCache setObject:optimizedImage forKey:snapshotID];
 
   base::UmaHistogramMemoryKB("IOS.Snapshots.SnapshotImageMemoryFootprint",
                              MemoryFootprintForImage(image));
-  [_fileManager writeImage:imageToWrite withSnapshotID:snapshotID];
+
+  [self.observers didUpdateSnapshotStorageWithSnapshotID:snapshotIDWrapper];
+
+  [_fileManager writeImage:optimizedImage withSnapshotID:snapshotID];
 }
 
 - (void)removeImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper {
