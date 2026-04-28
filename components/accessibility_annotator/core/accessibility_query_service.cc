@@ -63,6 +63,35 @@ bool EntryMatchesAnyFilterWord(
       });
 }
 
+// Deduplicates search results in `MemorySearchResults`.
+// An entry is considered a duplicate if its `type`, `value` and its
+// `metadata_list` are identical to an entry already in the unique set.
+// The first occurrence of a duplicate entry is preserved, maintaining its
+// relative order and other fields (like confidence_score). The `sources` of
+// subsequent duplicates are merged into the preserved entry.
+void DeduplicateResults(std::vector<MemorySearchResult>& results) {
+  std::vector<MemorySearchResult> unique_results;
+  unique_results.reserve(results.size());
+  for (MemorySearchResult& result : results) {
+    auto it = std::ranges::find_if(
+        unique_results, [&result](const MemorySearchResult& existing) {
+          return existing.type == result.type &&
+                 existing.value == result.value &&
+                 existing.metadata_list == result.metadata_list;
+        });
+    if (it != unique_results.end()) {
+      for (MemoryEntrySource& source : result.sources) {
+        if (!std::ranges::contains(it->sources, source)) {
+          it->sources.push_back(std::move(source));
+        }
+      }
+    } else {
+      unique_results.push_back(std::move(result));
+    }
+  }
+  results = std::move(unique_results);
+}
+
 }  // namespace
 
 AccessibilityQueryService::AccessibilityQueryService(
@@ -168,6 +197,8 @@ void AccessibilityQueryService::OnDataRetrieved(
     base::Extend(entries, std::move(list));
   }
 
+  DeduplicateResults(entries);
+
   // If we couldn't find any local results, try the 1P resolver if full search
   // is enabled.
   if (entries.empty()) {
@@ -256,6 +287,7 @@ void AccessibilityQueryService::OnOnePResolverComplete(
   } else {
     // The 1P resolver successfully found relevant results, so we
     // return those instead of the fallback.
+    DeduplicateResults(one_p_entries);
     update_callback.Run(MemorySearchResults(
         MemorySearchStatus::kFinalResponseSuccess, std::move(one_p_entries)));
   }

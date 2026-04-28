@@ -172,9 +172,10 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  EXPECT_EQ(result.entries.size(), 2u);
-  EXPECT_EQ(result.entries[0].value, u"John Doe");
-  EXPECT_EQ(result.entries[1].value, u"Jane Doe");
+  EXPECT_THAT(result.entries,
+              testing::ElementsAre(
+                  testing::Field(&MemorySearchResult::value, u"John Doe"),
+                  testing::Field(&MemorySearchResult::value, u"Jane Doe")));
   EXPECT_EQ(fake_data_provider1->last_type(), EntryType::kNameFull);
   EXPECT_EQ(fake_data_provider2->last_type(), EntryType::kNameFull);
 }
@@ -200,8 +201,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
 
   ASSERT_TRUE(future.Wait());
   const auto& search_results = future.Get();
-  EXPECT_EQ(search_results.entries.size(), 1u);
-  EXPECT_EQ(search_results.entries[0].value, u"John Doe");
+  EXPECT_THAT(search_results.entries,
+              testing::ElementsAre(
+                  testing::Field(&MemorySearchResult::value, u"John Doe")));
   EXPECT_EQ(fake_data_provider->last_type(), EntryType::kNameFull);
 }
 
@@ -278,8 +280,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent_QueriesOnePResolver) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"Some 1P Value");
+  EXPECT_THAT(result.entries,
+              testing::ElementsAre(testing::Field(&MemorySearchResult::value,
+                                                  u"Some 1P Value")));
   EXPECT_EQ(fake_one_p_resolver->last_query(), u"random query");
 }
 
@@ -328,8 +331,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoLocalData_QueriesOnePResolver) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"Jane Doe");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value, u"Jane Doe")));
   EXPECT_EQ(fake_one_p_resolver->last_query(), u"what is my name");
 }
 
@@ -412,8 +415,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value,
+                                  u"123 San Diego St Home San Diego")));
   EXPECT_EQ(fake_data_provider->last_type(), EntryType::kAddressFull);
 }
 
@@ -442,8 +446,9 @@ TEST_F(AccessibilityQueryServiceTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value,
+                                  u"123 San Diego St Home San Diego")));
   EXPECT_EQ(fake_data_provider->last_type(), EntryType::kAddressFull);
 }
 
@@ -508,8 +513,9 @@ TEST_F(AccessibilityQueryServiceTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"456 New York Ave Home New York");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value,
+                                  u"456 New York Ave Home New York")));
   EXPECT_EQ(fake_one_p_resolver->last_query(),
             u"What's my home address in New York");
 }
@@ -544,8 +550,9 @@ TEST_F(AccessibilityQueryServiceTest,
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  EXPECT_EQ(result.entries.size(), 1u);
-  EXPECT_EQ(result.entries[0].value, u"123 San Diego St Home San Diego");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value,
+                                  u"123 San Diego St Home San Diego")));
   EXPECT_EQ(fake_one_p_resolver->last_query(),
             u"What's my home address in New York");
 }
@@ -579,9 +586,9 @@ TEST_F(AccessibilityQueryServiceTest, Query_FullSearch_NoOnePIfLocalDataFound) {
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
   EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_EQ(result.entries.size(), 1u);
   // Should return the local result and NOT query 1P.
-  EXPECT_EQ(result.entries[0].value, u"John Doe");
+  EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
+                                  &MemorySearchResult::value, u"John Doe")));
   EXPECT_TRUE(fake_one_p_resolver->last_query().empty());
 }
 
@@ -617,6 +624,148 @@ TEST_F(AccessibilityQueryServiceTest, StaleResultsAreNotSent) {
 
   // The second query's callback should be called.
   ASSERT_TRUE(future2.Wait());
+}
+
+// Tests that deduplication preserves the original insertion order.
+TEST_F(AccessibilityQueryServiceTest,
+       Query_DeduplicatesResults_PreservesOrder) {
+  auto data_provider1 = std::make_unique<FakeMemoryDataProvider>();
+  auto* fake_data_provider1 = data_provider1.get();
+
+  std::vector<std::unique_ptr<MemoryDataProvider>> providers;
+  providers.push_back(std::move(data_provider1));
+  auto service = std::make_unique<AccessibilityQueryService>(
+      std::make_unique<MockAccessibilityQueryServiceDelegate>(),
+      std::move(providers), /*one_p_resolver=*/nullptr,
+      /*remote_model_executor=*/nullptr);
+
+  MemorySearchResult result1(EntryType::kNameFull, u"Name", u"Alice");
+  MemorySearchResult result2(EntryType::kNameFull, u"Name", u"Bob");
+  MemorySearchResult result3(EntryType::kNameFull, u"Name",
+                             u"Alice");  // duplicate of result1
+  MemorySearchResult result4(EntryType::kNameFull, u"Name", u"Charlie");
+
+  fake_data_provider1->SetResults({result1, result2, result3, result4});
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const MemorySearchResults& result = future.Get();
+  EXPECT_THAT(result.entries,
+              testing::ElementsAre(
+                  testing::Field(&MemorySearchResult::value, u"Alice"),
+                  testing::Field(&MemorySearchResult::value, u"Bob"),
+                  testing::Field(&MemorySearchResult::value, u"Charlie")));
+}
+
+// Tests that deduplication retains fields like confidence_score from the first
+// entry and merges sources.
+TEST_F(AccessibilityQueryServiceTest,
+       Query_DeduplicatesResults_RetainsFirstEntryFieldsAndMergesSources) {
+  auto data_provider1 = std::make_unique<FakeMemoryDataProvider>();
+  auto* fake_data_provider1 = data_provider1.get();
+
+  std::vector<std::unique_ptr<MemoryDataProvider>> providers;
+  providers.push_back(std::move(data_provider1));
+  auto service = std::make_unique<AccessibilityQueryService>(
+      std::make_unique<MockAccessibilityQueryServiceDelegate>(),
+      std::move(providers), /*one_p_resolver=*/nullptr,
+      /*remote_model_executor=*/nullptr);
+
+  EntryMetadata metadata(EntryType::kAddressCity, u"City", u"San Diego");
+
+  MemorySearchResult result1(EntryType::kNameFull, u"Name", u"John Doe",
+                             /*confidence_score=*/0.9);
+  result1.metadata_list.push_back(metadata);
+  result1.sources.push_back(
+      MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+
+  MemorySearchResult result2(EntryType::kNameFull, u"Name", u"John Doe",
+                             /*confidence_score=*/0.5);
+  result2.metadata_list.push_back(metadata);
+  result2.sources.push_back(MemoryEntrySource(MemoryEntrySourceType::kGmail));
+  // Duplicate source shouldn't be added twice.
+  result2.sources.push_back(
+      MemoryEntrySource(MemoryEntrySourceType::kAutofill));
+
+  fake_data_provider1->SetResults({result1, result2});
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ASSERT_EQ(result.entries.size(), 1u);
+  EXPECT_EQ(result.entries[0].value, u"John Doe");
+  EXPECT_DOUBLE_EQ(result.entries[0].confidence_score, 0.9);
+  ASSERT_EQ(result.entries[0].sources.size(), 2u);
+  EXPECT_EQ(result.entries[0].sources[0].type,
+            MemoryEntrySourceType::kAutofill);
+  EXPECT_EQ(result.entries[0].sources[1].type, MemoryEntrySourceType::kGmail);
+}
+
+// Tests that entries with different values or metadata lists are both retained.
+TEST_F(AccessibilityQueryServiceTest,
+       Query_DeduplicatesResults_KeepsDifferentEntries) {
+  auto data_provider1 = std::make_unique<FakeMemoryDataProvider>();
+  auto* fake_data_provider1 = data_provider1.get();
+
+  std::vector<std::unique_ptr<MemoryDataProvider>> providers;
+  providers.push_back(std::move(data_provider1));
+  auto service = std::make_unique<AccessibilityQueryService>(
+      std::make_unique<MockAccessibilityQueryServiceDelegate>(),
+      std::move(providers), /*one_p_resolver=*/nullptr,
+      /*remote_model_executor=*/nullptr);
+
+  EntryMetadata metadata_sd(EntryType::kAddressCity, u"City", u"San Diego");
+  EntryMetadata metadata_ny(EntryType::kAddressCity, u"City", u"New York");
+
+  // Same value, different metadata
+  MemorySearchResult result1(EntryType::kNameFull, u"Name", u"John Doe");
+  result1.metadata_list.push_back(metadata_sd);
+
+  MemorySearchResult result2(EntryType::kNameFull, u"Name", u"John Doe");
+  result2.metadata_list.push_back(metadata_ny);
+
+  // Different value, same metadata
+  MemorySearchResult result3(EntryType::kNameFull, u"Name", u"Jane Doe");
+  result3.metadata_list.push_back(metadata_sd);
+
+  // Same value and metadata, different type
+  MemorySearchResult result4(EntryType::kUnknown, u"Unknown", u"John Doe");
+  result4.metadata_list.push_back(metadata_sd);
+
+  fake_data_provider1->SetResults({result1, result2, result3, result4});
+
+  base::test::TestFuture<MemorySearchResults> future;
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ASSERT_EQ(result.entries.size(), 4u);
+  EXPECT_EQ(result.entries[0].value, u"John Doe");
+  ASSERT_EQ(result.entries[0].metadata_list.size(), 1u);
+  EXPECT_EQ(result.entries[0].metadata_list[0].value, u"San Diego");
+  EXPECT_EQ(result.entries[0].type, EntryType::kNameFull);
+
+  EXPECT_EQ(result.entries[1].value, u"John Doe");
+  ASSERT_EQ(result.entries[1].metadata_list.size(), 1u);
+  EXPECT_EQ(result.entries[1].metadata_list[0].value, u"New York");
+  EXPECT_EQ(result.entries[1].type, EntryType::kNameFull);
+
+  EXPECT_EQ(result.entries[2].value, u"Jane Doe");
+  ASSERT_EQ(result.entries[2].metadata_list.size(), 1u);
+  EXPECT_EQ(result.entries[2].metadata_list[0].value, u"San Diego");
+  EXPECT_EQ(result.entries[2].type, EntryType::kNameFull);
+
+  EXPECT_EQ(result.entries[3].value, u"John Doe");
+  ASSERT_EQ(result.entries[3].metadata_list.size(), 1u);
+  EXPECT_EQ(result.entries[3].metadata_list[0].value, u"San Diego");
+  EXPECT_EQ(result.entries[3].type, EntryType::kUnknown);
 }
 
 }  // namespace
