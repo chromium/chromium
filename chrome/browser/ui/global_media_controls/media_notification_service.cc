@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -659,12 +659,7 @@ void MediaNotificationService::RemoveDeviceListHost(int host_id) {
 
 bool MediaNotificationService::IsIdBlocked(
     const std::string& request_id) const {
-  auto* glic_keyed_service = glic::GlicKeyedService::Get(profile_);
-  if (!glic_keyed_service) {
-    return false;
-  }
-
-  return glic_keyed_service->IsMediaRequestFromGlic(request_id);
+  return glic::IsMediaRequestFromGlic(profile_, request_id);
 }
 
 global_media_controls::MediaItemManager* MediaNotificationService::

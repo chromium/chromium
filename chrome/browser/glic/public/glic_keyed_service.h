@@ -244,9 +244,6 @@ class GlicKeyedService : public KeyedService,
   // null if there is none. `bwi` can be null if preloaded with no browser open.
   GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
 
-  // Returns true if the media request ID belongs to any Glic instance.
-  bool IsMediaRequestFromGlic(const std::string& request_id) const;
-
   // Get the GlicInstance for a provided tab, or null if there is none.
   virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
 

@@ -19,6 +19,7 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -275,6 +276,21 @@ std::vector<content::WebContents*> GetAllGlicGuestWebContentsForTesting(
     }
   }
   return guest_contents;
+}
+
+bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
+                            const std::string& request_id) {
+  for (Host* host : GetAllHosts(browser_context)) {
+    auto* guest = host->web_client_contents();
+    if (!guest) {
+      continue;
+    }
+    if (content::MediaSession::GetRequestIdFromWebContents(guest).ToString() ==
+        request_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace glic

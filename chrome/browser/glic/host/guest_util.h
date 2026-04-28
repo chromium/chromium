@@ -52,6 +52,10 @@ content::WebContents* GetGlicGuestWebContents(
 // true, otherwise return false.
 bool OnGuestAdded(content::WebContents* guest_contents);
 
+// Returns true if the media request ID belongs to any Glic instance.
+bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
+                            const std::string& request_id);
+
 // Returns all Glic guest WebContents for the given browser context.
 std::vector<content::WebContents*> GetAllGlicGuestWebContentsForTesting(
     content::BrowserContext* browser_context);

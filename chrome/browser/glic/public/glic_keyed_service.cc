@@ -70,7 +70,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
@@ -616,22 +615,6 @@ GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
     return nullptr;
   }
   return instance_coordinator().GetInstanceForTab(tab_list->GetActiveTab());
-}
-
-bool GlicKeyedService::IsMediaRequestFromGlic(
-    const std::string& request_id) const {
-  for (GlicInstance* instance : instance_coordinator().GetInstances()) {
-    if (!instance->host().web_client_contents()) {
-      continue;
-    }
-
-    if (content::MediaSession::GetRequestIdFromWebContents(
-            instance->host().web_client_contents())
-            .ToString() == request_id) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void GlicKeyedService::SendAdditionalContext(
