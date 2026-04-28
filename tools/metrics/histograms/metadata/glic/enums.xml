@@ -896,6 +896,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Submit Prompt with Auto Mode"/>
   <int value="2" label="Task interrupted for user confirmation"/>
   <int value="3" label="Task interrupted for user cancellation"/>
+  <int value="4" label="Selection toggled via shared menu"/>
+  <int value="5" label="Selection toggled via hotkey"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUseCounter) -->

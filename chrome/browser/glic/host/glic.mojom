@@ -1696,6 +1696,8 @@ enum WebUseCounter {
   kSubmitPromptWithAutoMode = 1,
   kTaskInterruptedForUserConfirmation = 2,
   kTaskInterruptedForUserClarification = 3,
+  kSelectionToggledViaSharedMenu = 4,
+  kSelectionToggledViaHotKey = 5,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
