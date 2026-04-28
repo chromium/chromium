@@ -22,6 +22,7 @@ suite('ComposeboxTest', () => {
   let composebox: ComposeboxElement;
   let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let searchboxHandler: SearchboxPageHandlerRemote&TestMock<SearchboxPageHandlerRemote>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -66,7 +67,7 @@ suite('ComposeboxTest', () => {
     handler.setResultMapperFor(
         'getSmartTabSharingActive', () => Promise.resolve({active: false}));
 
-    installMock(
+    searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
 
@@ -243,6 +244,30 @@ suite('ComposeboxTest', () => {
 
         composebox.getActiveElement = originalGetActiveElement;
       });
+
+  test('autocomplete matches are cleared on submit', async () => {
+    composebox.getInputElement().inputElement.value = 'Some text';
+    composebox.getInputElement().inputElement.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, cancelable: true}));
+    await composebox.updateComplete;
+
+    const composeboxDiv = composebox.shadowRoot.querySelector('#composebox');
+    assertTrue(!!composeboxDiv);
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      shiftKey: false,
+      bubbles: true,
+      cancelable: true,
+    });
+    composeboxDiv.dispatchEvent(event);
+
+    const clearResult = await searchboxHandler.whenCalled('stopAutocomplete');
+    assertTrue(clearResult);
+    assertFalse(composebox.showDropdown);
+    assertEquals(null, composebox.result);
+    assertEquals('', composebox.lastQueriedInput);
+  });
 });
 
 suite('composeboxSharedMountAutoRepostionDefault', () => {

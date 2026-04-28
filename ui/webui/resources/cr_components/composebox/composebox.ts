@@ -1060,6 +1060,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   override submitCleanup() {
+    this.clearAutocompleteMatches();
     // Update states after submitting:
     this.animationState = GlowAnimationState.SUBMITTING;
 

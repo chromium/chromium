@@ -480,6 +480,9 @@ suite('ContextualTasksComposeboxTest', () => {
     await composebox.updateComplete;
     assertEquals(
         '', inputElement.value, 'Input should be cleared after submit');
+    assertEquals(
+        null, composebox.getDropdownElement().result,
+        'Matches should be cleared after submit');
 
     // 5. Action: Press Enter again on empty input.
     mockSearchboxPageHandler.reset();
@@ -775,6 +778,9 @@ suite('ContextualTasksComposeboxTest', () => {
     // After submission, verify the input is cleared by your component logic.
     await innerComposebox.updateComplete;
     assertEquals('', innerComposebox.input);
+    assertEquals(
+        null, innerComposebox.getDropdownElement().result,
+        'Matches should be cleared after submit');
   });
 
   test('OfflineStatusReconsideredOnReload', async () => {
