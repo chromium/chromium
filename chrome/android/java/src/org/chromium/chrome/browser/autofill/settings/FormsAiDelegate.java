@@ -9,6 +9,8 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -16,10 +18,12 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** A delegate class to handle shared logic for Forms AI settings fragments. */
 @NullMarked
@@ -95,6 +99,12 @@ public class FormsAiDelegate {
         if (mEntityEditor != null) {
             mEntityEditor.onConfigurationChanged();
         }
+    }
+
+    static boolean disabledSettingsInThirdPartyMode(Profile profile) {
+        return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
+                        UserPrefs.get(profile))
+                == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
     void editEntity(EntityInstance entityInstance) {

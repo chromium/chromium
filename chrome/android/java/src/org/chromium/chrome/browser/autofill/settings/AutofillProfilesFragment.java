@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.autofill.settings.FormsAiDelegate.disabledSettingsInThirdPartyMode;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -26,9 +27,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
-import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
@@ -69,7 +68,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.user_prefs.UserPrefs;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -613,12 +611,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     @Override
     public @Nullable String getMainMenuKey() {
         return "autofill_addresses";
-    }
-
-    private static boolean disabledSettingsInThirdPartyMode(Profile profile) {
-        return AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
-                        UserPrefs.get(profile))
-                == AndroidAutofillAvailabilityStatus.AVAILABLE;
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
