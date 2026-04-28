@@ -309,6 +309,10 @@ class TouchBarNotificationBridge : public CommandObserver,
 @synthesize browser = _browser;
 
 - (NSTouchBar*)makeTouchBar {
+  if (!_browser) {
+    return nil;
+  }
+
   // When in tab or extension fullscreen, we should show a touch bar containing
   // only items associated with that mode. Since the toolbar is hidden, only
   // the option to exit fullscreen should show up.
