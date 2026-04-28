@@ -13,6 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -37,6 +38,15 @@ public class ContentShellApplication extends Application {
         if (isBrowserProcess) {
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             ApplicationStatus.initialize(this);
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (!ContextUtils.getProcessName().contains(":")) {
+            NetworkChangeNotifier.init();
+            NetworkChangeNotifier.setAutoDetectConnectivityState(true);
         }
     }
 
