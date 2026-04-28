@@ -91,9 +91,6 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 
   // Tracks if a sign-out from an age mismatch is currently in progress.
   BOOL _isAgeMismatchSignoutInProgress;
-
-  // Tracks if the Age Mismatch prompt has been shown at least once.
-  BOOL _hasShownAgeMismatchPrompt;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -356,9 +353,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
                          browser:self.sceneState.browserProviderInterface
                                      .mainBrowserProvider.browser
                         identity:identity
-                            mode:_hasShownAgeMismatchPrompt
-                                     ? AgeMismatchPromptMode::kFollowUp
-                                     : AgeMismatchPromptMode::kInitial];
+                            mode:AgeMismatchPromptMode::kStandard];
   _ageMismatchSignoutCoordinator.delegate = self;
   [_ageMismatchSignoutCoordinator start];
 }

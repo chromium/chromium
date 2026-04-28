@@ -18,7 +18,7 @@ class AgeMismatchSignoutViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     view_controller_ = [[AgeMismatchSignoutViewController alloc]
-        initWithMode:AgeMismatchPromptMode::kInitial];
+        initWithMode:AgeMismatchPromptMode::kStandard];
   }
 
   base::test::TaskEnvironment task_environment_;

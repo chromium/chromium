@@ -7,8 +7,10 @@
 
 // Mode for the Age Mismatch prompt variations.
 enum class AgeMismatchPromptMode {
-  kInitial,
-  kFollowUp,
+  // Age mismatch signout outside of sign-in flows.
+  kStandard,
+  // Age mismatch signout during sign-in flows.
+  kSigninFlow,
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_PROMPT_MODE_H_

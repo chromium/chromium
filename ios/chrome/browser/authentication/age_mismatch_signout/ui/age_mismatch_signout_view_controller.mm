@@ -60,11 +60,11 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
   BOOL isIPad = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
   switch (_mode) {
-    case AgeMismatchPromptMode::kFollowUp:
+    case AgeMismatchPromptMode::kSigninFlow:
       self.titleText =
           l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_FOLLOW_UP_HEADER);
       break;
-    case AgeMismatchPromptMode::kInitial:
+    case AgeMismatchPromptMode::kStandard:
       self.titleText =
           l10n_util::GetNSString(isIPad ? IDS_IOS_AGE_MISMATCH_HEADER_IPAD
                                         : IDS_IOS_AGE_MISMATCH_HEADER_IPHONE);
@@ -94,7 +94,7 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
   // Add the identity view only for the follow up prompt.
   switch (_mode) {
-    case AgeMismatchPromptMode::kFollowUp:
+    case AgeMismatchPromptMode::kSigninFlow:
       [self.specificContentView addSubview:self.identityView];
       [constraints addObjectsFromArray:@[
         [self.identityView.topAnchor
@@ -109,7 +109,7 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
                                                   .bottomAnchor],
       ]];
       break;
-    case AgeMismatchPromptMode::kInitial:
+    case AgeMismatchPromptMode::kStandard:
       [constraints addObject:[self.subtitleTextView.bottomAnchor
                                  constraintLessThanOrEqualToAnchor:
                                      self.specificContentView.bottomAnchor]];
@@ -160,11 +160,11 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
     NSString* combinedText;
     switch (_mode) {
-      case AgeMismatchPromptMode::kFollowUp:
+      case AgeMismatchPromptMode::kSigninFlow:
         combinedText =
             l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_FOLLOW_UP_SUBTITLE);
         break;
-      case AgeMismatchPromptMode::kInitial: {
+      case AgeMismatchPromptMode::kStandard: {
         NSString* part1 =
             l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SUBTITLE_PART1);
         NSString* part2 =
