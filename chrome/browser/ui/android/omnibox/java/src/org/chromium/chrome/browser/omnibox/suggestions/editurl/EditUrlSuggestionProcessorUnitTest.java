@@ -205,7 +205,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Test
     public void doesProcessSuggestion_acceptMatchingWhatYouTypedWhenDesktopModeDisabled() {
         // URL_WHAT_YOU_TYPED
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
 
         // SEARCH_WHAT_YOU_TYPED
@@ -268,7 +268,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchWhenDesktopModeEnabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxFeatures.setIsDesktopModeForTesting(true);
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

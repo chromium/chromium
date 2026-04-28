@@ -57,7 +57,7 @@ public class OmniboxPTTest {
 
     @Before
     public void setUp() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxFeatures.setIsDesktopModeForTesting(false);
         mBlankPage = mCtaTestRule.startOnBlankPage();
     }
 

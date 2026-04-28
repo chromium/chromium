@@ -31,12 +31,12 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
 
-            boolean hasDesktopExperience =
+            boolean isDesktopMode =
                     ThreadUtils.runOnUiThreadBlocking(
                             () ->
-                                    OmniboxFeatures.hasDesktopExperience(
+                                    OmniboxFeatures.isDesktopMode(
                                             ContextUtils.getApplicationContext()));
-            if (omniboxFacility.getHostStation().isIncognito() || hasDesktopExperience) {
+            if (omniboxFacility.getHostStation().isIncognito() || isDesktopMode) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
             } else {
                 declareEnterCondition(omniboxFacility.micButtonElement.present());

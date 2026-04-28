@@ -159,7 +159,7 @@ public class FuseboxSessionState implements UserData {
         // Use current URL if the Retention is active as the starting input.
         // On eligible LFF devices the Omnibox should, by default, present the
         // current page URL (if the URL is eligible for display).
-        if (OmniboxFeatures.hasDesktopExperience(context)
+        if (OmniboxFeatures.isDesktopMode(context)
                 && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
             var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
             mAutocompleteInput.setInitialUserText(editUrl);
@@ -172,7 +172,7 @@ public class FuseboxSessionState implements UserData {
             mAutocompleteInput
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(
-                            OmniboxFeatures.hasDesktopExperience(context) ? 0 : Integer.MAX_VALUE,
+                            OmniboxFeatures.isDesktopMode(context) ? 0 : Integer.MAX_VALUE,
                             Integer.MAX_VALUE);
         }
 

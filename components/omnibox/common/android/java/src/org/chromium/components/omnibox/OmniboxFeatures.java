@@ -283,11 +283,8 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sDiagInputConnection =
             newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
 
-    /** See {@link #setHasDesktopExperienceForTesting(boolean)}. */
-    private static @Nullable Boolean sHasDesktopExperienceForTesting;
-
-    /** See {@link #setIsDesktopPlatformForTesting(boolean)}. */
-    private static @Nullable Boolean sIsDesktopPlatformForTesting;
+    /** See {@link #setIsDesktopModeForTesting(boolean)}. */
+    private static @Nullable Boolean sIsDesktopModeForTesting;
 
     /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
     private static @Nullable Boolean sActivateJumpStartOmnibox;
@@ -413,10 +410,22 @@ public class OmniboxFeatures {
         return inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
     }
 
-    /** Modifies the output of {@link #hasDesktopExperience()} for testing. */
-    public static void setHasDesktopExperienceForTesting(Boolean hasDesktopExperience) {
-        sHasDesktopExperienceForTesting = hasDesktopExperience;
-        ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = null);
+    /** Modifies the output of {@link #isDesktopMode()} for testing. */
+    public static void setIsDesktopModeForTesting(Boolean isDesktopMode) {
+        sIsDesktopModeForTesting = isDesktopMode;
+        ResettersForTesting.register(() -> sIsDesktopModeForTesting = null);
+    }
+
+    /**
+     * Explicitly disable fusebox for desktop for release users, but not for tests or for local
+     * development. Fusebox feature checks should go through this instead of the feature directly.
+     * This should be removed in a milestone or two, before fusebox launch for desktop.
+     */
+    public static boolean isMultimodalInputEnabled(Context context) {
+        if (DeviceInfo.isDesktop() || isDesktopMode(context)) {
+            return sAndroidDesktopAimGate.isEnabled() && sOmniboxMultimodalInput.isEnabled();
+        }
+        return sOmniboxMultimodalInput.isEnabled();
     }
 
     /**
@@ -428,48 +437,14 @@ public class OmniboxFeatures {
      *
      * @param context the context to use to determine device form factor
      */
-    public static boolean hasDesktopExperience(Context context) {
-        if (sHasDesktopExperienceForTesting != null) {
-            return sHasDesktopExperienceForTesting;
+    public static boolean isDesktopMode(Context context) {
+        if (sIsDesktopModeForTesting != null) {
+            return sIsDesktopModeForTesting;
         }
 
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
-    }
-
-    /** Modifies the output of {@link #isDesktopPlatform()} for testing. */
-    public static void setIsDesktopPlatformForTesting(Boolean isDesktopPlatform) {
-        sIsDesktopPlatformForTesting = isDesktopPlatform;
-        ResettersForTesting.register(() -> sIsDesktopPlatformForTesting = null);
-    }
-
-    /**
-     * Return whether the current platform is specifically a desktop platform.
-     *
-     * <p>This call should be used sparingly - only to gate features that are strictly Desktop
-     * specific. All other calls should defer to {@link #hasDesktopExperience()}.
-     */
-    public static boolean isDesktopPlatform() {
-        if (sIsDesktopPlatformForTesting != null) {
-            return sIsDesktopPlatformForTesting;
-        }
-        return DeviceInfo.isDesktop();
-    }
-
-    /**
-     * Explicitly disable fusebox for desktop for release users, but not for tests or for local
-     * development. Fusebox feature checks should go through this instead of the feature directly.
-     * This should be removed in a milestone or two, before fusebox launch for desktop.
-     *
-     * <p>Checks whether the fusebox is enabled for the current combination of context, device and
-     * flag state, disabling the fusebox on unsupported device and experience configurations.
-     */
-    public static boolean isMultimodalInputEnabled(Context context) {
-        if (isDesktopPlatform() || hasDesktopExperience(context)) {
-            return sAndroidDesktopAimGate.isEnabled() && sOmniboxMultimodalInput.isEnabled();
-        }
-        return sOmniboxMultimodalInput.isEnabled();
     }
 
     /**
