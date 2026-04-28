@@ -755,9 +755,13 @@ const FeatureEntry::FeatureVariation kAndroidBottomToolbarV2Variations[] = {
 const FeatureEntry::FeatureParam kTabBottomSheetSuppressToolbarParam[] = {
     {"suppress_bottom_toolbar_while_open", "true"}};
 
+const FeatureEntry::FeatureParam kTabBottomSheetResizeWebviewParam[] = {
+    {"resize_webview", "true"}};
+
 const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
     {"Suppress bottom toolbar while open", kTabBottomSheetSuppressToolbarParam,
-     nullptr}};
+     nullptr},
+    {"Resize webview", kTabBottomSheetResizeWebviewParam, nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidSidePanelDevFeatureTabScoped[] = {
     {"scope", "tab"}};
