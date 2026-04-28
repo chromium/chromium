@@ -340,6 +340,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self updateLayoutConstraints];
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  _bannerPromoBackgroundHeightConstraint.constant = [self
+      bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
+}
+
 #pragma mark - PopupMenuUIUpdating
 
 - (void)updateUIForOverflowMenuIPHDisplayed {
