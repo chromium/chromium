@@ -17,6 +17,7 @@
 
 namespace glic {
 class GlicInstance;
+class GlicKeyedService;
 }  // namespace glic
 
 class Profile;
@@ -50,6 +51,12 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
       components_sharing_message::ServerChannelConfiguration server_channel,
       std::optional<int64_t> last_seen_sequence_number,
       glic::GlicInstance* instance);
+
+  void ProcessStopActionRequest(
+      components_sharing_message::SharingMessage message,
+      tabs::TabInterface* active_tab,
+      glic::GlicKeyedService* glic_service,
+      DoneCallback done_callback);
 
   const raw_ptr<Profile> profile_;
 

@@ -67,8 +67,7 @@ enum class GlicPrewarmingChecksResult;
 // possible via enterprise policy). This is required on disabled profiles
 // since pieces of this service are the ones that monitor this runtime
 // preference for changes and cause the UI to respond to it.
-class GlicKeyedService : public KeyedService,
-                         public base::SupportsUserData {
+class GlicKeyedService : public KeyedService, public base::SupportsUserData {
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -263,9 +262,8 @@ class GlicKeyedService : public KeyedService,
   base::CallbackListSubscription AddActOnWebCapabilityChangedCallback(
       ActOnWebCapabilityChangedCallback callback);
 
-  GlicActorPolicyChecker& actor_policy_checker() {
-    return *actor_policy_checker_;
-  }
+  // Virtual for testing.
+  virtual GlicActorPolicyChecker& actor_policy_checker();
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback

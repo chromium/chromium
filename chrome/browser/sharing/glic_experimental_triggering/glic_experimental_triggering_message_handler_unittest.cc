@@ -10,17 +10,23 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -34,6 +40,130 @@
 namespace {
 
 using testing::_;
+
+class FakeGlicInstance : public glic::GlicInstance {
+ public:
+  FakeGlicInstance() = default;
+  ~FakeGlicInstance() override = default;
+
+  bool IsShowing() const override { return false; }
+  bool IsActive() override { return false; }
+  bool IsAttached() override { return false; }
+  void AddStateObserver(glic::PanelStateObserver* observer) override {}
+  void RemoveStateObserver(glic::PanelStateObserver* observer) override {}
+  glic::mojom::PanelState GetPanelState() override { return {}; }
+  base::CallbackListSubscription RegisterStateChange(
+      StateChangeCallback callback) override {
+    return {};
+  }
+  glic::Host& host() override { return *host_; }
+  gfx::Size GetPanelSize() override { return {}; }
+  const glic::InstanceId& id() const override { return id_; }
+  std::optional<std::string> conversation_id() const override {
+    return std::nullopt;
+  }
+  base::Time GetLastActivationTimestamp() const override { return {}; }
+  base::TimeDelta GetTimeSinceLastActive() const override { return {}; }
+  void OnSelectionAreasChanged(int count) override {}
+  void BindTabForTesting(tabs::TabInterface* tab) override {}
+
+  glic::InstanceId id_{"test-id"};
+  raw_ptr<glic::Host> host_ = nullptr;
+};
+
+class FakeInstanceDelegate : public glic::Host::InstanceDelegate,
+                             public glic::GlicInstanceMetrics {
+ public:
+  FakeInstanceDelegate()
+      : glic::GlicInstanceMetrics(&profile_metrics_service_) {}
+
+ public:
+  tabs::TabInterface* CreateTab(
+      const ::GURL& url,
+      bool open_in_background,
+      const std::optional<int32_t>& window_id,
+      glic::mojom::WebClientHandler::CreateTabCallback callback) override {
+    return nullptr;
+  }
+  void CreateTask(
+      base::WeakPtr<actor::ActorTaskDelegate> delegate,
+      actor::webui::mojom::TaskOptionsPtr options,
+      glic::mojom::WebClientHandler::CreateTaskCallback callback) override {}
+  void PerformActions(
+      const std::vector<uint8_t>& actions_proto,
+      glic::mojom::WebClientHandler::PerformActionsCallback callback) override {
+  }
+  void CancelActions(
+      actor::TaskId task_id,
+      glic::mojom::WebClientHandler::CancelActionsCallback callback) override {}
+  void StopActorTask(actor::TaskId task_id,
+                     glic::mojom::ActorTaskStopReason stop_reason) override {}
+  void PauseActorTask(actor::TaskId task_id,
+                      glic::mojom::ActorTaskPauseReason pause_reason,
+                      tabs::TabInterface::Handle tab_handle) override {}
+  void ResumeActorTask(actor::TaskId task_id,
+                       const glic::mojom::GetTabContextOptions& context_options,
+                       glic::mojom::WebClientHandler::ResumeActorTaskCallback
+                           callback) override {}
+  void InterruptActorTask(actor::TaskId task_id,
+                          std::optional<glic::mojom::ActorTaskInterruptReason>
+                              interrupt_reason) override {}
+  void UninterruptActorTask(actor::TaskId task_id) override {}
+
+  void CreateActorTab(
+      actor::TaskId task_id,
+      bool open_in_background,
+      const std::optional<int32_t>& initiator_tab_id,
+      const std::optional<int32_t>& initiator_window_id,
+      glic::mojom::WebClientHandler::CreateActorTabCallback callback) override {
+  }
+
+  void FetchZeroStateSuggestions(
+      bool is_first_run,
+      std::optional<std::vector<std::string>> supported_tools,
+      glic::mojom::WebClientHandler::
+          GetZeroStateSuggestionsForFocusedTabCallback callback) override {}
+
+  void GetZeroStateSuggestionsAndSubscribe(
+      bool has_active_subscription,
+      const glic::mojom::ZeroStateSuggestionsOptions& options,
+      glic::mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+          callback) override {}
+
+  void RegisterConversation(
+      glic::mojom::ConversationInfoPtr info,
+      glic::mojom::WebClientHandler::RegisterConversationCallback callback)
+      override {}
+
+  void OnWebClientCleared() override {}
+  void PrepareForOpen() override {}
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {}
+
+  void OnInteractionModeChange(glic::mojom::WebClientMode new_mode) override {}
+
+  glic::GlicInstanceMetrics& instance_metrics() override { return *this; }
+  glic::GlicInstanceMetricsBackwardsCompatibility&
+  instance_metrics_backwards_compatibility() override {
+    return *this;
+  }
+
+  bool IsActive() override { return false; }
+
+ private:
+  metrics::ProfileMetricsService profile_metrics_service_{1};
+};
+
+class MockInstanceDelegate : public FakeInstanceDelegate {
+ public:
+  MOCK_METHOD(void,
+              StopActorTask,
+              (actor::TaskId, glic::mojom::ActorTaskStopReason),
+              (override));
+  MOCK_METHOD(std::unique_ptr<glic::WebUIContentsContainer>,
+              CreateWebUIContentsContainer,
+              (),
+              (override));
+};
 
 class MockGlicKeyedService : public glic::GlicKeyedService {
  public:
@@ -57,6 +187,14 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
               instance_coordinator,
               (),
               (const, override));
+  MOCK_METHOD(glic::GlicInstance*,
+              GetInstanceForTab,
+              (tabs::TabInterface*),
+              (override));
+  MOCK_METHOD(glic::GlicActorPolicyChecker&,
+              actor_policy_checker,
+              (),
+              (override));
 };
 
 class MockHost : public glic::Host {
@@ -103,6 +241,8 @@ class GlicExperimentalTriggeringMessageHandlerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
     profile_ = testing_profile_manager->CreateTestingProfile("test_profile");
+    actor_policy_checker_ =
+        std::make_unique<glic::GlicActorPolicyChecker>(*profile_);
 
     glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
         profile_,
@@ -119,9 +259,12 @@ class GlicExperimentalTriggeringMessageHandlerTest : public testing::Test {
     mock_glic_service_ = static_cast<MockGlicKeyedService*>(
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
                                                            /*create=*/true));
+
     ASSERT_TRUE(mock_glic_service_);
     EXPECT_CALL(*mock_glic_service_, instance_coordinator())
         .WillRepeatedly(testing::ReturnRef(mock_instance_coordinator_));
+    EXPECT_CALL(*mock_glic_service_, actor_policy_checker())
+        .WillRepeatedly(testing::ReturnRef(*actor_policy_checker_));
 
     handler_ = std::make_unique<TestGlicExperimentalTriggeringMessageHandler>(
         profile_, &mock_sharing_message_sender_);
@@ -130,6 +273,7 @@ class GlicExperimentalTriggeringMessageHandlerTest : public testing::Test {
   void TearDown() override {
     handler_.reset();
     mock_glic_service_ = nullptr;
+    actor_policy_checker_.reset();
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
@@ -142,6 +286,7 @@ class GlicExperimentalTriggeringMessageHandlerTest : public testing::Test {
   testing::NiceMock<MockSharingMessageSender> mock_sharing_message_sender_;
   std::unique_ptr<TestGlicExperimentalTriggeringMessageHandler> handler_;
   glic::MockGlicInstanceCoordinator mock_instance_coordinator_;
+  std::unique_ptr<glic::GlicActorPolicyChecker> actor_policy_checker_;
   raw_ptr<MockGlicKeyedService> mock_glic_service_ = nullptr;
   glic::GlicProfileManager glic_profile_manager_;
 };
@@ -162,7 +307,11 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
 
 TEST_F(GlicExperimentalTriggeringMessageHandlerTest, RelaysUpdatesToServer) {
   components_sharing_message::SharingMessage message;
-  message.mutable_glic_experimental_triggering();
+  auto* glic_experimental_triggering =
+      message.mutable_glic_experimental_triggering();
+  glic_experimental_triggering->mutable_request()
+      ->mutable_trigger_actuation_request();
+
   auto* server_channel_config = message.mutable_server_channel_configuration();
   server_channel_config->set_configuration("test_config");
 
@@ -263,6 +412,7 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   auto* trigger_message = message.mutable_glic_experimental_triggering();
   // Set the sequence number coming from the server request
   trigger_message->mutable_task_metadata()->set_sender_sequence_number(42);
+  trigger_message->mutable_request()->mutable_trigger_actuation_request();
 
   base::MockOnceCallback<void(
       std::unique_ptr<components_sharing_message::ResponseMessage>)>
@@ -381,6 +531,7 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
   // Explicitly set the incoming sequence number.
   auto* trigger_message = message.mutable_glic_experimental_triggering();
   trigger_message->mutable_task_metadata()->set_sender_sequence_number(42);
+  trigger_message->mutable_request()->mutable_trigger_actuation_request();
 
   base::MockOnceCallback<void(
       std::unique_ptr<components_sharing_message::ResponseMessage>)>
@@ -478,6 +629,115 @@ TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
       done_callback;
   EXPECT_CALL(*mock_glic_service_, InvokeWithAutoSubmit(_, _)).Times(0);
   EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  handler_->OnMessage(std::move(message), done_callback.Get());
+}
+
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       HandlesStopActuationRequest_Successful_SendsStopped) {
+  components_sharing_message::SharingMessage message;
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  auto* request = triggering->mutable_request();
+  auto* stop_request = request->mutable_stop_actuation_request();
+  stop_request->set_stop_reason("STOPPED_BY_USER");
+  auto* metadata = triggering->mutable_task_metadata();
+  metadata->set_task_id("123");
+  message.mutable_server_channel_configuration();  // Enable response sending
+
+  tabs::MockTabInterface mock_tab;
+  handler_->SetActiveTab(&mock_tab);
+
+  base::MockOnceCallback<void(
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>
+      done_callback;
+  EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  FakeGlicInstance fake_instance;
+  MockInstanceDelegate mock_instance_delegate;
+  glic::Host host(profile_, nullptr, &fake_instance, &mock_instance_delegate);
+  fake_instance.host_ = &host;
+
+  EXPECT_CALL(*mock_glic_service_, GetInstanceForTab(_))
+      .WillOnce(testing::Return(&fake_instance));
+
+  EXPECT_CALL(mock_instance_delegate,
+              StopActorTask(actor::TaskId(123),
+                            glic::mojom::ActorTaskStopReason::kStoppedByUser))
+      .Times(1);
+
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _, _))
+      .Times(1)
+      .WillOnce(
+          [](const components_sharing_message::ServerChannelConfiguration&,
+             base::TimeDelta,
+             components_sharing_message::SharingMessage message,
+             SharingMessageSender::DelegateType,
+             SharingMessageSender::ResponseCallback) {
+            EXPECT_EQ(message.glic_experimental_triggering()
+                          .response()
+                          .task_update()
+                          .state(),
+                      components_sharing_message::GlicExperimentalTriggering::
+                          ExperimentalTriggeringResponse::TaskUpdate::STOPPED);
+            return base::DoNothing();
+          });
+
+  handler_->OnMessage(std::move(message), done_callback.Get());
+}
+
+TEST_F(GlicExperimentalTriggeringMessageHandlerTest,
+       HandlesStopActuationRequest_MissingMetadata_SendsFailed) {
+  components_sharing_message::SharingMessage message;
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  auto* request = triggering->mutable_request();
+  auto* stop_request = request->mutable_stop_actuation_request();
+  stop_request->set_stop_reason("STOPPED_BY_USER");
+  // Omit task_metadata
+  message.mutable_server_channel_configuration();  // Enable response sending
+
+  tabs::MockTabInterface mock_tab;
+  handler_->SetActiveTab(&mock_tab);
+
+  base::MockOnceCallback<void(
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>
+      done_callback;
+  EXPECT_CALL(done_callback, Run(_)).Times(1);
+
+  FakeGlicInstance fake_instance;
+  MockInstanceDelegate mock_instance_delegate;
+  glic::Host host(profile_, nullptr, &fake_instance, &mock_instance_delegate);
+  fake_instance.host_ = &host;
+
+  EXPECT_CALL(*mock_glic_service_, GetInstanceForTab(_))
+      .WillOnce(testing::Return(&fake_instance));
+
+  EXPECT_CALL(mock_instance_delegate, StopActorTask(_, _)).Times(0);
+
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _, _))
+      .Times(1)
+      .WillOnce(
+          [](const components_sharing_message::ServerChannelConfiguration&,
+             base::TimeDelta,
+             components_sharing_message::SharingMessage message,
+             SharingMessageSender::DelegateType,
+             SharingMessageSender::ResponseCallback) {
+            EXPECT_EQ(message.glic_experimental_triggering()
+                          .response()
+                          .task_update()
+                          .state(),
+                      components_sharing_message::GlicExperimentalTriggering::
+                          ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+            EXPECT_EQ(
+                message.glic_experimental_triggering()
+                    .response()
+                    .task_update()
+                    .data_type(),
+                components_sharing_message::GlicExperimentalTriggering::
+                    ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+            return base::DoNothing();
+          });
 
   handler_->OnMessage(std::move(message), done_callback.Get());
 }
