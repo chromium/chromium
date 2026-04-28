@@ -468,6 +468,29 @@ class GtestTestInstanceTests(unittest.TestCase):
       actual = gtest_test_instance.IsPreTest(test_name)
       self.assertEqual(expected, actual)
 
+  def testFilterTestNames_withPrePrefixStripping(self):
+    test_list = [
+        'Suite.Test',
+        'Suite.PRE_Test',
+        'Suite.PRE_PRE_Test',
+        'Other.Test',
+    ]
+    actual = gtest_test_instance.unittest_util.FilterTestNames(
+        test_list, 'Suite.Test', gtest_test_instance.TestNameWithoutPrefixes)
+    expected = ['Suite.Test', 'Suite.PRE_Test', 'Suite.PRE_PRE_Test']
+    self.assertEqual(expected, actual)
+
+    actual = gtest_test_instance.unittest_util.FilterTestNames(
+        test_list, 'Suite.PRE_Test',
+        gtest_test_instance.TestNameWithoutPrefixes)
+    expected = ['Suite.PRE_Test']
+    self.assertEqual(expected, actual)
+
+    actual = gtest_test_instance.unittest_util.FilterTestNames(
+        test_list, '-Suite.Test', gtest_test_instance.TestNameWithoutPrefixes)
+    expected = ['Other.Test']
+    self.assertEqual(expected, actual)
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

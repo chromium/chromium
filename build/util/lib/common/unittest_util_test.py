@@ -59,6 +59,38 @@ class FilterTestNamesTest(unittest.TestCase):
                           "Foo.Two",
                           "Quux.Two"])
 
+  def testMatchWithStrippedName(self):
+    possible_list = ["Suite.Test", "Suite.PRE_Test", "Other.Test"]
+
+    def strip_pre(test):
+      return test.replace("PRE_", "")
+
+    x = unittest_util.FilterTestNames(possible_list,
+                                      "Suite.Test",
+                                      test_name_stripped_func=strip_pre)
+    self.assertEquals(x, ["Suite.Test", "Suite.PRE_Test"])
+
+    x = unittest_util.FilterTestNames(possible_list,
+                                      "Suite.*",
+                                      test_name_stripped_func=strip_pre)
+    self.assertEquals(x, ["Suite.Test", "Suite.PRE_Test"])
+
+    x = unittest_util.FilterTestNames(possible_list,
+                                      "-Suite.Test",
+                                      test_name_stripped_func=strip_pre)
+    self.assertEquals(x, ["Other.Test"])
+
+  def testMatchWithStrippedNameExplicitPreTest(self):
+    possible_list = ["Suite.Test", "Suite.PRE_Test", "Other.Test"]
+
+    def strip_pre(test):
+      return test.replace("PRE_", "")
+
+    x = unittest_util.FilterTestNames(possible_list,
+                                      "Suite.PRE_Test",
+                                      test_name_stripped_func=strip_pre)
+    self.assertEquals(x, ["Suite.PRE_Test"])
+
 
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.DEBUG)

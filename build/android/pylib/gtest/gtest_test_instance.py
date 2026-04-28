@@ -722,7 +722,7 @@ class GtestTestInstance(test_instance.TestInstance):
       for gtest_filter_string in gtest_filter_strings:
         logging.debug('Filtering tests using: %s', gtest_filter_string)
         filtered_test_list = unittest_util.FilterTestNames(
-            filtered_test_list, gtest_filter_string)
+            filtered_test_list, gtest_filter_string, TestNameWithoutPrefixes)
 
       if self._gtest_filters:
         out_filtered_test_list = list(set(test_list)-set(filtered_test_list))
@@ -733,7 +733,8 @@ class GtestTestInstance(test_instance.TestInstance):
             continue
           if all(
               unittest_util.FilterTestNames([test_name_no_disabled],
-                                            gtest_filter)
+                                            gtest_filter,
+                                            TestNameWithoutPrefixes)
               for gtest_filter in self._gtest_filters):
             disabled_tests.append(test)
         if disabled_tests:
