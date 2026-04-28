@@ -7,7 +7,12 @@
 
 #include <jni.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 
@@ -15,6 +20,7 @@ namespace extensions {
 class ExtensionInstallDialogViewAndroid {
  public:
   ExtensionInstallDialogViewAndroid(
+      content::WebContents* web_contents,
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt,
       ExtensionInstallPrompt::DoneCallback done_callback);
   ExtensionInstallDialogViewAndroid(const ExtensionInstallDialogViewAndroid&) =
@@ -32,11 +38,14 @@ class ExtensionInstallDialogViewAndroid {
   void OnDialogCanceled(JNIEnv* env);
   void OnDialogDismissed(JNIEnv* env);
   void Destroy(JNIEnv* env);
+  void OnStoreLinkClicked(JNIEnv* env,
+                          const base::android::JavaRef<jstring>& url);
 
  private:
   // Builds java PropertyModel from `prompt_`.
   void BuildPropertyModel();
 
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
 

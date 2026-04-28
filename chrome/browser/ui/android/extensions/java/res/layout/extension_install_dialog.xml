@@ -18,7 +18,40 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:visibility="gone">
-    <!-- TODO(crbug.com/424010795): Add webstore information -->
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:paddingStart="24dp"
+      android:paddingTop="16dp"
+      android:visibility="gone" >
+      <RatingBar
+        android:id="@+id/webstore_rating_bar"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="0.1"
+        android:isIndicator="true"
+        android:visibility="gone" />
+      <TextView
+        android:id="@+id/webstore_user_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:textAppearance="@style/TextAppearance.TextSmall"
+        android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/webstore_real_user_count"
+      android:layout_width="match_parent"
+      android:paddingTop="16dp"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/TextAppearance.TextSmall"
+      android:visibility="gone"
+      android:paddingStart="24dp" />
   </LinearLayout>
 
   <LinearLayout
@@ -66,5 +99,13 @@ found in the LICENSE file.
       </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
   </LinearLayout>
+  <TextView
+    android:id="@+id/store_link"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/TextAppearance.TextMedium.Link"
+    android:visibility="gone"
+    android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+    android:paddingStart="24dp" />
 
 </LinearLayout>
