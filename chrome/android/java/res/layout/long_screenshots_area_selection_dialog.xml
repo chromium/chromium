@@ -119,6 +119,7 @@ found in the LICENSE file.
                     android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
                     android:elevation="@dimen/long_screenshots_button_elev"
                     android:layout_width="@dimen/long_screenshots_button_size"
+                    android:scaleType="fitCenter"
                     android:translationY="30dp"
                     style="@style/ToolbarButton" />
                 <View
@@ -150,6 +151,7 @@ found in the LICENSE file.
                     android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
                     android:elevation="@dimen/long_screenshots_button_elev"
                     android:layout_width="@dimen/long_screenshots_button_size"
+                    android:scaleType="fitCenter"
                     android:translationY="-30dp"
                     style="@style/ToolbarButton" />
             </LinearLayout>
