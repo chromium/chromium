@@ -27,7 +27,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Local" summary="local"/>
 </variants>
 
+<!-- LINT.IfChange(EnterpriseConnector) -->
+
 <variants name="EnterpriseConnector">
+  <variant name="Actor"/>
   <variant name="Download"/>
   <variant name="DragAndDrop"/>
   <variant name="FileTransfer"/>
@@ -35,6 +38,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Print"/>
   <variant name="Upload"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/enterprise/connectors/core/common.cc:EnterpriseConnector) -->
 
 <!-- LINT.IfChange(GeminiAntiscamProtectionContentCategory) -->
 

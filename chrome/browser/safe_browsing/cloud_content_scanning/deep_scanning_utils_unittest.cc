@@ -113,7 +113,8 @@ INSTANTIATE_TEST_SUITE_P(
             enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP,
             enterprise_connectors::DeepScanAccessPoint::PASTE,
             enterprise_connectors::DeepScanAccessPoint::PRINT,
-            enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER),
+            enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER,
+            enterprise_connectors::DeepScanAccessPoint::ACTOR),
         testing::ValuesIn(kAllBinaryUploadServiceResults)));
 
 TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {

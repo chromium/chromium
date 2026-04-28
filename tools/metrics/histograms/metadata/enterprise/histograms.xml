@@ -84,7 +84,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Text" summary="Content analysis of pasted text."/>
 </variants>
 
+<!-- LINT.IfChange(DeepScanAccessPoint) -->
+
 <variants name="DeepScanAccessPoint">
+  <variant name="Actor" summary="Initiated from an actor/agent action"/>
   <variant name="Download" summary="Initiated from downloading 1+ file(s)"/>
   <variant name="DragAndDrop"
       summary="Initiated from drag-and-dropping text or 1+ file(s)"/>
@@ -94,6 +97,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Print" summary="Initiated from printing a page"/>
   <variant name="Upload" summary="Initiated from uploading 1+ file(s)"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/enterprise/connectors/core/common.h:DeepScanAccessPoint) -->
 
 <variants name="EncryptedCacheOperation">
   <variant name="Open"

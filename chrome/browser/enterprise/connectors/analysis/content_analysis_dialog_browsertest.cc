@@ -844,7 +844,8 @@ INSTANTIATE_TEST_SUITE_P(,
                              testing::Values(DeepScanAccessPoint::UPLOAD,
                                              DeepScanAccessPoint::DRAG_AND_DROP,
                                              DeepScanAccessPoint::PASTE,
-                                             DeepScanAccessPoint::PRINT),
+                                             DeepScanAccessPoint::PRINT,
+                                             DeepScanAccessPoint::ACTOR),
                              /*has_custom_rule_message=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
@@ -905,7 +906,8 @@ INSTANTIATE_TEST_SUITE_P(,
                              testing::Values(DeepScanAccessPoint::UPLOAD,
                                              DeepScanAccessPoint::DRAG_AND_DROP,
                                              DeepScanAccessPoint::PASTE,
-                                             DeepScanAccessPoint::PRINT),
+                                             DeepScanAccessPoint::PRINT,
+                                             DeepScanAccessPoint::ACTOR),
                              /*has_custom_rule_message=*/testing::Bool()));
 
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {

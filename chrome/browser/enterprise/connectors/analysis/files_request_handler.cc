@@ -53,8 +53,9 @@ AnalysisConnector AccessPointToEnterpriseConnector(
     case DeepScanAccessPoint::UPLOAD:
     case DeepScanAccessPoint::DRAG_AND_DROP:
     case DeepScanAccessPoint::PASTE:
+    case DeepScanAccessPoint::ACTOR:
       // A file can be uploaded to a website by either a normal file picker, a
-      // dragNdrop event or using copy+paste.
+      // dragNdrop event, using copy+paste, or an agent action.
       return enterprise_connectors::FILE_ATTACHED;
     case DeepScanAccessPoint::DOWNLOAD:
     case DeepScanAccessPoint::PRINT:

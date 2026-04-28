@@ -380,9 +380,12 @@ enum class DeepScanAccessPoint {
   // A deep scan was initiated from transferring 1+ file(s) within ChromeOS.
   FILE_TRANSFER,
 
-  kMaxValue = FILE_TRANSFER,
+  // A deep scan was initiated from an actor/agent action.
+  ACTOR,
+
+  kMaxValue = ACTOR,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:DeepScanAccessPoint)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:DeepScanAccessPoint)
 
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 std::string FinalContentAnalysisResultToString(

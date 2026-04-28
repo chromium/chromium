@@ -529,7 +529,7 @@ void GlicActorPolicyChecker::ValidateContentSentToRenderer(
                                           : ContentValidationReason::kBlocked);
               },
               std::move(callback)),
-          enterprise_connectors::DeepScanAccessPoint::PASTE);
+          enterprise_connectors::DeepScanAccessPoint::ACTOR);
       return;
     }
   }
