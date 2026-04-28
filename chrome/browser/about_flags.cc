@@ -3788,10 +3788,13 @@ const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetTrue[] = {
     {"use_widget", "true"}};
 const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetFalse[] = {
     {"use_widget", "false"}};
+const FeatureEntry::FeatureParam kGlicSelectionPromptUpdatesOnlyTrue[] = {
+    {"updates_only", "true"}};
 
 const FeatureEntry::FeatureVariation kGlicSelectionPromptVariations[] = {
     {"with InlineCue", kGlicSelectionPromptUseWidgetTrue, nullptr},
-    {"with TopCue", kGlicSelectionPromptUseWidgetFalse, nullptr}};
+    {"with TopCue", kGlicSelectionPromptUseWidgetFalse, nullptr},
+    {"with UpdatesOnly", kGlicSelectionPromptUpdatesOnlyTrue, nullptr}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};

@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -131,6 +132,13 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   glic_keyed_service_ = GlicKeyedService::Get(profile);
+
+  if (glic_keyed_service_) {
+    panel_state_subscription_ =
+        glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
+            base::BindRepeating(&GlicSelectionObserver::OnPanelStateChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
+  }
 
   web_contents->ForEachRenderFrameHost(
       [this](content::RenderFrameHost* render_frame_host) {
@@ -360,7 +368,7 @@ void GlicSelectionObserver::DismissUI(bool keep_nudge) {
   // Only dismiss the nudge if this is NOT a scroll event.
   // The nudge lives in the toolbar and doesn't need to be hidden when
   // scrolling.
-  if (!keep_nudge) {
+  if (!keep_nudge && !features::kGlicSelectionPromptUpdatesOnly.Get()) {
     PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
                          /*anchored_message_text=*/std::string(),
                          GlicNudgeActivity::kNudgeDismissed, base::DoNothing());
@@ -454,6 +462,7 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
 
 void GlicSelectionObserver::UpdateSelectionState(
     const std::u16string& selected_text) {
+  last_selected_text_ = selected_text;
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (!tab_interface) {
@@ -467,9 +476,12 @@ void GlicSelectionObserver::UpdateSelectionState(
           views::Widget::ClosedReason::kLostFocus);
     }
 
-    PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
-                         /*anchored_message_text=*/std::string(),
-                         GlicNudgeActivity::kNudgeDismissed, base::DoNothing());
+    if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {
+      PostUpdateNudgeLabel(web_contents(), "", std::nullopt,
+                           /*anchored_message_text=*/std::string(),
+                           GlicNudgeActivity::kNudgeDismissed,
+                           base::DoNothing());
+    }
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
       if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
@@ -521,7 +533,9 @@ void GlicSelectionObserver::UpdateSelectionState(
                                                std::move(context));
     has_sent_selection_context_ = true;
   } else {
-    ShowSelectionAffordance(selected_text, bwi);
+    if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {
+      ShowSelectionAffordance(selected_text, bwi);
+    }
     has_sent_selection_context_ = false;
   }
 }
@@ -699,6 +713,50 @@ void GlicSelectionObserver::CopyLinkToHighlight(
   if (generated_link_.has_value() && generated_link_->is_valid()) {
     WriteLinkToClipboard(weak_document_ptr, generated_link_.value());
   }
+}
+
+void GlicSelectionObserver::OnPanelStateChanged() {
+  if (last_selected_text_.empty()) {
+    return;
+  }
+
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab_interface || !glic_keyed_service_) {
+    return;
+  }
+
+  auto* bwi = tab_interface->GetBrowserWindowInterface();
+  if (!bwi) {
+    return;
+  }
+
+  bool panel_showing = glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
+
+  auto* instance = glic_keyed_service_->GetInstanceForTab(tab_interface);
+  if (!instance || !panel_showing) {
+    host_observation_.Reset();
+    UpdateSelectionState(last_selected_text_);
+    return;
+  }
+
+  if (instance->host().IsWebClientConnected()) {
+    host_observation_.Reset();
+    UpdateSelectionState(last_selected_text_);
+  } else {
+    if (!host_observation_.IsObservingSource(&instance->host())) {
+      host_observation_.Reset();
+      host_observation_.Observe(&instance->host());
+    }
+  }
+}
+
+void GlicSelectionObserver::WebClientConnected() {
+  host_observation_.Reset();
+  if (last_selected_text_.empty()) {
+    return;
+  }
+  UpdateSelectionState(last_selected_text_);
 }
 
 }  // namespace glic

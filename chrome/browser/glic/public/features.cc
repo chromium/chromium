@@ -25,6 +25,8 @@ BASE_FEATURE(kGlicOrphanedReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicSelectionPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly{
+    &kGlicSelectionPrompt, "updates_only", false};
 const base::FeatureParam<bool> kGlicSelectionPromptUseWidget{
     &kGlicSelectionPrompt, "use_widget", true};
 
