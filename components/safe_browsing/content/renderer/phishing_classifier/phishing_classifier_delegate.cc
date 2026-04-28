@@ -132,9 +132,9 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   if (!callback_.is_null()) {
     std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED,
                              std::nullopt);
-    CancelPendingClassification(
-        CancelClassificationReason::kNewRequestFromBrowser);
   }
+  CancelPendingClassification(
+      CancelClassificationReason::kNewRequestFromBrowser);
   is_phishing_detection_running_ = true;
   awaiting_retry_ = false;
   last_url_received_from_browser_ = StripRef(url);
@@ -293,6 +293,7 @@ void PhishingClassifierDelegate::ClassificationDone(
     const ClientPhishingRequest& verdict,
     PhishingClassifier::Result phishing_classifier_result) {
   RecordEvent(SBPhishingClassifierEvent::kClassificationComplete);
+  is_classifying_ = false;
   is_phishing_detection_running_ = false;
   if (callback_.is_null()) {
     RecordEvent(
@@ -352,7 +353,12 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   // Note that if we determine that this particular navigation should not be
   // classified at all (as opposed to deferring it until we get an IPC or
   // the load completes), we discard the page text since it won't be needed.
+
+  // We shouldn't hit this ever, but for sanity check, we should return when
+  // this hits.
   if (is_classifying_) {
+    RecordEvent(SBPhishingClassifierEvent::
+                    kOngoingClassificationAtAnotherClassificationRequest);
     return;
   }
 

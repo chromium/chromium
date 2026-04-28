@@ -56,7 +56,10 @@ enum class SBPhishingClassifierEvent {
   kPhishingClassifierPageFinishedLoading = 10,
   // Renderer frame layout has finished loading during classification.
   kPhishingClassifierPageFinishedLoadingAgainDuringClassification = 11,
-  kMaxValue = kPhishingClassifierPageFinishedLoadingAgainDuringClassification,
+  // There is an ongoing classification at the time of classification start
+  // request.
+  kOngoingClassificationAtAnotherClassificationRequest = 12,
+  kMaxValue = kOngoingClassificationAtAnotherClassificationRequest,
 };
 
 class PhishingClassifierDelegate : public content::RenderFrameObserver,

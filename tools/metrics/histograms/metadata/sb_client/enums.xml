@@ -513,6 +513,9 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Renderer page layout has finished loading again in middle of
              classification"/>
+  <int value="12"
+      label="Classification is ongoing when another classification request
+             comes in"/>
 </enum>
 
 <enum name="TailoredWarningType">
