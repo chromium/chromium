@@ -107,6 +107,7 @@ void VrpFlagsImpl::EnsureAllocated() {
 
   read_flag_ = std::make_unique<ReadFlag>();
   read_flag_->prefix = base::UnguessableToken::Create();
+  read_flag_->flag = base::UnguessableToken::Create();
 
   arbitrary_value_ = base::RandUint64();
   const size_t kSizes[] = {4096, 16384, 65536, 262144, 1048576};

@@ -181,6 +181,47 @@ IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, ReadAttempted) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, ReadAttemptedZeroIsh) {
+  mojo::Remote<vrp_flags::mojom::VrpFlags> remote = GetRemote();
+
+  // Ensure allocated.
+  {
+    base::RunLoop run_loop;
+    remote->GetReadPrefix(base::BindLambdaForTesting(
+        [&](const base::UnguessableToken& p) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  base::RunLoop run_loop;
+  // Impossible to do a zero test as the mojom rejects a 0,0 token in any case.
+  remote->ReadAttempted(base::UnguessableToken::CreateForTesting(0, 1),
+                        base::BindLambdaForTesting([&](bool success) {
+                          EXPECT_FALSE(success);
+                          run_loop.Quit();
+                        }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, WriteAttemptedZero) {
+  mojo::Remote<vrp_flags::mojom::VrpFlags> remote = GetRemote();
+
+  // Ensure allocated.
+  {
+    base::RunLoop run_loop;
+    remote->GetWriteLocations(
+        base::BindLambdaForTesting([&](const std::vector<uint64_t>& locations,
+                                       uint64_t value) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  base::RunLoop run_loop;
+  remote->WriteAttempted(0, base::BindLambdaForTesting([&](bool success) {
+                           EXPECT_FALSE(success);
+                           run_loop.Quit();
+                         }));
+  run_loop.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(VrpFlagsBrowserTest, BindGpuVrpFlags) {
   mojo::Remote<vrp_flags::mojom::VrpFlags> remote = GetGpuRemote();
   base::RunLoop run_loop;
