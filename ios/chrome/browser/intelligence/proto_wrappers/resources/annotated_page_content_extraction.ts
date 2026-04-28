@@ -216,7 +216,9 @@ const ATTR_VALUE_ROLE_CONTENT_INFO = 'contentinfo';
 const ATTR_VALUE_ROLE_NONE = 'none';
 
 // Style values.
+const ATTR_POSITION_ABSOLUTE = 'absolute';
 const ATTR_POSITION_FIXED = 'fixed';
+const ATTR_POSITION_STATIC = 'static';
 const ATTR_POSITION_STICKY = 'sticky';
 const ATTR_DISPLAY_NONE = 'none';
 const ATTR_VISIBILITY_HIDDEN = 'hidden';
@@ -2312,105 +2314,111 @@ function toEnclosingRect(rect: Rect): Rect {
  *
  * @param element The HTML element to calculate geometry for.
  * @param attributes The attributes object where geometry will be stored.
- * @param parentClipRect The clipping rectangle inherited from parent elements,
- *     or null if no clipping applies.
- * @return The new clipping rectangle for this element's children, or the
- *     inherited parentClipRect if this element does not clip its children.
+ * @param context The clipping context inherited from parent elements.
+ * @return The new ClippingContext for this element's children, based on
+ *     positioning styles.
  */
 function addNodeGeometry(
     element: HTMLElement, attributes: PageContentAttributes,
-    parentClipRect: Rect|null, actionableMode: boolean): Rect|null {
-  // Only process element nodes when in actionable mode and return null in that
-  // case since the resulting rectangle isn't needed.
+    context: ClippingContext, actionableMode: boolean): ClippingContext {
+  // Only process element nodes when in actionable mode and return incoming
+  // context in that case since the resulting rectangle isn't needed.
   if (!actionableMode) {
-    return null;
+    return context;
   }
 
-
   const style = getComputedStyleForElement(element);
-  if (style?.position === ATTR_POSITION_FIXED) {
+  const position = style?.position;
+
+  // Select the appropriate clip rect based on position.
+  const elementDoc = element.ownerDocument;
+  let clipToUse: Rect|null = null;
+
+  if (position === ATTR_POSITION_FIXED) {
     // Fixed positioned elements are relative to the viewport, bypassing parent
     // clips.
-    parentClipRect = null;
+    clipToUse = elementDoc ? getViewportRect(elementDoc) : null;
+  } else if (position === ATTR_POSITION_ABSOLUTE) {
+    clipToUse = context.absoluteClip;
+  } else {
+    clipToUse = context.normalClip;
+  }
+
+  // We clip with the viewport by default when there's no clipToUse.
+  if (!clipToUse && elementDoc) {
+    clipToUse = getViewportRect(elementDoc);
   }
 
   // getBoundingClientRect() provides the element's position relative to the
   // viewport. It accounts for all CSS transforms and scroll offsets.
-  // Crucially, it is NOT clipped by its ancestors or the viewport, which makes
-  // it functionally equivalent to Blink's ComputeOuterBoundingBox (using
-  // kSkipAncestorAndViewportClips).
   const domRect = element.getBoundingClientRect();
   const elementRect =
       createRect(domRect.x, domRect.y, domRect.width, domRect.height);
+  const visibleRect =
+      clipToUse ? intersection(elementRect, clipToUse) : elementRect;
 
   const geometry = {} as PageContentGeometry;
   geometry.outerBoundingBox = toEnclosingRect(elementRect);
 
-  // TODO(crbug.com/500701829): The current clipping logic uses simple top-down
-  // inheritance, which does not accurately model CSS position-based clipping
-  // (e.g., an absolute child should only be clipped by a hidden overflow parent
-  // if that parent is its containing block). Consider tracking a containing
-  // block stack for more precise visible bounding box calculations.
-
   // Calculate visibleBoundingBox by intersecting the element's client rect with
-  // its ancestry clip chain (or viewport if top level).
-  const elementDoc = element.ownerDocument;
-  if (!elementDoc) {
-    // HTMLElement should always have an ownerDocument (unless the node itself
-    // is a Document). If it's somehow missing, we cannot accurately determine
-    // the viewport boundaries.
-    return parentClipRect;
-  }
-  const clipToUse = parentClipRect || getViewportRect(elementDoc);
-  const visibleRect = intersection(elementRect, clipToUse);
-  if (visibleRect.width > 0 && visibleRect.height > 0) {
-    geometry.visibleBoundingBox = toEnclosingRect(visibleRect);
-  }
-
-  // Handle fragmentation (e.g., text wrapping across multiple lines).
-  // getClientRects() returns multiple rectangles for inline elements that
-  // are split across lines. We compute the intersection with the current
-  // clip rect (or viewport) for each fragment to determine its visibility.
-  const clientRects = element.getClientRects();
-  if (clientRects.length > 1) {
-    const fragmentVisibleBoundingBoxes: Rect[] = [];
-
-    for (let i = 0; i < clientRects.length; i++) {
-      const rect = clientRects[i]!;
-      const fragmentRect = createRect(rect.x, rect.y, rect.width, rect.height);
-      const visibleFragmentRect = intersection(fragmentRect, clipToUse);
-      if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
-        fragmentVisibleBoundingBoxes.push(toEnclosingRect(visibleFragmentRect));
-      }
+  // the selected clip rect.
+  if (clipToUse) {
+    // Note that we have truthy `clipToUse`, so `visibleRect` is equivalent to
+    // `intersection(elementRect, clipToUse)`.
+    if (visibleRect.width > 0 && visibleRect.height > 0) {
+      geometry.visibleBoundingBox = toEnclosingRect(visibleRect);
     }
 
-    if (fragmentVisibleBoundingBoxes.length > 0) {
-      geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
+    // Handle fragmentation (e.g., text wrapping across multiple lines).
+    const clientRects = element.getClientRects();
+    if (clientRects.length > 1) {
+      const fragmentVisibleBoundingBoxes: Rect[] = [];
+
+      for (let i = 0; i < clientRects.length; i++) {
+        const rect = clientRects[i]!;
+        const fragmentRect =
+            createRect(rect.x, rect.y, rect.width, rect.height);
+        const visibleFragmentRect = intersection(fragmentRect, clipToUse);
+        if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
+          fragmentVisibleBoundingBoxes.push(
+              toEnclosingRect(visibleFragmentRect));
+        }
+      }
+
+      if (fragmentVisibleBoundingBoxes.length > 0) {
+        geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
+      }
     }
   }
 
   attributes.geometry = geometry;
 
-  // Determine the new clip rect to pass down to children.
-  // We default to passing down the parent's clip rect because elements with
-  // 'overflow: visible' do not clip their children. We specifically do not use
-  // this element's visibleRect because children are allowed to overflow and
-  // bleed outside of this element's visible boundaries if it doesn't clip.
-  let childClipRect = parentClipRect;
+  // Determine the new clip context to pass down to children.
+  let newNormalClip = context.normalClip;
+  let newAbsoluteClip = context.absoluteClip;
 
   const overflowX = style?.overflowX || '';
   const overflowY = style?.overflowY || '';
+
   if (isClippedStyle(overflowX) || isClippedStyle(overflowY)) {
+    const visibleRectForClip = visibleRect;
+
     // If the element actively clips its children, its own visible bounds become
     // the new absolute boundary for any descendant.
-    // Note: To properly support CSS transforms (which affect elementRect but
-    // not clientWidth/clientHeight), we fallback to using the visible rect
-    // (which is based on the outer border box) as the clipping boundary rather
-    // than attempting to manually calculate the transformed padding box.
-    childClipRect = visibleRect;
+    newNormalClip = visibleRectForClip;
+
+    // Absolute descendants are only clipped if this element forms a containing
+    // block (i.e., one that is not statically positioned).
+    if (position && position !== ATTR_POSITION_STATIC) {
+      newAbsoluteClip = visibleRectForClip;
+    }
+  } else if (position && position !== ATTR_POSITION_STATIC) {
+    // Since this positioned element forms a containing block but doesn't clip,
+    // reset the absolute clip to match the current normal flow clip.
+    newAbsoluteClip = context.normalClip;
   }
 
-  return childClipRect;
+  return {normalClip: newNormalClip, absoluteClip: newAbsoluteClip};
 }
 
 // TODO(crbug.com/476341187): Carry status information when the max depth is
@@ -2436,9 +2444,9 @@ function maybeGenerateContentNode(
     domNode: Node, nonce: string, depth: number, maxDepth: number,
     interactiveNodeIds: InteractiveNodeIds, actionableMode: boolean,
     paidContentContext: PaidContentExtractionContext, hasCanvas: boolean,
-    parentClipRect: Rect|null): {
+    parentContext: ClippingContext): {
   node: PageContentNode|null,
-  nextClipRect: Rect|null,
+  nextClippingContext: ClippingContext,
 } {
   let contentAttributes: PageContentAttributes|null = null;
   if (domNode.nodeType === Node.TEXT_NODE) {
@@ -2455,7 +2463,7 @@ function maybeGenerateContentNode(
           childrenNodes: [],
           contentAttributes: contentAttributes,
         },
-        nextClipRect: null,
+        nextClippingContext: parentContext,
       };
     }
   } else if (domNode.nodeType === Node.ELEMENT_NODE) {
@@ -2480,14 +2488,14 @@ function maybeGenerateContentNode(
             roleStr ? getAXRoleForAriaRole(roleStr) : AxRole.AX_ROLE_UNKNOWN;
       }
 
-      const nextClipRect = addNodeGeometry(
-          element, contentNode.contentAttributes, parentClipRect,
+      const nextClippingContext = addNodeGeometry(
+          element, contentNode.contentAttributes, parentContext,
           actionableMode);
-      return {node: contentNode, nextClipRect};
+      return {node: contentNode, nextClippingContext};
     }
   }
 
-  return {node: null, nextClipRect: null};
+  return {node: null, nextClippingContext: parentContext};
 }
 
 /**
@@ -2543,6 +2551,17 @@ function shouldAcceptNode(node: Node): number {
   return NodeFilter.FILTER_ACCEPT;
 }
 
+/**
+ * Tracks inherited clipping rectangles separately for normal flow elements
+ * and absolute positioned elements.
+ */
+interface ClippingContext {
+  /** Clipping rectangle applied to static and relative positioned elements. */
+  normalClip: Rect|null;
+  /** Clipping rectangle applied to absolute positioned elements. */
+  absoluteClip: Rect|null;
+}
+
 // Item in the ancestor stack.
 interface AncestorStackItem {
   // Node object in the DOM tree.
@@ -2553,9 +2572,8 @@ interface AncestorStackItem {
   depth: number;
   // Whether the node has style.
   isVisible: boolean;
-  // Clipping rectangle of the node. Falls back to using the viewport as the
-  // clipping rectangle if null.
-  clipRect: Rect|null;
+  // Clipping context of the node.
+  clippingContext: ClippingContext;
 }
 
 /**
@@ -2588,11 +2606,11 @@ function generateAndPushContentNode(
     return;
   }
 
-  const parentClipRect = parentStackItem.clipRect;
+  const parentContext = parentStackItem.clippingContext;
 
   const result = maybeGenerateContentNode(
       node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
-      paidContentContext, hasCanvas, parentClipRect);
+      paidContentContext, hasCanvas, parentContext);
   if (!result.node) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -2601,7 +2619,7 @@ function generateAndPushContentNode(
   }
 
   const newApcNode = result.node;
-  const nextClipRect = result.nextClipRect;
+  const nextClippingContext = result.nextClippingContext;
 
   parentStackItem.apcNode.childrenNodes.push(newApcNode);
 
@@ -2619,7 +2637,7 @@ function generateAndPushContentNode(
     apcNode: newApcNode,
     depth: currentDepth,
     isVisible: isVisible,
-    clipRect: nextClipRect,
+    clippingContext: nextClippingContext,
   });
 }
 
@@ -2788,8 +2806,11 @@ export function extractAnnotatedPageContent(
     apcNode: rootNode,
     depth,
     isVisible: true,
-    clipRect: addNodeGeometry(
-        root, rootNode.contentAttributes, getViewportRect(document),
+    clippingContext: addNodeGeometry(
+        root, rootNode.contentAttributes, {
+          normalClip: getViewportRect(document),
+          absoluteClip: getViewportRect(document),
+        },
         actionableMode),
   }];
 

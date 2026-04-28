@@ -1172,6 +1172,220 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(div_scroller_info->FindDict("visibleArea"));
 }
 
+// Test that absolute positioned elements are not clipped by static ancestors
+// with overflow: hidden.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_Geometry_AbsoluteClipping) {
+  const std::string html =
+      "<html><body>"
+      "  <div style=\"position: static; overflow: hidden; width: 100px; "
+      "height: 100px;\">"
+      "    <div id=\"target\" role=\"region\" style=\"position: absolute; top: "
+      "120px; left: 120px; width: 50px; height: 50px;\">"
+      "      Absolute Content"
+      "    </div>"
+      "  </div>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  // We expect the static div to be extracted (as it has overflow: hidden and
+  // acts as container).
+  ASSERT_GE(children->size(), 1u);
+  const base::DictValue& div_node = (*children)[0].GetDict();
+  const base::ListValue* div_children = div_node.FindList("childrenNodes");
+  ASSERT_TRUE(div_children);
+  ASSERT_GE(div_children->size(), 1u);
+
+  const base::DictValue& target_node = (*div_children)[0].GetDict();
+
+  const base::DictValue* geometry =
+      target_node.FindDictByDottedPath("contentAttributes.geometry");
+  ASSERT_TRUE(geometry) << "Geometry not found for target node";
+
+  const base::DictValue* visible_box = geometry->FindDict("visibleBoundingBox");
+  ASSERT_TRUE(visible_box) << "visibleBoundingBox not found";
+
+  // If it was clipped to the parent (100x100), width/height would likely be 0
+  // or negative since it's at 120,120. So if width is 50, it means it was NOT
+  // clipped.
+  std::optional<double> width = visible_box->FindDouble("width");
+  ASSERT_TRUE(width.has_value());
+  EXPECT_EQ(static_cast<int>(width.value()), 50);
+
+  std::optional<double> height = visible_box->FindDouble("height");
+  ASSERT_TRUE(height.has_value());
+  EXPECT_EQ(static_cast<int>(height.value()), 50);
+
+  const base::DictValue* outer_box = geometry->FindDict("outerBoundingBox");
+  ASSERT_TRUE(outer_box);
+
+  // Verify that outer bounds equal visible bounds when there is no clipping.
+  EXPECT_EQ(outer_box->FindDouble("width"), width);
+  EXPECT_EQ(outer_box->FindDouble("height"), height);
+  EXPECT_EQ(outer_box->FindDouble("x"), visible_box->FindDouble("x"));
+  EXPECT_EQ(outer_box->FindDouble("y"), visible_box->FindDouble("y"));
+}
+
+// Test that absolute positioned elements are clipped by positioned ancestors
+// with overflow: hidden.
+TEST_P(
+    PageContextExtractorJavaScriptFeatureTest,
+    ExtractPageContext_RichExtraction_Geometry_AbsoluteClipping_PositionedAncestor) {
+  const std::string html =
+      "<html><body>"
+      "  <div style=\"position: relative; overflow: hidden; width: 100px; "
+      "height: 100px;\">"
+      "    <div id=\"target\" role=\"region\" style=\"position: absolute; top: "
+      "120px; left: 120px; width: 50px; height: 50px;\">"
+      "      Absolute Content"
+      "    </div>"
+      "  </div>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  // We expect the relative div to be extracted.
+  ASSERT_GE(children->size(), 1u);
+  const base::DictValue& div_node = (*children)[0].GetDict();
+  const base::ListValue* div_children = div_node.FindList("childrenNodes");
+  ASSERT_TRUE(div_children);
+
+  // Since the child is positioned at top: 120px, left: 120px relative to the
+  // parent, and the parent container size is 100px x 100px with overflow:
+  // hidden, the child is completely clipped. If the element gets extracted, its
+  // visible bounding box is omitted by the script.
+  if (div_children->size() == 0) {
+    // If not extracted because not visible, that's also a valid result of
+    // clipping.
+    return;
+  }
+
+  ASSERT_GE(div_children->size(), 1u);
+  const base::DictValue& target_node = (*div_children)[0].GetDict();
+
+  const base::DictValue* geometry =
+      target_node.FindDictByDottedPath("contentAttributes.geometry");
+  ASSERT_TRUE(geometry);
+
+  const base::DictValue* visible_box = geometry->FindDict("visibleBoundingBox");
+  // Since the child is positioned at top: 120px, left: 120px relative to its
+  // parent, and the parent container size is 100px x 100px with overflow:
+  // hidden, the child is fully clipped and its visible bounding box is omitted
+  // by the script.
+  EXPECT_FALSE(visible_box)
+      << "Expected visibleBoundingBox to be missing for fully clipped element";
+}
+
+// Test that absolute positioned elements are clipped by static ancestors with
+// overflow: hidden if their containing block is a descendant of the clipping
+// ancestor.
+// In this scenario, the parent is positioned relative, so it is clipped by the
+// static grandparent container. This visible clip bounds constraint is then
+// correctly inherited by its absolute positioned child. If the parent instead
+// had absolute positioning, it would skip the static grandparent entirely,
+// meaning the absolute child would not be clipped.
+TEST_P(
+    PageContextExtractorJavaScriptFeatureTest,
+    ExtractPageContext_RichExtraction_Geometry_AbsoluteClipping_ChainedContainingBlock) {
+  const std::string html =
+      "<html><body>"
+      "  <div style=\"position: static; overflow: hidden; width: 100px; "
+      "height: 100px;\">"
+      "    <div role=\"region\" style=\"position: relative; overflow: visible; "
+      "width: 200px; height: 200px;\">"
+      "      <div id=\"target\" role=\"region\" style=\"position: absolute; "
+      "top: 120px; left: 120px; width: 50px; height: 50px;\">"
+      "        Absolute Content"
+      "      </div>"
+      "    </div>"
+      "  </div>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+
+  ASSERT_GE(children->size(), 1u);
+  const base::DictValue& static_div = (*children)[0].GetDict();
+  const base::ListValue* static_div_children =
+      static_div.FindList("childrenNodes");
+  ASSERT_TRUE(static_div_children);
+
+  ASSERT_GE(static_div_children->size(), 1u);
+  const base::DictValue& relative_div = (*static_div_children)[0].GetDict();
+  const base::ListValue* relative_div_children =
+      relative_div.FindList("childrenNodes");
+  ASSERT_TRUE(relative_div_children);
+
+  if (relative_div_children->size() == 0) {
+    return;
+  }
+
+  ASSERT_GE(relative_div_children->size(), 1u);
+  const base::DictValue& target_node = (*relative_div_children)[0].GetDict();
+
+  const base::DictValue* geometry =
+      target_node.FindDictByDottedPath("contentAttributes.geometry");
+  ASSERT_TRUE(geometry);
+
+  const base::DictValue* visible_box = geometry->FindDict("visibleBoundingBox");
+  EXPECT_FALSE(visible_box) << "Expected visibleBoundingBox to be missing for "
+                               "chained fully clipped element";
+}
+
 // Verifies that ExtractPageContext payload is a string when IPC optimization
 // is enabled and a dictionary otherwise.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
