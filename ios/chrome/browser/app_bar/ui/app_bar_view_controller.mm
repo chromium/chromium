@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import <optional>
 
 #import "base/metrics/user_metrics.h"
@@ -152,6 +154,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   CGFloat _buttonsTitleAlpha;
   // Background view for the IPH.
   AppBarIPHBackgroundView* _IPHBackgroundView;
+  // Whether the App Bar content is rotated.
+  BOOL _isRotated;
 }
 
 #pragma mark - Accessors & Mutators
@@ -174,12 +178,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)updateForAngle:(CGFloat)angle {
   [self loadViewIfNeeded];
 
+  _isRotated = (angle != 0);
+
   CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
   _assistantButton.transform = transform;
   _openNewTabButton.transform = transform;
   _tabGridButton.transform = transform;
 
-  [self updateStackViewConstraintsForPortrait:(angle == 0)];
+  [self updateStackViewConstraintsForPortrait:!_isRotated];
 }
 
 - (void)toggleSpotlightView:(BOOL)shouldShow {
@@ -517,10 +523,16 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     NSFontAttributeName : AssistantButtonFontSize(self.traitCollection)
   }];
 
-  CGFloat availableWidthForButton =
-      (self.view.bounds.size.width - 2 * kStackViewHorizontalMargin -
-       2 * kStackViewSpacing) /
-      3.0;
+  CGFloat availableWidthForButton;
+  if (_isRotated) {
+    availableWidthForButton = self.view.bounds.size.height;
+  } else {
+    availableWidthForButton =
+        (self.view.bounds.size.width - 2 * kStackViewHorizontalMargin -
+         2 * kStackViewSpacing) /
+        3.0;
+  }
+
   CGFloat availableWidthForTitle =
       availableWidthForButton - 2 * kButtonHorizontalPadding;
 
