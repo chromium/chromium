@@ -1146,8 +1146,6 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateCanCompositeBackgroundAttachmentFixed();
 
-  void EnqueueScrollSnapChangingFromImplIfNecessary();
-
   void RunCanvasOnpaintSteps();
 
   typedef HeapHashSet<Member<LayoutEmbeddedContent>> EmbeddedContentSet;
