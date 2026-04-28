@@ -27,7 +27,6 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -71,7 +70,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
@@ -119,7 +117,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
-import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
@@ -472,8 +469,24 @@ public class StripLayoutHelper
                 }
             };
 
+    public interface TrailingButtonDelegate {
+        /** Returns true if the trailing button context menu is showing. */
+        boolean isMenuShowing();
+
+        /** Dismisses the trailing button context menu if it is showing. */
+        void dismissContextMenu();
+
+        /**
+         * Fades out trailing buttons.
+         *
+         * @param fade Whether the buttons should be made visible (true) or hidden (false).
+         */
+        void fadeCompositorButtons(boolean fade);
+    }
+
     // External influences
     private final SceneOverlay mSceneOverlay;
+    private final TrailingButtonDelegate mTrailingButtonDelegate;
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
     private final LayoutManagerHost mManagerHost;
@@ -523,12 +536,10 @@ public class StripLayoutHelper
     private final Set<StripLayoutGroupTitle> mClosingGroupTitles = new HashSet<>();
 
     private final TintedCompositorButton mNewTabButton;
-    private final @Nullable TintedCompositorTextButton mGlicButton;
     private final @Nullable CompositorButton mModelSelectorButton;
 
     // Layout Constants
     private final float mNewTabButtonWidth;
-    private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
 
     // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
     // by this much, so we offset the drawX.
@@ -696,18 +707,20 @@ public class StripLayoutHelper
      * Creates an instance of the {@link StripLayoutHelper}.
      *
      * @param context The current Android {@link Context}.
+     * @param sceneOverlay The {@link SceneOverlay} to use.
+     * @param trailingButtonDelegate A delegate to communicate with the trailing buttons
+     *     coordinator.
      * @param managerHost The parent {@link LayoutManagerHost}.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
      * @param incognito Whether or not this tab strip is incognito.
-     * @param glicButton The {@link TintedCompositorButton} used to toggle Glic in the sidepanel.
      * @param modelSelectorButton The {@link CompositorButton} used to toggle between regular and
      *     incognito models.
-     * @param tabStripDragHandler The @{@link TabStripDragHandler} instance to initiate drag and
+     * @param tabStripDragHandler The {@link TabStripDragHandler} instance to initiate drag and
      *     drop.
-     * @param toolbarContainerView The @{link View} passed to @{link TabStripDragHandler} for drag
+     * @param toolbarContainerView The {@link View} passed to {@link TabStripDragHandler} for drag
      *     and drop.
-     * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
+     * @param windowAndroid The {@link WindowAndroid} instance to access Activity.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
@@ -723,12 +736,12 @@ public class StripLayoutHelper
      */
     public StripLayoutHelper(
             Context context,
-            StripLayoutHelperManager manager,
+            SceneOverlay sceneOverlay,
+            TrailingButtonDelegate trailingButtonDelegate,
             LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             boolean incognito,
-            @Nullable TintedCompositorTextButton glicButton,
             @Nullable CompositorButton modelSelectorButton,
             @Nullable TabStripDragHandler tabStripDragHandler,
             View toolbarContainerView,
@@ -744,7 +757,6 @@ public class StripLayoutHelper
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
-        mGlicButton = glicButton;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
         mTabStripDragHandler = tabStripDragHandler;
@@ -769,7 +781,8 @@ public class StripLayoutHelper
         updateFades(/* stripButtonsTouchTargetSize= */ 0);
         updateMargins(false);
 
-        mSceneOverlay = manager;
+        mSceneOverlay = sceneOverlay;
+        mTrailingButtonDelegate = trailingButtonDelegate;
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
@@ -861,11 +874,6 @@ public class StripLayoutHelper
                     if (!mCloseAnimationsRequested) rebuildStripViews();
                 });
 
-        // Create Glic unpin menu
-        if (mGlicButton != null) {
-            mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
-        }
-
         if (!mIncognito
                 && (ChromeFeatureList.sGlic.isEnabled()
                         || ChromeFeatureList.sContextualTasks.isEnabled())) {
@@ -917,10 +925,6 @@ public class StripLayoutHelper
         if (mModel != null) {
             mModel.removeObserver(mTabModelObserver);
             mModel = null;
-        }
-        if (mGlicButtonContextMenuCoordinator != null) {
-            mGlicButtonContextMenuCoordinator.dismiss();
-            mGlicButtonContextMenuCoordinator = null;
         }
         if (mStripTabUnderlineManager != null) {
             mStripTabUnderlineManager.destroy();
@@ -1159,16 +1163,17 @@ public class StripLayoutHelper
     }
 
     /**
-     * @param glicTouchTargetSize The touch target size for the Glic button.
+     * @param trailingButtonsTouchTargetSize The combined touch target size for the trailing
+     *     buttons.
      * @param msbTouchTargetSize The touch target size for the model selector button.
      */
     public void updateEndMarginForStripButtons(
-            float glicTouchTargetSize, float msbTouchTargetSize) {
+            float trailingButtonsTouchTargetSize, float msbTouchTargetSize) {
         // There are two additional tab strip buttons: Glic & MSB
         // When both buttons are not visible we add strip end padding here.
         // When either is visible, the strip end padding will be included in the visible button(s)
         // touch target, so just add padding between NTB and visible button(s) here.
-        float stripButtonsTouchTargetSize = glicTouchTargetSize + msbTouchTargetSize;
+        float stripButtonsTouchTargetSize = trailingButtonsTouchTargetSize + msbTouchTargetSize;
         float padding =
                 stripButtonsTouchTargetSize > 0
                         ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
@@ -1264,9 +1269,6 @@ public class StripLayoutHelper
 
         updateMargins(recalculateTabWidth);
         if (mStripViews.length > 0) mUpdateHost.requestUpdate();
-
-        // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
-        if (mGlicButtonContextMenuCoordinator != null) mGlicButtonContextMenuCoordinator.dismiss();
 
         // Dismiss iph on orientation change, as its position might become incorrect.
         dismissTabStripSyncIph();
@@ -2385,8 +2387,7 @@ public class StripLayoutHelper
                         && mTabContextMenuCoordinator.isMenuShowing())
                 || (mTabStripContextMenuCoordinator != null
                         && mTabStripContextMenuCoordinator.isMenuShowing())
-                || (mGlicButtonContextMenuCoordinator != null
-                        && mGlicButtonContextMenuCoordinator.isShowing());
+                || (mTrailingButtonDelegate != null && mTrailingButtonDelegate.isMenuShowing());
     }
 
     @VisibleForTesting
@@ -2394,7 +2395,9 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
-        if (mGlicButtonContextMenuCoordinator != null) mGlicButtonContextMenuCoordinator.dismiss();
+        if (mTrailingButtonDelegate != null) {
+            mTrailingButtonDelegate.dismissContextMenu();
+        }
     }
 
     /**
@@ -2667,21 +2670,8 @@ public class StripLayoutHelper
     }
 
     private void getAdjustedAnchorRect(RectProvider anchorRectProvider) {
-        int[] toolbarCoordinates = new int[2];
-        Rect backgroundPadding = new Rect();
-        mToolbarContainerView.getLocationInWindow(toolbarCoordinates);
-        Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, mIncognito);
-        background.getPadding(backgroundPadding);
-
-        // Use parent toolbar view coordinates to offset title rect.
-        // Also shift the anchor left by menu padding to align the menu exactly with title x.
-        int xOffset =
-                MathUtils.flipSignIf(
-                        toolbarCoordinates[0] - backgroundPadding.left,
-                        LocalizationUtils.isLayoutRtl());
-        int topPaddingPx =
-                Math.round(mTopPadding * mContext.getResources().getDisplayMetrics().density);
-        anchorRectProvider.getRect().offset(xOffset, toolbarCoordinates[1] + topPaddingPx);
+        StripLayoutUtils.getAdjustedAnchorRect(
+                mContext, mToolbarContainerView, mIncognito, mTopPadding, anchorRectProvider);
     }
 
     private void startReorderMode(
@@ -2712,18 +2702,20 @@ public class StripLayoutHelper
      * Called on hover enter event.
      *
      * @param x The x coordinate of the position of the hover enter event.
+     * @param y The y coordinate of the position of the hover enter event.
+     * @param isTrailingButtonHovered Whether a trailing button was hovered.
      */
-    public void onHoverEnter(float x, float y) {
+    public void onHoverEnter(float x, float y, boolean isTrailingButtonHovered) {
         StripLayoutTab hoveredTab = getTabAtPosition(x);
 
         // Hovered into a tab on the strip.
-        if (hoveredTab != null) {
+        if (hoveredTab != null && !isTrailingButtonHovered) {
             updateLastHoveredTab(hoveredTab);
             // Check whether the close button on the hovered tab is being hovered on.
             StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y);
         } else {
             // Check whether the model selector, Glic, or new tab button is being hovered.
-            updateCompositorButtonHoverState(x, y);
+            updateCompositorButtonHoverState(x, y, isTrailingButtonHovered);
         }
         mUpdateHost.requestUpdate();
     }
@@ -2732,14 +2724,16 @@ public class StripLayoutHelper
      * Called on hover move event.
      *
      * @param x The x coordinate of the position of the hover move event.
+     * @param y The y coordinate of the position of the hover move event.
+     * @param isTrailingButtonHovered Whether a trailing button was hovered.
      */
-    public void onHoverMove(float x, float y) {
+    public void onHoverMove(float x, float y, boolean isTrailingButtonHovered) {
         // Check whether the model selector, Glic, or new tab button is being hovered.
-        updateCompositorButtonHoverState(x, y);
+        updateCompositorButtonHoverState(x, y, isTrailingButtonHovered);
 
         StripLayoutTab hoveredTab = getTabAtPosition(x);
         // Hovered into a non-tab region within the strip.
-        if (hoveredTab == null) {
+        if (hoveredTab == null || isTrailingButtonHovered) {
             clearLastHoveredTab();
         } else if (hoveredTab == mLastHoveredTab) {
             if (!StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y)) return;
@@ -2803,37 +2797,31 @@ public class StripLayoutHelper
         }
     }
 
-    /** Check whether the model selector, Glic, or new tab button is being hovered. */
-    private void updateCompositorButtonHoverState(float x, float y) {
+    /** Check whether the model selector or new tab button is being hovered. */
+    private void updateCompositorButtonHoverState(
+            float x, float y, boolean isTrailingButtonHovered) {
         boolean isModelSelectorHovered =
-                mModelSelectorButton != null && mModelSelectorButton.checkClickedOrHovered(x, y);
-        boolean isGlicHovered =
-                !isModelSelectorHovered
-                        && mGlicButton != null
-                        && mGlicButton.checkClickedOrHovered(x, y);
+                !isTrailingButtonHovered
+                        && mModelSelectorButton != null
+                        && mModelSelectorButton.checkClickedOrHovered(x, y);
         boolean isNewTabHovered =
-                !isModelSelectorHovered
-                        && !isGlicHovered
+                !isTrailingButtonHovered
+                        && !isModelSelectorHovered
                         && mNewTabButton.checkClickedOrHovered(x, y);
 
         if (mModelSelectorButton != null && !isModelSelectorHovered) {
             mModelSelectorButton.setHovered(false);
         }
-        if (mGlicButton != null && !isGlicHovered) {
-            mGlicButton.setHovered(false);
-        }
         if (!isNewTabHovered) {
             mNewTabButton.setHovered(false);
         }
 
-        // There's a delay in updating NTB's position/touch target when the MSB or Glic button
+        // There's a delay in updating NTB's position/touch target when the MSB
         // initially appears on the strip, taking over NTB's position and moving NTB closer to the
         // tabs. Consequently, hover highlights can be observed on multiple buttons. To address
         // this, we allow only one button to be hovered at a time.
         if (isModelSelectorHovered) {
             assumeNonNull(mModelSelectorButton).setHovered(true);
-        } else if (isGlicHovered) {
-            assumeNonNull(mGlicButton).setHovered(true);
         } else if (isNewTabHovered) {
             mNewTabButton.setHovered(true);
         }
@@ -2843,9 +2831,6 @@ public class StripLayoutHelper
     private void clearCompositorButtonHoverStateIfNotClicked() {
         if (mModelSelectorButton != null) {
             mModelSelectorButton.setHovered(false);
-        }
-        if (mGlicButton != null) {
-            mGlicButton.setHovered(false);
         }
         mNewTabButton.setHovered(false);
     }
@@ -3172,10 +3157,6 @@ public class StripLayoutHelper
                 }
                 showTabContextMenu(Collections.singletonList(clickedTab.getTabId()), clickedTab);
             }
-            return true;
-        } else if (clickedView instanceof CompositorButton button
-                && button.getType() == ButtonType.GLIC) {
-            showGlicButtonMenu(clickedView);
             return true;
         } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
             if (mModel != null) {
@@ -3549,9 +3530,6 @@ public class StripLayoutHelper
 
     private @Nullable StripLayoutView determineClickedView(float x, float y, int buttons) {
         if (mNewTabButton.click(x, y, buttons)) return mNewTabButton;
-        if (mGlicButton != null && mGlicButton.isVisible() && mGlicButton.click(x, y, buttons)) {
-            return mGlicButton;
-        }
         StripLayoutView view = getViewAtPositionX(x, true);
         if (view instanceof StripLayoutTab clickedTab) {
             if (clickedTab.checkCloseHitTest(x, y) || MotionEventUtils.isTertiaryButton(buttons)) {
@@ -4917,9 +4895,7 @@ public class StripLayoutHelper
     private float calculateDeltaToMakeViewVisible(@Nullable StripLayoutView view) {
         if (view == null) return 0.f;
         // These are always in view.
-        if (view.equals(mNewTabButton)
-                || view.equals(mGlicButton)
-                || view.equals(mModelSelectorButton)) return 0.f;
+        if (view.equals(mNewTabButton) || view.equals(mModelSelectorButton)) return 0.f;
         if (view instanceof StripLayoutTab tab && tab.getIsPinned()) return 0.f;
 
         // 1. Calculate the bounds to fully show the regular view on the left/right side of the
@@ -5007,16 +4983,6 @@ public class StripLayoutHelper
                         endOpacity,
                         ANIM_BUTTONS_FADE_MS)
                 .start();
-        if (mGlicButton != null) {
-            CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            mGlicButton,
-                            CompositorButton.OPACITY,
-                            mGlicButton.getOpacity(),
-                            endOpacity,
-                            ANIM_BUTTONS_FADE_MS)
-                    .start();
-        }
         if (mModelSelectorButton != null) {
             CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
@@ -5026,6 +4992,9 @@ public class StripLayoutHelper
                             endOpacity,
                             ANIM_BUTTONS_FADE_MS)
                     .start();
+        }
+        if (mTrailingButtonDelegate != null) {
+            mTrailingButtonDelegate.fadeCompositorButtons(visible);
         }
     }
 
@@ -5238,23 +5207,6 @@ public class StripLayoutHelper
     }
 
     /**
-     * Shows the unpin menu below the Glic button.
-     *
-     * @param anchorView The Glic button the menu will be anchored to
-     */
-    private void showGlicButtonMenu(StripLayoutView anchorView) {
-        if (mGlicButtonContextMenuCoordinator == null
-                || mModel == null
-                || mModel.getProfile() == null) return;
-        RectProvider anchorRectProvider = new RectProvider();
-        anchorView.getAnchorRect(anchorRectProvider.getRect());
-        getAdjustedAnchorRect(anchorRectProvider);
-        var activity = assertNonNull(mWindowAndroid.getActivity().get());
-        mGlicButtonContextMenuCoordinator.showMenu(
-                anchorRectProvider, activity, mModel.getProfile(), mCachedTabWidthSupplier.get());
-    }
-
-    /**
      * Sets the direction and distance for scrolling the tab strip.
      *
      * @param delta a 1-D vector under the window coordinate system; it can be on the X axis or the
@@ -5347,16 +5299,6 @@ public class StripLayoutHelper
                 || viewX >= rightBound;
     }
 
-    @Nullable /* package */ TintedCompositorButton getGlicButtonForTesting() {
-        return mGlicButton;
-    }
-
-    /** Returns true if the Glic button menu is showing */
-    public boolean isGlicButtonMenuShowingForTesting() {
-        return mGlicButtonContextMenuCoordinator != null
-                && mGlicButtonContextMenuCoordinator.isShowing();
-    }
-
     /** Returns The width of the tab strip. */
     float getWidthForTesting() {
         return mWidth;
@@ -5371,7 +5313,7 @@ public class StripLayoutHelper
     }
 
     /** Returns The width of a tab. */
-    float getUnpinnedTabWidthForTesting() {
+    float getUnpinnedTabWidth() {
         return getCachedTabWidth(/* isPinned= */ false);
     }
 

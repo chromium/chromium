@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -36,7 +39,10 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.MotionEventUtils;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
 
@@ -79,14 +85,16 @@ public class StripLayoutTrailingButtonsCoordinator {
             (StripLayoutHelperManager.MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP
                             - GLIC_BUTTON_BACKGROUND_WIDTH_DP)
                     / 2;
+    private static final int ANIM_BUTTONS_FADE_MS = 150;
 
     // Core Dependencies
     private final Context mContext;
     private final LayoutUpdateHost mUpdateHost;
     private final LayoutRenderHost mRenderHost;
-    private final StripLayoutTrailingButtonsObserver mObserver;
+    private final WindowAndroid mWindowAndroid;
 
     // Configuration & Delegates
+    private final StripLayoutTrailingButtonsObserver mObserver;
     private final float mDensity;
     private final float mStripEndPadding;
     private final Runnable mGlicClickHandler;
@@ -101,6 +109,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     // UI Components
     private @Nullable TintedCompositorTextButton mGlicButton;
     private @Nullable TintedCompositorButton mGlicDismissNudgeButton;
+    private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
+    private final View mToolbarControlContainer;
 
     // Layout & State Parameters
     private float mWidth;
@@ -116,6 +126,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param context The {@link Context} for constructing the button.
      * @param updateHost The {@link LayoutUpdateHost} for requesting handles layout.
      * @param renderHost The {@link LayoutRenderHost} for requesting renders.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param glicClickHandler The {@link Runnable} to execute on Glic button click.
      * @param density The display density.
      * @param stripEndPadding The end padding of the tab strip.
@@ -124,11 +135,13 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param isAppInDesktopWindow Whether the app is in a desktop window.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
      * @param glicKeyedService The {@link GlicKeyedService} for observing Glic UI state.
+     * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout changes.
      */
     public StripLayoutTrailingButtonsCoordinator(
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
+            WindowAndroid windowAndroid,
             Runnable glicClickHandler,
             float density,
             float stripEndPadding,
@@ -146,6 +159,8 @@ public class StripLayoutTrailingButtonsCoordinator {
         mStripEndPadding = stripEndPadding;
         mGlicKeyedService = glicKeyedService;
         mObserver = observer;
+        mWindowAndroid = windowAndroid;
+        mToolbarControlContainer = toolbarControlContainer;
 
         if (mGlicKeyedService != null) {
             mGlicUiObserver =
@@ -204,15 +219,15 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* parentView= */ null,
                             GLIC_BUTTON_BACKGROUND_WIDTH_DP,
                             GLIC_BUTTON_BACKGROUND_HEIGHT_DP,
-                            (tooltipText) -> {
-                                toolbarControlContainer.setTooltipText(tooltipText);
-                            },
+                            (tooltipText) -> mToolbarControlContainer.setTooltipText(tooltipText),
                             glicClickHandlerOnButton,
                             keyboardFocusHandler,
                             R.drawable.ic_spark_4c_16dp,
                             GLIC_BUTTON_CLICK_SLOP_DP,
-                            /* hasLongClickAction= */ false,
+                            /* hasLongClickAction= */ true,
                             mGlicDismissNudgeButton);
+
+            mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
 
             mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
             mGlicButton.setVisible(false);
@@ -258,6 +273,10 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
+        }
+        if (mGlicButtonContextMenuCoordinator != null) {
+            mGlicButtonContextMenuCoordinator.dismiss();
+            mGlicButtonContextMenuCoordinator = null;
         }
     }
 
@@ -346,11 +365,19 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public void onSizeChanged(
             float width, float rightPadding, float leftPadding, float topPadding) {
+        if (mWidth == width
+                && mRightPadding == rightPadding
+                && mLeftPadding == leftPadding
+                && mTopPadding == topPadding) {
+            return;
+        }
         mWidth = width;
         mRightPadding = rightPadding;
         mLeftPadding = leftPadding;
         mTopPadding = topPadding;
         updateGlicButtonPosition();
+        // Dismiss Glic context menu, similar to how the app menu is dismissed on orientation change
+        dismissGlicContextMenu();
     }
 
     /** Sets the cache used for generating textures for the trailing buttons. */
@@ -359,6 +386,44 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicButton != null) {
             updateGlicButtonTextProperties();
         }
+    }
+
+    /** Returns true if the trailing button context menu is showing. */
+    public boolean isMenuShowing() {
+        return mGlicButtonContextMenuCoordinator != null
+                && mGlicButtonContextMenuCoordinator.isShowing();
+    }
+
+    /** Dismisses the trailing button context menu if it is showing. */
+    public void dismissGlicContextMenu() {
+        if (mGlicButtonContextMenuCoordinator != null) {
+            mGlicButtonContextMenuCoordinator.dismiss();
+        }
+    }
+
+    /**
+     * Shows the trailing button context menu.
+     *
+     * @param activity The current {@link Activity}.
+     * @param tabWidthDp The current tab width in DP.
+     */
+    public void showMenu(Activity activity, float tabWidthDp) {
+        if (mGlicButtonContextMenuCoordinator == null || mProfile == null || mGlicButton == null) {
+            return;
+        }
+
+        RectProvider anchorRectProvider = new RectProvider();
+        mGlicButton.getAnchorRect(anchorRectProvider.getRect());
+
+        StripLayoutUtils.getAdjustedAnchorRect(
+                mContext,
+                mToolbarControlContainer,
+                mProfile.isOffTheRecord(),
+                mTopPadding,
+                anchorRectProvider);
+
+        mGlicButtonContextMenuCoordinator.showMenu(
+                anchorRectProvider, activity, mProfile, tabWidthDp);
     }
 
     @VisibleForTesting
@@ -493,6 +558,24 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
     }
 
+    /**
+     * Fades out trailing buttons when the compositor buttons are set to hidden (e.g. during tab
+     * drag).
+     */
+    public void fadeCompositorButtons(boolean visible) {
+        if (mGlicButton != null) {
+            float endOpacity = visible ? 1.f : 0.f;
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            mGlicButton,
+                            CompositorButton.OPACITY,
+                            mGlicButton.getOpacity(),
+                            endOpacity,
+                            ANIM_BUTTONS_FADE_MS)
+                    .start();
+        }
+    }
+
     /** Returns whether the Glic button is currently visible. */
     public boolean isGlicButtonVisible() {
         return mGlicButton != null && mGlicButton.isVisible();
@@ -544,12 +627,66 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @return true if the event was handled.
      */
     public boolean onUpOrCancel() {
-        boolean handled =
-                mGlicButton != null && mGlicButton.isVisible() && mGlicButton.onUpOrCancel();
+        boolean handled = mGlicButton != null && mGlicButton.onUpOrCancel();
         if (handled) {
             mGlicClickHandler.run();
         }
         return handled;
+    }
+
+    /**
+     * Handles long press touch events.
+     *
+     * @param x The x coordinate of the event.
+     * @param y The y coordinate of the event.
+     * @param tabWidthDp The current tab width in DP.
+     * @return True if the event was handled and hit a trailing button.
+     */
+    public boolean onLongPress(float x, float y, float tabWidthDp) {
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return false;
+        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
+            showMenu(activity, tabWidthDp);
+            // Clear the pressed state so a click isn't triggered in addition to the long press.
+            mGlicButton.setPressed(false);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handles hover move events on the trailing buttons.
+     *
+     * @param x The x coordinate of the hover event.
+     * @param y The y coordinate of the hover event.
+     */
+    public boolean onHoverEvent(float x, float y) {
+        if (mGlicButton == null) return false;
+        boolean isHovered = mGlicButton.checkClickedOrHovered(x, y);
+        if (isHovered != mGlicButton.isHovered()) {
+            mGlicButton.setHovered(isHovered);
+            mRenderHost.requestRender();
+        }
+        return isHovered;
+    }
+
+    /** Clears hover states on the trailing buttons. */
+    public void onHoverExit() {
+        if (mGlicButton != null && mGlicButton.isHovered()) {
+            mGlicButton.setHovered(false);
+            mRenderHost.requestRender();
+        }
+    }
+
+    /**
+     * Checks if the trailing buttons are clicked or hovered.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @return True if the event coordinates hit a trailing button.
+     */
+    public boolean checkClickedOrHovered(float x, float y) {
+        return mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y);
     }
 
     /**
@@ -565,19 +702,29 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     /**
-     * Handles click events.
+     * Set state for a click event.
      *
-     * @param time The timestamp of the event.
-     * @param x The x coordinate of the event.
-     * @param y The y coordinate of the event.
-     * @param buttons The buttons pressed.
-     * @param modifiers Any key modifiers.
-     * @return true if the event was handled.
+     * @param time The time of the click in ms.
+     * @param x The x coordinate of the click event.
+     * @param y The y coordinate of the click event.
+     * @param buttons State of all buttons that are pressed.
+     * @param modifiers State of all modifiers.
+     * @param tabWidthDp The current tab width in DP.
+     * @return Whether the event was handled.
      */
-    public boolean click(long time, float x, float y, int buttons, int modifiers) {
-        if (mGlicButton != null && mGlicButton.click(x, y, buttons)) {
-            mGlicButton.handleClick(time, buttons, modifiers);
-            return true;
+    public boolean click(
+            long time, float x, float y, int buttons, int modifiers, float tabWidthDp) {
+        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
+            if (MotionEventUtils.isSecondaryClick(buttons)) {
+                Activity activity = mWindowAndroid.getActivity().get();
+                if (activity != null) {
+                    showMenu(activity, tabWidthDp);
+                    return true;
+                }
+            } else if (mGlicButton.click(x, y, buttons)) {
+                mGlicButton.handleClick(time, buttons, modifiers);
+                return true;
+            }
         }
         return false;
     }

@@ -101,7 +101,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.TooltipHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
@@ -113,6 +112,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -196,11 +196,10 @@ public class StripLayoutHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private View mInteractingTabView;
-    @Mock private StripLayoutHelperManager mManager;
+    @Mock private SceneOverlay mSceneOverlay;
     @Mock private LayoutManagerHost mManagerHost;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
-    @Mock private TintedCompositorTextButton mGlicBtn;
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabUngrouper mTabUngrouper;
@@ -448,7 +447,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(/* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0);
         mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* glicTouchTargetSize= */ 16f, /* msbTouchTargetSize= */ 32f);
+                /* trailingButtonsTouchTargetSize= */ 16f, /* msbTouchTargetSize= */ 32f);
 
         // Verify end fade.
         float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
@@ -477,7 +476,7 @@ public class StripLayoutHelperTest {
         // Setup
         initializeTest(/* rtl= */ true, /* incognito= */ false, /* tabIndex= */ 0);
         mStripLayoutHelper.updateEndMarginForStripButtons(
-                /* glicTouchTargetSize= */ 10f, /* msbTouchTargetSize= */ 20f);
+                /* trailingButtonsTouchTargetSize= */ 10f, /* msbTouchTargetSize= */ 20f);
 
         // Verify end fade.
         float expectedEndGradient = StripLayoutHelper.BUTTON_FADE_GRADIENT_LONG_WIDTH_DP;
@@ -879,7 +878,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tabs should be at minimum width for this test to be valid",
                 MIN_TAB_WIDTH_DP,
-                mStripLayoutHelper.getUnpinnedTabWidthForTesting(),
+                mStripLayoutHelper.getUnpinnedTabWidth(),
                 EPSILON);
 
         final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
@@ -1679,14 +1678,14 @@ public class StripLayoutHelperTest {
         // Verify new tab button is hovered.
         int x = (int) mStripLayoutHelper.getNewTabButton().getDrawX();
         mStripLayoutHelper.onHoverEnter(
-                x + 1, 0); // mouse position within NTB range(32dp width + 12dp click slop).
+                x + 1, 0, false); // mouse position within NTB range(32dp width + 12dp click slop).
         assertTrue(
                 "New tab button should be hovered",
                 mStripLayoutHelper.getNewTabButton().isHovered());
 
         // Verify new tab button is NOT hovered
         mStripLayoutHelper.onHoverEnter(
-                x + 45, 0); // mouse position out of NTB range(32dp width + 12dp click slop).
+                x + 45, 0, false); // mouse position out of NTB range(32dp width + 12dp click slop).
         assertFalse(
                 "New tab button should NOT be hovered",
                 mStripLayoutHelper.getNewTabButton().isHovered());
@@ -1810,14 +1809,14 @@ public class StripLayoutHelperTest {
 
         // Verify close button is hovered on.
         mStripLayoutHelper.onHoverEnter(
-                x + 1,
-                y + 1); // mouse position within close button range(24dp width + 12dp click slop)
+                x + 1, y + 1,
+                false); // mouse position within close button range(24dp width + 12dp click slop)
         assertTrue("Close button should be hovered", tab.isCloseHovered());
 
         // Verify close button is NOT hovered on.
         mStripLayoutHelper.onHoverEnter(
-                x + 37,
-                y); // mouse position out of close button range(24dp width + 12dp click slop).
+                x + 37, y,
+                false); // mouse position out of close button range(24dp width + 12dp click slop).
         assertFalse("Close button should NOT be hovered on", tab.isCloseHovered());
     }
 
@@ -2800,30 +2799,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testOnLongPress_OnGlicButton() {
-        // Initialize.
-        mToolbarContainerView = new View(mActivity);
-        initializeTest(/* tabIndex= */ 0);
-
-        // Mock Glic button.
-        when(mGlicBtn.isVisible()).thenReturn(true);
-        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
-        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
-
-        // Long press on Glic button.
-        mStripLayoutHelper.onLongPress(150f, 0f);
-
-        // Verify the Glic button menu is showing.
-        assertFalse(
-                "Should not be in reorder mode after long press on Glic button.",
-                mStripLayoutHelper.getInReorderModeForTesting());
-        assertTrue(
-                "Glic button menu should be showing",
-                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
-    }
-
-    @Test
     public void testOnLongPress_OffTab() {
         setupDragDropState();
         onLongPress_OffTab();
@@ -2858,13 +2833,9 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabAtPositionForTesting(null);
         mStripLayoutHelper.onLongPress(x, y);
 
-        // Verify that we do not show the popup menu anchored on the Glic button.
         assertFalse(
                 "Should not be in reorder mode after long press on empty space on tab strip.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        assertFalse(
-                "Should not show after long press on empty space on tab strip.",
-                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
 
         // Verify that we show the strip context menu.
         var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
@@ -2873,7 +2844,7 @@ public class StripLayoutHelperTest {
         Rect rect = rectProviderCaptor.getValue().getRect();
         int tabWidthPx =
                 Math.round(
-                        mStripLayoutHelper.getUnpinnedTabWidthForTesting()
+                        mStripLayoutHelper.getUnpinnedTabWidth()
                                 * mContext.getResources().getDisplayMetrics().density);
         assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
     }
@@ -2901,7 +2872,7 @@ public class StripLayoutHelperTest {
         Rect rect = rectProviderCaptor.getValue().getRect();
         int tabWidthPx =
                 Math.round(
-                        mStripLayoutHelper.getUnpinnedTabWidthForTesting()
+                        mStripLayoutHelper.getUnpinnedTabWidth()
                                 * mContext.getResources().getDisplayMetrics().density);
         assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
     }
@@ -2979,7 +2950,7 @@ public class StripLayoutHelperTest {
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidth(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -3032,7 +3003,7 @@ public class StripLayoutHelperTest {
         // Check initial bottom indicator width.
         float expectedStartWidth =
                 calculateExpectedBottomIndicatorWidth(
-                        mStripLayoutHelper.getUnpinnedTabWidthForTesting(), 2, groupTitle);
+                        mStripLayoutHelper.getUnpinnedTabWidth(), 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -4769,19 +4740,30 @@ public class StripLayoutHelperTest {
         LocalizationUtils.setRtlForTesting(rtl);
         return new StripLayoutHelper(
                 mActivity,
-                mManager,
+                mSceneOverlay,
+                new StripLayoutHelper.TrailingButtonDelegate() {
+                    @Override
+                    public boolean isMenuShowing() {
+                        return false;
+                    }
+
+                    @Override
+                    public void dismissContextMenu() {}
+
+                    @Override
+                    public void fadeCompositorButtons(boolean fade) {}
+                },
                 mManagerHost,
                 mUpdateHost,
                 mRenderHost,
                 incognito,
-                mGlicBtn,
                 mModelSelectorBtn,
                 mTabStripDragHandler,
                 mToolbarContainerView,
                 mWindowAndroid,
                 mActionConfirmationManager,
                 mDataSharingTabManager,
-                () -> true,
+                /* tabStripVisibleSupplier= */ () -> true,
                 mBottomSheetController,
                 mMultiInstanceManager,
                 ObservableSuppliers.createMonotonic(mShareDelegate),
@@ -5463,28 +5445,6 @@ public class StripLayoutHelperTest {
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
         verify(mTabContextMenuCoordinator, times(2)).showMenu(any(), any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    // TODO(crbug.com/483475735): Combine into testSecondaryClick after launch
-    public void testSecondaryClick_OnGlicButton() {
-        // Initialize.
-        mToolbarContainerView = new View(mActivity);
-        initializeTest(/* tabIndex= */ 0);
-
-        // Mock Glic button.
-        when(mGlicBtn.isVisible()).thenReturn(true);
-        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
-        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
-
-        // Long press on Glic button.
-        mStripLayoutHelper.click(TIMESTAMP, 150f, 0f, MotionEvent.BUTTON_SECONDARY, 0);
-
-        // Verify the Glic button menu is showing.
-        assertTrue(
-                "Glic button menu should be showing",
-                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
     }
 
     @Test
@@ -6305,7 +6265,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 1, null);
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        assertNotEquals(0, mStripLayoutHelper.getUnpinnedTabWidthForTesting(), EPSILON);
+        assertNotEquals(0, mStripLayoutHelper.getUnpinnedTabWidth(), EPSILON);
     }
 
     @Test

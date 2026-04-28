@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
@@ -19,11 +22,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -407,6 +412,38 @@ public class StripLayoutUtils {
     }
 
     // Other methods.
+
+    /**
+     * Adjusts the anchor rect mathematically to align an Android PopupWindow across differing
+     * coordinate spaces correctly.
+     *
+     * @param context The context used to load resources.
+     * @param toolbarContainerView The parent toolbar view to anchor against.
+     * @param isIncognito Whether the current profile is Incognito.
+     * @param topPaddingDp The top padding of the strip in DP.
+     * @param anchorRectProvider The provider of the original unadjusted Rect.
+     */
+    public static void getAdjustedAnchorRect(
+            Context context,
+            View toolbarContainerView,
+            boolean isIncognito,
+            float topPaddingDp,
+            RectProvider anchorRectProvider) {
+        if (toolbarContainerView == null) return;
+        int[] toolbarCoordinates = new int[2];
+        Rect backgroundPadding = new Rect();
+        toolbarContainerView.getLocationInWindow(toolbarCoordinates);
+        Drawable background = TabOverflowMenuCoordinator.getMenuBackground(context, isIncognito);
+        background.getPadding(backgroundPadding);
+
+        int xOffset =
+                MathUtils.flipSignIf(
+                        toolbarCoordinates[0] - backgroundPadding.left,
+                        LocalizationUtils.isLayoutRtl());
+        int topPaddingPx =
+                Math.round(topPaddingDp * context.getResources().getDisplayMetrics().density);
+        anchorRectProvider.getRect().offset(xOffset, toolbarCoordinates[1] + topPaddingPx);
+    }
 
     public static void performHapticFeedback(View view) {
         if (view == null) return;

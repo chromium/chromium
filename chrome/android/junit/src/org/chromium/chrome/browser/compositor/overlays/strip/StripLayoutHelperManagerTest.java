@@ -569,7 +569,8 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
-                        x + 1, 0); // mouse position within MSB range(32dp width + 12dp click slop).
+                        x + 1, 0,
+                        false); // mouse position within MSB range(32dp width + 12dp click slop).
         assertTrue(
                 "Model selector button should be hovered",
                 mStripLayoutHelperManager.getModelSelectorButton().isHovered());
@@ -578,8 +579,8 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
-                        x + 45,
-                        0); // mouse position out of MSB range(32dp width + 12dp click slop).
+                        x + 45, 0,
+                        false); // mouse position out of MSB range(32dp width + 12dp click slop).
         assertFalse(
                 "Model selector button should NOT be hovered",
                 mStripLayoutHelperManager.getModelSelectorButton().isHovered());
