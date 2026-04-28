@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -322,8 +323,12 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
     return false;
   }
 
+  const GURL& url = web_state_->GetVisibleURL();
+  if (IsChromeNextIaEnabled() && IsUrlNtp(url)) {
+    return true;
+  }
+
   if (IsGeminiCopresenceEnabled() || IsGeminiFloatyAllPagesEnabled()) {
-    const GURL& url = web_state_->GetVisibleURL();
     if (!IsUrlEligibleForGemini(url)) {
       return false;
     }
@@ -334,6 +339,10 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
 }
 
 bool BwgTabHelper::IsUrlEligibleForGemini(const GURL& url) {
+  if (IsChromeNextIaEnabled() && IsUrlNtp(url)) {
+    return true;
+  }
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
   }
