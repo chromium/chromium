@@ -252,7 +252,7 @@ TEST_F(AISummarizerTest, CanCreateUnIsLanguagesSupported) {
   auto options = GetDefaultOptions();
   options->output_language = AILanguageCode::New("es-ES");
   options->expected_input_languages =
-      AITestUtils::ToMojoLanguageCodes({"en", "fr", "ja"});
+      AITestUtils::ToMojoLanguageCodes({"en", "tlh", "ja"});
   options->expected_context_languages =
       AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
