@@ -251,8 +251,7 @@ void GCMAccountTrackerTest::IssueExpiredAccessToken(
 
 void GCMAccountTrackerTest::IssueError(const CoreAccountId& account_id) {
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      account_id, GoogleServiceAuthError::FromServiceUnavailable(""));
 }
 
 bool GCMAccountTrackerTest::IsFetchingRequired() const {
