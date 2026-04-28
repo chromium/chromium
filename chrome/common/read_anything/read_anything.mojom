@@ -297,9 +297,6 @@ interface UntrustedPageHandler {
   // Informs the browser to collapse the selection made in the WebUI.
   OnCollapseSelection();
 
-  // Requests the browser to take a screenshot of the active web contents.
-  OnScreenshotRequested();
-
   // Informs the browser of the status of the latest distillation attempt.
   OnDistillationStatus(read_anything.mojom.DistillationStatus status,
                        int32 word_count);

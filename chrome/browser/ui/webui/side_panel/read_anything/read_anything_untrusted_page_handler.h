@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/translate/core/browser/translate_client.h"
@@ -319,7 +318,6 @@ class ReadAnythingUntrustedPageHandler :
                          ui::AXNodeID focus_node_id,
                          int focus_offset) override;
   void OnCollapseSelection() override;
-  void OnScreenshotRequested() override;
 
   void SetDefaultLanguageCode(const std::string& code);
 
@@ -390,10 +388,6 @@ class ReadAnythingUntrustedPageHandler :
   // (iframe) of the main web contents since that is where the pdf contents is
   // contained.
   std::unique_ptr<ReadAnythingWebContentsObserver> pdf_observer_;
-
-  // `web_screenshotter_` is used to capture a screenshot of the main web
-  // contents requested.
-  std::unique_ptr<ReadAnythingScreenshotter> web_screenshotter_;
 
   // Private implementation for dom_distiller::ViewRequestDelegate, not part of
   // the public API.

@@ -28,8 +28,6 @@
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
@@ -477,7 +475,6 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 #endif
   translate_observation_.Reset();
-  web_screenshotter_.reset();
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
@@ -1145,22 +1142,6 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
   if (main_observer_ && main_observer_->web_contents()) {
     main_observer_->web_contents()->CollapseSelection();
   }
-}
-
-void ReadAnythingUntrustedPageHandler::OnScreenshotRequested() {
-  if (!features::IsDataCollectionModeForScreen2xEnabled()) {
-    return;
-  }
-  if (!main_observer_ || !main_observer_->web_contents()) {
-    VLOG(2) << "The main observer didn't observe the main web contents";
-    return;
-  }
-
-  if (!web_screenshotter_) {
-    web_screenshotter_ = std::make_unique<ReadAnythingScreenshotter>();
-  }
-  VLOG(2) << "Requesting a screenshot for the main web contents";
-  web_screenshotter_->RequestScreenshot(main_observer_->web_contents());
 }
 
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(

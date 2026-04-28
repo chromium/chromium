@@ -1506,8 +1506,6 @@ static_library("ui") {
       "webui/side_panel/history_clusters/history_clusters_side_panel_ui.h",
       "webui/side_panel/read_anything/chrome_os_extension_wrapper.cc",
       "webui/side_panel/read_anything/chrome_os_extension_wrapper.h",
-      "webui/side_panel/read_anything/read_anything_screenshotter.cc",
-      "webui/side_panel/read_anything/read_anything_screenshotter.h",
       "webui/side_panel/read_anything/read_anything_untrusted_page_handler.cc",
       "webui/side_panel/read_anything/read_anything_untrusted_page_handler.h",
       "webui/side_panel/read_anything/read_anything_untrusted_ui.cc",

@@ -458,11 +458,6 @@ ReadAnythingAppController::ReadAnythingAppController(
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetDataCollectionForScreen2xCallback(
-        base::BindOnce(&ReadAnythingAppController::DistillAndScreenshot,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 
   model_observer_.Observe(&model_);
   self_ = this;
@@ -918,25 +913,7 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   model_.OnAXTreeDestroyed(tree_id);
 }
 
-void ReadAnythingAppController::DistillAndScreenshot() {
-  // For screen2x data generation mode, chrome is opened from the CLI to a
-  // specific URL. The caller monitors for a dump of the distilled proto written
-  // to a local file. Distill should only be called once the page finished
-  // loading and is stable, so the proto represents the entire webpage.
-  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-  CHECK(model_.PageFinishedLoadingForDataCollection());
-  CHECK(model_.ScreenAIServiceReadyForDataCollection());
-
-  Distill(/*for_training_data=*/true);
-  page_handler_->OnScreenshotRequested();
-}
-
-void ReadAnythingAppController::Distill(bool for_training_data) {
-  if (!for_training_data &&
-      features::IsDataCollectionModeForScreen2xEnabled()) {
-    return;
-  }
-
+void ReadAnythingAppController::Distill() {
   if (IsUpdateProcessingPaused()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
@@ -1264,9 +1241,6 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    model_.SetScreenAIServiceReadyForDataCollection();
-  }
   distiller_->ScreenAIServiceReady();
 }
 

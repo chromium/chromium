@@ -13,26 +13,6 @@
 
 namespace {
 
-class ReadAnythingServiceDataCollectionCUJTest : public InteractiveBrowserTest {
- public:
-  ReadAnythingServiceDataCollectionCUJTest() = default;
-  ~ReadAnythingServiceDataCollectionCUJTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDataCollectionModeForScreen2x);
-    InteractiveBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingServiceDataCollectionCUJTest,
-                       SidePanelOpensAutomatically) {
-  RunTestSequence(WaitForShow(kSidePanelElementId));
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 
 using ReadAnythingServiceGuestTest = InProcessBrowserTest;

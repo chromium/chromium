@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -389,15 +388,6 @@ class ReadAnythingAppModel {
     return ax_tree_anchors_;
   }
 
-  // The following methods are used for the screen2x data collection pipeline.
-  // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
-  // feature flag is enabled.
-  bool ScreenAIServiceReadyForDataCollection() const;
-  void SetScreenAIServiceReadyForDataCollection();
-  bool PageFinishedLoadingForDataCollection() const;
-  void SetDataCollectionForScreen2xCallback(
-      base::OnceCallback<void()> callback);
-
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool page_finished_loading) {
     page_finished_loading_ = page_finished_loading;
@@ -629,16 +619,6 @@ class ReadAnythingAppModel {
 
   void UpdateActiveTreeIfNeeded(const ui::AXTreeID& tree_id);
 
-  void HandleScreen2xDataCollection(const Updates& updates);
-
-  // Runs the data collection for screen2x pipeline, provided in the form of a
-  // callback from the ReadAnythingAppController. This should only be called
-  // when the DataCollectionModeForScreen2x feature is enabled.
-  void MaybeRunDataCollectionForScreen2xCallback();
-
-  void OnPageLoadTimerTriggered();
-  void OnTreeChangeTimerTriggered();
-
   void SetFontSize(double font_size, int increment = 0);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   std::map<std::string, std::vector<AnchorData>> CollectAnchorsFromAXTree(
@@ -743,17 +723,6 @@ class ReadAnythingAppModel {
   int line_focus_scroll_distance_ = 0;
   int line_focus_keyboard_lines_ = 0;
   int line_focus_speech_lines_ = 0;
-
-  // For screen2x data collection, Chrome is launched from the CLI to open one
-  // webpage. We record the result of the distill() call for this entire
-  // webpage, so we only make the call once the webpage finished loading and
-  // screen ai has loaded.
-  bool screen_ai_service_ready_for_data_collection_ = false;
-  bool waiting_for_page_load_completion_timer_trigger_ = true;
-  bool waiting_for_tree_change_timer_trigger_ = true;
-  base::OneShotTimer timer_since_page_load_for_data_collection_;
-  base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
-  base::OnceCallback<void()> data_collection_for_screen2x_callback_;
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;

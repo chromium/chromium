@@ -295,16 +295,6 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui(),
           /*use_screen_ai_service=*/true);
-
-  // This code is called as part of a screen2x data generation workflow, where
-  // the browser is opened by a CLI and the read-anything side panel is
-  // automatically opened. Therefore we force the UI to show right away rather
-  // than waiting for all UI artifacts to load, as in the general case.
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    if (embedder()) {
-      embedder()->ShowUI();
-    }
-  }
 }
 
 void ReadAnythingUntrustedUI::ShouldShowUI() {

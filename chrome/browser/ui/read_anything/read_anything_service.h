@@ -6,18 +6,14 @@
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
-class ProfileBrowserCollection;
 
 // This per-profile class holds profile-scoped state for the read anything
 // feature.
-class ReadAnythingService : public KeyedService,
-                            public BrowserCollectionObserver {
+class ReadAnythingService : public KeyedService {
  public:
   explicit ReadAnythingService(Profile* profile);
   ~ReadAnythingService() override;
@@ -42,9 +38,6 @@ class ReadAnythingService : public KeyedService,
   void SetupDesktopEngine();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // BrowserCollectionObserver:
-  void OnBrowserActivated(BrowserWindowInterface* browser) override;
-
   // The number of active local reading modes that are currently shown. If there
   // is no active local side panel (count is 0) after a timeout, we can safely
   // remove the gdocs helper extension.
@@ -55,9 +48,6 @@ class ReadAnythingService : public KeyedService,
   // otherwise, uninstall it. This prevents frequent
   // installations/uninstallations.
   base::RetainingOneShotTimer local_reading_mode_switch_delay_timer_;
-
-  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observer_{this};
 
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ReadAnythingService> weak_ptr_factory_{this};

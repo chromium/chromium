@@ -50,7 +50,6 @@ class MojoUkmRecorder;
 class AXTreeDistiller;
 class DependencyParserModel;
 class ReadAnythingAppControllerTest;
-class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 class ReadAnythingAppControllerReadabilityTest;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -437,13 +436,12 @@ class ReadAnythingAppController
 
  private:
   friend ReadAnythingAppControllerTest;
-  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
   friend ReadAnythingAppControllerReadabilityTest;
   // The fallback language code if GetLanguageCodeForSpeech has an error.
   // However, this may be the same value as GetLanguageCodeForSpeech.
   const std::string& GetDefaultLanguageCodeForSpeech() const;
 
-  void Distill(bool for_training_data = false);
+  void Distill();
   void DrawSelection();
   void DrawEmptyState();
 

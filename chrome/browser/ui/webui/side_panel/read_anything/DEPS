@@ -8,11 +8,5 @@ specific_include_rules = {
     "+chrome/browser/ui/read_anything",
     "+chrome/browser/ui/views/frame/browser_view.h",
     "+content/public/browser/tts_controller.h",
-    "+components/paint_preview/common/recording_map.h",
-    "+components/paint_preview/public/paint_preview_compositor_service.h",
-  ],
-  "read_anything_screenshotter\.*": [
-    "+components/paint_preview/common/recording_map.h",
-    "+components/paint_preview/public/paint_preview_compositor_service.h",
   ],
 }
