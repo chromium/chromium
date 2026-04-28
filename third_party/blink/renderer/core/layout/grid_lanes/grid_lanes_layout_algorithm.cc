@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
@@ -199,30 +198,6 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 }
 
 namespace {
-
-// TODO(almaher): Should we consolidate this with LayoutGridItemForMeasure()?
-const LayoutResult* LayoutGridLanesItemForMeasure(
-    const GridItemData& grid_lanes_item,
-    const ConstraintSpace& constraint_space,
-    SizingConstraint sizing_constraint) {
-  const auto& node = grid_lanes_item.node;
-
-  // Disable side effects during MinMax computation to avoid potential "MinMax
-  // after layout" crashes. This is not necessary during the layout pass, and
-  // would have a negative impact on performance if used there.
-  //
-  // TODO(ikilpatrick): For subgrid, ideally we don't want to disable side
-  // effects as it may impact performance significantly; this issue can be
-  // avoided by introducing additional cache slots (see crbug.com/1272533).
-  //
-  // TODO(almaher): Handle subgrid here.
-  std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
-  if (!node.GetLayoutBox()->NeedsLayout() &&
-      sizing_constraint != SizingConstraint::kLayout) {
-    disable_side_effects.emplace();
-  }
-  return node.Layout(constraint_space);
-}
 
 LayoutUnit AlignContentOffset(
     LayoutUnit intrinsic_size,
@@ -553,8 +528,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     const auto& item_style = item_node.Style();
     const LayoutResult* result =
         is_for_layout ? result = item_node.Layout(space)
-                      : LayoutGridLanesItemForMeasure(grid_lanes_item, space,
-                                                      *sizing_constraint);
+                      : LayoutGridItemForMeasure(grid_lanes_item, space,
+                                                 *sizing_constraint);
 
     const auto& physical_fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
@@ -1264,11 +1239,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
     const MinMaxSizes sizes = min_max_sizes_result.sizes;
     const auto fallback_space = CreateConstraintSpaceForMeasure(
         *grid_lanes_item, /*opt_fixed_inline_size=*/sizes.max_size);
-    return LayoutGridLanesItemForMeasure(*grid_lanes_item, fallback_space,
-                                         sizing_constraint);
+    return LayoutGridItemForMeasure(*grid_lanes_item, fallback_space,
+                                    sizing_constraint);
   }
-  return LayoutGridLanesItemForMeasure(*grid_lanes_item, space_for_measure,
-                                       sizing_constraint);
+  return LayoutGridItemForMeasure(*grid_lanes_item, space_for_measure,
+                                  sizing_constraint);
 }
 
 // TODO(almaher): Eventually look into consolidating repeated code with

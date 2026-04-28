@@ -54,6 +54,13 @@ class BaselineAccumulator {
   virtual std::optional<LayoutUnit> LastBaseline() const = 0;
 };
 
+// Performs a layout of `grid_item` for measurement purposes. Disables layout
+// side effects when appropriate.
+const LayoutResult* LayoutGridItemForMeasure(
+    const GridItemData& grid_item,
+    const ConstraintSpace& constraint_space,
+    SizingConstraint sizing_constraint);
+
 // Update the provided `available_size`, `min_available_size`, and
 // `max_available_size` to their appropriate values.
 void ComputeAvailableSizes(const BoxStrut& border_scrollbar_padding,

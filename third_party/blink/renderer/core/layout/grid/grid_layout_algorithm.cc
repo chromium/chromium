@@ -503,28 +503,6 @@ LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
 
 namespace {
 
-const LayoutResult* LayoutGridItemForMeasure(
-    const GridItemData& grid_item,
-    const ConstraintSpace& constraint_space,
-    SizingConstraint sizing_constraint) {
-  const auto& node = grid_item.node;
-
-  // Disable side effects during MinMax computation to avoid potential "MinMax
-  // after layout" crashes. This is not necessary during the layout pass, and
-  // would have a negative impact on performance if used there.
-  //
-  // TODO(ikilpatrick): For subgrid, ideally we don't want to disable side
-  // effects as it may impact performance significantly; this issue can be
-  // avoided by introducing additional cache slots (see crbug.com/1272533).
-  std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
-  if (!node.GetLayoutBox()->NeedsLayout() &&
-      (sizing_constraint != SizingConstraint::kLayout ||
-       grid_item.is_subgridded_to_parent_grid)) {
-    disable_side_effects.emplace();
-  }
-  return node.Layout(constraint_space);
-}
-
 LayoutUnit Baseline(const GridItemData& grid_item,
                     const GridLayoutData& layout_data,
                     GridTrackSizingDirection track_direction) {
