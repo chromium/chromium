@@ -248,6 +248,7 @@ class GnGenerator(object):
       gn_command.append('--ide=xcode')
       gn_command.append('--ninja-executable=autoninja')
       gn_command.append('--xcode-build-system=new')
+      gn_command.append('--enumerate-files-with-git')
       gn_command.append('--xcode-project=%s' % xcode_project_name)
       gn_command.append('--xcode-additional-files-patterns=' +
                         ';'.join(ADDITIONAL_FILES_PATTERNS))
