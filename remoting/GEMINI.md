@@ -124,7 +124,9 @@ developer.
 *   **MAGI Protocol:** For highly complex, high-stakes, or ambiguous architectural
     problems, suggest invoking the `magi-mode` skill. This triggers a
     multi-agent debate to explore security, performance, and maintainability
-    trade-offs before implementation.
+    trade-offs before implementation. It features an iterative "Rumination Cycle"
+    with dynamic topology routing (Star to Roundtable) and human escalation for
+    deadlocks.
 *   **Batch Commands:** Combine related shell commands using `&&` whenever
     logical. For example, instead of running a build and then asking to run a
     test, combine them:
