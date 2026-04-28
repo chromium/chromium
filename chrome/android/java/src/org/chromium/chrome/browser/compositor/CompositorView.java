@@ -159,14 +159,13 @@ public class CompositorView extends FrameLayout
         }
     }
 
-    private @Nullable ScreenStateReceiverWorkaround mScreenStateReceiver;
+    private ScreenStateReceiverWorkaround mScreenStateReceiver;
 
     /**
      * Creates a {@link CompositorView}. This can be called only after the native library is
      * properly loaded.
-     *
-     * @param c The Context to create this {@link CompositorView} in.
-     * @param host The renderer host owning this view.
+     * @param c        The Context to create this {@link CompositorView} in.
+     * @param host     The renderer host owning this view.
      */
     public CompositorView(Context c, LayoutRenderHost host) {
         super(c);
@@ -624,47 +623,26 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().surfaceCreated(mNativeCompositorView);
     }
 
-    private boolean mInSurfaceDestroyed;
-
-    @Override
     @SuppressWarnings("NewApi")
+    @Override
     public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed) {
-        if (mNativeCompositorView == 0 || mInSurfaceDestroyed) return;
-        mInSurfaceDestroyed = true;
+        if (mNativeCompositorView == 0) return;
 
-        try {
-            // When we switch from Chrome to other app we can't detach child surface controls
-            // because it
-            // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
-            // surface is going to be destroyed, they will be detached and freed by OS.
-            if (androidSurfaceDestroyed) {
-                CompositorViewJni.get().preserveChildSurfaceControls(mNativeCompositorView);
-            }
+        // When we switch from Chrome to other app we can't detach child surface controls because it
+        // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
+        // surface is going to be destroyed, they will be detached and freed by OS.
+        if (androidSurfaceDestroyed) {
+            CompositorViewJni.get().preserveChildSurfaceControls(mNativeCompositorView);
+        }
 
-            CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView);
+        CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView);
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SURFACE_DESTROYED_RECREATES_MANAGER)) {
-                // TODO(yfriedman): Delete the mScreenStateReceiver when rollout completes.
-                if (mScreenStateReceiver != null) {
-                    mScreenStateReceiver.shutDown();
-                    mScreenStateReceiver = null;
-                }
-                if (mCompositorSurfaceManager != null) {
-                    mCompositorSurfaceManager.shutDown();
-                    createCompositorSurfaceManager();
-                }
-            } else {
-                if (mScreenStateReceiver != null) {
-                    mScreenStateReceiver.maybeResetCompositorSurfaceManager();
-                }
-            }
-            if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
-                SurfaceInputTransferHandlerMap.remove(mSurfaceId);
-                mSurfaceId = null;
-            }
-        } finally {
-            mInSurfaceDestroyed = false;
+        if (mScreenStateReceiver != null) {
+            mScreenStateReceiver.maybeResetCompositorSurfaceManager();
+        }
+        if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
+            SurfaceInputTransferHandlerMap.remove(mSurfaceId);
+            mSurfaceId = null;
         }
     }
 
