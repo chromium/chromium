@@ -759,24 +759,22 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         getChildFragmentManager()
                 .addOnBackStackChangedListener(
                         () -> {
-                            mOnBackPressedCallback.updateEnabledState();
-
                             // On some specific devices, FragmentManager's BackStackChangedListener
                             // seems to be called *before* the back stack is updated, specifically
                             // if this is triggered from the system back button and the fragment
                             // manager's back stack will become empty by the event.
                             // Thus, updateEnabledState() above may NOT update the state to the
-                            // expected
-                            // one. As a workaround, post another updateEnabledState, which should
-                            // be
-                            // invoked *after* the back stack is updated, so the "back button"
-                            // in the following pages can work as expected.
+                            // expected one.
+                            // As a workaround, post updateEnabledState with some delay, which
+                            // should invoke the method *after* the back stack is updated so the
+                            // "back button" in the following pages can work as expected.
                             // Unfortunately, this is not perfect solution, as there still is some
                             // short timing that enabled is not properly set, but still provides
                             // better UX. See crbug.com/465040723 for more context.
                             if (getChildFragmentManager().getBackStackEntryCount() == 1) {
                                 getSlidingPaneLayout()
-                                        .post(mOnBackPressedCallback::updateEnabledState);
+                                        .postDelayed(
+                                                mOnBackPressedCallback::updateEnabledState, 100);
                             }
                         });
 
