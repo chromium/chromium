@@ -1649,7 +1649,18 @@ void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
 
 void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
   bool is_key_window = [window_ isKeyWindow];
+
+  // If a request to close the window comes in during the nested loop of
+  // -[NSWindow toggleFullScreen:], `this` may be destroyed when the call
+  // returns (see NativeWidgetNSWindowFullscreenController::
+  // HandleDeferredClose). Use a weak pointer to check for this case.
+  // https://crbug.com/503792787
+  auto weak_ptr = factory_.GetWeakPtr();
   [window_ toggleFullScreen:nil];
+  if (!weak_ptr) {
+    return;
+  }
+
   // Ensure the transitioning window maintains focus.
   // When a key window moves to a different space, AppKit will focus a
   // different window on the previously focused space to become key, which can
