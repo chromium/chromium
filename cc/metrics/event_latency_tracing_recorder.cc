@@ -274,6 +274,13 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
                 event_metrics->trace_id()->value());
           }
 
+          if (const auto* scroll_metrics = event_metrics->AsScroll()) {
+            event_latency->set_scroll_begin_arrival_us(
+                scroll_metrics->scroll_begin_arrival_timestamp()
+                    .since_origin()
+                    .InMicroseconds());
+          }
+
           const ScrollUpdateEventMetrics* scroll_update =
               event_metrics->AsScrollUpdate();
           if (scroll_update &&

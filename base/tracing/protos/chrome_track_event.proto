@@ -1138,6 +1138,24 @@ message EventLatency {
 
   // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
   optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];
+
+  // The timestamp of when the scroll begin event which started the scroll
+  // containing this scroll event arrived in the renderer compositor.
+  //
+  // This value effectively serves as the ID of the scroll that this event
+  // belongs to. For example, if the renderer compositor receives the sequence
+  // of events GSB1, GSU1a, GSU1b, GSE1, GSB2, GSU2a, GSU2b, GSE, then:
+  //
+  //   * `GSB1.scroll_begin_arrival_us`, `GSU1a.scroll_begin_arrival_us`,
+  //     `GSU1b.scroll_begin_arrival_us` and `GSE1.scroll_begin_arrival_us` will
+  //     all be equal to some value T1.
+  //   * `GSB2.scroll_begin_arrival_us`, `GSU2a.scroll_begin_arrival_us`,
+  //     `GSU2b.scroll_begin_arrival_us` and `GSE2.scroll_begin_arrival_us` will
+  //     all be equal to some value T2 such that T2 > T1.
+  //
+  // See `EventMetrics::scroll_begin_arrival_timestamp()` and
+  // `cc::ScrollSequenceTracker` for more details.
+  optional int64 scroll_begin_arrival_us = 11;
 }
 
 message ProcessSingleton {
