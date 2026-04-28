@@ -649,8 +649,4 @@ GlicKeyedService::AddActOnWebCapabilityChangedCallback(
   return actor_policy_checker_->AddActOnWebCapabilityChangedCallback(callback);
 }
 
-GlicActorPolicyChecker& GlicKeyedService::actor_policy_checker() {
-  return *actor_policy_checker_;
-}
-
 }  // namespace glic
