@@ -296,16 +296,13 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
-# TODO(crbug.com/40596525): Remove when either workaround is implemented in cmd decoder,
-# or when angle is used everywhere.
-crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
-crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
-crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
-crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
+# TODO(crbug.com/40593023): Remove when passthrough has shipped everywhere.
+crbug.com/40596525 [ no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
+crbug.com/40596525 [ no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
 
 # TODO(crbug.com/427956856): Remove when issue is diagnosed.
-crbug.com/427956856 [ linux ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
-crbug.com/427956856 [ linux ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
+crbug.com/427956856 [ linux passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
+crbug.com/427956856 [ linux passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
 
 # This test needs to be rewritten to measure its expected
 # performance; it's currently too flaky even on release bots.
