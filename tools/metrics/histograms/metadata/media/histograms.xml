@@ -1629,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Mac.VoiceProcessedInputStreamDetectedWithoutNativeAEC"
-    enum="BooleanDetected" expires_after="2026-04-23">
+    enum="BooleanDetected" expires_after="2027-04-27">
   <owner>brandstrom@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
