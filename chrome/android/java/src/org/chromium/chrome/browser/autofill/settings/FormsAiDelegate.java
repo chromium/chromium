@@ -13,6 +13,9 @@ import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -24,6 +27,8 @@ public class FormsAiDelegate {
     private static final int DEFAULT_SNACKBAR_DURATION = 10000;
 
     private final ChromeBaseSettingsFragment mFragment;
+    private @Nullable EntityEditorCoordinator mEntityEditor;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
             new EntityEditorCoordinator.Delegate() {
                 @Override
@@ -77,6 +82,54 @@ public class FormsAiDelegate {
 
     EntityEditorCoordinator.Delegate getEntityEditorDelegate() {
         return mEntityEditorDelegate;
+    }
+
+    public void onDestroyView() {
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
+            mReauthenticatorBridge = null;
+        }
+    }
+
+    public void onConfigurationChanged() {
+        if (mEntityEditor != null) {
+            mEntityEditor.onConfigurationChanged();
+        }
+    }
+
+    void editEntity(EntityInstance entityInstance) {
+        if (entityInstance.requiresReauthToSee()) {
+            if (mReauthenticatorBridge == null) {
+                mReauthenticatorBridge =
+                        ReauthenticatorBridge.create(
+                                mFragment.getActivity(),
+                                mFragment.getProfile(),
+                                DeviceAuthSource.AUTOFILL);
+            }
+            if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                    != BiometricStatus.UNAVAILABLE) {
+                mReauthenticatorBridge.reauthenticate(
+                        success -> {
+                            if (success) {
+                                showEntityEditor(entityInstance);
+                            }
+                        });
+            } else {
+                showEntityEditor(entityInstance);
+            }
+        } else {
+            showEntityEditor(entityInstance);
+        }
+    }
+
+    void showEntityEditor(EntityInstance entityInstance) {
+        mEntityEditor =
+                new EntityEditorCoordinator(
+                        mFragment.getActivity(),
+                        mEntityEditorDelegate,
+                        mFragment.getProfile(),
+                        entityInstance);
+        mEntityEditor.showEditorDialog();
     }
 
     private void onLocalSaveFallback() {

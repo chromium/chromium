@@ -40,15 +40,11 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
-import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.editors.common.EditorViewBase;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.device_reauth.BiometricStatus;
-import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
-import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -160,8 +156,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             "https://myaccount.google.com/personal-info?utm_source=chrome-settings&utm_medium=autofill";
 
     private @Nullable AddressEditorCoordinator mAddressEditor;
-    private @Nullable EntityEditorCoordinator mEntityEditor;
-    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -195,9 +189,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (mAddressEditor != null) {
             mAddressEditor.onConfigurationChanged();
         }
-        if (mEntityEditor != null) {
-            mEntityEditor.onConfigurationChanged();
-        }
+        mFormsAiDelegate.onConfigurationChanged();
     }
 
     @Override
@@ -411,7 +403,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     Instant nowInstant = Instant.ofEpochMilli(TimeUtils.currentTimeMillis());
                     LocalDate modifiedDate =
                             nowInstant.atZone(ZoneId.systemDefault()).toLocalDate();
-                    showEntityEditor(
+                    mFormsAiDelegate.showEntityEditor(
                             new EntityInstance.Builder(entityType)
                                     .setModifiedDate(modifiedDate)
                                     .setUseCount(0)
@@ -485,7 +477,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             if (entityInstance == null) {
                                 return true;
                             }
-                            editEntity(entityInstance);
+                            mFormsAiDelegate.editEntity(entityInstance);
                             return true;
                         });
                 category.addPreference(pref);
@@ -495,41 +487,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 addAddEntityButton(category, type, !addButtonEnabled);
             }
         }
-    }
-
-    private void editEntity(EntityInstance entityInstance) {
-        if (entityInstance.requiresReauthToSee()) {
-            if (mReauthenticatorBridge == null) {
-                mReauthenticatorBridge =
-                        ReauthenticatorBridge.create(
-                                getActivity(),
-                                getProfile(),
-                                DeviceAuthSource.AUTOFILL);
-            }
-            if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
-                    != BiometricStatus.UNAVAILABLE) {
-                mReauthenticatorBridge.reauthenticate(
-                        success -> {
-                            if (success) {
-                                showEntityEditor(entityInstance);
-                            }
-                        });
-            } else {
-                showEntityEditor(entityInstance);
-            }
-        } else {
-            showEntityEditor(entityInstance);
-        }
-    }
-
-    private void showEntityEditor(EntityInstance entityInstance) {
-        mEntityEditor =
-                new EntityEditorCoordinator(
-                        getActivity(),
-                        mFormsAiDelegate.getEntityEditorDelegate(),
-                        getProfile(),
-                        entityInstance);
-        mEntityEditor.showEditorDialog();
     }
 
     @Override
@@ -563,10 +520,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (entityDataManager != null) {
             entityDataManager.unregisterDataObserver(this);
         }
-        if (mReauthenticatorBridge != null) {
-            mReauthenticatorBridge.destroy();
-            mReauthenticatorBridge = null;
-        }
+        mFormsAiDelegate.onDestroyView();
         super.onDestroyView();
     }
 
