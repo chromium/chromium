@@ -6,9 +6,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "components/record_replay/core/browser/capabilities_database.h"
+#include "components/record_replay/core/browser/parsing_utils.h"
 #include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 
 namespace record_replay {
 
@@ -17,6 +22,7 @@ RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   db_.AsyncCall(&CapabilitiesDatabase::Init).WithArgs(std::move(profile_path));
+  SeedDatabaseIfEmpty();
 }
 
 RecordingDataManagerImpl::~RecordingDataManagerImpl() = default;
@@ -89,6 +95,16 @@ void RecordingDataManagerImpl::DeleteActivityData(
   db_.AsyncCall(&CapabilitiesDatabase::DeleteActivityData)
       .WithArgs(annotation_id)
       .Then(std::move(callback));
+}
+
+void RecordingDataManagerImpl::SeedDatabaseIfEmpty() {
+  std::string seed_json = features::kRecordReplayAnnotationSeed.Get();
+  if (seed_json.empty()) {
+    return;
+  }
+
+  db_.AsyncCall(&CapabilitiesDatabase::MaybeSeedAnnotationsFromJson)
+      .WithArgs(std::move(seed_json));
 }
 
 }  // namespace record_replay

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/record_replay/core/browser/parsing_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -136,6 +137,44 @@ bool CapabilitiesDatabase::CreateActivityAnnotationsTable() {
   return db_.Execute(
       "CREATE INDEX IF NOT EXISTS activity_annotations_url ON "
       "ActivityAnnotations(target_url)");
+}
+
+bool CapabilitiesDatabase::IsActivityAnnotationsTableEmpty() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT EXISTS(SELECT 1 FROM ActivityAnnotations)";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  return statement.Step() && statement.ColumnInt(0) == 0;
+}
+
+void CapabilitiesDatabase::MaybeSeedAnnotationsFromJson(
+    const std::string& json_string) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsActivityAnnotationsTableEmpty()) {
+    return;
+  }
+
+  std::vector<base::Value> values = ParseJSONListOfDicts(json_string);
+  for (const auto& item : values) {
+    if (!item.is_dict()) {
+      continue;
+    }
+    const auto& dict = item.GetDict();
+    const std::string* url = dict.FindString("url");
+    const std::string* title = dict.FindString("title");
+    const std::string* instructions = dict.FindString("instructions");
+
+    if (url && title && instructions) {
+      ActivityAnnotation annotation;
+      annotation.set_url(*url);
+      annotation.set_title(*title);
+      annotation.set_description(*instructions);
+
+      SaveActivityAnnotation(std::nullopt, std::move(annotation), *url,
+                             std::nullopt);
+    }
+  }
 }
 
 bool CapabilitiesDatabase::CreateActivityDataTable() {

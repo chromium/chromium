@@ -46,6 +46,12 @@ class CapabilitiesDatabase {
                               std::string target_url,
                               std::optional<int64_t> recording_id);
 
+  // Checks if the "ActivityAnnotations" table is empty.
+  bool IsActivityAnnotationsTableEmpty();
+
+  // Reads JSON and seeds the database if empty.
+  void MaybeSeedAnnotationsFromJson(const std::string& json_string);
+
   // Retrieves the annotation for a given ID, if it exists.
   std::optional<ActivityAnnotation> GetActivityAnnotation(
       int64_t annotation_id);

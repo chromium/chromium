@@ -11,4 +11,9 @@ namespace record_replay::features {
 // Enables the record & replay feature in its most basic form.
 BASE_FEATURE(kRecordReplayBase, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(std::string,
+                   kRecordReplayAnnotationSeed,
+                   &kRecordReplayBase,
+                   "");
+
 }  // namespace record_replay::features

@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/record_replay/core/browser/parsing_utils.h"
 
 namespace record_replay {
 
@@ -58,39 +59,34 @@ void FileActivityProvider::ShouldOfferActivity(
 void FileActivityProvider::OnFileLoaded(
     std::optional<std::string> file_content) {
   if (!file_content) {
-    OnJsonParsed(std::nullopt);
+    OnJsonParsed({});
     return;
   }
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(*file_content, base::JSON_PARSE_RFC);
-  OnJsonParsed(std::move(value));
+  std::vector<base::Value> values = ParseJSONListOfDicts(*file_content);
+  OnJsonParsed(std::move(values));
 }
 
-void FileActivityProvider::OnJsonParsed(std::optional<base::Value> value) {
+void FileActivityProvider::OnJsonParsed(std::vector<base::Value> values) {
   is_ready_ = true;
 
-  if (value && value->is_list()) {
-    for (const auto& item : value->GetList()) {
-      if (!item.is_dict()) {
-        continue;
-      }
-      const base::DictValue& dict = item.GetDict();
+  for (const auto& item : values) {
+    if (!item.is_dict()) {
+      continue;
+    }
+    const auto& dict = item.GetDict();
+    const std::string* url_str = dict.FindString("url");
+    const std::string* title = dict.FindString("title");
+    const std::string* instructions = dict.FindString("instructions");
+    const std::string* anchored_message = dict.FindString("anchored_message");
 
-      const std::string* url_str = dict.FindString("url");
-      const std::string* title = dict.FindString("title");
-      const std::string* instructions = dict.FindString("instructions");
-      const std::string* anchored_message = dict.FindString("anchored_message");
-
-      if (url_str && title && instructions && anchored_message) {
-        GURL url(*url_str);
-        if (url.is_valid()) {
-          metadata_map_.emplace(url,
-                                ActivityDiscoveryService::AutomationMetadata{
-                                    .title = *title,
-                                    .instructions = *instructions,
-                                    .anchored_message = *anchored_message});
-        }
+    if (url_str && title && instructions && anchored_message) {
+      GURL url(*url_str);
+      if (url.is_valid()) {
+        metadata_map_.emplace(url, ActivityDiscoveryService::AutomationMetadata{
+                                       .title = *title,
+                                       .instructions = *instructions,
+                                       .anchored_message = *anchored_message});
       }
     }
   }

@@ -61,7 +61,12 @@ class RecordingDataManagerImpl : public RecordingDataManager {
                           base::OnceCallback<void(bool)> callback) override;
 
  private:
+  // Reads the feature parameter and seeds the database if empty.
+  void SeedDatabaseIfEmpty();
+
   base::SequenceBound<CapabilitiesDatabase> db_;
+
+  base::WeakPtrFactory<RecordingDataManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay

@@ -28,7 +28,7 @@ class FileActivityProvider : public ActivityProvider {
 
  private:
   void OnFileLoaded(std::optional<std::string> file_content);
-  void OnJsonParsed(std::optional<base::Value> value);
+  void OnJsonParsed(std::vector<base::Value> values);
   std::optional<ActivityDiscoveryService::AutomationMetadata> GetMetadata(
       const GURL& url) const;
 

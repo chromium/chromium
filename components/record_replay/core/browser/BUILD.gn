@@ -16,6 +16,8 @@ static_library("browser") {
     "capabilities_database.h",
     "file_activity_provider.cc",
     "file_activity_provider.h",
+    "parsing_utils.cc",
+    "parsing_utils.h",
     "record_replay_client.cc",
     "record_replay_client.h",
     "record_replay_driver.h",
