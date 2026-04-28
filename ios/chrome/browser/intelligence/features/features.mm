@@ -640,20 +640,16 @@ int GetModelBasedPageClassificationExecutionRate() {
   return kModelBasedPageClassificationExecutionRateFeatureParam.Get();
 }
 
-BASE_FEATURE(kPageActionMenuIcon, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageActionMenuIcon, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPageActionMenuIconParams[] = "PageActionMenuIconParams";
 
 PageActionMenuIconVariations GetPageActionMenuIcon() {
-  int param = base::GetFieldTrialParamByFeatureAsInt(
-      kPageActionMenuIcon, kPageActionMenuIconParams, 0);
-  if (param == 1) {
-    return PageActionMenuIconVariations::kSparkles1;
-  }
-  if (param == 2) {
+  if (@available(iOS 26, *)) {
     return PageActionMenuIconVariations::kSparkles2;
+  } else {
+    return PageActionMenuIconVariations::kDefault;
   }
-  return PageActionMenuIconVariations::kDefault;
 }
 
 BASE_FEATURE(kGeminiBackendMigration, base::FEATURE_DISABLED_BY_DEFAULT);
