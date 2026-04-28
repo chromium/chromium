@@ -97,6 +97,7 @@ source_set("litert_headers") {
   public = [
     "src/litert/c/internal/litert_accelerator.h",
     "src/litert/c/internal/litert_accelerator_registration.h",
+    "src/litert/c/internal/litert_compiler_context.h",
     "src/litert/c/internal/litert_delegate_wrapper.h",
     "src/litert/c/internal/litert_external_litert_buffer_context.h",
     "src/litert/c/internal/litert_logging.h",
@@ -247,6 +248,7 @@ static_library("litert_c") {
   sources = [
     "src/litert/c/internal/litert_accelerator.cc",
     "src/litert/c/internal/litert_accelerator_registration.cc",
+    "src/litert/c/internal/litert_compiler_context.cc",
     "src/litert/c/internal/litert_delegate_wrapper.cc",
     "src/litert/c/internal/litert_external_litert_buffer_context.cc",
     "src/litert/c/internal/litert_logging.cc",

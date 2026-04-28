@@ -52,6 +52,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_chromium) {
     xnnpack_deps = [
       ":bf16-f32-vcvt_x64",
+      ":bf16-qs8-vcvt_x64",
       ":bf16-rminmax_x64",
       ":configs_x64",
       ":enums_x64",
@@ -586,6 +587,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_internal_optimization_guide) {
     xnnpack_standalone_deps = [
       ":bf16-f32-vcvt_x64_standalone",
+      ":bf16-qs8-vcvt_x64_standalone",
       ":bf16-rminmax_x64_standalone",
       ":configs_x64_standalone",
       ":enums_x64_standalone",
@@ -1120,6 +1122,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_chromium) {
     xnnpack_deps = [
       ":bf16-f32-vcvt_arm64",
+      ":bf16-qs8-vcvt_arm64",
       ":bf16-rminmax_arm64",
       ":configs_arm64",
       ":enums_arm64",
@@ -1354,6 +1357,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_internal_optimization_guide) {
     xnnpack_standalone_deps = [
       ":bf16-f32-vcvt_arm64_standalone",
+      ":bf16-qs8-vcvt_arm64_standalone",
       ":bf16-rminmax_arm64_standalone",
       ":configs_arm64_standalone",
       ":enums_arm64_standalone",
@@ -1588,6 +1592,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_chromium) {
     xnnpack_deps = [
       ":bf16-f32-vcvt_riscv64",
+      ":bf16-qs8-vcvt_riscv64",
       ":bf16-rminmax_riscv64",
       ":configs_riscv64",
       ":enums_riscv64",
@@ -1810,6 +1815,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   if (build_with_internal_optimization_guide) {
     xnnpack_standalone_deps = [
       ":bf16-f32-vcvt_riscv64_standalone",
+      ":bf16-qs8-vcvt_riscv64_standalone",
       ":bf16-rminmax_riscv64_standalone",
       ":configs_riscv64_standalone",
       ":enums_riscv64_standalone",
@@ -2168,6 +2174,61 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/bf16-f32-vcvt/gen/bf16-f32-vcvt-scalar-u2.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
+    source_set("bf16-qs8-vcvt_x64") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("bf16-qs8-vcvt_x64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -35965,13 +36026,71 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
+    source_set("bf16-qs8-vcvt_arm64") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("bf16-qs8-vcvt_arm64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
     source_set("bf16-rminmax_arm64") {
       cflags = []
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/bf16-rminmax/gen/bf16-rmax-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c",
+        "src/src/bf16-rminmax/gen/bf16-rmin-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c",
+        "src/src/bf16-rminmax/gen/bf16-rminmax-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c",
       ]
 
@@ -35998,8 +36117,11 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/bf16-rminmax/gen/bf16-rmax-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c",
+        "src/src/bf16-rminmax/gen/bf16-rmin-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c",
+        "src/src/bf16-rminmax/gen/bf16-rminmax-neon-u32-acc4.c",
         "src/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c",
       ]
 
@@ -49867,6 +49989,61 @@ if (current_cpu == "riscv64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/bf16-f32-vcvt/gen/bf16-f32-vcvt-scalar-u2.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
+    source_set("bf16-qs8-vcvt_riscv64") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("bf16-qs8-vcvt_riscv64_standalone") {
+      cflags = []
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
