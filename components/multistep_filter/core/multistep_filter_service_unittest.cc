@@ -39,11 +39,15 @@ class MockFilterExtractor : public FilterExtractor {
  public:
   MockFilterExtractor(AnnotationIndexClient& annotation_index_client,
                       FilterStore& filter_store)
-      : FilterExtractor(annotation_index_client, filter_store) {}
+      : FilterExtractor(annotation_index_client,
+                        filter_store,
+                        /*log_router=*/nullptr) {}
   MOCK_METHOD(void,
               ExtractAnnotationFromUrl,
               (const GURL& url,
-               base::OnceCallback<void(std::optional<base::Uuid>)> callback),
+               base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+               int64_t navigation_id,
+               std::string_view domain),
               (override));
 };
 
@@ -51,12 +55,16 @@ class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
  public:
   MockFilterSuggestionGenerator(AnnotationIndexClient& annotation_index_client,
                                 FilterStore& filter_store)
-      : FilterSuggestionGenerator(annotation_index_client, filter_store) {}
+      : FilterSuggestionGenerator(annotation_index_client,
+                                  filter_store,
+                                  /*log_router=*/nullptr) {}
   MOCK_METHOD(
       void,
       GenerateSuggestion,
       (const GURL& url,
-       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
+       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+       int64_t navigation_id,
+       std::string_view domain),
       (override));
 };
 
@@ -132,7 +140,8 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
   const GURL kUrl("http://example.com");
   base::Uuid mock_uuid = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(kUrl, _))
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(
+                                    kUrl, _, kTestNavigationId, "example.com"))
       .WillOnce(base::test::RunOnceCallback<1>(mock_uuid));
 
   EXPECT_CALL(*mock_observer_,
@@ -190,7 +199,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
   UrlFilterSuggestion mock_suggestion(kUrl, u"example.com", base::Time::Now(),
                                       {});
 
-  EXPECT_CALL(*mock_generator_, GenerateSuggestion(kUrl, _))
+  EXPECT_CALL(*mock_generator_,
+              GenerateSuggestion(kUrl, _, kTestNavigationId, "example.com"))
       .WillOnce(base::test::RunOnceCallback<1>(mock_suggestion));
 
   EXPECT_CALL(*mock_observer_,

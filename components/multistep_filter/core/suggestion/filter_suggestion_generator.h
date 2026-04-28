@@ -7,10 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
@@ -20,6 +22,7 @@ namespace multistep_filter {
 
 class AnnotationIndexClient;
 class FilterStore;
+class MultistepFilterLogRouter;
 struct FilterAnnotation;
 struct FilterSuggestionCandidate;
 
@@ -29,7 +32,8 @@ struct FilterSuggestionCandidate;
 class FilterSuggestionGenerator {
  public:
   FilterSuggestionGenerator(AnnotationIndexClient& annotation_index_client,
-                            FilterStore& filter_store);
+                            FilterStore& filter_store,
+                            MultistepFilterLogRouter* log_router);
   virtual ~FilterSuggestionGenerator();
 
   FilterSuggestionGenerator(const FilterSuggestionGenerator&) = delete;
@@ -54,7 +58,9 @@ class FilterSuggestionGenerator {
   //    std::nullopt otherwise.
   virtual void GenerateSuggestion(
       const GURL& url,
-      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      int64_t navigation_id,
+      std::string_view domain);
 
  private:
   // See documentation of `GenerateSuggestion()` for more details.
@@ -63,18 +69,24 @@ class FilterSuggestionGenerator {
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
           success_callback,
       base::ScopedClosureRunner failure_callback,
+      int64_t navigation_id,
+      std::string_view domain,
       std::optional<std::vector<std::string>> supported_task_types);
   void OnAllAnnotationsFetched(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
           success_callback,
       base::ScopedClosureRunner failure_callback,
+      int64_t navigation_id,
+      std::string_view domain,
       std::vector<std::vector<FilterAnnotation>> filter_annotations);
   void OnFilterSuggestionCandidatesFetched(
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
           success_callback,
       base::ScopedClosureRunner failure_callback,
       std::vector<FilterAnnotation> annotations,
+      int64_t navigation_id,
+      std::string_view domain,
       std::optional<std::vector<FilterSuggestionCandidate>> candidates);
 
   // The client used to fetch supported task types and URL filter suggestions.
@@ -88,6 +100,9 @@ class FilterSuggestionGenerator {
   // `MultistepFilterService` instance that owns this
   // `FilterSuggestionGenerator`.
   const base::raw_ref<FilterStore> filter_store_;
+
+  // Log router for the internals page.
+  const raw_ptr<MultistepFilterLogRouter> log_router_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

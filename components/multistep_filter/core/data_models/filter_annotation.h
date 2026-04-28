@@ -36,6 +36,8 @@ struct FilterAttribute {
 
   ~FilterAttribute() = default;
 
+  std::string ToString() const;
+
   friend bool operator==(const FilterAttribute&,
                          const FilterAttribute&) = default;
   friend auto operator<=>(const FilterAttribute&,
@@ -69,6 +71,8 @@ struct FilterAnnotation {
   FilterAnnotation& operator=(FilterAnnotation&&);
 
   ~FilterAnnotation();
+
+  std::string ToString() const;
 
   friend bool operator==(const FilterAnnotation&, const FilterAnnotation&);
   friend auto operator<=>(const FilterAnnotation&, const FilterAnnotation&);

@@ -6,8 +6,10 @@
 #define COMPONENTS_MULTISTEP_FILTER_CORE_EXTRACTION_FILTER_EXTRACTOR_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
@@ -17,6 +19,7 @@ namespace multistep_filter {
 
 class AnnotationIndexClient;
 class FilterStore;
+class MultistepFilterLogRouter;
 struct FilterAnnotation;
 
 // Responsible for extracting `FilterAnnotation`s from URLs and storing them.
@@ -24,7 +27,8 @@ struct FilterAnnotation;
 class FilterExtractor {
  public:
   FilterExtractor(AnnotationIndexClient& annotation_index_client,
-                  FilterStore& filter_store);
+                  FilterStore& filter_store,
+                  MultistepFilterLogRouter* log_router);
 
   FilterExtractor(const FilterExtractor&) = delete;
   FilterExtractor& operator=(const FilterExtractor&) = delete;
@@ -47,16 +51,22 @@ class FilterExtractor {
   //    otherwise.
   virtual void ExtractAnnotationFromUrl(
       const GURL& url,
-      base::OnceCallback<void(std::optional<base::Uuid>)> callback);
+      base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+      int64_t navigation_id,
+      std::string_view domain);
 
  private:
   // See documentation of `ExtractAnnotationFromUrl()` for more details.
   void OnAnnotationExtracted(
       base::OnceCallback<void(std::optional<base::Uuid>)> callback,
+      int64_t navigation_id,
+      std::string_view domain,
       std::optional<FilterAnnotation> annotation);
   void OnAnnotationStored(
       base::OnceCallback<void(std::optional<base::Uuid>)> callback,
-      base::Uuid id,
+      base::Uuid annotation_id,
+      int64_t navigation_id,
+      std::string_view domain,
       bool success);
 
   // The client used to extract annotations from URLs. This is a non-owning
@@ -69,6 +79,9 @@ class FilterExtractor {
   // reference. The lifetime of the `FilterStore` object is managed by the
   // `MultistepFilterService` instance that owns this `FilterExtractor`.
   const base::raw_ref<FilterStore> filter_store_;
+
+  // Log router for the internals page.
+  const raw_ptr<MultistepFilterLogRouter> log_router_;
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.

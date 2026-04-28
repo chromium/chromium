@@ -74,14 +74,10 @@ class MultistepFilterService : public KeyedService {
   friend class MultistepFilterServiceTestApi;
 
   // Callback for when an annotation is extracted.
-  void OnExtractionFinished(int64_t navigation_id,
-                            const GURL& url,
-                            std::optional<base::Uuid> annotation_id);
+  void OnExtractionFinished(std::optional<base::Uuid> annotation_id);
 
   // Callback for when a suggestion is generated.
   void OnSuggestionGenerated(
-      int64_t navigation_id,
-      const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       std::optional<UrlFilterSuggestion> suggestion);
 

@@ -4,6 +4,7 @@
 
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -54,6 +55,26 @@ TEST(FilterAnnotationTest, FilterAnnotation_Constructor_InvalidAttributes) {
       FilterAnnotation(TestUuid(), "", kSourceDomain, kCreationTimestamp, {}));
   EXPECT_DCHECK_DEATH(
       FilterAnnotation(TestUuid(), kTaskType, "", kCreationTimestamp, {}));
+}
+
+TEST(FilterAnnotationTest, FilterAttribute_ToString) {
+  FilterAttribute attr(kKey1, kValue1);
+  EXPECT_EQ(attr.ToString(), "FilterAttribute(key=key1, value=value1)");
+}
+
+TEST(FilterAnnotationTest, FilterAnnotation_ToString) {
+  FilterAttribute attr(kKey1, kValue1);
+  FilterAnnotation annotation(TestUuid(), kTaskType, kSourceDomain,
+                              kCreationTimestamp, {attr});
+
+  std::string expected =
+      "FilterAnnotation(id=00000000-0000-0000-0000-000000000000, "
+      "task_type=task_type1, source_domain=domain1.com, "
+      "creation_timestamp=" +
+      base::NumberToString(
+          kCreationTimestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
+      ", attributes=[FilterAttribute(key=key1, value=value1)])";
+  EXPECT_EQ(annotation.ToString(), expected);
 }
 
 }  // namespace

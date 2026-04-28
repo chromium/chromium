@@ -11,6 +11,7 @@ source_set("suggestion") {
     "//components/multistep_filter/core:features",
     "//components/multistep_filter/core:util",
     "//components/multistep_filter/core/annotation_index",
+    "//components/multistep_filter/core/logging",
     "//components/multistep_filter/core/storage",
   ]
   public_deps = [

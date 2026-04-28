@@ -4,6 +4,9 @@
 
 #include "components/multistep_filter/core/data_models/filter_annotation.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace multistep_filter {
@@ -37,5 +40,22 @@ FilterAnnotation::~FilterAnnotation() = default;
 
 bool operator==(const FilterAnnotation&, const FilterAnnotation&) = default;
 auto operator<=>(const FilterAnnotation&, const FilterAnnotation&) = default;
+
+std::string FilterAttribute::ToString() const {
+  return base::StrCat({"FilterAttribute(key=", key, ", value=", value, ")"});
+}
+
+std::string FilterAnnotation::ToString() const {
+  std::vector<std::string> attribute_strings;
+  for (const FilterAttribute& attr : attributes) {
+    attribute_strings.push_back(attr.ToString());
+  }
+  return base::StrCat(
+      {"FilterAnnotation(id=", id.AsLowercaseString(), ", task_type=",
+       task_type, ", source_domain=", source_domain, ", creation_timestamp=",
+       base::NumberToString(
+           creation_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()),
+       ", attributes=[", base::JoinString(attribute_strings, ", "), "])"});
+}
 
 }  // namespace multistep_filter
