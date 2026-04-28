@@ -349,6 +349,11 @@ inline constexpr base::FeatureParam<bool> kCCTNavigationalPrefetchHoldback(
     "holdback",
     false);
 
+inline constexpr base::FeatureParam<bool>
+    kEnableAndroidSidePanelDisableAnimations(&kEnableAndroidSidePanel,
+                                             "disable_animations",
+                                             false);
+
 // If it does not support PERCEPTIBLE importance (e.g. Android Q- does not
 // support not-perceptible binding), protected tabs have MODERATE importance as
 // fallback.

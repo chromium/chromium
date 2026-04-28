@@ -2778,6 +2778,16 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
     {flag_descriptions::kWebOtpBackendAuto, switches::kWebOtpBackend,
      switches::kWebOtpBackendAuto},
 };
+
+const FeatureEntry::FeatureParam kEnableAndroidSidePanel_Enabled[] = {
+    {"disable_animations", "false"}};
+const FeatureEntry::FeatureParam kEnableAndroidSidePanel_NoAnimations[] = {
+    {"disable_animations", "true"}};
+
+const FeatureEntry::FeatureVariation kEnableAndroidSidePanelVariations[] = {
+    {"Enabled", kEnableAndroidSidePanel_Enabled, nullptr},
+    {"Enabled without animations", kEnableAndroidSidePanel_NoAnimations,
+     nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The choices for the Send Tab To Self enhanced handoff experiment.
@@ -12604,7 +12614,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-android-side-panel",
      flag_descriptions::kEnableAndroidSidePanelName,
      flag_descriptions::kEnableAndroidSidePanelDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSidePanel)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEnableAndroidSidePanel,
+                                    kEnableAndroidSidePanelVariations,
+                                    "EnableAndroidSidePanel")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

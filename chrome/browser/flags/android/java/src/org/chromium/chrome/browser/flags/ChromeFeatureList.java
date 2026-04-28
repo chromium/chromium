@@ -1743,6 +1743,9 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sEdgeToEdgeTabletMinWidthThreshold =
             newIntCachedFeatureParam(EDGE_TO_EDGE_TABLET, "e2e_tablet_width_threshold", -1);
 
+    public static final BooleanCachedFeatureParam sEnableAndroidSidePanelDisableAnimations =
+            newBooleanCachedFeatureParam(ENABLE_ANDROID_SIDE_PANEL, "disable_animations", false);
+
     public static final IntCachedFeatureParam sGestureUserEducationPageDelay =
             newIntCachedFeatureParam(
                     GESTURE_USER_EDUCATION_BACK_SWIPE, "gesture-user-education-page-delay", 4000);
@@ -1900,6 +1903,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeUseBackupNavbarInsetsOemList,
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,
+                    sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
                     sInitFeatureListEarly,
                     sLockTopControlsForceAdjustHeightOnStartup,
