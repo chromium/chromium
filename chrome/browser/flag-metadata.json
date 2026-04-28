@@ -2999,7 +2999,6 @@
   {
     "name": "enable-brightness-control-in-settings",
     "owners": [
-      "cambickel@google.com",
       "longbowei@google.com",
       "cros-device-enablement@google.com"
     ],
@@ -4122,8 +4121,7 @@
   {
     "name": "enable-toggle-camera-shortcut",
     "owners": [
-      "cambickel@google.com",
-      "dpad@google.com",
+      "longbowei@google.com",
       "cros-device-enablement@google.com"
     ],
     "expiry_milestone": 160

@@ -318,7 +318,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled"
     enum="BooleanToggled" expires_after="2026-12-01">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records each time a user toggles the auto-brightness setting via the
@@ -328,7 +328,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted"
     units="%" expires_after="2026-09-15">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records each time a user changes the screen brightness for an internal

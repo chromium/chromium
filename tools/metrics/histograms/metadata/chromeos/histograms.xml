@@ -1485,7 +1485,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.Display.Startup.AmbientLightSensorEnabled"
     enum="BooleanEnabled" expires_after="2026-12-31">
   <owner>longbowei@google.com</owner>
-  <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Record the status of the display ambient light sensor at startup. Fires when
@@ -1496,7 +1495,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram
     name="ChromeOS.Display.TimeUntilFirstBrightnessChange.{Time}.{BrightnessAction}Brightness.{PowerSource}Power"
     units="ms" expires_after="2026-09-27">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     When a user {BrightnessAction} the brightness of the internal display for
@@ -1549,7 +1548,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram
     name="ChromeOS.FirmwareUpdateUi.InstallFailedWithDurationAfterRequest.RequestId{DeviceRequestId}"
     units="ms" expires_after="2027-01-28">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1563,7 +1562,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus"
     enum="FirmwareUpdateFwupdStatus" expires_after="2027-01-28">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1574,7 +1573,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.FirmwareUpdateUi.RequestReceived.Kind{Kind}"
     enum="FirmwareUpdateDeviceRequestID" expires_after="2027-01-28">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -1593,7 +1592,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram
     name="ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration.RequestId{DeviceRequestId}"
     units="ms" expires_after="2027-01-28">
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -2165,7 +2164,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.NumberOfTopRowKeys"
     units="keys" expires_after="2026-10-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of top-row keys on a user's internal keyboard, if their
@@ -2177,7 +2176,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Inputs.InternalKeyboard.CustomTopRowLayout.TopRowKeysPresent"
     enum="KeyboardTopRowActionKeys" expires_after="2026-10-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>cambickel@google.com</owner>
+  <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the specific keys present on a user's internal keyboard, if their

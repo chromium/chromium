@@ -29,7 +29,7 @@ items:
     launcher/search key to change the behavior of function keys".
   value: null
 owners:
-- cambickel@google.com
+- longbowei@google.com
 - cros-device-enablement@google.com
 schema:
   type: boolean
