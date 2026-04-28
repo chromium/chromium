@@ -12,8 +12,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "crypto/hpke.h"
+#include "crypto/keypair.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace syncer {
 
@@ -64,7 +65,7 @@ class CrossUserSharingPublicPrivateKeyPair {
  private:
   CrossUserSharingPublicPrivateKeyPair();
 
-  bssl::ScopedEVP_HPKE_KEY key_;
+  crypto::keypair::PrivateKey key_;
 };
 
 }  // namespace syncer
