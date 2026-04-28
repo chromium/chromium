@@ -8226,6 +8226,24 @@
             ]
         }
     ],
+    "DeferredTabGridInit": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260427",
+                    "params": {
+                        "mode": "1"
+                    },
+                    "enable_features": [
+                        "TabGridSetupMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayMainJobStudy": [
         {
             "platforms": [
