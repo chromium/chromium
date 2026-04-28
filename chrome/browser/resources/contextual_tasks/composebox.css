@@ -269,6 +269,16 @@
   --cr-icon-button-size: var(--icon-menu-button-size);
 }
 
+:host([energy-effect-enabled_]) #composebox::part(context-menu-entrypoint-icon),
+:host([energy-effect-enabled_]) #composebox::part(entrypoint-button) {
+  --cr-composebox-entrypoint-background-color:
+      var(--color-composebox-context-entrypoint-background);
+  --cr-composebox-entrypoint-border-radius: 100px;
+  --cr-composebox-entrypoint-height: 36px;
+  --cr-composebox-entrypoint-width: 48px;
+  --cr-icon-button-margin-start: 8px;
+}
+
 /* Controls cancel and submit buttons. */
 #composebox::part(action-icon) {
   --cr-icon-button-hover-background-color: var(--color-composebox-hover);
@@ -358,6 +368,11 @@
   inset-inline-start: auto;
   position: absolute;
   top: auto;
+}
+
+:host([energy-effect-enabled_]) #composebox::part(submit-icon),
+:host([energy-effect-enabled_]) #composebox::part(submit-overlay) {
+  bottom: 0;
 }
 
 #composebox:not([submit-enabled])::part(submit) {

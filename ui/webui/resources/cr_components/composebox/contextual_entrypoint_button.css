@@ -229,12 +229,22 @@ cr-button#entrypoint:focus {
   --cr-button-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--cr-icon-button-hover-background-color);
+  --cr-icon-button-height: var(
+      --cr-composebox-entrypoint-height, var(--cr-icon-button-size));
   --cr-icon-button-margin-start: 6px;
+  --cr-icon-button-width: var(
+      --cr-composebox-entrypoint-width, var(--cr-icon-button-size));
   --icon-block-padding-small: 10px;
   border: initial;
+  border-radius: var(--cr-composebox-entrypoint-border-radius, 50%);
   gap: 4px;
   position: relative;
   z-index: 5;
+}
+
+#entrypoint:not(:hover) {
+  background-color:
+      var(--cr-composebox-entrypoint-background-color, transparent);
 }
 
 :host([has-popup-focus]) #entrypoint {
