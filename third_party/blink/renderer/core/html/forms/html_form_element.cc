@@ -747,6 +747,13 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
 
 void HTMLFormElement::submitFromJavaScript() {
   ScheduleFormSubmission(nullptr, nullptr);
+
+  // If a WebMCP tool is running, resolving it here handles the case where
+  // the site manually called form.submit() from inside a submit handler.
+  if (active_webmcp_tool_ && active_webmcp_tool_->CurrentlyRunning()) {
+    CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+    active_webmcp_tool_->CallDoneCallback(base::ok(String()));
+  }
 }
 
 void HTMLFormElement::requestSubmit(ExceptionState& exception_state) {
