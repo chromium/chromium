@@ -128,6 +128,15 @@ class GlicShareImageHandler : public content::WebContentsObserver,
   void OnPastePolicyCheckComplete(
       std::optional<content::ClipboardPasteData> data);
 
+  // Waits for the user to consent to the onboarding flow.
+  void WaitForOnboardingCompletion();
+
+  // Called, eg, when the user finishes onboarding.
+  void OnOnboardingStatusChanged();
+
+  // Called when we timeout waiting for onboarding completion.
+  void OnOnboardingTimeout();
+
   raw_ref<GlicKeyedService> service_;  // owns this
 
   bool is_share_in_progress_ = false;
@@ -156,6 +165,9 @@ class GlicShareImageHandler : public content::WebContentsObserver,
   // This is used for communicating with the renderer to capture image context.
   std::unique_ptr<mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>>
       chrome_render_frame_remote_;
+
+  base::OneShotTimer onboarding_timeout_timer_;
+  base::CallbackListSubscription onboarding_subscription_;
 
   base::WeakPtrFactory<GlicShareImageHandler> weak_ptr_factory_{this};
 };

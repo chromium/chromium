@@ -1292,34 +1292,24 @@ class GlicInteractiveContextMenuTestBase
 };
 
 class GlicInteractiveContextMenuTest
-    : public GlicInteractiveContextMenuTestBase,
-      public ::testing::WithParamInterface<bool> {
+    : public GlicInteractiveContextMenuTestBase {
  public:
   GlicInteractiveContextMenuTest() {
-    if (UseMultiInstance()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
-                                features::kGlicMultitabUnderlines},
-          /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
-          /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize});
-    }
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
+                              features::kGlicMultitabUnderlines},
+        /*disabled_features=*/{features::kGlicWarming,
+                               blink::features::kSvgFallBackToContainerSize});
     // Ensure that we open the FRE.
     glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
   }
   ~GlicInteractiveContextMenuTest() override = default;
 
-  bool UseMultiInstance() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuTest, GlicShareImage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
@@ -1336,11 +1326,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
       WaitForAdditionalContext(), CheckHistograms());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
-  if (!UseMultiInstance()) {
-    GTEST_SKIP()
-        << " creating a new instance is only meaningful for multi-instance";
-  }
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuTest, CreateNewInstance) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
@@ -1362,12 +1348,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
       WaitForAdditionalContext(), CheckCachedInstance(), CheckHistograms());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuTest,
                        CreateNewInstanceDetached) {
-  if (!UseMultiInstance()) {
-    GTEST_SKIP()
-        << " creating a new instance is only meaningful for multi-instance";
-  }
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
@@ -1394,7 +1376,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
       WaitForAdditionalContext(), CheckCachedInstance(), CheckHistograms());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuTest,
                        GlicShareImageFailsOnNoImage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
@@ -1409,11 +1391,6 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
       CheckToastIsShowing(ToastId::kGlicShareImageFailed),
       WaitForShareResult(glic::ShareImageResult::kFailedNoImage));
 }
-
-INSTANTIATE_TEST_SUITE_P(MultiInstance,
-                         GlicInteractiveContextMenuTest,
-                         // This parameter toggles multi-instance mode.
-                         testing::Bool());
 
 class GlicTrustFirstOnboardingContextMenuTest
     : public GlicInteractiveContextMenuTestBase {
@@ -1492,6 +1469,11 @@ class GlicInteractiveContextMenuPolicyTest
         SetObserverForTesting(this);
   }
 
+  static base::RepeatingClosure& GetPastePolicyCallbackHook() {
+    static base::NoDestructor<base::RepeatingClosure> hook;
+    return *hook;
+  }
+
   void SetUpOnMainThread() override {
     GlicInteractiveContextMenuTest::SetUpOnMainThread();
 
@@ -1514,6 +1496,9 @@ class GlicInteractiveContextMenuPolicyTest
             &ClipboardTestContentAnalysisDelegate::Create, base::DoNothing(),
             base::BindRepeating([](const std::string& contents,
                                    const base::FilePath& path) {
+              if (GetPastePolicyCallbackHook()) {
+                GetPastePolicyCallbackHook().Run();
+              }
               bool success = false;
               if (contents.size() > kPatternSize) {
                 std::string pattern = base::Base64Encode(contents.substr(
@@ -1588,7 +1573,7 @@ class GlicInteractiveContextMenuPolicyTest
   bool content_analysis_dialog_shown_ = false;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnCopyDenied) {
   // Taken from DataProtectionClipboardBrowserTest in clipboard_browsertest.cc.
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -1616,7 +1601,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardCopyPolicy));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnPasteDenied) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
@@ -1633,7 +1618,7 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       WaitForContentAnalysisDialog());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnPasteAllowed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const GURL url = embedded_test_server()->GetURL(kPageWithAllowedImage);
@@ -1649,7 +1634,35 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
+IN_PROC_BROWSER_TEST_F(
+    GlicInteractiveContextMenuPolicyTest,
+    GlicShareImageSucceedsOnNavigationAfterPastePolicyCheck) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  const GURL url = embedded_test_server()->GetURL(kPageWithAllowedImage);
+  const DeepQuery kPathToImg{"img:nth-of-type(3)"};
+  const GURL new_url = embedded_test_server()->GetURL("/empty.html");
+
+  static bool reached = false;
+  reached = false;
+
+  GetPastePolicyCallbackHook() =
+      base::BindRepeating([](bool* flag) { *flag = true; }, &reached);
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab, std::nullopt, browser(), true),
+      NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      PollUntil([]() { return reached; }, "waiting for hook"),
+      NavigateWebContents(kActiveTab, new_url), PollForAndCompleteOnboarding(),
+      WaitForShareResult(glic::ShareImageResult::kSentImageToClient));
+
+  // Reset hook.
+  GetPastePolicyCallbackHook().Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsWhenGuestURLBlocked) {
   // Check that our destination is the Guest URL.
   GURL guest_url = glic::GetGuestURL();
@@ -1672,11 +1685,6 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
       PollForAndCompleteOnboarding(),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardPastePolicy));
 }
-
-INSTANTIATE_TEST_SUITE_P(MultiInstance,
-                         GlicInteractiveContextMenuPolicyTest,
-                         // This parameter toggles multi-instance mode.
-                         testing::Bool());
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 

@@ -454,7 +454,36 @@ void GlicShareImageHandler::OnPastePolicyCheckComplete(
   // WebContents destruction.
   StopObservingNavigation();
 
-  ShareComplete(ShareImageResult::kSentImageToClient);
+  WaitForOnboardingCompletion();
+}
+
+void GlicShareImageHandler::WaitForOnboardingCompletion() {
+  if (GlicEnabling::HasConsentedForProfile(service_->profile())) {
+    ShareComplete(ShareImageResult::kSentImageToClient);
+    return;
+  }
+
+  onboarding_timeout_timer_.Start(
+      FROM_HERE, base::Minutes(1),
+      base::BindOnce(&GlicShareImageHandler::OnOnboardingTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  onboarding_subscription_ = service_->enabling().RegisterOnConsentChanged(
+      base::BindRepeating(&GlicShareImageHandler::OnOnboardingStatusChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicShareImageHandler::OnOnboardingStatusChanged() {
+  if (GlicEnabling::HasConsentedForProfile(service_->profile())) {
+    onboarding_timeout_timer_.Stop();
+    onboarding_subscription_ = base::CallbackListSubscription();
+    ShareComplete(ShareImageResult::kSentImageToClient);
+  }
+}
+
+void GlicShareImageHandler::OnOnboardingTimeout() {
+  onboarding_subscription_ = base::CallbackListSubscription();
+  ShareComplete(ShareImageResult::kFailedTimedOutDidNotCompleteOnboarding);
 }
 
 std::optional<bool> GlicShareImageHandler::IsClientReady(
@@ -464,8 +493,7 @@ std::optional<bool> GlicShareImageHandler::IsClientReady(
     return std::nullopt;
   }
   if (GlicInstance* instance = *optional_instance) {
-    return instance->host().IsWebClientConnected() &&
-           GlicEnabling::HasConsentedForProfile(service_->profile());
+    return instance->host().IsWebClientConnected();
   }
   return false;
 }
@@ -564,6 +592,8 @@ void GlicShareImageHandler::Reset() {
   instance_observation_.Reset();
   instance_id_ = InstanceId::CreateNullId();
   instance_change_permitted_ = true;
+  onboarding_timeout_timer_.Stop();
+  onboarding_subscription_ = base::CallbackListSubscription();
 
   // Ensure that async callbacks aren't invoked.
   weak_ptr_factory_.InvalidateWeakPtrs();
