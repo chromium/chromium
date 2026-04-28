@@ -12,10 +12,9 @@ source_set("model") {
     "actor_service_factory.mm",
     "actor_task.h",
     "actor_task.mm",
-    "aggregated_journal.h",
-    "aggregated_journal.mm",
   ]
   deps = [
+    ":aggregated_journal",
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -23,6 +22,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
+    "//ios/chrome/browser/intelligence/actor/tools/model:page_stability",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/intelligence/features",
@@ -32,6 +32,18 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/web/public",
+  ]
+}
+
+source_set("aggregated_journal") {
+  sources = [
+    "aggregated_journal.h",
+    "aggregated_journal.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//url",
   ]
 }
 
@@ -45,6 +57,7 @@ source_set("unit_tests") {
     "aggregated_journal_unittest.mm",
   ]
   deps = [
+    ":aggregated_journal",
     ":model",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

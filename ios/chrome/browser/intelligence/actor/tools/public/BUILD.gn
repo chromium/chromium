@@ -7,7 +7,10 @@ source_set("public") {
     "actor_tool_types.h",
     "actor_tool_types.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/features",
+  ]
   public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
 }
 

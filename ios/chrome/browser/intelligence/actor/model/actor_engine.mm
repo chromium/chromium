@@ -10,6 +10,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
@@ -54,6 +55,27 @@ std::string EngineResultToString(ActorEngine::EngineResult result) {
     case ActorEngine::EngineResult::kCancelled:
       return "Cancelled";
   }
+}
+
+// Waits or immediately finishes tool execution based on the `tool_result`.
+void WaitOrImmediatelyFinishTool(base::OnceClosure on_delay_complete,
+                                 ToolExecutionResult tool_result,
+                                 ObservationDelayController* delay_controller) {
+  // TODO(crbug.com/504625981): Move tool-specific state machine
+  // into an iOS version of chrome/browser/actor/tools/tool_controller.h.
+  if (!tool_result.requires_page_stabilization() || !delay_controller) {
+    std::move(on_delay_complete).Run();
+    return;
+  }
+  delay_controller->Wait(
+      // TODO(crbug.com/498991756): Get the WebFrame from the tool.
+      /*web_frame=*/nullptr,
+      base::BindOnce(
+          [](base::OnceClosure callback,
+             ObservationDelayController::Result delay_result) {
+            std::move(callback).Run();
+          },
+          std::move(on_delay_complete)));
 }
 
 // TODO(crbug.com/503841160): Log the proper WebState URLs.
@@ -116,7 +138,11 @@ void EndAsyncEntry(AggregatedJournal::PendingAsyncEntry* entry,
 }  // namespace
 
 ActorEngine::ActorEngine(ActorTaskId task_id, AggregatedJournal* journal)
-    : state_(State::kInit), task_id_(task_id), journal_(journal) {}
+    : state_(State::kInit),
+      task_id_(task_id),
+      journal_(journal),
+      observation_delay_controller_(
+          new ObservationDelayController(task_id, journal)) {}
 
 ActorEngine::~ActorEngine() = default;
 
@@ -201,7 +227,11 @@ void ActorEngine::OnToolExecutionComplete(ToolExecutionResult tool_result) {
   EndAsyncEntry(current_async_entry_.get(), tool_result);
   current_async_entry_.reset();
 
-  FinishedToolInvoke(ActionResult(std::move(tool_result)));
+  base::OnceClosure on_delay_complete =
+      base::BindOnce(&ActorEngine::FinishedToolInvoke,
+                     weak_ptr_factory_.GetWeakPtr(), ActionResult(tool_result));
+  WaitOrImmediatelyFinishTool(std::move(on_delay_complete), tool_result,
+                              observation_delay_controller_.get());
 }
 
 void ActorEngine::FinishedToolInvoke(ActionResult result) {

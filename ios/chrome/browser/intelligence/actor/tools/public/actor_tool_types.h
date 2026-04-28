@@ -11,6 +11,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {
 
@@ -84,15 +85,18 @@ enum class InternalToolErrorCode {
 //    more detailed information about the failure.
 struct ToolExecutionResult {
   ToolExecutionResult(mojom::ActionResultCode external_code,
+                      bool requires_page_stabilization = false,
                       std::optional<std::string> message = std::nullopt);
   ToolExecutionResult(mojom::ActionResultCode external_code,
                       InternalToolErrorCode internal_code,
+                      bool requires_page_stabilization = false,
                       std::optional<std::string> message = std::nullopt);
   // Constructs an error from an internal_code, inferring the corresponding
   // external_code automatically.
   // TODO(crbug.com/505037793): Stop using this in favor of other constructors
   // after migration.
   ToolExecutionResult(InternalToolErrorCode internal_code,
+                      bool requires_page_stabilization = false,
                       std::optional<std::string> message = std::nullopt);
   ~ToolExecutionResult();
 
@@ -108,10 +112,9 @@ struct ToolExecutionResult {
   static ToolExecutionResult Ok() {
     return ToolExecutionResult(mojom::ActionResultCode::kOk);
   }
-  // Temporary helpers while we migrate callsites away from expecting a
-  // base::expected.
-  // TODO(crbug.com/505037793): remove these helpers once callsites use the
-  // above accessors instead.
+  bool requires_page_stabilization() const {
+    return IsPageStabilityEnabled() && requires_page_stabilization_;
+  }
   std::optional<InternalToolErrorCode> internal_code() const {
     return internal_code_;
   }
@@ -122,6 +125,9 @@ struct ToolExecutionResult {
   // code that is specific enough for actuation in Chrome on iOS.
   mojom::ActionResultCode external_code_;
   std::optional<InternalToolErrorCode> internal_code_;
+  // Whether this result indicates that changes were made in the webpage and
+  // we should wait for it to be stable before executing the next tool.
+  bool requires_page_stabilization_ = false;
   // If unset, a default message for the error codes will be used.
   // This is primarily used for kJavascriptFeatureFailedInJavaScriptExecution
   // to provide detailed JS error info.

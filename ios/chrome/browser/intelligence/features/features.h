@@ -311,6 +311,8 @@ bool IsGeminiDynamicSettingsEnabled();
 // Feature flag for Actor tools.
 BASE_DECLARE_FEATURE(kActorTools);
 bool IsActorEnabled();
+extern const char kActorToolsPageStabilityParam[];
+bool IsPageStabilityEnabled();
 
 // Returns true if the specified tool is disabled via the "DisabledTools"
 // feature parameter of the `kActorTools` feature.

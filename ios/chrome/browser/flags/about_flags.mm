@@ -161,6 +161,13 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
+const FeatureEntry::FeatureParam kActorToolsPageStabilityEnabled[] = {
+    {kActorToolsPageStabilityParam, "true"},
+};
+const FeatureEntry::FeatureVariation kActorToolsPageStabilityVariations[] = {
+    {"PageStabilityEnabled", kActorToolsPageStabilityEnabled, nullptr},
+};
+
 const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionA[] = {
     {kAIMCobrowseHeaderParam, kAIMCobrowseHeaderParamOptionA}};
 const FeatureEntry::FeatureParam kAIMCobrowseHeaderOptionB[] = {
@@ -2847,7 +2854,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOpenEditGroupViewByTappingTitle)},
     {"ios-actor-tools", flag_descriptions::kIOSActorToolsName,
      flag_descriptions::kIOSActorToolsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kActorTools)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kActorTools,
+                                    kActorToolsPageStabilityVariations,
+                                    "ActorTools")},
     {"gemini-client-migration", flag_descriptions::kGeminiClientMigrationName,
      flag_descriptions::kGeminiClientMigrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiClientMigration)},

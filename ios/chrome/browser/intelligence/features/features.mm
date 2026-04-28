@@ -570,8 +570,20 @@ BASE_FEATURE_PARAM(std::string,
                    "DisabledTools",
                    "");
 
+const char kActorToolsPageStabilityParam[] = "PageStabilityEnabled";
+
+BASE_FEATURE_PARAM(bool,
+                   kPageStabilityEnabled,
+                   &kActorTools,
+                   kActorToolsPageStabilityParam,
+                   false);
+
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
+}
+
+bool IsPageStabilityEnabled() {
+  return kPageStabilityEnabled.Get();
 }
 
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {

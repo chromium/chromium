@@ -12,20 +12,27 @@ namespace actor {
 
 ToolExecutionResult::ToolExecutionResult(mojom::ActionResultCode external_code,
                                          InternalToolErrorCode internal_code,
+                                         bool requires_page_stabilization,
                                          std::optional<std::string> message)
     : external_code_(external_code),
       internal_code_(internal_code),
+      requires_page_stabilization_(requires_page_stabilization),
       message_(std::move(message)) {}
 
 ToolExecutionResult::ToolExecutionResult(mojom::ActionResultCode external_code,
+                                         bool requires_page_stabilization,
                                          std::optional<std::string> message)
     : external_code_(external_code),
       internal_code_(std::nullopt),
+      requires_page_stabilization_(requires_page_stabilization),
       message_(std::move(message)) {}
 
 ToolExecutionResult::ToolExecutionResult(InternalToolErrorCode internal_code,
+                                         bool requires_page_stabilization,
                                          std::optional<std::string> message)
-    : internal_code_(internal_code), message_(std::move(message)) {
+    : internal_code_(internal_code),
+      requires_page_stabilization_(requires_page_stabilization),
+      message_(std::move(message)) {
   mojom::ActionResultCode external_code =
       mojom::ActionResultCode::kArgumentsInvalid;
   switch (internal_code) {

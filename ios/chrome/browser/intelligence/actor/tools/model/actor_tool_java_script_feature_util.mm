@@ -27,6 +27,7 @@ void ParseJavaScriptResult(ToolExecutionCallback callback,
     std::move(callback).Run(ToolExecutionResult(
         // TODO(crbug.com/505037793): return more tool-specific errors.
         InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution,
+        /*requires_page_stabilization=*/false,
         error_message ? *error_message : "Unknown error in JS."));
     return;
   }
@@ -54,7 +55,8 @@ ToolExecutionResult ParseJavaScriptResultWithResultCode(
   }
   int error_code = static_cast<int>(*error_code_double);
   if (const std::string* message = result_dict.FindString("message"); message) {
-    return ToolExecutionResult(resultCodeTranslator(error_code), *message);
+    return ToolExecutionResult(resultCodeTranslator(error_code),
+                               /*requires_page_stabilization=*/false, *message);
   } else {
     return ToolExecutionResult(resultCodeTranslator(error_code));
   }

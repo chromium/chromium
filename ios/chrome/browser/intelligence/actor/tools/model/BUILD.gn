@@ -304,6 +304,20 @@ source_set("java_script_features") {
   ]
 }
 
+source_set("page_stability") {
+  sources = [
+    "observation_delay_controller.h",
+    "observation_delay_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/model:aggregated_journal",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
 source_set("actor_tool_java_script_feature_test_base") {
   testonly = true
   sources = [
