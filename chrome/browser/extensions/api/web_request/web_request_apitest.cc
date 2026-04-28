@@ -658,7 +658,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
         const text = await res.text();
         const expected = 'p {\n  color: __MSG_text_color__;\n}\n';
         // "__MSG_text_color__" must not be replaced with "red".
-        if (text == expected) {
+        // We use `includes` because there's also a license in the file.
+        if (text.includes(expected)) {
           chrome.test.notifyPass();
         } else {
           chrome.test.notifyFail('Unexpected content :' + text);
