@@ -39,16 +39,21 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(
       kMorphingBaseMargin + (kMorphingMediumMargin - kMorphingBaseMargin) * 0.5,
       constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
+  EXPECT_EQ(
+      kMorphingBaseMargin + (kMorphingMediumMargin - kMorphingBaseMargin) * 0.5,
+      constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
-  EXPECT_EQ(40.0, constraints.bottom_corner_radius);
+  EXPECT_EQ(
+      kMorphingBaseCornerRadius +
+          (kMorphingMediumBottomCornerRadius - kMorphingBaseCornerRadius) * 0.5,
+      constraints.bottom_corner_radius);
   EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Exactly at medium.
   constraints = CalculateMorphingConstraints(300, minimized, medium, large);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
+  EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius,
             constraints.bottom_corner_radius);
@@ -60,7 +65,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(450.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin + (0.0 - kMorphingMediumMargin) * progress,
             constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * progress,
+  EXPECT_EQ(kMorphingMediumMargin + (0.0 - kMorphingMediumMargin) * progress,
             constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius * 0.5,
@@ -111,7 +116,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_NoLargeDetent) {
       CalculateMorphingConstraints(450, minimized, medium, large);
   EXPECT_EQ(450.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
+  EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius,
             constraints.bottom_corner_radius);
@@ -131,7 +136,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
       CalculateMorphingConstraints(150, minimized, medium, large);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin - 150.0, constraints.bottom_margin);
+  EXPECT_EQ(kMorphingMediumMargin - 150.0, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius,
             constraints.bottom_corner_radius);
@@ -169,7 +174,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
       CalculateMorphingConstraints(150, minimized, medium, large);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin - 150.0, constraints.bottom_margin);
+  EXPECT_EQ(kMorphingMediumMargin - 150.0, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius,
             constraints.bottom_corner_radius);
@@ -178,7 +183,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   constraints = CalculateMorphingConstraints(800, minimized, medium, large);
   EXPECT_EQ(800.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
+  EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(kMorphingMediumBottomCornerRadius,
             constraints.bottom_corner_radius);

@@ -148,7 +148,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
         bottom_margin = kMorphingBaseMargin;
       } else {
         side_margin = kMorphingMediumMargin;
-        bottom_margin = kMorphingBaseMargin;
+        bottom_margin = kMorphingMediumMargin;
         bottom_corner_radius = kMorphingMediumBottomCornerRadius;
       }
       // Subtract the deficit to physically drag the anchor bounds downwards.
@@ -163,7 +163,8 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
         InterpolateProgress(height, minimized_height, medium_height);
     side_margin =
         InterpolateValue(kMorphingBaseMargin, kMorphingMediumMargin, progress);
-    bottom_margin = kMorphingBaseMargin;
+    bottom_margin =
+        InterpolateValue(kMorphingBaseMargin, kMorphingMediumMargin, progress);
     bottom_corner_radius = InterpolateValue(
         kMorphingBaseCornerRadius, kMorphingMediumBottomCornerRadius, progress);
   }
@@ -171,7 +172,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
   // Medium.
   else if (medium_height >= 0 && height == medium_height) {
     side_margin = kMorphingMediumMargin;
-    bottom_margin = kMorphingBaseMargin;
+    bottom_margin = kMorphingMediumMargin;
     bottom_corner_radius = kMorphingMediumBottomCornerRadius;
   }
 
@@ -180,7 +181,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
            height < large_height) {
     CGFloat progress = InterpolateProgress(height, medium_height, large_height);
     side_margin = InterpolateValue(kMorphingMediumMargin, 0, progress);
-    bottom_margin = InterpolateValue(kMorphingBaseMargin, 0, progress);
+    bottom_margin = InterpolateValue(kMorphingMediumMargin, 0, progress);
     bottom_corner_radius =
         InterpolateValue(kMorphingMediumBottomCornerRadius, 0, progress);
     background_dimming_alpha =
@@ -212,7 +213,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
   else {
     if (medium_height >= 0 && height > medium_height) {
       side_margin = kMorphingMediumMargin;
-      bottom_margin = kMorphingBaseMargin;
+      bottom_margin = kMorphingMediumMargin;
       bottom_corner_radius = kMorphingMediumBottomCornerRadius;
     } else {
       side_margin = kMorphingBaseMargin;
