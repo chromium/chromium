@@ -2221,6 +2221,8 @@ enum HostCapability {
   // Indicates that the host supports auto browse attempting login using Sign in
   // with Google.
   kAutoLoginSignInWithGoogle = 10,
+  // Indicates that the host supports sharing images via the invoke mechanism.
+  kShareImageViaInvoke = 11,
 };
 
 // @generate glic_api

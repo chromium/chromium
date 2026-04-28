@@ -75,6 +75,7 @@ BASE_DECLARE_FEATURE(kGlicGetTabFaviconById);
 
 BASE_DECLARE_FEATURE(kGlicSkipCookieSyncOnOpen);
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
+BASE_DECLARE_FEATURE(kGlicShareImageViaInvoke);
 
 BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
 extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;

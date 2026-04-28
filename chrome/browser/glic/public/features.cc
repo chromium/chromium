@@ -123,6 +123,7 @@ BASE_FEATURE(kGlicGetTabFaviconById, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicSkipCookieSyncOnOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicCookieSyncOnTokenChange, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicShareImageViaInvoke, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWebClientLoadTimes, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicPreLoadingTimeMs{

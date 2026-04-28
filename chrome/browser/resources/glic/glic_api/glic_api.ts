@@ -3124,6 +3124,8 @@ export enum HostCapability {
   // Indicates that the host supports auto browse attempting login using Sign in
   // with Google.
   AUTO_LOGIN_SIGN_IN_WITH_GOOGLE = 10,
+  // Indicates that the host supports sharing images via the invoke mechanism.
+  SHARE_IMAGE_VIA_INVOKE = 11,
 }
 
 ///////////////////////////////////////////////
