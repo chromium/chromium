@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>

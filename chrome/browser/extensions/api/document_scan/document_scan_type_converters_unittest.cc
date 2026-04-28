@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
+#include <algorithm>
+#include <optional>
+
 #include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,6 +21,14 @@ namespace mojom = crosapi::mojom;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::UnorderedElementsAre;
+
+std::optional<document_scan::OperationResult> GetResultByName(
+    const std::vector<document_scan::SetOptionResult>& results,
+    const std::string& name) {
+  auto it = std::ranges::find_if(results,
+                                 [&](const auto& r) { return r.name == name; });
+  return it != results.end() ? std::make_optional(it->result) : std::nullopt;
+}
 
 TEST(DocumentScanTypeConvertersTest, OperationResult) {
   EXPECT_EQ(ConvertTo<document_scan::OperationResult>(
@@ -74,68 +85,100 @@ TEST(DocumentScanTypeConvertersTest, OperationResult) {
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionType) {
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kUnknown),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionTypeForTesting(
+                lorgnette::TYPE_UNKNOWN),
             document_scan::OptionType::kUnknown);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kBool),
-            document_scan::OptionType::kBool);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kInt),
-            document_scan::OptionType::kInt);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kFixed),
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionTypeForTesting(lorgnette::TYPE_BOOL),
+      document_scan::OptionType::kBool);
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionTypeForTesting(lorgnette::TYPE_INT),
+      document_scan::OptionType::kInt);
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionTypeForTesting(
+                lorgnette::TYPE_FIXED),
             document_scan::OptionType::kFixed);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kString),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionTypeForTesting(
+                lorgnette::TYPE_STRING),
             document_scan::OptionType::kString);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kButton),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionTypeForTesting(
+                lorgnette::TYPE_BUTTON),
             document_scan::OptionType::kButton);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionType::kGroup),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionTypeForTesting(
+                lorgnette::TYPE_GROUP),
             document_scan::OptionType::kGroup);
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionUnit) {
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kUnitless),
-            document_scan::OptionUnit::kUnitless);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kPixel),
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionUnitForTesting(lorgnette::UNIT_NONE),
+      document_scan::OptionUnit::kUnitless);
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionUnitForTesting(
+                lorgnette::UNIT_PIXEL),
             document_scan::OptionUnit::kPixel);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kBit),
-            document_scan::OptionUnit::kBit);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kMm),
-            document_scan::OptionUnit::kMm);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kDpi),
-            document_scan::OptionUnit::kDpi);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kPercent),
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionUnitForTesting(lorgnette::UNIT_BIT),
+      document_scan::OptionUnit::kBit);
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionUnitForTesting(lorgnette::UNIT_MM),
+      document_scan::OptionUnit::kMm);
+  EXPECT_EQ(
+      document_scan::ConvertLorgnetteOptionUnitForTesting(lorgnette::UNIT_DPI),
+      document_scan::OptionUnit::kDpi);
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionUnitForTesting(
+                lorgnette::UNIT_PERCENT),
             document_scan::OptionUnit::kPercent);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionUnit::kMicrosecond),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionUnitForTesting(
+                lorgnette::UNIT_MICROSECOND),
             document_scan::OptionUnit::kMicrosecond);
 }
 
 TEST(DocumentScanTypeConvertersTest, ConstraintType) {
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kNone),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_NONE),
             document_scan::ConstraintType::kNone);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kIntRange),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE),
             document_scan::ConstraintType::kIntRange);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kFixedRange),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE),
             document_scan::ConstraintType::kFixedRange);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kIntList),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_INT_LIST),
             document_scan::ConstraintType::kIntList);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kFixedList),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST),
             document_scan::ConstraintType::kFixedList);
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConstraintType::kStringList),
+  EXPECT_EQ(document_scan::ConvertLorgnetteOptionConstraintTypeForTesting(
+                lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST),
             document_scan::ConstraintType::kStringList);
 }
 
 TEST(DocumentScanTypeConvertersTest, Configurability) {
-  EXPECT_EQ(ConvertForTesting(mojom::OptionConfigurability::kNotConfigurable),
+  lorgnette::ScannerOption input;
+
+  input.set_sw_settable(false);
+  input.set_hw_settable(false);
+  EXPECT_EQ(document_scan::ConvertLorgnetteScannerOptionForTesting(input)
+                .configurability,
             document_scan::Configurability::kNotConfigurable);
-  EXPECT_EQ(
-      ConvertForTesting(mojom::OptionConfigurability::kSoftwareConfigurable),
-      document_scan::Configurability::kSoftwareConfigurable);
-  EXPECT_EQ(
-      ConvertForTesting(mojom::OptionConfigurability::kHardwareConfigurable),
-      document_scan::Configurability::kHardwareConfigurable);
+
+  input.set_sw_settable(true);
+  input.set_hw_settable(false);
+  EXPECT_EQ(document_scan::ConvertLorgnetteScannerOptionForTesting(input)
+                .configurability,
+            document_scan::Configurability::kSoftwareConfigurable);
+
+  input.set_sw_settable(false);
+  input.set_hw_settable(true);
+  EXPECT_EQ(document_scan::ConvertLorgnetteScannerOptionForTesting(input)
+                .configurability,
+            document_scan::Configurability::kHardwareConfigurable);
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_Empty) {
-  auto input = mojom::OptionConstraint::New();
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kNone);
   EXPECT_FALSE(output.list.has_value());
   EXPECT_FALSE(output.min.has_value());
@@ -144,10 +187,12 @@ TEST(DocumentScanTypeConvertersTest, Constraint_Empty) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_IntList) {
-  auto input = mojom::OptionConstraint::New();
-  input->type = mojom::OptionConstraintType::kIntList;
-  input->restriction = mojom::OptionConstraintRestriction::NewValidInt({2, 3});
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_LIST);
+  input.add_valid_int(2);
+  input.add_valid_int(3);
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kIntList);
   EXPECT_FALSE(output.min.has_value());
   EXPECT_FALSE(output.max.has_value());
@@ -158,11 +203,12 @@ TEST(DocumentScanTypeConvertersTest, Constraint_IntList) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_FixedList) {
-  auto input = mojom::OptionConstraint::New();
-  input->type = mojom::OptionConstraintType::kFixedList;
-  input->restriction =
-      mojom::OptionConstraintRestriction::NewValidFixed({4.0, 1.5});
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST);
+  input.add_valid_fixed(4.0);
+  input.add_valid_fixed(1.5);
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kFixedList);
   EXPECT_FALSE(output.min.has_value());
   EXPECT_FALSE(output.max.has_value());
@@ -173,11 +219,13 @@ TEST(DocumentScanTypeConvertersTest, Constraint_FixedList) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_StringList) {
-  auto input = mojom::OptionConstraint::New();
-  input->type = mojom::OptionConstraintType::kStringList;
-  input->restriction =
-      mojom::OptionConstraintRestriction::NewValidString({"a", "b"});
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST);
+  input.add_valid_string("a");
+  input.add_valid_string("b");
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kStringList);
   EXPECT_FALSE(output.min.has_value());
   EXPECT_FALSE(output.max.has_value());
@@ -188,15 +236,14 @@ TEST(DocumentScanTypeConvertersTest, Constraint_StringList) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_IntRange) {
-  auto input = mojom::OptionConstraint::New();
-  input->type = mojom::OptionConstraintType::kIntRange;
-  auto restriction = mojom::IntRange::New();
-  restriction->min = 1;
-  restriction->max = 10;
-  restriction->quant = 3;
-  input->restriction =
-      mojom::OptionConstraintRestriction::NewIntRange(std::move(restriction));
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE);
+  auto* restriction = input.mutable_int_range();
+  restriction->set_min(1);
+  restriction->set_max(10);
+  restriction->set_quant(3);
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kIntRange);
   EXPECT_FALSE(output.list.has_value());
   ASSERT_TRUE(output.min.has_value());
@@ -211,15 +258,15 @@ TEST(DocumentScanTypeConvertersTest, Constraint_IntRange) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Constraint_FixedRange) {
-  auto input = mojom::OptionConstraint::New();
-  input->type = mojom::OptionConstraintType::kFixedRange;
-  auto restriction = mojom::FixedRange::New();
-  restriction->min = 1.5;
-  restriction->max = 10.0;
-  restriction->quant = 0.5;
-  input->restriction =
-      mojom::OptionConstraintRestriction::NewFixedRange(std::move(restriction));
-  document_scan::OptionConstraint output = ConvertForTesting(input);
+  lorgnette::OptionConstraint input;
+  input.set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE);
+  auto* restriction = input.mutable_fixed_range();
+  restriction->set_min(1.5);
+  restriction->set_max(10.0);
+  restriction->set_quant(0.5);
+  document_scan::OptionConstraint output =
+      document_scan::ConvertLorgnetteOptionConstraintForTesting(input);
   EXPECT_EQ(output.type, document_scan::ConstraintType::kFixedRange);
   EXPECT_FALSE(output.list.has_value());
   ASSERT_TRUE(output.min.has_value());
@@ -234,80 +281,109 @@ TEST(DocumentScanTypeConvertersTest, Constraint_FixedRange) {
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_BoolValue) {
-  auto input = mojom::OptionValue::NewBoolValue(true);
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  ASSERT_TRUE(output.as_boolean.has_value());
-  EXPECT_EQ(output.as_boolean.value(), true);
-  EXPECT_FALSE(output.as_integer.has_value());
-  EXPECT_FALSE(output.as_integers.has_value());
-  EXPECT_FALSE(output.as_number.has_value());
-  EXPECT_FALSE(output.as_numbers.has_value());
-  EXPECT_FALSE(output.as_string.has_value());
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_BOOL);
+  input.set_bool_value(true);
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  ASSERT_TRUE(output->as_boolean.has_value());
+  EXPECT_EQ(output->as_boolean.value(), true);
+  EXPECT_FALSE(output->as_integer.has_value());
+  EXPECT_FALSE(output->as_integers.has_value());
+  EXPECT_FALSE(output->as_number.has_value());
+  EXPECT_FALSE(output->as_numbers.has_value());
+  EXPECT_FALSE(output->as_string.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_IntValue) {
-  auto input = mojom::OptionValue::NewIntValue(42);
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  EXPECT_FALSE(output.as_boolean.has_value());
-  ASSERT_TRUE(output.as_integer.has_value());
-  EXPECT_EQ(output.as_integer.value(), 42);
-  EXPECT_FALSE(output.as_integers.has_value());
-  EXPECT_FALSE(output.as_number.has_value());
-  EXPECT_FALSE(output.as_numbers.has_value());
-  EXPECT_FALSE(output.as_string.has_value());
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_INT);
+  input.mutable_int_value()->add_value(42);
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_FALSE(output->as_boolean.has_value());
+  ASSERT_TRUE(output->as_integer.has_value());
+  EXPECT_EQ(output->as_integer.value(), 42);
+  EXPECT_FALSE(output->as_integers.has_value());
+  EXPECT_FALSE(output->as_number.has_value());
+  EXPECT_FALSE(output->as_numbers.has_value());
+  EXPECT_FALSE(output->as_string.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_FixedValue) {
-  auto input = mojom::OptionValue::NewFixedValue(42.5);
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  EXPECT_FALSE(output.as_boolean.has_value());
-  EXPECT_FALSE(output.as_integer.has_value());
-  EXPECT_FALSE(output.as_integers.has_value());
-  ASSERT_TRUE(output.as_number.has_value());
-  EXPECT_EQ(output.as_number.value(), 42.5);
-  EXPECT_FALSE(output.as_numbers.has_value());
-  EXPECT_FALSE(output.as_string.has_value());
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_FIXED);
+  input.mutable_fixed_value()->add_value(42.5);
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_FALSE(output->as_boolean.has_value());
+  EXPECT_FALSE(output->as_integer.has_value());
+  EXPECT_FALSE(output->as_integers.has_value());
+  ASSERT_TRUE(output->as_number.has_value());
+  EXPECT_EQ(output->as_number.value(), 42.5);
+  EXPECT_FALSE(output->as_numbers.has_value());
+  EXPECT_FALSE(output->as_string.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_StringValue) {
-  auto input = mojom::OptionValue::NewStringValue("string");
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  EXPECT_FALSE(output.as_boolean.has_value());
-  EXPECT_FALSE(output.as_integer.has_value());
-  EXPECT_FALSE(output.as_integers.has_value());
-  EXPECT_FALSE(output.as_number.has_value());
-  EXPECT_FALSE(output.as_numbers.has_value());
-  ASSERT_TRUE(output.as_string.has_value());
-  EXPECT_EQ(output.as_string.value(), "string");
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_STRING);
+  input.set_string_value("string");
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_FALSE(output->as_boolean.has_value());
+  EXPECT_FALSE(output->as_integer.has_value());
+  EXPECT_FALSE(output->as_integers.has_value());
+  EXPECT_FALSE(output->as_number.has_value());
+  EXPECT_FALSE(output->as_numbers.has_value());
+  ASSERT_TRUE(output->as_string.has_value());
+  EXPECT_EQ(output->as_string.value(), "string");
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_IntListValue) {
-  auto input = mojom::OptionValue::NewIntList({3, 2, 1});
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  EXPECT_FALSE(output.as_boolean.has_value());
-  EXPECT_FALSE(output.as_integer.has_value());
-  ASSERT_TRUE(output.as_integers.has_value());
-  EXPECT_THAT(output.as_integers.value(), ElementsAre(3, 2, 1));
-  EXPECT_FALSE(output.as_number.has_value());
-  EXPECT_FALSE(output.as_numbers.has_value());
-  EXPECT_FALSE(output.as_string.has_value());
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_INT);
+  input.mutable_int_value()->add_value(3);
+  input.mutable_int_value()->add_value(2);
+  input.mutable_int_value()->add_value(1);
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_FALSE(output->as_boolean.has_value());
+  EXPECT_FALSE(output->as_integer.has_value());
+  ASSERT_TRUE(output->as_integers.has_value());
+  EXPECT_THAT(output->as_integers.value(), ElementsAre(3, 2, 1));
+  EXPECT_FALSE(output->as_number.has_value());
+  EXPECT_FALSE(output->as_numbers.has_value());
+  EXPECT_FALSE(output->as_string.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, Value_FixedListValue) {
-  auto input = mojom::OptionValue::NewFixedList({3.5, 2.25, 1.0});
-  document_scan::ScannerOption::Value output = ConvertForTesting(input);
-  EXPECT_FALSE(output.as_boolean.has_value());
-  EXPECT_FALSE(output.as_integer.has_value());
-  EXPECT_FALSE(output.as_integers.has_value());
-  EXPECT_FALSE(output.as_number.has_value());
-  ASSERT_TRUE(output.as_numbers.has_value());
-  EXPECT_THAT(output.as_numbers.value(), ElementsAre(3.5, 2.25, 1.0));
-  EXPECT_FALSE(output.as_string.has_value());
+  lorgnette::ScannerOption input;
+  input.set_option_type(lorgnette::TYPE_FIXED);
+  input.mutable_fixed_value()->add_value(3.5);
+  input.mutable_fixed_value()->add_value(2.25);
+  input.mutable_fixed_value()->add_value(1.0);
+  std::optional<document_scan::ScannerOption::Value> output =
+      document_scan::GetLorgnetteOptionValueForTesting(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_FALSE(output->as_boolean.has_value());
+  EXPECT_FALSE(output->as_integer.has_value());
+  EXPECT_FALSE(output->as_integers.has_value());
+  EXPECT_FALSE(output->as_number.has_value());
+  ASSERT_TRUE(output->as_numbers.has_value());
+  EXPECT_THAT(output->as_numbers.value(), ElementsAre(3.5, 2.25, 1.0));
+  EXPECT_FALSE(output->as_string.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, ScannerOption_Empty) {
-  auto input = mojom::ScannerOption::New();
-  document_scan::ScannerOption output = ConvertForTesting(input);
+  lorgnette::ScannerOption input;
+  document_scan::ScannerOption output =
+      document_scan::ConvertLorgnetteScannerOptionForTesting(input);
   EXPECT_EQ(output.name, "");
   EXPECT_EQ(output.title, "");
   EXPECT_EQ(output.description, "");
@@ -326,26 +402,26 @@ TEST(DocumentScanTypeConvertersTest, ScannerOption_Empty) {
 }
 
 TEST(DocumentScanTypeConvertersTest, ScannerOption_NonEmpty) {
-  auto input = mojom::ScannerOption::New();
-  input->name = "name";
-  input->title = "title";
-  input->description = "description";
-  input->type = mojom::OptionType::kInt;
-  input->unit = mojom::OptionUnit::kDpi;
-  input->value = mojom::OptionValue::NewIntValue(42);
-  input->constraint = mojom::OptionConstraint::New();
-  input->constraint->type = mojom::OptionConstraintType::kIntList;
-  input->constraint->restriction =
-      mojom::OptionConstraintRestriction::NewValidInt({5});
-  input->isDetectable = true;
-  input->configurability = mojom::OptionConfigurability::kSoftwareConfigurable;
-  input->isAutoSettable = true;
-  input->isEmulated = true;
-  input->isActive = true;
-  input->isAdvanced = true;
-  input->isInternal = true;
+  lorgnette::ScannerOption input;
+  input.set_name("name");
+  input.set_title("title");
+  input.set_description("description");
+  input.set_option_type(lorgnette::TYPE_INT);
+  input.set_unit(lorgnette::UNIT_DPI);
+  input.mutable_int_value()->add_value(42);
+  auto* constraint = input.mutable_constraint();
+  constraint->set_constraint_type(
+      lorgnette::OptionConstraint::CONSTRAINT_INT_LIST);
+  constraint->add_valid_int(5);
+  input.set_detectable(true);
+  input.set_sw_settable(true);
+  input.set_auto_settable(true);
+  input.set_emulated(true);
+  input.set_active(true);
+  input.set_advanced(true);
 
-  document_scan::ScannerOption output = ConvertForTesting(input);
+  document_scan::ScannerOption output =
+      document_scan::ConvertLorgnetteScannerOptionForTesting(input);
   EXPECT_EQ(output.name, "name");
   EXPECT_EQ(output.title, "title");
   EXPECT_EQ(output.description, "description");
@@ -366,7 +442,7 @@ TEST(DocumentScanTypeConvertersTest, ScannerOption_NonEmpty) {
   EXPECT_TRUE(output.is_emulated);
   EXPECT_TRUE(output.is_active);
   EXPECT_TRUE(output.is_advanced);
-  EXPECT_TRUE(output.is_internal);
+  EXPECT_FALSE(output.is_internal);
 }
 
 TEST(DocumentScanTypeConvertersTest, DeviceFilter_Empty) {
@@ -463,8 +539,8 @@ TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Network) {
 }
 
 TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_Empty) {
-  auto input = mojom::OpenScannerResponse::New();
-  auto output = input.To<document_scan::OpenScannerResponse>();
+  lorgnette::OpenScannerResponse input;
+  auto output = document_scan::ConvertLorgnetteOpenScannerResponse(input);
   EXPECT_EQ(output.scanner_id, "");
   EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
   EXPECT_FALSE(output.scanner_handle.has_value());
@@ -472,30 +548,76 @@ TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_Empty) {
 }
 
 TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_NonEmpty) {
-  auto input = mojom::OpenScannerResponse::New();
-  input->scanner_id = "scanner_id";
-  input->result = mojom::ScannerOperationResult::kSuccess;
-  input->scanner_handle = "scanner_handle";
-  input->options.emplace();
-  input->options.value()["name1"] = mojom::ScannerOption::New();
-  input->options.value()["name2"] = mojom::ScannerOption::New();
+  lorgnette::OpenScannerResponse input;
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  input.mutable_scanner_id()->set_connection_string("scanner_id");
+  lorgnette::ScannerConfig* config = input.mutable_config();
+  config->mutable_scanner()->set_token("scanner_handle");
 
-  auto output = input.To<document_scan::OpenScannerResponse>();
+  // Int option
+  (*config->mutable_options())["option_int"] =
+      extensions::CreateTestScannerOption("option_int", 42);
+
+  // Bool option
+  lorgnette::ScannerOption bool_option;
+  bool_option.set_name("option_bool");
+  bool_option.set_option_type(lorgnette::TYPE_BOOL);
+  bool_option.set_bool_value(true);
+  (*config->mutable_options())["option_bool"] = bool_option;
+
+  // String option
+  lorgnette::ScannerOption string_option;
+  string_option.set_name("option_string");
+  string_option.set_option_type(lorgnette::TYPE_STRING);
+  string_option.set_string_value("hello");
+  (*config->mutable_options())["option_string"] = string_option;
+
+  // Fixed option
+  lorgnette::ScannerOption fixed_option;
+  fixed_option.set_name("option_fixed");
+  fixed_option.set_option_type(lorgnette::TYPE_FIXED);
+  fixed_option.mutable_fixed_value()->add_value(42.5);
+  (*config->mutable_options())["option_fixed"] = fixed_option;
+
+  // Int list option
+  lorgnette::ScannerOption int_list_option;
+  int_list_option.set_name("option_int_list");
+  int_list_option.set_option_type(lorgnette::TYPE_INT);
+  int_list_option.mutable_int_value()->add_value(1);
+  int_list_option.mutable_int_value()->add_value(2);
+  (*config->mutable_options())["option_int_list"] = int_list_option;
+
+  // Fixed list option
+  lorgnette::ScannerOption fixed_list_option;
+  fixed_list_option.set_name("option_fixed_list");
+  fixed_list_option.set_option_type(lorgnette::TYPE_FIXED);
+  fixed_list_option.mutable_fixed_value()->add_value(1.5);
+  fixed_list_option.mutable_fixed_value()->add_value(2.5);
+  (*config->mutable_options())["option_fixed_list"] = fixed_list_option;
+
+  auto output = document_scan::ConvertLorgnetteOpenScannerResponse(input);
   EXPECT_EQ(output.scanner_id, "scanner_id");
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
   ASSERT_TRUE(output.scanner_handle.has_value());
   EXPECT_EQ(output.scanner_handle.value(), "scanner_handle");
   ASSERT_TRUE(output.options.has_value());
-  EXPECT_TRUE(output.options->additional_properties.contains("name1"));
-  EXPECT_TRUE(output.options->additional_properties.contains("name2"));
+  EXPECT_TRUE(output.options->additional_properties.contains("option_int"));
+  EXPECT_TRUE(output.options->additional_properties.contains("option_bool"));
+  EXPECT_TRUE(output.options->additional_properties.contains("option_string"));
+  EXPECT_TRUE(output.options->additional_properties.contains("option_fixed"));
+  EXPECT_TRUE(
+      output.options->additional_properties.contains("option_int_list"));
+  EXPECT_TRUE(
+      output.options->additional_properties.contains("option_fixed_list"));
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_Empty) {
   document_scan::OptionSetting input;
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "");
-  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
-  EXPECT_TRUE(output->value.is_null());
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_UNKNOWN);
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_BoolValue) {
@@ -505,12 +627,13 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_BoolValue) {
   input.value.emplace();
   input.value->as_boolean = true;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kBool);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_bool_value());
-  EXPECT_EQ(output->value->get_bool_value(), true);
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_BOOL);
+  EXPECT_TRUE(output->has_bool_value());
+  EXPECT_TRUE(output->bool_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_IntValue) {
@@ -520,27 +643,29 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_IntValue) {
   input.value.emplace();
   input.value->as_integer = 42;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kInt);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_int_value());
-  EXPECT_EQ(output->value->get_int_value(), 42);
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
+  ASSERT_TRUE(output->has_int_value());
+  EXPECT_THAT(output->int_value().value(), ElementsAre(42));
 }
 
-TEST(DocumentScanTypeConvertersTest, OptionSetting_IntList) {
+TEST(DocumentScanTypeConvertersTest, OptionSetting_IntListValue) {
   document_scan::OptionSetting input;
   input.name = "name";
   input.type = document_scan::OptionType::kInt;
   input.value.emplace();
   input.value->as_integers = {42, 10};
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kInt);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_int_list());
-  EXPECT_THAT(output->value->get_int_list(), ElementsAre(42, 10));
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
+  ASSERT_TRUE(output->has_int_value());
+  EXPECT_THAT(output->int_value().value(), ElementsAre(42, 10));
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedValue) {
@@ -550,27 +675,29 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedValue) {
   input.value.emplace();
   input.value->as_number = 42.25;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_fixed_value());
-  EXPECT_EQ(output->value->get_fixed_value(), 42.25);
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_FIXED);
+  ASSERT_TRUE(output->has_fixed_value());
+  EXPECT_THAT(output->fixed_value().value(), ElementsAre(42.25));
 }
 
-TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedList) {
+TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedListValue) {
   document_scan::OptionSetting input;
   input.name = "name";
   input.type = document_scan::OptionType::kFixed;
   input.value.emplace();
   input.value->as_numbers = {42.5, 10.75};
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_fixed_list());
-  EXPECT_THAT(output->value->get_fixed_list(), ElementsAre(42.5, 10.75));
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_FIXED);
+  ASSERT_TRUE(output->has_fixed_value());
+  EXPECT_THAT(output->fixed_value().value(), ElementsAre(42.5, 10.75));
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_StringValue) {
@@ -580,12 +707,13 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_StringValue) {
   input.value.emplace();
   input.value->as_string = "hello";
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kString);
-  ASSERT_FALSE(output->value.is_null());
-  ASSERT_TRUE(output->value->is_string_value());
-  EXPECT_EQ(output->value->get_string_value(), "hello");
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_STRING);
+  EXPECT_TRUE(output->has_string_value());
+  EXPECT_EQ(output->string_value(), "hello");
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_Group) {
@@ -593,10 +721,11 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_Group) {
   input.name = "name";
   input.type = document_scan::OptionType::kGroup;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kGroup);
-  EXPECT_TRUE(output->value.is_null());
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_GROUP);
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_Button) {
@@ -604,10 +733,11 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_Button) {
   input.name = "name";
   input.type = document_scan::OptionType::kButton;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kButton);
-  EXPECT_TRUE(output->value.is_null());
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_BUTTON);
 }
 
 TEST(DocumentScanTypeConvertersTest, OptionSetting_None) {
@@ -615,43 +745,51 @@ TEST(DocumentScanTypeConvertersTest, OptionSetting_None) {
   input.name = "name";
   input.type = document_scan::OptionType::kNone;
 
-  auto output = mojom::OptionSetting::From(input);
-  EXPECT_EQ(output->name, "name");
-  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
-  EXPECT_TRUE(output->value.is_null());
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  ASSERT_TRUE(output.has_value());
+  EXPECT_EQ(output->name(), "name");
+  EXPECT_EQ(output->option_type(), lorgnette::TYPE_UNKNOWN);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_TypeMismatch) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kBool;
+  input.value.emplace();
+  input.value->as_integer = 42;
+
+  auto output =
+      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
+  EXPECT_FALSE(output.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_Empty) {
-  auto input = mojom::SetOptionsResponse::New();
-  auto output = input.To<document_scan::SetOptionsResponse>();
+  lorgnette::SetOptionsResponse input;
+  auto output = document_scan::TransformLorgnetteSetOptionsResponse(input, {});
   EXPECT_EQ(output.scanner_handle, "");
   EXPECT_TRUE(output.results.empty());
   EXPECT_FALSE(output.options.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_NonEmpty) {
-  auto input = mojom::SetOptionsResponse::New();
-  input->scanner_handle = "scanner-handle";
-  input->results.emplace_back(mojom::SetOptionResult::New(
-      "name1", mojom::ScannerOperationResult::kWrongType));
-  input->results.emplace_back(mojom::SetOptionResult::New(
-      "name2", mojom::ScannerOperationResult::kSuccess));
-  input->options.emplace();
-  input->options->try_emplace(
-      "option1", mojo::ConvertForTesting(
-                     extensions::CreateTestScannerOption("option1", 5)));
-  input->options->try_emplace(
-      "option2", mojo::ConvertForTesting(
-                     extensions::CreateTestScannerOption("option2", 10)));
+  lorgnette::SetOptionsResponse input;
+  input.mutable_scanner()->set_token("scanner-handle");
+  (*input.mutable_results())["name1"] = lorgnette::OPERATION_RESULT_WRONG_TYPE;
+  (*input.mutable_results())["name2"] = lorgnette::OPERATION_RESULT_SUCCESS;
+  lorgnette::ScannerConfig* config = input.mutable_config();
+  (*config->mutable_options())["option1"] =
+      extensions::CreateTestScannerOption("option1", 5);
+  (*config->mutable_options())["option2"] =
+      extensions::CreateTestScannerOption("option2", 10);
 
-  auto output = input.To<document_scan::SetOptionsResponse>();
+  auto output = document_scan::TransformLorgnetteSetOptionsResponse(input, {});
   EXPECT_EQ(output.scanner_handle, "scanner-handle");
-  ASSERT_EQ(output.results.size(), 2U);
-  EXPECT_EQ(output.results[0].name, "name1");
-  EXPECT_EQ(output.results[0].result,
+  EXPECT_EQ(output.results.size(), 2U);
+  EXPECT_EQ(GetResultByName(output.results, "name1"),
             document_scan::OperationResult::kWrongType);
-  EXPECT_EQ(output.results[1].name, "name2");
-  EXPECT_EQ(output.results[1].result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(GetResultByName(output.results, "name2"),
+            document_scan::OperationResult::kSuccess);
   ASSERT_TRUE(output.options.has_value());
   EXPECT_TRUE(output.options->additional_properties.contains("option1"));
   EXPECT_TRUE(output.options->additional_properties.contains("option2"));
@@ -783,36 +921,6 @@ TEST(DocumentScanTypeConvertersTest,
   EXPECT_EQ(output->name(), "option1");
   EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
   EXPECT_FALSE(output->has_int_value());
-}
-
-TEST(DocumentScanTypeConvertersTest,
-     TransformOptionSettingToLorgnetteScannerOption_IntValue) {
-  document_scan::OptionSetting input;
-  input.name = "option1";
-  input.type = document_scan::OptionType::kInt;
-  input.value.emplace();
-  input.value->as_integer = 42;
-
-  auto output =
-      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
-  ASSERT_TRUE(output.has_value());
-  EXPECT_EQ(output->name(), "option1");
-  EXPECT_EQ(output->option_type(), lorgnette::TYPE_INT);
-  ASSERT_TRUE(output->has_int_value());
-  EXPECT_THAT(output->int_value().value(), ElementsAre(42));
-}
-
-TEST(DocumentScanTypeConvertersTest,
-     TransformOptionSettingToLorgnetteScannerOption_TypeMismatch) {
-  document_scan::OptionSetting input;
-  input.name = "option1";
-  input.type = document_scan::OptionType::kBool;
-  input.value.emplace();
-  input.value->as_integer = 42;
-
-  auto output =
-      document_scan::TransformOptionSettingToLorgnetteScannerOption(input);
-  EXPECT_FALSE(output.has_value());
 }
 
 }  // namespace

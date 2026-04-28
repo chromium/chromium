@@ -66,6 +66,19 @@ SetOptionsResponse TransformLorgnetteSetOptionsResponse(
 std::optional<lorgnette::ScannerOption>
 TransformOptionSettingToLorgnetteScannerOption(const OptionSetting& setting);
 
+OptionType ConvertLorgnetteOptionTypeForTesting(
+    const lorgnette::OptionType& input);
+ConstraintType ConvertLorgnetteOptionConstraintTypeForTesting(
+    const lorgnette::OptionConstraint_ConstraintType& input);
+OptionUnit ConvertLorgnetteOptionUnitForTesting(
+    const lorgnette::OptionUnit& input);
+OptionConstraint ConvertLorgnetteOptionConstraintForTesting(
+    const lorgnette::OptionConstraint& input);
+std::optional<ScannerOption::Value> GetLorgnetteOptionValueForTesting(
+    const lorgnette::ScannerOption& option);
+ScannerOption ConvertLorgnetteScannerOptionForTesting(
+    const lorgnette::ScannerOption& input);
+
 }  // namespace extensions::api::document_scan
 
 namespace mojo {
@@ -92,50 +105,11 @@ struct TypeConverter<extensions::api::document_scan::GetScannerListResponse,
 };
 
 template <>
-struct TypeConverter<extensions::api::document_scan::OpenScannerResponse,
-                     crosapi::mojom::OpenScannerResponsePtr> {
-  static extensions::api::document_scan::OpenScannerResponse Convert(
-      const crosapi::mojom::OpenScannerResponsePtr& input);
-};
-
-template <>
 struct TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
                      crosapi::mojom::GetOptionGroupsResponsePtr> {
   static extensions::api::document_scan::GetOptionGroupsResponse Convert(
       const crosapi::mojom::GetOptionGroupsResponsePtr& input);
 };
-
-template <>
-struct TypeConverter<crosapi::mojom::OptionSettingPtr,
-                     extensions::api::document_scan::OptionSetting> {
-  static crosapi::mojom::OptionSettingPtr Convert(
-      const extensions::api::document_scan::OptionSetting& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::SetOptionsResponse,
-                     crosapi::mojom::SetOptionsResponsePtr> {
-  static extensions::api::document_scan::SetOptionsResponse Convert(
-      const crosapi::mojom::SetOptionsResponsePtr& input);
-};
-
-// Test wrappers for type conversions that don't need to be done explicitly.
-// This lets them be tested in isolation without fully exposing the
-// TypeConverter instances.
-extensions::api::document_scan::OptionType ConvertForTesting(
-    crosapi::mojom::OptionType input);
-extensions::api::document_scan::OptionUnit ConvertForTesting(
-    crosapi::mojom::OptionUnit input);
-extensions::api::document_scan::ConstraintType ConvertForTesting(
-    crosapi::mojom::OptionConstraintType input);
-extensions::api::document_scan::Configurability ConvertForTesting(
-    crosapi::mojom::OptionConfigurability input);
-extensions::api::document_scan::OptionConstraint ConvertForTesting(
-    const crosapi::mojom::OptionConstraintPtr& input);
-extensions::api::document_scan::ScannerOption::Value ConvertForTesting(
-    const crosapi::mojom::OptionValuePtr& input);
-extensions::api::document_scan::ScannerOption ConvertForTesting(
-    const crosapi::mojom::ScannerOptionPtr& input);
 
 }  // namespace mojo
 
