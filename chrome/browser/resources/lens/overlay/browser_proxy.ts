@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
-import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
@@ -129,6 +129,11 @@ class SelectionOverlayBaseHandlerImpl extends SelectionOverlayBaseHandler {
           coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
         },
         isClick);
+  }
+
+  adjustPolylineSelected(
+      _points: PointF[], _source: RegionSource, _id?: string): void {
+    // Lens doesn't support polylines.
   }
 }
 

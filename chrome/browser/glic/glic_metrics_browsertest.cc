@@ -338,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
   }));
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
       ->AdjustRegion(selection::SelectedRegion::New(
-          base::UnguessableToken::Create(), gfx::RectF(10, 10, 10, 10)));
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(10, 10, 10, 10))));
 
   auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
   auto* instance = GetInstanceForTab(browser()->profile(), tab_interface);

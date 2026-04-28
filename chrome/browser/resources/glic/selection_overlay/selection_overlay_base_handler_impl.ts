@@ -1,10 +1,8 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {assert} from '//resources/js/assert.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
-import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {RegionSource, SelectedRegion} from '/lens/selection_overlay_base_handler.js';
 import {SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 
@@ -95,9 +93,8 @@ export class SelectionOverlayBaseHandlerImpl extends
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               const firstRegion = regions[0];
-              if (firstRegion) {
-                assert(firstRegion.region);
-                callback(firstRegion.region);
+              if (firstRegion && firstRegion.shape.rect) {
+                callback(firstRegion.shape.rect);
               }
             });
   }
@@ -107,10 +104,16 @@ export class SelectionOverlayBaseHandlerImpl extends
     return BrowserProxyImpl.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
-              callback(regions.map(r => ({
-                                     id: r.id,
-                                     region: r.region,
-                                   })));
+              callback(regions.map(r => {
+                const tsRegion: SelectedRegion = {
+                  id: r.id,
+                  region: r.shape.rect || {x: 0, y: 0, width: 0, height: 0},
+                };
+                if (r.shape.polyline) {
+                  tsRegion.polyline = r.shape.polyline;
+                }
+                return tsRegion;
+              }));
             });
   }
 
@@ -119,8 +122,18 @@ export class SelectionOverlayBaseHandlerImpl extends
       id: string = this.activeRegionId || generateRandomHexId()): void {
     const proxy = BrowserProxyImpl.getInstance();
     proxy.handler.adjustRegion({
-      region: rect,
       id: id,
+      shape: {rect: rect},
+    });
+  }
+
+  adjustPolylineSelected(
+      points: PointF[], _source: RegionSource,
+      id: string = this.activeRegionId || generateRandomHexId()): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.adjustRegion({
+      id: id,
+      shape: {polyline: points},
     });
   }
 

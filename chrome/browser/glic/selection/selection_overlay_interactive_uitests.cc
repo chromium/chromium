@@ -18,9 +18,11 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
@@ -58,6 +60,17 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class SelectionOverlayInteractiveTestWithPolyline
+    : public SelectionOverlayInteractiveTest {
+ public:
+  SelectionOverlayInteractiveTestWithPolyline() {
+    feature_list_.InitAndEnableFeature(features::kGlicRegionSelectionLine);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
@@ -626,6 +639,65 @@ IN_PROC_BROWSER_TEST_F(
       }),
       Wait(base::Seconds(1)),
       EnsureNotPresent(OverlayBaseController::kOverlayId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
+                       SelectionPolylineWebUI) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+
+      // Trigger the polyline selection from the WebUI.
+      InAnyContext(WithElement(
+          kOverlayWebContentsId,
+          [](ui::TrackedElement* el) {
+            content::WebContents* overlay_contents =
+                InteractiveBrowserTest::AsInstrumentedWebContents(el)
+                    ->web_contents();
+
+            static constexpr std::string_view kJs = R"(
+              const app = document.querySelector('selection-overlay-app');
+              const renderer = app.shadowRoot.querySelector(
+                  'glic-selection-overlay').shadowRoot.querySelector(
+                  'post-selection-renderer');
+              renderer.baseHandler.adjustPolylineSelected(
+                  [{x: 0.1, y: 0.1}, {x: 0.2, y: 0.2}, {x: 0.3, y: 0.1}], 1);
+            )";
+
+            EXPECT_TRUE(content::ExecJs(overlay_contents, kJs));
+          })),
+
+      // Verify that the region contains the polyline points.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        R"(el => {
+                          const p = el.selectedRegions[0].polyline;
+                          return el.selectedRegions.length === 1 &&
+                                 p.length === 3 &&
+                                 Math.abs(p[0].x - 0.1) < 0.001 &&
+                                 Math.abs(p[0].y - 0.1) < 0.001 &&
+                                 Math.abs(p[1].x - 0.2) < 0.001 &&
+                                 Math.abs(p[1].y - 0.2) < 0.001 &&
+                                 Math.abs(p[2].x - 0.3) < 0.001 &&
+                                 Math.abs(p[2].y - 0.1) < 0.001;
+                        })"),
+
+      Do([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        SelectionOverlayController::FromTabWebContents(web_contents)->Close();
+      }));
 }
 
 }  // namespace glic

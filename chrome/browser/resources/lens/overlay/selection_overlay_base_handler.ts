@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
-import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 export enum RegionSource {
   CLICK,
@@ -15,6 +15,7 @@ export enum RegionSource {
 export interface SelectedRegion {
   id: string;
   region: RectF;
+  polyline?: PointF[]|null;
 }
 
 /*
@@ -54,6 +55,8 @@ export abstract class SelectionOverlayBaseHandler {
       number;
   abstract adjustRegionSelected(rect: RectF, source: RegionSource, id?: string):
       void;
+  abstract adjustPolylineSelected(
+      points: PointF[], source: RegionSource, id?: string): void;
   abstract deleteRegion(id: string): void;
   abstract closePreselectionBubble(): void;
   abstract notifyOverlayInitialized(): void;

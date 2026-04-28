@@ -422,23 +422,60 @@ void SelectionOverlayController::RenderRegions() {
     return;
   }
 
-  std::vector<std::pair<base::UnguessableToken, gfx::Rect>> gfx_regions;
+  std::vector<std::pair<base::UnguessableToken, glic::mojom::CapturedRegionPtr>>
+      captured_regions;
   std::vector<selection::SelectedRegionPtr> regions_mojo;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
   // through all the regions. Revisit once we expand the selections.
   for (const auto& [id, region] : selected_regions_) {
-    gfx::RectF gfx_rect_on_canvas =
-        GetRectForRegion(redacted_screenshot_, region->region);
-    SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect_on_canvas);
-    if (!rect_on_canvas.isEmpty() &&
-        redacted_screenshot_.bounds().contains(rect_on_canvas)) {
-      gfx_regions.emplace_back(id, gfx::ToEnclosingRect(gfx_rect_on_canvas));
-      regions_mojo.push_back(region.Clone());
-    } else {
-      // TODO(http://b/485358530): Record proper histograms for the error case.
-      LOG(ERROR) << "Invalid region selected " << region->region.ToString();
+    if (region->shape->is_rect()) {
+      gfx::RectF gfx_rect_on_canvas =
+          GetRectForRegion(redacted_screenshot_, region->shape->get_rect());
+      SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect_on_canvas);
+      if (!rect_on_canvas.isEmpty() &&
+          redacted_screenshot_.bounds().contains(rect_on_canvas)) {
+        regions_mojo.push_back(region.Clone());
+        captured_regions.emplace_back(
+            id, glic::mojom::CapturedRegion::NewRect(
+                    gfx::ToEnclosingRect(gfx_rect_on_canvas)));
+      } else {
+        // TODO(b/485358530): Record proper histograms for the error case.
+        LOG(ERROR) << "Invalid region selected "
+                   << region->shape->get_rect().ToString();
+      }
+    } else if (region->shape->is_polyline()) {
+      if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
+        std::vector<gfx::Point> line_points;
+        bool all_points_valid = true;
+        for (const auto& point : region->shape->get_polyline()) {
+          int x = std::round(point.x() * redacted_screenshot_.width());
+          int y = std::round(point.y() * redacted_screenshot_.height());
+
+          if (x >= 0 && x <= redacted_screenshot_.width() && y >= 0 &&
+              y <= redacted_screenshot_.height()) {
+            // Map width/height to width-1/height-1 to be valid pixel indices.
+            int pixel_x = (x == redacted_screenshot_.width()) ? x - 1 : x;
+            int pixel_y = (y == redacted_screenshot_.height()) ? y - 1 : y;
+            line_points.emplace_back(pixel_x, pixel_y);
+          } else {
+            all_points_valid = false;
+            break;
+          }
+        }
+        if (all_points_valid && !line_points.empty()) {
+          regions_mojo.push_back(region.Clone());
+          captured_regions.emplace_back(
+              id,
+              glic::mojom::CapturedRegion::NewPolyline(std::move(line_points)));
+        } else {
+          LOG(ERROR) << "Invalid polyline selected";
+        }
+      } else {
+        LOG(ERROR) << "Received polyline but kGlicRegionSelectionLine feature "
+                      "is disabled.";
+      }
     }
   }
 
@@ -448,7 +485,7 @@ void SelectionOverlayController::RenderRegions() {
       GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   if (GlicInstance* instance = service->GetInstanceForTab(tab_)) {
     mojom::AdditionalContextPtr additional_context =
-        CreateAdditionalContext(gfx_regions);
+        CreateAdditionalContext(std::move(captured_regions));
     service->SendAdditionalContext(tab_->GetHandle(),
                                    std::move(additional_context));
     instance->OnSelectionAreasChanged(selected_regions_.size());
@@ -464,42 +501,19 @@ void SelectionOverlayController::RenderRegions() {
 
 glic::mojom::AdditionalContextPtr
 SelectionOverlayController::CreateAdditionalContext(
-    const std::vector<std::pair<base::UnguessableToken, gfx::Rect>>& regions) {
+    std::vector<std::pair<base::UnguessableToken,
+                          glic::mojom::CapturedRegionPtr>> regions) {
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
   mojom::TabContextPtr tab_context = tab_context_.Clone();
   parts.push_back(glic::mojom::AdditionalContextPart::NewTabContext(
       std::move(tab_context)));
-  for (const auto& region : regions) {
-    glic::mojom::CapturedRegionPtr captured_region;
-    // TODO(b/501134201): this is a temporary test of line.
-    if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
-      std::vector<gfx::Point> line_points;
-
-      // 4 corners of the rectangle + closing point
-      gfx::Point p0(region.second.x(), region.second.y());
-      gfx::Point p1(region.second.right(), region.second.y());
-      gfx::Point p2(region.second.right(), region.second.bottom());
-      gfx::Point p3(region.second.x(), region.second.bottom());
-      gfx::Point p4(region.second.x(), region.second.y());
-
-      line_points.push_back(p0);
-      line_points.push_back(p1);
-      line_points.push_back(p2);
-      line_points.push_back(p3);
-      line_points.push_back(p4);
-
-      captured_region =
-          glic::mojom::CapturedRegion::NewPolyline(std::move(line_points));
-    } else {
-      captured_region = glic::mojom::CapturedRegion::NewRect(region.second);
-    }
-
+  for (auto& region : regions) {
     parts.push_back(glic::mojom::AdditionalContextPart::NewPendingRegion(
         glic::mojom::PendingCapturedRegion::New(region.first,
-                                                captured_region.Clone())));
+                                                region.second.Clone())));
     parts.push_back(glic::mojom::AdditionalContextPart::NewRegion(
-        std::move(captured_region)));
+        std::move(region.second)));
   }
   context->source = glic::mojom::AdditionalContextSource::kRegionSelection;
   context->tab_id = tab_->GetHandle().raw_value();

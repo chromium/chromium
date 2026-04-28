@@ -8,12 +8,18 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+union RegionShape {
+  // A rectangular region.
+  gfx.mojom.RectF rect;
+  // A polyline shape.
+  array<gfx.mojom.PointF> polyline;
+};
+
 struct SelectedRegion {
   // Uniquely identifies this selected region.
   mojo_base.mojom.UnguessableToken id;
-  // The selected rectangular region.
-  gfx.mojom.RectF region;
-  // TODO(b:452032491): Supports non-rect region selection.
+  // The shape of the selected region (either a rectangle or a polyline).
+  RegionShape shape;
 };
 
 enum DismissOverlayReason {

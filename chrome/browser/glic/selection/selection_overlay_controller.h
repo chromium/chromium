@@ -128,7 +128,8 @@ class SelectionOverlayController
 
   void Reset();
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
-      const std::vector<std::pair<base::UnguessableToken, gfx::Rect>>& regions);
+      std::vector<std::pair<base::UnguessableToken,
+                            glic::mojom::CapturedRegionPtr>> regions);
 
   // Connections to and from the overlay WebUI. Only valid while
   // `OverlayBaseController::overlay_view_` is showing and the underlying
