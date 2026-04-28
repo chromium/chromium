@@ -19,6 +19,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/ActionUtils.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionViewBinding.java",
     "java/src/org/chromium/chrome/browser/ui/actions/DelegatingActionView.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/HomeActionButtonBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/HomeActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/IphIntent.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ResourceTextResolver.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ActionButtonData.java",
@@ -68,6 +70,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/actions/ActionButtonBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/ActionRegistryUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/HomeActionButtonBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/ResourceTextResolverUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/actions/button/DrawableButtonDataUnitTest.java",
