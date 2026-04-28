@@ -110,6 +110,8 @@ class ContextualCueingController
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
   raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<PrefService> profile_prefs_;
+
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};

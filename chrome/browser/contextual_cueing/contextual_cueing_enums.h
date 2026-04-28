@@ -62,7 +62,9 @@ enum class ContextualCueingDecision {
   kSidePanelShowing = 22,
   // The cue couldn't be shown because there are no eligible cue surfaces.
   kNoEligibleCueSurfaces = 23,
-  kMaxValue = kNoEligibleCueSurfaces,
+  // The cue couldn't be shown because the user opted out.
+  kDisabledForUser = 24,
+  kMaxValue = kDisabledForUser,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

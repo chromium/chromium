@@ -66,6 +66,7 @@ source_set("impl") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/background/glic",
     "//chrome/browser/component_updater",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
     "//chrome/browser/external_protocol",
