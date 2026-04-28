@@ -9,9 +9,8 @@ import("//ios/build/chrome_build.gni")
 
 buildflag_header("features") {
   header = "features.h"
-  flags = [
-    "ENABLE_WIDGET_KIT_EXTENSION=" + "$ios_enable_widget_kit_extension",
-  ]
+  flags =
+      [ "ENABLE_WIDGET_KIT_EXTENSION=" + "$ios_enable_widget_kit_extension" ]
 }
 
 if (ios_enable_widget_kit_extension) {
