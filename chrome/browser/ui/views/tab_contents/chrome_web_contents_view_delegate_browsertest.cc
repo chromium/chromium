@@ -20,8 +20,9 @@
 class ChromeWebContentsViewDelegateBrowserTest : public InProcessBrowserTest {};
 
 #if BUILDFLAG(IS_MAC)
+// Flaky: https://crbug.com/493464839
 IN_PROC_BROWSER_TEST_F(ChromeWebContentsViewDelegateBrowserTest,
-                       ContextMenuFocusesWebContents) {
+                       DISABLED_ContextMenuFocusesWebContents) {
   // Add a second tab and create split view.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(0);
