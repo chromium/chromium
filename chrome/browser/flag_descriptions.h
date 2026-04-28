@@ -595,6 +595,14 @@ inline constexpr char kEnableWebSigninLoadingDialogName[] =
 inline constexpr char kEnableWebSigninLoadingDialogDescription[] =
     "Enables a dialog to be shown while users wait for cookies to be minted.";
 
+inline constexpr char kEnergyEffectName[] = "Energy Effect";
+inline constexpr char kEnergyEffectDescription[] =
+    "Enables the Energy Effect for the Realbox.";
+
+inline constexpr char kEnergyEffectAnimationName[] = "Energy Effect Animation";
+inline constexpr char kEnergyEffectAnimationDescription[] =
+    "Enables animations for the Energy Effect for the Realbox.";
+
 inline constexpr char kForceHistoryOptInScreenName[] =
     "Force history opt-in screen";
 inline constexpr char kForceHistoryOptInScreenDescription[] =
