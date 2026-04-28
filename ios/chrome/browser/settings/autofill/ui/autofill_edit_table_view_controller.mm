@@ -30,6 +30,7 @@
   }
 
   _formInputAccessoryView = [[FormInputAccessoryView alloc] init];
+  _formInputAccessoryView.hidden = YES;
   return self;
 }
 
@@ -84,9 +85,12 @@
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
-  if (!IsCompactHeight(self)) {
+
+  // Don't show a keyboard accessory if the text field has a custom input view.
+  if (!IsCompactHeight(self) && !cell.textField.inputView) {
     _formInputAccessoryView.hidden = NO;
   }
+
   [textField setInputAccessoryView:_formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
