@@ -45,6 +45,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       composeboxForkEnabled_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
       hasAllowedInputs_: {type: Boolean},
+      energyEffectEnabled_: {type: Boolean, reflect: true},
     };
   }
 
@@ -59,6 +60,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('composeboxAnimationDisabled');
   protected caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
+  protected accessor energyEffectEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
 
   private eventTracker_ = new EventTracker();
   private pageHandler_: PageHandlerInterface;

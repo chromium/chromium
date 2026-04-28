@@ -176,6 +176,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxAnimationDisabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxAimPopupDisableAnimation));
+  source->AddBoolean(
+      "energyEffectEnabled",
+      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,

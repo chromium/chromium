@@ -45,6 +45,8 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
+// Enables energy effect in the omnibox.
+BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
