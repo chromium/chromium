@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import type {KeyboardShortcutPageElement} from 'chrome://settings/search_page/keyboard_shortcut_page.js';
+import type {KeyboardShortcutPageElement} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

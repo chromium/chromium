@@ -267,15 +267,6 @@ build_webui_tests("build") {
     "chrome://settings/privacy_sandbox/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings/tsc/privacy_sandbox/*",
             target_gen_dir),
-    "chrome://settings/search_page/site_shortcuts_page.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/tsc/search_page/site_shortcuts_page.d.ts",
-            target_gen_dir),
-    "chrome://settings/search_page/feature_shortcuts_page.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/tsc/search_page/feature_shortcuts_page.d.ts",
-            target_gen_dir),
-    "chrome://settings/search_page/keyboard_shortcut_page.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/tsc/search_page/keyboard_shortcut_page.d.ts",
-            target_gen_dir),
     "chrome://settings/settings.js|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.d.ts",

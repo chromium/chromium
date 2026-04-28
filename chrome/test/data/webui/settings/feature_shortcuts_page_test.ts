@@ -6,13 +6,12 @@
 import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {FeatureShortcutsPageElement} from 'chrome://settings/search_page/feature_shortcuts_page.js';
+import type {CategorizedTemplateUrls, FeatureShortcutsPageElement} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-import type {CategorizedTemplateUrls} from 'chrome://settings/settings.js';
 
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
