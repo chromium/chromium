@@ -3784,17 +3784,14 @@ const FeatureEntry::FeatureVariation kGlicGuestUrlPresetTypes[] = {
     {"Pre-prod", kGlicGuestUrlPresetTypePreprod, nullptr},
     {"Prod", kGlicGuestUrlPresetTypeProd, nullptr}};
 
-const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetTrue[] = {
-    {"use_widget", "true"}};
-const FeatureEntry::FeatureParam kGlicSelectionPromptUseWidgetFalse[] = {
-    {"use_widget", "false"}};
-const FeatureEntry::FeatureParam kGlicSelectionPromptUpdatesOnlyTrue[] = {
-    {"updates_only", "true"}};
-
-const FeatureEntry::FeatureVariation kGlicSelectionPromptVariations[] = {
-    {"with InlineCue", kGlicSelectionPromptUseWidgetTrue, nullptr},
-    {"with TopCue", kGlicSelectionPromptUseWidgetFalse, nullptr},
-    {"with UpdatesOnly", kGlicSelectionPromptUpdatesOnlyTrue, nullptr}};
+const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"Enabled with Updates Only", switches::kEnableFeatures,
+     "GlicSelectionPrompt:updates_only/true"},
+    {"Enabled with TopCue", switches::kEnableFeatures,
+     "GlicSelectionPrompt:use_widget/false"},
+    {"Enabled with InlineCue", switches::kEnableFeatures,
+     "GlicSelectionPrompt:use_widget/true"}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
@@ -10689,9 +10686,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicSelectionPrompt,
-                                    kGlicSelectionPromptVariations,
-                                    "GlicSelectionPrompt")},
+     MULTI_VALUE_TYPE(kGlicSelectionPromptChoices)},
 
     {"glic-disable-actor-safety-checks",
      flag_descriptions::kGlicDisableActorSafetyChecksName,
