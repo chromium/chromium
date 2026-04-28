@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,12 +50,14 @@ public class BottomBarMediatorUnitTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private PropertyModel mModel;
     private @Nullable BottomBarMediator mMediator;
 
     @Before
     public void setUp() {
         mTabSupplier = ObservableSuppliers.createNullable();
+        mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mModel = new PropertyModel(BottomBarProperties.ALL_KEYS);
         when(mThemeColorProvider.getBrandedColorScheme())
                 .thenReturn(BrandedColorScheme.APP_DEFAULT);
@@ -72,7 +75,12 @@ public class BottomBarMediatorUnitTest {
     public void testConstructor() {
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -85,7 +93,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
@@ -103,7 +116,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onUrlUpdated(mTab);
@@ -120,7 +138,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -140,7 +163,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -160,7 +188,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -180,7 +213,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -203,7 +241,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -226,7 +269,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -249,7 +297,12 @@ public class BottomBarMediatorUnitTest {
         mTabSupplier.set(mTab);
         mMediator =
                 new BottomBarMediator(
-                        mModel, mThemeColorProvider, mTabSupplier, mVisibilityDelegate);
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -261,5 +314,59 @@ public class BottomBarMediatorUnitTest {
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void testHomeButtonVisibility_Enabled() {
+        mHomepageEnabledSupplier.set(true);
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void testHomeButtonVisibility_Disabled() {
+        mHomepageEnabledSupplier.set(false);
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        assertFalse(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void testHomeButtonVisibility_Toggle() {
+        mHomepageEnabledSupplier.set(true);
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true);
+
+        assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
+
+        mHomepageEnabledSupplier.set(false);
+        assertFalse(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
+
+        mHomepageEnabledSupplier.set(true);
+        assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
     }
 }

@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -64,6 +65,7 @@ public class BottomBarCoordinatorUnitTest {
 
     private Activity mActivity;
     private FrameLayout mParent;
+    private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private BottomBarCoordinator mCoordinator;
 
     @Before
@@ -77,12 +79,14 @@ public class BottomBarCoordinatorUnitTest {
     private void onActivity(Activity activity) {
         mActivity = activity;
         mParent = new FrameLayout(mActivity);
+        mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mCoordinator =
                 new BottomBarCoordinator(
                         mParent,
                         mActionRegistry,
                         mThemeColorProvider,
                         mTabSupplier,
+                        mHomepageEnabledSupplier,
                         mVisibilityDelegate);
     }
 

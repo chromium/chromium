@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,7 +34,10 @@ public class BottomBarMediator {
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
     private final VisibilityDelegate mVisibilityDelegate;
+    private final NonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private final Callback<@Nullable Tab> mTabSupplierObserver = this::onTabChanged;
+    private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
+    private final boolean mShouldIncludeHomeButton;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable Boolean mIsVisible;
@@ -48,11 +52,15 @@ public class BottomBarMediator {
             PropertyModel model,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
-            VisibilityDelegate visibilityDelegate) {
+            NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
+            VisibilityDelegate visibilityDelegate,
+            boolean shouldIncludeHomeButton) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mTabSupplier = tabSupplier;
+        mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
+        mShouldIncludeHomeButton = shouldIncludeHomeButton;
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -64,6 +72,9 @@ public class BottomBarMediator {
 
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
+        if (mShouldIncludeHomeButton) {
+            mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
+        }
     }
 
     private void onTabChanged(@Nullable Tab tab) {
@@ -91,6 +102,10 @@ public class BottomBarMediator {
         mVisibilityDelegate.onVisibilityChanged(isVisible);
     }
 
+    private void onHomepageEnabledChanged(boolean isEnabled) {
+        mModel.set(BottomBarProperties.IS_HOME_BUTTON_VISIBLE, isEnabled);
+    }
+
     /** Remove observers. */
     public void destroy() {
         if (mCurrentTab != null) {
@@ -98,5 +113,8 @@ public class BottomBarMediator {
             mCurrentTab = null;
         }
         mTabSupplier.removeObserver(mTabSupplierObserver);
+        if (mShouldIncludeHomeButton) {
+            mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
+        }
     }
 }

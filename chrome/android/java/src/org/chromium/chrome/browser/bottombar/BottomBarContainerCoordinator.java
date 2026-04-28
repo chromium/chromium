@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -51,13 +52,19 @@ public class BottomBarContainerCoordinator
             Callback<Boolean> requestLayerUpdateCallback,
             ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            NonNullObservableSupplier<Boolean> homepageEnabledSupplier) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
 
         mBottomBarCoordinator =
                 new BottomBarCoordinator(
-                        bottomBarContainer, actionRegistry, themeColorProvider, tabSupplier, this);
+                        bottomBarContainer,
+                        actionRegistry,
+                        themeColorProvider,
+                        tabSupplier,
+                        homepageEnabledSupplier,
+                        this);
     }
 
     @Override

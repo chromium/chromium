@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,14 +45,23 @@ public class BottomBarCoordinator implements BottomBar {
             ActionRegistry actionRegistry,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
+            NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate) {
         mView =
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.bottom_bar_layout, parent, false);
 
+        boolean shouldIncludeHomeButton = BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled();
+
         mModel = new PropertyModel.Builder(BottomBarProperties.ALL_KEYS).build();
         mMediator =
-                new BottomBarMediator(mModel, themeColorProvider, tabSupplier, visibilityDelegate);
+                new BottomBarMediator(
+                        mModel,
+                        themeColorProvider,
+                        tabSupplier,
+                        homepageEnabledSupplier,
+                        visibilityDelegate,
+                        shouldIncludeHomeButton);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
 
@@ -60,9 +70,8 @@ public class BottomBarCoordinator implements BottomBar {
                         actionRegistry.get(ActionId.NEW_TAB),
                         mView.findViewById(R.id.new_tab_button)));
 
-        if (BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled()) {
+        if (shouldIncludeHomeButton) {
             BottomBarButtonContainer homeContainer = mView.findViewById(R.id.home_button_container);
-            homeContainer.setVisibility(View.VISIBLE);
             homeContainer.inflateStub();
             mBindings.add(
                     new ActionViewBinding(

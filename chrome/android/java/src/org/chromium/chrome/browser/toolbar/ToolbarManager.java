@@ -2418,7 +2418,8 @@ public class ToolbarManager
                         mBottomControlsStacker::requestLayerUpdate,
                         assumeNonNull(mActionRegistry),
                         mCurrentTabSupplier,
-                        mAppThemeColorProvider);
+                        mAppThemeColorProvider,
+                        mHomepageEnabledSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {

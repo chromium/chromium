@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -67,6 +68,7 @@ public class BottomBarContainerCoordinatorUnitTest {
 
     private Activity mActivity;
     private FrameLayout mBottomBarContainer;
+    private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private BottomBarContainerCoordinator mCoordinator;
 
     @Before
@@ -79,13 +81,15 @@ public class BottomBarContainerCoordinatorUnitTest {
                         (activity) -> {
                             mActivity = activity;
                             mBottomBarContainer = new FrameLayout(mActivity);
+                            mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
                                             mRequestLayerUpdateCallback,
                                             mActionRegistry,
                                             mTabSupplier,
-                                            mThemeColorProvider);
+                                            mThemeColorProvider,
+                                            mHomepageEnabledSupplier);
                         });
     }
 

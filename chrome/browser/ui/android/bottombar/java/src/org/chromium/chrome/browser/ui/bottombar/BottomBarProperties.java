@@ -14,6 +14,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 public class BottomBarProperties {
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey IS_HOME_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE, COLOR_SCHEME};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {IS_VISIBLE, COLOR_SCHEME, IS_HOME_BUTTON_VISIBLE};
 }
