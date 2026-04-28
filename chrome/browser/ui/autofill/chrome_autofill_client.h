@@ -22,6 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -146,6 +148,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   AutofillComposeDelegate* GetComposeDelegate() final;
   accessibility_annotator::AccessibilityQueryService*
   GetAccessibilityQueryService() override;
+  accessibility_annotator::RemoteAnnotatorEnablementState
+  GetAccessibilityAnnotatorEnablementState() const override;
   PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id) final;
   void GetAiPageContent(GetAiPageContentCallback callback) final;

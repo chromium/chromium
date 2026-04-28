@@ -59,6 +59,7 @@
 #include "base/types/zip.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -1174,6 +1175,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                               /*update_datalist=*/true);
 
   if (IsAtMemoryTriggerSource(trigger_source)) {
+    // Do not show the pop up at all for non eligible profiles.
+    if (client().GetAccessibilityAnnotatorEnablementState() ==
+        accessibility_annotator::RemoteAnnotatorEnablementState::
+            kDisabledNotEligible) {
+      return;
+    }
     // Show empty suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(field_id, {});
     return;

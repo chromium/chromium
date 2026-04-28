@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
@@ -113,6 +114,12 @@ AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
 accessibility_annotator::AccessibilityQueryService*
 AutofillClient::GetAccessibilityQueryService() {
   return nullptr;
+}
+
+accessibility_annotator::RemoteAnnotatorEnablementState
+AutofillClient::GetAccessibilityAnnotatorEnablementState() const {
+  return accessibility_annotator::RemoteAnnotatorEnablementState::
+      kDisabledNotEligible;
 }
 
 PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(

@@ -1553,6 +1553,23 @@ TEST_F(BrowserAutofillManagerTest, AtMemoryTriggersEmptySuggestions) {
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
+// Tests that when `RemoteAnnotatorEnablementState` is `kDisabledNotEligible`
+// for a given profile, the AtMemory popup doesn't trigger.
+TEST_F(BrowserAutofillManagerTest, AtMemoryTriggerDroppedWhenNotEligible) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  autofill_client().set_accessibility_annotator_enablement_state(
+      accessibility_annotator::RemoteAnnotatorEnablementState::
+          kDisabledNotEligible);
+
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kAtMemory);
+
+  // No suggestions should be returned, not even empty ones.
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
 // Test that the correct logger is returned for an address field.
 TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_Address) {
   AutofillField field;
