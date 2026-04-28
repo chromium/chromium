@@ -1124,6 +1124,28 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity.CrossDomainSearch" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there is a site search with a URL-like keyword whose target
+    URL has a different domain.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.CrossTldSearch" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there is a site search with a URL-like keyword whose target
+    URL has a different eTLD, but the same domain otherwise.
+  </summary>
+</histogram>
+
 <histogram
     name="Search.Integrity.Enterprise.IsDefaultCustomWithMatchingPolicyEngine"
     enum="Boolean" expires_after="2026-10-20">
@@ -1150,6 +1172,17 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     engine that is not on the allowlist on a managed profile. Recorded once per
     profile at startup if a custom search engine is present on a managed
     profile.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.ExtensionUrlSearch" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there is a site search with a URL-like keyword whose target
+    is an extension.
   </summary>
 </histogram>
 
@@ -1196,6 +1229,17 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 
     Recorded once per profile at startup when the search engine allowlist is
     initialized and the configuration is checked.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.ObfuscatedSearchUrl" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there is a site search with a URL-like keyword whose target
+    URL is obfuscated using multiple escaped characters in a row.
   </summary>
 </histogram>
 

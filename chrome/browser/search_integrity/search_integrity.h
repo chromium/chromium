@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,6 +34,14 @@ enum class SearchReferralParam {
   kMaxValue = kTt,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchReferralParam)
+
+// A struct to hold the results of the site search integrity check.
+struct SiteSearchIntegrityReport {
+  bool has_obfuscated_search_url = false;
+  bool has_cross_tld_search = false;
+  bool has_cross_domain_search = false;
+  bool has_extension_url_search = false;
+};
 
 // A struct to hold the results of the search integrity check.
 struct SearchIntegrityReport {
@@ -77,6 +86,8 @@ class SearchIntegrity : public KeyedService {
   void LogEnterpriseMetrics(const SearchIntegrityReport& report);
 
   SearchIntegrityReport CheckSearchEnginesReport();
+
+  SiteSearchIntegrityReport CheckSiteSearchReport();
 
   // The template URL service, used to access se list.
   raw_ptr<TemplateURLService> template_url_service_;
