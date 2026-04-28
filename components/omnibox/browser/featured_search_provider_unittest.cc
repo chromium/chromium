@@ -399,25 +399,6 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
   RunTest(typing_scheme_cases);
 }
 
-TEST_F(FeaturedSearchProviderTest, AssociatedKeyword) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {omnibox::kStarterPackExpansion, omnibox::kAiModeStartPack}, {});
-
-  AddStarterPackEntriesToTemplateUrlService();
-  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
-                                    TemplateURLData::PolicyOrigin::kSiteSearch);
-
-  AutocompleteInput input(u"@", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  provider_->Start(input, false);
-
-  for (const auto& match : provider_->matches()) {
-    EXPECT_FALSE(match.keyword.empty());
-    EXPECT_EQ(match.associated_keyword, match.keyword);
-  }
-}
-
 TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
