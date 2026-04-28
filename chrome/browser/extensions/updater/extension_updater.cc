@@ -61,7 +61,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/time/time.h"

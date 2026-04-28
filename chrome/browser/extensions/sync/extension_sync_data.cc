@@ -17,7 +17,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

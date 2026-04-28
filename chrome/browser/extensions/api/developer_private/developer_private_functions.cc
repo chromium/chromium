@@ -126,7 +126,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"

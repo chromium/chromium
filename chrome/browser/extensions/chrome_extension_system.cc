@@ -65,7 +65,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

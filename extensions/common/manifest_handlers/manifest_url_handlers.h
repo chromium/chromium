@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_COMMON_MANIFEST_URL_HANDLERS_H_
-#define EXTENSIONS_COMMON_MANIFEST_URL_HANDLERS_H_
+#ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_MANIFEST_URL_HANDLERS_H_
+#define EXTENSIONS_COMMON_MANIFEST_HANDLERS_MANIFEST_URL_HANDLERS_H_
 
 #include <string>
 #include <vector>
@@ -112,4 +112,4 @@ class AboutPageHandler : public ManifestHandler {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_COMMON_MANIFEST_URL_HANDLERS_H_
+#endif  // EXTENSIONS_COMMON_MANIFEST_HANDLERS_MANIFEST_URL_HANDLERS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 
 #include <memory>
 #include <utility>
@@ -83,11 +83,9 @@ GURL ManifestURL::GetDetailsURL(const Extension* extension) {
              : GURL();
 }
 
-HomepageURLHandler::HomepageURLHandler() {
-}
+HomepageURLHandler::HomepageURLHandler() = default;
 
-HomepageURLHandler::~HomepageURLHandler() {
-}
+HomepageURLHandler::~HomepageURLHandler() = default;
 
 bool HomepageURLHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
@@ -114,11 +112,9 @@ base::span<const char* const> HomepageURLHandler::Keys() const {
   return kKeys;
 }
 
-UpdateURLHandler::UpdateURLHandler() {
-}
+UpdateURLHandler::UpdateURLHandler() = default;
 
-UpdateURLHandler::~UpdateURLHandler() {
-}
+UpdateURLHandler::~UpdateURLHandler() = default;
 
 bool UpdateURLHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
@@ -132,8 +128,7 @@ bool UpdateURLHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   manifest_url->url_ = GURL(*tmp_update_url);
-  if (!manifest_url->url_.is_valid() ||
-      manifest_url->url_.has_ref()) {
+  if (!manifest_url->url_.is_valid() || manifest_url->url_.has_ref()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidUpdateURL,
                                                  *tmp_update_url);
     return false;
@@ -148,11 +143,9 @@ base::span<const char* const> UpdateURLHandler::Keys() const {
   return kKeys;
 }
 
-AboutPageHandler::AboutPageHandler() {
-}
+AboutPageHandler::AboutPageHandler() = default;
 
-AboutPageHandler::~AboutPageHandler() {
-}
+AboutPageHandler::~AboutPageHandler() = default;
 
 bool AboutPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
