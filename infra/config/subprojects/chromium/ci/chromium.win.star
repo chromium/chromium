@@ -732,7 +732,10 @@ ci.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # 20min (bot update) + 3hr (compile time without cache) +
     # 40min (isolate tests) with 1hr buffer
-    execution_timeout = 5 * time.hour,
+    # TODO: crbug.com/506222555: Extend timeout to let builds to
+    # upload logs.
+    # execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
 )
 
 ci.thin_tester(
