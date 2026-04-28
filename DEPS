@@ -533,6 +533,10 @@ vars = {
   # the commit queue can handle CLs rolling clusterfuzz-data
   # and whatever else without interference from each other.
   'clusterfuzz_data_revision':'16291853b71303fe621459f0c280e2ba1257d529',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling agents-internal
+  # and whatever else without interference from each other.
+  'agents_internal_revision': 'd12111acb44948a78b14ca49b497705655e205ed',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -3103,6 +3107,11 @@ deps = {
     'condition': 'checkout_src_internal or checkout_src_internal_infra',
   },
 # LINT.ThenChange(/components/cronet/gn2bp/copy.bara.sky)
+
+  'src/agents/internal': {
+    'url': Var('chrome_git') + '/chrome/agents-internal.git' + '@' + Var('agents_internal_revision'),
+    'condition': 'checkout_src_internal or checkout_src_internal_infra',
+  },
 
   'src/internal/tools/edit_monitor/cipd': {
       'packages': [
