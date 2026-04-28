@@ -268,6 +268,7 @@ source_set("chrome_web_authentication_delegate") {
       "//chrome/browser/sync",
       "//chrome/browser/ui/passwords",
       "//components/device_event_log",
+      "//components/webapps/isolated_web_apps:scheme",
       "//components/webauthn/core/browser",
     ]
 

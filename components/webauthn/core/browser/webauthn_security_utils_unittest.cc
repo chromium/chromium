@@ -20,6 +20,9 @@ TEST(WebAuthnSecurityUtilsTest, OriginAllowedToMakeWebAuthnRequests) {
       {"https://example.com", ValidationStatus::kSuccess},
       {"https://foo.bar.net", ValidationStatus::kSuccess},
       {"http://localhost", ValidationStatus::kSuccess},
+      {"isolated-app://"
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+       ValidationStatus::kSuccess},
       // Non-trustworthy HTTP
       {"http://example.com", ValidationStatus::kInvalidDomain},
       // IP addresses are disallowed.
@@ -76,6 +79,19 @@ TEST(WebAuthnSecurityUtilsTest, OriginIsAllowedToClaimRelyingPartyId) {
       {"http://example.com", "example.com", false},
       // Internal labels (disallowed by Chromium)
       {"https://login.awesomecompany", "awesomecompany", false},
+      // IWAs can not claim any RP ID except via remoteDesktopClientOverride.
+      {"isolated-app://"
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+       "awesomecompany", false},
+      {"isolated-app://"
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+       "example.com", false},
+      {"isolated-app://"
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+       "localhost", false},
+      {"isolated-app://"
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic", false},
   };
 
   for (const auto& test_case : kTestCases) {

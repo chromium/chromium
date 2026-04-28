@@ -36,11 +36,16 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -53,6 +58,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1341,6 +1347,170 @@ IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest,
       "webauthn: OK",
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionCredID1234));
+}
+
+class WebAuthnIWABrowserTest : public WebAuthnBrowserTest {
+ public:
+  WebAuthnIWABrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnIWARemoteDesktopAllowedOriginsPolicy,
+         features::kIsolatedWebApps},
+        {});
+  }
+
+  WebAuthnIWABrowserTest(const WebAuthnIWABrowserTest&) = delete;
+  WebAuthnIWABrowserTest& operator=(const WebAuthnIWABrowserTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebAuthnBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration
+      os_integration_override_;
+};
+
+// Launches the IWA with the given ID and returns its main frame.
+content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
+                                  Profile* profile) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  auto url = std::nullopt;
+
+  base::test::TestFuture<content::WebContents*> future;
+  provider->scheduler().LaunchApp(
+      app_id, url,
+      base::BindOnce([](base::WeakPtr<Browser>,
+                        base::WeakPtr<content::WebContents> web_contents,
+                        apps::LaunchContainer) {
+        return web_contents.get();
+      }).Then(future.GetCallback()));
+
+  auto* web_contents = future.Get();
+  content::WaitForLoadStop(web_contents);
+  return web_contents->GetPrimaryMainFrame();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnIWABrowserTest,
+                       MissingPermissionsPolicyYieldsNotAllowedError) {
+  // Test that invoking WebAuthn inside an IWA is rejected with a
+  // NotAllowedError, if the IWA manifest lacks the necessary permissions
+  // policy.
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+          // We do not add any permission here because of it will fail before
+          // check due to no remote desktop override extensrion is used.
+          )
+          .BuildBundle();
+  auto url_info = app->Install(browser()->profile());
+
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+
+  EXPECT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
+      kCredentialID, url_info->origin().host()));
+
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
+
+  content::RenderFrameHost* app_frame =
+      OpenApp(url_info->app_id(), browser()->profile());
+  content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
+
+  EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAuthnIWABrowserTest,
+    NoRemoteDesktopClientOverrideExtensionYieldsSecurityError_PolicyNotSet) {
+  // Test that invoking WebAuthn inside an IWA is rejected with a
+  // SecurityError, if the IWA is not using remoteDesktopClientOverride
+  // extension, IWAs only can use WebAuthn for now in VDI sessions.
+  // Behavior different from Chrome Extensions.
+
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              // Allow IWA to get creds
+              .AddPermissionsPolicy(network::mojom::PermissionsPolicyFeature::
+                                        kPublicKeyCredentialsGet,
+                                    true, {}))
+          .BuildBundle();
+
+  auto url_info = app->Install(browser()->profile());
+
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+
+  // Create and register creds with rp_id equals to IWA caller origin hostname
+  EXPECT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
+      kCredentialID, url_info->origin().host()));
+
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
+
+  content::RenderFrameHost* app_frame =
+      OpenApp(url_info->app_id(), browser()->profile());
+
+  content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
+  // Call not permitted due to 'local' case, we only allow WebAuthn for IWAs if
+  // remoteDesktopClientOverride set, in this case remoteDesktopClientOverride
+  // not set
+  EXPECT_THAT(result.ExtractString(),
+              testing::HasSubstr("error SecurityError"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAuthnIWABrowserTest,
+    NoRemoteDesktopClientOverrideExtensionYieldsSecurityError_PolicySet) {
+  // Test that WebAuthn does not work for 'local' IWAs (call to
+  // navigator.credentials.get not allowed). Case with policy and prefs
+  // set, rp_id equals to IWAs caller origin hostnames and credentials with this
+  // origin created, but unlike the Chrome Extension behavior is different, IWAs
+  // outside of VDI can not assert even same origin: RP IDs are FQDN, which IWA
+  // are not. We do not have a spec for first-party credential for an IWA so
+  // limit functionality with VDI.
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              // Allow IWA to get creds
+              .AddPermissionsPolicy(network::mojom::PermissionsPolicyFeature::
+                                        kPublicKeyCredentialsGet,
+                                    true, {}))
+          .BuildBundle();
+
+  auto url_info = app->Install(browser()->profile());
+  // Put IWA origin to prefs to emulate values set by
+  // WebAuthenticationRemoteDesktopAllowedOrigins policy
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser()->profile())->GetPrefs();
+  base::ListValue list =
+      base::ListValue().Append("isolated-app://" + url_info->origin().host());
+  prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
+                 std::move(list));
+
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+
+  // Create and register creds with rp_id equals to IWA caller origin
+  EXPECT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
+      kCredentialID, url_info->origin().host()));
+
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
+
+  content::RenderFrameHost* app_frame =
+      OpenApp(url_info->app_id(), browser()->profile());
+
+  content::EvalJsResult result = EvalJs(app_frame, kGetAssertionCredID1234);
+  // Call not permitted due to 'local' case, despite same rp_id, we only allow
+  // WebAuthn for IWAs if remoteDesktopClientOverride set, in this case
+  // remoteDesktopClientOverride not set
+  EXPECT_THAT(result.ExtractString(),
+              testing::HasSubstr("error SecurityError"));
 }
 
 }  // namespace

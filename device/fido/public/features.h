@@ -145,6 +145,11 @@ BASE_DECLARE_FEATURE(kWebAuthnImmediateGet);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateMediationTimeoutMilliseconds);
 
+// Enables support for the WebAuthenticationRemoteDesktopAllowedOrigins
+// enterprise policy for Isolated Web Apps.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
+
 // Sends a PIN generation number to the enclave on a PIN wrapping request.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);

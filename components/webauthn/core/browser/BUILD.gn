@@ -98,6 +98,12 @@ source_set("common_utils") {
     "//services/network/public/mojom",
     "//url",
   ]
+
+  # has to be in this form because of how checks are
+  # implemented in  components/webapps/isolated_web_apps/BUILD.gn
+  if (is_chromeos || is_win || is_mac || is_linux) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }
 
 source_set("unit_tests") {

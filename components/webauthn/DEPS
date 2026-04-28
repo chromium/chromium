@@ -4,6 +4,7 @@ include_rules = [
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/sync",
   "+components/version_info/android/java/src/org/chromium/components/version_info/VersionInfo.java",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+content/browser/webauth",
   "+content/public",
   "+crypto",

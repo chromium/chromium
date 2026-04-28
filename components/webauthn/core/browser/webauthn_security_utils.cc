@@ -4,6 +4,7 @@
 
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/url_util.h"
@@ -14,6 +15,12 @@ ValidationStatus OriginAllowedToMakeWebAuthnRequests(
     url::Origin caller_origin) {
   if (caller_origin.opaque()) {
     return ValidationStatus::kOpaqueDomain;
+  }
+
+  // IWAs can make WebAuthn requests but generally aren't allowed to claim
+  // any RP IDs, except via the remoteDesktopClientOverride extension.
+  if (caller_origin.scheme() == webapps::kIsolatedAppScheme) {
+    return ValidationStatus::kSuccess;
   }
 
   // Given the |network::IsUrlPotentiallyTrustworthy| check below, http
@@ -43,7 +50,10 @@ bool OriginIsAllowedToClaimRelyingPartyId(
       ValidationStatus::kSuccess) {
     return false;
   }
-
+  // IWAs can only claim RP IDs via the remoteDesktopClientOverride extension
+  if (caller_origin.scheme() == webapps::kIsolatedAppScheme) {
+    return false;
+  }
   if (claimed_relying_party_id.empty()) {
     return false;
   }
