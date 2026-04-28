@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/on_device_translation/public/supported_languages.h:SupportedLanguage) -->
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
-    enum="LocaleCodeBCP47" expires_after="2026-08-23">
+    enum="LocaleCodeBCP47" expires_after="2026-10-25">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

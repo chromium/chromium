@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TaskManager.Opened" enum="StartAction"
-    expires_after="2026-08-23">
+    expires_after="2026-10-25">
   <owner>mwoj@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>

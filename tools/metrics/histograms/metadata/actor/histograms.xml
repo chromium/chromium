@@ -404,7 +404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.Same{Scope}{Origin}"
-    enum="BooleanMatched" expires_after="2026-08-23">
+    enum="BooleanMatched" expires_after="2026-10-25">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <owner>cfredric@chromium.org</owner>
@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.TimeElapsedForGating2" units="ms"
-    expires_after="2026-08-23">
+    expires_after="2026-10-25">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
@@ -437,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.ObservationDelay.DidNavigate" enum="Boolean"
-    expires_after="2026-08-11">
+    expires_after="2026-10-25">
   <owner>dtapuska@google.com</owner>
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>

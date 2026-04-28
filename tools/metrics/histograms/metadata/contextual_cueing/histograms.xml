@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.GlicSuggestions.PinnedTabsEligibleForSuggestions"
-    enum="Boolean" expires_after="2026-08-23">
+    enum="Boolean" expires_after="2026-10-25">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>

@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Content.SharedWorker.CreationContextTypeMismatch"
-    enum="SharedWorkerCreationContextTypeMismatch" expires_after="2026-08-09">
+    enum="SharedWorkerCreationContextTypeMismatch" expires_after="2026-10-25">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>content-owners@chromium.org</owner>
   <summary>

@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="History.AttemptedToFixProfileError"
-    enum="BooleanDatabaseKilled" expires_after="2026-08-21">
+    enum="BooleanDatabaseKilled" expires_after="2026-10-25">
   <owner>etienneb@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>

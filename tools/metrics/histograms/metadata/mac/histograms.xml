@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.ValidationResult"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-08-23">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-25">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
