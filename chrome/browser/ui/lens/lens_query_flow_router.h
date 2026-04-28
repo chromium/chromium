@@ -131,6 +131,9 @@ class LensQueryFlowRouter
   // Removes the contextual search context if no region selection was made.
   void RemoveContextualSearchContextIfNecessary(bool has_region_selection);
 
+  void SetQueryContextualizerForTesting(
+      std::unique_ptr<contextual_tasks::QueryContextualizer> contextualizer);
+
   void reset_context_upload_status_observation() {
     context_upload_status_observation_.Reset();
   }
