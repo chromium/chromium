@@ -102,7 +102,6 @@ perfetto::TraceConfig IOSTracingController::CreateDeveloperTraceConfig() {
 void IOSTracingController::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   startup_tracing_controller_->ShutdownAndWaitForStopIfNeeded();
-  tracing::StartupTracingController::ResetForTesting();  // IN-TEST
   tracing::TraceStartupConfig::ResetForTesting();        // IN-TEST
   perfetto::Tracing::ResetForTesting();                  // IN-TEST
   tracing::CustomEventRecorder::GetInstance()->DetachFromSequence();

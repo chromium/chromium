@@ -169,9 +169,7 @@ enum class OutputLocation {
   // Write trace into a given directory (basename will be set to trace1 before
   // starting).
   kDirectoryWithDefaultBasename,
-  // Write trace into a given directory (basename will be set to trace1 before
-  // starting, and updated to trace2 before calling Stop()).
-  kDirectoryWithBasenameUpdatedBeforeStop,
+
 };
 
 std::ostream& operator<<(std::ostream& o, OutputLocation type) {
@@ -181,9 +179,6 @@ std::ostream& operator<<(std::ostream& o, OutputLocation type) {
       return o;
     case OutputLocation::kDirectoryWithDefaultBasename:
       o << "dir/trace1";
-      return o;
-    case OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop:
-      o << "dir/trace2";
       return o;
   }
 }
@@ -226,7 +221,7 @@ class StartupTracingTest
       // calling SetDefaultBasenameForTest, which forces the creation of
       // TraceStartupConfig, which queries the command line flags and
       // stores the snapshot.
-      tracing::StartupTracingController::SetDefaultBasenameForTest(
+      tracing::StartupTracingController::OverrideDefaultBasenameForTest(
           "trace1",
           tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
     } else {
@@ -258,9 +253,6 @@ class StartupTracingTest
         return temp_file_path_;
       case OutputLocation::kDirectoryWithDefaultBasename:
         filename = "trace1";
-        break;
-      case OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop:
-        filename = "trace2";
         break;
     }
 
@@ -310,7 +302,7 @@ class StartupTracingTest
     } else {
       BrowserMainLoop::GetInstance()
           ->startup_tracing_controller()
-          ->WaitUntilStopped();
+          ->ShutdownAndWaitForStopIfNeeded();
     }
   }
 
@@ -320,6 +312,7 @@ class StartupTracingTest
  private:
   base::test::ScopedRunLoopTimeout increased_timeout_{
       FROM_HERE, TestTimeouts::test_launcher_timeout()};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -329,10 +322,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(FinishType::kStopExplicitly,
                         FinishType::kWaitForTimeout),
         testing::Values(OutputType::kJSON, OutputType::kProto),
-        testing::Values(
-            OutputLocation::kGivenFile,
-            OutputLocation::kDirectoryWithDefaultBasename,
-            OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
+        testing::Values(OutputLocation::kGivenFile,
+                        OutputLocation::kDirectoryWithDefaultBasename)));
 
 // TODO(crbug.com/40900782): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
@@ -343,26 +334,12 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
-  if (GetOutputLocation() ==
-      OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop) {
-    tracing::StartupTracingController::SetDefaultBasenameForTest(
-        "trace2",
-        tracing::StartupTracingController::ExtensionType::kAppendAppropriate);
-  }
 
   Wait();
 
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-// TODO(ssid): Fix the flaky tests, probably the same reason as
-// crbug.com/1041392.
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_ContinueAtShutdown) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
-  BrowserMainLoop::GetInstance()
-      ->startup_tracing_controller()
-      ->set_continue_on_shutdown_for_testing();
-}
 
 class EmergencyStopTracingTest : public StartupTracingTest {};
 

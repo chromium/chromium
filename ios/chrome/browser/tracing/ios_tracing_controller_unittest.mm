@@ -114,7 +114,7 @@ TEST_F(IOSTracingControllerTest, StartupTraceRecording) {
   // Wait for the trace to be flushed and stopped.
   IOSTracingController::GetInstance()
       .startup_tracing_controller()
-      ->WaitUntilStopped();
+      ->ShutdownAndWaitForStopIfNeeded();
 
   // Verify
   std::string trace_data;

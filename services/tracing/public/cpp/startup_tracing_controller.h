@@ -5,6 +5,8 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_STARTUP_TRACING_CONTROLLER_H_
 #define SERVICES_TRACING_PUBLIC_CPP_STARTUP_TRACING_CONTROLLER_H_
 
+#include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/component_export.h"
@@ -12,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
@@ -46,7 +49,7 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
   static void EmergencyStop();
 
   void StartIfNeeded();
-  void WaitUntilStopped();
+
   void ShutdownAndWaitForStopIfNeeded();
 
   // By default, a trace is written into a temporary file which then is renamed,
@@ -79,21 +82,21 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
   };
   static void SetDefaultBasename(std::string basename,
                                  ExtensionType extension_type);
-  // As the test harness calls SetDefaultBasename, expose ForTest() version for
+  // As the test harness calls SetDefaultBasename, expose Override() version for
   // the tests checking the StartupTracingController logic itself.
-  static void SetDefaultBasenameForTest(std::string basename,  // IN-TEST
-                                        ExtensionType extension_type);
+  static void OverrideDefaultBasenameForTest(std::string basename,  // IN-TEST
+                                             ExtensionType extension_type);
 
   bool is_finished_for_testing() const { return state_ == State::kStopped; }
 
-  void set_continue_on_shutdown_for_testing() {
-    should_continue_on_shutdown_ = true;
-  }
-
-  static void ResetForTesting();
-
  private:
-  void Stop(base::OnceClosure on_finished_callback);
+  friend class TracingSessionCoordinator;
+  class BackgroundTracer;
+  base::SequenceBound<BackgroundTracer> StopInternal(
+      base::OnceClosure on_finished_callback);
+  void OnAutoStopped();
+  static void SetDefaultBasenameInternal(std::string basename,
+                                         ExtensionType extension_type);
 
   void OnStoppedOnUIThread();
 
@@ -109,10 +112,7 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
 
   // All actual interactions with the tracing service and the process of writing
   // files happens on a background thread.
-  class BackgroundTracer;
-  base::SequenceBound<BackgroundTracer> background_tracer_;
 
-  base::OnceClosure on_tracing_finished_;
   base::FilePath output_file_;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -120,12 +120,7 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
 #endif
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  // Used for testing only
-  bool should_continue_on_shutdown_ = false;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<StartupTracingController> weak_ptr_factory_{this};
 };
 
 }  // namespace tracing

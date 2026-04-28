@@ -1052,7 +1052,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   CHECK(BrowserMainLoop::GetInstance()->startup_tracing_controller());
   BrowserMainLoop::GetInstance()
       ->startup_tracing_controller()
-      ->WaitUntilStopped();
+      ->ShutdownAndWaitForStopIfNeeded();
 #endif
 }
 
