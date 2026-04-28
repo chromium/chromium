@@ -13,11 +13,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
+
+namespace actor {
 
 namespace {
 
@@ -35,11 +38,13 @@ struct EventInfo {
   }
 };
 
-class TypeToolJavascriptTest
+}  // namespace
+
+class TypeToolJavaScriptTest
     : public web::JavascriptTest,
       public ::testing::WithParamInterface<const char*> {
  public:
-  TypeToolJavascriptTest() {
+  TypeToolJavaScriptTest() {
     scoped_feature_list_.InitAndEnableFeature(
         web::features::kAssertOnJavaScriptErrors);
     web_view().frame = CGRectMake(0.0, 0.0, 400.0, 400.0);
@@ -197,17 +202,18 @@ class TypeToolJavascriptTest
   net::EmbeddedTestServer test_server_;
 };
 
-TEST_P(TypeToolJavascriptTest, TypeByCoordinate_Success) {
+TEST_P(TypeToolJavaScriptTest, TypeByCoordinate_Success) {
   NSDictionary* result =
       TypeByCoordinate(/*pixelType=*/1, /*text=*/"hello", /*typeMode=*/3,
                        /*followByEnter=*/false);
 
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetInputText(), "hello");
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
 }
 
-TEST_P(TypeToolJavascriptTest, TypeByNodeId_Success) {
+TEST_P(TypeToolJavaScriptTest, TypeByNodeId_Success) {
   id nodeIdResult = web::test::ExecuteJavaScript(
       web_view(), base::SysUTF8ToNSString(base::StringPrintf(R"(
         var el = document.querySelector('%s');
@@ -220,12 +226,13 @@ TEST_P(TypeToolJavascriptTest, TypeByNodeId_Success) {
   NSDictionary* result = TypeByNodeId(nodeId, /*text=*/"world", /*typeMode=*/3,
                                       /*followByEnter=*/false);
 
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetInputText(), "world");
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
 }
 
-TEST_P(TypeToolJavascriptTest, TypeMode_Append) {
+TEST_P(TypeToolJavaScriptTest, TypeMode_Append) {
   SetInputText(/*text=*/"hello-");
 
   TypeByCoordinate(/*pixelType=*/1, /*text=*/"world", /*typeMode=*/3,
@@ -235,7 +242,7 @@ TEST_P(TypeToolJavascriptTest, TypeMode_Append) {
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
 }
 
-TEST_P(TypeToolJavascriptTest, TypeMode_Prepend) {
+TEST_P(TypeToolJavaScriptTest, TypeMode_Prepend) {
   SetInputText(/*text=*/"-world");
 
   TypeByCoordinate(/*pixelType=*/1, /*text=*/"hello", /*typeMode=*/2,
@@ -245,7 +252,7 @@ TEST_P(TypeToolJavascriptTest, TypeMode_Prepend) {
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
 }
 
-TEST_P(TypeToolJavascriptTest, TypeMode_DeleteExisting) {
+TEST_P(TypeToolJavaScriptTest, TypeMode_DeleteExisting) {
   SetInputText(/*text=*/"old text");
 
   TypeByCoordinate(/*pixelType=*/1, /*text=*/"new text", /*typeMode=*/1,
@@ -255,7 +262,7 @@ TEST_P(TypeToolJavascriptTest, TypeMode_DeleteExisting) {
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents());
 }
 
-TEST_P(TypeToolJavascriptTest, TypeMode_UnknownModeUnsupported) {
+TEST_P(TypeToolJavaScriptTest, TypeMode_UnknownModeUnsupported) {
   SetInputText(/*text=*/"old text");
 
   TypeByCoordinate(/*pixelType=*/1, /*text=*/"new text", /*typeMode=*/0,
@@ -265,22 +272,40 @@ TEST_P(TypeToolJavascriptTest, TypeMode_UnknownModeUnsupported) {
   EXPECT_TRUE(GetCapturedEvents().empty());
 }
 
-TEST_P(TypeToolJavascriptTest, FollowByEnter) {
+TEST_P(TypeToolJavaScriptTest, FollowByEnter) {
   NSDictionary* result =
       TypeByCoordinate(/*pixelType=*/1, /*text=*/"submit", /*typeMode=*/3,
                        /*followByEnter=*/true);
 
-  EXPECT_TRUE([result[@"success"] boolValue]);
+  EXPECT_EQ([result[@"resultCode"] intValue],
+            static_cast<int>(TypeToolResultCode::kOk));
   EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/true));
+}
+
+TEST_P(TypeToolJavaScriptTest, TargetedElementDisabled_Fails) {
+  SetInputText(/*text=*/"old text");
+  // Disable the <input>
+  (void)web::test::ExecuteJavaScript(
+      web_view(),
+      base::SysUTF8ToNSString(base::StringPrintf(
+          "document.querySelector('%s').disabled = true;", GetParam())));
+
+  NSDictionary* result =
+      TypeByCoordinate(/*pixelType=*/1, /*text=*/"new text", /*typeMode=*/3,
+                       /*followByEnter=*/false);
+
+  EXPECT_EQ(GetInputText(), "old text");
+  EXPECT_EQ(static_cast<TypeToolResultCode>([result[@"resultCode"] intValue]),
+            TypeToolResultCode::kElementDisabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    TypeToolJavascriptTest,
+    TypeToolJavaScriptTest,
     //  These are used by document.querySelector to get the target element.
     ::testing::Values("input", "textarea", "div[contenteditable]"),
     // Output the selector for context when debugging.
-    [](const ::testing::TestParamInfo<TypeToolJavascriptTest::ParamType>&
+    [](const ::testing::TestParamInfo<TypeToolJavaScriptTest::ParamType>&
            info) {
       std::string name = info.param;
       if (name == "div[contenteditable]") {
@@ -289,4 +314,4 @@ INSTANTIATE_TEST_SUITE_P(
       return name;
     });
 
-}  // namespace
+}  // namespace actor

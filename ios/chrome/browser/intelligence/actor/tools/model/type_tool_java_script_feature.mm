@@ -15,11 +15,35 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
+namespace actor {
+
 namespace {
+
+mojom::ActionResultCode ToActionResultCode(int code) {
+  auto result_code = static_cast<TypeToolResultCode>(code);
+  switch (result_code) {
+    case TypeToolResultCode::kOk:
+      return mojom::ActionResultCode::kOk;
+    case TypeToolResultCode::kCoordinatesOutOfBounds:
+      return mojom::ActionResultCode::kCoordinatesOutOfBounds;
+    case TypeToolResultCode::kInvalidDomNodeId:
+      return mojom::ActionResultCode::kInvalidDomNodeId;
+    case TypeToolResultCode::kTypeTargetNotElement:
+      return mojom::ActionResultCode::kTypeTargetNotElement;
+    case TypeToolResultCode::kTypeTargetNotFocusable:
+      return mojom::ActionResultCode::kTypeTargetNotFocusable;
+    case TypeToolResultCode::kTypeKeyDownSuppressed:
+      return mojom::ActionResultCode::kTypeKeyDownSuppressed;
+    case TypeToolResultCode::kInvalidArguments:
+      return mojom::ActionResultCode::kArgumentsInvalid;
+    case TypeToolResultCode::kElementDisabled:
+      return mojom::ActionResultCode::kElementDisabled;
+  }
+  NOTREACHED();
+}
+
 const char kScriptName[] = "type_tool";
 }  // namespace
-
-namespace actor {
 
 // static
 TypeToolJavaScriptFeature* TypeToolJavaScriptFeature::GetInstance() {
@@ -49,8 +73,8 @@ void TypeToolJavaScriptFeature::Type(
          action.target().has_document_identifier()));
 
   if (!target_frame) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kActorTargetWebFrameInvalidated));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
@@ -77,7 +101,12 @@ void TypeToolJavaScriptFeature::Type(
   auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallJavaScriptFunction(
       target_frame.get(), function_name, parameters,
-      base::BindOnce(&ParseJavaScriptResult, std::move(cb_for_js)),
+      base::BindOnce(
+          [](ToolExecutionCallback callback, const base::Value* result) {
+            std::move(callback).Run(ParseJavaScriptResultWithResultCode(
+                &ToActionResultCode, result));
+          },
+          std::move(cb_for_js)),
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 
   if (!sent) {

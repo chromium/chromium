@@ -54,8 +54,7 @@ TEST_F(TypeToolTest, Create_MissingTabId) {
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(TypeToolTest, Create_NoWebStateForTabId) {
@@ -68,8 +67,7 @@ TEST_F(TypeToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
       TypeTool::Create(action.type(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(TypeToolTest, Create_MissingText) {
@@ -89,8 +87,7 @@ TEST_F(TypeToolTest, Create_MissingText) {
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(TypeToolTest, Create_MissingMode) {
@@ -109,8 +106,7 @@ TEST_F(TypeToolTest, Create_MissingMode) {
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(TypeToolTest, Create_MissingTarget) {
@@ -131,8 +127,7 @@ TEST_F(TypeToolTest, Create_MissingTarget) {
       TypeTool::Create(action.type(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
-            result.error().internal_code().value());
+  EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
@@ -163,8 +158,7 @@ TEST_F(TypeToolTest, Execute_WebStateDestroyed_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kTabWentAway);
 }
 
 TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
@@ -197,8 +191,7 @@ TEST_F(TypeToolTest, Execute_NoWebFramesManager_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
@@ -240,8 +233,7 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
 
   ToolExecutionResult result = future.Get();
   EXPECT_FALSE(result.IsOk());
-  EXPECT_EQ(InternalToolErrorCode::kExecutionMissingDependencies,
-            result.internal_code().value());
+  EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
 }  // namespace actor

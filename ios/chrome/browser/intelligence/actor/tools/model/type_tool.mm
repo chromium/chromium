@@ -27,8 +27,8 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
     const optimization_guide::proto::TypeAction& action,
     ProfileIOS* profile) {
   if (!action.has_tab_id()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   auto resolution_result = ResolveTab(action.tab_id(), profile);
@@ -37,13 +37,13 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
   }
 
   if (!action.has_text() || !action.has_mode()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   if (!action.has_target()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   const auto& target = action.target();
@@ -52,8 +52,8 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
       target.has_content_node_id() && target.has_document_identifier();
 
   if (!can_target_by_coordinate && !can_target_by_node_id) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return base::unexpected(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
   return std::unique_ptr<TypeTool>(
@@ -62,15 +62,15 @@ base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> TypeTool::Create(
 
 void TypeTool::Execute(ToolExecutionCallback callback) {
   if (!web_state_) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
   web::WebFramesManager* frames_manager =
       js_feature_->GetWebFramesManager(web_state_.get());
   if (!frames_manager || !frames_manager->GetMainWebFrame()) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
@@ -105,8 +105,8 @@ void TypeTool::OnTargetFrameResolved(
       result.value();
   web::WebFrame* target_web_frame = target_frame.frame;
   if (!target_web_frame) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kExecutionMissingDependencies));
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
     return;
   }
 
