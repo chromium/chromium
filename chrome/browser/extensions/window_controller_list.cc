@@ -114,13 +114,9 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
       return controller;
     }
 
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/371432155): Support on Android.
-    // windows_util::CalledFromChildWindow() checks native widgets for parents.
     if (windows_util::CalledFromChildWindow(function, controller)) {
       parent_window = controller;
     }
-#endif
 
     last_window = controller;
   }
