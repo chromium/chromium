@@ -375,6 +375,11 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // have been initialized.
   void Populate();
 
+  // Creates the action view model for the given action ID and registers an icon
+  // update observer.
+  std::unique_ptr<ExtensionActionViewModel> CreateAndObserveActionViewModel(
+      const ToolbarActionsModel::ActionId& action_id);
+
   // Adds `extension_id` to `host_access_requests` in the correct sorted
   // order and notifies observers.
   void AddHostAccessRequest(const extensions::ExtensionId& extension_id);

@@ -1159,14 +1159,12 @@ void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   std::unique_ptr<ExtensionActionViewModel> action_model =
-      delegate_->CreateActionViewModel(action_id);
-  ExtensionActionViewModel* action_model_ptr = action_model.get();
+      CreateAndObserveActionViewModel(action_id);
 
-  // Register action icon observer.
-  action_icon_subscriptions_[action_id] =
-      action_model->RegisterIconUpdateObserver(
-          base::BindRepeating(&ExtensionsMenuViewModel::OnActionIconUpdated,
-                              base::Unretained(this), action_id));
+  if (!action_model) {
+    return;
+  }
+  ExtensionActionViewModel* action_model_ptr = action_model.get();
 
   // Insert action model in the correct order.
   auto it = std::upper_bound(action_models_.begin(), action_models_.end(),
@@ -1281,7 +1279,7 @@ void ExtensionsMenuViewModel::Populate() {
 
   // Create and sort the action models by name.
   for (const auto& id : toolbar_model_->action_ids()) {
-    auto model = delegate_->CreateActionViewModel(id);
+    auto model = CreateAndObserveActionViewModel(id);
     if (model) {
       action_models_.push_back(std::move(model));
     }
@@ -1289,6 +1287,19 @@ void ExtensionsMenuViewModel::Populate() {
   std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
 
   UpdateHostAccessRequests();
+}
+
+std::unique_ptr<ExtensionActionViewModel>
+ExtensionsMenuViewModel::CreateAndObserveActionViewModel(
+    const ToolbarActionsModel::ActionId& action_id) {
+  auto action_model = delegate_->CreateActionViewModel(action_id);
+  if (action_model) {
+    action_icon_subscriptions_[action_id] =
+        action_model->RegisterIconUpdateObserver(
+            base::BindRepeating(&ExtensionsMenuViewModel::OnActionIconUpdated,
+                                base::Unretained(this), action_id));
+  }
+  return action_model;
 }
 
 void ExtensionsMenuViewModel::AddHostAccessRequest(
