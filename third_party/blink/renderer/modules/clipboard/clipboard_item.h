@@ -5,8 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_ITEM_H_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
 
+#include "base/metrics/single_sample_metrics.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
@@ -129,6 +133,17 @@ class MODULES_EXPORT ClipboardItem final
   AccessMode access_mode_ = AccessMode::kEager;
   // Whether HTML data should be sanitized when reading lazily.
   bool sanitize_html_for_lazy_read_ = true;
+  // Cumulative size of blobs resolved via getType() for single read call.
+  uint64_t total_lazy_read_blob_size_ = 0;
+  // SingleSampleMetrics for lazy-read histograms. These accumulate values via
+  // SetSample() during blob resolution and emit a single sample at destruction,
+  // avoiding the need to record in ContextDestroyed() or pre-finalizers.
+  std::unique_ptr<base::SingleSampleMetric> formats_never_read_metric_;
+  std::unique_ptr<base::SingleSampleMetric> total_blob_size_kb_metric_;
+  // Tracks the last `getType()` call time per MIME type for telemetry.
+  HashMap<String, base::TimeTicks> last_get_type_calls_;
+  // The time this `ClipboardItem` was created, used for telemetry.
+  base::TimeTicks creation_time_;
 };
 
 }  // namespace blink

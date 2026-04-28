@@ -35,6 +35,15 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   // Method to simulate clipboard data change only for testing.
   void OnClipboardDataChanged();
 
+  // Force a format to be advertised in ReadStandardFormatNames() even when
+  // the corresponding data is empty. Used to test reader behavior when the
+  // OS clipboard advertises a format but returns no data.
+  void AddFormatWithoutData(const String& mime_type) {
+    if (!std::ranges::contains(forced_formats_, mime_type)) {
+      forced_formats_.push_back(mime_type);
+    }
+  }
+
 #if BUILDFLAG(IS_MAC)
   // Test helper to configure the permission state returned by the mock
   void SetPlatformPermissionState(
@@ -115,6 +124,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   HashMap<String, String> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
+  Vector<String> forced_formats_;
   HashMap<String, Vector<uint8_t>> unsanitized_custom_data_map_;
 #if BUILDFLAG(IS_MAC)
   mojom::blink::PlatformClipboardPermissionState platform_permission_state_ =

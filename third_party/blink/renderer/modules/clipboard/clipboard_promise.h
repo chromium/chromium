@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_PROMISE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_PROMISE_H_
 
+#include <cstdint>
 #include <utility>
 
 #include "base/sequence_checker.h"
@@ -212,6 +213,10 @@ class MODULES_EXPORT ClipboardPromise final
   // read operation
   std::optional<HashSet<String>> read_clipboard_item_types_;
   HeapVector<String> item_mime_types_;
+  // Cumulative size of blobs read in eager mode for telemetry.
+  // Uses uint64_t to match Blob::size() return type and avoid truncation on
+  // 32-bit platforms.
+  uint64_t total_eager_read_blob_size_ = 0;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

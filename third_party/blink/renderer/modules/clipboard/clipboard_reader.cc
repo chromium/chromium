@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
@@ -52,6 +53,8 @@ class ClipboardPngReader final : public ClipboardReader {
         data.size()) {
       blob = Blob::Create(data, ui::kMimeTypePng);
     }
+    base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
+                              !data.size());
     result_handler_->OnRead(blob, ui::kMimeTypePng);
   }
 
@@ -79,6 +82,8 @@ class ClipboardTextReader final : public ClipboardReader {
 
  private:
   void OnRead(const String& plain_text) {
+    base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
+                              plain_text.empty());
     if (plain_text.empty()) {
       NextRead(Vector<uint8_t>());
       return;
@@ -170,6 +175,8 @@ class ClipboardHtmlReader final : public ClipboardReader {
                              *frame->GetDocument(), html_string, fragment_start,
                              fragment_end, url, kIncludeNode, kResolveAllURLs)
                        : html_string;
+    base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
+                              final_html.empty());
     if (final_html.empty()) {
       NextRead(Vector<uint8_t>());
       return;
@@ -251,6 +258,8 @@ class ClipboardSvgReader final : public ClipboardReader {
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
         url, kIncludeNode, kResolveAllURLs);
 
+    base::UmaHistogramBoolean("Blink.Clipboard.Reader.ProcessedDataNull",
+                              strictly_processed_svg.empty());
     if (strictly_processed_svg.empty()) {
       NextRead(Vector<uint8_t>());
       return;

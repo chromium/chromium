@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -217,42 +216,6 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
     shell()->web_contents()->Focus();
   }
 };
-
-IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {
-  base::HistogramTester histogram_tester;
-  NavigateAndSetFocusToPage();
-  SetPermissionOverrideForAsyncClipboardTests(
-      blink::mojom::PermissionStatus::GRANTED);
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
-  content::FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 0,
-                                     1);
-}
-
-IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, NumberOfFormatsOnRead) {
-  base::HistogramTester histogram_tester;
-  NavigateAndSetFocusToPage();
-  SetPermissionOverrideForAsyncClipboardTests(
-      blink::mojom::PermissionStatus::GRANTED);
-  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
-  SetPermissionOverrideForStrictlyProcessedWriteTests(
-      blink::mojom::PermissionStatus::GRANTED);
-  ASSERT_TRUE(ExecJs(
-      shell(),
-      " const format1 = 'text/html';"
-      " const textInput = '<p>Hello</p>';"
-      " const blobInput1 = new Blob([textInput], {type: format1});"
-      " const clipboardItemInput = new ClipboardItem({[format1]: blobInput1});"
-      " navigator.clipboard.write([clipboardItemInput]);"));
-  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
-  content::FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 0,
-                                     1);
-  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 1,
-                                     1);
-}
 
 namespace {
 bool IsUint128(std::string_view data) {

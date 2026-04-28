@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -84,6 +86,17 @@ ClipboardItem::ClipboardItem(const HeapVector<String>& mime_types,
       custom_format_types_.push_back(web_custom_format_string);
     }
   }
+  if (access_mode_ == AccessMode::kLazy) {
+    formats_never_read_metric_ =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            "Blink.Clipboard.LazyRead.FormatsNeverRead", 1, 100, 50);
+    formats_never_read_metric_->SetSample(
+        static_cast<int>(mime_types_.size()));
+    total_blob_size_kb_metric_ =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            "Blink.Clipboard.LazyRead.TotalBlobSizeKB", 1, 10000, 50);
+    total_blob_size_kb_metric_->SetSample(0);
+  }
 }
 
 ClipboardItem::ClipboardItem(
@@ -149,13 +162,17 @@ void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
       representations_with_resolvers_.end()) {
     return;
   }
-  if (HasClipboardChangedSinceClipboardRead()) {
+  const bool clipboard_changed = HasClipboardChangedSinceClipboardRead();
+  base::UmaHistogramBoolean("Blink.Clipboard.LazyRead.GetTypeRejected",
+                            clipboard_changed);
+  if (clipboard_changed) {
     representations_with_resolvers_.at(mime_type)->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
                                            "Clipboard data has changed"));
     return;
   }
 
+  base::UmaHistogramBoolean("Blink.Clipboard.LazyRead.NullBlobResolved", !blob);
   if (!blob) {
     representations_with_resolvers_.at(mime_type)->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
@@ -163,7 +180,19 @@ void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
     return;
   }
 
+  total_lazy_read_blob_size_ += blob->size();
   representations_with_resolvers_.at(mime_type)->Resolve(blob);
+
+  int formats_never_requested =
+      static_cast<int>(mime_types_.size()) -
+      static_cast<int>(representations_with_resolvers_.size());
+  if (formats_never_read_metric_ && formats_never_requested >= 0) {
+    formats_never_read_metric_->SetSample(formats_never_requested);
+  }
+  if (total_blob_size_kb_metric_) {
+    total_blob_size_kb_metric_->SetSample(
+        static_cast<int>(total_lazy_read_blob_size_ / 1024));
+  }
 }
 
 ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
@@ -190,7 +219,10 @@ ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
     return ScriptPromise<Blob>();
   }
 
-  if (HasClipboardChangedSinceClipboardRead()) {
+  const bool clipboard_changed = HasClipboardChangedSinceClipboardRead();
+  base::UmaHistogramBoolean("Blink.Clipboard.LazyRead.GetTypeRejected",
+                            clipboard_changed);
+  if (clipboard_changed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "Clipboard data has changed");
     return ScriptPromise<Blob>();
@@ -275,6 +307,12 @@ void ClipboardItem::OnRead(Blob* blob, const String& mime_type) {
 }
 
 void ClipboardItem::ContextDestroyed() {
+  // Flush SingleSampleMetrics to emit their final values now rather than
+  // waiting for GC. The values were pre-computed via SetSample() during
+  // ResolveFormatData(), so no GC-managed state is accessed here.
+  formats_never_read_metric_.reset();
+  total_blob_size_kb_metric_.reset();
+
   DOMException* detached_error = MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotAllowedError, "Document detached.");
   for (auto& entry : representations_with_resolvers_) {

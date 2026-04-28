@@ -739,14 +739,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Clipboard.Read.NumberOfFormats" units="count"
-    expires_after="2025-02-10">
-  <owner>estade@chromium.org</owner>
-  <owner>storage-dev@chromium.org</owner>
-  <owner>snianu@microsoft.com</owner>
+<histogram name="Blink.Clipboard.EagerRead.TotalBlobSizeKB" units="KB"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
   <summary>
-    Reports the number of formats read from the system clipboard when
-    navigator.clipboard.read() is called.
+    Records the total size in KB of all blobs read during a single
+    navigator.clipboard.read() call in eager (non-lazy) mode. All MIME type
+    blobs are read upfront before the clipboard.read() promise resolves.
+    Recorded once per clipboard.read() call when the ClipboardItem is created.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Clipboard.LazyRead.FormatsNeverRead" units="count"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
+  <summary>
+    Records the number of MIME types advertised by a lazy ClipboardItem (from
+    navigator.clipboard.read()) that were never fetched via getType() before the
+    ClipboardItem was destroyed. Recorded once per lazy ClipboardItem when it is
+    destroyed (frame detachment or navigation) or garbage collected.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Clipboard.LazyRead.GetTypeRejected" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
+  <summary>
+    Records whether a lazy-read getType() call was rejected because the
+    clipboard content changed after clipboard.read(). True means rejected; false
+    means the clipboard had not changed. Recorded once per getType() call on a
+    lazy-mode ClipboardItem.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Clipboard.LazyRead.NullBlobResolved" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
+  <summary>
+    Records whether a lazy-read getType() call resolved with a null blob from
+    the OS clipboard. True means the blob was null; false means valid data was
+    returned. Recorded once per getType() resolution on a lazy-mode
+    ClipboardItem.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Clipboard.LazyRead.TotalBlobSizeKB" units="KB"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
+  <summary>
+    Records the total size in KB of all blobs resolved via getType() calls for a
+    single lazy ClipboardItem during its lifetime. Recorded once per lazy
+    ClipboardItem when it is destroyed (frame detachment or navigation) or
+    garbage collected.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Clipboard.Reader.ProcessedDataNull" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>rbyers@chromium.org</owner>
+  <owner>shwetabindal@microsoft.com</owner>
+  <summary>
+    Records true when a clipboard reader (PNG, text, HTML, or SVG) produces null
+    data after processing. For PNG this means ReadPng() returned empty data; for
+    text it means ReadPlainText() returned empty; for HTML/SVG it means
+    sanitization produced an empty string. Recorded once per individual reader
+    invocation.
   </summary>
 </histogram>
 

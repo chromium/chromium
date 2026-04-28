@@ -381,16 +381,15 @@ void ClipboardPromise::ResolveRead() {
   HeapVector<Member<ClipboardItem>> clipboard_items;
   if (RuntimeEnabledFeatures::
           ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
-    base::UmaHistogramCounts100("Blink.Clipboard.Read.NumberOfFormats",
-                                item_mime_types_.size());
     clipboard_items = {MakeGarbageCollected<ClipboardItem>(
         item_mime_types_, GetSystemClipboard()->SequenceNumber(),
         GetExecutionContext(),
         /*sanitize_html_for_lazy_read=*/!will_read_unprocessed_html_,
         ClipboardItem::AccessMode::kLazy)};
   } else {
-    base::UmaHistogramCounts100("Blink.Clipboard.Read.NumberOfFormats",
-                                clipboard_item_data_.size());
+    base::UmaHistogramCounts10000(
+        "Blink.Clipboard.EagerRead.TotalBlobSizeKB",
+        static_cast<int>(total_eager_read_blob_size_ / 1024));
     items.ReserveInitialCapacity(clipboard_item_data_.size());
 
     for (const auto& item : clipboard_item_data_) {
@@ -479,6 +478,7 @@ void ClipboardPromise::OnRead(Blob* blob, const String& mime_type) {
   if (blob) {
     clipboard_item_data_[clipboard_representation_index_].second =
         MakeGarbageCollected<V8UnionBlobOrString>(blob);
+    total_eager_read_blob_size_ += blob->size();
   }
   ++clipboard_representation_index_;
   ReadNextRepresentation();

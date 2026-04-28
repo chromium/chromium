@@ -39,6 +39,7 @@ void MockClipboardHost::Reset() {
   custom_data_.clear();
   write_smart_paste_ = false;
   needs_reset_ = false;
+  forced_formats_.clear();
 
   // Reset call tracking
   read_text_call_count_ = 0;
@@ -82,6 +83,11 @@ Vector<String> MockClipboardHost::ReadStandardFormatNames() {
   for (auto& it : custom_data_) {
     CHECK(!std::ranges::contains(types, it.key));
     types.push_back(it.key);
+  }
+  for (const String& fmt : forced_formats_) {
+    if (!std::ranges::contains(types, fmt)) {
+      types.push_back(fmt);
+    }
   }
   return types;
 }
