@@ -5084,14 +5084,14 @@ FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
 
 void PDFiumEngine::DrawText(int page_index,
                             base::span<const InkTextInfo> text_info,
-                            SkColor color,
-                            float css_font_size,
                             double pdf_zoom,
-                            const gfx::RectF& textbox) {
+                            const InkTextBoxAttributes& attributes) {
   CHECK(PageIndexInBounds(page_index));
   FPDF_PAGE page = GetPage(page_index)->GetPage();
   const gfx::Transform transform = GetCanonicalToPdfTransformForPage(page);
-  const float pdf_font_size = CSSFontSizeToPdfFontSize(css_font_size);
+  const SkColor color = attributes.color;
+  const float pdf_font_size =
+      CSSFontSizeToPdfFontSize(attributes.css_font_size);
 
   for (const InkTextInfo& item : text_info) {
     FPDF_FONT font = GetAddedFont(item.font_id);
@@ -5101,12 +5101,12 @@ void PDFiumEngine::DrawText(int page_index,
     // Blink actually uses the primary font ascent for alignment. Also Blink
     // uses a special platform-specific rounded number.
     float ascent;
-    CHECK(FPDFFont_GetAscent(font, css_font_size, &ascent));
+    CHECK(FPDFFont_GetAscent(font, attributes.css_font_size, &ascent));
 
     gfx::RectF run_rect = item.location;
     run_rect.Scale(1.0 / pdf_zoom);
     run_rect.set_height(ascent);
-    run_rect = transform.MapRect(run_rect + textbox.OffsetFromOrigin());
+    run_rect = transform.MapRect(run_rect + attributes.rect.OffsetFromOrigin());
 
     ScopedFPDFPageObject text_object(
         FPDFPageObj_CreateTextObj(doc(), font, pdf_font_size));

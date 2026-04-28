@@ -25,8 +25,6 @@
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
-using SkColor = uint32_t;
-
 namespace gfx {
 class PointF;
 }
@@ -67,15 +65,12 @@ class PdfInkModuleClient {
   // Notifies the client to clear the current text selection.
   virtual void ClearSelection() {}
 
-  // Notifies the client to draw `text_info` with `css_font_size` into the page
-  // at `page_index`. `textbox` specifies the rectangle of the text box in
-  // CSS screen coordinates.
+  // Notifies the client to draw `text_info` with `attributes` into the page
+  // at `page_index`.
   virtual void DrawText(int page_index,
                         base::span<const InkTextInfo> text_info,
-                        SkColor color,
-                        float css_font_size,
                         double pdf_zoom,
-                        const gfx::RectF& textbox) {}
+                        const InkTextBoxAttributes& attributes) {}
 
   // Asks the client to discard the stroke identified by `id` on the page at
   // `page_index`.

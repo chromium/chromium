@@ -143,6 +143,24 @@ SkColor GetColorFromDict(const base::DictValue& dict) {
   return SkColorSetRGB(color_r, color_g, color_b);
 }
 
+InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
+  const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
+  gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
+                     text_box_rect.FindDouble("locationY").value(),
+                     text_box_rect.FindDouble("width").value(),
+                     text_box_rect.FindDouble("height").value());
+
+  const base::DictValue& text_attributes = *data.FindDict("textAttributes");
+  const float css_font_size = text_attributes.FindDouble("size").value();
+
+  // TODO(crbug.com/409021827): Add more attributes.
+  return InkTextBoxAttributes{
+      .rect = textbox,
+      .color = GetColorFromDict(text_attributes),
+      .css_font_size = css_font_size,
+  };
+}
+
 ink::Rect GetEraserRect(const gfx::PointF& center) {
   return ink::Rect::FromTwoPoints(
       {center.x() - kEraserSize, center.y() - kEraserSize},
@@ -1563,23 +1581,14 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
 
   int page_index = data.FindInt("pageIndex").value();
 
-  const base::DictValue& text_attributes = *data.FindDict("textAttributes");
-  SkColor color = GetColorFromDict(text_attributes);
-  float font_size = text_attributes.FindDouble("size").value();
-
   // Note: `pdf_zoom` is similar to GetZoom() but GetZoom() is multiplied by
   // device scale factor while this value isn't. Additionally `pdf_zoom` comes
   // from the frontend at the exact same time as the annotation commit happens
   // to avoid any potential sync race issues between the frontend and backend.
   double pdf_zoom = data.FindDouble("pdfZoom").value();
 
-  const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
-  gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
-                     text_box_rect.FindDouble("locationY").value(),
-                     text_box_rect.FindDouble("width").value(),
-                     text_box_rect.FindDouble("height").value());
-
-  client_->DrawText(page_index, ink_info, color, font_size, pdf_zoom, textbox);
+  client_->DrawText(page_index, ink_info, pdf_zoom,
+                    GetTextBoxAttributesFromDict(data));
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

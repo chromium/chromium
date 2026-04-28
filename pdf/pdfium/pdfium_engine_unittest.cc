@@ -3066,8 +3066,10 @@ TEST_P(PDFiumEngineInkDrawTest, DrawText) {
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
-      /*color=*/SK_ColorBLACK, /*css_font_size=*/10.0f, /*pdf_zoom=*/1.0,
-      /*textbox=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f));
+      /*pdf_zoom=*/1.0,
+      InkTextBoxAttributes{.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+                           .color = SK_ColorBLACK,
+                           .css_font_size = 10.0f});
 
   // Verify the rendering of text for in-memory PDF.
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
@@ -3112,9 +3114,10 @@ TEST_P(PDFiumEngineInkDrawTest, DrawOrangeText) {
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
-      /*color=*/SkColorSetRGB(0xFF, 0x63, 0x0C), /*css_font_size=*/10.0f,
       /*pdf_zoom=*/1.0,
-      /*textbox=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f));
+      InkTextBoxAttributes{.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+                           .color = SkColorSetRGB(0xFF, 0x63, 0x0C),
+                           .css_font_size = 10.0f});
 
   // Verify the rendering of orange text for in-memory PDF.
   const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(

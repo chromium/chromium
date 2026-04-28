@@ -14,7 +14,16 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+using SkColor = uint32_t;
+
 namespace chrome_pdf {
+
+struct InkTextBoxAttributes {
+  // `rect` is in CSS screen coordinates.
+  gfx::RectF rect;
+  SkColor color;
+  float css_font_size;
+};
 
 struct InkTextInfo {
   InkTextInfo(FontId,

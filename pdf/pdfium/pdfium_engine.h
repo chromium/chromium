@@ -409,10 +409,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   // See method of the same name in PdfInkModuleClient.
   void DrawText(int page_index,
                 base::span<const InkTextInfo> text_info,
-                SkColor color,
-                float css_font_size,
                 double pdf_zoom,
-                const gfx::RectF& textbox);
+                const InkTextBoxAttributes& attributes);
 
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);

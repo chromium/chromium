@@ -235,6 +235,15 @@ MATCHER_P5(InkTextInfoEq,
          arg.is_horizontal == is_horizontal;
 }
 
+MATCHER_P3(InkTextBoxAttributesEq,
+           rect,
+           color,
+           css_font_size,
+           "matches InkTextBoxAttributes") {
+  return arg.rect == rect && arg.color == color &&
+         arg.css_font_size == css_font_size;
+}
+
 base::DictValue CreateGetAnnotationBrushMessage(const std::string& brush_type) {
   auto message = base::DictValue()
                      .Set("type", "getAnnotationBrush")
@@ -302,10 +311,8 @@ class FakeClient : public PdfInkModuleClient {
               DrawText,
               (int page_index,
                base::span<const InkTextInfo> text_info,
-               SkColor color,
-               float css_font_size,
                double pdf_zoom,
-               const gfx::RectF& textbox),
+               const InkTextBoxAttributes& attributes),
               (override));
 
   MOCK_METHOD(void,
@@ -1001,8 +1008,11 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
                            /*glyph_positions=*/std::vector<gfx::Vector2dF>(2),
                            /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
                            /*is_horizontal=*/true)),
-                       SkColorSetRGB(255, 111, 99), 12.0f, 2.0f,
-                       gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f)));
+                       2.0f,
+                       InkTextBoxAttributesEq(
+                           /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
+                           /*color=*/SkColorSetRGB(255, 111, 99),
+                           /*css_font_size=*/12.0f)));
 
   base::DictValue message = base::DictValue()
                                 .Set("type", "finishTextAnnotation")
