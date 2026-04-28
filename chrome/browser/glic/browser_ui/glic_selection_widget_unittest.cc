@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
 
@@ -40,7 +41,7 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   auto children = contents_view->children();
   ASSERT_EQ(children.size(), 3u);
 
-  auto* ask_gemini_btn = views::AsViewClass<views::ImageButton>(children[0]);
+  auto* ask_gemini_btn = views::AsViewClass<views::MdTextButton>(children[0]);
   auto* copy_btn = views::AsViewClass<views::ImageButton>(children[1]);
   auto* copy_link_btn = views::AsViewClass<views::ImageButton>(children[2]);
 

@@ -21,12 +21,16 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -37,6 +41,8 @@ namespace {
 constexpr size_t kMaxSelectionLengthForTooltip = 50;
 constexpr int kIconSize = 20;
 
+constexpr int kButtonCornerRadius = 14;
+
 class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
@@ -45,8 +51,11 @@ class GlicSelectionContentsView : public views::View {
                             base::RepeatingClosure on_ask_gemini,
                             base::RepeatingClosure on_copy,
                             base::RepeatingClosure on_copy_link) {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(4, 4), 4));
+    auto layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(4, 4), 4);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    SetLayoutManager(std::move(layout));
 
     // Ask Gemini Button
     std::u16string truncated_text;
@@ -62,11 +71,19 @@ class GlicSelectionContentsView : public views::View {
     auto ask_gemini_tooltip = l10n_util::GetStringFUTF16(
         IDS_GLIC_SELECTION_ASK_ABOUT,
         base::StrCat({u"\"", truncated_text, u"\""}));
-    auto* ask_gemini_btn = AddChildView(views::ImageButton::CreateIconButton(
+    auto* ask_gemini_btn = AddChildView(std::make_unique<views::MdTextButton>(
         std::move(on_ask_gemini),
-        GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-        ask_gemini_tooltip));
+        l10n_util::GetStringUTF16(
+            IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
+    ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
+    ask_gemini_btn->SetImageLabelSpacing(4);
+    ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurface);
+    ask_gemini_btn->SetTextColor(views::Button::STATE_DISABLED,
+                                 ui::kColorLabelForegroundDisabled);
+    ask_gemini_btn->SetCustomPadding(
+        views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_ICON_BUTTON));
 
     gfx::ImageSkia* icon_skia =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -81,9 +98,20 @@ class GlicSelectionContentsView : public views::View {
     ask_gemini_btn->SetImageModel(views::Button::STATE_PRESSED, icon_model);
     ask_gemini_btn->SetImageModel(views::Button::STATE_DISABLED, icon_model);
 
-    CreateToolbarInkdropCallbacks(ask_gemini_btn,
-                                  kColorTabBackgroundInactiveHoverFrameActive,
-                                  kColorTabStripControlButtonInkDropRipple);
+    views::InkDrop::Get(ask_gemini_btn)
+        ->SetMode(views::InkDropHost::InkDropMode::ON);
+    ask_gemini_btn->SetHasInkDropActionOnClick(true);
+    ask_gemini_btn->SetShowInkDropWhenHotTracked(true);
+    views::InstallRoundRectHighlightPathGenerator(ask_gemini_btn, gfx::Insets(),
+                                                  kButtonCornerRadius);
+    views::InkDrop::Get(ask_gemini_btn)
+        ->SetBaseColorCallback(base::BindRepeating(
+            [](views::View* host) {
+              return host->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
+            },
+            base::Unretained(ask_gemini_btn)));
+    CreateToolbarInkdropCallbacks(ask_gemini_btn, kColorToolbarInkDropHover,
+                                  kColorToolbarInkDropRipple);
 
     // Copy Button
     auto copy_tooltip = gfx::LocateAndRemoveAcceleratorChar(
@@ -91,14 +119,17 @@ class GlicSelectionContentsView : public views::View {
     auto* copy_btn = AddChildView(views::ImageButton::CreateIconButton(
         std::move(on_copy), vector_icons::kContentCopyIcon, copy_tooltip));
     copy_btn->SetTooltipText(copy_tooltip);
+    copy_btn->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    copy_btn->SetBorder(
+        views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_ICON_BUTTON)));
     views::SetImageFromVectorIconWithColor(
         copy_btn, vector_icons::kContentCopyIcon, kIconSize,
         views::IconColors(ui::kColorSysOnSurface,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurface));
-    CreateToolbarInkdropCallbacks(copy_btn,
-                                  kColorTabBackgroundInactiveHoverFrameActive,
-                                  kColorTabStripControlButtonInkDropRipple);
+    CreateToolbarInkdropCallbacks(copy_btn, kColorToolbarInkDropHover,
+                                  kColorToolbarInkDropRipple);
 
     // Copy Link Button
     auto copy_link_tooltip =
@@ -106,14 +137,17 @@ class GlicSelectionContentsView : public views::View {
     copy_link_btn_ = AddChildView(views::ImageButton::CreateIconButton(
         std::move(on_copy_link), vector_icons::kLinkIcon, copy_link_tooltip));
     copy_link_btn_->SetTooltipText(copy_link_tooltip);
+    copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    copy_link_btn_->SetBorder(
+        views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_ICON_BUTTON)));
     views::SetImageFromVectorIconWithColor(
         copy_link_btn_, vector_icons::kLinkIcon, kIconSize,
         views::IconColors(ui::kColorSysOnSurface,
                           ui::kColorLabelForegroundDisabled,
                           ui::kColorSysOnSurface));
-    CreateToolbarInkdropCallbacks(copy_link_btn_,
-                                  kColorTabBackgroundInactiveHoverFrameActive,
-                                  kColorTabStripControlButtonInkDropRipple);
+    CreateToolbarInkdropCallbacks(copy_link_btn_, kColorToolbarInkDropHover,
+                                  kColorToolbarInkDropRipple);
     copy_link_btn_->SetEnabled(false);
   }
 
