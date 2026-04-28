@@ -16,6 +16,8 @@ NSArray<NSString*>* GetOriginList(web::OriginFilter filter) {
       return @[ @"https://test.test" ];
     case web::OriginFilter::kCobalt:
       return web::provider::GetCobaltOriginList();
+    case web::OriginFilter::kGoogleSearch:
+      return @[ @"https://www.google.com" ];
   }
 }
 

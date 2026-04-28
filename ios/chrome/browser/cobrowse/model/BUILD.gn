@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
 source_set("model") {
   sources = [
+    "aim_cobrowse_java_script_feature.h",
+    "aim_cobrowse_java_script_feature.mm",
     "cobrowse_browser_agent.h",
     "cobrowse_browser_agent.mm",
     "cobrowse_context.h",
@@ -12,6 +16,7 @@ source_set("model") {
     "cobrowse_tab_helper.mm",
   ]
   deps = [
+    ":aim_cobrowse_ts",
     "//base",
     "//components/search_engines",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -24,7 +29,9 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
 }
@@ -53,9 +60,15 @@ source_set("factory") {
   ]
 }
 
+optimize_ts("aim_cobrowse_ts") {
+  sources = [ "aim_cobrowse.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "aim_cobrowse_java_script_feature_unittest.mm",
     "cobrowse_context_unittest.mm",
     "cobrowse_tab_helper_unittest.mm",
   ]
@@ -76,6 +89,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/ocmock",
   ]
 }

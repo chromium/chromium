@@ -14,16 +14,16 @@
 #import "components/contextual_tasks/public/features.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#import "net/base/url_util.h"
+#import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "url/gurl.h"
 
 namespace {
@@ -152,17 +152,16 @@ namespace {
 
 #pragma mark - ComposeboxURLLoader
 
-// Prepares the load for a given query text by appending it to the base URL.
-- (void)prepareLoadForQueryText:(NSString*)queryText
+// Sends the query message to the page via the JavaScriptFeature.
+- (void)prepareLoadForQueryText:(__unused NSString*)queryText
              clientToAimMessage:(const lens::ClientToAimMessage&)message {
-  if (!_webState || queryText.length == 0) {
+  if (!_webState || !message.has_submit_query()) {
     return;
   }
 
-  GURL url = net::AppendOrReplaceQueryParameter(
-      _context.url, "q", base::SysNSStringToUTF8(queryText));
-  web::NavigationManager::WebLoadParams params{url};
-  _webState->GetNavigationManager()->LoadURLWithParams(params);
+  // Execute the script in the page via the JavaScriptFeature.
+  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(_webState.get(),
+                                                           message);
 
   [self.delegate assistantAIMMediatorDidLoadQuery:self];
 }

@@ -31,7 +31,27 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_aim_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/contextual_tasks/public",
+    "//ios/chrome/browser/cobrowse/model",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//third_party/ocmock",
   ]
 }

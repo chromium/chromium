@@ -17,6 +17,7 @@ enum class OriginFilter {
   // TODO(crbug.com/481255908): Remove the placeholder filter.
   kValidTestOriginForTesting,
   kCobalt,
+  kGoogleSearch,
 };
 
 // Converts `filter` in the actual list of allowed origins.
