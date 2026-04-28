@@ -35,7 +35,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** The coordinator for a signin button on the NTP toolbar. Owns the SigninButton view. */
+/** The coordinator for a signin button on the toolbar. Owns the SigninButton view. */
 @NullMarked
 public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFocusChangeListener {
     private final Context mContext;
@@ -48,6 +48,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private @Nullable OmniboxStub mOmniboxStub;
     private boolean mUrlHasFocus;
+    private boolean mShowOnAllPages;
 
     public SigninButtonCoordinator(
             Context context,
@@ -104,6 +105,15 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     }
 
     /**
+     * Sets whether the button should be shown on all pages. Otherwise, it is only shown on the NTP.
+     *
+     * @param showOnAllPages Whether the button should be shown on all pages.
+     */
+    public void setShowOnAllPages(boolean showOnAllPages) {
+        mShowOnAllPages = showOnAllPages;
+    }
+
+    /**
      * Sets whether the SigninButton has space to show and inflates SigninButton view if needed.
      *
      * @param hasSpaceToShow Whether the button has space to show.
@@ -153,25 +163,23 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     }
 
     /**
-     * Called by the toolbar to set whether the button should be shown based on page state (e.g.
-     * only on the NTP) and inflates SigninButton view if needed.
+     * Called by the toolbar to set whether the button should be shown based on page state (e.g. not
+     * incognito) and inflates SigninButton view if needed.
      */
     public void updateButtonVisibility() {
         Tab tab = mTabSupplier.get();
-        // Should only show the signin button when on the NTP and not incognito.
-        // It should also be hidden when the url bar has focus on a phone-like UI.
         boolean shouldHideButtonForUrlFocus =
                 !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext) && mUrlHasFocus;
-        boolean showSigninButtonOnNtp =
+        boolean showSigninButton =
                 tab != null
-                        && UrlUtilities.isNtpUrl(tab.getUrl())
+                        && (mShowOnAllPages || UrlUtilities.isNtpUrl(tab.getUrl()))
                         && !tab.isOffTheRecord()
                         && !shouldHideButtonForUrlFocus;
 
         // Only update signin button if it does not match the intended state.
-        if (showSigninButtonOnNtp != isShown()) {
+        if (showSigninButton != isShown()) {
             mTransitionTrigger.run();
-            mMediator.updateButtonVisibility(showSigninButtonOnNtp);
+            mMediator.updateButtonVisibility(showSigninButton);
             maybeInflateView();
         }
     }

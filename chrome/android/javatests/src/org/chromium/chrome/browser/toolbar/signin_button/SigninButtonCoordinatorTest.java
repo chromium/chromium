@@ -71,7 +71,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
+@EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
 public class SigninButtonCoordinatorTest {
 
     @Rule(order = 1)
@@ -313,7 +313,8 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testSigninButtonHiddenOnNavigation() {
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testSigninButtonHiddenOnNavigationOnPhone() {
         // Initially visible on NTP.
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
 
@@ -327,6 +328,32 @@ public class SigninButtonCoordinatorTest {
         aboutBlank.loadPageProgrammatically(
                 getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testSigninButtonShownOnNavigationOnTablet() {
+        // Initially visible on NTP.
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        // Should still be visible on navigation away from NTP.
+        mPage.loadWebPageProgrammatically(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
+    public void testSigninButtonHiddenOnNavigation() {
+        // Initially visible on NTP.
+        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+
+        // Should be hidden on navigation away from NTP.
+        mPage.loadWebPageProgrammatically(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        onView(withId(R.id.signin_button)).check(matches(not(isDisplayed())));
     }
 
     @Test

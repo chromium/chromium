@@ -68,6 +68,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.SigninFeatureMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -437,6 +438,10 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
                 new OptionalButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.SIGNIN_BUTTON] = signinButtonCoordinator;
+        if (signinButtonCoordinator != null) {
+            signinButtonCoordinator.setShowOnAllPages(
+                    SigninFeatureMap.sProfileDiscOnAllPages.isEnabled());
+        }
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
