@@ -64,6 +64,13 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   DCHECK(shared_highlighting::ShouldOfferLinkToText(
       GURL(GetFrame()->GetDocument()->Url())));
 
+  if (response_callback_) {
+    std::move(response_callback_)
+        .Run(g_empty_string,
+             shared_highlighting::LinkGenerationError::kNotGenerated,
+             shared_highlighting::LinkGenerationReadyStatus::
+                 kRequestedBeforeReady);
+  }
   response_callback_ = std::move(callback);
   selector_ready_status_ =
       preemptive_generation_result_.has_value()
@@ -91,8 +98,77 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
     InvokeReplyCallback(preemptive_generation_result_.value(), error_);
 }
 
+void TextFragmentHandler::RequestSelectorForSelection(
+    RequestSelectorForSelectionCallback callback) {
+  preemptive_generation_result_.reset();
+  error_ = shared_highlighting::LinkGenerationError::kNone;
+  if (response_callback_) {
+    std::move(response_callback_)
+        .Run(g_empty_string,
+             shared_highlighting::LinkGenerationError::kNotGenerated,
+             shared_highlighting::LinkGenerationReadyStatus::
+                 kRequestedBeforeReady);
+  }
+  response_callback_ = std::move(callback);
+  selector_ready_status_ =
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady;
+
+  if (!shared_highlighting::ShouldOfferLinkToText(
+          GURL(GetFrame()->GetDocument()->Url()))) {
+    error_ = shared_highlighting::LinkGenerationError::kBlockList;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
+
+  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  VisibleSelectionInFlatTree selection =
+      GetFrame()->Selection().ComputeVisibleSelectionInFlatTree();
+  EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
+
+  bool has_valid_selection;
+  if (RuntimeEnabledFeatures::
+          NonEmptyVisibleTextSelectionForTextFragmentEnabled()) {
+    has_valid_selection = GetFrame()->Selection().HasVisibleText();
+  } else {
+    has_valid_selection = !GetFrame()->Selection().SelectedText().empty();
+  }
+
+  if (!has_valid_selection) {
+    error_ = shared_highlighting::LinkGenerationError::kEmptySelection;
+    InvokeReplyCallback(
+        TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid),
+        error_);
+    return;
+  }
+
+  RangeInFlatTree* current_selection_range =
+      MakeGarbageCollected<RangeInFlatTree>(selection_range.StartPosition(),
+                                            selection_range.EndPosition());
+
+  if (!GetTextFragmentSelectorGenerator()) {
+    text_fragment_selector_generator_ =
+        MakeGarbageCollected<TextFragmentSelectorGenerator>(GetFrame());
+  }
+
+  GetTextFragmentSelectorGenerator()->Generate(
+      *current_selection_range,
+      BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
+               WrapWeakPersistent(this)));
+}
+
 void TextFragmentHandler::RequestSelectorForViewportCenter(
     RequestSelectorForViewportCenterCallback callback) {
+  if (response_callback_) {
+    std::move(response_callback_)
+        .Run(g_empty_string,
+             shared_highlighting::LinkGenerationError::kNotGenerated,
+             shared_highlighting::LinkGenerationReadyStatus::
+                 kRequestedBeforeReady);
+  }
   response_callback_ = std::move(callback);
   selector_ready_status_ =
       shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady;
@@ -234,10 +310,13 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
   error_ = shared_highlighting::LinkGenerationError::kNone;
   selector_ready_status_.reset();
 
-  // It is possible we have unserved callback, but if we are starting a new
-  // generation, then we have a new selection, in which case it is safe to
-  // assume that the client is not waiting for the callback return.
-  response_callback_.Reset();
+  if (response_callback_) {
+    std::move(response_callback_)
+        .Run(g_empty_string,
+             shared_highlighting::LinkGenerationError::kNotGenerated,
+             shared_highlighting::LinkGenerationReadyStatus::
+                 kRequestedBeforeReady);
+  }
 
   VisibleSelectionInFlatTree selection =
       GetFrame()->Selection().ComputeVisibleSelectionInFlatTree();

@@ -67,6 +67,10 @@ class MockTextFragmentReceiver : public blink::mojom::TextFragmentReceiver {
 
   MOCK_METHOD(void, Cancel, (), (override));
   MOCK_METHOD(void, RequestSelector, (RequestSelectorCallback), (override));
+  MOCK_METHOD(void,
+              RequestSelectorForSelection,
+              (RequestSelectorForSelectionCallback),
+              (override));
   MOCK_METHOD(void, RemoveFragments, (), (override));
   MOCK_METHOD(void,
               ExtractTextFragmentsMatches,

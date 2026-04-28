@@ -46,6 +46,11 @@ interface TextFragmentReceiver {
   // Returns the selector, the error code and whether the generated selector was
   // ready at the time of the request.
   // See specs: https://github.com/WICG/scroll-to-text-fragment.
+  //
+  // This is a specific API for the context menu "Copy Link to Text" feature and
+  // relies on the renderer side preemptive generation. More general use cases
+  // that want to generate a selector from the current selection should use
+  // RequestSelectorForSelection.
   RequestSelector() => (string selector,
                         LinkGenerationError error,
                         LinkGenerationReadyStatus ready_status);
@@ -65,6 +70,12 @@ interface TextFragmentReceiver {
   RequestSelectorForViewportCenter() => (string selector,
                                          LinkGenerationError error,
                                          LinkGenerationReadyStatus ready_status);
+
+  // Request the text fragment selector for the current selection. Unlike
+  // RequestSelector, this generates the selector on demand.
+  RequestSelectorForSelection() => (string selector,
+                                    LinkGenerationError error,
+                                    LinkGenerationReadyStatus ready_status);
 
   // Request the bounding rectangle, relative to the viewport, of the first
   // found match. Returns an empty rectangle if no matches are found.

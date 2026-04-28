@@ -50,6 +50,8 @@ class CORE_EXPORT TextFragmentHandler final
   void RequestSelector(RequestSelectorCallback callback) override;
   void RequestSelectorForViewportCenter(
       RequestSelectorForViewportCenterCallback callback) override;
+  void RequestSelectorForSelection(
+      RequestSelectorForSelectionCallback callback) override;
   void GetExistingSelectors(GetExistingSelectorsCallback callback) override;
   void RemoveFragments() override;
   void ExtractTextFragmentsMatches(

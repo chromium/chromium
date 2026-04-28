@@ -89,13 +89,17 @@ class TextFragmentHandlerTest : public SimTest {
     return RequestSelectorForViewportCenterFull(frame).selector;
   }
 
-  struct ViewportCenterResult {
+  String RequestSelectorForSelection(LocalFrame* frame = nullptr) {
+    return RequestSelectorForSelectionFull(frame).selector;
+  }
+
+  struct GenerationResult {
     String selector;
     shared_highlighting::LinkGenerationError error;
     shared_highlighting::LinkGenerationReadyStatus ready_status;
   };
 
-  ViewportCenterResult RequestSelectorForViewportCenterFull(
+  GenerationResult RequestSelectorForViewportCenterFull(
       LocalFrame* frame = nullptr) {
     if (!frame) {
       frame = GetDocument().GetFrame();
@@ -107,7 +111,26 @@ class TextFragmentHandlerTest : public SimTest {
     GetTextFragmentHandler(frame).RequestSelectorForViewportCenter(
         future.GetCallback());
 
-    ViewportCenterResult result;
+    GenerationResult result;
+    result.selector = future.Get<0>();
+    result.error = future.Get<1>();
+    result.ready_status = future.Get<2>();
+    return result;
+  }
+
+  GenerationResult RequestSelectorForSelectionFull(
+      LocalFrame* frame = nullptr) {
+    if (!frame) {
+      frame = GetDocument().GetFrame();
+    }
+    base::test::TestFuture<const String&,
+                           shared_highlighting::LinkGenerationError,
+                           shared_highlighting::LinkGenerationReadyStatus>
+        future;
+    GetTextFragmentHandler(frame).RequestSelectorForSelection(
+        future.GetCallback());
+
+    GenerationResult result;
     result.selector = future.Get<0>();
     result.error = future.Get<1>();
     result.ready_status = future.Get<2>();
@@ -1210,10 +1233,113 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterEmptyDocument) {
   )HTML");
   Compositor().BeginFrame();
 
-  ViewportCenterResult result = RequestSelectorForViewportCenterFull();
+  GenerationResult result = RequestSelectorForViewportCenterFull();
   EXPECT_TRUE(result.selector.empty());
   EXPECT_EQ(shared_highlighting::LinkGenerationError::kEmptySelection,
             result.error);
+}
+
+TEST_F(TextFragmentHandlerTest, RequestSelectorForSelection) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+        font-size: 120px;
+        line-height: 1;
+      }
+    </style>
+    <p>Block 1</p>
+    <p>Block 2</p>
+    <p>Block 3</p>
+    <p>Block 4</p>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Node* text_node =
+      GetDocument().QuerySelector(AtomicString("p"))->firstChild();
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text_node, 0))
+          .Extend(Position(text_node, 7))
+          .Build(),
+      SetSelectionOptions());
+
+  String selector = RequestSelectorForSelection();
+  EXPECT_EQ("Block%201,-Block%202", selector);
+}
+
+TEST_F(TextFragmentHandlerTest, RequestSelectorForSelectionEmptyDocument) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body></body>
+  )HTML");
+  Compositor().BeginFrame();
+
+  GenerationResult result = RequestSelectorForSelectionFull();
+  EXPECT_TRUE(result.selector.empty());
+  EXPECT_EQ(shared_highlighting::LinkGenerationError::kEmptySelection,
+            result.error);
+}
+
+TEST_F(TextFragmentHandlerTest,
+       RequestSelectorForSelectionResolvesPreviousCallback) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        margin: 0;
+        padding: 0;
+        font-size: 120px;
+        line-height: 1;
+      }
+    </style>
+    <p>This is a long enough block of text to be async</p>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Node* text_node =
+      GetDocument().QuerySelector(AtomicString("p"))->firstChild();
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text_node, 0))
+          .Extend(Position(text_node, 47))
+          .Build(),
+      SetSelectionOptions());
+
+  base::test::TestFuture<const String&,
+                         shared_highlighting::LinkGenerationError,
+                         shared_highlighting::LinkGenerationReadyStatus>
+      future1;
+  GetTextFragmentHandler().RequestSelectorForSelection(future1.GetCallback());
+
+  base::test::TestFuture<const String&,
+                         shared_highlighting::LinkGenerationError,
+                         shared_highlighting::LinkGenerationReadyStatus>
+      future2;
+  GetTextFragmentHandler().RequestSelectorForSelection(future2.GetCallback());
+
+  // The first callback should be rejected because a new request was made.
+  EXPECT_TRUE(future1.Get<0>().empty());
+  EXPECT_EQ(shared_highlighting::LinkGenerationError::kNotGenerated,
+            future1.Get<1>());
+
+  // The second callback should succeed.
+  EXPECT_EQ(
+      "This%20is%20a%20long%20enough%20block%20of%20text%20to%20be%20async",
+      future2.Get<0>());
+  EXPECT_EQ(shared_highlighting::LinkGenerationError::kNone, future2.Get<1>());
 }
 
 TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterNonText) {
@@ -1229,7 +1355,7 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterNonText) {
   )HTML");
   Compositor().BeginFrame();
 
-  ViewportCenterResult result = RequestSelectorForViewportCenterFull();
+  GenerationResult result = RequestSelectorForViewportCenterFull();
   EXPECT_TRUE(result.selector.empty());
   EXPECT_EQ(shared_highlighting::LinkGenerationError::kEmptySelection,
             result.error);
@@ -1248,7 +1374,7 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterLargeImage) {
   )HTML");
   Compositor().BeginFrame();
 
-  ViewportCenterResult result = RequestSelectorForViewportCenterFull();
+  GenerationResult result = RequestSelectorForViewportCenterFull();
   EXPECT_TRUE(result.selector.empty());
   EXPECT_EQ(shared_highlighting::LinkGenerationError::kEmptySelection,
             result.error);
@@ -1347,7 +1473,7 @@ TEST_F(TextFragmentHandlerTest, RequestSelectorForViewportCenterInSubframe) {
   Compositor().BeginFrame();
 
   // Center of main frame hits the iframe.
-  ViewportCenterResult result = RequestSelectorForViewportCenterFull();
+  GenerationResult result = RequestSelectorForViewportCenterFull();
   EXPECT_TRUE(result.selector.empty());
   EXPECT_EQ(shared_highlighting::LinkGenerationError::kEmptySelection,
             result.error);
