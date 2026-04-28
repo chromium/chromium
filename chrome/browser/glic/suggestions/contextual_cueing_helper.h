@@ -78,6 +78,18 @@ class ContextualCueingHelper
       base::TimeTicks document_available_time,
       base::expected<CueingResult, NudgeDecision> decision_result);
 
+  enum class AutoOpenResult {
+    kAutoOpened,
+    kFallbackToNudge,
+  };
+
+  static AutoOpenResult RecordAutoOpenResult(GlicAutoOpenResult result);
+
+  AutoOpenResult AutoOpenGlicSidePanel(
+      const CueingResult& decision_result,
+      ScopedNudgeDecisionRecorder* decision_recorder,
+      bool is_pdf_candidate);
+
   bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
 
   // When the last same doc navigation was committed.

@@ -55,6 +55,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/glic/glic_button_interface.h"
+#include "ui/views/controls/button/label_button.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -63,11 +65,14 @@
 
 namespace glic {
 
-namespace {
-void RecordAutoOpenResult(GlicAutoOpenResult result) {
+ContextualCueingHelper::AutoOpenResult
+ContextualCueingHelper::RecordAutoOpenResult(GlicAutoOpenResult result) {
   base::UmaHistogramEnumeration("ContextualCueing.GlicAutoOpen.Result", result);
+  if (result == GlicAutoOpenResult::kSuccess) {
+    return AutoOpenResult::kAutoOpened;
+  }
+  return AutoOpenResult::kFallbackToNudge;
 }
-}  // namespace
 
 class ScopedNudgeDecisionRecorder {
  public:
@@ -405,104 +410,30 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
-  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
-  auto* bwi =
-      tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
-  auto* side_panel_ui = bwi ? SidePanelUIProvider::From(bwi) : nullptr;
-
-  bool existing_side_panel_open =
-      side_panel_ui &&
-      (side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
-       side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kToolbar));
-
-  bool is_split = tab_interface && tab_interface->IsSplit();
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  NudgeDecision can_show_decision =
+      contextual_cueing_service_->CanShowNudge(url);
+  decision_recorder->set_nudge_decision(can_show_decision);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  bool vertical_tabs_enabled = false;
-#if !BUILDFLAG(IS_ANDROID)
-  vertical_tabs_enabled =
-      profile->GetPrefs()->GetBoolean(::prefs::kVerticalTabsEnabled);
-#endif
-
-  bool should_open_side_panel =
-      decision_result->auto_open_eligible &&
-      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
-
-  std::optional<GlicAutoOpenResult> prevented_reason;
-  if (should_open_side_panel) {
-    // Prevention reasons for generically auto-opening the side panel.
-    if (existing_side_panel_open) {
-      prevented_reason =
-          GlicAutoOpenResult::kPreventedFromExistingSidePanelOpen;
-    } else if (is_split) {
-      prevented_reason = GlicAutoOpenResult::kPreventedFromSplitView;
-    } else if (vertical_tabs_enabled) {
-      prevented_reason = GlicAutoOpenResult::kPreventedFromVerticalTabs;
-    }
-
-    if (prevented_reason) {
-      RecordAutoOpenResult(*prevented_reason);
-      should_open_side_panel = false;
-    }
-  }
-
-  bool is_auto_open_pdf_side_panel_cue =
-      should_open_side_panel &&
+  bool is_pdf_candidate =
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
       glic::GlicEnabling::IsAutoOpenForPdfEnabled(profile);
 
-  if (is_auto_open_pdf_side_panel_cue) {
-    // Prevention reasons for auto-opening on pdfs
-    if (web_contents()->GetContainerBounds().width() <
-        kMinWindowWidthForPdfAutoOpen.Get()) {
-      prevented_reason = GlicAutoOpenResult::kPreventedFromWindowTooNarrow;
-    }
-
-    if (prevented_reason) {
-      RecordAutoOpenResult(*prevented_reason);
-      is_auto_open_pdf_side_panel_cue = false;
-      should_open_side_panel = false;
+  if (decision_result->auto_open_eligible &&
+      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel)) {
+    if (can_show_decision == NudgeDecision::kSuccess || is_pdf_candidate) {
+      if (AutoOpenGlicSidePanel(*decision_result, decision_recorder.get(),
+                                is_pdf_candidate) !=
+          AutoOpenResult::kFallbackToNudge) {
+        return;
+      }
     }
   }
 
-  // Check nudge rate-limiting/backoff caps. Auto-open PDF side panel bypasses
-  // this check for a more deterministic feel.
-  NudgeDecision can_show_decision;
-  if (is_auto_open_pdf_side_panel_cue) {
-    can_show_decision = NudgeDecision::kSuccess;
-  } else {
-    const GURL& url = web_contents()->GetLastCommittedURL();
-    can_show_decision = contextual_cueing_service_->CanShowNudge(url);
-  }
-  decision_recorder->set_nudge_decision(can_show_decision);
   if (can_show_decision != NudgeDecision::kSuccess) {
     return;
-  }
-
-  // Handle side panel auto-open case: bypass nudge and open panel directly.
-  // If auto-open fails or is disabled, falls through to standard nudge.
-  if (should_open_side_panel) {
-    auto* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    if (glic_service && tab_interface) {
-      glic::mojom::InvocationSource invocation_source =
-          glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
-      if (is_auto_open_pdf_side_panel_cue) {
-        invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
-      }
-
-      glic::GlicInvokeOptions options(invocation_source);
-      options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
-      if (!decision_result->prompt_suggestion.empty()) {
-        options.prompts.push_back(decision_result->prompt_suggestion);
-      }
-      glic_service->Invoke(tab_interface, std::move(options));
-      RecordAutoOpenResult(GlicAutoOpenResult::kSuccess);
-      return;
-    }
-    // Fall through to nudge if side panel open fails.
-    RecordAutoOpenResult(GlicAutoOpenResult::kFailedUnknown);
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(
@@ -516,6 +447,79 @@ void ContextualCueingHelper::OnCueingDecision(
                           contextual_cueing_service_->GetWeakPtr(),
                           web_contents(), document_available_time,
                           decision_result->is_dynamic));
+}
+
+ContextualCueingHelper::AutoOpenResult
+ContextualCueingHelper::AutoOpenGlicSidePanel(
+    const CueingResult& decision_result,
+    ScopedNudgeDecisionRecorder* decision_recorder,
+    bool is_pdf_candidate) {
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+  auto* bwi =
+      tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
+  auto* side_panel_ui = bwi ? SidePanelUIProvider::From(bwi) : nullptr;
+
+  if (side_panel_ui &&
+      (side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
+       side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kToolbar))) {
+    return RecordAutoOpenResult(
+        GlicAutoOpenResult::kPreventedFromExistingSidePanelOpen);
+  }
+  if (tab_interface && tab_interface->IsSplit()) {
+    return RecordAutoOpenResult(GlicAutoOpenResult::kPreventedFromSplitView);
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  bool vertical_tabs_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  vertical_tabs_enabled =
+      profile->GetPrefs()->GetBoolean(::prefs::kVerticalTabsEnabled);
+#endif
+
+  if (vertical_tabs_enabled) {
+    return RecordAutoOpenResult(GlicAutoOpenResult::kPreventedFromVerticalTabs);
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  views::LabelButton* glic_button = glic::GlicButtonInterface::FromBrowser(bwi);
+  if (!glic_button || !glic_button->GetVisible()) {
+    return RecordAutoOpenResult(
+        GlicAutoOpenResult::kPreventedFromButtonNotVisible);
+  }
+#endif
+
+  if (is_pdf_candidate) {
+    // Prevention reasons for auto-opening on pdfs
+    if (web_contents()->GetContainerBounds().width() <
+        kMinWindowWidthForPdfAutoOpen.Get()) {
+      return RecordAutoOpenResult(
+          GlicAutoOpenResult::kPreventedFromWindowTooNarrow);
+    }
+  }
+
+  // Handle side panel auto-open case: bypass nudge and open panel directly.
+  // If auto-open fails or is disabled, falls through to standard nudge.
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (glic_service && tab_interface) {
+    glic::mojom::InvocationSource invocation_source =
+        glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
+    if (is_pdf_candidate) {
+      invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
+    }
+
+    glic::GlicInvokeOptions options(invocation_source);
+    options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
+    if (!decision_result.prompt_suggestion.empty()) {
+      options.prompts.push_back(decision_result.prompt_suggestion);
+    }
+    glic_service->Invoke(tab_interface, std::move(options));
+    return RecordAutoOpenResult(GlicAutoOpenResult::kSuccess);
+  }
+
+  // Fall through to nudge if side panel open fails.
+  return RecordAutoOpenResult(GlicAutoOpenResult::kFailedUnknown);
 }
 
 // static
