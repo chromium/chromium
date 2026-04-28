@@ -221,8 +221,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Reset latency tracking on session end.
   _waitingForResponse = NO;
   _lastPromptSentTime = base::TimeTicks();
-  // TODO(crbug.com/435649967): log # of times users dismissed the floaty before
-  // receiving a response.
   // Record prompt counts for the session.
   RecordSessionPromptCount(_totalPromptsInSession);
   RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
