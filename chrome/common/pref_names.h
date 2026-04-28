@@ -2961,16 +2961,6 @@ inline constexpr char kKnownInterceptionDisclosureInfobarLastShown[] =
     "known_interception_disclosure_infobar_last_shown";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kRequiredClientCertificateForUser[] =
-    "required_client_certificate_for_user";
-inline constexpr char kRequiredClientCertificateForDevice[] =
-    "required_client_certificate_for_device";
-inline constexpr char kCertificateProvisioningStateForUser[] =
-    "cert_provisioning_user_state";
-inline constexpr char kCertificateProvisioningStateForDevice[] =
-    "cert_provisioning_device_state";
-#endif
 // A boolean pref that enables certificate prompts when multiple certificates
 // match the auto-selection policy. This pref is controlled exclusively by
 // policies (PromptOnMultipleMatchingCertificates or, in the sign-in profile,

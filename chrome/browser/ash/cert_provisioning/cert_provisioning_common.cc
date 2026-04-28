@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
@@ -249,31 +249,32 @@ std::optional<ProtocolVersion> ParseProtocolVersion(
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kRequiredClientCertificateForUser);
-  registry->RegisterDictionaryPref(prefs::kCertificateProvisioningStateForUser);
+  registry->RegisterListPref(ash::prefs::kRequiredClientCertificateForUser);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kCertificateProvisioningStateForUser);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kRequiredClientCertificateForDevice);
+  registry->RegisterListPref(ash::prefs::kRequiredClientCertificateForDevice);
   registry->RegisterDictionaryPref(
-      prefs::kCertificateProvisioningStateForDevice);
+      ash::prefs::kCertificateProvisioningStateForDevice);
 }
 
 const char* GetPrefNameForCertProfiles(CertScope scope) {
   switch (scope) {
     case CertScope::kUser:
-      return prefs::kRequiredClientCertificateForUser;
+      return ash::prefs::kRequiredClientCertificateForUser;
     case CertScope::kDevice:
-      return prefs::kRequiredClientCertificateForDevice;
+      return ash::prefs::kRequiredClientCertificateForDevice;
   }
 }
 
 const char* GetPrefNameForSerialization(CertScope scope) {
   switch (scope) {
     case CertScope::kUser:
-      return prefs::kCertificateProvisioningStateForUser;
+      return ash::prefs::kCertificateProvisioningStateForUser;
     case CertScope::kDevice:
-      return prefs::kCertificateProvisioningStateForDevice;
+      return ash::prefs::kCertificateProvisioningStateForDevice;
   }
 }
 

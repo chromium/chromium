@@ -3114,6 +3114,19 @@ inline constexpr char kKerberosUseCustomPrefilledConfig[] =
     "kerberos.use_custom_prefilled_config";
 
 //-----------------------------------------------------------------------------
+// Certificate related Prefs
+//-----------------------------------------------------------------------------
+
+inline constexpr char kRequiredClientCertificateForUser[] =
+    "required_client_certificate_for_user";
+inline constexpr char kRequiredClientCertificateForDevice[] =
+    "required_client_certificate_for_device";
+inline constexpr char kCertificateProvisioningStateForUser[] =
+    "cert_provisioning_user_state";
+inline constexpr char kCertificateProvisioningStateForDevice[] =
+    "cert_provisioning_device_state";
+
+//-----------------------------------------------------------------------------
 // TPM related Prefs
 //-----------------------------------------------------------------------------
 

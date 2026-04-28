@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_worker.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -1065,7 +1065,7 @@ TEST_F(CertProvisioningSchedulerTest, PlatformKeysServiceShutDown) {
            "cert_profile_id":"cert_profile_id_1",
            "policy_version":"cert_profile_version_1",
            "key_algorithm":"rsa" }])");
-  pref_service_.Set(prefs::kRequiredClientCertificateForDevice, config);
+  pref_service_.Set(ash::prefs::kRequiredClientCertificateForDevice, config);
 
   // Same as in the policy.
   CertProfile cert_profile{kCertProfileId,          kCertProfileName,
