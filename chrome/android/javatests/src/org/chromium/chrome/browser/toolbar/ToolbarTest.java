@@ -301,9 +301,12 @@ public class ToolbarTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
+        // Simulate availability of a hardware keyboard.
+        mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
+
         // If soft keyboard is requested while hardware keyboard is connected - do not prefocus the
         // Omnibox, as it will automatically call up software keyboard.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(mActivity);
 
         // Open a new tab.
         ChromeTabUtils.newTabFromMenu(
@@ -317,7 +320,7 @@ public class ToolbarTest {
                                     .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
-                            Matchers.is(true));
+                            Matchers.is(wantPrefocus));
                 });
 
         // Navigate away from the NTP.
