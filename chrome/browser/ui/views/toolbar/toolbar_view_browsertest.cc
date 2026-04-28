@@ -156,3 +156,12 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
     }
   }
 }
+
+// Regression test for crbug.com/505902447: Verify that popup windows still
+// have pinned toolbar actions, as they're used for pinning the download button.
+IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, PinnedToolbarActionsInPopup) {
+  Browser* popup = CreateBrowserForPopup(browser()->profile());
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(popup)
+                  ->toolbar_button_provider()
+                  ->GetPinnedToolbarActions());
+}
