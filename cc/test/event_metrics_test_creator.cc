@@ -40,11 +40,110 @@ constexpr EventMetricsType GetEventMetricsTypeFor(ui::EventType type) {
 
 }  // namespace
 
-std::unique_ptr<EventMetrics> EventMetricsTestCreator::CreateEventMetrics(
-    EventParams params) {
-  CHECK_EQ(GetEventMetricsTypeFor(params.type),
-           EventMetricsType::kEventMetrics);
+template <typename Derived>
+EventMetricsTestCreator::EventBuilderBase<Derived>::EventBuilderBase(
+    base::SimpleTestTickClock& clock,
+    ui::EventType type)
+    : clock_(clock), type_(type) {}
 
+template <typename Derived>
+Derived& EventMetricsTestCreator::EventBuilderBase<Derived>::SetTimestamp(
+    base::TimeTicks timestamp) {
+  timestamp_ = timestamp;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived& EventMetricsTestCreator::EventBuilderBase<Derived>::
+    SetArrivedInRendererCompositorTimestamp(
+        base::TimeTicks arrived_in_renderer_compositor_timestamp) {
+  arrived_in_renderer_compositor_timestamp_ =
+      arrived_in_renderer_compositor_timestamp;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::EventBuilderBase<Derived>::SetCausedFrameUpdate(
+    bool caused_frame_update) {
+  caused_frame_update_ = caused_frame_update;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+EventMetricsTestCreator::ScrollEventBuilderBase<
+    Derived>::ScrollEventBuilderBase(base::SimpleTestTickClock& clock,
+                                     ui::EventType type,
+                                     bool is_inertial)
+    : EventBuilderBase<Derived>(clock, type), is_inertial_(is_inertial) {}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::SetDispatchArgs(
+    ScrollEventMetrics::DispatchBeginFrameArgs dispatch_args) {
+  dispatch_args_ = dispatch_args;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::
+    ScrollUpdateEventBuilderBase(
+        base::SimpleTestTickClock& clock,
+        ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
+        bool is_inertial)
+    : ScrollEventBuilderBase<Derived>(clock,
+                                      ui::EventType::kGestureScrollUpdate,
+                                      is_inertial),
+      scroll_update_type_(scroll_update_type) {}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::SetDelta(
+    float delta) {
+  delta_ = delta;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived& EventMetricsTestCreator::ScrollUpdateEventBuilderBase<
+    Derived>::SetPredictedDelta(float predicted_delta) {
+  predicted_delta_ = predicted_delta;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::SetDidScroll(
+    bool did_scroll) {
+  did_scroll_ = did_scroll;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::SetIsSynthetic(
+    bool is_synthetic) {
+  is_synthetic_ = is_synthetic;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::SetTraceId(
+    EventMetrics::TraceId trace_id) {
+  trace_id_ = trace_id;
+  return static_cast<Derived&>(*this);
+}
+
+EventMetricsTestCreator::EventBuilder::EventBuilder(
+    base::SimpleTestTickClock& clock,
+    ui::EventType type)
+    : EventBuilderBase<EventBuilder>(clock, type) {}
+
+EventMetricsTestCreator::EventBuilder::~EventBuilder() = default;
+
+std::unique_ptr<EventMetrics> EventMetricsTestCreator::EventBuilder::Build() {
+  CHECK_EQ(GetEventMetricsTypeFor(type_), EventMetricsType::kEventMetrics);
   // `EventMetrics::CreateForTesting()` sets the dispatch timestamp of the
   // `EventMetrics::DispatchStage::kArrivedInRendererCompositor` stage to
   // `test_tick_clock->NowTicks()`. The statement below ensures that the
@@ -52,125 +151,154 @@ std::unique_ptr<EventMetrics> EventMetricsTestCreator::CreateEventMetrics(
   // (`EventMetrics::DispatchStage::kGenerated` <
   // `EventMetrics::DispatchStage::kArrivedInBrowserMain` <
   // `EventMetrics::DispatchStage::kArrivedInRendererCompositor`).
-  test_tick_clock_.SetNowTicks(
-      params.arrived_in_renderer_compositor_timestamp.value_or(
-          params.timestamp + base::Nanoseconds(2)));
+  clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
+      timestamp_ + base::Nanoseconds(2)));
 
   auto event = EventMetrics::CreateForTesting(
-      params.type, params.timestamp,
-      /* arrived_in_browser_main_timestamp= */ params.timestamp +
+      type_, timestamp_,
+      /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Nanoseconds(1),
-      &test_tick_clock_, /* trace_id= */ std::nullopt);
+      &*clock_, /* trace_id= */ std::nullopt);
   if (event == nullptr) {
     return event;
   }
-  if (params.caused_frame_update.has_value()) {
-    event->set_caused_frame_update(*params.caused_frame_update);
+  if (caused_frame_update_.has_value()) {
+    event->set_caused_frame_update(*caused_frame_update_);
   }
   return event;
 }
 
-std::unique_ptr<ScrollEventMetrics>
-EventMetricsTestCreator::CreateGestureScrollBegin(ScrollEventParams params) {
-  return CreateScrollEventMetrics(ui::EventType::kGestureScrollBegin,
-                                  /* is_inertial= */ false, params);
+EventMetricsTestCreator::EventBuilder
+EventMetricsTestCreator::CreateEventBuilder(ui::EventType type) {
+  return EventBuilder(test_tick_clock_, type);
 }
+
+EventMetricsTestCreator::ScrollEventBuilder::ScrollEventBuilder(
+    base::SimpleTestTickClock& clock,
+    ui::EventType type,
+    bool is_inertial)
+    : ScrollEventBuilderBase<ScrollEventBuilder>(clock, type, is_inertial) {}
+
+EventMetricsTestCreator::ScrollEventBuilder::~ScrollEventBuilder() = default;
 
 std::unique_ptr<ScrollEventMetrics>
-EventMetricsTestCreator::CreateGestureScrollEnd(ScrollEventParams params) {
-  return CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
-                                  /* is_inertial= */ false, params);
-}
-
-std::unique_ptr<ScrollEventMetrics>
-EventMetricsTestCreator::CreateInertialGestureScrollEnd(
-    ScrollEventParams params) {
-  return CreateScrollEventMetrics(ui::EventType::kGestureScrollEnd,
-                                  /* is_inertial= */ true, params);
-}
-
-std::unique_ptr<ScrollUpdateEventMetrics>
-EventMetricsTestCreator::CreateFirstGestureScrollUpdate(
-    ScrollUpdateEventParams params) {
-  return CreateScrollUpdateEventMetrics(
-      /* is_inertial= */ false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, params);
-}
-
-std::unique_ptr<ScrollUpdateEventMetrics>
-EventMetricsTestCreator::CreateGestureScrollUpdate(
-    ScrollUpdateEventParams params) {
-  return CreateScrollUpdateEventMetrics(
-      /* is_inertial= */ false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, params);
-}
-
-std::unique_ptr<ScrollUpdateEventMetrics>
-EventMetricsTestCreator::CreateInertialGestureScrollUpdate(
-    ScrollUpdateEventParams params) {
-  return CreateScrollUpdateEventMetrics(
-      /* is_inertial= */ true,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, params);
-}
-
-std::unique_ptr<ScrollEventMetrics>
-EventMetricsTestCreator::CreateScrollEventMetrics(ui::EventType type,
-                                                  bool is_inertial,
-                                                  ScrollEventParams params) {
-  CHECK_EQ(GetEventMetricsTypeFor(type), EventMetricsType::kScrollEventMetrics);
+EventMetricsTestCreator::ScrollEventBuilder::Build() {
+  CHECK_EQ(GetEventMetricsTypeFor(type_),
+           EventMetricsType::kScrollEventMetrics);
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
-  test_tick_clock_.SetNowTicks(
-      params.arrived_in_renderer_compositor_timestamp.value_or(
-          params.timestamp + base::Nanoseconds(2)));
+  clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
+      timestamp_ + base::Nanoseconds(2)));
   auto event = ScrollEventMetrics::CreateForTesting(
-      type, ui::ScrollInputType::kTouchscreen, is_inertial, params.timestamp,
-      /* arrived_in_browser_main_timestamp= */ params.timestamp +
+      type_, ui::ScrollInputType::kTouchscreen, is_inertial_, timestamp_,
+      /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Nanoseconds(1),
-      &test_tick_clock_,
-      /* scroll_begin_arrival_timestamp= */ params.timestamp -
-          base::Nanoseconds(1));
-  if (params.caused_frame_update.has_value()) {
-    event->set_caused_frame_update(*params.caused_frame_update);
+      &*clock_,
+      /* scroll_begin_arrival_timestamp= */ timestamp_ - base::Nanoseconds(1));
+  if (caused_frame_update_.has_value()) {
+    event->set_caused_frame_update(*caused_frame_update_);
   }
-  if (params.dispatch_args.has_value()) {
-    event->set_dispatch_args(*params.dispatch_args);
+  if (dispatch_args_.has_value()) {
+    event->set_dispatch_args(*dispatch_args_);
   }
   return event;
 }
 
-std::unique_ptr<ScrollUpdateEventMetrics>
-EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
-    bool is_inertial,
+EventMetricsTestCreator::ScrollEventBuilder
+EventMetricsTestCreator::GestureScrollBeginBuilder() {
+  return ScrollEventBuilder(test_tick_clock_,
+                            ui::EventType::kGestureScrollBegin,
+                            /*is_inertial=*/false);
+}
+
+EventMetricsTestCreator::ScrollEventBuilder
+EventMetricsTestCreator::GestureScrollEndBuilder() {
+  return ScrollEventBuilder(test_tick_clock_, ui::EventType::kGestureScrollEnd,
+                            /*is_inertial=*/false);
+}
+
+EventMetricsTestCreator::ScrollEventBuilder
+EventMetricsTestCreator::InertialGestureScrollEndBuilder() {
+  return ScrollEventBuilder(test_tick_clock_, ui::EventType::kGestureScrollEnd,
+                            /*is_inertial=*/true);
+}
+
+EventMetricsTestCreator::ScrollUpdateEventBuilder::ScrollUpdateEventBuilder(
+    base::SimpleTestTickClock& clock,
     ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
-    ScrollUpdateEventParams params) {
+    bool is_inertial)
+    : ScrollUpdateEventBuilderBase<ScrollUpdateEventBuilder>(clock,
+                                                             scroll_update_type,
+                                                             is_inertial) {}
+
+EventMetricsTestCreator::ScrollUpdateEventBuilder::~ScrollUpdateEventBuilder() =
+    default;
+
+std::unique_ptr<ScrollUpdateEventMetrics>
+EventMetricsTestCreator::ScrollUpdateEventBuilder::Build() {
+  CHECK_EQ(GetEventMetricsTypeFor(ui::EventType::kGestureScrollUpdate),
+           EventMetricsType::kScrollUpdateEventMetrics);
   // See `EventMetricsTestCreator::CreateEventMetrics()` for why we do this.
-  test_tick_clock_.SetNowTicks(
-      params.arrived_in_renderer_compositor_timestamp.value_or(
-          params.timestamp + base::Nanoseconds(2)));
+  clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
+      timestamp_ + base::Nanoseconds(2)));
   auto event = ScrollUpdateEventMetrics::CreateForTesting(
       ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
-      is_inertial, scroll_update_type, params.delta, params.timestamp,
-      /* arrived_in_browser_main_timestamp= */ params.timestamp +
+      is_inertial_, scroll_update_type_, delta_, timestamp_,
+      /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Nanoseconds(1),
-      &test_tick_clock_, params.trace_id,
-      /* scroll_begin_arrival_timestamp= */ params.timestamp -
-          base::Nanoseconds(1));
-  if (params.predicted_delta.has_value()) {
-    event->set_predicted_delta(*params.predicted_delta);
+      &*clock_, trace_id_,
+      /* scroll_begin_arrival_timestamp= */ timestamp_ - base::Nanoseconds(1));
+  if (predicted_delta_.has_value()) {
+    event->set_predicted_delta(*predicted_delta_);
   }
-  if (params.caused_frame_update.has_value()) {
-    event->set_caused_frame_update(*params.caused_frame_update);
+  if (caused_frame_update_.has_value()) {
+    event->set_caused_frame_update(*caused_frame_update_);
   }
-  if (params.did_scroll.has_value()) {
-    event->set_did_scroll(*params.did_scroll);
+  if (did_scroll_.has_value()) {
+    event->set_did_scroll(*did_scroll_);
   }
-  if (params.is_synthetic.has_value()) {
-    event->set_is_synthetic(*params.is_synthetic);
+  if (is_synthetic_.has_value()) {
+    event->set_is_synthetic(*is_synthetic_);
   }
-  if (params.dispatch_args.has_value()) {
-    event->set_dispatch_args(*params.dispatch_args);
+  if (dispatch_args_.has_value()) {
+    event->set_dispatch_args(*dispatch_args_);
   }
   return event;
 }
+
+EventMetricsTestCreator::ScrollUpdateEventBuilder
+EventMetricsTestCreator::FirstGestureScrollUpdateBuilder() {
+  return ScrollUpdateEventBuilder(
+      test_tick_clock_, ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+      /*is_inertial=*/false);
+}
+
+EventMetricsTestCreator::ScrollUpdateEventBuilder
+EventMetricsTestCreator::GestureScrollUpdateBuilder() {
+  return ScrollUpdateEventBuilder(
+      test_tick_clock_, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      /*is_inertial=*/false);
+}
+
+EventMetricsTestCreator::ScrollUpdateEventBuilder
+EventMetricsTestCreator::InertialGestureScrollUpdateBuilder() {
+  return ScrollUpdateEventBuilder(
+      test_tick_clock_, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      /*is_inertial=*/true);
+}
+
+// Explicit template instantiations so that method implementations don't have to
+// live in the header file.
+template class EventMetricsTestCreator::EventBuilderBase<
+    EventMetricsTestCreator::EventBuilder>;
+template class EventMetricsTestCreator::EventBuilderBase<
+    EventMetricsTestCreator::ScrollEventBuilder>;
+template class EventMetricsTestCreator::EventBuilderBase<
+    EventMetricsTestCreator::ScrollUpdateEventBuilder>;
+template class EventMetricsTestCreator::ScrollEventBuilderBase<
+    EventMetricsTestCreator::ScrollEventBuilder>;
+template class EventMetricsTestCreator::ScrollEventBuilderBase<
+    EventMetricsTestCreator::ScrollUpdateEventBuilder>;
+template class EventMetricsTestCreator::ScrollUpdateEventBuilderBase<
+    EventMetricsTestCreator::ScrollUpdateEventBuilder>;
 
 }  // namespace cc

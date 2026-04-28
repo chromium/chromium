@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
@@ -20,66 +21,152 @@ namespace cc {
 // A helper class for creating `EventMetrics` in unit tests.
 class EventMetricsTestCreator {
  public:
-  struct EventParams {
-    ui::EventType type = ui::EventType::kUnknown;
-    base::TimeTicks timestamp = kDefaultTimestamp;
-    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
-        std::nullopt;
-    std::optional<bool> caused_frame_update = std::nullopt;
-  };
-
-  std::unique_ptr<EventMetrics> CreateEventMetrics(EventParams params);
-
-  struct ScrollEventParams {
-    base::TimeTicks timestamp = kDefaultTimestamp;
-    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
-        std::nullopt;
-    std::optional<bool> caused_frame_update = std::nullopt;
-    std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args =
-        std::nullopt;
-  };
-
-  std::unique_ptr<ScrollEventMetrics> CreateGestureScrollBegin(
-      ScrollEventParams params);
-  std::unique_ptr<ScrollEventMetrics> CreateGestureScrollEnd(
-      ScrollEventParams params);
-  std::unique_ptr<ScrollEventMetrics> CreateInertialGestureScrollEnd(
-      ScrollEventParams params);
-
-  struct ScrollUpdateEventParams {
-    base::TimeTicks timestamp = kDefaultTimestamp;
-    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp =
-        std::nullopt;
-    float delta = 0.0f;
-    std::optional<float> predicted_delta = std::nullopt;
-    std::optional<bool> caused_frame_update = std::nullopt;
-    std::optional<bool> did_scroll = std::nullopt;
-    std::optional<bool> is_synthetic = std::nullopt;
-    std::optional<EventMetrics::TraceId> trace_id = std::nullopt;
-    std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args =
-        std::nullopt;
-  };
-
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateFirstGestureScrollUpdate(
-      ScrollUpdateEventParams params);
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateGestureScrollUpdate(
-      ScrollUpdateEventParams params);
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateInertialGestureScrollUpdate(
-      ScrollUpdateEventParams params);
-
- private:
   static inline constexpr base::TimeTicks kDefaultTimestamp =
       base::TimeTicks() + base::Milliseconds(1337);
 
-  std::unique_ptr<ScrollEventMetrics> CreateScrollEventMetrics(
-      ui::EventType type,
-      bool is_inertial,
-      ScrollEventParams params);
-  std::unique_ptr<ScrollUpdateEventMetrics> CreateScrollUpdateEventMetrics(
-      bool is_inertial,
-      ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
-      ScrollUpdateEventParams params);
+  // ---------------------------------------------------------------------------
+  // Base Templates for CRTP
+  //
+  // We use the Curiously Recurring Template Pattern
+  // (https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) to
+  // avoid setter duplication while preserving method chaining and improving
+  // type safety. It allows us to implement a single method on a base class, for
+  // example:
+  //
+  // ```
+  // template <typename Derived>
+  // class EventBuilderBase {
+  //  public:
+  //   Derived& SetXYZ(...);
+  //   ...
+  // }
+  // ```
+  //
+  // and then use it with all three builders as if they each implemented their
+  // own method:
+  //
+  // ```
+  // EventBuilder& EventBuilder::SetTimestamp(...);
+  // ScrollEventBuilder& ScrollEventBuilder::SetTimestamp(...);
+  // ScrollUpdateEventBuilder& ScrollUpdateEventBuilder::SetTimestamp(...);
+  // ```
+  //
+  // Inheritance Hierarchy:
+  //
+  //   Actual Builder Classes         CRTP Base Templates
+  //   (to be used by clients)
+  //
+  //   EventBuilder ----------------> EventBuilderBase<Derived>
+  //   (Derived=EventBuilder)               ^
+  //                                        |
+  //   ScrollEventBuilder ----------> ScrollEventBuilderBase<Derived>
+  //   (Derived=ScrollEventBuilder)         ^
+  //                                        |
+  //   ScrollUpdateEventBuilder ----> ScrollUpdateEventBuilderBase<Derived>
+  //   (Derived=ScrollUpdateEventBuilderBase)
+  // ---------------------------------------------------------------------------
 
+  template <typename Derived>
+  class EventBuilderBase {
+   public:
+    Derived& SetTimestamp(base::TimeTicks timestamp);
+    Derived& SetArrivedInRendererCompositorTimestamp(
+        base::TimeTicks arrived_in_renderer_compositor_timestamp);
+    Derived& SetCausedFrameUpdate(bool caused_frame_update);
+
+   protected:
+    EventBuilderBase(base::SimpleTestTickClock& clock, ui::EventType type);
+
+    raw_ref<base::SimpleTestTickClock> clock_;
+    ui::EventType type_;
+    base::TimeTicks timestamp_ = kDefaultTimestamp;
+    std::optional<base::TimeTicks> arrived_in_renderer_compositor_timestamp_;
+    std::optional<bool> caused_frame_update_;
+  };
+
+  template <typename Derived>
+  class ScrollEventBuilderBase : public EventBuilderBase<Derived> {
+   public:
+    Derived& SetDispatchArgs(
+        ScrollEventMetrics::DispatchBeginFrameArgs dispatch_args);
+
+   protected:
+    ScrollEventBuilderBase(base::SimpleTestTickClock& clock,
+                           ui::EventType type,
+                           bool is_inertial);
+
+    bool is_inertial_;
+    std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args_;
+  };
+
+  template <typename Derived>
+  class ScrollUpdateEventBuilderBase : public ScrollEventBuilderBase<Derived> {
+   public:
+    Derived& SetDelta(float delta);
+    Derived& SetPredictedDelta(float predicted_delta);
+    Derived& SetDidScroll(bool did_scroll);
+    Derived& SetIsSynthetic(bool is_synthetic);
+    Derived& SetTraceId(EventMetrics::TraceId trace_id);
+
+   protected:
+    ScrollUpdateEventBuilderBase(
+        base::SimpleTestTickClock& clock,
+        ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
+        bool is_inertial);
+
+    ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type_;
+    float delta_ = 0.0f;
+    std::optional<float> predicted_delta_;
+    std::optional<bool> did_scroll_;
+    std::optional<bool> is_synthetic_;
+    std::optional<EventMetrics::TraceId> trace_id_;
+  };
+
+  // ---------------------------------------------------------------------------
+  // Actual Builder Classes
+  // ---------------------------------------------------------------------------
+
+  class EventBuilder : public EventBuilderBase<EventBuilder> {
+   public:
+    EventBuilder(base::SimpleTestTickClock& clock, ui::EventType type);
+    ~EventBuilder();
+
+    std::unique_ptr<EventMetrics> Build();
+  };
+
+  EventBuilder CreateEventBuilder(ui::EventType type);
+
+  class ScrollEventBuilder : public ScrollEventBuilderBase<ScrollEventBuilder> {
+   public:
+    ScrollEventBuilder(base::SimpleTestTickClock& clock,
+                       ui::EventType type,
+                       bool is_inertial);
+    ~ScrollEventBuilder();
+
+    std::unique_ptr<ScrollEventMetrics> Build();
+  };
+
+  ScrollEventBuilder GestureScrollBeginBuilder();
+  ScrollEventBuilder GestureScrollEndBuilder();
+  ScrollEventBuilder InertialGestureScrollEndBuilder();
+
+  class ScrollUpdateEventBuilder
+      : public ScrollUpdateEventBuilderBase<ScrollUpdateEventBuilder> {
+   public:
+    ScrollUpdateEventBuilder(
+        base::SimpleTestTickClock& clock,
+        ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
+        bool is_inertial);
+    ~ScrollUpdateEventBuilder();
+
+    std::unique_ptr<ScrollUpdateEventMetrics> Build();
+  };
+
+  ScrollUpdateEventBuilder FirstGestureScrollUpdateBuilder();
+  ScrollUpdateEventBuilder GestureScrollUpdateBuilder();
+  ScrollUpdateEventBuilder InertialGestureScrollUpdateBuilder();
+
+ private:
   base::SimpleTestTickClock test_tick_clock_;
 };
 
