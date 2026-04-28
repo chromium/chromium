@@ -1461,6 +1461,19 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
                                        });
 
     if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
+      BrowserList* browser_list = BrowserListFactory::GetForProfile(_profile);
+      const BrowserList::BrowserType browserTypes =
+          _profile->IsOffTheRecord()
+              ? BrowserList::BrowserType::kIncognito
+              : BrowserList::BrowserType::kRegularAndInactive;
+      std::set<Browser*> browsers = browser_list->BrowsersOfType(browserTypes);
+      BrowserAndIndex tab_info = FindBrowserAndIndex(tabInfo.tabID, browsers);
+      if (!tab_info.browser ||
+          tab_info.tab_index == WebStateList::kInvalidIndex) {
+        // Tab is not found in any browser. Could be that the tab was removed
+        // during the drag.
+        return;
+      }
       // Move tab across Browsers.
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kOtherBrowser);

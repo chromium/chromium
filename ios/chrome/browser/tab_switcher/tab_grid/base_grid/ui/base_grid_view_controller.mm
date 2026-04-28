@@ -989,6 +989,9 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
     GridItemIdentifier* sourceItem =
         [self.diffableDataSource itemIdentifierForIndexPath:sourceIndexPath];
+    if (!sourceItem) {
+      return;
+    }
     GridItemIdentifier* destinationItem = [self.diffableDataSource
         itemIdentifierForIndexPath:destinationIndexPath];
 
