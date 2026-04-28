@@ -34,11 +34,12 @@ ${this.filteredSkills_().length === 0 ? html`
       <p class="headline">$i18n{emptyStateTitle}</p>
       <p class="body-text">$i18n{emptyStateDescription}</p>
     </div>
-    <cr-button id="browseSkillsButton" class="floating-button"
-        @click="${this.onExploreButtonClick_}">
-      <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
-      $i18n{browseSkillsTitle}
-    </cr-button>
+    ${!this.shouldDisableBrowseSkillsPage_ ? html`
+      <cr-button id="browseSkillsButton" class="floating-button"
+          @click="${this.onExploreButtonClick_}">
+        <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
+        $i18n{browseSkillsTitle}
+      </cr-button>` : ''}
   </div>` : html`
    <div class="skill-cards-container">
     ${Array.from(this.filteredSkills_()).map((skill) => html`
