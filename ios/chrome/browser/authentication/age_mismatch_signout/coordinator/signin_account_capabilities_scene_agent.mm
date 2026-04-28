@@ -53,7 +53,26 @@
     ProfileStateObserver,
     SceneUIBlockerStateObserver,
     UIBlockerManagerObserver>
+
+// Called once the sign-out is done.
+// `identity` is the primary identity before sign-out.
+- (void)signOutDoneFromIdentity:(id<SystemIdentity>)identity;
+
 @end
+
+namespace {
+
+// Called once the sign-out is done. It calls
+// `-[SigninAccountCapabilitiesSceneAgent signOutDoneFromIdentity:]` to continue
+// the workflow.
+void SignOutDoneForSceneState(id<SystemIdentity> identity,
+                              SceneState* scene_state) {
+  SigninAccountCapabilitiesSceneAgent* scene_agent =
+      [SigninAccountCapabilitiesSceneAgent agentFromScene:scene_state];
+  [scene_agent signOutDoneFromIdentity:identity];
+}
+
+}  //  namespace
 
 @implementation SigninAccountCapabilitiesSceneAgent {
   // SceneUIProvider that provides the scene UI objects.
@@ -263,9 +282,9 @@
 
 // Signs out the user and shows the age mismatch signout UI.
 - (void)handleAgeMismatchSignout {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.profileState.profile);
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (!authenticationService) {
     return;
   }
@@ -279,16 +298,13 @@
     _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
         self.sceneState, UIBlockerExtent::kApplication);
 
-    base::OnceClosure signoutCompletion = base::BindOnce(
-        [](__typeof(self) strong_self, id<SystemIdentity> primary_identity) {
-          [strong_self markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
-                           primary_identity];
-        },
-        self, primaryIdentity);
-
-    authenticationService->SignOut(
+    signin::SignoutCompletion signoutCompletion =
+        base::BindOnce(&SignOutDoneForSceneState, primaryIdentity);
+    std::string sceneSessionID = self.sceneState.sceneSessionID;
+    signin::MultiProfileSignOutForProfile(
+        profile, sceneSessionID,
         signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
-        base::CallbackToBlock(std::move(signoutCompletion)));
+        std::move(signoutCompletion));
   }
 }
 
@@ -318,25 +334,33 @@
   return YES;
 }
 
-- (void)markAgeMismatchSignoutCompletedAndShowPromptForIdentity:
-    (id<SystemIdentity>)identity {
-  CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
-  _isAgeMismatchSignoutInProgress = NO;
-
-  // Show the age mismatch signout screen.
-  if (!_ageMismatchSignoutCoordinator) {
-    _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
-        initWithBaseViewController:[_sceneUIProvider activeViewController]
-                           browser:self.sceneState.browserProviderInterface
-                                       .mainBrowserProvider.browser
-                          identity:identity
-                              mode:_hasShownAgeMismatchPrompt
-                                       ? AgeMismatchPromptMode::kFollowUp
-                                       : AgeMismatchPromptMode::kInitial];
-    _ageMismatchSignoutCoordinator.delegate = self;
-    [_ageMismatchSignoutCoordinator start];
-    _hasShownAgeMismatchPrompt = YES;
+- (void)signOutDoneFromIdentity:(id<SystemIdentity>)identity {
+  if (_isAgeMismatchSignoutInProgress) {
+    // This case is when there was no profile switching during sign-out.
+    // This method is called on the scene agent who triggered the sign-out flow.
+    CHECK(_applicationUIBlocker, base::NotFatalUntil::M155);
+    // Sign-out is done.
+    _isAgeMismatchSignoutInProgress = NO;
+  } else {
+    // This case is when there was a profile switching during sign-out.
+    // This method is called on the newly created scene agent. This scene agent
+    // didn't trigger the sign-out. But it needs to finish the workflow.
+    CHECK(!_applicationUIBlocker, base::NotFatalUntil::M155);
+    _applicationUIBlocker = std::make_unique<ScopedUIBlocker>(
+        self.sceneState, UIBlockerExtent::kApplication);
   }
+  CHECK(!_ageMismatchSignoutCoordinator, base::NotFatalUntil::M155);
+  // Show the age mismatch signout screen.
+  _ageMismatchSignoutCoordinator = [[AgeMismatchSignoutCoordinator alloc]
+      initWithBaseViewController:[_sceneUIProvider activeViewController]
+                         browser:self.sceneState.browserProviderInterface
+                                     .mainBrowserProvider.browser
+                        identity:identity
+                            mode:_hasShownAgeMismatchPrompt
+                                     ? AgeMismatchPromptMode::kFollowUp
+                                     : AgeMismatchPromptMode::kInitial];
+  _ageMismatchSignoutCoordinator.delegate = self;
+  [_ageMismatchSignoutCoordinator start];
 }
 
 @end
