@@ -34,6 +34,29 @@ const CGFloat kHeaderInnerPadding = 10;
 // The logo point size.
 const CGFloat kSymbolsPointSize = 24.0;
 
+// Creates a button configuration for a header button.
+UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
+  UIButtonConfiguration* config;
+  if (@available(iOS 26, *)) {
+    if ([UIButtonConfiguration
+            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
+      config = [UIButtonConfiguration prominentGlassButtonConfiguration];
+    } else {
+      config = [UIButtonConfiguration glassButtonConfiguration];
+    }
+  } else {
+    config = [UIButtonConfiguration plainButtonConfiguration];
+  }
+
+  config.image = image;
+  config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  config.background.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+
+  return config;
+}
+
 }  // namespace
 
 @implementation AssistantAIMHeaderView {
@@ -117,26 +140,10 @@ const CGFloat kSymbolsPointSize = 24.0;
 }
 
 - (void)setUpCloseButton {
-  UIButtonConfiguration* buttonConfiguration;
-  if (@available(iOS 26, *)) {
-    if ([UIButtonConfiguration
-            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
-      buttonConfiguration =
-          [UIButtonConfiguration prominentGlassButtonConfiguration];
-    } else {
-      buttonConfiguration = [UIButtonConfiguration glassButtonConfiguration];
-    }
-  } else {
-    buttonConfiguration = [UIButtonConfiguration plainButtonConfiguration];
-  }
-
-  buttonConfiguration.image = DefaultSymbolTemplateWithPointSize(
+  UIImage* image = DefaultSymbolTemplateWithPointSize(
       kXMarkSymbol, kCloseButtonSymbolPointSize);
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kTextPrimaryColor];
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
-  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  UIButtonConfiguration* buttonConfiguration =
+      CreateHeaderButtonConfiguration(image);
 
   _closeButton =
       [ExtendedTouchTargetButton buttonWithConfiguration:buttonConfiguration
@@ -145,6 +152,7 @@ const CGFloat kSymbolsPointSize = 24.0;
                    action:@selector(didTapCloseButton)
          forControlEvents:UIControlEventTouchUpInside];
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.tintColor = [UIColor clearColor];
   _closeButton.accessibilityIdentifier =
       kAssistantAIMCloseButtonAccessibilityIdentifier;
 
@@ -161,26 +169,10 @@ const CGFloat kSymbolsPointSize = 24.0;
 }
 
 - (void)setUpBackButton {
-  UIButtonConfiguration* buttonConfiguration;
-  if (@available(iOS 26, *)) {
-    if ([UIButtonConfiguration
-            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
-      buttonConfiguration =
-          [UIButtonConfiguration prominentGlassButtonConfiguration];
-    } else {
-      buttonConfiguration = [UIButtonConfiguration glassButtonConfiguration];
-    }
-  } else {
-    buttonConfiguration = [UIButtonConfiguration plainButtonConfiguration];
-  }
-
-  buttonConfiguration.image = DefaultSymbolWithPointSize(
-      kChevronBackwardSymbol, kCloseButtonSymbolPointSize);
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kTextPrimaryColor];
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
-  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  UIImage* image = DefaultSymbolWithPointSize(kChevronBackwardSymbol,
+                                              kCloseButtonSymbolPointSize);
+  UIButtonConfiguration* buttonConfiguration =
+      CreateHeaderButtonConfiguration(image);
 
   _backButton = [UIButton buttonWithConfiguration:buttonConfiguration
                                     primaryAction:nil];
