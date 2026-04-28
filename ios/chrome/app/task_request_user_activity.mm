@@ -469,12 +469,13 @@ void OpenPaymentMethodsWithBrowser(Browser* browser) {
 }
 
 // Opens Lens from intents.
-void OpenLensFromIntentsWithBrowser(Browser* browser) {
+void OpenLensFromIntentsWithBrowser(LensEntrypoint entry_point,
+                                    Browser* browser) {
   id<LensCommands> lensHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
-          initWithEntryPoint:LensEntrypoint::Intents
+          initWithEntryPoint:entry_point
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   [lensHandler openLensInputSelection:command];
@@ -792,7 +793,8 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
           targetMode:_targetMode
-          completion:base::BindOnce(&OpenLensFromIntentsWithBrowser)];
+          completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
+                                    LensEntrypoint::Intents)];
       break;
     case UserActivityType::kClearBrowsingData:
       [self openURLs:{GURL(kChromeUINewTabURL)}
@@ -919,10 +921,18 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
             completion:{}];
         break;
       case SpotlightActionType::kSetDefaultBrowser:
-        // TODO(crbug.com/492115056): Add implementation.
+        [[UIApplication sharedApplication]
+                      openURL:[NSURL URLWithString:
+                                         UIApplicationOpenSettingsURLString]
+                      options:{}
+            completionHandler:nil];
         break;
       case SpotlightActionType::kLens:
-        // TODO(crbug.com/492115056): Add implementation.
+        [self openURLs:{GURL(kChromeUINewTabURL)}
+            sceneState:sceneState
+            targetMode:_targetMode
+            completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
+                                      LensEntrypoint::Spotlight)];
         break;
       case SpotlightActionType::kUnknown:
         break;
