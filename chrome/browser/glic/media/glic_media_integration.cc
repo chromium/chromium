@@ -290,14 +290,14 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
     return;
   }
 
-  std::vector<std::string_view> pieces;
   auto chunks = context->GetTranscriptChunks();
+  if (chunks.empty()) {
+    return;
+  }
+  std::vector<std::string_view> pieces;
+  pieces.reserve(chunks.size());
   for (const auto& chunk : chunks) {
     pieces.push_back(chunk.text);
-  }
-
-  if (pieces.empty()) {
-    return;
   }
 
   std::string result = base::JoinString(pieces, "");
@@ -313,7 +313,7 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
              (static_cast<unsigned char>(result[start_index]) & 0xC0) == 0x80) {
         start_index++;
       }
-      result = result.substr(start_index);
+      result = std::move(result).substr(start_index);
     }
   }
 
