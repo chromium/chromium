@@ -3973,7 +3973,11 @@
     "BaseLockTrySpin": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac"
             ],
             "experiments": [
                 {
