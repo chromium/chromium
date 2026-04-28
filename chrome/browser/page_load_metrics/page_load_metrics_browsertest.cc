@@ -3831,7 +3831,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   auto waiter2 = CreatePageLoadMetricsTestWaiter("waiter2");
   waiter2->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  waiter1->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  waiter2->AddPageExpectation(TimingField::kLargestContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
   waiter2->Wait();
 
