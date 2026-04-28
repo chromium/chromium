@@ -515,8 +515,7 @@ class KeyboardControllerAnimationTest : public KeyboardUIControllerTest {
 
     KeyboardUIControllerTest::SetUp();
 
-    // Wait for the keyboard contents to load.
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(test::WaitUntilLoaded());
     keyboard_window()->SetBounds(root_window()->bounds());
   }
 
