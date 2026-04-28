@@ -14,6 +14,7 @@ GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSettingsTurnOnSyncButton;
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
@@ -50,6 +51,7 @@ GetAccountReauthSourceFromAccessPoint(
   switch (access_point) {
     case signin_metrics::AccessPoint::kSettings:
     case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
+    case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSettingsReauthAccountButton;
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:

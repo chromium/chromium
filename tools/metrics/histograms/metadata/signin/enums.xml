@@ -1017,6 +1017,8 @@ chromium-metrics-reviews@google.com.
   <int value="98" label="Search AI Mode (Desktop only)"/>
   <int value="99" label="App Bar (iOS only)"/>
   <int value="100" label="Page Action Menu (iOS only)"/>
+  <int value="101"
+      label="Autofill and passwords settings page on iOS and Android"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

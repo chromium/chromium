@@ -340,10 +340,12 @@ enum class AccessPoint : int {
   kIosAppBar = 99,
   // Sign in from the Page Action Menu.
   kIosPageActionMenu = 100,
+  // Autofill and passwords settings page on iOS and Android.
+  kSettingsAutofillAndPasswords = 101,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kIosPageActionMenu,  // This must be last.
+  kMaxValue = kSettingsAutofillAndPasswords,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

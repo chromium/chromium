@@ -45552,6 +45552,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromSettingsAutofillAndPasswords"
+    not_user_triggered="true">
+  <owner>josefraska@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>
+    Recorded when showing sign in entry in the Autofill and passwords settings
+    page.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromSetUpList">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -46603,6 +46613,16 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kSettings.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSettingsAutofillAndPasswords">
+  <owner>josefraska@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kSettingsAutofillAndPasswords, emitted from
+    Autofill and passwords settings page.
   </description>
 </action>
 

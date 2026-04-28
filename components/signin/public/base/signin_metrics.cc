@@ -144,6 +144,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kSearchAIModeBubble:
     case AccessPoint::kIosAppBar:
     case AccessPoint::kIosPageActionMenu:
+    case AccessPoint::kSettingsAutofillAndPasswords:
       return access_point;
   }
 
@@ -734,6 +735,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromPageActionMenu"));
       break;
+    case AccessPoint::kSettingsAutofillAndPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromSettingsAutofillAndPasswords"));
+      break;
   }
 }
 
@@ -865,6 +870,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kIosAppBar:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromIOSAppBar"));
+      break;
+    case AccessPoint::kSettingsAutofillAndPasswords:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromSettingsAutofillAndPasswords"));
       break;
     case AccessPoint::kExtensions:
     case AccessPoint::kMachineLogon:
