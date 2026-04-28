@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -1592,6 +1593,35 @@ TEST_F(AccountSelectionInteractionTest, ClickProtectionButtonState) {
                                   gfx::Point(), base::TimeTicks(),
                                   ui::EF_LEFT_MOUSE_BUTTON, 0));
   EXPECT_FALSE(account_hover_button->HasBeenClicked());
+}
+
+TEST_F(AccountSelectionInteractionTest, SynchronousDestruction) {
+  const std::vector<std::string> kAccountSuffixes = {"1", "2", "3"};
+  CreateAndShowMultiAccountPicker(kAccountSuffixes);
+
+  AccountHoverButton* account_hover_button =
+      static_cast<AccountHoverButton*>(GetFirstAccountHoverButton());
+  IdentityRequestAccountPtr account =
+      CreateTestIdentityRequestAccount("1", idp_data_, LoginState::kSignUp);
+
+  base::WeakPtr<AccountHoverButton> weak_button =
+      account_hover_button->GetWeakPtrForTesting();
+
+  // Set up a callback that destroys the bubble view.
+  account_hover_button->SetCallbackForTesting(
+      base::BindLambdaForTesting([&](const ui::Event& event) {
+        // This will destroy the AccountSelectionBubbleView and the button.
+        account_selection_view_->Close(true, false);
+        return false;
+      }));
+
+  // Create mouse event
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+
+  // This should not crash.
+  account_hover_button->OnPressed(event);
+  EXPECT_FALSE(weak_button);
 }
 
 }  //  namespace webid

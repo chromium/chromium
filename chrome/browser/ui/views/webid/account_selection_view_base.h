@@ -129,6 +129,9 @@ class AccountHoverButton : public HoverButton {
 
   // Used for testing.
   void SetCallbackForTesting(AccountSelectionCallback callback);
+  base::WeakPtr<AccountHoverButton> GetWeakPtrForTesting() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   AccountSelectionCallback callback_;
@@ -139,6 +142,8 @@ class AccountHoverButton : public HoverButton {
   bool has_spinner_{false};
   bool is_appear_disabled_{false};
   bool has_been_clicked_{false};
+
+  base::WeakPtrFactory<AccountHoverButton> weak_ptr_factory_{this};
 };
 
 class AccountHoverButtonSecondaryView : public views::View {

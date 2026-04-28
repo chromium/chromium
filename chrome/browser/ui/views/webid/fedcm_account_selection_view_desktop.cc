@@ -687,8 +687,6 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
     return;
   }
 
-  delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
-
   if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH) {
     is_mismatch_continue_clicked_ = true;
     popup_window_state_ =
@@ -702,6 +700,8 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
     modal_account_chooser_state_ =
         webid::AccountChooserResult::kUseOtherAccountButton;
   }
+
+  delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
 }
 
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
