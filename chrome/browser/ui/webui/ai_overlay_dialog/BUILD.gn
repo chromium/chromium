@@ -36,6 +36,7 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser:browser_process",
     "//chrome/browser/glic",
     "//chrome/browser/page_content_annotations:fetcher",
+    "//chrome/browser/page_content_annotations:screenshot_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ai_overlay_dialog:resources",
     "//chrome/browser/search_engines",
