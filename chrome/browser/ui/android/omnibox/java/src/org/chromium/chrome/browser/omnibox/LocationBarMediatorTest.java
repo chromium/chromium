@@ -907,7 +907,7 @@ public class LocationBarMediatorTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
-        OmniboxFeatures.setIsDesktopModeForTesting(true); // Adopt Desktop functionality.
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true); // Adopt Desktop functionality.
 
         mMediator.beginInput(input);
         mMediator.onConfigurationChanged(config);
@@ -927,7 +927,7 @@ public class LocationBarMediatorTest {
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
 
-        OmniboxFeatures.setIsDesktopModeForTesting(false); // non-Desktop functionality.
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false); // non-Desktop functionality.
         mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator, never()).clearFocus();
 
@@ -1241,13 +1241,13 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnUrlFocusChange_isNotDesktopMode() {
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         testOnUrlFocusChange(/* expectDesktopMode= */ false);
     }
 
     @Test
-    public void testOnUrlFocusChange_isDesktopMode() {
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+    public void testOnUrlFocusChange_hasDesktopExperience() {
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         testOnUrlFocusChange(/* expectDesktopMode= */ true);
     }
 
@@ -1864,7 +1864,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRestoringText() {
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -1907,7 +1907,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
@@ -2404,14 +2404,14 @@ public class LocationBarMediatorTest {
         clearInvocations(mScrimHandler);
 
         // Show scrim on mobile devices even if there are no suggestions to show.
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         mMediator.onSuggestionsChanged(null, false);
         verify(mScrimHandler).setVisibility(true);
         clearInvocations(mScrimHandler);
 
         // On desktop, we show no suggestions in select cases, e.g. on the NTP where the omnibox is
         // prefocused. We don't want to show the scrim in that scenario either.
-        OmniboxFeatures.setIsDesktopModeForTesting(true);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
         mMediator.beginInput(
                 new AutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY));
         verify(mScrimHandler).setVisibility(false);

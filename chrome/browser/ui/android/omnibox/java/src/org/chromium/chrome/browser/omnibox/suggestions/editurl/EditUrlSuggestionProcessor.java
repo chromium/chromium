@@ -65,7 +65,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         // Fall back to the base suggestion processor when retaining omnibox on focus so as not to
         // show mobile-optimized actions in a desktop-like context.
-        if (OmniboxFeatures.isDesktopMode(mContext)) return false;
+        if (OmniboxFeatures.hasDesktopExperience(mContext)) return false;
 
         Tab activeTab = mTabSupplier.get();
         if (activeTab == null

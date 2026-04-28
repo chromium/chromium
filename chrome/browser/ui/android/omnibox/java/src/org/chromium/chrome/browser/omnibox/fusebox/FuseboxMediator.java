@@ -1067,7 +1067,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
     }
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return OmniboxFeatures.isDesktopMode(mContext)
+        return OmniboxFeatures.hasDesktopExperience(mContext)
                 ? FuseboxLayoutMode.POPOVER
                 : FuseboxLayoutMode.SEPARATED;
     }

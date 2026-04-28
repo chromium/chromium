@@ -96,7 +96,7 @@ public class OmniboxPedalsTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        OmniboxFeatures.setIsDesktopModeForTesting(false);
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
     }
