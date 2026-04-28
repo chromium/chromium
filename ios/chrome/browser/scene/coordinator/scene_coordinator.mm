@@ -564,7 +564,10 @@ void OnListFamilyMembersResponse(
     baseViewController = self.activeViewController;
   }
 
-  DCHECK(!self.isSigninInProgress);
+  if (self.isSigninInProgress) {
+    [self stopSigninCoordinatorWithCompletionAnimated:NO];
+  }
+
   if (_settingsNavigationController) {
     DCHECK(_settingsNavigationController.presentingViewController)
         << base::SysNSStringToUTF8(
