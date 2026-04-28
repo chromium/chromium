@@ -8260,6 +8260,7 @@ from previous Chrome versions.
   <int value="-1943313820" label="SystemKeyboardLock:disabled"/>
   <int value="-1942730618" label="WebAuthenticationTouchId:disabled"/>
   <int value="-1942518189" label="HeavyAdIntervention:disabled"/>
+  <int value="-1942470865" label="EnableWindowsGameInputDataFetcher:enabled"/>
   <int value="-1942419166" label="SyncPseudoUSSApps:disabled"/>
   <int value="-1942058396" label="ThumbnailPlaceholder:enabled"/>
   <int value="-1942057472" label="ExperimentalAccessibilityLabels:enabled"/>
@@ -11392,6 +11393,7 @@ from previous Chrome versions.
       label="AutofillEnableBuyNowPayLaterForKlarna:enabled"/>
   <int value="-910007270" label="FeedbackReportQuestionnaire:enabled"/>
   <int value="-909905655" label="AllowAllSitesToInitiateMirroring:disabled"/>
+  <int value="-909747439" label="EnableWindowsGameInputDataFetcher:disabled"/>
   <int value="-909351661" label="OmniboxOnFocusSuggestions:disabled"/>
   <int value="-908421850" label="PointerEvent:enabled"/>
   <int value="-907968198" label="MediaIndicatorsAndroid:enabled"/>

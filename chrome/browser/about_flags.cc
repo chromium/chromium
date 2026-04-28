@@ -7754,6 +7754,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGamepadMultitouchDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kEnableGamepadMultitouch)},
 
+#if BUILDFLAG(IS_WIN)
+    {"enable-windows-gameinput-data-fetcher",
+     flag_descriptions::kEnableWindowsGameInputDataFetcherName,
+     flag_descriptions::kEnableWindowsGameInputDataFetcherDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kEnableWindowsGameInputDataFetcher)},
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"sharing-desktop-screenshots",
      flag_descriptions::kSharingDesktopScreenshotsName,

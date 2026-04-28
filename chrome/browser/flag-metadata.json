@@ -4369,6 +4369,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-windows-gameinput-data-fetcher",
+    "owners": [ "mattreynolds@chromium.org", "gabrielbrito@microsoft.com" ],
+    // This flag selects the platform API used for Xbox-compatible gamepads on
+    // Windows. When enabled the newer GameInput API is used. Otherwise, the
+    // older WGI API is used.
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-your-saved-info-settings-page",
     "owners": ["mikhe@google.com", "chrome-autofill@google.com" ],
     "expiry_milestone": 148

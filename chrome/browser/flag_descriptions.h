@@ -1884,6 +1884,11 @@ inline constexpr char kEnableGamepadMultitouchDescription[] =
     "Enables the ability to receive input from multitouch surface "
     "on the gamepad object.";
 
+inline constexpr char kEnableWindowsGameInputDataFetcherName[] =
+    "Enable GameInput data fetcher";
+inline constexpr char kEnableWindowsGameInputDataFetcherDescription[] =
+    "Enables Gamepad API to use GameInput for gamepad access.";
+
 inline constexpr char kEnableGpuServiceLoggingName[] =
     "Enable gpu service logging";
 inline constexpr char kEnableGpuServiceLoggingDescription[] =
