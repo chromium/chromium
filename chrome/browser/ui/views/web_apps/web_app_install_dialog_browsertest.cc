@@ -19,6 +19,7 @@
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -141,7 +142,9 @@ class WebAppInstallDialogBrowserTest
         dialog_type == InstallDialogType::kDetailed
             ? screenshot_fetcher_.GetWeakPtr()
             : base::WeakPtr<WebAppScreenshotFetcher>(),
-        /*show_initiating_origin=*/false, dialog_type, os_type);
+        /*show_initiating_origin=*/false, dialog_type, os_type,
+        std::make_unique<ProgressDelay>(/*delay_time=*/base::Seconds(0),
+                                        /*steps=*/1));
 
     views::Widget* widget = waiter.WaitIfNeededAndGet();
     ASSERT_NE(nullptr, widget);
@@ -150,7 +153,7 @@ class WebAppInstallDialogBrowserTest
         name, "_", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     std::vector<int> parts_to_accept_times;
     // Map the separate parts into their "number of times to accept".
-    // "Successful_Cancel" -> [3, -1]
+    // "Successful" -> [2]
     for (const std::string& part : parts) {
       parts_to_accept_times.push_back(GetTimesToAcceptDialog(part, os_type));
     }

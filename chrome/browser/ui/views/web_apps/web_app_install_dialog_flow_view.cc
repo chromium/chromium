@@ -32,6 +32,7 @@ WebAppInstallFlowView::~WebAppInstallFlowView() = default;
 
 void WebAppInstallFlowView::UpdateStepVisibility(
     InstallDialogStep current_step) {
+  current_step_for_testing_ = current_step;
   for (auto const& [step, view] : install_step_to_view_) {
     if (view) {
       view->SetVisible(step == current_step);

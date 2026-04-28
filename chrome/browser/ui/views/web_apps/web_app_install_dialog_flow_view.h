@@ -35,9 +35,16 @@ class WebAppInstallFlowView : public views::View {
 
   views::View* GetViewForStep(InstallDialogStep step);
 
+  InstallDialogStep GetCurrentStepForTesting() const {
+    return current_step_for_testing_;
+  }
+
  private:
   absl::flat_hash_map<InstallDialogStep, raw_ptr<views::View>>
       install_step_to_view_;
+
+  InstallDialogStep current_step_for_testing_ =
+      InstallDialogStep::kInstallDialog;
 
   base::WeakPtrFactory<WebAppInstallFlowView> weak_ptr_factory_{this};
 };

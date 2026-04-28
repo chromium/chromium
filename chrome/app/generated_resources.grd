@@ -3564,6 +3564,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP" desc="Text for button that opens the current tab in the newly installed app.">
         Open tab in app
       </message>
+      <message name="IDS_INSTALL_PWA_DIALOG_INSTALLING" desc="Text shown when the app is installing.">
+        Installing app…
+      </message>
       <message name="IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE" desc="Title above app description to explain the content below is from this app">
         From the app
       </message>

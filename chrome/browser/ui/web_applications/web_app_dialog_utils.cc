@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -57,6 +58,9 @@
 namespace web_app {
 
 namespace {
+
+constexpr base::TimeDelta kProgressDelay = base::Seconds(2);
+constexpr int kProgressDelaySteps = 100;
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
@@ -109,12 +113,14 @@ void OnWebAppInstallShowInstallDialog(
         } else if (web_app_info->is_diy_app) {
           install_type = kDiy;
         }
+        auto progress_delay = std::make_unique<ProgressDelay>(
+            kProgressDelay, kProgressDelaySteps);
         WebAppInstallFlowDialogDelegate::Show(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker),
             std::move(launch_app_on_install_success), iph_state,
             std::move(screenshot_fetcher), show_initiating_origin, install_type,
-            os_type);
+            os_type, std::move(progress_delay));
         return;
       }
 

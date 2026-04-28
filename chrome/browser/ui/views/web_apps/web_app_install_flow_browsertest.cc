@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -48,7 +50,25 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
     ASSERT_TRUE(dialog_delegate);
 
     views::test::WidgetDestroyedWaiter waiter(widget);
-    while (!widget->IsClosed()) {
+
+    // Step 1: Install Dialog. Accept to move to options.
+    dialog_delegate->AcceptDialog();
+
+    // Step 2: Installer Options. Accept to move to progress.
+    dialog_delegate->AcceptDialog();
+
+    // Step 3: Progress. Wait for completion and accept to move to success.
+    ASSERT_TRUE(base::test::RunUntil([dialog_delegate, widget]() -> bool {
+      return dialog_delegate->IsDialogButtonEnabled(
+                 ui::mojom::DialogButton::kOk) ||
+             widget->IsClosed();
+    }));
+    if (!widget->IsClosed()) {
+      dialog_delegate->AcceptDialog();
+    }
+
+    // Step 4: Successful. Accept to close the dialog.
+    if (!widget->IsClosed()) {
       dialog_delegate->AcceptDialog();
     }
     waiter.Wait();
