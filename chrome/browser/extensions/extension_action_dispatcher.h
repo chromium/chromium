@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ACTION_DISPATCHER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ACTION_DISPATCHER_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -102,13 +100,6 @@ class ExtensionActionDispatcher : public BrowserContextKeyedAPI {
 
   // Returns the associated extension prefs.
   ExtensionPrefs* GetExtensionPrefs();
-
-  // The DispatchEvent methods forward events to the `context`'s event router.
-  void DispatchEventToExtension(content::BrowserContext* context,
-                                const ExtensionId& extension_id,
-                                events::HistogramValue histogram_value,
-                                const std::string& event_name,
-                                base::ListValue event_args);
 
   // BrowserContextKeyedAPI implementation.
   void Shutdown() override;
