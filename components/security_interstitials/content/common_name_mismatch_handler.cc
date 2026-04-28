@@ -141,7 +141,7 @@ void CommonNameMismatchHandler::OnSimpleLoaderHandler(
   }
   if (response_code == 200 && final_url.SchemeIsCryptographic() &&
       final_url.GetHost() != request_url_.GetHost()) {
-    DCHECK_EQ(final_url.GetHost(), final_url.GetHost());
+    DCHECK_EQ(final_url.GetHost(), check_url_.GetHost());
     result = SUGGESTED_URL_AVAILABLE;
   }
   simple_url_loader_.reset();
