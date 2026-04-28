@@ -122,7 +122,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VulkanDeviceQueue* device_queue() const { return device_queue_; }
   const VkImageCreateInfo& create_info() const { return create_info_; }
   gfx::Size size() const {
-    return gfx::Size(create_info_.extent.width, create_info_.extent.height);
+    return gfx::Size(static_cast<int>(create_info_.extent.width),
+                     static_cast<int>(create_info_.extent.height));
   }
   VkFormat format() const { return create_info_.format; }
   VkImageCreateFlags flags() const { return create_info_.flags; }

@@ -37,7 +37,7 @@
 #include "third_party/tflite/buildflags.h"
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-#include "services/webnn/tflite/context_provider_tflite.h"
+#include "services/webnn/tflite/context_provider_tflite.h"  // nogncheck
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)

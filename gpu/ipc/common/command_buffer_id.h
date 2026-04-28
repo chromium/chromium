@@ -17,7 +17,8 @@ enum class GpuChannelReservedRoutes : int32_t {
 inline CommandBufferId CommandBufferIdFromChannelAndRoute(int channel_id,
                                                           int32_t route_id) {
   return CommandBufferId::FromUnsafeValue(
-      (static_cast<uint64_t>(channel_id) << 32) | route_id);
+      (static_cast<uint64_t>(channel_id) << 32) |
+      static_cast<uint32_t>(route_id));
 }
 
 inline int ChannelIdFromCommandBufferId(
@@ -27,7 +28,7 @@ inline int ChannelIdFromCommandBufferId(
 
 inline int32_t RouteIdFromCommandBufferId(
     gpu::CommandBufferId command_buffer_id) {
-  return 0xffffffff & command_buffer_id.GetUnsafeValue();
+  return static_cast<int32_t>(0xffffffff & command_buffer_id.GetUnsafeValue());
 }
 
 }  // namespace gpu

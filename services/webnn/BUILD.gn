@@ -31,8 +31,8 @@ source_set("webnn_switches") {
   ]
 }
 
-component("webnn_service") {
-  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+source_set("webnn_service_base") {
+  visibility = [ ":*" ]
 
   sources = [
     "error.h",
@@ -58,6 +58,58 @@ component("webnn_service") {
     "webnn_utils.cc",
     "webnn_utils.h",
   ]
+
+  deps = [
+    ":buildflags",
+    ":webnn_switches",
+    "//base",
+    "//gpu/command_buffer/service",
+    "//gpu/command_buffer/service:gles2",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
+    "//services/webnn/public/mojom",
+    "//third_party/tflite:buildflags",
+  ]
+
+  if (build_tflite_with_xnnpack) {
+    deps += [
+      "//third_party/pthreadpool",
+      "//third_party/xnnpack",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+
+  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+}
+
+if (is_apple || webnn_use_tflite || webnn_use_litert) {
+  source_set("webnn_service_resource_management") {
+    visibility = [ ":*" ]
+
+    sources = [
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
+    ]
+
+    deps = [ "//base" ]
+
+    configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+
+    defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+  }
+}
+
+component("webnn_service") {
+  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+
+  sources = []
+
+  public_deps = [ ":webnn_service_base" ]
 
   deps = [
     ":buildflags",
@@ -142,10 +194,6 @@ component("webnn_service") {
       ]
     }
 
-    if (build_tflite_with_xnnpack) {
-      deps += [ "//third_party/xnnpack" ]
-    }
-
     if (enable_ml_internal) {
       deps += [ "//services/on_device_model/ml" ]
     }
@@ -196,13 +244,7 @@ component("webnn_service") {
   }
 
   if (is_apple || webnn_use_tflite || webnn_use_litert) {
-    sources += [
-      "queueable_resource_state.h",
-      "queueable_resource_state_base.cc",
-      "queueable_resource_state_base.h",
-      "resource_task.cc",
-      "resource_task.h",
-    ]
+    deps += [ ":webnn_service_resource_management" ]
   }
 }
 

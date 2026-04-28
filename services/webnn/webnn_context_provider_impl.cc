@@ -33,10 +33,10 @@
 #if BUILDFLAG(IS_WIN)
 #include <string>
 
-#include "services/webnn/ort/context_impl_ort.h"
-#include "services/webnn/ort/context_provider_ort.h"
-#include "services/webnn/ort/environment.h"
-#include "services/webnn/ort/ort_session_options.h"
+#include "services/webnn/ort/context_impl_ort.h"      // nogncheck
+#include "services/webnn/ort/context_provider_ort.h"  // nogncheck
+#include "services/webnn/ort/environment.h"           // nogncheck
+#include "services/webnn/ort/ort_session_options.h"   // nogncheck
 #include "services/webnn/webnn_switches.h"
 #endif
 
@@ -45,15 +45,15 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "services/webnn/coreml/context_impl_coreml.h"
+#include "services/webnn/coreml/context_impl_coreml.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
-#include "services/webnn/tflite/context_impl_tflite.h"
+#include "services/webnn/tflite/context_impl_tflite.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
-#include "services/webnn/tflite/context_impl_litert.h"
+#include "services/webnn/tflite/context_impl_litert.h"  // nogncheck
 #endif
 
 #if defined(ADDRESS_SANITIZER)
