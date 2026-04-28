@@ -232,7 +232,7 @@ const WebFileHandlersInfo* WebFileHandlers::GetFileHandlers(
     return nullptr;
   }
 
-  WebFileHandlers* info = static_cast<WebFileHandlers*>(
+  const WebFileHandlers* info = static_cast<const WebFileHandlers*>(
       extension.GetManifestData(manifest_keys::kFileHandlers));
   return info ? &info->file_handlers : nullptr;
 }

@@ -25,7 +25,7 @@ RequirementsInfo::~RequirementsInfo() = default;
 // static
 const RequirementsInfo& RequirementsInfo::GetRequirements(
     const Extension* extension) {
-  RequirementsInfo* info = static_cast<RequirementsInfo*>(
+  const RequirementsInfo* info = static_cast<const RequirementsInfo*>(
       extension->GetManifestData(ManifestKeys::kRequirements));
 
   // We should be guaranteed to have requirements, since they are parsed for all

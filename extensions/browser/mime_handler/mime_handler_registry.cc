@@ -125,7 +125,7 @@ void MimeHandlerRegistry::OnExtensionUnloaded(
 }
 
 void MimeHandlerRegistry::RegisterExtension(const Extension* extension) {
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
   if (!handler) {
     return;
   }

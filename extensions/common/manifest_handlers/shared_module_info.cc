@@ -42,7 +42,7 @@ static base::LazyInstance<SharedModuleInfo>::DestructorAtExit
     g_empty_shared_module_info = LAZY_INSTANCE_INITIALIZER;
 
 const SharedModuleInfo& GetSharedModuleInfo(const Extension* extension) {
-  SharedModuleInfo* info = static_cast<SharedModuleInfo*>(
+  const SharedModuleInfo* info = static_cast<const SharedModuleInfo*>(
       extension->GetManifestData(kSharedModule));
   if (!info) {
     return g_empty_shared_module_info.Get();

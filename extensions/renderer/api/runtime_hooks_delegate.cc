@@ -208,7 +208,7 @@ mojom::SerializationFormat GetSerializationFormat(
     return mojom::SerializationFormat::kJson;
   }
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(installed_target_extension);
   if (!info || !info->matches.MatchesURL(script_context->url())) {
     // Extension installed, but not externally connectable from context.

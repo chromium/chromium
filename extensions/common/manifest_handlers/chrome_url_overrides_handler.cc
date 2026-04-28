@@ -42,7 +42,7 @@ const URLOverrides::URLOverrideMap& URLOverrides::GetChromeURLOverrides(
     const Extension* extension) {
   static const base::NoDestructor<URLOverrides::URLOverrideMap>
       empty_url_overrides;
-  URLOverrides* url_overrides = static_cast<URLOverrides*>(
+  const URLOverrides* url_overrides = static_cast<const URLOverrides*>(
       extension->GetManifestData(ChromeUrlOverridesKeys::kChromeUrlOverrides));
   return url_overrides ? url_overrides->chrome_url_overrides_
                        : *empty_url_overrides;

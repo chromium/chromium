@@ -388,8 +388,9 @@ bool CanWebpageContextConnectExternally(ScriptContext* context) {
   // TODO(devlin): This doesn't seem thread-safe with ServiceWorkers?
   for (const auto& extension :
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
-    ExternallyConnectableInfo* info = static_cast<ExternallyConnectableInfo*>(
-        extension->GetManifestData(manifest_keys::kExternallyConnectable));
+    const ExternallyConnectableInfo* info =
+        static_cast<const ExternallyConnectableInfo*>(
+            extension->GetManifestData(manifest_keys::kExternallyConnectable));
     if (info && info->matches.MatchesURL(context->url())) {
       return true;
     }

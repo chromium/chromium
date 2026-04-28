@@ -37,7 +37,7 @@ InputComponents::~InputComponents() = default;
 // static
 const std::vector<InputComponentInfo>* InputComponents::GetInputComponents(
     const Extension* extension) {
-  InputComponents* info = static_cast<InputComponents*>(
+  const InputComponents* info = static_cast<const InputComponents*>(
       extension->GetManifestData(keys::kInputComponents));
   return info ? &info->input_components : nullptr;
 }

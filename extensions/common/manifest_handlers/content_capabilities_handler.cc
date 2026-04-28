@@ -37,8 +37,9 @@ static base::LazyInstance<ContentCapabilitiesInfo>::DestructorAtExit
 // static
 const ContentCapabilitiesInfo& ContentCapabilitiesInfo::Get(
     const Extension* extension) {
-  ContentCapabilitiesInfo* info = static_cast<ContentCapabilitiesInfo*>(
-      extension->GetManifestData(keys::kContentCapabilities));
+  const ContentCapabilitiesInfo* info =
+      static_cast<const ContentCapabilitiesInfo*>(
+          extension->GetManifestData(keys::kContentCapabilities));
   return info ? *info : g_empty_content_capabilities_info.Get();
 }
 

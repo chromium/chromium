@@ -46,8 +46,8 @@ const ExtensionIconSet& IconsInfo::GetIcons(
     return icon_variants_info->Get(color_scheme);
   }
 
-  IconsInfo* info =
-      static_cast<IconsInfo*>(extension.GetManifestData(keys::kIcons));
+  const IconsInfo* info =
+      static_cast<const IconsInfo*>(extension.GetManifestData(keys::kIcons));
   return info ? info->icons : g_empty_icon_set.Get();
 }
 

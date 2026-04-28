@@ -35,7 +35,7 @@ OAuth2ManifestHandler::~OAuth2ManifestHandler() = default;
 const OAuth2Info& OAuth2ManifestHandler::GetOAuth2Info(
     const Extension& extension) {
   static const base::NoDestructor<OAuth2Info> empty_oauth2_info;
-  OAuth2ManifestData* data = static_cast<OAuth2ManifestData*>(
+  const OAuth2ManifestData* data = static_cast<const OAuth2ManifestData*>(
       extension.GetManifestData(OAuth2ManifestKeys::kOauth2));
   return data ? data->info : *empty_oauth2_info;
 }

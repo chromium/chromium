@@ -51,7 +51,7 @@ TEST_F(KioskModeInfoManifestTest, MultipleSecondaryApps) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("kiosk_secondary_app_multi_apps.json"));
   EXPECT_TRUE(KioskModeInfo::HasSecondaryApps(extension.get()));
-  KioskModeInfo* info = KioskModeInfo::Get(extension.get());
+  const KioskModeInfo* info = KioskModeInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
   std::map<std::string, EnabledOnLaunchState> expected_secondary_apps = {
@@ -81,7 +81,7 @@ TEST_F(KioskModeInfoManifestTest,
        RequiredPlatformVersionAndAlwaysUpdateAreOptional) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("kiosk_required_platform_version_not_present.json"));
-  KioskModeInfo* info = KioskModeInfo::Get(extension.get());
+  const KioskModeInfo* info = KioskModeInfo::Get(extension.get());
   EXPECT_TRUE(info->required_platform_version.empty());
   EXPECT_FALSE(info->always_update);
 }
@@ -89,7 +89,7 @@ TEST_F(KioskModeInfoManifestTest,
 TEST_F(KioskModeInfoManifestTest, RequiredPlatformVersion) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("kiosk_required_platform_version.json"));
-  KioskModeInfo* info = KioskModeInfo::Get(extension.get());
+  const KioskModeInfo* info = KioskModeInfo::Get(extension.get());
   EXPECT_EQ("1234.0.0", info->required_platform_version);
 }
 
@@ -103,14 +103,14 @@ TEST_F(KioskModeInfoManifestTest, RequiredPlatformVersionInvalid) {
 TEST_F(KioskModeInfoManifestTest, AlwaysUpdate) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("kiosk_always_update.json"));
-  KioskModeInfo* info = KioskModeInfo::Get(extension.get());
+  const KioskModeInfo* info = KioskModeInfo::Get(extension.get());
   EXPECT_TRUE(info->always_update);
 }
 
 TEST_F(KioskModeInfoManifestTest, AlwaysUpdateFalse) {
   scoped_refptr<Extension> extension(
       LoadAndExpectSuccess("kiosk_always_update_false.json"));
-  KioskModeInfo* info = KioskModeInfo::Get(extension.get());
+  const KioskModeInfo* info = KioskModeInfo::Get(extension.get());
   EXPECT_FALSE(info->always_update);
 }
 

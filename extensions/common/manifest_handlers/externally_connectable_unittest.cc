@@ -40,7 +40,7 @@ TEST_F(ExternallyConnectableTest, IDsAndMatches) {
       LoadAndExpectSuccess("externally_connectable_ids_and_matches.json");
   ASSERT_TRUE(extension.get());
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
@@ -99,7 +99,7 @@ TEST_F(ExternallyConnectableTest, IDs) {
       LoadAndExpectSuccess("externally_connectable_ids.json");
   ASSERT_TRUE(extension.get());
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
@@ -117,7 +117,7 @@ TEST_F(ExternallyConnectableTest, Matches) {
       LoadAndExpectSuccess("externally_connectable_matches.json");
   ASSERT_TRUE(extension.get());
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
@@ -157,7 +157,7 @@ TEST_F(ExternallyConnectableTest, MatchesWithTlsChannelId) {
       "externally_connectable_matches_tls_channel_id.json");
   ASSERT_TRUE(extension.get());
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
@@ -179,7 +179,7 @@ TEST_F(ExternallyConnectableTest, AllIDs) {
       LoadAndExpectSuccess("externally_connectable_all_ids.json");
   ASSERT_TRUE(extension.get());
 
-  ExternallyConnectableInfo* info =
+  const ExternallyConnectableInfo* info =
       ExternallyConnectableInfo::Get(extension.get());
   ASSERT_TRUE(info);
 
@@ -243,7 +243,8 @@ TEST_F(ExternallyConnectableTest, ErrorBadMatches) {
 TEST_F(ExternallyConnectableTest, AllURLs) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_all_urls.json");
-  ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
+  const ExternallyConnectableInfo* info =
+      GetExternallyConnectableInfo(extension);
   EXPECT_TRUE(info->matches.MatchesAllURLs());
 
   // Sanity check with a pattern and a few URLs.
@@ -256,7 +257,8 @@ TEST_F(ExternallyConnectableTest, AllURLs) {
 TEST_F(ExternallyConnectableTest, WildcardHost) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_wildcard_host.json");
-  ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
+  const ExternallyConnectableInfo* info =
+      GetExternallyConnectableInfo(extension);
   EXPECT_TRUE(info->matches.ContainsPattern(
       URLPattern(URLPattern::SCHEME_ALL, "http://*/*")));
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://example.com")));
@@ -266,7 +268,8 @@ TEST_F(ExternallyConnectableTest, WildcardHost) {
 TEST_F(ExternallyConnectableTest, TLD) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("externally_connectable_tld.json");
-  ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
+  const ExternallyConnectableInfo* info =
+      GetExternallyConnectableInfo(extension);
   EXPECT_TRUE(info->matches.ContainsPattern(
       URLPattern(URLPattern::SCHEME_ALL, "http://*.co.uk/*")));
   EXPECT_FALSE(info->matches.MatchesURL(GURL("http://example.com")));

@@ -20,8 +20,8 @@ namespace {
 // keys, but we just arbitrarily pick one to store it under in the manifest.
 const char* kAppDisplayInfoKey = keys::kDisplayInLauncher;
 
-AppDisplayInfo* GetAppDisplayInfo(const Extension& extension) {
-  auto* info = static_cast<AppDisplayInfo*>(
+const AppDisplayInfo* GetAppDisplayInfo(const Extension& extension) {
+  const AppDisplayInfo* info = static_cast<const AppDisplayInfo*>(
       extension.GetManifestData(kAppDisplayInfoKey));
   DCHECK(!info || extension.is_app())
       << "Only apps are allowed to be displayed in the NTP or launcher.";
@@ -37,17 +37,17 @@ AppDisplayInfo::AppDisplayInfo(bool display_in_launcher,
 AppDisplayInfo::~AppDisplayInfo() = default;
 
 bool AppDisplayInfo::RequiresSortOrdinal(const Extension& extension) {
-  AppDisplayInfo* info = GetAppDisplayInfo(extension);
+  const AppDisplayInfo* info = GetAppDisplayInfo(extension);
   return info && (info->display_in_launcher_ || info->display_in_new_tab_page_);
 }
 
 bool AppDisplayInfo::ShouldDisplayInAppLauncher(const Extension& extension) {
-  AppDisplayInfo* info = GetAppDisplayInfo(extension);
+  const AppDisplayInfo* info = GetAppDisplayInfo(extension);
   return info && info->display_in_launcher_;
 }
 
 bool AppDisplayInfo::ShouldDisplayInNewTabPage(const Extension& extension) {
-  AppDisplayInfo* info = GetAppDisplayInfo(extension);
+  const AppDisplayInfo* info = GetAppDisplayInfo(extension);
   return info && info->display_in_new_tab_page_;
 }
 

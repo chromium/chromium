@@ -70,26 +70,26 @@ KioskModeInfo::KioskModeInfo(
 KioskModeInfo::~KioskModeInfo() = default;
 
 // static
-KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
-  return static_cast<KioskModeInfo*>(
+const KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
+  return static_cast<const KioskModeInfo*>(
       extension->GetManifestData(keys::kKioskMode));
 }
 
 // static
 bool KioskModeInfo::IsKioskEnabled(const Extension* extension) {
-  KioskModeInfo* info = Get(extension);
+  const KioskModeInfo* info = Get(extension);
   return info && info->kiosk_status != NONE;
 }
 
 // static
 bool KioskModeInfo::IsKioskOnly(const Extension* extension) {
-  KioskModeInfo* info = Get(extension);
+  const KioskModeInfo* info = Get(extension);
   return info && info->kiosk_status == ONLY;
 }
 
 // static
 bool KioskModeInfo::HasSecondaryApps(const Extension* extension) {
-  KioskModeInfo* info = Get(extension);
+  const KioskModeInfo* info = Get(extension);
   return info && !info->secondary_apps.empty();
 }
 

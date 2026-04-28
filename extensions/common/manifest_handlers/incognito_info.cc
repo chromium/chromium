@@ -20,21 +20,21 @@ IncognitoInfo::~IncognitoInfo() = default;
 
 // static
 bool IncognitoInfo::IsSpanningMode(const Extension* extension) {
-  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
   return info->mode == api::incognito::IncognitoMode::kSpanning;
 }
 
 // static
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
-  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
   return info->mode == api::incognito::IncognitoMode::kSplit;
 }
 
 // static
 bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
-  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+  const IncognitoInfo* info = static_cast<const IncognitoInfo*>(
       extension->GetManifestData(IncognitoManifestKeys::kIncognito));
   return info->mode != api::incognito::IncognitoMode::kNotAllowed;
 }

@@ -17,7 +17,7 @@ VersionNameInfo::~VersionNameInfo() = default;
 
 // static
 const std::string& VersionNameInfo::GetVersionName(const Extension& extension) {
-  VersionNameInfo* info = static_cast<VersionNameInfo*>(
+  const VersionNameInfo* info = static_cast<const VersionNameInfo*>(
       extension.GetManifestData(manifest_keys::kVersionName));
   return info ? info->version_name_ : base::EmptyString();
 }

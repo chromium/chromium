@@ -21,8 +21,9 @@ SocketsManifestData::SocketsManifestData(
 SocketsManifestData::~SocketsManifestData() = default;
 
 // static
-SocketsManifestData* SocketsManifestData::Get(const Extension* extension) {
-  return static_cast<SocketsManifestData*>(
+const SocketsManifestData* SocketsManifestData::Get(
+    const Extension* extension) {
+  return static_cast<const SocketsManifestData*>(
       extension->GetManifestData(manifest_keys::kSockets));
 }
 

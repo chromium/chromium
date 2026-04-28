@@ -152,7 +152,7 @@ const FileHandlersInfo* FileHandlers::GetFileHandlers(
   if (WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     return nullptr;
   }
-  FileHandlers* info = static_cast<FileHandlers*>(
+  const FileHandlers* info = static_cast<const FileHandlers*>(
       extension->GetManifestData(keys::kFileHandlers));
   return info ? &info->file_handlers : nullptr;
 }

@@ -161,7 +161,7 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
 bool DNRManifestHandler::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
-  DNRManifestData* data = static_cast<DNRManifestData*>(
+  const DNRManifestData* data = static_cast<const DNRManifestData*>(
       extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
   DCHECK(data);
 

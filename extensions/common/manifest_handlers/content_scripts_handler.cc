@@ -154,7 +154,7 @@ ContentScriptsInfo::~ContentScriptsInfo() = default;
 // static
 const UserScriptList& ContentScriptsInfo::GetContentScripts(
     const Extension* extension) {
-  ContentScriptsInfo* info = static_cast<ContentScriptsInfo*>(
+  const ContentScriptsInfo* info = static_cast<const ContentScriptsInfo*>(
       extension->GetManifestData(ContentScriptsKeys::kContentScripts));
   return info ? info->content_scripts
               : g_empty_script_list.Get().user_script_list;

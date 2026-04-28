@@ -26,7 +26,7 @@ namespace errors = manifest_errors;
 
 // static
 const std::string& LocaleInfo::GetDefaultLocale(const Extension* extension) {
-  LocaleInfo* info = static_cast<LocaleInfo*>(
+  const LocaleInfo* info = static_cast<const LocaleInfo*>(
       extension->GetManifestData(keys::kDefaultLocale));
   return info ? info->default_locale : base::EmptyString();
 }

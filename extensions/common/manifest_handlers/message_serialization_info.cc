@@ -22,8 +22,9 @@ MessageSerializationInfo::~MessageSerializationInfo() = default;
 
 // static
 bool MessageSerializationInfo::UsesStructuredClone(const Extension* extension) {
-  MessageSerializationInfo* info = static_cast<MessageSerializationInfo*>(
-      extension->GetManifestData(manifest_keys::kMessageSerialization));
+  const MessageSerializationInfo* info =
+      static_cast<const MessageSerializationInfo*>(
+          extension->GetManifestData(manifest_keys::kMessageSerialization));
   bool is_opted_in = info && info->opts_in_structured_clone;
   return is_opted_in &&
          base::FeatureList::IsEnabled(

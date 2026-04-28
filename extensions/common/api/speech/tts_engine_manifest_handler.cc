@@ -117,8 +117,8 @@ const std::vector<TtsVoice>* TtsEngine::GetTtsVoices(
 
 // static
 const TtsEngine* TtsEngine::GetTtsEngineInfo(const Extension* extension) {
-  TtsEngine* info =
-      static_cast<TtsEngine*>(extension->GetManifestData(keys::kTtsVoices));
+  const TtsEngine* info = static_cast<const TtsEngine*>(
+      extension->GetManifestData(keys::kTtsVoices));
   return info;
 }
 

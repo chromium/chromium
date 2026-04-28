@@ -168,7 +168,7 @@ ManifestPermission* AutomationHandler::CreateInitialRequiredPermission(
 
 // static
 const AutomationInfo* AutomationInfo::Get(const Extension* extension) {
-  return static_cast<AutomationInfo*>(
+  return static_cast<const AutomationInfo*>(
       extension->GetManifestData(keys::kAutomation));
 }
 

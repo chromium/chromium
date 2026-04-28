@@ -23,7 +23,7 @@ UsbPrinterManifestData::~UsbPrinterManifestData() {
 // static
 const UsbPrinterManifestData* UsbPrinterManifestData::Get(
     const Extension* extension) {
-  return static_cast<UsbPrinterManifestData*>(
+  return static_cast<const UsbPrinterManifestData*>(
       extension->GetManifestData(manifest_keys::kUsbPrinters));
 }
 

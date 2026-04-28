@@ -19,7 +19,7 @@ DescriptionInfo::~DescriptionInfo() = default;
 // Return the `extension` description.
 // static
 const std::string& DescriptionInfo::GetDescription(const Extension& extension) {
-  DescriptionInfo* info = static_cast<DescriptionInfo*>(
+  const DescriptionInfo* info = static_cast<const DescriptionInfo*>(
       extension.GetManifestData(manifest_keys::kDescription));
   return info ? info->description_ : base::EmptyString();
 }

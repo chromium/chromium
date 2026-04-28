@@ -93,7 +93,7 @@ ProtocolHandlers::~ProtocolHandlers() = default;
 // static
 const ProtocolHandlersInfo* ProtocolHandlers::GetProtocolHandlers(
     const Extension& extension) {
-  ProtocolHandlers* info = static_cast<ProtocolHandlers*>(
+  const ProtocolHandlers* info = static_cast<const ProtocolHandlers*>(
       extension.GetManifestData(keys::kProtocolHandlers));
   DCHECK(!info || SupportsProtocolHandlers(extension));
   return info ? &info->protocol_handlers : nullptr;

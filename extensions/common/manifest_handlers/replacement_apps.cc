@@ -24,7 +24,7 @@ namespace {
 const char kReplacementApps[] = "replacement_apps";
 
 const ReplacementAppsInfo* GetReplacementAppsInfo(const Extension* extension) {
-  return static_cast<ReplacementAppsInfo*>(
+  return static_cast<const ReplacementAppsInfo*>(
       extension->GetManifestData(kReplacementApps));
 }
 

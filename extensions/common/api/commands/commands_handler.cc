@@ -33,30 +33,30 @@ CommandsInfo::~CommandsInfo() = default;
 // static
 const Command* CommandsInfo::GetBrowserActionCommand(
     const Extension* extension) {
-  auto* info =
-      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
+  const CommandsInfo* info = static_cast<const CommandsInfo*>(
+      extension->GetManifestData(keys::kCommands));
   return info ? info->browser_action_command.get() : nullptr;
 }
 
 // static
 const Command* CommandsInfo::GetPageActionCommand(const Extension* extension) {
-  auto* info =
-      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
+  const CommandsInfo* info = static_cast<const CommandsInfo*>(
+      extension->GetManifestData(keys::kCommands));
   return info ? info->page_action_command.get() : nullptr;
 }
 
 // static
 const Command* CommandsInfo::GetActionCommand(const Extension* extension) {
-  auto* info =
-      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
+  const CommandsInfo* info = static_cast<const CommandsInfo*>(
+      extension->GetManifestData(keys::kCommands));
   return info ? info->action_command.get() : nullptr;
 }
 
 // static
 const ui::CommandMap* CommandsInfo::GetNamedCommands(
     const Extension* extension) {
-  auto* info =
-      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
+  const CommandsInfo* info = static_cast<const CommandsInfo*>(
+      extension->GetManifestData(keys::kCommands));
   return info ? &info->named_commands : nullptr;
 }
 

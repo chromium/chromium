@@ -78,9 +78,9 @@ base::span<const char* const> ExternallyConnectableHandler::Keys() const {
 }
 
 // static
-ExternallyConnectableInfo* ExternallyConnectableInfo::Get(
+const ExternallyConnectableInfo* ExternallyConnectableInfo::Get(
     const Extension* extension) {
-  return static_cast<ExternallyConnectableInfo*>(
+  return static_cast<const ExternallyConnectableInfo*>(
       extension->GetManifestData(keys::kExternallyConnectable));
 }
 
@@ -164,7 +164,7 @@ ExternallyConnectableInfo::ExternallyConnectableInfo(
       all_ids(all_ids),
       accepts_tls_channel_id(accepts_tls_channel_id) {}
 
-bool ExternallyConnectableInfo::IdCanConnect(const ExtensionId& id) {
+bool ExternallyConnectableInfo::IdCanConnect(const ExtensionId& id) const {
   if (all_ids) {
     return true;
   }

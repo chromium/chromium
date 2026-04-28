@@ -39,8 +39,9 @@ using WebAccessibleResourcesMv2ManifestKeys =
 namespace {
 
 const WebAccessibleResourcesInfo* GetResourcesInfo(const Extension* extension) {
-  return static_cast<WebAccessibleResourcesInfo*>(extension->GetManifestData(
-      WebAccessibleResourcesManifestKeys::kWebAccessibleResources));
+  return static_cast<const WebAccessibleResourcesInfo*>(
+      extension->GetManifestData(
+          WebAccessibleResourcesManifestKeys::kWebAccessibleResources));
 }
 
 URLPattern GetPattern(std::string relative_path, const Extension& extension) {

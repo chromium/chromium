@@ -37,12 +37,12 @@ const std::vector<DNRManifestData::RulesetInfo>& DNRManifestData::GetRulesets(
   static const base::NoDestructor<std::vector<DNRManifestData::RulesetInfo>>
       empty_vector;
 
-  Extension::ManifestData* data =
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
+  const DNRManifestData* data = static_cast<const DNRManifestData*>(
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
   if (!data)
     return *empty_vector;
 
-  return static_cast<DNRManifestData*>(data)->rulesets;
+  return data->rulesets;
 }
 
 const DNRManifestData::ManifestIDToRulesetMap&
@@ -51,24 +51,23 @@ DNRManifestData::GetManifestIDToRulesetMap(const Extension& extension) {
   // the extension didn't specify any rulesets.
   static const base::NoDestructor<ManifestIDToRulesetMap> empty_map;
 
-  Extension::ManifestData* data =
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
+  const DNRManifestData* data = static_cast<const DNRManifestData*>(
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
   if (!data)
     return *empty_map;
 
-  return static_cast<DNRManifestData*>(data)->manifest_id_to_ruleset_map;
+  return data->manifest_id_to_ruleset_map;
 }
 
 // static
 const DNRManifestData::RulesetInfo& DNRManifestData::GetRuleset(
     const Extension& extension,
     RulesetID ruleset_id) {
-  Extension::ManifestData* data =
-      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
+  const DNRManifestData* data = static_cast<const DNRManifestData*>(
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest));
   DCHECK(data);
 
-  const std::vector<DNRManifestData::RulesetInfo>& rulesets =
-      static_cast<DNRManifestData*>(data)->rulesets;
+  const std::vector<DNRManifestData::RulesetInfo>& rulesets = data->rulesets;
 
   int index = ruleset_id.value() - kMinValidStaticRulesetID.value();
   CHECK_GE(index, 0);

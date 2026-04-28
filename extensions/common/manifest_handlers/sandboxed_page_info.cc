@@ -27,7 +27,7 @@ static base::LazyInstance<SandboxedPageInfo>::DestructorAtExit
     g_empty_sandboxed_info = LAZY_INSTANCE_INITIALIZER;
 
 const SandboxedPageInfo& GetSandboxedPageInfo(const Extension* extension) {
-  SandboxedPageInfo* info = static_cast<SandboxedPageInfo*>(
+  const SandboxedPageInfo* info = static_cast<const SandboxedPageInfo*>(
       extension->GetManifestData(keys::kSandboxedPages));
   return info ? *info : g_empty_sandboxed_info.Get();
 }

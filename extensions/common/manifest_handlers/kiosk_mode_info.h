@@ -43,7 +43,7 @@ struct KioskModeInfo : public Extension::ManifestData {
 
   // Gets the KioskModeInfo for `extension`, or NULL if none was
   // specified.
-  static KioskModeInfo* Get(const Extension* extension);
+  static const KioskModeInfo* Get(const Extension* extension);
 
   // Whether the extension or app is enabled for app kiosk mode.
   static bool IsKioskEnabled(const Extension* extension);

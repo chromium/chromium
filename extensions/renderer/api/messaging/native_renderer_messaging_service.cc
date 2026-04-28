@@ -663,7 +663,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
                                     source.tab, v8_context));
     }
 
-    ExternallyConnectableInfo* externally_connectable =
+    const ExternallyConnectableInfo* externally_connectable =
         ExternallyConnectableInfo::Get(extension);
     if (externally_connectable &&
         externally_connectable->accepts_tls_channel_id) {

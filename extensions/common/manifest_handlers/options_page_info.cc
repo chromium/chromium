@@ -26,8 +26,8 @@ using api::extensions_manifest_types::OptionsUI;
 
 namespace {
 
-OptionsPageInfo* GetOptionsPageInfo(const Extension* extension) {
-  return static_cast<OptionsPageInfo*>(
+const OptionsPageInfo* GetOptionsPageInfo(const Extension* extension) {
+  return static_cast<const OptionsPageInfo*>(
       extension->GetManifestData(keys::kOptionsUI));
 }
 
@@ -75,7 +75,7 @@ OptionsPageInfo::~OptionsPageInfo() = default;
 
 // static
 const GURL& OptionsPageInfo::GetOptionsPage(const Extension* extension) {
-  OptionsPageInfo* info = GetOptionsPageInfo(extension);
+  const OptionsPageInfo* info = GetOptionsPageInfo(extension);
   return info ? info->options_page_ : GURL::EmptyGURL();
 }
 
@@ -86,13 +86,13 @@ bool OptionsPageInfo::HasOptionsPage(const Extension* extension) {
 
 // static
 bool OptionsPageInfo::ShouldUseChromeStyle(const Extension* extension) {
-  OptionsPageInfo* info = GetOptionsPageInfo(extension);
+  const OptionsPageInfo* info = GetOptionsPageInfo(extension);
   return info && info->chrome_styles_;
 }
 
 // static
 bool OptionsPageInfo::ShouldOpenInTab(const Extension* extension) {
-  OptionsPageInfo* info = GetOptionsPageInfo(extension);
+  const OptionsPageInfo* info = GetOptionsPageInfo(extension);
   return info && info->open_in_tab_;
 }
 

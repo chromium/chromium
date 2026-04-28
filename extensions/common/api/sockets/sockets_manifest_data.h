@@ -30,7 +30,7 @@ class SocketsManifestData : public Extension::ManifestData {
 
   // Gets the SocketsManifestData for |extension|, or NULL if none was
   // specified.
-  static SocketsManifestData* Get(const Extension* extension);
+  static const SocketsManifestData* Get(const Extension* extension);
 
   static bool CheckRequest(const Extension* extension,
                            const content::SocketPermissionRequest& request);
