@@ -55,7 +55,10 @@ public final class TabBottomSheetUtils {
      * @return The {@link TabBottomSheetManager}, or null if not found.
      */
     public static @Nullable TabBottomSheetManager getManagerFromWindow(
-            WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            return null;
+        }
         return MANAGER_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 

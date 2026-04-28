@@ -218,7 +218,9 @@ public class TabBottomSheetCoordinator {
 
         if (mBottomSheetController.requestShowContent(mSheetContent, animate)) {
             // Set peek height for touch arbitration.
-            mMediator.setPeekHeight(mSheetContent.getPeekHeight());
+            if (mSheetContent != null) {
+                mMediator.setPeekHeight(mSheetContent.getPeekHeight());
+            }
             // Notify that the sheet is opened synchronously. The precise expansion state will be
             // refined once the posted task completes and layout is available.
             mSheetEventsCallback.onBottomSheetOpened(startsExpanded);

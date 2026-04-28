@@ -66,7 +66,10 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
         webContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
     }
 
-    private @Nullable TabBottomSheetManagerImpl getTabBottomSheetManager(Tab tab) {
+    private @Nullable TabBottomSheetManagerImpl getTabBottomSheetManager(@Nullable Tab tab) {
+        if (tab == null) {
+            return null;
+        }
         return (TabBottomSheetManagerImpl)
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
     }
