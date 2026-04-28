@@ -11,6 +11,7 @@
 #include "base/debug/asan_service.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/bind.h"
@@ -38,6 +39,7 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_graph_mojolpm_fuzzer.pb.h"
 #include "services/webnn/webnn_test_environment.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
@@ -45,11 +47,10 @@ namespace {
 
 struct InitGlobals {
   InitGlobals() {
+    CHECK(base::CommandLine::InitializedForCurrentProcess());
     mojo::core::Init();
-    bool success = base::CommandLine::Init(0, nullptr);
-    CHECK(success);
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    success = base::FeatureList::InitInstance(
+    bool success = base::FeatureList::InitInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));
     CHECK(success);
@@ -67,8 +68,6 @@ struct InitGlobals {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-InitGlobals* init_globals = new InitGlobals();
 
 class WebnnGraphLPMFuzzer {
  public:
@@ -316,3 +315,9 @@ DEFINE_TEXT_PROTO_FUZZER(
 }
 
 }  // namespace
+
+extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
+  CHECK(base::CommandLine::Init(*argc, *argv));
+  static base::NoDestructor<InitGlobals> init_globals;
+  return 0;
+}
