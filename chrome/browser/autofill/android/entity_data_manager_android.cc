@@ -293,6 +293,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
     CHECK_EQ(entities_of_type.size(), labels.size());
 
     for (const auto [entity, label] : base::zip(entities_of_type, labels)) {
+      const bool stored_in_wallet =
+          entity->record_type() == EntityInstance::RecordType::kServerWallet;
       entities_with_labels.emplace_back(
           entity->guid().value(),
           EntityTypeAndroid(
@@ -301,8 +303,9 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
               IsEligibleForWalletStorage(type),
               IsMaskedStorageSupported(type, entity->record_type())),
           entity->type().GetNameForI18n(),
-          base::JoinString(label, kLabelSeparator),
-          entity->record_type() == EntityInstance::RecordType::kServerWallet);
+          base::JoinString(label, kLabelSeparator), stored_in_wallet,
+          stored_in_wallet ? std::make_optional(GetWalletManagementURL(*entity))
+                           : std::nullopt);
     }
   }
   return entities_with_labels;

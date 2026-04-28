@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Represents information of an Autofill AI entity. Used to display to users details about their
@@ -27,6 +28,8 @@ public class EntityInstanceWithLabels {
     private final String mEntityInstanceSubLabel;
     // Whether the entity is a server or a local entity.
     private final boolean mStoredInWallet;
+    // The URL to manage the entity in the Wallet application, if it is stored in Wallet.
+    private final @Nullable String mWalletEntityUrl;
 
     @CalledByNative
     public EntityInstanceWithLabels(
@@ -34,12 +37,14 @@ public class EntityInstanceWithLabels {
             @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::u16string") String entityInstanceLabel,
             @JniType("std::u16string") String entityInstanceSubLabel,
-            boolean storedInWallet) {
+            boolean storedInWallet,
+            @JniType("std::optional<std::string>") @Nullable String walletEntityUrl) {
         mGuid = guid;
         mType = entityType;
         mEntityInstanceLabel = entityInstanceLabel;
         mEntityInstanceSubLabel = entityInstanceSubLabel;
         mStoredInWallet = storedInWallet;
+        mWalletEntityUrl = walletEntityUrl;
     }
 
     @CalledByNative
@@ -65,5 +70,10 @@ public class EntityInstanceWithLabels {
     @CalledByNative
     public boolean isStoredInWallet() {
         return mStoredInWallet;
+    }
+
+    @CalledByNative
+    public @JniType("std::optional<std::string>") @Nullable String getWalletEntityUrl() {
+        return mWalletEntityUrl;
     }
 }

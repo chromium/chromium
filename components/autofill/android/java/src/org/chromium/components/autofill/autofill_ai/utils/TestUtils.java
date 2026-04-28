@@ -100,6 +100,11 @@ public final class TestUtils {
                         .setUseCount(0)
                         .build();
         return new EntityInstanceWithLabels(
-                entityInstance.getGUID(), entityType, label, subLabel, /* storedInWallet= */ true);
+                entityInstance.getGUID(),
+                entityType,
+                label,
+                subLabel,
+                /* storedInWallet= */ true,
+                /* walletEntityUrl= */ null);
     }
 }

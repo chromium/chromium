@@ -1137,7 +1137,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity1));
@@ -1172,7 +1173,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         EntityInstanceWithLabels entity2 =
                 new EntityInstanceWithLabels(
@@ -1180,7 +1182,8 @@ public class AutofillProfilesFragmentTest {
                         passportType,
                         /*entityName*/ "Passport",
                         /* entityInstanceSubLabel= */ "Germany",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1347,7 +1350,12 @@ public class AutofillProfilesFragmentTest {
 
         EntityInstanceWithLabels entity =
                 new EntityInstanceWithLabels(
-                        "guid1", disabledType, "Label", "Sublabel", /* storedInWallet= */ false);
+                        "guid1",
+                        disabledType,
+                        "Label",
+                        "Sublabel",
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1388,7 +1396,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "B",
                         /* entityInstanceSubLabel= */ "2",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         EntityInstanceWithLabels entity2 =
                 new EntityInstanceWithLabels(
@@ -1396,7 +1405,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "A",
                         /* entityInstanceSubLabel= */ "1",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         EntityInstanceWithLabels entity3 =
                 new EntityInstanceWithLabels(
@@ -1404,7 +1414,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "A",
                         /* entityInstanceSubLabel= */ "2",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         // Sorting is now expected to be done by getInstancesToList.
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
@@ -1580,7 +1591,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1727,7 +1739,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ true);
+                        /* storedInWallet= */ true,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1772,7 +1785,8 @@ public class AutofillProfilesFragmentTest {
                         vehicleType,
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap1 =
                 new LinkedHashMap<>();
@@ -1881,7 +1895,8 @@ public class AutofillProfilesFragmentTest {
                         TestUtils.getVehicleEntityType(),
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1930,7 +1945,8 @@ public class AutofillProfilesFragmentTest {
                         TestUtils.getVehicleEntityType(),
                         /* entityInstanceLabel= */ "Vehicle",
                         /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false);
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();

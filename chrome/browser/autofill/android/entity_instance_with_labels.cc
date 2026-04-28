@@ -17,12 +17,14 @@ EntityInstanceWithLabels::EntityInstanceWithLabels(
     EntityTypeAndroid entity_type,
     std::u16string entity_instance_label,
     std::u16string entity_instance_sublabel,
-    bool stored_in_wallet)
+    bool stored_in_wallet,
+    std::optional<std::string> wallet_entity_url)
     : guid(std::move(guid)),
       entity_type(std::move(entity_type)),
       entity_instance_label(std::move(entity_instance_label)),
       entity_instance_sublabel(std::move(entity_instance_sublabel)),
-      stored_in_wallet(stored_in_wallet) {}
+      stored_in_wallet(stored_in_wallet),
+      wallet_entity_url(std::move(wallet_entity_url)) {}
 EntityInstanceWithLabels::~EntityInstanceWithLabels() = default;
 EntityInstanceWithLabels::EntityInstanceWithLabels(
     const EntityInstanceWithLabels&) = default;
@@ -49,7 +51,8 @@ EntityInstanceWithLabels FromJniType<EntityInstanceWithLabels>(
       autofill::Java_EntityInstanceWithLabels_getEntityInstanceLabel(env, jobj),
       autofill::Java_EntityInstanceWithLabels_getEntityInstanceSubLabel(env,
                                                                         jobj),
-      autofill::Java_EntityInstanceWithLabels_isStoredInWallet(env, jobj));
+      autofill::Java_EntityInstanceWithLabels_isStoredInWallet(env, jobj),
+      autofill::Java_EntityInstanceWithLabels_getWalletEntityUrl(env, jobj));
   return instance;
 }
 
@@ -61,7 +64,7 @@ ScopedJavaLocalRef<jobject> ToJniType<EntityInstanceWithLabels>(
       env, native_instance.guid, native_instance.entity_type,
       native_instance.entity_instance_label,
       native_instance.entity_instance_sublabel,
-      native_instance.stored_in_wallet);
+      native_instance.stored_in_wallet, native_instance.wallet_entity_url);
 }
 
 }  // namespace jni_zero

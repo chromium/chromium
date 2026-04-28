@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_INSTANCE_WITH_LABELS_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_INSTANCE_WITH_LABELS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -20,7 +21,8 @@ struct EntityInstanceWithLabels {
                            EntityTypeAndroid entity_type,
                            std::u16string entity_instance_label,
                            std::u16string entity_instance_sublabel,
-                           bool stored_in_wallet);
+                           bool stored_in_wallet,
+                           std::optional<std::string> wallet_entity_url);
   ~EntityInstanceWithLabels();
   EntityInstanceWithLabels(const EntityInstanceWithLabels&);
   EntityInstanceWithLabels& operator=(const EntityInstanceWithLabels&);
@@ -32,6 +34,7 @@ struct EntityInstanceWithLabels {
   std::u16string entity_instance_label;
   std::u16string entity_instance_sublabel;
   bool stored_in_wallet;
+  std::optional<std::string> wallet_entity_url;
 };
 
 }  // namespace autofill
