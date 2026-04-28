@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
-#import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
@@ -670,17 +668,7 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 
   badge_config.badgeText = cue_label;
   badge_config.shouldHideBadgeAfterChipCollapse = true;
-  if ([(id)location_bar_badge_commands_handler_
-          respondsToSelector:@selector(updateBadgeConfig:)]) {
-    [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
-  } else {
-    // The handler is unexpectedly missing the method. Log this as a non-fatal
-    // incident to help diagnose the root cause in the field.
-    // Associated bug: crbug.com/505463016
-    SCOPED_CRASH_KEY_STRING32("BwgTabHelper", "missing_selector",
-                              "updateBadgeConfig:");
-    base::debug::DumpWithoutCrashing();
-  }
+  [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
 }
 
 // Computes Gemini eligibility based on the presence of metadata.
