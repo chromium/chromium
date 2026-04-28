@@ -42,6 +42,7 @@ class MockGlicInstance : public GlicInstance {
               conversation_id,
               (),
               (const, override));
+  MOCK_METHOD(std::string, conversation_title, (), (const, override));
   MOCK_METHOD(base::Time, GetLastActivationTimestamp, (), (const, override));
   MOCK_METHOD(base::TimeDelta, GetTimeSinceLastActive, (), (const, override));
   MOCK_METHOD(void, OnSelectionAreasChanged, (int), (override));

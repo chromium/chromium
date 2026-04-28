@@ -11,6 +11,7 @@ generate_jni("jni_headers") {
     "//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicInstanceHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsNavigation.java",
   ]
@@ -36,6 +37,19 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("helper_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/glic/GlicInstanceHelper.java" ]
+  deps = [
+    ":jni_headers_java",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.glic"
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
@@ -52,6 +66,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.glic"
 
   deps = [
+    ":helper_java",
     ":java_resources",
     ":jni_headers_java",
     "//base:base_java",

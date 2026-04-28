@@ -102,6 +102,9 @@ class GlicInstance {
   // Get the current conversation ID for this instance.
   virtual std::optional<std::string> conversation_id() const = 0;
 
+  // Get the current conversation title for this instance.
+  virtual std::string conversation_title() const = 0;
+
   // Returns the timestamp when the instance last became active.
   virtual base::Time GetLastActivationTimestamp() const = 0;
 

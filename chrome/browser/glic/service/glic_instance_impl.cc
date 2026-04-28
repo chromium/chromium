@@ -229,6 +229,19 @@ void GlicInstanceImpl::NotifyStateChange() {
   }
 }
 
+void GlicInstanceImpl::NotifyConversationTitleChanged() {
+#if BUILDFLAG(IS_ANDROID)
+  // Notify bound helpers that the instance info (title) changed.
+  for (const auto& [key, entry] : embedders_) {
+    if (auto* const* tab_ptr = std::get_if<tabs::TabInterface*>(&key)) {
+      if (auto* helper = GlicInstanceHelper::From(*tab_ptr)) {
+        helper->OnConversationTitleChanged();
+      }
+    }
+  }
+#endif
+}
+
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry() = default;
 GlicInstanceImpl::EmbedderEntry::~EmbedderEntry() = default;
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry(EmbedderEntry&&) = default;
@@ -586,6 +599,8 @@ void GlicInstanceImpl::RegisterConversation(
   }
 
   conversation_info_ = std::move(info);
+  NotifyConversationTitleChanged();
+
   std::move(callback).Run(std::nullopt);
 }
 
@@ -908,8 +923,12 @@ void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
 std::optional<std::string> GlicInstanceImpl::conversation_id() const {
   if (!conversation_info_->conversation_id.empty()) {
     return conversation_info_->conversation_id;
-  }
-  return std::nullopt;
+}
+return std::nullopt;
+}
+
+std::string GlicInstanceImpl::conversation_title() const {
+  return conversation_info_->conversation_title;
 }
 
 glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {

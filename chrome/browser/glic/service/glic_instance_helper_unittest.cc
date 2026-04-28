@@ -22,6 +22,9 @@ class FakeGlicInstance : public GlicInstanceHelper::Instance {
   std::optional<std::string> conversation_id() const override {
     return "test_conversation_id";
   }
+  std::string conversation_title() const override {
+    return "test_conversation_title";
+  }
 
  private:
   InstanceId id_;
@@ -97,6 +100,7 @@ TEST_F(GlicInstanceHelperTest, GettersWork) {
   helper.SetBoundInstance(&instance);
   EXPECT_EQ(helper.GetInstanceId(), id);
   EXPECT_EQ(helper.GetConversationId(), "test_conversation_id");
+  EXPECT_EQ(helper.GetConversationTitle(), "test_conversation_title");
 
   helper.OnPinnedByInstance(&instance);
   EXPECT_THAT(helper.GetPinnedInstances(), testing::ElementsAre(&instance));

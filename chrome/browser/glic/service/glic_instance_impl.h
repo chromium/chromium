@@ -179,6 +179,7 @@ class GlicInstanceImpl : public GlicInstance,
   const InstanceId& id() const override;
   void SetIdForRestoration(InstanceId id);
   std::optional<std::string> conversation_id() const override;
+  std::string conversation_title() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
   void BindTabForTesting(tabs::TabInterface* tab) override;
@@ -327,6 +328,7 @@ class GlicInstanceImpl : public GlicInstance,
   };
 
   void NotifyStateChange();
+  void NotifyConversationTitleChanged();
 
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);

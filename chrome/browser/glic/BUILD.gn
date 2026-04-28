@@ -87,6 +87,7 @@ source_set("glic") {
     sources += [
       "public/widget/glic_side_panel_coordinator_android.h",
       "public/widget/glic_side_panel_coordinator_desktop_android.h",
+      "service/glic_instance_helper_android.cc",
     ]
   }
   public_deps = [
@@ -148,6 +149,7 @@ source_set("glic") {
   } else {  # is_android
     deps += [
       ":actor_types_for_migration",
+      "//chrome/browser/android:tabs_public",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
     ]
   }

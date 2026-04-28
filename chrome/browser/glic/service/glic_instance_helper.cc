@@ -17,7 +17,11 @@ GlicInstanceHelper* GlicInstanceHelper::From(tabs::TabInterface* tab) {
 
 GlicInstanceHelper::GlicInstanceHelper(tabs::TabInterface* tab)
     : tab_(tab),
-      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+#if BUILDFLAG(IS_ANDROID)
+  InitJavaObject();
+#endif
+}
 
 GlicInstanceHelper::~GlicInstanceHelper() {
   CHECK(tab_);
@@ -36,13 +40,29 @@ void GlicInstanceHelper::SetBoundInstance(Instance* instance) {
   if (bound_instance_) {
     metrics_.OnBoundToInstance(bound_instance_->id());
   }
+#if BUILDFLAG(IS_ANDROID)
+  NotifyJavaInstanceTitleChanged();
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void GlicInstanceHelper::OnConversationTitleChanged() {
+  NotifyJavaInstanceTitleChanged();
+}
+#endif
 
 std::optional<std::string> GlicInstanceHelper::GetConversationId() const {
   if (bound_instance_) {
     return bound_instance_->conversation_id();
   }
   return std::nullopt;
+}
+
+std::string GlicInstanceHelper::GetConversationTitle() const {
+  if (bound_instance_) {
+    return bound_instance_->conversation_title();
+  }
+  return "";
 }
 
 void GlicInstanceHelper::OnPinnedByInstance(Instance* instance) {
