@@ -39,6 +39,18 @@ PendingInputBuffer::~PendingInputBuffer() = default;
 MediaFoundationStreamWrapper::MediaFoundationStreamWrapper() = default;
 MediaFoundationStreamWrapper::~MediaFoundationStreamWrapper() = default;
 
+IFACEMETHODIMP_(ULONG) MediaFoundationStreamWrapper::Release() {
+  ULONG ref_count = InternalRelease();
+  if (ref_count == 0) {
+    if (!task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->DeleteSoon(FROM_HERE, this);
+    } else {
+      delete this;
+    }
+  }
+  return ref_count;
+}
+
 /*static*/
 HRESULT MediaFoundationStreamWrapper::Create(
     int stream_id,
