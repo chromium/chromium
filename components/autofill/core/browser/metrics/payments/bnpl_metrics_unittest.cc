@@ -9,16 +9,23 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 
+using ::testing::Each;
 using IssuerId = autofill::BnplIssuer::IssuerId;
+using UkmPayLaterTabShownType = ukm::builders::Autofill_PayLaterTabShown;
+using UkmPayLaterTabSelectedType = ukm::builders::Autofill_PayLaterTabSelected;
+using UkmPayLaterTabSuggestionAcceptedType =
+    ukm::builders::Autofill_PayLaterTabSuggestionAccepted;
 
 // Params of the BnplMetricsTest:
 // -- std::string_view issuer_id;
@@ -174,7 +181,7 @@ TEST_F(BnplMetricsTest, LogSuggestionShown_NoPayLaterTabSuggestion) {
   base::HistogramTester histogram_tester;
 
   LogSuggestionShownForPayLaterTab(
-      /*contains_pay_later_tab_suggestions=*/false);
+      /*contains_pay_later_tab_suggestions=*/false, /*ukm_source_id=*/0);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
@@ -188,7 +195,7 @@ TEST_F(BnplMetricsTest, LogSuggestionShown_WithPayLaterTabSuggestion) {
   base::HistogramTester histogram_tester;
 
   LogSuggestionShownForPayLaterTab(
-      /*contains_pay_later_tab_suggestions=*/true);
+      /*contains_pay_later_tab_suggestions=*/true, /*ukm_source_id=*/0);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
@@ -651,6 +658,12 @@ TEST_F(BnplFormEventsMetricsTest,
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kSuggestionsShownWithPayLaterTab,
       1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmPayLaterTabShownType::kEntryName),
+      UkmEventsAre({{{UkmPayLaterTabShownType::kShownName, true}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmPayLaterTabShownType::kEntryName),
+      Each(form().main_frame_origin().GetURL()));
 }
 
 TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnNoneBnplEligiblePage) {
@@ -738,6 +751,12 @@ TEST_F(BnplFormEventsMetricsTest, PayLaterTabSelected) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kSwitchedToPayLaterTab, 1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmPayLaterTabSelectedType::kEntryName),
+      UkmEventsAre({{{UkmPayLaterTabSelectedType::kSelectedName, true}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmPayLaterTabSelectedType::kEntryName),
+      Each(form().main_frame_origin().GetURL()));
 }
 
 TEST_F(BnplFormEventsMetricsTest, PayNowTabSelected) {
@@ -804,6 +823,14 @@ TEST_F(BnplFormEventsMetricsTest, AffirmSelectedFromPayLaterTab) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kAffirmAccepted, 1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(),
+                   UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+      UkmEventsAre(
+          {{{UkmPayLaterTabSuggestionAcceptedType::kAcceptedName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(),
+                           UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+              Each(form().main_frame_origin().GetURL()));
 }
 
 TEST_F(BnplFormEventsMetricsTest, ZipSelectedFromPayLaterTab) {
@@ -829,6 +856,14 @@ TEST_F(BnplFormEventsMetricsTest, ZipSelectedFromPayLaterTab) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kZipAccepted, 1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(),
+                   UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+      UkmEventsAre(
+          {{{UkmPayLaterTabSuggestionAcceptedType::kAcceptedName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(),
+                           UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+              Each(form().main_frame_origin().GetURL()));
 }
 
 TEST_F(BnplFormEventsMetricsTest, KlarnaSelectedFromPayLaterTab) {
@@ -854,9 +889,17 @@ TEST_F(BnplFormEventsMetricsTest, KlarnaSelectedFromPayLaterTab) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kKlarnaAccepted, 1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(),
+                   UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+      UkmEventsAre(
+          {{{UkmPayLaterTabSuggestionAcceptedType::kAcceptedName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(),
+                           UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+              Each(form().main_frame_origin().GetURL()));
 }
 
-TEST_F(BnplFormEventsMetricsTest, AfterpaySelectionedFromPayLaterTab) {
+TEST_F(BnplFormEventsMetricsTest, AfterpaySelectedFromPayLaterTab) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -879,6 +922,14 @@ TEST_F(BnplFormEventsMetricsTest, AfterpaySelectionedFromPayLaterTab) {
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl.PayLaterTab",
       autofill_metrics::PayLaterTabsFormEvent::kAfterpayAccepted, 1);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(),
+                   UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+      UkmEventsAre(
+          {{{UkmPayLaterTabSuggestionAcceptedType::kAcceptedName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(),
+                           UkmPayLaterTabSuggestionAcceptedType::kEntryName),
+              Each(form().main_frame_origin().GetURL()));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

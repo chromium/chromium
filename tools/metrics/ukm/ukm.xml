@@ -3309,6 +3309,71 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.PayLaterTabSelected" singular="true">
+  <owner>yishuil@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when a user selects the Pay Later tab from the payments autofill
+    dropdown.
+  </summary>
+  <metric name="Selected" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.PayLaterTabShown" singular="true">
+  <owner>yishuil@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when the Pay Later tab was shown in the payments autofill dropdown.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.PayLaterTabSuggestionAccepted" singular="true">
+  <owner>yishuil@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when a BNPL suggestion from the Pay Later tab was accepted by
+    users.
+  </summary>
+  <metric name="Accepted" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Autofill.SuggestionFilled">
   <owner>osaul@google.com</owner>
   <summary>

@@ -221,10 +221,15 @@ void LogBnplPopupWindowLatency(base::TimeDelta duration,
                                BnplFlowResult result);
 
 // Logs suggestion shown events for the Pay Later tab.
-void LogSuggestionShownForPayLaterTab(bool contains_pay_later_tab_suggestions);
+void LogSuggestionShownForPayLaterTab(bool contains_pay_later_tab_suggestions,
+                                      ukm::SourceId ukm_source_id);
+
+// Logs that a user has switched to the Pay Later tab.
+void LogPayLaterTabSelected(ukm::SourceId ukm_source_id);
 
 // Logs that a pay later tab suggestion was accepted.
-void LogPayLaterTabSuggestionAccepted(autofill::BnplIssuer::IssuerId issuer_id);
+void LogPayLaterTabSuggestionAccepted(autofill::BnplIssuer::IssuerId issuer_id,
+                                      ukm::SourceId ukm_source_id);
 
 // Logs Pay Later Tab form events. Please refer to `PayLaterTabsFormEvent` for
 // the possible enumerations that can be logged.

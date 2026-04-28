@@ -227,7 +227,8 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
     ReplaceIssuerSuggestionsWithLoadingThrobber();
     if (!has_logged_bnpl_suggestion_accepted_) {
       autofill_metrics::LogPayLaterTabSuggestionAccepted(
-          ongoing_flow_state_->issuer->issuer_id());
+          ongoing_flow_state_->issuer->issuer_id(),
+          browser_autofill_manager_->driver().GetPageUkmSourceId());
       has_logged_bnpl_suggestion_accepted_ = true;
     }
   }

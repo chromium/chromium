@@ -159,8 +159,8 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
       payments::IsEligibleForBnpl(owner_->client())) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnablePayNowPayLaterTabs)) {
-      LogSuggestionShownForPayLaterTab(
-          suggestion_contains_pay_later_tab_entry_);
+      LogSuggestionShownForPayLaterTab(suggestion_contains_pay_later_tab_entry_,
+                                       driver().GetPageUkmSourceId());
     } else {
       LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnBnplEligiblePage);
     }
@@ -593,7 +593,7 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
 void CreditCardFormEventLogger::OnUserDecisionToUseBnpl() {
   if (!has_logged_user_decision_to_use_bnpl_) {
     if (suggestion_contains_pay_later_tab_entry_) {
-      LogPayLaterTabsFormEvent(PayLaterTabsFormEvent::kSwitchedToPayLaterTab);
+      LogPayLaterTabSelected(driver().GetPageUkmSourceId());
     } else {
       LogBnplSuggestionAccepted(driver().GetPageUkmSourceId());
     }
