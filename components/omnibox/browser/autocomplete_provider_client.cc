@@ -16,6 +16,11 @@ AutocompleteProviderClient::GetHistoryEmbeddingsSearch() {
   return nullptr;
 }
 
+GeolocationHeaderService*
+AutocompleteProviderClient::GetGeolocationHeaderService() const {
+  return nullptr;
+}
+
 DocumentSuggestionsService*
 AutocompleteProviderClient::GetDocumentSuggestionsService() const {
   return nullptr;

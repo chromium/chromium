@@ -124,9 +124,12 @@ void GeolocationHeaderService::PrimeLocation() {
   }
 
   // If the location is fresh there is no need to query for a new one.
-  if (HasCachedLocation() && base::Time::Now() - last_position_->timestamp <=
-                                 kMaxLocationAgeForPriming) {
-    return;
+  if (HasCachedLocation()) {
+    base::TimeDelta age = location_age_for_testing_.value_or(
+        base::Time::Now() - last_position_->timestamp);
+    if (age <= kMaxLocationAgeForPriming) {
+      return;
+    }
   }
 
   if (!EnsureGeolocationServiceConnection(requesting_url)) {
@@ -271,12 +274,12 @@ bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
 
   // We pass the requesting_url to the Device Service so that the OS level
   // location prompt can attribute the location request to the correct origin.
+  bool has_precise = HasPrecisePermission(requesting_url);
   geolocation_context_->BindGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(), requesting_url,
-      device::mojom::GeolocationClientId::kOmnibox,
-      HasPrecisePermission(requesting_url));
+      device::mojom::GeolocationClientId::kOmnibox, has_precise);
 
-  geolocation_->SetHighAccuracyHint(HasPrecisePermission(requesting_url));
+  geolocation_->SetHighAccuracyHint(has_precise);
 
   geolocation_.set_disconnect_handler(base::BindOnce(
       [](base::WeakPtr<GeolocationHeaderService> service) {

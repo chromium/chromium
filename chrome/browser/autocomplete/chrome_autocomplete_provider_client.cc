@@ -36,6 +36,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
+#include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -310,6 +311,11 @@ TemplateURLService* ChromeAutocompleteProviderClient::GetTemplateURLService() {
 const TemplateURLService*
 ChromeAutocompleteProviderClient::GetTemplateURLService() const {
   return TemplateURLServiceFactory::GetForProfile(profile_);
+}
+
+GeolocationHeaderService*
+ChromeAutocompleteProviderClient::GetGeolocationHeaderService() const {
+  return GeolocationHeaderServiceFactory::GetForProfile(profile_);
 }
 
 DocumentSuggestionsService*

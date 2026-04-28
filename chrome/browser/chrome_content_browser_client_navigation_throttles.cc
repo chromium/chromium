@@ -21,6 +21,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
+#include "chrome/browser/omnibox/geolocation_navigation_throttle.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -288,6 +289,12 @@ void CreateAndAddChromeThrottlesForNavigation(
     // should be cared by adding an attribute flag to
     // NavigationThrottleRegistry::AddThrottle().
     page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
+
+    // Appends the X-Geo header to the navigation request if needed.
+    if (auto throttle =
+            GeolocationNavigationThrottle::MaybeCreateThrottleFor(registry)) {
+      registry.AddThrottle(std::move(throttle));
+    }
   }
 
   DSEPrewarmNavigationThrottle::MaybeCreateAndAdd(registry);

@@ -10,6 +10,8 @@ source_set("omnibox") {
     "autocomplete_controller_emitter_factory.h",
     "geolocation_header_service_factory.cc",
     "geolocation_header_service_factory.h",
+    "geolocation_navigation_throttle.cc",
+    "geolocation_navigation_throttle.h",
   ]
 
   # Matches the build check used for the objects constructed by these factories.
@@ -31,4 +33,44 @@ source_set("omnibox") {
     "//components/omnibox/common",
     "//content/public/browser",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "geolocation_navigation_throttle_unittest.cc" ]
+  deps = [
+    ":omnibox",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/search_engines",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "geolocation_header_browsertest.cc" ]
+    deps = [
+      ":omnibox",
+      "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/test:test_support",
+      "//components/content_settings/core/browser",
+      "//components/omnibox/browser",
+      "//components/omnibox/common",
+      "//components/search_engines",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/device/public/cpp:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }

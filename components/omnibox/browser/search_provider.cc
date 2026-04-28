@@ -72,6 +72,10 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/geolocation_header_service.h"
+#endif
+
 using metrics::OmniboxEventProto;
 
 // Helpers --------------------------------------------------------------------
@@ -246,6 +250,12 @@ void SearchProvider::Start(const AutocompleteInput& input,
 
   matches_.clear();
   smart_compose_inline_hint_.clear();
+
+#if !BUILDFLAG(IS_IOS)
+  if (auto* geo_service = client()->GetGeolocationHeaderService()) {
+    geo_service->PrimeLocation();
+  }
+#endif
 
   // At this point, we could exit early if the input is on-focus or empty,
   // because offering suggestions in those scenarios is handled by
