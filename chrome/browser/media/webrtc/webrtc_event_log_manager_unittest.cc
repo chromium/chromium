@@ -119,7 +119,7 @@ const int kMaxPendingRemoteLogFiles =
     static_cast<int>(kMaxPendingRemoteBoundWebRtcEventLogs);
 const int kMaxCreatedDataChannelLogs =
     static_cast<int>(kMaxNumberLocalWebRtcDataChannelLogFiles);
-const char kSessionId[] = "session_id";
+const char kSessionId[] = "12345678";
 
 base::Time GetLastModificationTime(const base::FilePath& file_path) {
   base::File::Info file_info;
@@ -532,7 +532,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
     event_log_manager_->StartRemoteLogging(
         key.render_process_id, session_id, max_size_bytes, output_period_ms,
-        web_app_id, ReplyClosure(&result, &log_id, &error_message));
+        web_app_id, std::nullopt,
+        ReplyClosure(&result, &log_id, &error_message));
 
     WaitForReply();
 
@@ -2559,6 +2560,59 @@ TEST_F(WebRtcEventLogManagerTest,
   EXPECT_EQ(base::FilePath::kExtensionSeparator +
                 base::FilePath::StringType(remote_log_extension_),
             file_path->Extension());
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       StartRemoteLoggingSavesToFileWithDiagnosticUuidAndSessionId) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+
+  std::optional<base::FilePath> file_path;
+  ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
+      .WillByDefault(SaveFilePathTo(&file_path));
+
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  ASSERT_TRUE(OnPeerConnectionSessionIdSet(key, kSessionId));
+
+  const std::string kDiagnosticUuid = "123e4567-e89b-12d3-a456-426614174000";
+  std::string log_id;
+  std::string error_message;
+  bool result;
+
+  event_log_manager_->StartRemoteLogging(
+      key.render_process_id, kSessionId, kMaxRemoteLogFileSizeBytes, 0,
+      kWebAppId, kDiagnosticUuid,
+      ReplyClosure(&result, &log_id, &error_message));
+
+  WaitForReply();
+  ASSERT_TRUE(result);
+
+  // Compare filename (without extension).
+  const std::string filename =
+      file_path->BaseName().RemoveExtension().MaybeAsASCII();
+  ASSERT_FALSE(filename.empty());
+
+  const std::string expected_log_id = kDiagnosticUuid + "_" + kSessionId;
+  EXPECT_EQ(log_id, expected_log_id);
+
+  const std::string expected_filename =
+      std::string(kRemoteBoundWebRtcEventLogFileNamePrefix) + "_" +
+      base::NumberToString(kWebAppId) + "_" + log_id;
+  EXPECT_EQ(filename, expected_filename);
+}
+
+TEST_F(WebRtcEventLogManagerTest, IsValidRemoteBoundLogFilenameValidatesUuid) {
+  const std::string kValidUuid = "123e4567-e89b-12d3-a456-426614174000";
+
+  const std::string valid_filename =
+      std::string(kRemoteBoundWebRtcEventLogFileNamePrefix) + "_" + "01" + "_" +
+      kValidUuid + "_" + kSessionId;
+  EXPECT_TRUE(IsValidRemoteBoundLogFilename(valid_filename));
+
+  const std::string invalid_uuid = "invalid-uuid-format";
+  const std::string invalid_filename =
+      std::string(kRemoteBoundWebRtcEventLogFileNamePrefix) + "_" + "01" + "_" +
+      invalid_uuid + "_" + kSessionId;
+  EXPECT_FALSE(IsValidRemoteBoundLogFilename(invalid_filename));
 }
 
 TEST_F(WebRtcEventLogManagerTest, StartRemoteLoggingCreatesEmptyFile) {

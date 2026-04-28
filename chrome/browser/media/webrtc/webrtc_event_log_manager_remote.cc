@@ -429,6 +429,7 @@ bool WebRtcRemoteEventLogManager::StartRemoteLogging(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
+    std::optional<std::string> diagnostic_uuid,
     std::string* log_id,
     std::string* error_message) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -494,8 +495,20 @@ bool WebRtcRemoteEventLogManager::StartRemoteLogging(
     return false;
   }
 
-  return StartWritingLog(key, browser_context_dir, max_file_size_bytes,
-                         output_period_ms, web_app_id, log_id, error_message);
+  if (diagnostic_uuid.has_value() && !diagnostic_uuid->empty()) {
+    *log_id = *diagnostic_uuid + "_" + session_id;
+  } else {
+    *log_id = CreateWebRtcEventLogId();
+  }
+
+  const bool result =
+      StartWritingLog(key, browser_context_dir, max_file_size_bytes,
+                      output_period_ms, web_app_id, *log_id, error_message);
+  if (!result) {
+    log_id->clear();
+  }
+
+  return result;
 }
 
 bool WebRtcRemoteEventLogManager::EventLogWrite(const PeerConnectionKey& key,
@@ -1003,12 +1016,9 @@ bool WebRtcRemoteEventLogManager::StartWritingLog(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
-    std::string* log_id_out,
+    const std::string& log_id,
     std::string* error_message_out) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  // The log is assigned a universally unique ID (with high probability).
-  const std::string log_id = CreateWebRtcEventLogId();
 
   // Use the log ID as part of the filename. In the highly unlikely event that
   // this filename is already taken, or that an earlier log with the same name
@@ -1058,7 +1068,6 @@ bool WebRtcRemoteEventLogManager::StartWritingLog(
 
   UmaRecordWebRtcEventLoggingApi(WebRtcEventLoggingApiUma::kSuccess);
 
-  *log_id_out = log_id;
   return true;
 }
 

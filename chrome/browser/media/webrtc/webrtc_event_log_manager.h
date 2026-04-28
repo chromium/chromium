@@ -158,6 +158,7 @@ class WebRtcEventLogManager final
       size_t max_file_size_bytes,
       int output_period_ms,
       size_t web_app_id,
+      std::optional<std::string> diagnostic_uuid,
       base::OnceCallback<void(bool, const std::string&, const std::string&)>
           reply);
 
@@ -419,6 +420,7 @@ class WebRtcEventLogManager final
       size_t max_file_size_bytes,
       int output_period_ms,
       size_t web_app_id,
+      std::optional<std::string> diagnostic_uuid,
       base::OnceCallback<void(bool, const std::string&, const std::string&)>
           reply);
 

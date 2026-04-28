@@ -328,6 +328,7 @@ void WebRtcEventLogManager::StartRemoteLogging(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
+    std::optional<std::string> diagnostic_uuid,
     base::OnceCallback<void(bool, const std::string&, const std::string&)>
         reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -370,7 +371,7 @@ void WebRtcEventLogManager::StartRemoteLogging(
                      base::Unretained(this), render_process_id,
                      browser_context_id, session_id, browser_context->GetPath(),
                      max_file_size_bytes, output_period_ms, web_app_id,
-                     std::move(reply)));
+                     std::move(diagnostic_uuid), std::move(reply)));
 }
 
 void WebRtcEventLogManager::FinishLogging(int render_process_id,
@@ -1139,6 +1140,7 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
     size_t max_file_size_bytes,
     int output_period_ms,
     size_t web_app_id,
+    std::optional<std::string> diagnostic_uuid,
     base::OnceCallback<void(bool, const std::string&, const std::string&)>
         reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1147,8 +1149,8 @@ void WebRtcEventLogManager::StartRemoteLoggingInternal(
   std::string error_message;
   const bool result = remote_logs_manager_.StartRemoteLogging(
       render_process_id, browser_context_id, session_id, browser_context_dir,
-      max_file_size_bytes, output_period_ms, web_app_id, &log_id,
-      &error_message);
+      max_file_size_bytes, output_period_ms, web_app_id,
+      std::move(diagnostic_uuid), &log_id, &error_message);
 
   // |log_id| set only if successful; |error_message| set only if unsuccessful.
   DCHECK_EQ(result, !log_id.empty());

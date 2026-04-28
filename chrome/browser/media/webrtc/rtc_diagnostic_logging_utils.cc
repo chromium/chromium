@@ -186,7 +186,9 @@ void StartRtcDiagnosticLogging(
   metadata_map->emplace("__uuid__", uuid);
 
   WebRtcLoggingController::WebApiSettings web_api_settings{
-      .should_upload_on_stop = should_upload_on_stop, .origin = origin};
+      .should_upload_on_stop = should_upload_on_stop,
+      .origin = origin,
+      .uuid = uuid};
 
   controller->StartLogging(
       base::BindOnce(

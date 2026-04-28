@@ -98,7 +98,7 @@ class RTCDiagnosticLoggingTest : public ChromeRenderViewHostTestHarness {
       const GURL& url,
       bool event_log_allowed = true,
       const std::string& allowed_origin = "",
-      const std::string& session_id = "session_id") {
+      const std::string& session_id = "12345") {
     PrefService* prefs =
         Profile::FromBrowserContext(rfh->GetBrowserContext())->GetPrefs();
     prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed,
@@ -795,13 +795,15 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_FALSE(log_file_path.empty());
-  EXPECT_TRUE(base::StartsWith(
-      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe(),
-      "webrtc_event_log_01"));
+  const std::string filename =
+      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe();
+  EXPECT_TRUE(base::StartsWith(filename, "webrtc_event_log_01"));
+  EXPECT_THAT(filename, testing::HasSubstr(start_future.Get()));
+  EXPECT_TRUE(webrtc_event_logging::IsValidRemoteBoundLogFilename(filename));
 }
 
 TEST_F(RTCDiagnosticLoggingTest, EventLogStartedAfterSessionIdSet) {
@@ -956,7 +958,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_FALSE(log_file_path.empty());
@@ -984,7 +986,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -1008,7 +1010,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -1033,7 +1035,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -1049,7 +1051,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -1081,7 +1083,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *otr_rfh, "session_id", future.GetCallback());
+      *otr_rfh, "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 
@@ -1109,7 +1111,7 @@ TEST_F(RTCDiagnosticLoggingTest,
 
   base::test::TestFuture<void> future;
   rtc_diagnostic_logging::StartRtcPeerConnectionEventDiagnosticLogging(
-      *main_rfh(), "session_id", future.GetCallback());
+      *main_rfh(), "12345", future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }
 

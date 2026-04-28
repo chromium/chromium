@@ -314,9 +314,14 @@ void WebRtcLoggingController::StartEventLogging(
     // TODO(https://crbug.com/481412281): Add support for local event logging.
     std::move(callback).Run(false, "", "Local event logging not supported");
   } else {
+    std::optional<std::string> diagnostic_uuid;
+    if (api_type == webrtc_logging::ApiType::kWeb &&
+        web_api_settings_.has_value()) {
+      diagnostic_uuid = web_api_settings_->uuid;
+    }
     WebRtcEventLogManager::GetInstance()->StartRemoteLogging(
         render_process_id_, session_id, max_log_size_bytes, output_period_ms,
-        web_app_id, std::move(callback));
+        web_app_id, std::move(diagnostic_uuid), std::move(callback));
   }
 }
 

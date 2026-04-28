@@ -66,6 +66,7 @@ class WebRtcLoggingController
   struct WebApiSettings {
     bool should_upload_on_stop = false;
     url::Origin origin;
+    std::string uuid;
   };
 
   static void AttachToRenderProcessHost(content::RenderProcessHost* host);
@@ -81,21 +82,21 @@ class WebRtcLoggingController
   void SetMetaData(std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                    GenericDoneCallback callback);
 
-  // Opens a log and starts logging. Must be called on the IO thread.
+  // Opens a log and starts logging. Must be called on the UI thread.
   void StartLogging(
       GenericDoneCallback callback,
       std::optional<WebApiSettings> web_api_settings = std::nullopt);
 
   // Stops logging. Log will remain open until UploadLog or DiscardLog is
-  // called. Must be called on the IO thread.
+  // called. Must be called on the UI thread.
   void StopLogging(GenericDoneCallback callback);
 
   // Uploads the text log and the RTP dumps. Discards the local copy. May only
-  // be called after text logging has stopped. Must be called on the IO thread.
+  // be called after text logging has stopped. Must be called on the UI thread.
   void UploadLog(UploadDoneCallback callback);
 
   // Discards the log and the RTP dumps. May only be called after logging has
-  // stopped. Must be called on the IO thread.
+  // stopped. Must be called on the UI thread.
   void DiscardLog(GenericDoneCallback callback);
 
   // Stores the log locally using a hash of log_id + security origin.
