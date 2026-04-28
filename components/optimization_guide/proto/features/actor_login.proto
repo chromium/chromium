@@ -297,6 +297,14 @@ message ActorLoginQuality {
 
       // Timeout for the federated login.
       FEDERATED_TIMEOUT = 18;
+
+      // Password filling is not allowed in the site, potentially due to an
+      // enterprise policy.
+      FILLING_NOT_ALLOWED = 19;
+
+      // The primary page changed while the password filling attempt
+      // was in progress, so the attempt was cancelled.
+      FILLING_INTERRUPTED_BY_PAGE_CHANGE = 20;
     }
   }
 

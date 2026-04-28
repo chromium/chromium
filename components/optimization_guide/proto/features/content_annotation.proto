@@ -42,8 +42,11 @@ message ContentAnnotationRequest {
 // Holds the output data for the content annotation feature.
 // Next ID: 3
 message ContentAnnotationResponse {
-  // The extracted free-schema structured data from the provided page content.
-  string extracted_data = 1 [features = { field_presence: EXPLICIT }];
+  // Deprecated. Use content_annotation field instead.
+  string extracted_data = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // The structured content annotation result schema.
   ContentAnnotation content_annotation = 2 [features = { field_presence: EXPLICIT }];
