@@ -111,6 +111,11 @@ iwa_access_control {
     key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
     value: {}
   }
+  # crbug.com/492435576
+  managed_allowlist {
+    key: "ay6nbrwcfxvv66fterauuvjwdohunby6vdfp7cpz2v3p63tw77taaaic"
+    value: {}
+  }
   # crbug.com/452607018
   managed_allowlist {
     key: "buhw6nnxnvtbkomwrl6tx4l5soue23i6latmsu7gsdnq4lyso7faaaic"
