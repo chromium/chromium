@@ -7,8 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
+#include "third_party/blink/renderer/core/layout/column_gap_accumulator.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
 namespace blink {
@@ -126,36 +125,6 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   BreakStatus LayoutSpanner(BlockNode spanner_node,
                             const BlockBreakToken* break_token,
                             MarginStrut*);
-
-  // Add another main gap, at the given offset. This is either the block-start
-  // of a row gap, or before or after a spanner.
-  void AddMainGap(LayoutUnit block_offset,
-                  SpannerMainGapType gap_type = SpannerMainGapType::kNone);
-
-  // Add a cross gap at the given inline offset of the current column.
-  void AddCrossGap(LayoutUnit column_inline_start_offset);
-
-  // Add an entry for the current row to `columns_per_row_` to store the number
-  // of columns this row contains. Spanners are counted as rows and marked with
-  // `kNotFound`.
-  void AddNumberOfColumnsForCurrentRow(wtf_size_t cols_in_row);
-
-  // Populates `range_of_cross_gaps_before_current_main_gap_` with
-  // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
-  // For each `MainGap` we say that the `CrossGaps` associated with it are any
-  // that start before that main gap (and after a spanner). This information is
-  // needed by Paint to calculate the intersection points of row gaps and column
-  // gaps.
-  void CommitRangeOfCrossGapsBeforeCurrentMainGap();
-
-  // Updates the gap segment states for cross gaps based on the number of
-  // columns in each segment row. This is used to determine which cross gaps
-  // are blocked, empty on one side, or have columns on both sides.
-  void UpdateCrossGapSegmentStates();
-
-  // Finalizes the per-segment state of the main gap above the row just
-  // appended to `columns_per_row_`, when applicable.
-  void FinalizeMainGapSegmentStateForCurrentRow(wtf_size_t cols_in_row);
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,
@@ -308,8 +277,6 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;
 
-  LayoutUnit column_gap_size_;
-
   // The offset from the inline-start of the first column in the fragment, to
   // the inline-start of the first (imaginary or real) column that has (or would
   // have) overflowed in the inline direction.
@@ -317,37 +284,14 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   LayoutUnit row_gap_size_;
 
-  // One entry for each row gap, and one entry between column content and
-  // spanners. There is no gap between column content and spanners, but column
-  // gaps need to be interrupted, since they shouldn't necessarily overlap with
-  // spanners.
-  Vector<MainGap> main_gaps_;
-
-  // One entry for each column gap.
-  Vector<CrossGap> cross_gaps_;
-
-  // Offset to the first column (in the first row), from the start border edge
-  // of the resulting multicol fragment. Will only be set if needed, i.e. for
-  // gap decorations.
-  std::optional<LogicalOffset> first_column_offset_;
-
-  // Tracks the maximum number of columns in any row.
-  wtf_size_t max_columns_in_row_ = 0;
-
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
 
-  // This is the number of columns in each row, where the index in the vector
-  // indicates the index of the row of columns. Keep in mind, that this is used
-  // for gap decorations, which treats the area behind a spanner as a segment.
-  // Therefore, this vector also includes spanners as "rows" but marked as
-  // having `kNotFound` columns.
-  // TODO(crbug.com/440123087): Since the number of optionals for gap
-  // decorations has grown, explore encapsulating the logic in an `Accumulator`
-  // class similar to `Flex` and `Grid`.
-  std::optional<Vector<wtf_size_t>> columns_per_row_;
+  // Accumulates gap-decoration state when CSS gap decorations are enabled and
+  // the style has a gap rule. Null otherwise.
+  std::optional<ColumnGapAccumulator> gap_accumulator_;
 };
 
 }  // namespace blink

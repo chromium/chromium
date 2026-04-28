@@ -284,7 +284,15 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   LayoutUnit column_gap_size_until_overflow = CombinedColumnGapSize(
       Style(), ChildAvailableSize().inline_size, used_column_count_);
 
-  column_gap_size_ = column_gap_size_until_overflow / used_column_count_;
+  LayoutUnit column_gap_size =
+      column_gap_size_until_overflow / used_column_count_;
+
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule()) {
+    gap_accumulator_.emplace(column_gap_size, row_gap_size_,
+                             Style().ColumnCount(),
+                             Style().HasAutoColumnCount());
+  }
 
   // Calculate the space (along the inline axis) needed by column boxes within
   // the content box.
@@ -415,70 +423,11 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   container_builder_.HandleOofsAndSpecialDescendants();
 
-  // If we don't create any columns, then we don't bother dealing with gap
-  // decorations.
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule() && (!cross_gaps_.empty() || !main_gaps_.empty()) &&
-      first_column_offset_.has_value()) {
-    auto* gap_geometry =
-        MakeGarbageCollected<GapGeometry>(GapGeometry::kMultiColumn);
-
-    // In the case where we didn't create as many columns as specified in
-    // `column-count`, we need to add a cross gap for each remaining column
-    // that would have been created, until we reach the specified column count.
-    for (wtf_size_t i = max_columns_in_row_; i < Style().ColumnCount(); ++i) {
-      LayoutUnit inline_offset;
-      if (!cross_gaps_.empty()) {
-        inline_offset = cross_gaps_.back().GetGapOffset().inline_offset +
-                        column_gap_size_ / 2 + ColumnInlineSize() +
-                        column_gap_size_;
-      }
-      AddCrossGap(inline_offset);
+  if (gap_accumulator_) {
+    if (const auto* gap_geometry = gap_accumulator_->BuildGapGeometry(
+            container_builder_, ColumnInlineSize())) {
+      container_builder_.SetGapGeometry(gap_geometry);
     }
-
-    // For the content inline and block ends, we must take the max of where the
-    // fragment starts and ends and where the last cross gap and main gap are.
-    // This is so that when content overflows the container, we still paint the
-    // gap decorations.
-    LayoutUnit content_inline_end = container_builder_.FragmentInlineSize() -
-                                    BorderScrollbarPadding().inline_end;
-    if (!cross_gaps_.empty()) {
-      content_inline_end = std::max(
-          content_inline_end, cross_gaps_.back().GetGapOffset().inline_offset);
-
-      if (columns_per_row_.has_value()) {
-        UpdateCrossGapSegmentStates();
-      }
-
-      gap_geometry->SetCrossGaps(std::move(cross_gaps_));
-      gap_geometry->SetInlineGapSize(column_gap_size_);
-    }
-
-    LayoutUnit content_block_end =
-        container_builder_.FragmentBlockSize() -
-        container_builder_.ApplicableBorders().block_end -
-        container_builder_.ApplicableScrollbar().block_end -
-        container_builder_.ApplicablePadding().block_end;
-    if (!main_gaps_.empty()) {
-      // TODO(crbug.com/357648037): There is content beyond the last main gap,
-      // so using this as the offset isn't right. The bug here is that if the
-      // multicol container is overflowed, the column gaps in the last row will
-      // be missing.
-      content_block_end =
-          std::max(content_block_end, main_gaps_.back().GetGapOffset());
-      gap_geometry->SetMainGaps(std::move(main_gaps_));
-      gap_geometry->SetBlockGapSize(row_gap_size_);
-    }
-
-    gap_geometry->SetContentInlineOffsets(first_column_offset_->inline_offset,
-                                          content_inline_end);
-    gap_geometry->SetContentBlockOffsets(first_column_offset_->block_offset,
-                                         content_block_end);
-
-    // For multicol, the main direction will always be the rows.
-    gap_geometry->SetMainDirection(kForRows);
-
-    container_builder_.SetGapGeometry(gap_geometry);
   }
 
   return container_builder_.ToBoxFragment();
@@ -777,13 +726,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     // row-gap.
     LayoutUnit line_offset = intrinsic_block_size_ + margin_strut->Sum();
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() && is_first_row &&
-        Style().HasGapRule() && !main_gaps_.empty() &&
-        main_gaps_.back().IsStartSpannerMainGap()) {
-      // We are preceded by one or more spanners. Carve another mark, denoting
-      // the end of the column rules break that started at the first (or only)
-      // spanner, so that column rules may resume from now on.
-      AddMainGap(line_offset, SpannerMainGapType::kEnd);
+    if (gap_accumulator_ && is_first_row) {
+      gap_accumulator_->AddEndSpannerMainGapIfNeeded(line_offset);
     }
 
     // If we're done with one row, move to the next, by consuming any remaining
@@ -1318,13 +1262,12 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     num_columns = next_column_token->SequenceNumber() + 1;
   }
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() && has_wrapped &&
-      Style().HasGapRule() && row_gap_size_ > LayoutUnit()) {
+  if (gap_accumulator_ && has_wrapped && row_gap_size_ > LayoutUnit()) {
     // This is right after a column wrap. Since we're here, we're finally
     // positive that another line of columns is created. Add the preceding row
     // gap to allow for a row rule before this new row, and also so that column
     // rules belonging to the previous row are properly terminated.
-    AddMainGap(line_offset - row_gap_size_);
+    gap_accumulator_->AddMainGap(line_offset - row_gap_size_);
   }
 
   wtf_size_t column_index_in_row = 0;
@@ -1352,33 +1295,30 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-        Style().HasGapRule()) {
+    if (gap_accumulator_) {
       // The first column in a row has no associated column intersections.
       if (column_index_in_row > 0) {
         // Only add a cross gap if we haven't already added one at this column
         // position in a previous row. Since column gaps line up across rows,
         // we just need to check if this row has more columns than any previous
         // row.
-        if (column_index_in_row >= max_columns_in_row_) {
-          AddCrossGap(column_logical_rect.InlineStartOffset());
+        if (gap_accumulator_->ShouldAddCrossGapAt(column_index_in_row)) {
+          gap_accumulator_->AddCrossGap(
+              column_logical_rect.InlineStartOffset());
         }
       }
 
-      if (!first_column_offset_.has_value()) {
-        first_column_offset_.emplace(column_logical_rect.InlineStartOffset(),
-                                     column_logical_rect.BlockStartOffset());
-      }
+      gap_accumulator_->SetFirstColumnOffsetIfNeeded(
+          LogicalOffset(column_logical_rect.InlineStartOffset(),
+                        column_logical_rect.BlockStartOffset()));
     }
 
     column_index_in_row++;
   }
 
-  max_columns_in_row_ = std::max(max_columns_in_row_, new_columns.size());
-
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
-    AddNumberOfColumnsForCurrentRow(new_columns.size());
+  if (gap_accumulator_) {
+    gap_accumulator_->UpdateMaxColumnsInRow(new_columns.size());
+    gap_accumulator_->AddNumberOfColumnsForCurrentRow(new_columns.size());
   }
 
   // If there were superfluous ::column pseudo-elements from the previous pass,
@@ -1436,10 +1376,9 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
       intrinsic_block_size_ +=
           RemainingRowHeightAtOffset(intrinsic_block_size_);
 
-      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-          Style().HasGapRule()) {
+      if (gap_accumulator_) {
         // There's a row gap right here.
-        AddMainGap(intrinsic_block_size_);
+        gap_accumulator_->AddMainGap(intrinsic_block_size_);
       }
 
       intrinsic_block_size_ += row_gap_size_;
@@ -1500,152 +1439,14 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   *margin_strut = MarginStrut();
   margin_strut->Append(margins.block_end, /* is_quirky */ false);
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule()) {
-    if (main_gaps_.empty() || !main_gaps_.back().IsStartSpannerMainGap()) {
-      // This spanner is preceded by column content (because there are cross
-      // gaps, and no preceding adjacent spanner). Insert a break for column
-      // rules. They are not to overlap with the margin box of spanners.
-      AddMainGap(intrinsic_block_size_, SpannerMainGapType::kStart);
-
-      // For the purposes of segments for CSSGapDecorations, we treat the
-      // number of "columns" in a spanner as kNotFound, since they can be
-      // assumed to span the number of columns specified by the author.
-      AddNumberOfColumnsForCurrentRow(kNotFound);
-    }
+  if (gap_accumulator_) {
+    gap_accumulator_->AddStartSpannerMainGapIfNeeded(intrinsic_block_size_);
   }
 
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
 
   return BreakStatus::kContinue;
-}
-
-void ColumnLayoutAlgorithm::AddMainGap(LayoutUnit block_offset,
-                                       SpannerMainGapType gap_type) {
-  // If the main gap is not a spanner main gap, it should be offset by half the
-  // row gap size so that it's placed in the middle of the gap.
-  if (gap_type == SpannerMainGapType::kNone) {
-    block_offset += row_gap_size_ / 2;
-  }
-
-  main_gaps_.emplace_back(block_offset, gap_type);
-}
-
-void ColumnLayoutAlgorithm::AddCrossGap(LayoutUnit column_inline_start_offset) {
-  LayoutUnit gap_center = column_inline_start_offset - (column_gap_size_ / 2);
-
-  CHECK(first_column_offset_.has_value());
-
-  cross_gaps_.emplace_back(
-      LogicalOffset(gap_center, first_column_offset_.value().block_offset));
-}
-
-void ColumnLayoutAlgorithm::AddNumberOfColumnsForCurrentRow(
-    wtf_size_t cols_in_row) {
-  if (!columns_per_row_.has_value()) {
-    columns_per_row_ = Vector<wtf_size_t>();
-  }
-  columns_per_row_->push_back(cols_in_row);
-
-  FinalizeMainGapSegmentStateForCurrentRow(cols_in_row);
-}
-
-void ColumnLayoutAlgorithm::FinalizeMainGapSegmentStateForCurrentRow(
-    wtf_size_t cols_in_row) {
-  // Now that we know the column count of the row, we can finalize the gap
-  // segment state of the main gap directly above it (if any).
-  if (cols_in_row == kNotFound || main_gaps_.empty() ||
-      main_gaps_.back().IsSpannerMainGap()) {
-    return;
-  }
-
-  // Walk back to the last column row (skipping any interleaved spanner rows).
-  // The current entry is at the back; start one before it.
-  CHECK_GE(columns_per_row_->size(), 2u);
-  wtf_size_t prev_index = columns_per_row_->size() - 2;
-  while ((*columns_per_row_)[prev_index] == kNotFound) {
-    if (prev_index == 0) {
-      // No preceding column row exists; the gap is between this row and a
-      // spanner above. Nothing to do.
-      return;
-    }
-    --prev_index;
-  }
-
-  const wtf_size_t cols_above = (*columns_per_row_)[prev_index];
-  if (cols_above == cols_in_row) {
-    return;
-  }
-
-  const wtf_size_t shorter_row_cols = std::min(cols_above, cols_in_row);
-  const wtf_size_t longer_row_cols = std::max(cols_above, cols_in_row);
-  const GapSegmentState state =
-      (cols_above > cols_in_row)
-          ? GapSegmentState(GapSegmentState::kEmptyAfter)
-          : GapSegmentState(GapSegmentState::kEmptyBefore);
-  // We set the range between `shorter_row_cols` and `longer_row_cols` because
-  // that's the range of the segments that will have `EmptyAfter`. If row N has
-  // 4 columns and row N + 1 has 2 columns, the row segments that will be
-  // `EmptyAfter` will be the segments between 2 and 4.
-  main_gaps_.back().AddGapSegmentStateRange(
-      GapSegmentStateRange(shorter_row_cols, longer_row_cols, state));
-}
-
-void ColumnLayoutAlgorithm::UpdateCrossGapSegmentStates() {
-  // Computes per-row segment states for each cross gap based on how many
-  // columns are present in each row of the multicol container.
-  //
-  // Cross gaps are treated as global vertical separators between column slots.
-  // For a given row with N columns:
-  //   - If `cross_gap_index` >= N, the gap has no adjacent columns (empty on
-  //   both sides)
-  //   - If `cross_gap_index` == N - 1, the gap is after the last column (empty
-  //   after)
-  //   - Otherwise, the gap is between two columns and has no empty side
-  //
-  // Rows with kNotFound are treated as blocked and produce blocked gap
-  // segments, these are decoration segments that would exist behind spanners.
-  for (wtf_size_t cross_gap_index = 0; cross_gap_index < cross_gaps_.size();
-       ++cross_gap_index) {
-    CrossGap& cross_gap = cross_gaps_[cross_gap_index];
-    for (wtf_size_t cols_in_row_index = 0;
-         cols_in_row_index < columns_per_row_->size(); ++cols_in_row_index) {
-      wtf_size_t cols_in_row = (*columns_per_row_)[cols_in_row_index];
-      wtf_size_t segment_start = cols_in_row_index;
-      wtf_size_t segment_end = cols_in_row_index + 1;
-
-      // There are columns around this cross gap, so we don't mark it
-      // empty on either side.
-      if (cols_in_row != kNotFound && cross_gap_index + 1 < cols_in_row) {
-        continue;
-      }
-
-      // If the cross gap index is greater than or equal to the number of
-      // columns in the row, then the cross gap is outside of the specified
-      // column count, and should be treated as blocked in the case where it's
-      // not in between column content.
-      bool is_cross_gap_outside_specified_column_count =
-          cross_gap_index + 1 >= Style().ColumnCount() &&
-          !Style().HasAutoColumnCount();
-
-      GapSegmentState state;
-      if (cols_in_row == kNotFound &&
-          !is_cross_gap_outside_specified_column_count) {
-        state = GapSegmentState(GapSegmentState::kBlocked);
-      } else if (cross_gap_index + 1 == cols_in_row) {
-        // The cross gap is after the last column in this row, so it's
-        // empty on the right side.
-        state = GapSegmentState(GapSegmentState::kEmptyAfter);
-      } else {
-        // Empty on both sides.
-        state = GapSegmentState();
-      }
-
-      cross_gap.AddGapSegmentStateRange(
-          GapSegmentStateRange(segment_start, segment_end, state));
-    }
-  }
 }
 
 void ColumnLayoutAlgorithm::AttemptToPositionListMarker(

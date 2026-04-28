@@ -53,6 +53,8 @@ blink_core_sources_layout = [
   "break_token.cc",
   "break_token.h",
   "break_token_algorithm_data.h",
+  "column_gap_accumulator.cc",
+  "column_gap_accumulator.h",
   "column_layout_algorithm.cc",
   "column_layout_algorithm.h",
   "column_spanner_path.h",
