@@ -1313,8 +1313,6 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
   //  - We'll need special logic for replaced elements.
   //  - We'll need to respect the aspect-ratio when appropriate.
 
-  // TODO(almaher): Properly handle subgrid here.
-
   const LayoutResult* result = LayoutItemForMeasureWithFallback(
       grid_lanes_item, space_for_measure, sizing_constraint);
 
