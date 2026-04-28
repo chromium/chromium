@@ -519,9 +519,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   onRequestReceived(type: string): void {
     this.reportRequestCountEvent(type, GlicRequestEvent.REQUEST_RECEIVED);
-    if (document.visibilityState === 'hidden') {
+    if (!this.panelIsActive) {
       this.reportRequestCountEvent(
-          type, GlicRequestEvent.REQUEST_RECEIVED_WHILE_HIDDEN);
+          type, GlicRequestEvent.REQUEST_RECEIVED_WHILE_INACTIVE);
     }
   }
 
@@ -554,9 +554,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
             `Glic.Api.StatusCounts.Error`, requestTypeNumber,
             HOST_REQUEST_TYPES.MAX_VALUE + 1);
         break;
-      case GlicRequestEvent.REQUEST_RECEIVED_WHILE_HIDDEN:
+      case GlicRequestEvent.REQUEST_RECEIVED_WHILE_INACTIVE:
         chrome.histograms.recordEnumerationValue(
-            `Glic.Api.StatusCounts.Hidden`, requestTypeNumber,
+            `Glic.Api.StatusCounts.Inactive`, requestTypeNumber,
             HOST_REQUEST_TYPES.MAX_VALUE + 1);
         break;
       case GlicRequestEvent.REQUEST_RECEIVED:
@@ -591,8 +591,9 @@ enum GlicRequestEvent {
   REQUEST_RECEIVED = 0,
   RESPONSE_SENT = 1,
   REQUEST_HANDLER_EXCEPTION = 2,
-  REQUEST_RECEIVED_WHILE_HIDDEN = 3,
-  MAX_VALUE = REQUEST_RECEIVED_WHILE_HIDDEN,
+  // Deprecated: REQUEST_RECEIVED_WHILE_HIDDEN = 3,
+  REQUEST_RECEIVED_WHILE_INACTIVE = 4,
+  MAX_VALUE = REQUEST_RECEIVED_WHILE_INACTIVE,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 

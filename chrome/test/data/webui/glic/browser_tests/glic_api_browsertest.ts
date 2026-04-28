@@ -1341,7 +1341,8 @@ class ApiTests extends ApiTestFixtureBase {
   async testCallingApiWhileHiddenRecordsMetrics() {
     assertDefined(this.host.createTab);
     await this.advanceToNextStep();
-    await runUntil(() => document.visibilityState === 'hidden');
+    await observeSequence(this.host.panelActive())
+        .waitFor(isActive => !isActive);
     try {
       await this.host.createTab(
           'https://www.google.com', {openInBackground: false});
@@ -2775,8 +2776,6 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
       withErrorMessage: 'GetContextFromTab not allowed while backgrounded',
     });
   }
-
-
 }
 
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|

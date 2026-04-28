@@ -165,8 +165,9 @@ enum class GlicRequestEvent {
   kRequestReceived = 0,
   kRequestSent = 1,
   kRequestHandlerException = 2,
-  kRequestReceivedWhileHidden = 3,
-  kMaxValue = kRequestReceivedWhileHidden,
+  // Deprecated: kRequestReceivedWhileHidden = 3,
+  kRequestReceivedWhileInactive = 4,
+  kMaxValue = kRequestReceivedWhileInactive,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 

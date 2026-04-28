@@ -624,11 +624,19 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(GlicRequestEvent) -->
 
 <enum name="GlicRequestEvent">
-  <int value="0" label="Request received."/>
-  <int value="1" label="Response sent."/>
-  <int value="2" label="Request handling exception caught."/>
-  <int value="3"
-      label="Request received while hidden (whether or not this is expected)."/>
+  <int value="0" label="Received">The request was received.</int>
+  <int value="1" label="Responded">A response for the request was sent.</int>
+  <int value="2" label="Exception caught">
+    An exception was caught while handling the request.
+  </int>
+  <int value="3" label="(Obsolete) Hidden; replaced by Inactive">
+    (Obsolete) Request received while hidden (whether or not this is expected).
+    Replaced by Inactive in 2026/04
+  </int>
+  <int value="4" label="Inactive">
+    Request received while the panel was inactive (whether or not this is
+    expected).
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:GlicRequestEvent, //chrome/browser/glic/glic_metrics.h:GlicRequestEvent) -->

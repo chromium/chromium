@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a glic API fails with an exception.</summary>
 </histogram>
 
-<histogram name="Glic.Api.StatusCounts.Hidden" enum="GlicHostApiRequestType"
+<histogram name="Glic.Api.StatusCounts.Inactive" enum="GlicHostApiRequestType"
     expires_after="2026-09-20">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>

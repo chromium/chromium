@@ -1892,14 +1892,14 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
   // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
+      GlicRequestEvent::kRequestReceivedWhileInactive, expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 1);
   histogram_tester->ExpectTotalCount("Glic.Api.RequestCounts.GetContextFromTab",
                                      0);
   // Per-status metrics
-  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Inactive",
                                       9 /*GetContextFromFocusedTab*/,
                                       expected_count_hidden);
   histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
@@ -1912,13 +1912,13 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
   // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, expected_count_hidden);
+      GlicRequestEvent::kRequestReceivedWhileInactive, expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 1);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 0);
+      GlicRequestEvent::kRequestReceivedWhileInactive, 0);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
       GlicRequestEvent::kRequestHandlerException, 0);
@@ -1930,23 +1930,23 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
   // Per-request metrics
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, ++expected_count_hidden);
+      GlicRequestEvent::kRequestReceivedWhileInactive, ++expected_count_hidden);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
       GlicRequestEvent::kRequestHandlerException, 2);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+      GlicRequestEvent::kRequestReceivedWhileInactive, 1);
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromTab",
       GlicRequestEvent::kRequestHandlerException, 1);
   // Per-status metrics
-  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Inactive",
                                       9 /*GetContextFromFocusedTab*/,
                                       expected_count_hidden);
   histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
                                       9 /*GetContextFromFocusedTab*/, 2);
-  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Hidden",
+  histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Inactive",
                                       10 /*GetContextFromTab*/,
                                       expected_count_hidden);
   histogram_tester->ExpectBucketCount("Glic.Api.StatusCounts.Error",
@@ -2695,7 +2695,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
                                      GlicRequestEvent::kRequestReceived, 1);
   histogram_tester.ExpectBucketCount(
       "Glic.Api.RequestCounts.CreateTab",
-      GlicRequestEvent::kRequestReceivedWhileHidden, 1);
+      GlicRequestEvent::kRequestReceivedWhileInactive, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPinTabs) {
