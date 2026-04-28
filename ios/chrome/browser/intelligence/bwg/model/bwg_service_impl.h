@@ -42,6 +42,7 @@ class BwgServiceImpl : public BwgService,
   std::optional<gemini::IneligibilityReasons> GeminiIneligibilityForProfile()
       override;
   bool IsWorkspacePolicyCheckPending() override;
+  void CheckGeminiEnterpriseEligibilityIfNeeded() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

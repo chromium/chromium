@@ -163,6 +163,13 @@ void BwgServiceImpl::CheckGeminiEnterpriseEligibility() {
                          eligibility_weak_ptr_factory_.GetWeakPtr())));
 }
 
+void BwgServiceImpl::CheckGeminiEnterpriseEligibilityIfNeeded() {
+  if (!is_disabled_by_gemini_policy_.has_value() &&
+      !eligibility_weak_ptr_factory_.HasWeakPtrs()) {
+    CheckGeminiEnterpriseEligibility();
+  }
+}
+
 bool BwgServiceImpl::CanUseGeminiModelExecution(
     const AccountInfo& account_info) {
   // If the account info was not found, the user is likely not authenticated.
