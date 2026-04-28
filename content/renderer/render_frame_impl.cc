@@ -119,6 +119,7 @@
 #include "ipc/constants.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -5754,6 +5755,13 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
   auto delegate =
       std::make_unique<MHTMLPartsGenerationDelegateImpl>(std::move(params));
 
+  // Wrap the callback so that if it is destroyed without being run (e.g., if
+  // GenerateMHTMLParts drops it or RenderFrameImpl is destroyed), it will be
+  // run with default arguments to ensure a response is always sent.
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), mojom::MhtmlSaveStatus::kRenderProcessExited,
+      std::vector<std::string>());
+
   // Generate MHTML header if needed.
   if (IsMainFrame()) {
     TRACE_EVENT0("page-serialization",
@@ -5774,7 +5782,7 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
       mhtml_boundary, GetWebFrame(), delegate_ptr,
       base::BindOnce(&RenderFrameImpl::OnSerializeMHTMLComplete,
                      weak_factory_.GetWeakPtr(), std::move(delegate),
-                     std::move(callback), std::move(mhtml_contents)));
+                     std::move(wrapped_callback), std::move(mhtml_contents)));
 }
 
 void RenderFrameImpl::OnSerializeMHTMLComplete(
