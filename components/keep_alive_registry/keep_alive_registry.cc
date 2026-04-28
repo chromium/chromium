@@ -4,6 +4,7 @@
 
 #include "components/keep_alive_registry/keep_alive_registry.h"
 
+#include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
@@ -88,15 +89,30 @@ bool KeepAliveRegistry::IsRestarting() const {
   return is_restarting_;
 }
 
-void KeepAliveRegistry::SetRestarting() {
-  bool old_keeping_alive = IsKeepingAlive();
-  is_restarting_ = true;
-  bool new_keeping_alive = IsKeepingAlive();
+base::AutoReset<bool> KeepAliveRegistry::SetRestartingScopedForTesting() {
+  const bool old_keeping_alive = IsKeepingAlive();
+  base::AutoReset<bool> scoped_reset(&is_restarting_, true);
+  const bool new_keeping_alive = IsKeepingAlive();
 
-  // keep alive state can be updated by |is_restarting_| change.
+  // Keep alive state can be updated by |is_restarting_| change.
   // If that happens, notify observers.
-  if (old_keeping_alive != new_keeping_alive)
+  if (old_keeping_alive != new_keeping_alive) {
     OnKeepAliveStateChanged(new_keeping_alive);
+  }
+
+  return scoped_reset;
+}
+
+void KeepAliveRegistry::SetRestarting() {
+  const bool old_keeping_alive = IsKeepingAlive();
+  is_restarting_ = true;
+  const bool new_keeping_alive = IsKeepingAlive();
+
+  // Keep alive state can be updated by |is_restarting_| change.
+  // If that happens, notify observers.
+  if (old_keeping_alive != new_keeping_alive) {
+    OnKeepAliveStateChanged(new_keeping_alive);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

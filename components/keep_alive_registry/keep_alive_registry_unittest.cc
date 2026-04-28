@@ -24,12 +24,14 @@ class KeepAliveRegistryTest : public testing::Test,
     registry_->AddObserver(this);
 
     EXPECT_FALSE(registry_->IsKeepingAlive());
+    EXPECT_FALSE(registry_->IsRestarting());
   }
 
   ~KeepAliveRegistryTest() override {
     registry_->RemoveObserver(this);
 
     EXPECT_FALSE(registry_->IsKeepingAlive());
+    EXPECT_FALSE(registry_->IsRestarting());
   }
 
   void OnKeepAliveStateChanged(bool is_keeping_alive) override {
@@ -166,7 +168,7 @@ TEST_F(KeepAliveRegistryTest, AttemptRestarting) {
   EXPECT_TRUE(registry_->IsRestartAllowed());
 
   // Trigger the restarting procedure.
-  registry_->SetRestarting();
+  auto restarting = registry_->SetRestartingScopedForTesting();
   ASSERT_EQ(1, stop_keep_alive_call_count_);
 }
 
@@ -192,7 +194,7 @@ TEST_F(KeepAliveRegistryTest,
 
   // Trigger the restarting procedure, during normal keep alive is still
   // active.
-  registry_->SetRestarting();
+  auto restarting = registry_->SetRestartingScopedForTesting();
   EXPECT_EQ(0, stop_keep_alive_call_count_);
 
   // Now restart should be allowed, the only one left allows it.
@@ -200,6 +202,27 @@ TEST_F(KeepAliveRegistryTest,
   keep_alive.reset();
   ASSERT_EQ(1, stop_keep_alive_call_count_--);
   ASSERT_EQ(1, on_restart_allowed_call_count_--);
+}
+
+// Verify that SetRestartingScopedForTesting() resets is_restarting_ when the
+// returned AutoReset goes out of scope. Before this method existed,
+// SetRestarting() permanently set the flag, leaking state across tests.
+TEST_F(KeepAliveRegistryTest, ScopedRestartingResetsOnDestruction) {
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::CHROME_APP_DELEGATE,
+                             KeepAliveRestartOption::ENABLED);
+  ASSERT_EQ(1, start_keep_alive_call_count_--);  // decrement to ack
+
+  EXPECT_FALSE(registry_->IsRestarting());
+  {
+    auto restarting = registry_->SetRestartingScopedForTesting();
+    EXPECT_TRUE(registry_->IsRestarting());
+    // IsKeepingAlive() should reflect the restarting state: with only
+    // restart-enabled keep alives, restarting means not keeping alive.
+    EXPECT_FALSE(registry_->IsKeepingAlive());
+  }
+  // After the AutoReset is destroyed, the flag should be reset.
+  EXPECT_FALSE(registry_->IsRestarting());
+  EXPECT_TRUE(registry_->IsKeepingAlive());
 }
 
 TEST_F(KeepAliveRegistryTest, WouldRestartWithoutTest) {

@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 
@@ -54,8 +55,16 @@ class KeepAliveRegistry {
   // True if restarting is in progress.
   bool IsRestarting() const;
 
+  // Sets the restarting flag permanently. Use in production code where the
+  // process is about to exit and the flag should stay set.
   // Called when restarting is triggered.
   void SetRestarting();
+
+  // Sets the restarting flag and returns a scoped resetter. The flag
+  // remains true as long as the returned AutoReset is alive; when it
+  // is destroyed the flag resets to false. Use in tests so that
+  // is_restarting_ is automatically cleaned up at end of test scope.
+  [[nodiscard]] base::AutoReset<bool> SetRestartingScopedForTesting();
 
  private:
   friend struct base::DefaultSingletonTraits<KeepAliveRegistry>;
