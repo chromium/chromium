@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_THEME_H_
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_THEME_H_
 
-// Theme describing the look of the grid.
-typedef NS_ENUM(NSUInteger, GridTheme) {
-  GridThemeLight = 1,
-  GridThemeDark,
+// Theme specifying if the grid follows the device theme or is forced to dark
+// mode.
+enum class GridTheme {
+  // Matches the device's light/dark mode.
+  kDynamic,
+  // Always uses the dark appearance.
+  kDark,
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_THEME_H_

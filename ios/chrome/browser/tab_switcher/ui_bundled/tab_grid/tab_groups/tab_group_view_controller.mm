@@ -191,9 +191,9 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     _tabGroup = tabGroup;
     _gridViewController = [[TabGroupGridViewController alloc] init];
     if (!incognito) {
-      _gridViewController.theme = GridThemeLight;
+      _gridViewController.theme = GridTheme::kDynamic;
     } else {
-      _gridViewController.theme = GridThemeDark;
+      _gridViewController.theme = GridTheme::kDark;
     }
     _gridViewController.viewDelegate = self;
     _gridViewController.tabGroupHeaderDelegate = self;

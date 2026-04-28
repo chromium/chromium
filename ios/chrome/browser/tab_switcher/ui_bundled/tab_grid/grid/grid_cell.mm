@@ -296,7 +296,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 
 - (void)didMoveToWindow {
   [super didMoveToWindow];
-  if (self.theme == GridThemeLight) {
+  if (self.theme == GridTheme::kDynamic) {
     [self updateInterfaceStyleForWindow:self.window];
   }
 }
@@ -354,23 +354,23 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - Public
 
-// Updates the theme to either dark or light. Updating is only done if the
-// current theme is not the desired theme.
+// Updates the theme to either forced dark or dynamic. Updating is only done if
+// the current theme is not the desired theme.
 - (void)setTheme:(GridTheme)theme {
   if (_theme == theme) {
     return;
   }
 
-  // The light and dark themes have different colored borders based on the
-  // theme, regardless of dark mode, so `overrideUserInterfaceStyle` is not
-  // enough here.
+  // The dynamic and dark themes have different colored borders based on the
+  // mode (incognito/regular), regardless of dark mode, so
+  // `overrideUserInterfaceStyle` is not enough here.
   switch (theme) {
-    case GridThemeLight:
+    case GridTheme::kDynamic:
       [self updateInterfaceStyleForWindow:self.window];
       self.border.layer.borderColor =
           [UIColor colorNamed:kStaticBlue400Color].CGColor;
       break;
-    case GridThemeDark:
+    case GridTheme::kDark:
       self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
       self.border.layer.borderColor = UIColor.whiteColor.CGColor;
       break;

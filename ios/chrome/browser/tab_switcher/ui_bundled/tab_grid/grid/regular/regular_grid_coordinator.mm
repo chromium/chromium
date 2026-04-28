@@ -209,7 +209,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
         [[TabGridEmptyStateView alloc] initWithPage:TabGridPageRegularTabs];
     gridViewController.emptyStateView.accessibilityIdentifier =
         kTabGridRegularTabsEmptyStateIdentifier;
-    gridViewController.theme = GridThemeLight;
+    gridViewController.theme = GridTheme::kDynamic;
     gridViewController.suggestedActionsDelegate = _mediator;
 
     self.gridContainerViewController.containedViewController =

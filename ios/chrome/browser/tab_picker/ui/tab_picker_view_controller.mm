@@ -26,7 +26,7 @@
 
   if (self) {
     _gridViewController = [[BaseGridViewController alloc] init];
-    _gridViewController.theme = GridThemeLight;
+    _gridViewController.theme = GridTheme::kDynamic;
     [_gridViewController setTabGridMode:TabGridMode::kSelection];
   }
 

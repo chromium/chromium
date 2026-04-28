@@ -30,7 +30,7 @@
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _gridViewController = [[InactiveGridViewController alloc] init];
-    _gridViewController.theme = GridThemeLight;
+    _gridViewController.theme = GridTheme::kDynamic;
   }
   return self;
 }

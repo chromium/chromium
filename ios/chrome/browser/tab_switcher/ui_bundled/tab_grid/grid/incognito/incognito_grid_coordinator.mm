@@ -245,7 +245,7 @@
       [[TabGridEmptyStateView alloc] initWithPage:TabGridPageIncognitoTabs];
   gridViewController.emptyStateView.accessibilityIdentifier =
       kTabGridIncognitoTabsEmptyStateIdentifier;
-  gridViewController.theme = GridThemeDark;
+  gridViewController.theme = GridTheme::kDark;
 
   _mediator.consumer = gridViewController;
 
