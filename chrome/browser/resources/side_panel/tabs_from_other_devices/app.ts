@@ -5,12 +5,13 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {ForeignSession, ForeignSessionPageHandlerRemote} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import type {ForeignSession, ForeignSessionPageHandlerRemote, ForeignSessionTab} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {ForeignSessionPageCallbackRouter, ForeignSessionPageHandler} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -18,6 +19,8 @@ import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+
+export type TabInfo = ForeignSessionTab&{sessionTag: string};
 
 const TabsFromOtherDevicesAppElementBase = CrLitElement;
 
@@ -38,11 +41,13 @@ export class TabsFromOtherDevicesAppElement extends
   static override get properties() {
     return {
       syncedDevices_: {type: Array},
+      searchQuery_: {type: String},
       selectedDeviceTag_: {type: String},
     };
   }
 
   protected accessor syncedDevices_: ForeignSession[] = [];
+  protected accessor searchQuery_: string = '';
   protected accessor selectedDeviceTag_: string|null = null;
 
   private foreignSessionHandler: ForeignSessionPageHandlerRemote =
@@ -128,6 +133,51 @@ export class TabsFromOtherDevicesAppElement extends
     } catch (e) {
       return urlStr;
     }
+  }
+
+  protected onSearchChanged_(e: CustomEvent<string>) {
+    this.searchQuery_ = e.detail;
+  }
+
+  // Returns the tabs that match the current user selection: If there is a
+  // search query, this returns all tabs from all devices that match the search
+  // query. Otherwise, returns all tabs for the selected device tag.
+  protected getFilteredTabs_(): TabInfo[] {
+    const tabs: TabInfo[] = [];
+    if (this.searchQuery_) {
+      // The user has entered a search query. Return all tabs matching the
+      // query, from all devices. (The UI will hide the device picker dropdown
+      // in this case.)
+      const query = this.searchQuery_.trim().toLowerCase();
+      for (const device of this.syncedDevices_) {
+        for (const window of device.windows) {
+          for (const tab of window.tabs) {
+            if (tab.title.toLowerCase().includes(query) ||
+                tab.url.toLowerCase().includes(query)) {
+              tabs.push({
+                ...tab,
+                sessionTag: device.tag,
+              });
+            }
+          }
+        }
+      }
+    } else {
+      // No search query - return all tabs from the selected device.
+      const device =
+          this.syncedDevices_.find(d => d.tag === this.selectedDeviceTag_);
+      if (device) {
+        for (const window of device.windows) {
+          for (const tab of window.tabs) {
+            tabs.push({
+              ...tab,
+              sessionTag: device.tag,
+            });
+          }
+        }
+      }
+    }
+    return tabs;
   }
 }
 
