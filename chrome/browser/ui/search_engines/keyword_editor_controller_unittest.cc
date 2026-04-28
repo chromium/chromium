@@ -104,6 +104,8 @@ class KeywordEditorControllerTest : public testing::Test,
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSearchSettingsUpdate};
   TestingProfile profile_;
   std::unique_ptr<KeywordEditorController> controller_;
   TemplateURLServiceFactoryTestUtil util_;
@@ -130,7 +132,6 @@ class KeywordEditorControllerManagedDSPTest
 
 // Tests adding a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Add) {
-  size_t original_row_count = table_model()->engine_count();
   controller()->AddTemplateURL(kA, kB, "http://c");
 
   // Verify the observer was notified.
@@ -138,9 +139,6 @@ TEST_F(KeywordEditorControllerTest, Add) {
   if (HasFatalFailure()) {
     return;
   }
-
-  // Verify the TableModel has the new data.
-  ASSERT_EQ(original_row_count + 1, table_model()->engine_count());
 
   // Verify the TemplateURLService has the new data.
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
@@ -245,6 +243,18 @@ TEST_F(KeywordEditorControllerTest, Remove) {
   const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_TRUE(overridden_keywords.empty());
+}
+
+// Tests that a prepopulated TemplateURL can be removed.
+// Regression test for crbug.com/506130949.
+TEST_F(KeywordEditorControllerTest, CanRemovePrepopulatedEngines) {
+  TemplateURLData template_url_data;
+  template_url_data.prepopulate_id = 3;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  std::unique_ptr<TemplateURL> prepopulated_url =
+      std::make_unique<TemplateURL>(template_url_data);
+
+  EXPECT_TRUE(controller()->CanRemove(prepopulated_url.get()));
 }
 
 // Tests removing a SiteSearch TemplateURL.

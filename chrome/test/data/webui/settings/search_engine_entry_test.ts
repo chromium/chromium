@@ -669,22 +669,26 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
 
   // Test the delete option availability for different states.
   test('Delete option visibility', function() {
-    // Should be visible and enabled for removable engines.
+    // Should be visible and enabled for custom engines.
     assertFalse(isButtonDisabled(
         entry, '#deleteOption',
         createSampleSearchEngine({canBeRemoved: true, isPrepopulated: false})));
 
-    // Should be hidden for prepopulated engines.
-    assertButtonHidden(
+    // Should be visible and enabled for prepopulated engines.
+    assertFalse(isButtonDisabled(
         entry, '#deleteOption',
-        createSampleSearchEngine({isPrepopulated: true}));
+        createSampleSearchEngine({canBeRemoved: true, isPrepopulated: true})));
 
-    // Should be visible but disabled if it's the default (and not
-    // prepopulated).
+    // Should be visible but disabled if it's the default.
     assertTrue(isButtonDisabled(
         entry, '#deleteOption',
         createSampleSearchEngine(
             {default: true, canBeRemoved: false, isPrepopulated: false})));
+
+    // Should be hidden if it cannot be removed and is not the default engine.
+    assertButtonHidden(
+        entry, '#deleteOption',
+        createSampleSearchEngine({default: false, canBeRemoved: false}));
   });
 
   // Test the deactivate option availability for different states.

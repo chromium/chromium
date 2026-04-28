@@ -179,10 +179,8 @@ export class SettingsSearchEngineEntryElement extends
     assert(this.searchSettingsUpdateEnabled_);
 
     // `canBeRemoved` is always false if the engine is the current default,
-    // but it should be shown (and disabled) anyway. Hide the delete option if
-    // the engine is prepopulated, as the user should not be able to delete it.
-    return this.engine.canBeRemoved ||
-        (this.engine.default && !this.engine.isPrepopulated);
+    // but it should be shown (and disabled) anyway.
+    return this.engine.canBeRemoved || this.engine.default;
   }
 
   private showMakeDefaultOption_(): boolean {
