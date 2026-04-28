@@ -16,3 +16,13 @@ message SummarizerFeatureConfig {
   map<string, string> preference_use_cases = 2;
   map<string, string> experimental_use_cases = 3;
 }
+
+message WritingAssistanceApiFeatureConfig {
+  string default_use_case = 1;
+  map<string, string> experimental_use_cases = 2;
+}
+
+message PromptApiFeatureConfig {
+  string default_use_case = 1;
+  map<string, string> experimental_use_cases = 2;
+}
