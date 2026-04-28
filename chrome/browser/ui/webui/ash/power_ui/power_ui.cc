@@ -22,8 +22,9 @@
 #include "base/values.h"
 #include "chrome/browser/ash/power/power_data_collector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/power_resources.h"
+#include "chrome/grit/power_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -233,9 +234,8 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   html->UseStringsJs();
 
-  html->AddResourcePath("power.css", IDR_ABOUT_POWER_CSS);
-  html->AddResourcePath("power.js", IDR_ABOUT_POWER_JS);
-  html->SetDefaultResource(IDR_ABOUT_POWER_HTML);
+  html->AddResourcePaths(kPowerResources);
+  html->SetDefaultResource(IDR_POWER_POWER_HTML);
 }
 
 PowerUI::~PowerUI() = default;

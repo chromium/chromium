@@ -133,9 +133,6 @@
           <else>
           </else>
         </if>
-        <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />
-        <include name="IDR_ABOUT_POWER_JS" file="resources\chromeos\power.js" type="BINDATA" />
-        <include name="IDR_ABOUT_POWER_CSS" file="resources\chromeos\power.css" type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_HTML" file="resources\chromeos\emulator\device_emulator.html" type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_CSS" file="resources\chromeos\emulator\device_emulator.css" type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\audio_settings.js" use_base_dir="false" type="BINDATA" />

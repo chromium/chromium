@@ -370,6 +370,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [3560],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/power/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [3570],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/remote_maintenance_curtain/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3580],
