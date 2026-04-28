@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 
+#include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -22,6 +23,9 @@ AlwaysOnVpnPreConnectUrlAllowlistService::
         PolicyBlocklistService* policy_blocklist_service)
     : pref_service_(pref_service),
       policy_blocklist_service_(policy_blocklist_service) {
+  // TODO(crbug.com/7768231): Remove this once the root cause is identified.
+  DUMP_WILL_BE_CHECK(ash::NetworkHandler::Get());
+
   profile_pref_change_registrar_.Init(pref_service);
   profile_pref_change_registrar_.Add(
       arc::prefs::kAlwaysOnVpnLockdown,
