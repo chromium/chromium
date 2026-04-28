@@ -214,6 +214,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
             }));
     const composebox = this.$.composebox;
     if (composebox) {
+      // Do not play the glow animation if opening on a thread.
+      if (!this.isZeroState) {
+        composebox.animationState = GlowAnimationState.NONE;
+      }
       this.eventTracker_.add(composebox, 'composebox-focus-in', () => {
         this.isComposeboxFocused_ = true;
       });
