@@ -1,0 +1,9 @@
+source_set("coordinator") {
+  sources = [
+    "composebox_picker_image_result.h",
+    "composebox_picker_image_result.mm",
+    "composebox_picker_presenter.h",
+    "composebox_picker_presenter.mm",
+  ]
+  deps = [ "//base" ]
+}

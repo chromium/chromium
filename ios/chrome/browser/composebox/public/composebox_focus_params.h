@@ -12,18 +12,8 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
-
-/// An item representing an image and its identifier.
-@interface ComposeboxImageItem : NSObject
-
-/// The image object.
-@property(nonatomic, strong) UIImage* image;
-/// The asset identifier, used for deduplication.
-@property(nonatomic, copy) NSString* assetID;
-
-@end
-
 /// Parameters used to focus and initialize the composebox with specific state.
 @interface ComposeboxFocusParams : NSObject
 
@@ -37,7 +27,7 @@
 @property(nonatomic, assign) ComposeboxMode initialMode;
 
 /// Initial images to attach.
-@property(nonatomic, copy) NSArray<ComposeboxImageItem*>* initialImages;
+@property(nonatomic, copy) NSArray<ComposeboxPickerImageResult*>* initialImages;
 
 /// Initial files to attach.
 @property(nonatomic, copy) NSArray<NSURL*>* initialFiles;

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_mutator.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 
 @class ComposeboxMenuMediator;
 
@@ -21,6 +22,14 @@
 - (void)composeboxMenuMediatorDidProduceFocusParams:
     (ComposeboxFocusParams*)focusParams;
 
+// Called when the camera selection is requested.
+- (void)composeboxMenuMediatorDidRequestCameraSelection:
+    (ComposeboxMenuMediator*)mediator;
+
+// Called when the gallery selection is requested.
+- (void)composeboxMenuMediatorDidRequestGallerySelection:
+    (ComposeboxMenuMediator*)mediator;
+
 @end
 
 // Mediator for the composebox menu.
@@ -31,6 +40,16 @@
 
 // Creates a new instance with an entrypoint.
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint;
+
+/// Processes the given `imageItems`.
+- (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems;
+
+/// Returns whether more attachments can be added.
+- (BOOL)canAddMoreAttachments;
+
+// Returns the maximum number of images allowed based on the current
+// composebox mode and current number of attachments.
+- (NSUInteger)remainingNumberOfImagesAllowed;
 
 @end
 

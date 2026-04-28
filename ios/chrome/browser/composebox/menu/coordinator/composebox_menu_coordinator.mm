@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_mediator.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_view_controller.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -19,6 +20,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 }  // namespace
 
 @interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
+                                         ComposeboxPickerPresenterDelegate,
                                          UISheetPresentationControllerDelegate>
 @end
 
@@ -26,6 +28,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   ComposeboxMenuViewController* _viewController;
   ComposeboxMenuMediator* _mediator;
   ComposeboxEntrypoint _entrypoint;
+  ComposeboxPickerPresenter* _pickerPresenter;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -64,12 +67,17 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
+
+  _pickerPresenter = [[ComposeboxPickerPresenter alloc]
+      initWithBaseViewController:_viewController];
+  _pickerPresenter.delegate = self;
 }
 
 - (void)stop {
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   _mediator = nil;
+  _pickerPresenter = nil;
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -91,6 +99,47 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                          completion:^{
                            [commands showComposeboxWithParams:focusParams];
                          }];
+}
+
+- (void)composeboxMenuMediatorDidRequestCameraSelection:
+    (ComposeboxMenuMediator*)mediator {
+  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
+
+  [_pickerPresenter presentCameraPicker];
+}
+
+- (void)composeboxMenuMediatorDidRequestGallerySelection:
+    (ComposeboxMenuMediator*)mediator {
+  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
+
+  [_pickerPresenter
+      presentGalleryPickerWithLimit:[_mediator remainingNumberOfImagesAllowed]];
+}
+
+#pragma mark - ComposeboxPickerPresenterDelegate
+
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                    didPickImages:
+                        (NSArray<ComposeboxPickerImageResult*>*)results {
+  [_mediator processImageItems:results];
+}
+
+#pragma mark - Private
+
+/// Displays a snackbar error indicating the maximum number of attachments has
+/// been reached.
+- (void)showMaxAttachmentSnackbarError {
+  // TODO(crbug.com/506956765): Implement.
 }
 
 @end

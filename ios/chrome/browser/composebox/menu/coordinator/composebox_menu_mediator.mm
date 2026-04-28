@@ -20,6 +20,30 @@
   return self;
 }
 
+#pragma mark - Public
+
+- (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems {
+  ComposeboxFocusParams* focusParams =
+      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
+  focusParams.initialImages = imageItems;
+  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+}
+
+- (BOOL)canAddMoreAttachments {
+  // When presented as a standalone menu, there are no prior restrictions.
+  if (_entrypoint == ComposeboxEntrypoint::kNTPPlusButton) {
+    return YES;
+  }
+
+  // TODO(crbug.com/506956060): Take current attachments into account.
+  return YES;
+}
+
+- (NSUInteger)remainingNumberOfImagesAllowed {
+  // TODO(crbug.com/506956765): Implement.
+  return 5;
+}
+
 #pragma mark - ComposeboxMenuMutator
 
 - (void)handleItemPickedWithType:(ComposeboxMenuItemType)type {
@@ -52,9 +76,11 @@
     case ComposeboxMenuItemType::kAttachmentTabs:
       break;
     case ComposeboxMenuItemType::kAttachmentCamera:
-      break;
+      [self.delegate composeboxMenuMediatorDidRequestCameraSelection:self];
+      return;
     case ComposeboxMenuItemType::kAttachmentGallery:
-      break;
+      [self.delegate composeboxMenuMediatorDidRequestGallerySelection:self];
+      return;
     case ComposeboxMenuItemType::kAttachmentFiles:
       break;
     case ComposeboxMenuItemType::kUnknown:

@@ -350,10 +350,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [_mediator setModelOption:params.initialModelOption explicitUserAction:YES];
   }
 
-  for (ComposeboxImageItem* item in params.initialImages) {
-    NSItemProvider* provider =
-        [[NSItemProvider alloc] initWithObject:item.image];
-    [_mediator processImageItemProvider:provider
+  for (ComposeboxPickerImageResult* item in params.initialImages) {
+    [_mediator processImageItemProvider:item.imageProvider
                                 assetID:item.assetID
                              completion:nil];
   }

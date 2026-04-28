@@ -89,6 +89,7 @@ source_set("focus_params") {
     ":composebox_mode",
     ":entrypoint",
     ":model_options",
+    "//ios/chrome/browser/composebox/shared/coordinator",
     "//ios/web/public",
   ]
   deps = [ "//base" ]

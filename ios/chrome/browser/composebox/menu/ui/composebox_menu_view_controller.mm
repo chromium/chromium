@@ -393,6 +393,9 @@ enum class ComposeboxMenuSectionIdentifier {
   attachmentView.image = SymbolWithPalette(
       item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
 
+  attachmentView.userInteractionEnabled = NO;
+  attachmentView.accessibilityLabel = item.title;
+
   [cell.contentView addSubview:attachmentView];
   AddSameConstraints(attachmentView, cell.contentView);
 }
