@@ -193,6 +193,10 @@ BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
 // platforms.
 BASE_DECLARE_FEATURE(kPlatformAgnosticXGeo);
 
+// If enabled, Inline Location Signaling is enabled gating all development
+// and experimentation for the feature.
+BASE_DECLARE_FEATURE(kInlineLocationSignaling);
+
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

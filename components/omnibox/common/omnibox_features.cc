@@ -418,6 +418,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxXGeoPermissionGranularity,
       &kPlatformAgnosticXGeo,
+      &kInlineLocationSignaling,
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
       &kAndroidDesktopAimGate,
@@ -439,6 +440,10 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 // implementation. On Android, enabling this flag will disable the legacy Java
 // implementation.
 BASE_FEATURE(kPlatformAgnosticXGeo, DISABLED);
+
+// If enabled, Inline Location Signaling is enabled gating all development
+// and experimentation for the feature.
+BASE_FEATURE(kInlineLocationSignaling, DISABLED);
 
 // Note: no new flags beyond this point.
 

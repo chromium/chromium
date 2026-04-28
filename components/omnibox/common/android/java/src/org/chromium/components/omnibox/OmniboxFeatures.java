@@ -124,6 +124,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sPlatformAgnosticXGeo =
             newFlag(OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO, FeatureState.DISABLED);
 
+    public static final CachedFlag sInlineLocationSignaling =
+            newFlag(OmniboxFeatureList.INLINE_LOCATION_SIGNALING, FeatureState.DISABLED);
+
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);
 
