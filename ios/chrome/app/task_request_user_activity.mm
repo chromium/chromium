@@ -887,7 +887,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   if (domain == spotlight::DOMAIN_ACTIONS) {
     switch (_spotlightActionType) {
       case SpotlightActionType::kNewIncognitoTab:
-        // TODO(crbug.com/492115056): Add implementation.
+        [self openURLs:{GURL(kChromeUINewTabURL)}
+            sceneState:sceneState
+            targetMode:ApplicationModeForTabOpening::INCOGNITO
+            completion:{}];
         break;
       case SpotlightActionType::kVoiceSearch:
         // TODO(crbug.com/492115056): Add implementation.
@@ -896,7 +899,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
         // TODO(crbug.com/492115056): Add implementation.
         break;
       case SpotlightActionType::kNewTab:
-        // TODO(crbug.com/492115056): Add implementation.
+        [self openURLs:{GURL(kChromeUINewTabURL)}
+            sceneState:sceneState
+            targetMode:_targetMode
+            completion:{}];
         break;
       case SpotlightActionType::kSetDefaultBrowser:
         // TODO(crbug.com/492115056): Add implementation.
