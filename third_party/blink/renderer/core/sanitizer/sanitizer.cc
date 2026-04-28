@@ -9,15 +9,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace_with_attributes.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_presets.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_processing_instruction.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerattributenamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerprocessinginstruction_string.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -84,6 +87,8 @@ Sanitizer* Sanitizer::CreateEmpty() {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   sanitizer->remove_elements_ = std::make_unique<SanitizerNameSet>();
   sanitizer->remove_attrs_ = std::make_unique<SanitizerNameSet>();
+  sanitizer->remove_processing_instructions_ =
+      std::make_unique<HashSet<AtomicString>>();
   sanitizer->data_attrs_ = SanitizerBoolWithAbsence::kAbsent;
   sanitizer->comments_ = SanitizerBoolWithAbsence::kAbsent;
   DCHECK(sanitizer->isValid());
@@ -106,6 +111,9 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
       remove_attrs_(remove_attrs.release()),
       allow_attrs_per_element_(allow_attrs_per_element),
       remove_attrs_per_element_(remove_attrs_per_element),
+      allow_processing_instructions_(nullptr),
+      remove_processing_instructions_(
+          std::make_unique<HashSet<AtomicString>>()),
       data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
                                    : SanitizerBoolWithAbsence::kFalse),
       comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
@@ -706,6 +714,60 @@ bool Sanitizer::RemoveAttribute(const QualifiedName& name) {
   }
 }
 
+bool Sanitizer::allowProcessingInstruction(
+    const V8UnionSanitizerProcessingInstructionOrString* pi) {
+  AtomicString target;
+  if (pi->IsString()) {
+    target = AtomicString(pi->GetAsString());
+  } else {
+    target = AtomicString(pi->GetAsSanitizerProcessingInstruction()->target());
+  }
+  return AllowProcessingInstruction(target);
+}
+
+bool Sanitizer::removeProcessingInstruction(
+    const V8UnionSanitizerProcessingInstructionOrString* pi) {
+  AtomicString target;
+  if (pi->IsString()) {
+    target = AtomicString(pi->GetAsString());
+  } else {
+    target = AtomicString(pi->GetAsSanitizerProcessingInstruction()->target());
+  }
+  return RemoveProcessingInstruction(target);
+}
+
+bool Sanitizer::AllowProcessingInstruction(const AtomicString& target) {
+  if (allow_processing_instructions_) {
+    if (allow_processing_instructions_->Contains(target)) {
+      return false;
+    }
+    allow_processing_instructions_->insert(target);
+    return true;
+  } else {
+    DCHECK(remove_processing_instructions_);
+    if (!remove_processing_instructions_->Contains(target)) {
+      return false;
+    }
+    remove_processing_instructions_->erase(target);
+    return true;
+  }
+}
+
+bool Sanitizer::RemoveProcessingInstruction(const AtomicString& target) {
+  if (allow_processing_instructions_) {
+    bool modified = allow_processing_instructions_->Contains(target);
+    allow_processing_instructions_->erase(target);
+    return modified;
+  } else {
+    DCHECK(remove_processing_instructions_);
+    if (remove_processing_instructions_->Contains(target)) {
+      return false;
+    }
+    remove_processing_instructions_->insert(target);
+    return true;
+  }
+}
+
 void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core, Step 1.5.8 + 1.5.9.1-4
   //
@@ -885,12 +947,19 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
       // Steps 5.5-5.9 are in the subsequent switch-case, based on |action|.
     }
     case Node::NodeType::kCommentNode:
-    // TODO(nrosenthal): sanitizer for PIs?
-    // Spec: https://github.com/WICG/sanitizer-api/issues/370
-    case Node::NodeType::kProcessingInstructionNode:
-      // Step 4: If child implement Comments & config["comments"] is not true:
       return (comments_ == SanitizerBoolWithAbsence::kTrue) ? Action::kKeep
                                                             : Action::kDrop;
+    case Node::NodeType::kProcessingInstructionNode: {
+      ProcessingInstruction* pi = To<ProcessingInstruction>(node);
+      AtomicString target = AtomicString(pi->target());
+      if (allow_processing_instructions_) {
+        return allow_processing_instructions_->Contains(target) ? Action::kKeep
+                                                                : Action::kDrop;
+      }
+      DCHECK(remove_processing_instructions_);
+      return remove_processing_instructions_->Contains(target) ? Action::kDrop
+                                                               : Action::kKeep;
+    }
     case Node::NodeType::kTextNode:
       // Step 3: If child implements Text, then continue.
       return Action::kKeep;
@@ -993,6 +1062,8 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
   CHECK(!replace_elements_);
   CHECK(!allow_attrs_);
   CHECK(!remove_attrs_);
+  CHECK(!allow_processing_instructions_);
+  CHECK(!remove_processing_instructions_);
   CHECK(allow_attrs_per_element_.empty());
   CHECK(remove_attrs_per_element_.empty());
 
@@ -1058,6 +1129,34 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
       all_new_entries &= remove_attrs_->insert(getFrom(attribute)).is_new_entry;
     }
   }
+  if (config->hasProcessingInstructions()) {
+    allow_processing_instructions_ = std::make_unique<HashSet<AtomicString>>();
+    for (const auto& pi : config->processingInstructions()) {
+      AtomicString target;
+      if (pi->IsString()) {
+        target = AtomicString(pi->GetAsString());
+      } else {
+        target =
+            AtomicString(pi->GetAsSanitizerProcessingInstruction()->target());
+      }
+      all_new_entries &=
+          allow_processing_instructions_->insert(target).is_new_entry;
+    }
+  }
+  if (config->hasRemoveProcessingInstructions()) {
+    remove_processing_instructions_ = std::make_unique<HashSet<AtomicString>>();
+    for (const auto& pi : config->removeProcessingInstructions()) {
+      AtomicString target;
+      if (pi->IsString()) {
+        target = AtomicString(pi->GetAsString());
+      } else {
+        target =
+            AtomicString(pi->GetAsSanitizerProcessingInstruction()->target());
+      }
+      all_new_entries &=
+          remove_processing_instructions_->insert(target).is_new_entry;
+    }
+  }
   setComments(config->getCommentsOr(allowCommentsAndDataAttributes));
   if (allow_attrs_ || config->hasDataAttributes()) {
     setDataAttributes(
@@ -1071,6 +1170,9 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
   }
   if (!config->hasAttributes() && !config->hasRemoveAttributes()) {
     remove_attrs_ = std::make_unique<SanitizerNameSet>();
+  }
+  if (!remove_processing_instructions_) {
+    remove_processing_instructions_ = std::make_unique<HashSet<AtomicString>>();
   }
 
   return all_new_entries && isValid();
@@ -1101,6 +1203,16 @@ void Sanitizer::setFrom(const Sanitizer& other) {
   remove_attrs_per_element_ = other.remove_attrs_per_element_;
   data_attrs_ = other.data_attrs_;
   comments_ = other.comments_;
+  allow_processing_instructions_ =
+      other.allow_processing_instructions_
+          ? std::make_unique<HashSet<AtomicString>>(
+                *other.allow_processing_instructions_.get())
+          : nullptr;
+  remove_processing_instructions_ =
+      other.remove_processing_instructions_
+          ? std::make_unique<HashSet<AtomicString>>(
+                *other.remove_processing_instructions_.get())
+          : nullptr;
 }
 
 QualifiedName Sanitizer::getFrom(const String& name,

@@ -27,6 +27,7 @@ class V8UnionSanitizerConfigOrSanitizerPresets;
 class V8UnionSanitizerAttributeNamespaceOrString;
 class V8UnionSanitizerElementNamespaceWithAttributesOrString;
 class V8UnionSanitizerElementNamespaceOrString;
+class V8UnionSanitizerProcessingInstructionOrString;
 
 class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -72,6 +73,10 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool removeElement(const V8UnionSanitizerElementNamespaceOrString*);
   bool replaceElementWithChildren(
       const V8UnionSanitizerElementNamespaceOrString*);
+  bool allowProcessingInstruction(
+      const V8UnionSanitizerProcessingInstructionOrString*);
+  bool removeProcessingInstruction(
+      const V8UnionSanitizerProcessingInstructionOrString*);
   bool allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   bool removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   void setComments(bool);
@@ -87,6 +92,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   bool ReplaceElement(const QualifiedName&);
   bool AllowAttribute(const QualifiedName&);
   bool RemoveAttribute(const QualifiedName&);
+  bool AllowProcessingInstruction(const AtomicString& target);
+  bool RemoveProcessingInstruction(const AtomicString& target);
 
   // The core methods (not directly exposed to the API): Recursively sanitize
   // the node according to the current config.
@@ -175,6 +182,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   std::unique_ptr<SanitizerNameSet> remove_attrs_;
   SanitizerNameMap allow_attrs_per_element_;
   SanitizerNameMap remove_attrs_per_element_;
+  std::unique_ptr<HashSet<AtomicString>> allow_processing_instructions_;
+  std::unique_ptr<HashSet<AtomicString>> remove_processing_instructions_;
   SanitizerBoolWithAbsence data_attrs_;
   SanitizerBoolWithAbsence comments_;
 };
