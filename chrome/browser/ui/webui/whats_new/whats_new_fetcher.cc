@@ -37,10 +37,9 @@
 #include "url/gurl.h"
 
 namespace whats_new {
-const char kChromeWhatsNewURL[] =
-    "https://www.google.com/chrome/wn-2025/whats-new/";
+const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
 const char kChromeWhatsNewStagingURL[] =
-    "https://chrome-staging.corp.google.com/chrome/wn-2025/whats-new/";
+    "https://chrome-staging.corp.google.com/chrome/whats-new/";
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 

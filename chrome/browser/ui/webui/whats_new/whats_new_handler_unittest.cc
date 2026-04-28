@@ -115,7 +115,7 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
 
   const GURL expected_url =
-      GURL(base::StringPrintf("https://www.google.com/chrome/wn-2025/whats-new/"
+      GURL(base::StringPrintf("https://www.google.com/chrome/whats-new/"
                               "?version=%d&internal=true",
                               CHROME_VERSION_MAJOR));
 
