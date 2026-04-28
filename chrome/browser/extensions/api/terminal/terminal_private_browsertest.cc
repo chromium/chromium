@@ -115,4 +115,57 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
   ExpectJsResult(script, "success");
 }
 
+IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest,
+                       OnProcessOutputSendToCorrectRenderer) {
+  // Open 2 tabs in crosh.  Crosh will echo input for tests.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome-untrusted://crosh/")));
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome-untrusted://crosh/"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  content::WebContents* tab2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Verify that we have two distinct tabs.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_NE(tab1, tab2);
+
+  // In the second tab, register a listener for the onProcessOutput event.
+  // This listener will increment a counter every time it receives an event.
+  const std::string script2 = R"(
+    window.processOutputCount = 0;
+    chrome.terminalPrivate.onProcessOutput.addListener((id, type, data) => {
+      window.processOutputCount++;
+    });
+    true;
+  )";
+  EXPECT_EQ(true, EvalJs(tab2, script2, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                         /*world_id=*/1));
+
+  // In the first tab, send input and verify it gets echoed back.
+  const std::string script1 = R"(new Promise((resolve) => {
+    chrome.terminalPrivate.onProcessOutput.addListener((id, type, data) => {
+      resolve(new TextDecoder().decode(data));
+    });
+    chrome.terminalPrivate.openTerminalProcess("crosh", [], (id) => {
+      if (chrome.runtime.lastError) {
+        resolve(chrome.runtime.lastError.message);
+        return;
+      }
+      chrome.terminalPrivate.sendInput(id, "hello", (success) => {});
+    });
+  }))";
+  EXPECT_EQ("hello",
+            EvalJs(tab1, script1, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                   /*world_id=*/1));
+
+  // Verify that the second tab did NOT receive the output event.
+  EXPECT_EQ(0, EvalJs(tab2, "window.processOutputCount",
+                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
+}
+
 }  // namespace extensions
