@@ -461,6 +461,23 @@ class TimeBase {
   // the other subclasses can vary each time the application is restarted.
   constexpr TimeDelta since_origin() const;
 
+  // Returns |this| snapped to the next tick, given a |tick_phase| and
+  // repeating |tick_interval| in both directions. |this| may be before,
+  // after, or equal to the |tick_phase|.
+  constexpr TimeClass SnappedToNextTick(TimeClass tick_phase,
+                                        TimeDelta tick_interval) const {
+    // |interval_offset| is the offset from |this| to the next multiple of
+    // |tick_interval| after |tick_phase|, possibly negative if in the past.
+    TimeDelta interval_offset = (tick_phase - *this) % tick_interval;
+    // If |this| is exactly on the interval (i.e. offset==0), don't adjust.
+    // Otherwise, if |tick_phase| was in the past, adjust forward to the next
+    // tick after |this|.
+    if (!interval_offset.is_zero() && tick_phase < *this) {
+      interval_offset += tick_interval;
+    }
+    return *this + interval_offset;
+  }
+
   // Compute the difference between two times.
 #if !defined(__aarch64__) && BUILDFLAG(IS_ANDROID)
   NOINLINE  // https://crbug.com/1369775
@@ -1287,12 +1304,6 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   static TimeTicks UnixEpoch();
 
   static void SetSharedUnixEpoch(TimeTicks);
-
-  // Returns |this| snapped to the next tick, given a |tick_phase| and
-  // repeating |tick_interval| in both directions. |this| may be before,
-  // after, or equal to the |tick_phase|.
-  TimeTicks SnappedToNextTick(TimeTicks tick_phase,
-                              TimeDelta tick_interval) const;
 
   // Returns an enum indicating the underlying clock being used to generate
   // TimeTicks timestamps. This function should only be used for debugging and
