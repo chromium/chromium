@@ -776,8 +776,7 @@ bool Transaction::CreateExternalObjects(
         break;
     }
   }
-  *total_size = total_blob_size.ValueOrDie();
-  return true;
+  return total_blob_size.AssignIfValid(total_size);
 }
 
 void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
