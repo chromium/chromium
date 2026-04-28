@@ -155,6 +155,9 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
 // order of native windows vs. Browser and aren't tracking the switch over
 // of views on child guest contents properly.
 #define MAYBE_NavigatePage DISABLED_NavigatePage
+#elif BUILDFLAG(IS_MAC)
+// Flaky: https://crbug.com/507356237
+#define MAYBE_NavigatePage DISABLED_NavigatePage
 #else
 #define MAYBE_NavigatePage NavigatePage
 #endif
