@@ -170,12 +170,15 @@ public class AdaptiveToolbarButtonController
                             (int) (width / mContext.getResources().getDisplayMetrics().density);
                     if (mScreenWidthDp == widthDp) return;
 
+                    if (!mLifecycleDispatcher.isNativeInitializationFinished()
+                            || mAdaptiveToolbarStatePredictor == null) {
+                        mScreenWidthDp = widthDp;
+                        return;
+                    }
+
                     boolean wasOldWideEnough = isScreenWideEnoughForButton();
                     mScreenWidthDp = widthDp;
-
-                    if (wasOldWideEnough == isScreenWideEnoughForButton()
-                            || !mLifecycleDispatcher.isNativeInitializationFinished()
-                            || mAdaptiveToolbarStatePredictor == null) {
+                    if (wasOldWideEnough == isScreenWideEnoughForButton()) {
                         return;
                     }
 
