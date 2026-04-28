@@ -82,11 +82,11 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -1144,8 +1144,9 @@ BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
     return BrowserView::GetBrowserViewForNativeWindow(
         widget->GetNativeWindow());
   }
-  const auto* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
+  const auto* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
+  return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
 // static
@@ -5847,7 +5848,8 @@ void BrowserView::ActivateAppModalDialog() const {
   }
 
   BrowserWindowInterface* modal_browser =
-      chrome::FindBrowserWithTab(active_dialog->web_contents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          active_dialog->web_contents());
   if (modal_browser && (browser_.get() != modal_browser)) {
     modal_browser->GetWindow()->FlashFrame(true);
     modal_browser->GetWindow()->Activate();

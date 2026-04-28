@@ -17,8 +17,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_input_protector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -86,7 +86,9 @@ void ShowExtensionInstallDialogImpl(
   // contents. See crbug.com/40059470.
   content::WebContents* web_contents = show_params->GetParentWebContents();
   BrowserWindowInterface* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
+      web_contents ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                         web_contents)
+                   : nullptr;
 
   if (browser &&
       browser->GetTabStripModel()->GetActiveWebContents() != web_contents) {

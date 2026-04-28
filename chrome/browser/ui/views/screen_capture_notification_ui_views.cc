@@ -41,8 +41,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
@@ -431,7 +431,8 @@ void ScreenCaptureNotificationUIImpl::SetWindowsAppId(views::Widget* widget) {
     return;
   }
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(capturing_web_contents_.get());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          capturing_web_contents_.get());
   // Can be nullptr from extension background page call.
   if (!browser) {
     return;

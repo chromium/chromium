@@ -111,8 +111,8 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
@@ -409,7 +409,8 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
           controller->GetShowConfirmationForCardSuccessfullySavedCallback();
 
       BrowserWindowInterface* browser =
-          chrome::FindBrowserWithTab(web_contents());
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents());
 
       if (!browser) {
         std::move(promo_not_shown_callback).Run();

@@ -41,9 +41,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -134,7 +134,8 @@ void PromptForScanningInBubble(content::WebContents* web_contents,
   // ChromeOS does not have the download bubble and does not support local
   // password prompts for deep scans.
 #if !BUILDFLAG(IS_CHROMEOS)
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
@@ -695,7 +696,8 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
 // promo was clicked.
 void DownloadsDOMHandler::OpenEsbSettings() {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(GetWebUIWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          GetWebUIWebContents());
   if (!browser) {
     return;
   }

@@ -8,9 +8,9 @@
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -230,7 +230,8 @@ void ShowSafetyTipDialog(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }

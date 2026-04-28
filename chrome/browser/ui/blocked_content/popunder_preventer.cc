@@ -8,9 +8,9 @@
 
 #include "base/stl_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/web_contents.h"
@@ -42,7 +42,10 @@ PopunderPreventer::PopunderPreventer(content::WebContents* activating_contents)
 
 PopunderPreventer::~PopunderPreventer() {
   for (base::WeakPtr<content::WebContents>& popup : popups_) {
-    auto* browser = popup ? chrome::FindBrowserWithTab(popup.get()) : nullptr;
+    auto* browser =
+        popup ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                    popup.get())
+              : nullptr;
     // Only popup, app, or app-popup browser windows are potential popunders.
     if (browser &&
         (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||

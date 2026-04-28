@@ -7,8 +7,8 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -256,7 +256,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   BrowserWindowInterface* browser_window_interface =
-      chrome::FindBrowserWithTab(web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser_window_interface) {
     // For embedded WebUIs (e.g., Omnibox Popup and Contextual Tasks), try
     // getting the browser window that contains this WebContents.

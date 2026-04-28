@@ -5,7 +5,6 @@
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -113,7 +112,8 @@ BrowserWindow* DevToolsWindow::GetInspectedBrowserWindow() {
     return nullptr;
   }
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(inspected_web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          inspected_web_contents);
   return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
 }
 
@@ -130,7 +130,8 @@ void DevToolsWindow::UpdateBrowserWindow() {
     return;
   }
   BrowserWindowInterface* inspected_browser =
-      chrome::FindBrowserWithTab(inspected_web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          inspected_web_contents);
   if (!inspected_browser) {
     return;
   }

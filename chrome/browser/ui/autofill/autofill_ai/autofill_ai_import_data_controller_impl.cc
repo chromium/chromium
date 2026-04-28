@@ -23,9 +23,9 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -171,7 +171,8 @@ bool AutofillAiImportDataControllerImpl::IsWalletableEntity() const {
 
 void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {
   if (BrowserWindowInterface* browser =
-          chrome::FindBrowserWithTab(web_contents())) {
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents())) {
     reopen_bubble_when_web_contents_becomes_visible_ = true;
     const EntityInstance& new_entity = GetSaveUpdateState().new_entity;
     bool is_private_pass =
@@ -232,7 +233,8 @@ AutofillAiImportDataControllerImpl::GetPageActionIconType() {
 void AutofillAiImportDataControllerImpl::DoShowBubble() {
   auto get_bubble = [this]() -> AutofillBubbleBase& {
     BrowserWindowInterface* browser =
-        chrome::FindBrowserWithTab(web_contents());
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents());
     auto* bubble_handler = browser->GetBrowserForMigrationOnly()
                                ->window()
                                ->GetAutofillBubbleHandler();

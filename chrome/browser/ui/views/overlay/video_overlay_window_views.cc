@@ -23,8 +23,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
@@ -408,7 +408,8 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
 #if BUILDFLAG(IS_WIN)
   std::wstring app_user_model_id;
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(controller->GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          controller->GetWebContents());
   if (browser) {
     Browser* raw_browser = browser->GetBrowserForMigrationOnly();
     const base::FilePath& profile_path = browser->GetProfile()->GetPath();

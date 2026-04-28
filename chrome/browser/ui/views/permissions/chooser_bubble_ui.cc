@@ -10,10 +10,10 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -237,7 +237,8 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
     const extensions::Extension* extension,
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
-  auto* browser = chrome::FindBrowserWithTab(contents);
+  auto* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
   if (!browser) {
     return base::DoNothing();
   }
@@ -295,7 +296,8 @@ base::OnceClosure ShowDeviceChooserDialog(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  auto* browser = chrome::FindBrowserWithTab(contents);
+  auto* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
   if (!browser) {
     return base::DoNothing();
   }

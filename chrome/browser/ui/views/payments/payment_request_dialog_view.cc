@@ -11,8 +11,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
@@ -212,11 +213,10 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   is_showing_large_payment_handler_window_ = true;
 
   // Calculate |payment_handler_window_height_|
-  auto* browser = chrome::FindBrowserWithTab(request_->web_contents());
-  int browser_window_content_height = browser->GetBrowserForMigrationOnly()
-                                          ->window()
-                                          ->GetContentsSize()
-                                          .height();
+  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      request_->web_contents());
+  int browser_window_content_height =
+      browser->capabilities()->GetContentsSize().height();
   payment_handler_window_height_ =
       std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
                                        browser_window_content_height));

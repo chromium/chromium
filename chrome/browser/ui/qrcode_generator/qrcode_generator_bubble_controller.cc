@@ -6,9 +6,9 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_window_controller.h"
@@ -74,7 +74,8 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   }
 
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(&GetWebContents());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          &GetWebContents());
   if (!browser || !browser->GetWindow()) {
     return;
   }

@@ -9,10 +9,10 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -77,7 +77,9 @@ ui::NativeTheme* GetNativeThemeDeprecated(content::WebContents* web_contents) {
   ui::NativeTheme* native_theme = nullptr;
 
   if (web_contents) {
-    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            web_contents);
 
     if (browser) {
       // Find for WebContents hosted in a tab.

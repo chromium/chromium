@@ -54,7 +54,6 @@
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
@@ -63,6 +62,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -1480,7 +1480,8 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
     WindowOpenDisposition disposition,
     bool skip_renderer_creation) {
   BrowserWindowInterface* browser =
-      chrome::FindBrowserWithTab(source_web_contents);
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          source_web_contents);
   Profile* profile = browser->GetProfile();
   StartupTabs startup_tabs;
   SessionRestoreImpl restorer(profile, browser->GetBrowserForMigrationOnly(),
