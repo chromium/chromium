@@ -7,6 +7,7 @@
 #include <optional>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -57,7 +58,7 @@ constexpr int kExpectedTextIslands = 14;
 constexpr int kExpectedBgIslands = 6;
 
 // Helper function to parse rgb(r, g, b) or rgba(r, g, b, a) strings
-std::optional<SkColor> ParseRgbString(const std::string& color_str) {
+std::optional<SkColor> ParseRgbString(std::string_view color_str) {
   if (color_str.empty()) {
     return std::nullopt;
   }
@@ -68,9 +69,9 @@ std::optional<SkColor> ParseRgbString(const std::string& color_str) {
     return std::nullopt;
   }
 
-  std::string values_str = color_str.substr(start + 1, end - start - 1);
+  std::string_view values_str = color_str.substr(start + 1, end - start - 1);
 
-  std::vector<std::string> parts = base::SplitString(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       values_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() < 3) {
