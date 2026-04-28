@@ -18,6 +18,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/sys_string_conversions.h"
@@ -106,8 +107,11 @@ class SystemPdhMetricsProvider::ProcessMetricsObserver
     // Record 1/`downsampling_factor_` currently active renderers.
     for (auto it = content::RenderProcessHost::AllHostsIterator();
          !it.IsAtEnd(); it.Advance()) {
-      it.GetCurrentValue()->AddObserver(this);
-      ProbabilisticallyListenToRenderer(it.GetCurrentValue());
+      content::RenderProcessHost* host = it.GetCurrentValue();
+      host_observations_.AddObservation(host);
+      if (host->IsReady()) {
+        ProbabilisticallyListenToRenderer(host);
+      }
     }
 
     // Record the GPU, and Record 1/`downsampling_factor_` currently active
@@ -119,10 +123,6 @@ class SystemPdhMetricsProvider::ProcessMetricsObserver
 
   ~ProcessMetricsObserver() override {
     content::BrowserChildProcessObserver::Remove(this);
-    for (auto it = content::RenderProcessHost::AllHostsIterator();
-         !it.IsAtEnd(); it.Advance()) {
-      it.GetCurrentValue()->RemoveObserver(this);
-    }
   }
 
   // Depending on the type of the child process, listen to the given process's
@@ -176,7 +176,9 @@ class SystemPdhMetricsProvider::ProcessMetricsObserver
   }
 
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override {
-    host->AddObserver(this);
+    if (!host_observations_.IsObservingSource(host)) {
+      host_observations_.AddObservation(host);
+    }
   }
 
   void RenderProcessReady(content::RenderProcessHost* host) override {
@@ -193,7 +195,7 @@ class SystemPdhMetricsProvider::ProcessMetricsObserver
   }
 
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override {
-    host->RemoveObserver(this);
+    host_observations_.RemoveObservation(host);
     query_handler_
         ->AsyncCall(&SystemPdhMetricsProvider::PdhQueryHandler::
                         StopListeningToProcessPdhMetrics)
@@ -251,6 +253,10 @@ class SystemPdhMetricsProvider::ProcessMetricsObserver
 
   const raw_ref<base::SequenceBound<SystemPdhMetricsProvider::PdhQueryHandler>>
       query_handler_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observations_{this};
 };
 
 SystemPdhMetricsProvider::SystemPdhMetricsProvider() = default;
