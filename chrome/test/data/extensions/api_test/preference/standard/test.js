@@ -145,7 +145,7 @@ function privacySandboxPrefSetterToTrueExpectErrorAndControlled(prefName) {
 }
 
 chrome.test.sendMessage('ready', function(message) {
-  if (message != 'run test') {
+  if (message !== 'run test') {
     return;
   }
   chrome.test.getConfig(function(config) {
@@ -205,7 +205,7 @@ chrome.test.sendMessage('ready', function(message) {
       },
       // Set the WebRTCIPHhandlingPolicy and verify it in the get function.
       function testWebRTCIPHandlingPolicy() {
-        if (pn.webRTCIPHandlingPolicy == undefined) {
+        if (pn.webRTCIPHandlingPolicy === undefined) {
           chrome.test.callbackPass();
           return;
         }

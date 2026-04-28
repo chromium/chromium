@@ -35,7 +35,7 @@ chrome.runtime.onConnectNative.addListener(port => {
 
           currentMessage++;
 
-          if (currentMessage == messagesToSend.length) {
+          if (currentMessage === messagesToSend.length) {
             port.onMessage.removeListener(onMessage);
             chrome.test.succeed();
           } else {

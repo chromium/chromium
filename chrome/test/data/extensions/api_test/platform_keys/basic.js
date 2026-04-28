@@ -134,7 +134,7 @@ function assertCertsSelected(details, expectedCerts) {
         assertEq(
             expectedCerts.length, actualMatches.length,
             'Number of stored certs not as expected');
-        if (expectedCerts.length == actualMatches.length) {
+        if (expectedCerts.length === actualMatches.length) {
           let actualCerts =
               actualMatches.map(match => new Uint8Array(match.certificate));
           actualCerts = sortCerts(actualCerts);
@@ -412,7 +412,7 @@ function verifyRsaKeyPairValidity(publicKey, privateKey) {
           callbackPass(function(actualPublicKeySpki) {
             assertTrue(
                 compareArrays(
-                    DATA.client_1_spki, new Uint8Array(actualPublicKeySpki)) ==
+                    DATA.client_1_spki, new Uint8Array(actualPublicKeySpki)) ===
                     0,
                 'Match did not contain correct public key');
           }),
@@ -543,7 +543,7 @@ function verifySignWithNoHash(privateKey, signParams) {
       .then(callbackPass(function(signature) {
         const actualSignature = new Uint8Array(signature);
         assertTrue(
-            compareArrays(DATA.signature_nohash_pkcs, actualSignature) == 0,
+            compareArrays(DATA.signature_nohash_pkcs, actualSignature) === 0,
             'Incorrect signature');
       }));
 }
@@ -573,7 +573,7 @@ function verifySignWithSha1(privateKey, signParams, client_signature) {
       .then(callbackPass(function(signature) {
         const actualSignature = new Uint8Array(signature);
         assertTrue(
-            compareArrays(client_signature, actualSignature) == 0,
+            compareArrays(client_signature, actualSignature) === 0,
             'Incorrect signature');
       }));
 }
@@ -917,7 +917,7 @@ chrome.test.getConfig(async (config) => {
   const selectedTestSuite = customArg.testSuiteName;
   systemTokenEnabled = customArg.systemTokenEnabled;
   serverCertsBaseUrl = `http://127.0.0.1:${config.testServer.port}/`;
-  console.log(
+  console.info(
       `[SELECTED TEST SUITE] ${selectedTestSuite}` +
       `, systemTokenEnabled: ${systemTokenEnabled}`);
   await setUp();

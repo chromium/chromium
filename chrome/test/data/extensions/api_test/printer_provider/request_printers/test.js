@@ -4,7 +4,7 @@
 
 chrome.test.sendMessage('loaded', function(test) {
   chrome.test.runTests([function printTest() {
-    if (test == 'NO_LISTENER') {
+    if (test === 'NO_LISTENER') {
       chrome.test.sendMessage('ready');
       chrome.test.succeed();
       return;
@@ -15,7 +15,7 @@ chrome.test.sendMessage('loaded', function(test) {
       chrome.test.assertFalse(!!chrome.printerProviderInternal);
       chrome.test.assertTrue(!!callback);
 
-      if (test == 'ASYNC_RESPONSE') {
+      if (test === 'ASYNC_RESPONSE') {
         setTimeout(
             callback.bind(null, [{
                             id: 'printer1',
@@ -27,14 +27,14 @@ chrome.test.sendMessage('loaded', function(test) {
         return;
       }
 
-      if (test == 'IGNORE_CALLBACK') {
+      if (test === 'IGNORE_CALLBACK') {
         chrome.test.succeed();
         return;
       }
 
-      if (test == 'NOT_ARRAY') {
+      if (test === 'NOT_ARRAY') {
         chrome.test.assertThrows(callback, ['XXX'], 'No matching signature.');
-      } else if (test == 'INVALID_PRINTER_TYPE') {
+      } else if (test === 'INVALID_PRINTER_TYPE') {
         const expectedError =
             `Error at parameter 'printerInfo': Error at index 1: ` +
             'Invalid type: expected printerProvider.PrinterInfo, ' +
@@ -49,7 +49,7 @@ chrome.test.sendMessage('loaded', function(test) {
               'printer2',
             ]],
             expectedError);
-      } else if (test == 'INVALID_PRINTER') {
+      } else if (test === 'INVALID_PRINTER') {
         const expectedError = `Error at parameter 'printerInfo': ` +
             `Error at index 0: Unexpected property: 'unsupported'.`;
         chrome.test.assertThrows(

@@ -13,12 +13,12 @@ async function hasOffscreenDocument() {
       {contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT]});
   chrome.test.assertTrue(!!contexts);
   chrome.test.assertTrue(contexts.length <= 1);
-  return contexts.length == 1;
+  return contexts.length === 1;
 }
 
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  if (url.pathname == '/request_handled_by_sw.html') {
+  if (url.pathname === '/request_handled_by_sw.html') {
     e.respondWith(new Response('<html>Hello, world!</html>'));
   }
 });
@@ -28,7 +28,7 @@ chrome.test.runTests([
   async function createDocumentAndEnsureItExistsAndThenClose() {
     // Skip this test on Android, which does not yet support messaging.
     const isAndroid = await new Promise((resolve) => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
+      chrome.runtime.getPlatformInfo(info => resolve(info.os === 'android'));
     });
     if (isAndroid) {
       // Skip this test on Android because the underlying call to

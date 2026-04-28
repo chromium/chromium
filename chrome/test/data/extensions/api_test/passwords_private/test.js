@@ -97,7 +97,7 @@ const availableTests = [
     await chrome.passwordsPrivate.changeCredential(credential);
 
     groups = await chrome.passwordsPrivate.getCredentialGroups();
-    credential = groups[0].entries.find(entry => entry.username == 'anya');
+    credential = groups[0].entries.find(entry => entry.username === 'anya');
     chrome.test.assertTrue(!!credential);
     chrome.test.assertEq(credential.note, 'note');
     chrome.test.succeed();
@@ -112,7 +112,7 @@ const availableTests = [
     await chrome.passwordsPrivate.changeCredential(credential);
 
     groups = await chrome.passwordsPrivate.getCredentialGroups();
-    credential = groups[0].entries.find(entry => entry.username == 'anya');
+    credential = groups[0].entries.find(entry => entry.username === 'anya');
     chrome.test.assertTrue(!!credential);
     chrome.test.assertEq(credential.displayName, 'Anya Forger');
     chrome.test.succeed();
@@ -146,15 +146,15 @@ const availableTests = [
     const callback = function(savedPasswordsList) {
       numCalls++;
 
-      if (numCalls == 1) {
+      if (numCalls === 1) {
         numSavedPasswords = savedPasswordsList.length;
         chrome.passwordsPrivate.removeCredential(
             savedPasswordsList[0].id,
             chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
-      } else if (numCalls == 2) {
+      } else if (numCalls === 2) {
         chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords - 1);
         chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls == 3) {
+      } else if (numCalls === 3) {
         chrome.test.assertEq(savedPasswordsList.length, numSavedPasswords);
         chrome.test.succeed();
       } else {
@@ -172,12 +172,12 @@ const availableTests = [
     const callback = function(credentials) {
       numCalls++;
 
-      if (numCalls == 1) {
+      if (numCalls === 1) {
         numSavedCredentials = credentials.length;
         const passkey = credentials[numSavedCredentials - 1];
         chrome.test.assertTrue(passkey.isPasskey);
         chrome.passwordsPrivate.removeCredential(passkey.id, passkey.storedIn);
-      } else if (numCalls == 2) {
+      } else if (numCalls === 2) {
         chrome.test.assertEq(credentials.length, numSavedCredentials - 1);
         chrome.test.assertEq(credentials.find(c => c.isPasskey), undefined);
         chrome.test.succeed();
@@ -195,15 +195,15 @@ const availableTests = [
     const callback = function(passwordExceptionsList) {
       numCalls++;
 
-      if (numCalls == 1) {
+      if (numCalls === 1) {
         numPasswordExceptions = passwordExceptionsList.length;
         chrome.passwordsPrivate.removePasswordException(
             passwordExceptionsList[0].id);
-      } else if (numCalls == 2) {
+      } else if (numCalls === 2) {
         chrome.test.assertEq(
             passwordExceptionsList.length, numPasswordExceptions - 1);
         chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
-      } else if (numCalls == 3) {
+      } else if (numCalls === 3) {
         chrome.test.assertEq(
             passwordExceptionsList.length, numPasswordExceptions);
         chrome.test.succeed();
@@ -686,5 +686,5 @@ const availableTests = [
 
 const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
+  return op.name === testToRun;
 }));

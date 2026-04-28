@@ -41,7 +41,7 @@ function createAppWindow(onLoad) {
 }
 
 function resovleImageUrl(imageUrl, callback) {
-  if (imageUrl.substr(0, 4) != 'http') {
+  if (imageUrl.substr(0, 4) !== 'http') {
     callback(imageUrl);
     return;
   }

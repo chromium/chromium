@@ -24,7 +24,7 @@ function findOptionsTab(callback) {
     }
     chrome.tabs.query({url: optionsTabUrl}, callbackPass(function(tabs) {
                         assertTrue(tabs.length <= 1);
-                        callback(tabs.length == 0 ? null : tabs[0]);
+                        callback(tabs.length === 0 ? null : tabs[0]);
                       }));
   });
 }
@@ -47,7 +47,7 @@ function testNewOptionsPage() {
 function getActiveTab(callback) {
   chrome.tabs.query({active: true}, callbackPass(function(tabs) {
                       assertTrue(tabs.length <= 1);
-                      callback(tabs.length == 0 ? null : tabs[0]);
+                      callback(tabs.length === 0 ? null : tabs[0]);
                     }));
 }
 

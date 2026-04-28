@@ -37,7 +37,7 @@ function checkGrantedHosts(callback) {
   chrome.permissions.getAll(test.callbackPass(function(permissions) {
     assertSetEq(grantedHosts, permissions.origins);
     let countDown = grantedHosts.length;
-    if (countDown == 0) {
+    if (countDown === 0) {
       callback();
       return;
     }
@@ -45,7 +45,7 @@ function checkGrantedHosts(callback) {
       chrome.permissions.contains(
           {origins: [host]}, test.callbackPass(function(contains) {
             test.assertTrue(contains);
-            if (--countDown == 0) {
+            if (--countDown === 0) {
               callback();
             }
           }));
@@ -113,7 +113,7 @@ function contains(host, expected) {
 function chain(callbacks) {
   const head = callbacks[0];
   const tail = callbacks.slice(1);
-  if (tail.length == 0) {
+  if (tail.length === 0) {
     head();
     return;
   }

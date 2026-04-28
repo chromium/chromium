@@ -231,12 +231,12 @@ const tests = [
             // show up here. If this becomes too much of a problem, we can
             // isolate these tests further, but for now, just using a unique url
             // should be sufficient.
-            if (details.url.indexOf('unique') == -1) {
+            if (details.url.indexOf('unique') === -1) {
               return;
             }
-            if (details.url.indexOf('simple.html') != -1) {
+            if (details.url.indexOf('simple.html') !== -1) {
               sawSimple1 = true;
-            } else if (details.url.indexOf('simple2.html') != -1) {
+            } else if (details.url.indexOf('simple2.html') !== -1) {
               sawSimple2 = true;
             } else {
               chrome.test.fail(details.url);
@@ -254,7 +254,7 @@ const tests = [
           .addListener(function listener(details) {
             chrome.test.assertNe(-1, details.url.indexOf('unique'));
             chrome.test.assertTrue(
-                details.url.indexOf('simple2.html') != -1, details.url);
+                details.url.indexOf('simple2.html') !== -1, details.url);
             chrome.webNavigation.onBeforeNavigate.removeListener(listener);
             resolve();
           }, {url: [{pathContains: 'simple2.html'}]});

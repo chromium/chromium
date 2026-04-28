@@ -21,11 +21,11 @@ function verifyPageCapture(data, isFile) {
   reader.onload = function(e) {
     const text = e.target.result;
     if (!isFile) {
-      assertTrue(text.indexOf(testUrl) != -1);
-      assertTrue(text.indexOf('logo.png') != -1);
+      assertTrue(text.indexOf(testUrl) !== -1);
+      assertTrue(text.indexOf('logo.png') !== -1);
     } else {
-      assertTrue(text.indexOf('app_background_page') != -1);
-      assertTrue(text.indexOf('service_worker') != -1);
+      assertTrue(text.indexOf('app_background_page') !== -1);
+      assertTrue(text.indexOf('service_worker') !== -1);
     }
     // Run the GC so the blob is deleted.
     setTimeout(function() {
@@ -45,7 +45,7 @@ chrome.test.getConfig(function(config) {
     function saveAsMHTML() {
       chrome.tabs.onUpdated.addListener(
           function listener(tabId, changeInfo, tab) {
-            if (tab.status == 'complete') {
+            if (tab.status === 'complete') {
               chrome.tabs.onUpdated.removeListener(listener);
               chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
                 verifyPageCapture(data, false);
@@ -59,10 +59,10 @@ chrome.test.getConfig(function(config) {
       const captureUrl = `${config.testDataDirectory}/`;
       chrome.tabs.onUpdated.addListener(
           function listener(tabId, changeInfo, tab) {
-            if (tab.status == 'complete' && tab.url == captureUrl) {
+            if (tab.status === 'complete' && tab.url === captureUrl) {
               chrome.tabs.onUpdated.removeListener(listener);
               chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
-                if (config.customArg == 'ONLY_PAGE_CAPTURE_PERMISSION') {
+                if (config.customArg === 'ONLY_PAGE_CAPTURE_PERMISSION') {
                   chrome.test.assertLastError(
                       `Don't have permissions required to capture this page.`);
                   chrome.test.succeed();
@@ -78,7 +78,7 @@ chrome.test.getConfig(function(config) {
     function saveAsMHTML_RestrictedUrlReturnsError() {
       chrome.tabs.onUpdated.addListener(
           function listener(tabId, changeInfo, tab) {
-            if (tab.status == 'complete') {
+            if (tab.status === 'complete') {
               chrome.tabs.onUpdated.removeListener(listener);
               chrome.pageCapture.saveAsMHTML({tabId: tab.id}, function(data) {
                 chrome.test.assertLastError(

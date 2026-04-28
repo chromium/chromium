@@ -6,11 +6,11 @@
 const hasEnabled = {};
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-  if (request.msg == 'feedIcon') {
-    console.log(`url: ${sender.tab.url}`);
+  if (request.msg === 'feedIcon') {
+    console.info(`url: ${sender.tab.url}`);
 
     if (!hasEnabled[sender.tab.id]) {
-      console.log(`Enabling for ${sender.tab.id}`);
+      console.info(`Enabling for ${sender.tab.id}`);
 
       // We have received a list of feed urls found on the page.
       // Enable the page action icon.
@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
       hasEnabled[sender.tab.id] = true;
       hasEnabledLastTabId = sender.tab.id;
     } else {
-      console.log(
+      console.info(
           `We are not doing this more than once (for ${sender.tab.id})`);
     }
   }

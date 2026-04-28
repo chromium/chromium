@@ -15,7 +15,7 @@ async function startCapture(streamId) {
     },
   });
 
-  if (!stream || stream.getVideoTracks().length == 0) {
+  if (!stream || stream.getVideoTracks().length === 0) {
     throw new Error('Failed to get stream');
   }
 }
@@ -33,12 +33,12 @@ function stopCapture() {
 async function handleMessage(msg, reply) {
   let response = 'success';
   try {
-    if (msg.command == 'capture') {
+    if (msg.command === 'capture') {
       if (!msg.streamId) {
         throw new Error('No stream ID received');
       }
       await startCapture(msg.streamId);
-    } else if (msg.command == 'stop') {
+    } else if (msg.command === 'stop') {
       stopCapture();
     } else {
       throw new Error(`Unexpected message: ${JSON.stringify(message)}`);

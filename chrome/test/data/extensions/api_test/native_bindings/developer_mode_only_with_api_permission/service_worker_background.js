@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
-  const inDeveloperMode = config.customArg == 'in_developer_mode';
+  const inDeveloperMode = config.customArg === 'in_developer_mode';
 
   chrome.test.runTests([async function testDevModeApiAccess() {
     if (inDeveloperMode) {

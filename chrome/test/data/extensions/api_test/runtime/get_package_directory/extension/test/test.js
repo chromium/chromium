@@ -7,12 +7,12 @@ function checkTree(root, expectedEntries) {
   const contents = [];
   directoryReader.readEntries(
       chrome.test.callbackPass(function readEntriesCallback(entries) {
-        if (entries.length == 0) {
+        if (entries.length === 0) {
           chrome.test.assertEq(Object.keys(expectedEntries).length, 0);
         } else {
           for (let i = 0; i < entries.length; i++) {
             // Ignore files or directories like .svn.
-            if (entries[i].name[0] == '.') {
+            if (entries[i].name[0] === '.') {
               continue;
             }
             chrome.test.assertNe(null, expectedEntries[entries[i].name]);
@@ -43,7 +43,7 @@ chrome.test.getConfig(async (config) => {
         }));
   }];
 
-  if (config.customArg == 'run_promise_test') {
+  if (config.customArg === 'run_promise_test') {
     testCases.push(async function getPackageDirectoryEntryPromise() {
       // We have to redefine this for both tests as checkTree deletes the
       // elements as it verifies them.

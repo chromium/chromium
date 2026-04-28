@@ -27,7 +27,7 @@ const privateHelpers = {
       if (expectedStates.length > 0) {
         const expectedState = expectedStates.pop();
         assertEq(expectedState, properties.ConnectionState);
-        if (expectedStates.length == 0) {
+        if (expectedStates.length === 0) {
           finishTest();
         }
       }
@@ -99,8 +99,8 @@ const availableTests = [
           },
         },
         callbackPass(function(guid) {
-          assertFalse(guid == '');
-          assertFalse(guid == 'ignored_guid');
+          assertFalse(guid === '');
+          assertFalse(guid === 'ignored_guid');
           chrome.networkingPrivate.getProperties(
               guid, callbackPass(function(properties) {
                 assertEq('WiFi', properties.Type);
@@ -436,5 +436,5 @@ const availableTests = [
 
 const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
+  return op.name === testToRun;
 }));

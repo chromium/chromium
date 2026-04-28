@@ -4,7 +4,7 @@
 
 chrome.test.sendMessage('loaded', function(test) {
   chrome.test.runTests([function printTest() {
-    if (test == 'NO_LISTENER') {
+    if (test === 'NO_LISTENER') {
       chrome.test.sendMessage('ready');
       chrome.test.succeed();
       return;
@@ -15,17 +15,17 @@ chrome.test.sendMessage('loaded', function(test) {
       chrome.test.assertFalse(!!chrome.printerProviderInternal);
       chrome.test.assertTrue(!!callback);
 
-      if (test == 'IGNORE_CALLBACK') {
+      if (test === 'IGNORE_CALLBACK') {
         chrome.test.succeed();
         return;
       }
 
-      if (test == 'INVALID_VALUE') {
+      if (test === 'INVALID_VALUE') {
         chrome.test.assertThrows(
             callback, ['XXX'],
             'Error validating the callback argument: ' +
                 'Expected an object, found string.');
-      } else if (test == 'EMPTY') {
+      } else if (test === 'EMPTY') {
         callback([]);
       } else {
         chrome.test.assertEq('OK', test);

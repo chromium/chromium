@@ -77,7 +77,7 @@ chrome.test.runTests([
         'stub_wifi1_guid', chrome.test.callbackPass(function(result) {
           chrome.test.assertEq('stub_wifi1_guid', result.GUID);
           chrome.test.assertFalse(
-              result.ConnectionState ==
+              result.ConnectionState ===
               chrome.networking.onc.ConnectionStateType.CONNECTED);
         }));
   },

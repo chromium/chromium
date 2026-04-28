@@ -28,35 +28,35 @@ function pageUrl(letter) {
 }
 
 function dumpProcess(process) {
-  console.log(`id          ${process.id}`);
-  console.log(`osProcId    ${process.osProcessId}`);
-  console.log(`type        ${process.type}`);
-  console.log(`profile     ${process.profile}`);
-  console.log(`tasks       ${process.tasks}`);
+  console.info(`id          ${process.id}`);
+  console.info(`osProcId    ${process.osProcessId}`);
+  console.info(`type        ${process.type}`);
+  console.info(`profile     ${process.profile}`);
+  console.info(`tasks       ${process.tasks}`);
   for (let i = 0; i < process.tasks.length; ++i) {
-    console.log(`task[${i}].title       ${process.tasks[i].title}`);
+    console.info(`task[${i}].title       ${process.tasks[i].title}`);
     if ('tabId' in process.tasks[i]) {
-      console.log(`task[${i}].tabId       ${process.tasks[i].tabId}`);
+      console.info(`task[${i}].tabId       ${process.tasks[i].tabId}`);
     }
   }
-  console.log(`cpu         ${process.cpu}`);
-  console.log(`privMem     ${process.privateMemory}`);
-  console.log(`network     ${process.network}`);
-  console.log(`jsMemAlloc  ${process.jsMemoryAllocated}`);
-  console.log(`jsMemUsed   ${process.jsMemoryUsed}`);
-  console.log(`sqliteMem   ${process.sqliteMemory}`);
-  console.log(`naclDebugPort ${process.naclDebugPort}`);
+  console.info(`cpu         ${process.cpu}`);
+  console.info(`privMem     ${process.privateMemory}`);
+  console.info(`network     ${process.network}`);
+  console.info(`jsMemAlloc  ${process.jsMemoryAllocated}`);
+  console.info(`jsMemUsed   ${process.jsMemoryUsed}`);
+  console.info(`sqliteMem   ${process.sqliteMemory}`);
+  console.info(`naclDebugPort ${process.naclDebugPort}`);
   if ('imageCache' in process) {
-    console.log(`imageCache.size      ${process.imageCache.size}`);
-    console.log(`imageCache.liveSize  ${process.imageCache.liveSize}`);
+    console.info(`imageCache.size      ${process.imageCache.size}`);
+    console.info(`imageCache.liveSize  ${process.imageCache.liveSize}`);
   }
   if ('scriptCache' in process) {
-    console.log(`scriptCache.size     ${process.scriptCache.size}`);
-    console.log(`scriptCache.liveSize ${process.scriptCache.liveSize}`);
+    console.info(`scriptCache.size     ${process.scriptCache.size}`);
+    console.info(`scriptCache.liveSize ${process.scriptCache.liveSize}`);
   }
   if ('cssCache' in process) {
-    console.log(`cssCache.size        ${process.cssCache.size}`);
-    console.log(`cssCache .liveSize   ${process.cssCache.liveSize}`);
+    console.info(`cssCache.size        ${process.cssCache.size}`);
+    console.info(`cssCache .liveSize   ${process.cssCache.liveSize}`);
   }
 }
 
@@ -78,9 +78,9 @@ function validateProcessProperties(process, updating, memory_included) {
   assertEq(('privateMemory' in process), memory_included);
 
   // sqliteMemory is only reported for the browser process
-  if (process.type == 'browser') {
+  if (process.type === 'browser') {
     assertEq(('sqliteMemory' in process), updating);
-  } else if (process.type == 'renderer') {
+  } else if (process.type === 'renderer') {
     // The rest are not present in the browser process
     assertEq(('jsMemoryAllocated' in process), updating);
     assertEq(('jsMemoryUsed' in process), updating);
@@ -103,18 +103,18 @@ chrome.test.runTests([
     const onUpdatedCompleted = chrome.test.listenForever(
         chrome.tabs.onUpdated,
         function(changedTabId, changeInfo, changedTab) {
-          if (changedTab.status == 'complete') {
+          if (changedTab.status === 'complete') {
             completedCount++;
 
             // Once the NTP finishes loading, create another one.  This ensures
             // both NTPs end up in the same process.
-            if (changedTabId == tabs[3].id) {
+            if (changedTabId === tabs[3].id) {
               createTab(4, 'chrome://newtab/');
             }
           }
 
           // Once all tabs are done loading, continue with the next test.
-          if (completedCount == 5) {
+          if (completedCount === 5) {
             onUpdatedCompleted();
           }
         },
@@ -126,7 +126,7 @@ chrome.test.runTests([
                    getProcessId(tabs[1].id, pass(function(pid1) {
                                   // about:blank and extension page should not
                                   // share a process
-                                  assertTrue(pid0 != pid1);
+                                  assertTrue(pid0 !== pid1);
                                 }));
                  }));
   },
@@ -152,7 +152,7 @@ chrome.test.runTests([
                   chrome.processes.getProcessInfo(pid2, false, function(pl2) {
                     const proc1 = pl1[pid1];
                     const proc2 = pl2[pid2];
-                    assertTrue(proc1.tasks.length == proc2.tasks.length);
+                    assertTrue(proc1.tasks.length === proc2.tasks.length);
                     for (let i = 0; i < proc1.tasks.length; ++i) {
                       assertEq(proc1.tasks[i], proc2.tasks[i]);
                     }
@@ -167,7 +167,7 @@ chrome.test.runTests([
                    getProcessId(tabs[3].id, pass(function(pid3) {
                                   // NTP should not share a process with current
                                   // tabs
-                                  assertTrue(pid0 != pid3);
+                                  assertTrue(pid0 !== pid3);
                                 }));
                  }));
   },
@@ -191,13 +191,13 @@ chrome.test.runTests([
       assertTrue(pids.length >= 5, 'Unexpected size of pids');
 
       // Should be able to look up process object by ID.
-      assertTrue(processes[pids[0]].id == pids[0]);
-      assertTrue(processes[pids[0]].id != processes[pids[1]].id);
+      assertTrue(processes[pids[0]].id === pids[0]);
+      assertTrue(processes[pids[0]].id !== processes[pids[1]].id);
 
       getProcessId(
           tabs[0].id, pass(function(pidTab0) {
             // Process ID for tab 0 should be listed in pids.
-            assertTrue(processes[pidTab0] != undefined, 'Undefined Process');
+            assertTrue(processes[pidTab0] !== undefined, 'Undefined Process');
             assertEq(
                 'renderer', processes[pidTab0].type, 'Tab0 is not renderer');
           }));
@@ -296,7 +296,7 @@ chrome.test.runTests([
                          chrome.processes.getProcessInfo(
                              [pidTab0, pidTab1], false,
                              pass(function(processes) {
-                               assertTrue(Object.keys(processes).length == 2);
+                               assertTrue(Object.keys(processes).length === 2);
                              }));
                        }));
                  }));
@@ -305,7 +305,7 @@ chrome.test.runTests([
   function testGetProcessInfoSingle() {
     chrome.processes.getProcessInfo(
         0, false, pass(function(processes) {
-          assertTrue(Object.keys(processes).length == 1);
+          assertTrue(Object.keys(processes).length === 1);
         }));
   },
 
@@ -334,7 +334,7 @@ chrome.test.runTests([
 
   function testOnUnresponsive() {
     listenOnce(chrome.processes.onUnresponsive, function(process) {
-      assertTrue(process.id == hangingTabProcess);
+      assertTrue(process.id === hangingTabProcess);
       // actually kill the process, just to make sure it won't hang the test
       chrome.processes.terminate(process.id, function(killed) {
         chrome.test.assertTrue(killed);

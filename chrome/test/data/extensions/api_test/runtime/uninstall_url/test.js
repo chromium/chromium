@@ -13,7 +13,7 @@ chrome.test.runTests([
   function uninstallURL() {
     chrome.management.getAll(function(results) {
       for (let i = 0; i < results.length; i++) {
-        if (results[i].name == SETS_UNINSTALL_URL) {
+        if (results[i].name === SETS_UNINSTALL_URL) {
           chrome.test.runWithUserGesture(pass(function() {
             chrome.management.uninstall(
                 results[i].id, pass(function() {

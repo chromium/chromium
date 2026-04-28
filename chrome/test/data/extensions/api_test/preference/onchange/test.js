@@ -11,7 +11,7 @@ function listenUntil(event, expected) {
     for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
-        if (expected.length == 0) {
+        if (expected.length === 0) {
           done();
         }
         return;

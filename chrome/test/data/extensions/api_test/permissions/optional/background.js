@@ -38,13 +38,13 @@ const permissionsWithOrigin = {
 };
 
 function checkEqualSets(set1, set2) {
-  if (set1.length != set2.length) {
+  if (set1.length !== set2.length) {
     return false;
   }
 
   for (let x = 0; x < set1.length; x++) {
     if (!set2.some(function(v) {
-          return v == set1[x];
+          return v === set1[x];
         })) {
       return false;
     }
@@ -133,8 +133,8 @@ chrome.test.getConfig(function(config) {
     function requestBookmarks() {
       assertEq(undefined, chrome.bookmarks);
       listenOnce(chrome.permissions.onAdded, function(permissions) {
-        assertTrue(permissions.permissions.length == 1);
-        assertTrue(permissions.permissions[0] == 'bookmarks');
+        assertTrue(permissions.permissions.length === 1);
+        assertTrue(permissions.permissions[0] === 'bookmarks');
       });
       chrome.permissions.request(
           {permissions: ['bookmarks']}, pass(function(granted) {
@@ -182,8 +182,8 @@ chrome.test.getConfig(function(config) {
         assertTrue(true);
       }));
       listenOnce(chrome.permissions.onRemoved, function(permissions) {
-        assertTrue(permissions.permissions.length == 1);
-        assertTrue(permissions.permissions[0] == 'bookmarks');
+        assertTrue(permissions.permissions.length === 1);
+        assertTrue(permissions.permissions[0] === 'bookmarks');
       });
       chrome.permissions.remove(
           {permissions: ['bookmarks']},
@@ -230,9 +230,9 @@ chrome.test.getConfig(function(config) {
               }));
 
               listenOnce(chrome.permissions.onAdded, function(permissions) {
-                assertTrue(permissions.permissions.length == 0);
-                assertTrue(permissions.origins.length == 1);
-                assertTrue(permissions.origins[0] == 'http://*.c.com/*');
+                assertTrue(permissions.permissions.length === 0);
+                assertTrue(permissions.origins.length === 1);
+                assertTrue(permissions.origins[0] === 'http://*.c.com/*');
               });
               chrome.permissions.request(
                   {origins: ['http://*.c.com/*']}, pass(function(granted) {
@@ -256,9 +256,9 @@ chrome.test.getConfig(function(config) {
       doReq('http://c.com', pass(function(result) {
               assertTrue(result);
               listenOnce(chrome.permissions.onRemoved, function(permissions) {
-                assertTrue(permissions.permissions.length == 0);
-                assertTrue(permissions.origins.length == 1);
-                assertTrue(permissions.origins[0] == 'http://*.c.com/*');
+                assertTrue(permissions.permissions.length === 0);
+                assertTrue(permissions.origins.length === 1);
+                assertTrue(permissions.origins[0] === 'http://*.c.com/*');
               });
               chrome.permissions.remove(
                   {origins: ['http://*.c.com/*']}, pass(function(removed) {

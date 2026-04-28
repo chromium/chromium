@@ -11,10 +11,10 @@ const captureStopped = new Promise((resolve) => {
 
 // Listen for changes in tabCapture state.
 chrome.tabCapture.onStatusChanged.addListener((info) => {
-  if (info.status == 'active') {
+  if (info.status === 'active') {
     didCapture = true;
   }
-  if (info.status == 'stopped' && didCapture) {
+  if (info.status === 'stopped' && didCapture) {
     didStopCapture = true;
     onStoppedCapture();
   }

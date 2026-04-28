@@ -7,7 +7,7 @@ const incognitoSuffix = incognito ? ' incognito' : '';
 
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
   chrome.test.log(`onInputChanged: ${text}`);
-  if (text == 'suggestio') {
+  if (text === 'suggestio') {
     // First test, complete 'suggestio'
     const desc = 'Description with style: <match>&lt;match&gt;</match>, ' +
         '<dim>[dim]</dim>, <url>(url till end)</url>';
@@ -28,7 +28,7 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
 });
 
 chrome.omnibox.onInputEntered.addListener(function(text, disposition) {
-  if (disposition == 'newForegroundTab') {
+  if (disposition === 'newForegroundTab') {
     chrome.test.assertEq(`newtab${incognitoSuffix}`, text);
     chrome.test.notifyPass();
   } else {

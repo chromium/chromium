@@ -30,7 +30,7 @@ function create(id, options) {
         reject(new Error('Unable to create notification'));
         return;
       }
-      console.log(`Created with id: ${id}`);
+      console.info(`Created with id: ${id}`);
       resolve(id);
       return;
     });
@@ -44,7 +44,7 @@ function update(id, options) {
         reject(new Error('Unable to update notification'));
         return;
       }
-      console.log('Updated id: ', id);
+      console.info('Updated id: ', id);
       resolve(ok);
       return;
     });
@@ -99,7 +99,7 @@ function succeedTest(testName) {
           chrome.test.succeed(testName);
         },
         function(error) {
-          console.log(
+          console.info(
               'Unknown error in clearAll: ' + JSON.stringify(arguments));
         });
   };
@@ -112,7 +112,7 @@ function failTest(testName) {
           chrome.test.fail(testName);
         },
         function(error) {
-          console.log(
+          console.info(
               'Unknown error in clearAll: ' + JSON.stringify(error.message));
         });
   };
@@ -120,7 +120,7 @@ function failTest(testName) {
 
 function testPartialUpdate() {
   const testName = 'testPartialUpdate';
-  console.log(`Starting ${testName}`);
+  console.info(`Starting ${testName}`);
   const succeed = succeedTest(testName);
   const fail = failTest(testName);
 

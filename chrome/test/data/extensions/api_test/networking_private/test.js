@@ -12,9 +12,13 @@ const FAILURE = 'Failure';
 const GUID = 'SOME_GUID';
 
 function callbackResult(result) {
+  // Failures can be indicated in a number of ways. The most straightforward is
+  // a runtime error, but we also consider a 'Failure' result message to be
+  // failure, or a false value, or an empty array.
   if (chrome.runtime.lastError) {
     chrome.test.fail(chrome.runtime.lastError.message);
-  } else if (result == false || result == FAILURE) {
+  } else if (result === false || result === FAILURE ||
+             Array.isArray(result) && result.length === 0) {
     chrome.test.fail(`Failed: ${result}`);
   }
 }
@@ -104,5 +108,5 @@ const availableTests = [
 
 const testToRun = window.location.search.substring(1);
 chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
+  return op.name === testToRun;
 }));

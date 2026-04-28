@@ -16,11 +16,11 @@ chrome.test.getConfig(function(config) {
     eventCounter++;
     // We don't expect any other events to happen so finish the test as
     // passed.
-    if (eventCounter == statuses.length) {
+    if (eventCounter === statuses.length) {
       chrome.test.notifyPass();
     }
 
-    if (status == chrome.printing.JobStatus.IN_PROGRESS) {
+    if (status === chrome.printing.JobStatus.IN_PROGRESS) {
       chrome.printing.cancelJob(jobId, () => {});
     }
   });

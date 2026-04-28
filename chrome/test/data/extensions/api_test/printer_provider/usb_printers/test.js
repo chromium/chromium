@@ -4,7 +4,7 @@
 
 chrome.test.sendMessage('loaded', function(test) {
   chrome.test.runTests([function printTest() {
-    if (test == 'NO_LISTENER') {
+    if (test === 'NO_LISTENER') {
       chrome.test.sendMessage('ready');
       chrome.test.succeed();
       return;
@@ -15,7 +15,7 @@ chrome.test.sendMessage('loaded', function(test) {
       chrome.test.assertFalse(!!chrome.printerProviderInternal);
       chrome.test.assertTrue(!!callback);
 
-      if (test == 'EMPTY_RESPONSE') {
+      if (test === 'EMPTY_RESPONSE') {
         callback();
       } else {
         callback({

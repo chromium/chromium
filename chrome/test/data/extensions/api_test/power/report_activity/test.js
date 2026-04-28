@@ -9,9 +9,8 @@ chrome.idle.onStateChanged.addListener((newState) => {
   if (newState === 'idle') {
     wasIdle = true;
     chrome.test.sendMessage('idle');
-  }
-  // Only succeed a test if we go from "idle" to "active".
-  else if (newState === 'active' && wasIdle) {
+  } else if (newState === 'active' && wasIdle) {
+    // Only succeed a test if we go from "idle" to "active".
     chrome.test.succeed();
   }
 });

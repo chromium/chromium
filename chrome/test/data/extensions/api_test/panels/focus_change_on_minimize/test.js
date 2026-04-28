@@ -13,16 +13,16 @@ let listenDoneCallback;
 // whenever a panel loses focus.
 function onFocusChanged(changedWinId) {
   if (waitingForFocus) {
-    if (chrome.windows.WINDOW_ID_NONE != changedWinId) {
+    if (chrome.windows.WINDOW_ID_NONE !== changedWinId) {
       focusedWinId = changedWinId;
       // Only minimize if the focused window is the panel created by
       // this test. Tests might be run in parallel so there might be
       // other focus events that we don't care about.
-      if (focusedWinId == panelWinId) {
+      if (focusedWinId === panelWinId) {
         minimizePanel();
       }
     }
-  } else if (chrome.windows.WINDOW_ID_NONE == changedWinId) {
+  } else if (chrome.windows.WINDOW_ID_NONE === changedWinId) {
     listenDoneCallback();
   }
 }

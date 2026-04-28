@@ -27,7 +27,7 @@ async function getActivatedInstrumentationServiceWorker() {
     const worker = registration.installing;
 
     registration.installing.addEventListener('statechange', () => {
-      if (worker.state == 'activated') {
+      if (worker.state === 'activated') {
         resolve();
       }
     });

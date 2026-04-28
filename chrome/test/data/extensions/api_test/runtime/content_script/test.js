@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // This is a dummy script.
-console.log('Test started.');
+console.info('Test started.');

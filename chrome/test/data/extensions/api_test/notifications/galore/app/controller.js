@@ -36,7 +36,7 @@ const recorderButtonStates = [
 // corresponding sets of buttons.
 function updateButtonsState() {
   recorderButtonStates.map(function(entry) {
-    if (entry.state != recordingState) {
+    if (entry.state !== recordingState) {
       return;
     }
     // Found entry with current recorder state. Now compute the sets
@@ -116,7 +116,7 @@ function cloneOptions(obj) {
 }
 
 function recordCreate(kind, id, options) {
-  if (recordingState != RECORDING) {
+  if (recordingState !== RECORDING) {
     return;
   }
   setPreviousSegmentDuration();
@@ -126,7 +126,7 @@ function recordCreate(kind, id, options) {
 }
 
 function recordUpdate(kind, id, options) {
-  if (recordingState != RECORDING) {
+  if (recordingState !== RECORDING) {
     return;
   }
   setPreviousSegmentDuration();
@@ -136,7 +136,7 @@ function recordUpdate(kind, id, options) {
 }
 
 function recordDelete(kind, id) {
-  if (recordingState != RECORDING) {
+  if (recordingState !== RECORDING) {
     return;
   }
   setPreviousSegmentDuration();
@@ -170,9 +170,9 @@ function playNextSegment() {
     return;
   }
 
-  if (segment.type == 'create') {
+  if (segment.type === 'create') {
     createNotificationForPlay(segment.kind, segment.id, segment.options);
-  } else if (segment.type == 'update') {
+  } else if (segment.type === 'update') {
     updateNotificationForPlay(segment.kind, segment.id, segment.options);
   } else {  // type == 'delete'
     deleteNotificationForPlay(segment.kind, segment.id);
@@ -184,7 +184,7 @@ function playNextSegment() {
 }
 
 function deleteNotificationForPlay(kind, id) {
-  if (kind == 'web') {
+  if (kind === 'web') {
     webNotifications[id].close();
   } else {
     chrome.notifications.clear(id, function(wasClosed) {
@@ -194,7 +194,7 @@ function deleteNotificationForPlay(kind, id) {
 }
 
 function createNotificationForPlay(kind, id, options) {
-  if (kind == 'web') {
+  if (kind === 'web') {
     webNotifications[id] = createWebNotification(id, options);
   } else {
     const type = options.type;
@@ -204,7 +204,7 @@ function createNotificationForPlay(kind, id, options) {
 }
 
 function updateNotificationForPlay(kind, id, options) {
-  if (kind == 'web') {
+  if (kind === 'web') {
     // TODO: implement update.
   } else {
     const type = options.type;
@@ -237,13 +237,13 @@ function unpausePlaying() {
 }
 
 function onRecord() {
-  if (recordingState == STOPPED) {
+  if (recordingState === STOPPED) {
     segmentStart = new Date().getTime();
     pausedDuration = 0;
     // This item is only needed to keep a duration of the delay between start
     // and first action.
     recordingList = [{type: 'start'}];
-  } else if (recordingState == PAUSED_RECORDING) {
+  } else if (recordingState === PAUSED_RECORDING) {
     segmentStart = new Date().getTime() - pausedDuration;
     pausedDuration = 0;
   } else {
@@ -260,9 +260,9 @@ function pauseRecording() {
 }
 
 function onPause() {
-  if (recordingState == RECORDING) {
+  if (recordingState === RECORDING) {
     pauseRecording();
-  } else if (recordingState == PLAYING) {
+  } else if (recordingState === PLAYING) {
     pausePlaying();
   } else {
     return;
@@ -286,11 +286,11 @@ function onStop() {
 }
 
 function onPlay() {
-  if (recordingState == STOPPED) {
+  if (recordingState === STOPPED) {
     if (!startPlaying()) {
       return;
     }
-  } else if (recordingState == PAUSED_PLAYING) {
+  } else if (recordingState === PAUSED_PLAYING) {
     unpausePlaying();
   }
   setRecordingState(PLAYING);
@@ -316,7 +316,7 @@ function onDataFetched() {
     // Create notification buttons.
     data.forEach(function(section) {
       const type = section.notificationType;
-      if (type == 'progress') {
+      if (type === 'progress') {
         addProgressControl(section.sectionName);
       }
       (section.notificationOptions || []).forEach(function(options) {
@@ -359,10 +359,10 @@ function nextProgress(id, priority, options, progress, step, timeout) {
 function createNotification(type, options) {
   const id = getNextId();
   const priority = Number(settings.priority || 0);
-  if (type == 'web') {
+  if (type === 'web') {
     createWebNotification(id, options);
   } else {
-    if (type == 'progress') {
+    if (type === 'progress') {
       if (getElement('#progress-oneshot').checked) {
         options['progress'] = Number(getElement('#progress').value);
       } else {

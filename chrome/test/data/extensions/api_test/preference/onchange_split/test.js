@@ -16,7 +16,7 @@ function listenUntil(event, expected) {
     for (let i = 0; i < expected.length; i++) {
       if (chrome.test.checkDeepEq(expected[i], value)) {
         expected.splice(i, 1);
-        if (expected.length == 0) {
+        if (expected.length === 0) {
           done();
         }
         return;
@@ -43,7 +43,7 @@ function listenAndFailWhen(event) {
 function constructMessage(str, caller) {
   caller = caller || arguments.callee.caller.name;
   const incognitoStr = inIncognitoContext ? ' incognito ' : ' regular ';
-  console.log(`${caller}${incognitoStr}${str}`);
+  console.info(`${caller}${incognitoStr}${str}`);
   return `${caller}${incognitoStr}${str}`;
 }
 

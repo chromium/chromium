@@ -30,7 +30,7 @@ chrome.test.getConfig(function(config) {
         checkMessageUrl(message.caller_url);
         currentMessage++;
 
-        if (currentMessage == messagesToSend.length) {
+        if (currentMessage === messagesToSend.length) {
           chrome.test.succeed();
         } else {
           port.postMessage(messagesToSend[currentMessage]);
