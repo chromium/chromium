@@ -9,9 +9,10 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-@interface UIBlockerSceneAgent ()
+@interface UIBlockerSceneAgent () <SceneUIBlockerStateObserver>
 
 @property(nonatomic, strong) UIWindow* overlayWindow;
 
@@ -19,13 +20,24 @@
 
 @implementation UIBlockerSceneAgent
 
+- (void)setSceneState:(SceneState*)sceneState {
+  [super setSceneState:sceneState];
+  [sceneState.uiBlockerState addObserver:self];
+}
+
 #pragma mark - SceneStateObserver
 
-- (void)sceneStateWillShowModalOverlay:(SceneState*)sceneState {
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [sceneState.uiBlockerState removeObserver:self];
+}
+
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)willShowModalOverlay {
   [self displayBlockingOverlay];
 }
 
-- (void)sceneStateWillHideModalOverlay:(SceneState*)sceneState {
+- (void)willHideModalOverlay {
   if (!self.overlayWindow) {
     return;
   }
@@ -35,10 +47,11 @@
   // When the scene has displayed the blocking overlay and isn't in foreground
   // when it exits it, the cached app switcher snapshot will have the overlay on
   // it, and therefore needs updating.
-  if (sceneState.activationLevel < SceneActivationLevelForegroundInactive) {
-    DCHECK(sceneState.scene.session);
+  if (self.sceneState.activationLevel <
+      SceneActivationLevelForegroundInactive) {
+    DCHECK(self.sceneState.scene.session);
     [[UIApplication sharedApplication]
-        requestSceneSessionRefresh:sceneState.scene.session];
+        requestSceneSessionRefresh:self.sceneState.scene.session];
   }
 }
 

@@ -17,6 +17,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 #pragma mark - ProfileStateObserverList
@@ -182,7 +183,7 @@
     // overlay.
     BOOL shouldPresentOverlay =
         (uiBlockerTarget != nil) && (scene != uiBlockerTarget);
-    scene.presentingModalOverlay = shouldPresentOverlay;
+    scene.uiBlockerState.presentingModalOverlay = shouldPresentOverlay;
   }
 }
 
@@ -282,7 +283,7 @@
 
     case SceneActivationLevelForegroundActive:
       [_observers profileState:self sceneDidBecomeActive:sceneState];
-      sceneState.presentingModalOverlay =
+      sceneState.uiBlockerState.presentingModalOverlay =
           currentUIBlocker && currentUIBlocker != sceneState;
       break;
   }

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
@@ -69,6 +70,7 @@
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
     _agents = [[NSMutableArray alloc] init];
+    _uiBlockerState = [[SceneUIBlockerState alloc] init];
     _tabGridState = [[TabGridState alloc] init];
     _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
     _layoutState = [[LayoutState alloc] init];
@@ -156,22 +158,6 @@
   return self.controller.browserProviderInterface;
 }
 
-- (void)setPresentingModalOverlay:(BOOL)presentingModalOverlay {
-  if (_presentingModalOverlay == presentingModalOverlay) {
-    return;
-  }
-  if (presentingModalOverlay) {
-    [_observers sceneStateWillShowModalOverlay:self];
-  } else {
-    [_observers sceneStateWillHideModalOverlay:self];
-  }
-
-  _presentingModalOverlay = presentingModalOverlay;
-
-  if (!presentingModalOverlay) {
-    [_observers sceneStateDidHideModalOverlay:self];
-  }
-}
 
 - (void)setURLContextsToOpen:(NSSet<UIOpenURLContext*>*)URLContextsToOpen {
   if (_URLContextsToOpen == nil || URLContextsToOpen == nil) {
@@ -202,7 +188,7 @@
 #pragma mark - UIBlockerTarget
 
 - (BOOL)isUIBlocked {
-  return _presentingModalOverlay;
+  return self.uiBlockerState.presentingModalOverlay;
 }
 
 - (id<UIBlockerManager>)uiBlockerManagerForExtent:(UIBlockerExtent)extent {

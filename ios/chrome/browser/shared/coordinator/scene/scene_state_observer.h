@@ -30,12 +30,6 @@
 - (void)sceneState:(SceneState*)sceneState
     profileStateConnected:(ProfileState*)profileState;
 
-// Notifies when presentingModalOverlay is being set to true.
-- (void)sceneStateWillShowModalOverlay:(SceneState*)sceneState;
-// Notifies when presentingModalOverlay is being set to false.
-- (void)sceneStateWillHideModalOverlay:(SceneState*)sceneState;
-// Notifies when presentingModalOverlay has been set to false.
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState;
 // Notifies when UIEnabled has been set to true. Is only fired once during the
 // scene's life period when the scene UI has initialized.
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState;

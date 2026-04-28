@@ -26,6 +26,7 @@ source_set("profile") {
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }

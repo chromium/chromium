@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_coordinator_delegate.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -211,7 +212,7 @@ TEST_F(IdleTimeoutPolicySceneAgentTest,
        DialogDoesNotShowWhenSceneStateBlockedByOtherScene) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  scene_state_.presentingModalOverlay = true;
+  scene_state_.uiBlockerState.presentingModalOverlay = true;
   OCMReject([mock_application_handler_
       dismissModalDialogsWithCompletion:[OCMArg any]]);
   idle_service_->RunActionsForStateForTesting(

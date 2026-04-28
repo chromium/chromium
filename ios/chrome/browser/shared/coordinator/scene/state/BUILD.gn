@@ -9,6 +9,8 @@ source_set("state") {
     "layout_state.h",
     "layout_state.mm",
     "layout_transition_coordinating.h",
+    "scene_ui_blocker_state.h",
+    "scene_ui_blocker_state.mm",
     "tab_grid_state.h",
     "tab_grid_state.mm",
   ]

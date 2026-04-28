@@ -103,6 +103,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/tab_activity_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/task_updater_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
@@ -273,6 +274,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
 @interface SceneController () <AuthenticationServiceObserving,
                                ProfileStateObserver,
+                               SceneUIBlockerStateObserver,
                                SceneUIHandler,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
@@ -354,6 +356,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   if (self) {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
+    [_sceneState.uiBlockerState addObserver:self];
 
     _sceneURLLoadingService = std::make_unique<SceneUrlLoadingService>();
     _sceneURLLoadingService->SetDelegate(self);
@@ -685,7 +688,9 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   }
 }
 
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)didHideModalOverlay {
   [self handleExternalIntents];
 }
 
@@ -1156,6 +1161,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
   self.browserLifecycleManager = nil;
 
   [self.sceneState.profileState removeObserver:self];
+  [_sceneState.uiBlockerState removeObserver:self];
   _sceneURLLoadingService.reset();
 
   _imageTranscoder = nullptr;
@@ -1280,7 +1286,7 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
     return NO;
   }
 
-  if (self.sceneState.presentingModalOverlay) {
+  if (self.sceneState.uiBlockerState.presentingModalOverlay) {
     return NO;
   }
 

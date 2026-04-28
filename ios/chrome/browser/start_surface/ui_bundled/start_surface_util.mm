@@ -12,6 +12,7 @@
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -68,7 +69,7 @@ bool ShouldShowTabGroupInGridForSceneState(SceneState* scene_state) {
   if (*elapsed <= min_duration || *elapsed >= max_duration) {
     return false;
   }
-  if (scene_state.presentingModalOverlay ||
+  if (scene_state.uiBlockerState.presentingModalOverlay ||
       scene_state.startupHadExternalIntent) {
     return false;
   }
@@ -82,7 +83,7 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
       *elapsed < experimental_flags::GetReturnToHomeSurfaceDuration()) {
     return false;
   }
-  if (scene_state.presentingModalOverlay ||
+  if (scene_state.uiBlockerState.presentingModalOverlay ||
       scene_state.startupHadExternalIntent ||
       scene_state.incognitoState.incognitoContentVisible) {
     return false;

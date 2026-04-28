@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -38,6 +39,7 @@
                                       IdentityManagerObserverBridgeDelegate,
                                       FullscreenSigninCoordinatorDelegate,
                                       ProfileStateObserver,
+                                      SceneUIBlockerStateObserver,
                                       UIBlockerManagerObserver> {
   // Observes changes in identity to make sure that the sign-in state matches
   // the BrowserSignin policy.
@@ -85,6 +87,7 @@
 
   [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState addUIBlockerManagerObserver:self];
+  [self.sceneState.uiBlockerState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
@@ -95,6 +98,7 @@
   [self tearDownObservers];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
+  [self.sceneState.uiBlockerState removeObserver:self];
   [self.sceneState removeObserver:self];
   self.mainBrowser = nullptr;
 }
@@ -114,18 +118,20 @@
   [self handleSigninPromptsIfUIAvailable];
 }
 
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
-  // Reconsider showing the forced sign-in prompt if the UI blocker is
-  // dismissed which might be because the scene that was displaying the
-  // sign-in prompt previously was closed. Choosing a new scene to prompt
-  // is needed in that case.
-  [self handleSigninPromptsIfUIAvailable];
-}
-
 - (void)signinDidEnd:(SceneState*)sceneState {
   // Consider showing the forced sign-in prompt when the sign-in prompt is
   // dismissed/done because the browser may be signed out if sign-in is
   // cancelled.
+  [self handleSigninPromptsIfUIAvailable];
+}
+
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)didHideModalOverlay {
+  // Reconsider showing the forced sign-in prompt if the UI blocker is
+  // dismissed which might be because the scene that was displaying the
+  // sign-in prompt previously was closed. Choosing a new scene to prompt
+  // is needed in that case.
   [self handleSigninPromptsIfUIAvailable];
 }
 
@@ -236,12 +242,12 @@
     // This UI blocker will be superimposed on the one of the sign-in prompt
     // command and maybe the existing sign-in prompt (to be dismissed) to not
     // leave any gap that would allow the other scenes to handle the sign-in
-    // policy (by keeping `sceneState.presentingModalOverlay` == YES). There
-    // won't be issues with the superimpositions of the UI blockers because this
-    // is done on the same SceneState target, which will only increase the
-    // target counter. If the scene is dismissed, the count will be decremented
-    // to zero leaving the way for another scene to take over the forced
-    // sign-in prompt.
+    // policy (by keeping `sceneState.uiBlockerState.presentingModalOverlay` ==
+    // YES). There won't be issues with the superimpositions of the UI blockers
+    // because this is done on the same SceneState target, which will only
+    // increase the target counter. If the scene is dismissed, the count will be
+    // decremented to zero leaving the way for another scene to take over the
+    // forced sign-in prompt.
     //
     // Use the UIBlockerExtent::kApplication extent since the sign-in policies
     // have to be pushed through the platform which concerns the entire app in
@@ -304,9 +310,9 @@
   if (self.sceneState.signinInProgress) {
     // Prompting to sign-in is already in progress in that scene, no need to
     // present the forced sign-in prompt on top of that. The other scenes will
-    // have `self.sceneState.presentingModalOverlay` == YES which will stop
-    // them from handling the policy as well. For example, this stops the scene
-    // from rehandling the forced sign-in policy when foregrounded.
+    // have `self.sceneState.uiBlockerState.presentingModalOverlay` == YES which
+    // will stop them from handling the policy as well. For example, this stops
+    // the scene from rehandling the forced sign-in policy when foregrounded.
     return NO;
   }
 

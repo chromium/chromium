@@ -17,6 +17,7 @@
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -148,7 +149,7 @@ BOOL ApplicationIsInBackground() {
     // overlay.
     BOOL shouldPresentOverlay =
         (uiBlockerTarget != nil) && (scene != uiBlockerTarget);
-    scene.presentingModalOverlay = shouldPresentOverlay;
+    scene.uiBlockerState.presentingModalOverlay = shouldPresentOverlay;
   }
 }
 

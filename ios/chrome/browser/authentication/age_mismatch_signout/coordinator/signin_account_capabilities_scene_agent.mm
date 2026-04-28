@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -50,6 +51,7 @@
     ExternalPrivacyContextUIProvider,
     IdentityManagerObserverBridgeDelegate,
     ProfileStateObserver,
+    SceneUIBlockerStateObserver,
     UIBlockerManagerObserver>
 @end
 
@@ -96,6 +98,7 @@
   [super setSceneState:sceneState];
   [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState addUIBlockerManagerObserver:self];
+  [self.sceneState.uiBlockerState addObserver:self];
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
@@ -120,6 +123,7 @@
       ->UnregisterExternalPrivacyContextProvider(self);
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState.profileState removeObserver:self];
+  [self.sceneState.uiBlockerState removeObserver:self];
   [self.sceneState removeObserver:self];
   _identityManagerObserver.reset();
   _ageMismatchSignoutCoordinator.delegate = nil;
@@ -128,7 +132,9 @@
   _applicationUIBlocker.reset();
 }
 
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)didHideModalOverlay {
   [self notifyProviderReadyIfUIAvailable];
 }
 

@@ -10,11 +10,13 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/task_orchestrator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface TaskUpdaterSceneAgent () <ProfileStateObserver,
+                                     SceneUIBlockerStateObserver,
                                      UIBlockerManagerObserver>
 @end
 
@@ -28,6 +30,7 @@
   [super setSceneState:sceneState];
   [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState addUIBlockerManagerObserver:self];
+  [self.sceneState.uiBlockerState addObserver:self];
 
   [NSNotificationCenter.defaultCenter
       addObserver:self
@@ -69,10 +72,6 @@
   [self maybeUpdateToUIReady];
 }
 
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
-  [self maybeUpdateToUIReady];
-}
-
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   [self maybeUpdateToUIReady];
 }
@@ -82,12 +81,19 @@
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
+  [self.sceneState.uiBlockerState removeObserver:self];
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)signinDidEnd:(SceneState*)sceneState {
   // Handle intents after sign-in is done when the forced sign-in policy
   // is enabled.
+  [self maybeUpdateToUIReady];
+}
+
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)didHideModalOverlay {
   [self maybeUpdateToUIReady];
 }
 
@@ -142,7 +148,7 @@
   if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
     return NO;
   }
-  if (sceneState.presentingModalOverlay) {
+  if (sceneState.uiBlockerState.presentingModalOverlay) {
     return NO;
   }
   if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {

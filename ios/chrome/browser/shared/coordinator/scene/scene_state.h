@@ -22,6 +22,7 @@
 @class SceneController;
 @class SceneState;
 class SigninInProgress;
+@class SceneUIBlockerState;
 @class TabGridState;
 
 // During profile switching, it is possible that an animation is displayed
@@ -94,8 +95,6 @@ class SigninInProgress;
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;
 
-// When this is YES, the scene is showing the modal overlay.
-@property(nonatomic, assign) BOOL presentingModalOverlay;
 
 // When this is YES, the scene either resumed or started up in response to an
 // external intent.
@@ -125,6 +124,9 @@ class SigninInProgress;
 // Object containing the state of whether some incognito content is visible, for
 // example an incognito tab or the incognito tab switcher.
 @property(nonatomic, strong, readonly) IncognitoState* incognitoState;
+
+// Object containing the state of the scene UI blocker.
+@property(nonatomic, strong, readonly) SceneUIBlockerState* uiBlockerState;
 
 // Object containing the state of the tab grid.
 @property(nonatomic, strong, readonly) TabGridState* tabGridState;

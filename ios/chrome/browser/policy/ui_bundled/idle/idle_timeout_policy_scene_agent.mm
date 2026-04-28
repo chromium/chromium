@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -39,7 +40,8 @@
 
 @interface IdleTimeoutPolicySceneAgent () <
     IdleServiceObserving,
-    IdleTimeoutConfirmationCoordinatorDelegate>
+    IdleTimeoutConfirmationCoordinatorDelegate,
+    SceneUIBlockerStateObserver>
 @end
 
 @implementation IdleTimeoutPolicySceneAgent {
@@ -81,6 +83,11 @@
   UIWindow* _launchScreenWindow;
 }
 
+- (void)setSceneState:(SceneState*)sceneState {
+  [super setSceneState:sceneState];
+  [sceneState.uiBlockerState addObserver:self];
+}
+
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
                            sceneHandler:(id<SceneCommands>)sceneHandler
                 snackbarCommandsHandler:(id<SnackbarCommands>)snackbarHandler
@@ -106,18 +113,12 @@
   _mainBrowser = nullptr;
   _idleService = nullptr;
   [self stopIdleTimeoutConfirmationCoordinator];
+  [sceneState.uiBlockerState removeObserver:self];
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   // Setup objects that need the browser UI objects before being set.
   [self setupObserver];
-}
-
-- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
-  // Called to check if the dialog needs to be shown after a UI blocker has been
-  // released. This is the case when one scene is closed while showing the
-  // dialog, so any other open scene should take over showing the countdown.
-  [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -129,6 +130,15 @@
   // needed because the scene state might not be foregrounded yet when
   // `onIdleTimeoutActionsCompleted` is called on foreground.
   [self maybeShowPostActionSnackbar];
+}
+
+#pragma mark - SceneUIBlockerStateObserver
+
+- (void)didHideModalOverlay {
+  // Called to check if the dialog needs to be shown after a UI blocker has been
+  // released. This is the case when one scene is closed while showing the
+  // dialog, so any other open scene should take over showing the countdown.
+  [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
 #pragma mark - IdleServiceObserving
@@ -293,7 +303,7 @@
   }
 
   // Return YES if the scene is not blocked by a modal overlay.
-  return !self.sceneState.presentingModalOverlay;
+  return !self.sceneState.uiBlockerState.presentingModalOverlay;
 }
 
 // Shows the notification dialog if these two conditions are satisfied:

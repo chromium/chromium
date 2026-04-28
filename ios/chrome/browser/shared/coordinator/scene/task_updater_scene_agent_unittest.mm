@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -179,7 +180,7 @@ TEST_F(TaskUpdaterSceneAgentTest, TestModalOverlay) {
   scene_state_.UIEnabled = YES;
 
   // Set presenting modal overlay before becoming active.
-  scene_state_.presentingModalOverlay = YES;
+  scene_state_.uiBlockerState.presentingModalOverlay = YES;
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
@@ -188,7 +189,7 @@ TEST_F(TaskUpdaterSceneAgentTest, TestModalOverlay) {
             TaskExecutionStage::TaskExecutionUIReady);
 
   // Hide modal overlay.
-  scene_state_.presentingModalOverlay = NO;
+  scene_state_.uiBlockerState.presentingModalOverlay = NO;
 
   EXPECT_EQ(fake_task_orchestrator_.stage,
             TaskExecutionStage::TaskExecutionUIReady);

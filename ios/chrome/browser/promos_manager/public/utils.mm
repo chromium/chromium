@@ -12,6 +12,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_ui_blocker_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -63,7 +64,7 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   }
 
   // (7) The user isn't currently looking at a modal overlay.
-  if (scene_state.presentingModalOverlay) {
+  if (scene_state.uiBlockerState.presentingModalOverlay) {
     return NO;
   }
 
