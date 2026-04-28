@@ -288,11 +288,6 @@ void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
   image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
 }
 
-void PaintTimingDetector::LayoutObjectWillBeDestroyed(
-    const LayoutObject& object) {
-  text_paint_timing_detector_->LayoutObjectWillBeDestroyed(object);
-}
-
 void PaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {

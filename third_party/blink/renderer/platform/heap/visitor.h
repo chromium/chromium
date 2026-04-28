@@ -10,6 +10,9 @@
 
 namespace blink {
 
+template <typename K, typename V>
+using EphemeronPair = cppgc::EphemeronPair<K, V>;
+
 using LivenessBroker = cppgc::LivenessBroker;
 using Visitor = cppgc::Visitor;
 

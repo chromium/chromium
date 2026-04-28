@@ -96,7 +96,6 @@ class CORE_EXPORT PaintTimingDetector
   void Trace(Visitor* visitor) const override;
 
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
-  void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
   void NotifyPaintFinished();
   void NotifyInputEvent(WebInputEvent::Type);

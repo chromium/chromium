@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_PAINT_TIMING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_PAINT_TIMING_DETECTOR_H_
 
-#include <memory>
-#include <utility>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -16,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -35,30 +33,43 @@ class CORE_EXPORT LargestTextPaintManager final {
   LargestTextPaintManager& operator=(const LargestTextPaintManager&) = delete;
 
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,
-                                     const uint64_t&,
+                                     const uint64_t,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect);
 
+  // Returns the current largest ignored `TextRecord` if it exists and the
+  // underlying node has not been removed from the DOM, and nullptr otherwise.
   TextRecord* TakeLargestIgnoredText() {
-    return std::exchange(largest_ignored_text_, nullptr);
+    TextRecord* record = GetLargestIgnoredTextIfNotRemoved();
+    largest_ignored_text_ = {nullptr, nullptr};
+    return record;
   }
-  const TextRecord* LargestIgnoredText() const { return largest_ignored_text_; }
+
+  // Returns the current largest ignored `TextRecord` if it exists and the
+  // underlying node has not been removed from the DOM, and false otherwise.
+  TextRecord* GetLargestIgnoredTextIfNotRemoved() {
+    return largest_ignored_text_.value &&
+                   !largest_ignored_text_.value->WasNodeRemoved()
+               ? largest_ignored_text_.value
+               : nullptr;
+  }
 
   void Trace(Visitor*) const;
 
  private:
-  friend class LargestContentfulPaintCalculatorTest;
-  friend class TextPaintTimingDetectorTest;
-
-  unsigned count_candidates_ = 0;
-
   // Text paints are ignored when they (or an ancestor) have opacity 0. This can
   // be a problem later on if the opacity changes to nonzero but this change is
   // composited. We solve this for the special case of documentElement by
   // storing a record for the largest ignored text without nested opacity. We
   // consider this an LCP candidate when the documentElement's opacity changes
   // from zero to nonzero.
-  Member<TextRecord> largest_ignored_text_;
+  //
+  // TODO(crbug.com/457794552): This is currently best-effort since only one
+  // record is tracked and removing the corresponding node resets tracking.
+  // Consider improving this by tracking all ignored content or not emitting
+  // anything if the largest content was removed.
+  EphemeronPair<const LayoutObject, TextRecord> largest_ignored_text_{nullptr,
+                                                                      nullptr};
 
   Member<const LocalFrameView> frame_view_;
 };
@@ -88,7 +99,6 @@ class CORE_EXPORT TextPaintTimingDetector final
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
   OptionalPaintTimingDetectorCallback<TextRecord> TakePaintTimingCallback();
-  void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void StopRecordingLargestTextPaint();
 
   // Mark that the `LayoutObject` should be considered for paint timing, even if

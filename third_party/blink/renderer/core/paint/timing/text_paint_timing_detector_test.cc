@@ -104,7 +104,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   bool HasLargestIgnoredText() {
-    return !!GetLargestTextPaintManager().LargestIgnoredText();
+    return !!GetLargestTextPaintManager().GetLargestIgnoredTextIfNotRemoved();
   }
 
   void SimulateInputEvent() {

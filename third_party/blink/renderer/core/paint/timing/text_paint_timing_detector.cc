@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 
-#include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -74,14 +74,6 @@ TextPaintTimingDetector::TakePaintTimingCallback() {
   return blink::BindOnce(
       &TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
       WrapWeakPersistent(this), frame_index_++);
-}
-
-void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
-    const LayoutObject& object) {
-  if (const TextRecord* record = ltp_manager_.LargestIgnoredText();
-      record && record->GetNode() == object.GetNode()) {
-    ltp_manager_.TakeLargestIgnoredText();
-  }
 }
 
 void TextPaintTimingDetector::ResetPaintTrackingOnInteraction(
@@ -215,8 +207,7 @@ void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {
   TextRecord* record = ltp_manager_.TakeLargestIgnoredText();
-  // If the content has been removed, abort. It was never visible.
-  if (!record || !record->GetNode() || !record->GetNode()->GetLayoutObject()) {
+  if (!record) {
     return;
   }
 
@@ -244,16 +235,21 @@ LargestTextPaintManager::LargestTextPaintManager(LocalFrameView* frame_view)
 
 void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     const LayoutObject& object,
-    const uint64_t& size,
+    const uint64_t size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect) {
-  if (size && (!largest_ignored_text_ ||
-               size > largest_ignored_text_->RecordedSize())) {
-    largest_ignored_text_ = MakeGarbageCollected<TextRecord>(
-        object.GetNode(), size, gfx::RectF(), frame_visual_rect,
-        root_visual_rect, /*is_needed_for_timing=*/false,
-        /*soft_navigation_context=*/nullptr);
+  if (!size) {
+    return;
   }
+  if (TextRecord* current_candidate = GetLargestIgnoredTextIfNotRemoved();
+      current_candidate && current_candidate->RecordedSize() >= size) {
+    return;
+  }
+  largest_ignored_text_.key = &object;
+  largest_ignored_text_.value = MakeGarbageCollected<TextRecord>(
+      object.GetNode(), size, gfx::RectF(), frame_visual_rect, root_visual_rect,
+      /*is_needed_for_timing=*/false,
+      /*soft_navigation_context=*/nullptr);
 }
 
 void LargestTextPaintManager::Trace(Visitor* visitor) const {
