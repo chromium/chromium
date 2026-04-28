@@ -22,6 +22,9 @@ message OneTimeTokenBackendNotification {
     // Reference to a gmail message that contains the One Time Password.
     GmailMessageReference gmail_one_time_password = 1;
   }
+
+  // Time when the notification was sent by the Chrome backend to the client.
+  Timestamp notification_sent_timestamp = 2;
 }
 
 // Reference to an email that contains a one time token.
