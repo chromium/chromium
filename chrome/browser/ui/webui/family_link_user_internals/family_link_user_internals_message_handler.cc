@@ -27,10 +27,12 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
@@ -333,6 +335,19 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
                                           .is_subject_to_parental_controls()));
     }
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  const base::DictValue& approved_extensions =
+      profile->GetPrefs()->GetDict(prefs::kSupervisedUserApprovedExtensions);
+  if (!approved_extensions.empty()) {
+    base::ListValue* section_extensions =
+        AddSection(&section_list, "Approved Extensions");
+    for (const auto&& [extension_id, version]: approved_extensions) {
+      AddSectionEntry(section_extensions, extension_id,
+                      version.is_string() ? version.GetString() : "unknown version");
+    }
+  }
+#endif // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   base::DictValue result;
   result.Set("sections", std::move(section_list));
