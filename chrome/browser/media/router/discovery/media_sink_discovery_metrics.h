@@ -30,7 +30,7 @@ enum class MediaRouterChannelError {
   CERTIFICATE_TIMING = 4,
   NETWORK = 5,
   CONNECT_TIMEOUT = 6,
-  // Deprecated: PING_TIMEOUT = 7,
+  PING_TIMEOUT = 7,
 
   // Note = Add entries only immediately above this line.
   TOTAL_COUNT = 8

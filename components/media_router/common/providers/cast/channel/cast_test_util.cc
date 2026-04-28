@@ -38,7 +38,11 @@ MockCastSocketService::MockCastSocketService(
 MockCastSocketService::~MockCastSocketService() = default;
 
 MockCastSocket::MockCastSocket()
-    : mock_transport_(std::make_unique<MockCastTransport>()) {}
+    : channel_id_(0),
+      error_state_(ChannelError::NONE),
+      keep_alive_(false),
+      audio_only_(false),
+      mock_transport_(new MockCastTransport()) {}
 MockCastSocket::~MockCastSocket() = default;
 
 net::IPEndPoint CreateIPEndPointForTest() {

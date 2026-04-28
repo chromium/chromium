@@ -162,7 +162,7 @@ void CastTransportImpl::OnWriteResult(int result) {
   int rv = result;
   do {
     VLOG_WITH_CONNECTION(2)
-        << "OnWriteResult (state=" << std::to_underlying(write_state_) << ", "
+        << "OnWriteResult (state=" << AsInteger(write_state_) << ", "
         << "result=" << rv << ", " << "queue size=" << write_queue_.size()
         << ")";
 
@@ -184,7 +184,7 @@ void CastTransportImpl::OnWriteResult(int result) {
         break;
       default:
         NOTREACHED() << "Unknown state in write state machine: "
-                     << std::to_underlying(state);
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalWriteState(write_state_));
 
@@ -284,9 +284,8 @@ void CastTransportImpl::OnReadResult(int result) {
   // synchronously.
   int rv = result;
   do {
-    VLOG_WITH_CONNECTION(2)
-        << "OnReadResult(state=" << std::to_underlying(read_state_)
-        << ", result=" << rv << ")";
+    VLOG_WITH_CONNECTION(2) << "OnReadResult(state=" << AsInteger(read_state_)
+                            << ", result=" << rv << ")";
     ReadState state = read_state_;
     read_state_ = ReadState::UNKNOWN;
 
@@ -306,7 +305,7 @@ void CastTransportImpl::OnReadResult(int result) {
         break;
       default:
         NOTREACHED() << "Unknown state in read state machine: "
-                     << std::to_underlying(state);
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalReadState(read_state_));
 
@@ -385,5 +384,3 @@ int CastTransportImpl::DoReadHandleError(int result) {
 }
 
 }  // namespace cast_channel
-
-#undef VLOG_WITH_CONNECTION

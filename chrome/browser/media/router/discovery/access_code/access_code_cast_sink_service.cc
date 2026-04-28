@@ -42,6 +42,12 @@ namespace {
 // Connect timeout value when opening a Cast socket.
 const int kConnectTimeoutInSeconds = 2;
 
+// Amount of idle time to wait before pinging the Cast device.
+const int kPingIntervalInSeconds = 4;
+
+// Amount of idle time to wait before disconnecting.
+const int kLivenessTimeoutInSeconds = 8;
+
 using SinkSource = CastDeviceCountMetrics::SinkSource;
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
@@ -506,7 +512,8 @@ AccessCodeCastSinkService::CreateCastSocketOpenParams(
     const MediaSinkInternal& sink) {
   return cast_channel::CastSocketOpenParams(
       sink.cast_data().ip_endpoint, base::Seconds(kConnectTimeoutInSeconds),
-      /*CastDeviceCapabilitySet*/ {});
+      base::Seconds(kLivenessTimeoutInSeconds),
+      base::Seconds(kPingIntervalInSeconds), /*CastDeviceCapabilitySet*/ {});
 }
 
 void AccessCodeCastSinkService::OnChannelOpenedResult(
