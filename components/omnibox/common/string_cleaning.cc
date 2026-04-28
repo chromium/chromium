@@ -45,10 +45,21 @@ std::u16string CleanUpUrlForMatching(
     base::OffsetAdjuster::Adjustments* adjustments) {
   DCHECK(gurl.is_valid());
 
+  // Avoid re-parsing the URL when no truncation is needed (the common case).
+  // TruncateUrl returns the spec unchanged for URLs under
+  // kCleanedUpUrlMaxLength (1024 chars), so constructing a new GURL from it is
+  // redundant.
+  const std::string& spec = gurl.spec();
+  const bool needs_truncation = spec.length() > kCleanedUpUrlMaxLength;
+  GURL truncated_url;
+  if (needs_truncation) {
+    truncated_url = GURL(TruncateUrl(spec));
+  }
+  const GURL& url_to_format = needs_truncation ? truncated_url : gurl;
+
   base::OffsetAdjuster::Adjustments tmp_adjustments;
   return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
-      GURL(TruncateUrl(gurl.spec())),
-      url_formatter::kFormatUrlOmitUsernamePassword,
+      url_to_format, url_formatter::kFormatUrlOmitUsernamePassword,
       base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
       nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
