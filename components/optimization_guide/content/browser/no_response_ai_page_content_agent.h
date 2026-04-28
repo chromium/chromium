@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_NO_RESPONSE_AI_PAGE_CONTENT_AGENT_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_NO_RESPONSE_AI_PAGE_CONTENT_AGENT_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,7 +19,7 @@ class RenderFrameHost;
 namespace optimization_guide {
 
 // Overrides the AIPageContentAgent interface for the given frame to simulate a
-// non-responsive renderer. Saves the arguments to respond later.
+// non-responsive renderer. Tests can either respond later or close the pipe.
 class NoResponseAIPageContentAgent
     : public blink::mojom::AIPageContentAgentInterceptorForTesting {
  public:
@@ -35,11 +36,19 @@ class NoResponseAIPageContentAgent
 
   void Bind(mojo::ScopedMessagePipeHandle handle);
 
+  // Blocks until this fake agent receives an APC request from the browser.
+  void WaitForRequest();
+
+  // Forwards the saved request to the real renderer agent.
   void Respond();
+
+  // Closes the fake pipe without replying to the saved request.
+  void Disconnect();
 
  private:
   blink::mojom::AIPageContentOptionsPtr saved_options_;
   GetAIPageContentCallback saved_callback_;
+  base::OnceClosure on_request_;
   raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::Receiver<blink::mojom::AIPageContentAgent> receiver_{this};
   mojo::Remote<blink::mojom::AIPageContentAgent> agent_;

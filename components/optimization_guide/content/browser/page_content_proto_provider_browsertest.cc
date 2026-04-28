@@ -32,6 +32,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -391,6 +392,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     page_content_ = std::move(page_content);
     std::move(quit_closure).Run();
   }
+  bool has_page_content() const { return page_content_->has_value(); }
 
   const proto::AnnotatedPageContent& page_content() {
     return page_content_->value().proto;
@@ -3151,6 +3153,136 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                    gfx::Rect(100, 100, 200, 300));
   AssertRectsEqual(geometry.outer_bounding_box(),
                    gfx::Rect(100, 100, 200, 300));
+}
+
+class PageContentProtoProviderBrowserTestNoTimeouts
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderBrowserTestNoTimeouts() {
+    // Disable timeouts so these tests only pass when APC handles the lost
+    // renderer response. A timeout would mask the fallback path under test.
+    feature_list_.InitWithFeatures(
+        /* enabled_features= */ {},
+        /* disabled_features= */ {
+            features::kGetAIPageContentMainFrameTimeoutEnabled,
+            features::kGetAIPageContentSubframeTimeoutEnabled});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageContentProtoProviderBrowserTest::SetUpCommandLine(command_line);
+    content::IsolateAllSitesForTesting(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
+                       MainFrameMojoDisconnect) {
+  LoadPage(https_server()->GetURL("/simple.html"), /*options=*/nullptr);
+
+  // Hold the main-frame APC response so the request is still pending when the
+  // pipe closes.
+  NoResponseAIPageContentAgent no_response_agent(
+      web_contents()->GetPrimaryMainFrame());
+
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // Drop the response after the browser has installed its default callback.
+  no_response_agent.WaitForRequest();
+  no_response_agent.Disconnect();
+
+  // Closing the pipe runs the wrapped Mojo callback with nullptr, then the
+  // browser-side GetAIPageContent callback reports main-frame failure.
+  loading_run_loop.Run();
+
+  // A missing main-frame APC response makes the whole extraction fail.
+  EXPECT_FALSE(has_page_content());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
+                       MainFrameRendererCrashWithPendingRequest) {
+  LoadPage(https_server()->GetURL("/simple.html"), /*options=*/nullptr);
+
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  content::RenderProcessHost* child_process = main_frame->GetProcess();
+
+  // The title is the browser-side signal that the renderer's spin task started.
+  content::TitleWatcher title_watcher(web_contents(), u"BLOCKED");
+  content::ExecuteScriptAsync(main_frame, R"JS(
+    setTimeout(() => {
+      document.title = 'BLOCKED';
+
+      // Keep the renderer from reading the APC Mojo request. This makes the
+      // browser observe renderer shutdown, not a real APC response.
+      while (true) {}
+    }, 0);
+  )JS");
+  EXPECT_EQ(u"BLOCKED", title_watcher.WaitAndGetTitle());
+
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // The request has been posted to the renderer. Forcing the blocked process to
+  // exit should close the Mojo pipe and invoke APC's default failure callback.
+  content::RenderProcessHostWatcher crash_observer(
+      child_process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  ASSERT_TRUE(child_process->Shutdown(0));
+  crash_observer.Wait();
+
+  // Renderer exit closes the pipe. The wrapped Mojo callback runs with nullptr,
+  // then the browser-side GetAIPageContent callback reports main-frame failure.
+  loading_run_loop.Run();
+
+  // A crashed main renderer makes the whole extraction fail.
+  EXPECT_FALSE(has_page_content());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
+                       SubframeMojoDisconnect) {
+  LoadPage(https_server()->GetURL("/iframe_cross_site.html"),
+           /*options=*/nullptr);
+
+  // Hold the second child frame so the first child can still return content.
+  content::RenderFrameHost* child_frame_2 =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
+  ASSERT_TRUE(child_frame_2);
+  NoResponseAIPageContentAgent no_response_agent(child_frame_2);
+
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // Drop only the second child response, matching an OOPIF pipe disconnect.
+  no_response_agent.WaitForRequest();
+  no_response_agent.Disconnect();
+  loading_run_loop.Run();
+
+  // The main frame still returns content; only the lost child frame is
+  // represented with default iframe data.
+  EXPECT_TRUE(has_page_content());
+
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
+
+  const auto& b_frame = root_node.children_nodes()[0];
+  EXPECT_EQ(b_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& b_frame_data = b_frame.content_attributes().iframe_data();
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
+
+  const auto& c_frame = root_node.children_nodes()[1];
+  EXPECT_EQ(c_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  // We didn't wait for the frame to respond, so the iframe data is defaulted.
+  const auto& c_frame_data = c_frame.content_attributes().iframe_data();
+  EXPECT_FALSE(c_frame_data.frame_data().has_security_origin());
+  EXPECT_EQ(c_frame.children_nodes_size(), 0);
+  EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
 }
 
 }  // namespace
