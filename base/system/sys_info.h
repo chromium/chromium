@@ -119,13 +119,24 @@ class BASE_EXPORT SysInfo {
 
   // Return the available disk space in bytes on the volume containing |path|,
   // or nullopt on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteSize.
+  // TODO(crbug.com/505771669): Use `AmountOfDiskSpace()` instead of this
+  // function.
   static std::optional<int64_t> AmountOfFreeDiskSpace(const FilePath& path);
 
   // Return the total disk space in bytes on the volume containing |path|, or
   // nullopt on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteSize.
+  // TODO(crbug.com/505771669): Use `AmountOfDiskSpace()` instead of this
+  // function.
   static std::optional<int64_t> AmountOfTotalDiskSpace(const FilePath& path);
+
+  struct DiskSpaceInfo {
+    ByteSize total;
+    ByteSize available;
+  };
+
+  // Return the total and available disk space on the volume containing |path|,
+  // or nullopt on failure.
+  static std::optional<DiskSpaceInfo> AmountOfDiskSpace(const FilePath& path);
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Sets the total amount of disk space to report under the specified |path|.

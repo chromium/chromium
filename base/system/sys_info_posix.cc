@@ -18,6 +18,7 @@
 #include <iostream>
 #include <type_traits>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -86,37 +87,6 @@ bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
   return false;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-bool GetDiskSpaceInfo(const base::FilePath& path,
-                      int64_t* available_bytes,
-                      int64_t* total_bytes) {
-  struct statvfs stats;
-  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0) {
-    return false;
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const bool zero_size_means_unlimited =
-      stats.f_blocks == 0 && IsStatsZeroIfUnlimited(path);
-#else
-  const bool zero_size_means_unlimited = false;
-#endif
-
-  if (available_bytes) {
-    *available_bytes =
-        zero_size_means_unlimited
-            ? std::numeric_limits<int64_t>::max()
-            : base::saturated_cast<int64_t>(stats.f_bavail * stats.f_frsize);
-  }
-
-  if (total_bytes) {
-    *total_bytes =
-        zero_size_means_unlimited
-            ? std::numeric_limits<int64_t>::max()
-            : base::saturated_cast<int64_t>(stats.f_blocks * stats.f_frsize);
-  }
-  return true;
-}
 
 void GetKernelVersionNumbers(int32_t* major_version,
                              int32_t* minor_version,
@@ -207,28 +177,47 @@ ByteSize SysInfo::AmountOfVirtualMemory() {
 
 // static
 std::optional<int64_t> SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  int64_t available;
-  if (!GetDiskSpaceInfo(path, &available, nullptr)) {
-    return std::nullopt;
-  }
-  CHECK(available >= 0, base::NotFatalUntil::M150);
-  return available;
+  return AmountOfDiskSpace(path).transform([](DiskSpaceInfo info) {
+    return static_cast<int64_t>(info.available.InBytes());
+  });
 }
 
 // static
 std::optional<int64_t> SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
+  return AmountOfDiskSpace(path).transform([](DiskSpaceInfo info) {
+    return static_cast<int64_t>(info.total.InBytes());
+  });
+}
+
+// static
+std::optional<SysInfo::DiskSpaceInfo> SysInfo::AmountOfDiskSpace(
+    const FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  int64_t total;
-  if (!GetDiskSpaceInfo(path, nullptr, &total)) {
+  struct statvfs stats;
+  if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0) {
     return std::nullopt;
   }
-  CHECK(total >= 0, base::NotFatalUntil::M150);
-  return total;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  const bool zero_size_means_unlimited =
+      stats.f_blocks == 0 && IsStatsZeroIfUnlimited(path);
+#else
+  const bool zero_size_means_unlimited = false;
+#endif
+
+  int64_t available_bytes =
+      zero_size_means_unlimited
+          ? std::numeric_limits<int64_t>::max()
+          : base::saturated_cast<int64_t>(stats.f_bavail * stats.f_frsize);
+  int64_t total_bytes =
+      zero_size_means_unlimited
+          ? std::numeric_limits<int64_t>::max()
+          : base::saturated_cast<int64_t>(stats.f_blocks * stats.f_frsize);
+  return DiskSpaceInfo{
+      .total = ByteSize(static_cast<uint64_t>(total_bytes)),
+      .available = ByteSize(static_cast<uint64_t>(available_bytes))};
 }
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)

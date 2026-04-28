@@ -65,10 +65,10 @@ namespace storage {
 namespace {
 
 // Values in bytes.
-const int64_t kAvailableSpaceForApp = 13377331U;
-const int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
-const int64_t kDefaultPoolSize = 1000;
-const int64_t kDefaultPerStorageKeyQuota = 200 * 1024 * 1024;
+constexpr int64_t kAvailableSpaceForApp = 13377331U;
+constexpr int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
+constexpr int64_t kDefaultPoolSize = 1000;
+constexpr int64_t kDefaultPerStorageKeyQuota = 200 * 1024 * 1024;
 
 struct UsageAndQuotaResult {
   QuotaStatusCode status;
@@ -79,11 +79,6 @@ struct UsageAndQuotaResult {
 struct GlobalUsageResult {
   int64_t usage;
   int64_t unlimited_usage;
-};
-
-struct StorageCapacityResult {
-  int64_t total_space;
-  int64_t available_space;
 };
 
 struct ClientBucketData {
@@ -106,14 +101,15 @@ struct UsageAndQuotaWithBreakdown {
 };
 
 // Returns a deterministic value for the amount of available disk space.
-int64_t GetAvailableDiskSpaceForTest() {
+constexpr int64_t GetAvailableDiskSpaceForTest() {
   return kAvailableSpaceForApp + kMustRemainAvailableForSystem;
 }
 
-QuotaAvailability GetVolumeInfoForTests(const base::FilePath& unused) {
-  int64_t available = static_cast<uint64_t>(GetAvailableDiskSpaceForTest());
-  int64_t total = available * 2;
-  return QuotaAvailability(total, available);
+std::optional<base::SysInfo::DiskSpaceInfo> GetVolumeInfoForTests(
+    const base::FilePath& unused) {
+  constexpr base::ByteSize available(GetAvailableDiskSpaceForTest());
+  constexpr base::ByteSize total(GetAvailableDiskSpaceForTest() * 2);
+  return base::SysInfo::DiskSpaceInfo{.total = total, .available = available};
 }
 
 StorageKey ToStorageKey(const std::string& url) {
@@ -334,7 +330,8 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetQuotaSettings(settings);
   }
 
-  using GetVolumeInfoFn = QuotaAvailability (*)(const base::FilePath&);
+  using GetVolumeInfoFn =
+      std::optional<base::SysInfo::DiskSpaceInfo> (*)(const base::FilePath&);
 
   void SetGetVolumeInfoFn(GetVolumeInfoFn fn) {
     quota_manager_impl_->SetGetVolumeInfoFnForTesting(fn);
@@ -390,10 +387,10 @@ class QuotaManagerImplTest : public testing::Test {
     return future.Get();
   }
 
-  StorageCapacityResult GetStorageCapacity() {
-    base::test::TestFuture<int64_t, int64_t> future;
+  base::SysInfo::DiskSpaceInfo GetStorageCapacity() {
+    base::test::TestFuture<base::SysInfo::DiskSpaceInfo> future;
     quota_manager_impl_->GetStorageCapacity(future.GetCallback());
-    return {future.Get<0>(), future.Get<1>()};
+    return future.Get();
   }
 
   void GetEvictionRoundInfo() {
@@ -487,11 +484,11 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetStoragePressureCallback(callback);
   }
 
-  void MaybeRunStoragePressureCallback(const StorageKey& storage_key,
-                                       int64_t total,
-                                       int64_t available) {
-    quota_manager_impl_->MaybeRunStoragePressureCallback(storage_key, total,
-                                                         available);
+  void MaybeRunStoragePressureCallback(
+      const StorageKey& storage_key,
+      base::SysInfo::DiskSpaceInfo disk_space) {
+    quota_manager_impl_->MaybeRunStoragePressureCallback(storage_key,
+                                                         disk_space);
   }
 
   void set_additional_callback_count(int c) { additional_callback_count_ = c; }
@@ -1358,7 +1355,9 @@ TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
   result = GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 512);
-  EXPECT_EQ(result.quota, storage_capacity.available_space + result.usage);
+  EXPECT_EQ(result.quota,
+            static_cast<int64_t>(storage_capacity.available.InBytes()) +
+                result.usage);
 
   auto global_usage_result = GetGlobalUsage();
   EXPECT_EQ(global_usage_result.usage, 1 + 2 + 128 + 512);
@@ -1632,7 +1631,8 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Overbudget) {
   // quota calculations for an individual storage key, so despite global usage
   // in excess of our poolsize, we still get the nominal quota value.
   auto storage_capacity = GetStorageCapacity();
-  EXPECT_LE(kMustRemainAvailableForSystem, storage_capacity.available_space);
+  EXPECT_LE(kMustRemainAvailableForSystem,
+            static_cast<int64_t>(storage_capacity.available.InBytes()));
 
   auto result = GetUsageAndQuotaForWebApps(ToStorageKey("http://usage1/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
@@ -1684,7 +1684,9 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Unlimited) {
   result = GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 4000);
-  EXPECT_EQ(result.quota, storage_capacity.available_space + result.usage);
+  EXPECT_EQ(result.quota,
+            static_cast<int64_t>(storage_capacity.available.InBytes()) +
+                result.usage);
 
   auto client_result =
       GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"));
@@ -1710,7 +1712,9 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Unlimited) {
   result = GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 4000);
-  EXPECT_EQ(result.quota, storage_capacity.available_space + result.usage);
+  EXPECT_EQ(result.quota,
+            static_cast<int64_t>(storage_capacity.available.InBytes()) +
+                result.usage);
 
   client_result =
       GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"));
@@ -1904,8 +1908,8 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteBucket) {
 
 TEST_F(QuotaManagerImplTest, GetStorageCapacity) {
   auto storage_capacity = GetStorageCapacity();
-  EXPECT_GE(storage_capacity.total_space, 0);
-  EXPECT_GE(storage_capacity.available_space, 0);
+  EXPECT_TRUE(storage_capacity.total.is_positive());
+  EXPECT_GE(storage_capacity.available, base::ByteSize());
 }
 
 TEST_F(QuotaManagerImplTest, EvictBucketData) {
@@ -2411,9 +2415,8 @@ TEST_F(QuotaManagerImplTest, GetDiskAvailabilityAndTempPoolSize) {
       quota_internals_future.GetCallback());
   std::tuple quota_internals_result = quota_internals_future.Take();
 
-  int64_t available_space =
-      static_cast<uint64_t>(GetAvailableDiskSpaceForTest());
-  int64_t total_space = available_space * 2;
+  constexpr int64_t available_space = GetAvailableDiskSpaceForTest();
+  constexpr int64_t total_space = available_space * 2;
 
   EXPECT_EQ(total_space, std::get<0>(quota_internals_result));
   EXPECT_EQ(available_space, std::get<1>(quota_internals_result));
@@ -2767,8 +2770,8 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Incognito) {
   SetQuotaSettings(kPoolSize, kPerStorageKeyQuota, INT64_C(0));
 
   auto storage_capacity = GetStorageCapacity();
-  EXPECT_EQ(storage_capacity.total_space, kPoolSize);
-  EXPECT_EQ(storage_capacity.available_space, kPoolSize - 10);
+  EXPECT_EQ(storage_capacity.total, base::ByteSize(kPoolSize));
+  EXPECT_EQ(storage_capacity.available, base::ByteSize(kPoolSize - 10));
 
   auto result = GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
@@ -2796,12 +2799,16 @@ TEST_F(QuotaManagerImplTest, MaybeRunStoragePressureCallback) {
 
   SetStoragePressureCallback(cb);
 
-  int64_t kGBytes = QuotaManagerImpl::kMBytes * 1024;
-  MaybeRunStoragePressureCallback(StorageKey(), 100 * kGBytes, 2 * kGBytes);
+  uint64_t kGBytes = QuotaManagerImpl::kMBytes * 1024;
+  MaybeRunStoragePressureCallback(StorageKey(),
+                                  {.total = base::ByteSize(100 * kGBytes),
+                                   .available = base::ByteSize(2 * kGBytes)});
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_ran);
 
-  MaybeRunStoragePressureCallback(StorageKey(), 100 * kGBytes, kGBytes);
+  MaybeRunStoragePressureCallback(StorageKey(),
+                                  {.total = base::ByteSize(100 * kGBytes),
+                                   .available = base::ByteSize(kGBytes)});
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_ran);
 }
@@ -3113,7 +3120,9 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_NonBucket) {
   result = GetUsageAndQuotaWithBreakdown(ToStorageKey("http://unlimited/"));
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 10);
-  EXPECT_EQ(result.quota, GetStorageCapacity().available_space + result.usage);
+  EXPECT_EQ(result.quota,
+            static_cast<int64_t>(GetStorageCapacity().available.InBytes()) +
+                result.usage);
 }
 
 TEST_F(QuotaManagerImplTest, StaticReportedQuota_NonBucket_LowDisk) {
@@ -3244,7 +3253,8 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket) {
     auto result = GetUsageAndQuotaForBucket(bucket);
     EXPECT_EQ(result.status, QuotaStatusCode::kOk);
     EXPECT_EQ(result.usage, 0);
-    EXPECT_EQ(result.quota, storage_capacity.available_space);
+    EXPECT_EQ(result.quota,
+              static_cast<int64_t>(storage_capacity.available.InBytes()));
   }
 }
 

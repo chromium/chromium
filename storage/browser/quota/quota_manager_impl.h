@@ -26,6 +26,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -37,7 +38,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "storage/browser/quota/quota_availability.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
@@ -113,8 +113,8 @@ struct UsageInfo {
 };
 
 struct AccumulateQuotaInternalsInfo {
-  int64_t total_space = 0;
-  int64_t available_space = 0;
+  base::ByteSize total_space;
+  base::ByteSize available_space;
   int64_t temp_pool_size = 0;
 };
 
@@ -155,8 +155,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Function pointer type used to store the function which returns
   // information about the volume containing the given FilePath.
-  // The value returned is the QuotaAvailability struct.
-  using GetVolumeInfoFn = QuotaAvailability (*)(const base::FilePath&);
+  using GetVolumeInfoFn =
+      std::optional<base::SysInfo::DiskSpaceInfo> (*)(const base::FilePath&);
 
   static constexpr int64_t kGBytes = 1024 * 1024 * 1024;
   static constexpr int64_t kNoLimit = INT64_MAX;
@@ -545,8 +545,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   using DumpBucketTableCallback = base::OnceCallback<void(BucketTableEntries)>;
 
-  // The values returned total_space, available_space.
-  using StorageCapacityCallback = base::OnceCallback<void(int64_t, int64_t)>;
+  // The values returned as DiskSpaceInfo (total_space, available_space).
+  using StorageCapacityCallback =
+      base::OnceCallback<void(base::SysInfo::DiskSpaceInfo)>;
 
   // Lazily called on the IO thread when the first quota manager API is called.
   //
@@ -587,13 +588,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   UsageTracker* GetUsageTracker() const;
 
   void DumpBucketTable(DumpBucketTableCallback callback);
-  void UpdateQuotaInternalsDiskAvailability(base::OnceClosure barrier_callback,
-                                            AccumulateQuotaInternalsInfo* info,
-                                            int64_t total_space,
-                                            int64_t available_space);
-  void UpdateQuotaInternalsTempPoolSpace(base::OnceClosure barrier_callback,
-                                         AccumulateQuotaInternalsInfo* info,
-                                         const QuotaSettings& settings);
   void FinallySendDiskAvailabilityAndTempPoolSize(
       GetDiskAvailabilityAndTempPoolSizeCallback callback,
       std::unique_ptr<AccumulateQuotaInternalsInfo> info);
@@ -661,9 +655,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void ReportHistogram();
   void DidGetGlobalUsageForHistogram(int64_t usage, int64_t unlimited_usage);
-  void DidGetStorageCapacityForHistogram(int64_t usage,
-                                         int64_t total_space,
-                                         int64_t available_space);
+  void DidGetStorageCapacityForHistogram(
+      int64_t usage,
+      base::SysInfo::DiskSpaceInfo disk_space);
   void DidDumpBucketTableForHistogram(BucketTableEntries entries);
 
   // Returns the list of bucket ids that should be excluded from eviction due to
@@ -692,7 +686,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetSettings(std::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
-  void DidGetStorageCapacity(const QuotaAvailability& total_and_available);
+  void DidGetStorageCapacity(base::SysInfo::DiskSpaceInfo total_and_available);
 
   void DidRecoverOrRazeForReBootstrap(bool success);
 
@@ -730,9 +724,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                              QuotaErrorOr<std::set<BucketLocator>> result);
 
   void MaybeRunStoragePressureCallback(const blink::StorageKey& storage_key,
-                                       int64_t total_space,
-                                       int64_t available_space);
-
+                                       base::SysInfo::DiskSpaceInfo disk_space);
   std::optional<int64_t> GetQuotaOverrideForStorageKey(
       const blink::StorageKey&);
 
@@ -752,9 +744,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)>
   CreateDeleteBucketSetCallback(StatusCallback done);
 
-  static QuotaAvailability CallGetVolumeInfo(GetVolumeInfoFn get_volume_info_fn,
-                                             const base::FilePath& path);
-  static QuotaAvailability GetVolumeInfo(const base::FilePath& path);
+  static base::SysInfo::DiskSpaceInfo CallGetVolumeInfo(
+      GetVolumeInfoFn get_volume_info_fn,
+      const base::FilePath& path);
 
   const bool is_incognito_;
   const base::FilePath profile_path_;
@@ -787,11 +779,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       storage_pressure_callback_;
   QuotaSettings settings_;
   base::TimeTicks settings_timestamp_;
-  std::tuple<base::TimeTicks, int64_t, int64_t>
+  std::tuple<base::TimeTicks, base::SysInfo::DiskSpaceInfo>
       cached_disk_stats_for_storage_pressure_;
   CallbackQueue<QuotaSettingsCallback, const QuotaSettings&>
       settings_callbacks_;
-  CallbackQueue<StorageCapacityCallback, int64_t, int64_t>
+  CallbackQueue<StorageCapacityCallback, base::SysInfo::DiskSpaceInfo>
       storage_capacity_callbacks_;
 
   // The storage key for the last time a bucket was opened. This is used as an

@@ -58,7 +58,6 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "storage/browser/quota/client_usage_tracker.h"
-#include "storage/browser/quota/quota_availability.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
@@ -314,14 +313,11 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   }
 
   void OnGotCapacity(base::OnceClosure callback,
-                     int64_t total_space,
-                     int64_t available_space) {
+                     base::SysInfo::DiskSpaceInfo disk_space) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-    CHECK_GE(available_space, 0, base::NotFatalUntil::M148);
 
-    total_space_ = total_space;
-    available_space_ = available_space;
+    total_space_ = static_cast<int64_t>(disk_space.total.InBytes());
+    available_space_ = static_cast<int64_t>(disk_space.available.InBytes());
     std::move(callback).Run();
   }
 
@@ -431,14 +427,11 @@ class QuotaManagerImpl::EvictionRoundInfoHelper {
   }
 
   void OnGotCapacity(base::OnceClosure barrier_closure,
-                     int64_t total_space,
-                     int64_t available_space) {
+                     base::SysInfo::DiskSpaceInfo disk_space) {
     CHECK(barrier_closure, base::NotFatalUntil::M148);
-    CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-    CHECK_GE(available_space, 0, base::NotFatalUntil::M148);
 
-    total_space_ = total_space;
-    available_space_ = available_space;
+    total_space_ = static_cast<int64_t>(disk_space.total.InBytes());
+    available_space_ = static_cast<int64_t>(disk_space.available.InBytes());
     std::move(barrier_closure).Run();
   }
 
@@ -920,7 +913,7 @@ QuotaManagerImpl::QuotaManagerImpl(
       io_thread_(std::move(io_thread)),
       get_settings_function_(get_settings_function),
       special_storage_policy_(std::move(special_storage_policy)),
-      get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo),
+      get_volume_info_fn_(&base::SysInfo::AmountOfDiskSpace),
       report_static_storage_quota_(report_static_storage_quota) {
   CHECK_EQ(settings_.refresh_interval, base::TimeDelta::Max(),
            base::NotFatalUntil::M148);
@@ -1588,52 +1581,33 @@ void QuotaManagerImpl::GetDiskAvailabilityAndTempPoolSize(
              weak_factory_.GetWeakPtr(), std::move(callback), std::move(info)));
 
   // base::Unretained usage is safe here because BarrierClosure holds
-  // the std::unque_ptr that keeps AccumulateQuotaInternalsInfo alive, and the
-  // BarrierClosure will outlive the UpdateQuotaInternalsDiskAvailability
-  // and UpdateQuotaInternalsTempPoolSpace closures.
+  // the std::unique_ptr that keeps AccumulateQuotaInternalsInfo alive, and the
+  // BarrierClosure will outlive the individual closures below.
   GetStorageCapacity(base::BindOnce(
-      &QuotaManagerImpl::UpdateQuotaInternalsDiskAvailability,
-      weak_factory_.GetWeakPtr(), barrier, base::Unretained(info_ptr)));
+      [](base::OnceClosure barrier_callback, AccumulateQuotaInternalsInfo* info,
+         base::SysInfo::DiskSpaceInfo disk_space) {
+        info->total_space = disk_space.total;
+        info->available_space = disk_space.available;
+        std::move(barrier_callback).Run();
+      },
+      barrier, base::Unretained(info_ptr)));
   GetQuotaSettings(base::BindOnce(
-      &QuotaManagerImpl::UpdateQuotaInternalsTempPoolSpace,
-      weak_factory_.GetWeakPtr(), barrier, base::Unretained(info_ptr)));
-}
-
-void QuotaManagerImpl::UpdateQuotaInternalsDiskAvailability(
-    base::OnceClosure barrier_callback,
-    AccumulateQuotaInternalsInfo* info,
-    int64_t total_space,
-    int64_t available_space) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-  CHECK_GE(total_space, available_space, base::NotFatalUntil::M151);
-
-  info->total_space = total_space;
-  info->available_space = available_space;
-
-  std::move(barrier_callback).Run();
-}
-
-void QuotaManagerImpl::UpdateQuotaInternalsTempPoolSpace(
-    base::OnceClosure barrier_callback,
-    AccumulateQuotaInternalsInfo* info,
-    const QuotaSettings& settings) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(settings.pool_size, 0, base::NotFatalUntil::M148);
-  info->temp_pool_size = settings.pool_size;
-
-  std::move(barrier_callback).Run();
+      [](base::OnceClosure barrier_callback, AccumulateQuotaInternalsInfo* info,
+         const QuotaSettings& settings) {
+        info->temp_pool_size = settings.pool_size;
+        std::move(barrier_callback).Run();
+      },
+      barrier, base::Unretained(info_ptr)));
 }
 
 void QuotaManagerImpl::FinallySendDiskAvailabilityAndTempPoolSize(
     GetDiskAvailabilityAndTempPoolSizeCallback callback,
     std::unique_ptr<AccumulateQuotaInternalsInfo> info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(info->total_space, 0, base::NotFatalUntil::M148);
   CHECK_GE(info->total_space, info->available_space, base::NotFatalUntil::M151);
-  CHECK_GE(info->temp_pool_size, 0, base::NotFatalUntil::M148);
-
-  std::move(callback).Run(info->total_space, info->available_space,
+  CHECK_GE(info->temp_pool_size, 0);
+  std::move(callback).Run(static_cast<int64_t>(info->total_space.InBytes()),
+                          static_cast<int64_t>(info->available_space.InBytes()),
                           info->temp_pool_size);
 }
 
@@ -2158,14 +2132,14 @@ void QuotaManagerImpl::OnFullDiskError(std::optional<StorageKey> storage_key) {
 }
 
 void QuotaManagerImpl::NotifyWriteFailed(const blink::StorageKey& storage_key) {
-  auto [time_of_last_stats, total_space, available_space] =
+  auto [time_of_last_stats, disk_space] =
       cached_disk_stats_for_storage_pressure_;
   auto age_of_disk_stats = base::TimeTicks::Now() - time_of_last_stats;
 
   // Avoid polling for free disk space if disk stats have been recently
   // queried.
   if (age_of_disk_stats < kStoragePressureCheckDiskStatsInterval) {
-    MaybeRunStoragePressureCallback(storage_key, total_space, available_space);
+    MaybeRunStoragePressureCallback(storage_key, disk_space);
     return;
   }
 
@@ -2316,15 +2290,11 @@ void QuotaManagerImpl::DidDeleteBucketForRecreation(
 
 void QuotaManagerImpl::MaybeRunStoragePressureCallback(
     const StorageKey& storage_key,
-    int64_t total_space,
-    int64_t available_space) {
+    base::SysInfo::DiskSpaceInfo disk_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-  CHECK_GE(available_space, 0, base::NotFatalUntil::M148);
 
-  // TODO(crbug.com/40121667): Figure out what 0 total_space means
-  // and how to handle the storage pressure callback in these cases.
-  if (total_space == 0) {
+  if (disk_space.available >=
+      kStoragePressureThresholdRatio * disk_space.total) {
     return;
   }
 
@@ -2332,10 +2302,7 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
     // Quota will hold onto a storage pressure notification if no storage
     // pressure callback is set.
     storage_key_for_pending_storage_pressure_callback_ = std::move(storage_key);
-    return;
-  }
-
-  if (available_space < kStoragePressureThresholdRatio * total_space) {
+  } else {
     storage_pressure_callback_.Run(std::move(storage_key));
   }
 }
@@ -2453,12 +2420,13 @@ void QuotaManagerImpl::DidGetGlobalUsageForHistogram(int64_t usage,
 
 void QuotaManagerImpl::DidGetStorageCapacityForHistogram(
     int64_t usage,
-    int64_t total_space,
-    int64_t available_space) {
+    base::SysInfo::DiskSpaceInfo disk_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GE(usage, -1, base::NotFatalUntil::M148);
-  CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-  CHECK_GE(available_space, 0, base::NotFatalUntil::M148);
+
+  int64_t total_space = static_cast<int64_t>(disk_space.total.InBytes());
+  int64_t available_space =
+      static_cast<int64_t>(disk_space.available.InBytes());
 
   UMA_HISTOGRAM_MBYTES("Quota.GlobalUsageOfTemporaryStorage", usage);
   if (total_space > 0) {
@@ -2737,22 +2705,17 @@ void QuotaManagerImpl::ContinueIncognitoGetStorageCapacity(
 
   int64_t available_space =
       std::max(int64_t{0}, settings.pool_size - temporary_usage);
-  DidGetStorageCapacity(QuotaAvailability(settings.pool_size, available_space));
+  DidGetStorageCapacity(base::SysInfo::DiskSpaceInfo{
+      .total = base::ByteSize(static_cast<uint64_t>(settings.pool_size)),
+      .available = base::ByteSize(static_cast<uint64_t>(available_space))});
 }
 
 void QuotaManagerImpl::DidGetStorageCapacity(
-    const QuotaAvailability& quota_usage) {
+    base::SysInfo::DiskSpaceInfo disk_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  int64_t total_space = quota_usage.total;
-  CHECK_GE(total_space, 0, base::NotFatalUntil::M148);
-
-  int64_t available_space = quota_usage.available;
-  CHECK_GE(available_space, 0, base::NotFatalUntil::M148);
-
-  cached_disk_stats_for_storage_pressure_ =
-      std::make_tuple(base::TimeTicks::Now(), total_space, available_space);
-  storage_capacity_callbacks_.Run(total_space, available_space);
+  cached_disk_stats_for_storage_pressure_ = {base::TimeTicks::Now(),
+                                             disk_space};
+  storage_capacity_callbacks_.Run(disk_space);
 }
 
 void QuotaManagerImpl::DidRecoverOrRazeForReBootstrap(bool success) {
@@ -3010,40 +2973,24 @@ void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
 }
 
 // static
-QuotaAvailability QuotaManagerImpl::CallGetVolumeInfo(
+base::SysInfo::DiskSpaceInfo QuotaManagerImpl::CallGetVolumeInfo(
     GetVolumeInfoFn get_volume_info_fn,
     const base::FilePath& path) {
   if (!base::CreateDirectory(path)) {
     LOG(WARNING) << "Create directory failed for path" << path.value();
-    return QuotaAvailability(0, 0);
+    return {};
   }
 
-  const QuotaAvailability quotaAvailability = get_volume_info_fn(path);
-  const auto total = quotaAvailability.total;
-  const auto available = quotaAvailability.available;
-
-  if (total < 0 || available < 0) {
+  std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      get_volume_info_fn(path);
+  if (!disk_space) {
     LOG(WARNING) << "Unable to get volume info: " << path.value();
-    return QuotaAvailability(0, 0);
+    return {};
   }
-  CHECK_GE(total, 0, base::NotFatalUntil::M148);
-  CHECK_GE(available, 0, base::NotFatalUntil::M148);
 
-  UMA_HISTOGRAM_MBYTES("Quota.TotalDiskSpace", total);
-  UMA_HISTOGRAM_MBYTES("Quota.AvailableDiskSpace", available);
-  if (total > 0) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Quota.PercentDiskAvailable",
-        std::min(100, static_cast<int>((available * 100) / total)));
-  }
-  return QuotaAvailability(total, available);
-}
-
-// static
-QuotaAvailability QuotaManagerImpl::GetVolumeInfo(const base::FilePath& path) {
-  return QuotaAvailability(
-      base::SysInfo::AmountOfTotalDiskSpace(path).value_or(-1),
-      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1));
+  base::UmaHistogramMemoryMB("Quota.TotalDiskSpace", disk_space->total);
+  base::UmaHistogramMemoryMB("Quota.AvailableDiskSpace", disk_space->available);
+  return *disk_space;
 }
 
 void QuotaManagerImpl::AddObserver(
