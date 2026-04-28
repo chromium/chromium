@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
+#include "media/base/media_log.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -34,7 +35,8 @@ class CdmVideoDecoder {
 // decoder can be created.
 std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     CdmHostProxy* cdm_host_proxy,
-    const cdm::VideoDecoderConfig_3& config);
+    const cdm::VideoDecoderConfig_3& config,
+    MediaLog* media_log);
 
 }  // namespace media
 

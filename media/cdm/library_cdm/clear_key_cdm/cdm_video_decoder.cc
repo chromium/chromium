@@ -308,7 +308,8 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
 
 std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
     CdmHostProxy* cdm_host_proxy,
-    const cdm::VideoDecoderConfig_3& config) {
+    const cdm::VideoDecoderConfig_3& config,
+    MediaLog* media_log) {
   SetupGlobalEnvironmentIfNeeded();
 
   std::unique_ptr<VideoDecoder> video_decoder;
@@ -320,16 +321,13 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
 
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
   if (config.codec == cdm::kCodecAv1) {
-    video_decoder =
-        std::make_unique<Dav1dVideoDecoder>(std::make_unique<NullMediaLog>());
+    video_decoder = std::make_unique<Dav1dVideoDecoder>(media_log->Clone());
   }
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  static base::NoDestructor<media::NullMediaLog> null_media_log;
-
   if (!video_decoder)
-    video_decoder = std::make_unique<FFmpegVideoDecoder>(null_media_log.get());
+    video_decoder = std::make_unique<FFmpegVideoDecoder>(media_log);
 #endif
 
   if (!video_decoder)

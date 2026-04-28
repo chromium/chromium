@@ -51,14 +51,6 @@ void ExternalClearKeyTestHelper::LoadLibrary() {
   InitializeCdmFunc initialize_cdm_func = reinterpret_cast<InitializeCdmFunc>(
       library_.GetFunctionPointer(MAKE_STRING(INITIALIZE_CDM_MODULE)));
   ASSERT_TRUE(initialize_cdm_func) << "No INITIALIZE_CDM_MODULE in library";
-
-  // Loading and unloading this library leaks all static allocations; previously
-  // these were suppressed by a similar annotation in base::LazyInstance. With
-  // the switch to thread-safe statics, we lost the annotation.
-  //
-  // TODO(xhwang): Investigate if we are actually leaking memory during the
-  // normal process by which Chrome uses this library. http://crbug.com/691132.
-  ANNOTATE_SCOPED_MEMORY_LEAK;
   initialize_cdm_func();
 }
 

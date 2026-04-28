@@ -650,8 +650,8 @@ cdm::Status ClearKeyCdm::InitializeVideoDecoder(
   }
 
   if (!video_decoder_) {
-    video_decoder_ =
-        CreateVideoDecoder(cdm_host_proxy_.get(), video_decoder_config);
+    video_decoder_ = CreateVideoDecoder(cdm_host_proxy_.get(),
+                                        video_decoder_config, &null_media_log_);
     if (!video_decoder_)
       return cdm::kInitializationError;
   }

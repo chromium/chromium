@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
+#include "media/base/media_util.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/library_cdm/clear_key_cdm/clear_key_persistent_session_cdm.h"
 
@@ -187,6 +188,8 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
   bool is_running_output_protection_test_ = false;
   bool is_running_platform_verification_test_ = false;
   bool is_running_storage_id_test_ = false;
+
+  media::NullMediaLog null_media_log_;
 };
 
 }  // namespace media
